@@ -1,0 +1,4430 @@
+{
+  "schema": 1,
+  "target": "aarch64-unknown-netbsd",
+  "date": "2026-10-20",
+  "fixture_name": "faction-netbsd-shared-and-peaks-20261020",
+  "guest": {
+    "versions": {
+      "os": "NetBSD",
+      "release": "11.0",
+      "machine": "evbarm",
+      "rust": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)",
+      "compiler": "cc (nb3 20260326) 12.5.0",
+      "python": "Python 3.13.14",
+      "physical_ram_bytes": "1054990336",
+      "vcpus": "2"
+    },
+    "vcpus": 2,
+    "configured_ram_bytes": 1073741824,
+    "physical_ram_bytes": 1054990336,
+    "accelerator": "QEMU/HVF; two host CPU vCPUs; not physical SBC evidence"
+  },
+  "release_inputs": {
+    "image": {
+      "url": "https://cdn.netbsd.org/pub/NetBSD/NetBSD-11.0/evbarm-aarch64/binary/gzimg/arm64.img.gz",
+      "sha512": "50c8597cd83b73d12a466e67c1ecc49fb1969941171644b15a7fe377b0f482ccb190b3aa38b043eba3f5e7b4d6e38cf0e7d3c6fd5251813af869b49beda2ee80"
+    },
+    "kernel": {
+      "url": "https://cdn.netbsd.org/pub/NetBSD/NetBSD-11.0/evbarm-aarch64/binary/kernel/netbsd-GENERIC64.img.gz",
+      "sha512": "62a120ee688902e632f5e536e41aa9e6e74a55759a91d9c5bd3b2e12092b7d3bdaf00aa98c67b87466a04b8c0fff19b9d804814cd1efb0b665b6a82d39c0e179"
+    },
+    "manifest": {
+      "url": "https://cdn.NetBSD.org/pub/NetBSD/security/hashes/NetBSD-11.0_hashes.asc",
+      "signer_fingerprint": "271133262BF35CB50D4F504689261E17F5EF49FF",
+      "verification": "GPG good signature; signing public key retrieved through official HTTPS, no independent web-of-trust validation"
+    }
+  },
+  "release_verification": "SHA-512 plus signed manifest/fingerprint verified in this fresh fixture; HTTPS key retrieval, not independent web-of-trust validation",
+  "execution_sources": {
+    "Cargo.toml": "00199e37439041786876ac3f060009456778a83529d8810139e1a3b37f7e1dde",
+    "Cargo.lock": "c5a0e4f548e968ff6f967abdecffb7dd7ce0b05c6bd7b89182ea9774b54d48dd",
+    "dev-docs/dependencies/local-core.json": "a56146655ad124e9cc82d541da097b7126e1bd2e99ab1203c4b429fdf567deeb",
+    "deploy/netbsd/sshd_config.in": "60245b9ea2849b203b95c726341466291348014840f74d94e30a16e073ec60a8",
+    "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
+    "crates/faction-unix/Cargo.toml": "2e0eaea46081f07c3fc76b81de83ac2d972db0c59b1e8d98d4643584dbc8210b",
+    "crates/faction-unix/build.rs": "fad25481dacba11863882186822329fbb34af51ab03a292298d255faa7909fc2",
+    "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
+    "crates/faction-core/Cargo.toml": "a62682c6da2b6fdcd7a2e9cc0e3c0045cf41688351bebb452916b70747480e17",
+    "crates/faction-terminal/Cargo.toml": "6ca192866438705ee019001fd854451f35309bfabf87ba25cd7c1c78539fb367",
+    "crates/faction-terminal/tests/terminal.rs": "e8e15d519855fba39a01333daec4c42fcb9ee51e68b64af2bcdc0c73b0f43a99",
+    "crates/faction-terminal/src/keys.rs": "5d0a38d3c65e424198d7facedcf9d9141408b0a393dd0d3621aa674d66a5a5ee",
+    "crates/faction-terminal/src/lib.rs": "d14ee7e9264ca4d997662a68e6250289ccc90a23a3caa190a75a7cc1789d3822",
+    "crates/faction-terminal/src/theme.rs": "4657a18e21e926dca8b4f5e9bd821e9ed541c7fbc9146ce854e8e21ae9982b5d",
+    "crates/faction-terminal/src/editor.rs": "110c935ac2cb7915da060b82b8d1cae94790cb4032259e8bcd744aaf7f8004fb",
+    "crates/faction-terminal/src/art.rs": "5f0f2561b45159b276d34e2767b5e22742127e33767cab930741ab256bf5884c",
+    "crates/faction-core/tests/core.rs": "c55c59a528d2b534506e57d3d59164a6ec4c53155e40f776881cdf64197d3845",
+    "crates/faction-core/tests/credential_budget.rs": "edfda7feab89fdfa034e76e72613633058dfca299c2a4f1f2e4c69608109230e",
+    "crates/faction-core/tests/snapshot.rs": "74ee5b55b88ebdf0451505813efa8ad0e1bac0aa7c6f1b8b4e382d4a5d9c0de4",
+    "crates/faction-core/tests/chat.rs": "2012b8c2f3dfc731040b5493f2e06a079da0f970bdad2a2b22b03c9303fb91db",
+    "crates/faction-core/examples/profile_seed.rs": "0ccf4c4f32af84c0740d4ba5b1f8625a250ed34a72abec644c600e851b889e30",
+    "crates/faction-core/src/credentials.rs": "6220efbbcc2a60d566b22f1efd0e3112d2a4852e5dd1f268364970cab4312d2d",
+    "crates/faction-core/src/lib.rs": "bcb0ce4160c910088040a0fb9a9da8b0ff218d78d0b306ff7b79b9a2b6baee8d",
+    "crates/faction-core/src/snapshot.rs": "32432b6f2e76ddf0d453766949ab18cdd324c648f42c8f87c314c7bd80e22c2b",
+    "crates/faction-core/src/chat.rs": "1ad554998b5fe9c8435f8f84fec335aacc5de020e644537076f3305529c2de7a",
+    "crates/faction-cli/src/member.rs": "658aa9cae2c4d1ae3d537fe79f8c03181b81822c259662b6bc20ef4660c9e161",
+    "crates/faction-cli/src/terminal.rs": "a3bfecf29d2b7a7a2f02f7c47fca7015ff8e3278f66227abd93630fffae1199a",
+    "crates/faction-cli/src/lib.rs": "d157c188e5a0e369f034b4fc37f24199172597f016875fa870afb41d2ffd389b",
+    "crates/faction-cli/src/main.rs": "4f6d1d40afed6da13316991d7b13f0505261f57839cc3e0590c152ea2adbc140",
+    "crates/faction-cli/src/chat.rs": "61332f672c91e67585a0c9efa4f3a311accb544ea7ad5c4909ccbcb4b9f5195e",
+    "crates/faction-unix/src/lib.rs": "64e8a349439c33814c4f274c7436332833e576e1d3caae4591e447425eacbe07",
+    "crates/faction-unix/src/shutdown.c": "e263bcd624fd4b67a3b7648e480a88d71faee644390f08e46e1ed9ae0dee11db",
+    "crates/faction-unix/src/terminal_fd.c": "a97160e8499877395e574116289afb0b7fc4c9563733e378b8439a799520bf8c",
+    "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
+    "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
+    "crates/faction-access/src/broker.rs": "c5935dae87e3ec062f252708377a719e699dfa04d4e1892f3fe80a2b2065e463",
+    "experiments/055-shared-board/reset_fixture.py": "0e2db30ed16d592d1dbbc8a8cc3ef88b3d368fbebc134e0441eb7aae35320168",
+    "experiments/055-shared-board/Cargo.toml": "d551e1ba7f1a2a255ba102ef91928c54cb0345dc7b713946fb0b1c55b15e7b31",
+    "experiments/055-shared-board/terminal_probe.py": "97d5917de5d0d84a75eaa6e2417b04f82fd6a2aab4ec0037b41b74170fb656a1",
+    "experiments/055-shared-board/Cargo.lock": "55f09aa14a848ced9da474dc1203218b4ac0c9a41c3c9e404540ac899f3f65df",
+    "experiments/055-shared-board/main.rs": "6725ecff9a3674963b7acf64598a5b8432ee1a6178f6b7541857d4aae03d9df9",
+    "experiments/056-credential-peaks/calibrate.c": "26ee10e64efeb24761ba0e265d262f506b5d3d203e948db01cd0e7e26a303476",
+    "experiments/056-credential-peaks/netbsd_metrics.c": "833271b1fabc0a478e40a5e64744c284fe9ab661edc63d428c31c316819d98ba",
+    "tools/check_shared_oracles.py": "53d2f9c438ed93eeb1023edebcb708ab0a82ef6522011785879f8070ad1e995c",
+    "tools/check_shared_scaling.py": "ef9e204348a515d557247d5365d87d35219bf274631c7418011fb186b91dd20a",
+    "tools/check_credential_peaks.py": "ddee5b130aeda2179a5beff846f6377bd8c1fbeae5f753e265c23809e0a1df5d",
+    "tools/credential_peak.py": "7036159197f4e1f637ae920341771c336b8b4c9f0e8ff24c3dcc986f3146f5e9",
+    "tools/memory_profile.py": "81e8d177de80b9899b1a5bd5df09cfa9e0a33021afc3f0e86f19d23cf101175a",
+    "tools/check_restricted_ssh.py": "3d7207c0703ae0143b89bfb87f3efca44629a67cf7c0c936ad95245e217d67eb",
+    "tools/smoke_local_console.py": "d466f37efcf21c86ac5238a2e93a3c6d6926f1d92bcdf7acc359ff4c58258374"
+  },
+  "native_verified_source_count": 41,
+  "native_binaries": {
+    "faction": {
+      "sha256": "564d4b3ce018a54a38db190dbc596972e0d483d1972ab2b9e62efebb32423c2e",
+      "bytes": 2314512
+    },
+    "faction-member": {
+      "sha256": "ad8977403fcb55222bb7eb3d24145aee7de2f4a002448cc62bc82ab62288c6e9",
+      "bytes": 2314544
+    },
+    "faction-ssh": {
+      "sha256": "706ce99a4311099edd21416b65ced8081a01aaa2ca2cba9915a44f2bc8529c1b",
+      "bytes": 398784
+    },
+    "faction-broker": {
+      "sha256": "c22c5f37b7026e7549f5bc0da5361e5402a44d90745b539aa32785ff3698767f",
+      "bytes": 464288
+    },
+    "shared-bbs": {
+      "sha256": "62d40a1b657a759f5c7cc34f25decbaaa93bf65c8b5e4e4e1d450bcf3a4423d6",
+      "bytes": 2117896
+    },
+    "faction-netbsd-metrics": {
+      "sha256": "47734c23a886189d6c932f7e73e502065e2dda30d7d495e6964a2165ef925ae2",
+      "bytes": 22336
+    },
+    "faction-memory-calibrate": {
+      "sha256": "3705c531fae33dd6c2d85f039addf923d290925035e7a0020ffd033bf3d871a8",
+      "bytes": 17840
+    },
+    "profile_seed": {
+      "sha256": "db46fb9739c3d3ff4e14cb0c0d75c6a0383b04e17c3dfedcf89e994e2ceb5b3c",
+      "bytes": 1921264
+    }
+  },
+  "native_rust_tests": 58,
+  "native_pty_workflows": 5,
+  "normal_gateway_ssh_oracles": {
+    "schema": 1,
+    "scope": "NetBSD disposable real application SSH",
+    "results": [
+      {
+        "oracle": "separate_terminal_uid_cannot_read_database",
+        "result": "pass"
+      },
+      {
+        "oracle": "malformed_or_extra_local_descriptors_cannot_open_worker",
+        "result": "pass"
+      },
+      {
+        "oracle": "rejected_handoffs_preserve_broker_descriptor_count",
+        "result": "pass"
+      },
+      {
+        "oracle": "ordinary_ssh_shell_channel_enters_only_bbs",
+        "result": "pass"
+      },
+      {
+        "oracle": "no_pty_denied_before_board_access",
+        "result": "pass"
+      },
+      {
+        "oracle": "exec_denied_without_host_command",
+        "result": "pass"
+      },
+      {
+        "oracle": "blank_exec_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "sftp_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "direct_tcp_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "remote_tcp_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "remote_unix_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "unknown_transport_key_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "real_registration_pending_before_identity_and_menu",
+        "result": "pass"
+      },
+      {
+        "oracle": "approved_ansi_hotkey_room_post",
+        "result": "pass"
+      },
+      {
+        "oracle": "simultaneous_ssh_chat_preserves_draft",
+        "result": "pass"
+      },
+      {
+        "oracle": "active_ssh_chat_revocation_closes_session",
+        "result": "pass"
+      },
+      {
+        "oracle": "ssh_window_resize_plain_fallback_and_logout",
+        "result": "pass"
+      },
+      {
+        "oracle": "revoked_reconnect_cannot_reenter",
+        "result": "pass"
+      },
+      {
+        "oracle": "disconnect_stops_trusted_worker",
+        "result": "pass"
+      },
+      {
+        "oracle": "owner_export_unreachable_from_ssh_exec",
+        "result": "pass"
+      }
+    ],
+    "observations": {
+      "rejected_handoff_descriptor_rows": {
+        "before": 7,
+        "after": 7
+      },
+      "two_member_chat_process_sample": {
+        "faction-member": [
+          {
+            "rss_kib": 4060,
+            "vsz_kib": 19852
+          },
+          {
+            "rss_kib": 4076,
+            "vsz_kib": 19848
+          }
+        ],
+        "faction-broker": [
+          {
+            "rss_kib": 2496,
+            "vsz_kib": 17580
+          }
+        ],
+        "faction-ssh": [
+          {
+            "rss_kib": 1984,
+            "vsz_kib": 12668
+          },
+          {
+            "rss_kib": 1980,
+            "vsz_kib": 12664
+          }
+        ]
+      }
+    }
+  },
+  "normal_gateway_lifecycle_oracles": {
+    "schema": 1,
+    "scope": "disposable NetBSD eight-member SSH and lifecycle/fault tests",
+    "results": [
+      {
+        "oracle": "rc_status_and_duplicate_start",
+        "result": "pass"
+      },
+      {
+        "oracle": "rc_restart_idle",
+        "result": "pass"
+      },
+      {
+        "oracle": "eight_approved_ssh_members_chat",
+        "result": "pass"
+      },
+      {
+        "oracle": "ninth_ssh_member_rejected_at_cap",
+        "result": "pass"
+      },
+      {
+        "oracle": "100_and_250_over_cap_offers_preserve_sessions_and_descriptors",
+        "result": "pass"
+      },
+      {
+        "oracle": "worker_crash_isolated_and_reaped",
+        "result": "pass"
+      },
+      {
+        "oracle": "rc_stop_drains_then_reaps_active_members",
+        "result": "pass"
+      },
+      {
+        "oracle": "broker_sigkill_exits_member_without_host_shell",
+        "result": "pass"
+      },
+      {
+        "oracle": "stale_socket_recovery_and_fresh_authenticated_login",
+        "result": "pass"
+      },
+      {
+        "oracle": "sqlite_write_contention_bounded_retry_and_recovery",
+        "result": "pass"
+      },
+      {
+        "oracle": "absolute_session_deadline_reaps_observably_blocked_writer",
+        "result": "pass"
+      },
+      {
+        "oracle": "dedicated_sshd_rc_restart",
+        "result": "pass"
+      },
+      {
+        "oracle": "fresh_login_after_service_failures_and_ordered_stop",
+        "result": "pass"
+      }
+    ],
+    "observations": {
+      "eight_chat_processes": [
+        {
+          "role": "sshd-session",
+          "rss_kib": 8836,
+          "vsz_kib": 26188
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 6156,
+          "vsz_kib": 26516
+        },
+        {
+          "role": "sshd",
+          "rss_kib": 3792,
+          "vsz_kib": 19292
+        },
+        {
+          "role": "sshd",
+          "rss_kib": 4740,
+          "vsz_kib": 24104
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 7996,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 7996,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 27760
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4092,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8004,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8012,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4688,
+          "vsz_kib": 27956
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8000,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4692,
+          "vsz_kib": 28840
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 7996,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "faction-broker",
+          "rss_kib": 3256,
+          "vsz_kib": 29772
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8008,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4684,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4076,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8004,
+          "vsz_kib": 25084
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4680,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4072,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4668,
+          "vsz_kib": 27616
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4072,
+          "vsz_kib": 19848
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1980,
+          "vsz_kib": 12664
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1988,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        }
+      ],
+      "vmstat_summary": [
+        "    57810 pages free",
+        "    90425 pages active",
+        "    65741 pages inactive"
+      ],
+      "eight_chat_cpu_sample": "0",
+      "eight_chat_delivery_seconds": 0.337,
+      "over_cap_local_offers": [
+        {
+          "offered": 100,
+          "rejected": 100,
+          "seconds": 0.101
+        },
+        {
+          "offered": 250,
+          "rejected": 250,
+          "seconds": 0.001
+        }
+      ],
+      "overload_broker_descriptor_rows": {
+        "before": 15,
+        "after": 15
+      },
+      "active_stop_seconds": 5.533,
+      "broker_loss_worker_exit_seconds": 0.151,
+      "blocked_writer_completed_chunks": 0
+    }
+  },
+  "worker_model": {
+    "schema": 1,
+    "scope": "matched worker/shared native distinct-account SSH scaling; not production capacity",
+    "seed": {
+      "approved_accounts": 1000,
+      "rooms": 50,
+      "posts": 100000,
+      "post_body_bytes": 1024,
+      "independent_password_salts": true
+    },
+    "fixture_limits": {
+      "original_maxproc": 1044,
+      "original_maxfiles": 3404,
+      "experimental_maxproc": 2048,
+      "experimental_maxfiles": 16384,
+      "worker_limit": 250,
+      "launch_refill_ms": 100,
+      "launch_burst": 8,
+      "credential_slots": 2
+    },
+    "outcome": "stopped_at_headroom_guard",
+    "headroom_guard": "free + max(0, clean_file - wired) >= 128 MiB; zero swap; process/file reserves",
+    "completed_stage": 100,
+    "highest_observed_approved_sessions": 168,
+    "failure": null,
+    "stages": [
+      {
+        "sessions": 0,
+        "distinct_accounts": 0,
+        "phase": "seeded_idle_baseline",
+        "start": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 873381888,
+            "active": 77983744,
+            "inactive": 0,
+            "wired": 19124224,
+            "anon": 26546176,
+            "file": 49283072,
+            "exec": 21331968,
+            "kernel_pool": 36483072,
+            "boot_kernel": 35835904,
+            "file_clean": 70184960,
+            "file_dirty": 32768,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 2088960,
+              "high_water_rss_sum_bytes": 9031680,
+              "vsz_sum_bytes": 13033472,
+              "cpu_us_sum": 3228
+            },
+            "ssh": {
+              "count": 1,
+              "rss_sum_bytes": 2228224,
+              "high_water_rss_sum_bytes": 6320128,
+              "vsz_sum_bytes": 21630976,
+              "cpu_us_sum": 962
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 190,
+            "max_processes": 2048,
+            "processes": 22
+          },
+          "all_roles_rss_sum_bytes": 4317184
+        },
+        "end": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 873209856,
+            "active": 77889536,
+            "inactive": 0,
+            "wired": 19124224,
+            "anon": 26570752,
+            "file": 49291264,
+            "exec": 21331968,
+            "kernel_pool": 36601856,
+            "boot_kernel": 35835904,
+            "file_clean": 70184960,
+            "file_dirty": 40960,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 2088960,
+              "high_water_rss_sum_bytes": 9031680,
+              "vsz_sum_bytes": 13033472,
+              "cpu_us_sum": 4638
+            },
+            "ssh": {
+              "count": 1,
+              "rss_sum_bytes": 2228224,
+              "high_water_rss_sum_bytes": 6320128,
+              "vsz_sum_bytes": 21630976,
+              "cpu_us_sum": 962
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 190,
+            "max_processes": 2048,
+            "processes": 22
+          },
+          "all_roles_rss_sum_bytes": 4317184
+        },
+        "samples": [
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 873381888,
+              "active": 77983744,
+              "inactive": 0,
+              "wired": 19124224,
+              "anon": 26546176,
+              "file": 49283072,
+              "exec": 21331968,
+              "kernel_pool": 36483072,
+              "boot_kernel": 35835904,
+              "file_clean": 70184960,
+              "file_dirty": 32768,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 2088960,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 13033472,
+                "cpu_us_sum": 3228
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2228224,
+                "high_water_rss_sum_bytes": 6320128,
+                "vsz_sum_bytes": 21630976,
+                "cpu_us_sum": 962
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 190,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 4317184
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 873324544,
+              "active": 78131200,
+              "inactive": 0,
+              "wired": 19124224,
+              "anon": 26558464,
+              "file": 49283072,
+              "exec": 21331968,
+              "kernel_pool": 36532224,
+              "boot_kernel": 35835904,
+              "file_clean": 70184960,
+              "file_dirty": 32768,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 2088960,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 13033472,
+                "cpu_us_sum": 3494
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2228224,
+                "high_water_rss_sum_bytes": 6320128,
+                "vsz_sum_bytes": 21630976,
+                "cpu_us_sum": 962
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 190,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 4317184
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 873267200,
+              "active": 77860864,
+              "inactive": 0,
+              "wired": 19124224,
+              "anon": 26550272,
+              "file": 49291264,
+              "exec": 21331968,
+              "kernel_pool": 36569088,
+              "boot_kernel": 35835904,
+              "file_clean": 70184960,
+              "file_dirty": 40960,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 2088960,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 13033472,
+                "cpu_us_sum": 3786
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2228224,
+                "high_water_rss_sum_bytes": 6320128,
+                "vsz_sum_bytes": 21630976,
+                "cpu_us_sum": 962
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 190,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 4317184
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 873238528,
+              "active": 77983744,
+              "inactive": 0,
+              "wired": 19124224,
+              "anon": 26558464,
+              "file": 49291264,
+              "exec": 21331968,
+              "kernel_pool": 36601856,
+              "boot_kernel": 35835904,
+              "file_clean": 70184960,
+              "file_dirty": 40960,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 2088960,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 13033472,
+                "cpu_us_sum": 4174
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2228224,
+                "high_water_rss_sum_bytes": 6320128,
+                "vsz_sum_bytes": 21630976,
+                "cpu_us_sum": 962
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 190,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 4317184
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 873238528,
+              "active": 78090240,
+              "inactive": 0,
+              "wired": 19124224,
+              "anon": 26570752,
+              "file": 49291264,
+              "exec": 21331968,
+              "kernel_pool": 36601856,
+              "boot_kernel": 35835904,
+              "file_clean": 70184960,
+              "file_dirty": 40960,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 2088960,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 13033472,
+                "cpu_us_sum": 4434
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2228224,
+                "high_water_rss_sum_bytes": 6320128,
+                "vsz_sum_bytes": 21630976,
+                "cpu_us_sum": 962
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 190,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 4317184
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 873209856,
+              "active": 77889536,
+              "inactive": 0,
+              "wired": 19124224,
+              "anon": 26570752,
+              "file": 49291264,
+              "exec": 21331968,
+              "kernel_pool": 36601856,
+              "boot_kernel": 35835904,
+              "file_clean": 70184960,
+              "file_dirty": 40960,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 2088960,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 13033472,
+                "cpu_us_sum": 4638
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2228224,
+                "high_water_rss_sum_bytes": 6320128,
+                "vsz_sum_bytes": 21630976,
+                "cpu_us_sum": 962
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 190,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 4317184
+          }
+        ],
+        "interval": {
+          "seconds": 5.087,
+          "whole_vm_cpu_percent_one_core": 3.433,
+          "vm_delta_bytes": {
+            "total": 0,
+            "free": -172032,
+            "active": -94208,
+            "inactive": 0,
+            "wired": 0,
+            "anon": 24576,
+            "file": 8192,
+            "exec": 0,
+            "kernel_pool": 118784,
+            "boot_kernel": 0,
+            "file_clean": 0,
+            "file_dirty": 8192,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "stable_roles_cpu_percent_one_core": {
+            "broker": 0.028,
+            "ssh": 0.0
+          }
+        },
+        "all_alive": true
+      },
+      {
+        "sessions": 100,
+        "distinct_accounts": 100,
+        "phase": "approved_menu_idle",
+        "start": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 401211392,
+            "active": 449384448,
+            "inactive": 0,
+            "wired": 19972096,
+            "anon": 395878400,
+            "file": 49807360,
+            "exec": 23699456,
+            "kernel_pool": 104054784,
+            "boot_kernel": 35835904,
+            "file_clean": 73039872,
+            "file_dirty": 425984,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "member": {
+              "count": 100,
+              "rss_sum_bytes": 400293888,
+              "high_water_rss_sum_bytes": 2392559616,
+              "vsz_sum_bytes": 2028732416,
+              "cpu_us_sum": 3447996
+            },
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203165696,
+              "high_water_rss_sum_bytes": 809078784,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 333698
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1305047040,
+              "high_water_rss_sum_bytes": 1637298176,
+              "vsz_sum_bytes": 5305307136,
+              "cpu_us_sum": 1827245
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 8445952,
+              "high_water_rss_sum_bytes": 9031680,
+              "vsz_sum_bytes": 60493824,
+              "cpu_us_sum": 252772
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1597,
+            "max_processes": 2048,
+            "processes": 423
+          },
+          "all_roles_rss_sum_bytes": 1916952576
+        },
+        "end": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 399347712,
+            "active": 450445312,
+            "inactive": 0,
+            "wired": 19972096,
+            "anon": 396705792,
+            "file": 49913856,
+            "exec": 24002560,
+            "kernel_pool": 104534016,
+            "boot_kernel": 35835904,
+            "file_clean": 73457664,
+            "file_dirty": 278528,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "member": {
+              "count": 100,
+              "rss_sum_bytes": 400293888,
+              "high_water_rss_sum_bytes": 2392559616,
+              "vsz_sum_bytes": 2028732416,
+              "cpu_us_sum": 3589366
+            },
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203165696,
+              "high_water_rss_sum_bytes": 809078784,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 333698
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1305047040,
+              "high_water_rss_sum_bytes": 1637298176,
+              "vsz_sum_bytes": 5305307136,
+              "cpu_us_sum": 1835955
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 8445952,
+              "high_water_rss_sum_bytes": 9031680,
+              "vsz_sum_bytes": 60493824,
+              "cpu_us_sum": 292146
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1601,
+            "max_processes": 2048,
+            "processes": 425
+          },
+          "all_roles_rss_sum_bytes": 1916952576
+        },
+        "samples": [
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 401211392,
+              "active": 449384448,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 395878400,
+              "file": 49807360,
+              "exec": 23699456,
+              "kernel_pool": 104054784,
+              "boot_kernel": 35835904,
+              "file_clean": 73039872,
+              "file_dirty": 425984,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3447996
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1827245
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 252772
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1597,
+              "max_processes": 2048,
+              "processes": 423
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 401154048,
+              "active": 449146880,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 395898880,
+              "file": 49807360,
+              "exec": 23699456,
+              "kernel_pool": 104112128,
+              "boot_kernel": 35835904,
+              "file_clean": 73039872,
+              "file_dirty": 425984,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3463650
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1833683
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 256986
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1597,
+              "max_processes": 2048,
+              "processes": 423
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 401125376,
+              "active": 449003520,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 395911168,
+              "file": 49807360,
+              "exec": 23699456,
+              "kernel_pool": 104116224,
+              "boot_kernel": 35835904,
+              "file_clean": 73039872,
+              "file_dirty": 425984,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3479059
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1834102
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 261430
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1597,
+              "max_processes": 2048,
+              "processes": 423
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 401068032,
+              "active": 449122304,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 395911168,
+              "file": 49807360,
+              "exec": 23699456,
+              "kernel_pool": 104161280,
+              "boot_kernel": 35835904,
+              "file_clean": 73056256,
+              "file_dirty": 262144,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3494688
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1834302
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 265510
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1597,
+              "max_processes": 2048,
+              "processes": 423
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399519744,
+              "active": 450465792,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396677120,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104423424,
+              "boot_kernel": 35835904,
+              "file_clean": 73449472,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3509426
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1834686
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 269664
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399462400,
+              "active": 450002944,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396705792,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104468480,
+              "boot_kernel": 35835904,
+              "file_clean": 73449472,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3524430
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1834888
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 273885
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399433728,
+              "active": 450416640,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396697600,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104476672,
+              "boot_kernel": 35835904,
+              "file_clean": 73449472,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3539554
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1835192
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 278059
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399433728,
+              "active": 450019328,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396697600,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104484864,
+              "boot_kernel": 35835904,
+              "file_clean": 73449472,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3554527
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1835506
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 282552
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399433728,
+              "active": 450342912,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396693504,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104484864,
+              "boot_kernel": 35835904,
+              "file_clean": 73453568,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3569578
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1835600
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 286818
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399405056,
+              "active": 450064384,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396705792,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104493056,
+              "boot_kernel": 35835904,
+              "file_clean": 73457664,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3585511
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1835955
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 291034
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 399347712,
+              "active": 450445312,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 396705792,
+              "file": 49913856,
+              "exec": 24002560,
+              "kernel_pool": 104534016,
+              "boot_kernel": 35835904,
+              "file_clean": 73457664,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 400293888,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2028732416,
+                "cpu_us_sum": 3589366
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 1835955
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 292146
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1916952576
+          }
+        ],
+        "interval": {
+          "seconds": 10.097,
+          "whole_vm_cpu_percent_one_core": 3.682,
+          "vm_delta_bytes": {
+            "total": 0,
+            "free": -1863680,
+            "active": 1060864,
+            "inactive": 0,
+            "wired": 0,
+            "anon": 827392,
+            "file": 106496,
+            "exec": 303104,
+            "kernel_pool": 479232,
+            "boot_kernel": 0,
+            "file_clean": 417792,
+            "file_dirty": -147456,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "stable_roles_cpu_percent_one_core": {
+            "member": 1.4,
+            "frontend": 0.0,
+            "ssh": 0.086,
+            "broker": 0.39
+          }
+        },
+        "all_alive": true
+      },
+      {
+        "sessions": 100,
+        "distinct_accounts": 100,
+        "phase": "local_chat_idle",
+        "start": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 392065024,
+            "active": 457089024,
+            "inactive": 0,
+            "wired": 19972096,
+            "anon": 401526784,
+            "file": 52011008,
+            "exec": 24068096,
+            "kernel_pool": 104837120,
+            "boot_kernel": 35835904,
+            "file_clean": 75554816,
+            "file_dirty": 278528,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "member": {
+              "count": 100,
+              "rss_sum_bytes": 414932992,
+              "high_water_rss_sum_bytes": 2392559616,
+              "vsz_sum_bytes": 2038972416,
+              "cpu_us_sum": 3721805
+            },
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203165696,
+              "high_water_rss_sum_bytes": 809078784,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 333698
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1305047040,
+              "high_water_rss_sum_bytes": 1637298176,
+              "vsz_sum_bytes": 5305307136,
+              "cpu_us_sum": 2126899
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 8445952,
+              "high_water_rss_sum_bytes": 9031680,
+              "vsz_sum_bytes": 60493824,
+              "cpu_us_sum": 297915
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1601,
+            "max_processes": 2048,
+            "processes": 425
+          },
+          "all_roles_rss_sum_bytes": 1931591680
+        },
+        "end": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 391233536,
+            "active": 457920512,
+            "inactive": 0,
+            "wired": 19972096,
+            "anon": 401678336,
+            "file": 52379648,
+            "exec": 24068096,
+            "kernel_pool": 105160704,
+            "boot_kernel": 35835904,
+            "file_clean": 75911168,
+            "file_dirty": 131072,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "member": {
+              "count": 100,
+              "rss_sum_bytes": 414941184,
+              "high_water_rss_sum_bytes": 2392559616,
+              "vsz_sum_bytes": 2038972416,
+              "cpu_us_sum": 4214266
+            },
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203165696,
+              "high_water_rss_sum_bytes": 809078784,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 333698
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1305047040,
+              "high_water_rss_sum_bytes": 1637298176,
+              "vsz_sum_bytes": 5305307136,
+              "cpu_us_sum": 2299471
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 8445952,
+              "high_water_rss_sum_bytes": 9031680,
+              "vsz_sum_bytes": 60493824,
+              "cpu_us_sum": 336555
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1601,
+            "max_processes": 2048,
+            "processes": 425
+          },
+          "all_roles_rss_sum_bytes": 1931599872
+        },
+        "samples": [
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 392065024,
+              "active": 457089024,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401526784,
+              "file": 52011008,
+              "exec": 24068096,
+              "kernel_pool": 104837120,
+              "boot_kernel": 35835904,
+              "file_clean": 75554816,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 3721805
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2126899
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 297915
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 392093696,
+              "active": 457003008,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401530880,
+              "file": 52011008,
+              "exec": 24068096,
+              "kernel_pool": 104845312,
+              "boot_kernel": 35835904,
+              "file_clean": 75554816,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 3780414
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2265581
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 302536
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 392065024,
+              "active": 457723904,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401530880,
+              "file": 52011008,
+              "exec": 24068096,
+              "kernel_pool": 104849408,
+              "boot_kernel": 35835904,
+              "file_clean": 75554816,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 3834361
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 307143
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 392007680,
+              "active": 457261056,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401539072,
+              "file": 52011008,
+              "exec": 24068096,
+              "kernel_pool": 104894464,
+              "boot_kernel": 35835904,
+              "file_clean": 75554816,
+              "file_dirty": 278528,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 3882788
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 311095
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391921664,
+              "active": 457756672,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401616896,
+              "file": 51978240,
+              "exec": 24068096,
+              "kernel_pool": 104947712,
+              "boot_kernel": 35835904,
+              "file_clean": 75522048,
+              "file_dirty": 122880,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 3931725
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 315183
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391864320,
+              "active": 457748480,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401616896,
+              "file": 51978240,
+              "exec": 24068096,
+              "kernel_pool": 104988672,
+              "boot_kernel": 35835904,
+              "file_clean": 75522048,
+              "file_dirty": 122880,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 3978930
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 319023
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391864320,
+              "active": 457445376,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401637376,
+              "file": 51986432,
+              "exec": 24068096,
+              "kernel_pool": 104992768,
+              "boot_kernel": 35835904,
+              "file_clean": 75522048,
+              "file_dirty": 131072,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 4023855
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 323121
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391806976,
+              "active": 457523200,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401629184,
+              "file": 51986432,
+              "exec": 24068096,
+              "kernel_pool": 105029632,
+              "boot_kernel": 35835904,
+              "file_clean": 75522048,
+              "file_dirty": 131072,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 4070186
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 327483
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391749632,
+              "active": 457396224,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401653760,
+              "file": 51986432,
+              "exec": 24068096,
+              "kernel_pool": 105074688,
+              "boot_kernel": 35835904,
+              "file_clean": 75522048,
+              "file_dirty": 131072,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414932992,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 4117289
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 331503
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931591680
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391290880,
+              "active": 457801728,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401666048,
+              "file": 52379648,
+              "exec": 24068096,
+              "kernel_pool": 105111552,
+              "boot_kernel": 35835904,
+              "file_clean": 75911168,
+              "file_dirty": 131072,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414941184,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 4201974
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 335766
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931599872
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 391233536,
+              "active": 457920512,
+              "inactive": 0,
+              "wired": 19972096,
+              "anon": 401678336,
+              "file": 52379648,
+              "exec": 24068096,
+              "kernel_pool": 105160704,
+              "boot_kernel": 35835904,
+              "file_clean": 75911168,
+              "file_dirty": 131072,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "member": {
+                "count": 100,
+                "rss_sum_bytes": 414941184,
+                "high_water_rss_sum_bytes": 2392559616,
+                "vsz_sum_bytes": 2038972416,
+                "cpu_us_sum": 4214266
+              },
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203165696,
+                "high_water_rss_sum_bytes": 809078784,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 333698
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1305047040,
+                "high_water_rss_sum_bytes": 1637298176,
+                "vsz_sum_bytes": 5305307136,
+                "cpu_us_sum": 2299471
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 8445952,
+                "high_water_rss_sum_bytes": 9031680,
+                "vsz_sum_bytes": 60493824,
+                "cpu_us_sum": 336555
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1601,
+              "max_processes": 2048,
+              "processes": 425
+            },
+            "all_roles_rss_sum_bytes": 1931599872
+          }
+        ],
+        "interval": {
+          "seconds": 10.092,
+          "whole_vm_cpu_percent_one_core": 6.9,
+          "vm_delta_bytes": {
+            "total": 0,
+            "free": -831488,
+            "active": 831488,
+            "inactive": 0,
+            "wired": 0,
+            "anon": 151552,
+            "file": 368640,
+            "exec": 0,
+            "kernel_pool": 323584,
+            "boot_kernel": 0,
+            "file_clean": 356352,
+            "file_dirty": -147456,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "stable_roles_cpu_percent_one_core": {
+            "member": 4.88,
+            "frontend": 0.0,
+            "ssh": 1.71,
+            "broker": 0.383
+          }
+        },
+        "all_alive": true
+      }
+    ],
+    "deliveries": [
+      {
+        "sessions": 100,
+        "distinct_accounts": 100,
+        "delivery_seconds": 0.347
+      }
+    ],
+    "model": "workers",
+    "load_stop": {
+      "admitted_sessions": 168,
+      "snapshot_before_stop": {
+        "vm_bytes": {
+          "total": 1019154432,
+          "free": 76271616,
+          "active": 704872448,
+          "inactive": 0,
+          "wired": 20529152,
+          "anon": 647229440,
+          "file": 54337536,
+          "exec": 23764992,
+          "kernel_pool": 151347200,
+          "boot_kernel": 35835904,
+          "file_clean": 77680640,
+          "file_dirty": 335872,
+          "swap_used": 0,
+          "swapout": 0
+        },
+        "roles": {
+          "member": {
+            "count": 168,
+            "rss_sum_bytes": 688750592,
+            "high_water_rss_sum_bytes": 4020338688,
+            "vsz_sum_bytes": 3420540928,
+            "cpu_us_sum": 7323663
+          },
+          "frontend": {
+            "count": 168,
+            "rss_sum_bytes": 341323776,
+            "high_water_rss_sum_bytes": 1359245312,
+            "vsz_sum_bytes": 2198024192,
+            "cpu_us_sum": 592189
+          },
+          "ssh": {
+            "count": 337,
+            "rss_sum_bytes": 2192175104,
+            "high_water_rss_sum_bytes": 2748731392,
+            "vsz_sum_bytes": 8897261568,
+            "cpu_us_sum": 4149861
+          },
+          "broker": {
+            "count": 1,
+            "rss_sum_bytes": 12214272,
+            "high_water_rss_sum_bytes": 12214272,
+            "vsz_sum_bytes": 82710528,
+            "cpu_us_sum": 681100
+          }
+        },
+        "limits": {
+          "max_files": 16384,
+          "open_files": 2549,
+          "max_processes": 2048,
+          "processes": 695
+        },
+        "all_roles_rss_sum_bytes": 3234463744
+      },
+      "seconds": 6.893,
+      "workers_and_frontends_reaped": true
+    },
+    "after_clients_disconnected": {
+      "vm_bytes": {
+        "total": 1019154432,
+        "free": 725663744,
+        "active": 92659712,
+        "inactive": 0,
+        "wired": 19152896,
+        "anon": 37900288,
+        "file": 52649984,
+        "exec": 21331968,
+        "kernel_pool": 169713664,
+        "boot_kernel": 35835904,
+        "file_clean": 73347072,
+        "file_dirty": 425984,
+        "swap_used": 0,
+        "swapout": 0
+      },
+      "roles": {
+        "broker": {
+          "count": 1,
+          "rss_sum_bytes": 2392064,
+          "high_water_rss_sum_bytes": 9027584,
+          "vsz_sum_bytes": 15519744,
+          "cpu_us_sum": 2370
+        },
+        "ssh": {
+          "count": 1,
+          "rss_sum_bytes": 3887104,
+          "high_water_rss_sum_bytes": 6320128,
+          "vsz_sum_bytes": 21635072,
+          "cpu_us_sum": 82460
+        }
+      },
+      "limits": {
+        "max_files": 16384,
+        "open_files": 197,
+        "max_processes": 2048,
+        "processes": 23
+      },
+      "all_roles_rss_sum_bytes": 6279168
+    },
+    "fresh_login_after_load": "pass"
+  },
+  "shared_model": {
+    "schema": 1,
+    "scope": "matched worker/shared native distinct-account SSH scaling; not production capacity",
+    "seed": {
+      "approved_accounts": 1000,
+      "rooms": 50,
+      "posts": 100000,
+      "post_body_bytes": 1024,
+      "independent_password_salts": true
+    },
+    "fixture_limits": {
+      "original_maxproc": 1044,
+      "original_maxfiles": 3404,
+      "experimental_maxproc": 2048,
+      "experimental_maxfiles": 16384,
+      "worker_limit": 250,
+      "launch_refill_ms": 100,
+      "launch_burst": 8,
+      "credential_slots": 2
+    },
+    "outcome": "stopped_at_headroom_guard",
+    "headroom_guard": "free + max(0, clean_file - wired) >= 128 MiB; zero swap; process/file reserves",
+    "completed_stage": 100,
+    "highest_observed_approved_sessions": 224,
+    "failure": null,
+    "stages": [
+      {
+        "sessions": 0,
+        "distinct_accounts": 0,
+        "phase": "seeded_idle_baseline",
+        "start": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 862715904,
+            "active": 80609280,
+            "inactive": 0,
+            "wired": 26988544,
+            "anon": 35201024,
+            "file": 49799168,
+            "exec": 22700032,
+            "kernel_pool": 36499456,
+            "boot_kernel": 35835904,
+            "file_clean": 71995392,
+            "file_dirty": 434176,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 4304896,
+              "high_water_rss_sum_bytes": 9039872,
+              "vsz_sum_bytes": 23293952,
+              "cpu_us_sum": 6487
+            },
+            "ssh": {
+              "count": 1,
+              "rss_sum_bytes": 2211840,
+              "high_water_rss_sum_bytes": 6311936,
+              "vsz_sum_bytes": 22073344,
+              "cpu_us_sum": 752
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 197,
+            "max_processes": 2048,
+            "processes": 22
+          },
+          "all_roles_rss_sum_bytes": 6516736
+        },
+        "end": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 862515200,
+            "active": 80359424,
+            "inactive": 0,
+            "wired": 26988544,
+            "anon": 35225600,
+            "file": 49799168,
+            "exec": 22700032,
+            "kernel_pool": 36679680,
+            "boot_kernel": 35835904,
+            "file_clean": 72142848,
+            "file_dirty": 114688,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 4304896,
+              "high_water_rss_sum_bytes": 9039872,
+              "vsz_sum_bytes": 23293952,
+              "cpu_us_sum": 13371
+            },
+            "ssh": {
+              "count": 1,
+              "rss_sum_bytes": 2211840,
+              "high_water_rss_sum_bytes": 6311936,
+              "vsz_sum_bytes": 22073344,
+              "cpu_us_sum": 752
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 197,
+            "max_processes": 2048,
+            "processes": 22
+          },
+          "all_roles_rss_sum_bytes": 6516736
+        },
+        "samples": [
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 862715904,
+              "active": 80609280,
+              "inactive": 0,
+              "wired": 26988544,
+              "anon": 35201024,
+              "file": 49799168,
+              "exec": 22700032,
+              "kernel_pool": 36499456,
+              "boot_kernel": 35835904,
+              "file_clean": 71995392,
+              "file_dirty": 434176,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 4304896,
+                "high_water_rss_sum_bytes": 9039872,
+                "vsz_sum_bytes": 23293952,
+                "cpu_us_sum": 6487
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2211840,
+                "high_water_rss_sum_bytes": 6311936,
+                "vsz_sum_bytes": 22073344,
+                "cpu_us_sum": 752
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 197,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 6516736
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 862658560,
+              "active": 80269312,
+              "inactive": 0,
+              "wired": 26988544,
+              "anon": 35205120,
+              "file": 49799168,
+              "exec": 22700032,
+              "kernel_pool": 36536320,
+              "boot_kernel": 35835904,
+              "file_clean": 71995392,
+              "file_dirty": 434176,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 4304896,
+                "high_water_rss_sum_bytes": 9039872,
+                "vsz_sum_bytes": 23293952,
+                "cpu_us_sum": 7791
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2211840,
+                "high_water_rss_sum_bytes": 6311936,
+                "vsz_sum_bytes": 22073344,
+                "cpu_us_sum": 752
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 197,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 6516736
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 862658560,
+              "active": 80732160,
+              "inactive": 0,
+              "wired": 26988544,
+              "anon": 35205120,
+              "file": 49799168,
+              "exec": 22700032,
+              "kernel_pool": 36573184,
+              "boot_kernel": 35835904,
+              "file_clean": 71995392,
+              "file_dirty": 434176,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 4304896,
+                "high_water_rss_sum_bytes": 9039872,
+                "vsz_sum_bytes": 23293952,
+                "cpu_us_sum": 9471
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2211840,
+                "high_water_rss_sum_bytes": 6311936,
+                "vsz_sum_bytes": 22073344,
+                "cpu_us_sum": 752
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 197,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 6516736
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 862601216,
+              "active": 80703488,
+              "inactive": 0,
+              "wired": 26988544,
+              "anon": 35213312,
+              "file": 49799168,
+              "exec": 22700032,
+              "kernel_pool": 36614144,
+              "boot_kernel": 35835904,
+              "file_clean": 71995392,
+              "file_dirty": 434176,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 4304896,
+                "high_water_rss_sum_bytes": 9039872,
+                "vsz_sum_bytes": 23293952,
+                "cpu_us_sum": 10854
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2211840,
+                "high_water_rss_sum_bytes": 6311936,
+                "vsz_sum_bytes": 22073344,
+                "cpu_us_sum": 752
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 197,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 6516736
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 862572544,
+              "active": 80375808,
+              "inactive": 0,
+              "wired": 26988544,
+              "anon": 35201024,
+              "file": 49799168,
+              "exec": 22700032,
+              "kernel_pool": 36646912,
+              "boot_kernel": 35835904,
+              "file_clean": 72142848,
+              "file_dirty": 114688,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 4304896,
+                "high_water_rss_sum_bytes": 9039872,
+                "vsz_sum_bytes": 23293952,
+                "cpu_us_sum": 12306
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2211840,
+                "high_water_rss_sum_bytes": 6311936,
+                "vsz_sum_bytes": 22073344,
+                "cpu_us_sum": 752
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 197,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 6516736
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 862515200,
+              "active": 80359424,
+              "inactive": 0,
+              "wired": 26988544,
+              "anon": 35225600,
+              "file": 49799168,
+              "exec": 22700032,
+              "kernel_pool": 36679680,
+              "boot_kernel": 35835904,
+              "file_clean": 72142848,
+              "file_dirty": 114688,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 4304896,
+                "high_water_rss_sum_bytes": 9039872,
+                "vsz_sum_bytes": 23293952,
+                "cpu_us_sum": 13371
+              },
+              "ssh": {
+                "count": 1,
+                "rss_sum_bytes": 2211840,
+                "high_water_rss_sum_bytes": 6311936,
+                "vsz_sum_bytes": 22073344,
+                "cpu_us_sum": 752
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 197,
+              "max_processes": 2048,
+              "processes": 22
+            },
+            "all_roles_rss_sum_bytes": 6516736
+          }
+        ],
+        "interval": {
+          "seconds": 5.093,
+          "whole_vm_cpu_percent_one_core": 2.778,
+          "vm_delta_bytes": {
+            "total": 0,
+            "free": -200704,
+            "active": -249856,
+            "inactive": 0,
+            "wired": 0,
+            "anon": 24576,
+            "file": 0,
+            "exec": 0,
+            "kernel_pool": 180224,
+            "boot_kernel": 0,
+            "file_clean": 147456,
+            "file_dirty": -319488,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "stable_roles_cpu_percent_one_core": {
+            "broker": 0.135,
+            "ssh": 0.0
+          }
+        },
+        "all_alive": true
+      },
+      {
+        "sessions": 100,
+        "distinct_accounts": 100,
+        "phase": "approved_menu_idle",
+        "start": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 501018624,
+            "active": 369954816,
+            "inactive": 0,
+            "wired": 27426816,
+            "anon": 324464640,
+            "file": 50216960,
+            "exec": 23101440,
+            "kernel_pool": 83382272,
+            "boot_kernel": 35835904,
+            "file_clean": 72912896,
+            "file_dirty": 376832,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203223040,
+              "high_water_rss_sum_bytes": 809058304,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 307808
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1304363008,
+              "high_water_rss_sum_bytes": 1637232640,
+              "vsz_sum_bytes": 5378596864,
+              "cpu_us_sum": 1661550
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 5099520,
+              "high_water_rss_sum_bytes": 25026560,
+              "vsz_sum_bytes": 26472448,
+              "cpu_us_sum": 2754749
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1304,
+            "max_processes": 2048,
+            "processes": 323
+          },
+          "all_roles_rss_sum_bytes": 1512685568
+        },
+        "end": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 500531200,
+            "active": 370147328,
+            "inactive": 0,
+            "wired": 27426816,
+            "anon": 324534272,
+            "file": 50225152,
+            "exec": 23101440,
+            "kernel_pool": 83750912,
+            "boot_kernel": 35835904,
+            "file_clean": 72916992,
+            "file_dirty": 319488,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203223040,
+              "high_water_rss_sum_bytes": 809058304,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 307808
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1304363008,
+              "high_water_rss_sum_bytes": 1637232640,
+              "vsz_sum_bytes": 5378596864,
+              "cpu_us_sum": 1668692
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 5099520,
+              "high_water_rss_sum_bytes": 25026560,
+              "vsz_sum_bytes": 26472448,
+              "cpu_us_sum": 2865485
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1304,
+            "max_processes": 2048,
+            "processes": 323
+          },
+          "all_roles_rss_sum_bytes": 1512685568
+        },
+        "samples": [
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 501018624,
+              "active": 369954816,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324464640,
+              "file": 50216960,
+              "exec": 23101440,
+              "kernel_pool": 83382272,
+              "boot_kernel": 35835904,
+              "file_clean": 72912896,
+              "file_dirty": 376832,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1661550
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2754749
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500875264,
+              "active": 370262016,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324489216,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83435520,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1664700
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2766525
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500875264,
+              "active": 369811456,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324489216,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83484672,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1666372
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2778789
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500789248,
+              "active": 370184192,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324501504,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83537920,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1666919
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2791027
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500731904,
+              "active": 370171904,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324513792,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83587072,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1667020
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2803662
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500731904,
+              "active": 370155520,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324509696,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83595264,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1667390
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2816251
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500674560,
+              "active": 370106368,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324517888,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83632128,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1667636
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2828709
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500645888,
+              "active": 370233344,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324513792,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83664896,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1668337
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2840667
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500588544,
+              "active": 370446336,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324534272,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83714048,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1668602
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2851332
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500588544,
+              "active": 370094080,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324534272,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83718144,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1668692
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2862048
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 500531200,
+              "active": 370147328,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324534272,
+              "file": 50225152,
+              "exec": 23101440,
+              "kernel_pool": 83750912,
+              "boot_kernel": 35835904,
+              "file_clean": 72916992,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1668692
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5099520,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26472448,
+                "cpu_us_sum": 2865485
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512685568
+          }
+        ],
+        "interval": {
+          "seconds": 10.076,
+          "whole_vm_cpu_percent_one_core": 1.931,
+          "vm_delta_bytes": {
+            "total": 0,
+            "free": -487424,
+            "active": 192512,
+            "inactive": 0,
+            "wired": 0,
+            "anon": 69632,
+            "file": 8192,
+            "exec": 0,
+            "kernel_pool": 368640,
+            "boot_kernel": 0,
+            "file_clean": 4096,
+            "file_dirty": -57344,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "stable_roles_cpu_percent_one_core": {
+            "frontend": 0.0,
+            "ssh": 0.071,
+            "broker": 1.099
+          }
+        },
+        "all_alive": true
+      },
+      {
+        "sessions": 100,
+        "distinct_accounts": 100,
+        "phase": "local_chat_idle",
+        "start": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 498122752,
+            "active": 372731904,
+            "inactive": 0,
+            "wired": 27426816,
+            "anon": 324579328,
+            "file": 52322304,
+            "exec": 23166976,
+            "kernel_pool": 83947520,
+            "boot_kernel": 35835904,
+            "file_clean": 75014144,
+            "file_dirty": 319488,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203223040,
+              "high_water_rss_sum_bytes": 809058304,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 307808
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1304363008,
+              "high_water_rss_sum_bytes": 1637232640,
+              "vsz_sum_bytes": 5378596864,
+              "cpu_us_sum": 1818939
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 5263360,
+              "high_water_rss_sum_bytes": 25026560,
+              "vsz_sum_bytes": 26533888,
+              "cpu_us_sum": 2916209
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1304,
+            "max_processes": 2048,
+            "processes": 323
+          },
+          "all_roles_rss_sum_bytes": 1512849408
+        },
+        "end": {
+          "vm_bytes": {
+            "total": 1019154432,
+            "free": 497262592,
+            "active": 372854784,
+            "inactive": 0,
+            "wired": 27426816,
+            "anon": 324657152,
+            "file": 52723712,
+            "exec": 23166976,
+            "kernel_pool": 84357120,
+            "boot_kernel": 35835904,
+            "file_clean": 75497472,
+            "file_dirty": 16384,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "roles": {
+            "frontend": {
+              "count": 100,
+              "rss_sum_bytes": 203223040,
+              "high_water_rss_sum_bytes": 809058304,
+              "vsz_sum_bytes": 1303420928,
+              "cpu_us_sum": 307808
+            },
+            "ssh": {
+              "count": 201,
+              "rss_sum_bytes": 1304363008,
+              "high_water_rss_sum_bytes": 1637232640,
+              "vsz_sum_bytes": 5378596864,
+              "cpu_us_sum": 1951882
+            },
+            "broker": {
+              "count": 1,
+              "rss_sum_bytes": 5263360,
+              "high_water_rss_sum_bytes": 25026560,
+              "vsz_sum_bytes": 26533888,
+              "cpu_us_sum": 3085473
+            }
+          },
+          "limits": {
+            "max_files": 16384,
+            "open_files": 1304,
+            "max_processes": 2048,
+            "processes": 323
+          },
+          "all_roles_rss_sum_bytes": 1512849408
+        },
+        "samples": [
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 498122752,
+              "active": 372731904,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324579328,
+              "file": 52322304,
+              "exec": 23166976,
+              "kernel_pool": 83947520,
+              "boot_kernel": 35835904,
+              "file_clean": 75014144,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1818939
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 2916209
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 498094080,
+              "active": 372195328,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324603904,
+              "file": 52322304,
+              "exec": 23166976,
+              "kernel_pool": 83947520,
+              "boot_kernel": 35835904,
+              "file_clean": 75018240,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1924408
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 2933920
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497979392,
+              "active": 372453376,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324640768,
+              "file": 52322304,
+              "exec": 23166976,
+              "kernel_pool": 84045824,
+              "boot_kernel": 35835904,
+              "file_clean": 75018240,
+              "file_dirty": 319488,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 2952360
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497922048,
+              "active": 372490240,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324657152,
+              "file": 52330496,
+              "exec": 23166976,
+              "kernel_pool": 84086784,
+              "boot_kernel": 35835904,
+              "file_clean": 75018240,
+              "file_dirty": 327680,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 2970050
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497893376,
+              "active": 372502528,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324644864,
+              "file": 52330496,
+              "exec": 23166976,
+              "kernel_pool": 84123648,
+              "boot_kernel": 35835904,
+              "file_clean": 75018240,
+              "file_dirty": 327680,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 2987415
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497836032,
+              "active": 372387840,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324648960,
+              "file": 52330496,
+              "exec": 23166976,
+              "kernel_pool": 84164608,
+              "boot_kernel": 35835904,
+              "file_clean": 75091968,
+              "file_dirty": 204800,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 3004653
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497807360,
+              "active": 372449280,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324657152,
+              "file": 52330496,
+              "exec": 23166976,
+              "kernel_pool": 84197376,
+              "boot_kernel": 35835904,
+              "file_clean": 75104256,
+              "file_dirty": 32768,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 3022558
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497778688,
+              "active": 372477952,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324657152,
+              "file": 52330496,
+              "exec": 23166976,
+              "kernel_pool": 84234240,
+              "boot_kernel": 35835904,
+              "file_clean": 75104256,
+              "file_dirty": 32768,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 3040734
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497119232,
+              "active": 372404224,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 325357568,
+              "file": 51896320,
+              "exec": 23601152,
+              "kernel_pool": 84275200,
+              "boot_kernel": 35835904,
+              "file_clean": 75104256,
+              "file_dirty": 32768,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 3058234
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497291264,
+              "active": 372875264,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324665344,
+              "file": 52723712,
+              "exec": 23166976,
+              "kernel_pool": 84312064,
+              "boot_kernel": 35835904,
+              "file_clean": 75497472,
+              "file_dirty": 16384,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 3080404
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          },
+          {
+            "vm_bytes": {
+              "total": 1019154432,
+              "free": 497262592,
+              "active": 372854784,
+              "inactive": 0,
+              "wired": 27426816,
+              "anon": 324657152,
+              "file": 52723712,
+              "exec": 23166976,
+              "kernel_pool": 84357120,
+              "boot_kernel": 35835904,
+              "file_clean": 75497472,
+              "file_dirty": 16384,
+              "swap_used": 0,
+              "swapout": 0
+            },
+            "roles": {
+              "frontend": {
+                "count": 100,
+                "rss_sum_bytes": 203223040,
+                "high_water_rss_sum_bytes": 809058304,
+                "vsz_sum_bytes": 1303420928,
+                "cpu_us_sum": 307808
+              },
+              "ssh": {
+                "count": 201,
+                "rss_sum_bytes": 1304363008,
+                "high_water_rss_sum_bytes": 1637232640,
+                "vsz_sum_bytes": 5378596864,
+                "cpu_us_sum": 1951882
+              },
+              "broker": {
+                "count": 1,
+                "rss_sum_bytes": 5263360,
+                "high_water_rss_sum_bytes": 25026560,
+                "vsz_sum_bytes": 26533888,
+                "cpu_us_sum": 3085473
+              }
+            },
+            "limits": {
+              "max_files": 16384,
+              "open_files": 1304,
+              "max_processes": 2048,
+              "processes": 323
+            },
+            "all_roles_rss_sum_bytes": 1512849408
+          }
+        ],
+        "interval": {
+          "seconds": 10.08,
+          "whole_vm_cpu_percent_one_core": 4.688,
+          "vm_delta_bytes": {
+            "total": 0,
+            "free": -860160,
+            "active": 122880,
+            "inactive": 0,
+            "wired": 0,
+            "anon": 77824,
+            "file": 401408,
+            "exec": 0,
+            "kernel_pool": 409600,
+            "boot_kernel": 0,
+            "file_clean": 483328,
+            "file_dirty": -303104,
+            "swap_used": 0,
+            "swapout": 0
+          },
+          "stable_roles_cpu_percent_one_core": {
+            "frontend": 0.0,
+            "ssh": 1.319,
+            "broker": 1.679
+          }
+        },
+        "all_alive": true
+      }
+    ],
+    "deliveries": [
+      {
+        "sessions": 100,
+        "distinct_accounts": 100,
+        "delivery_seconds": 0.107
+      }
+    ],
+    "model": "shared",
+    "load_stop": {
+      "admitted_sessions": 224,
+      "snapshot_before_stop": {
+        "vm_bytes": {
+          "total": 1019154432,
+          "free": 67813376,
+          "active": 713523200,
+          "inactive": 0,
+          "wired": 27934720,
+          "anon": 664027136,
+          "file": 54648832,
+          "exec": 23166976,
+          "kernel_pool": 142409728,
+          "boot_kernel": 35835904,
+          "file_clean": 77451264,
+          "file_dirty": 335872,
+          "swap_used": 0,
+          "swapout": 0
+        },
+        "roles": {
+          "frontend": {
+            "count": 224,
+            "rss_sum_bytes": 455151616,
+            "high_water_rss_sum_bytes": 1812254720,
+            "vsz_sum_bytes": 2911821824,
+            "cpu_us_sum": 598863
+          },
+          "ssh": {
+            "count": 449,
+            "rss_sum_bytes": 2921402368,
+            "high_water_rss_sum_bytes": 3663933440,
+            "vsz_sum_bytes": 12027785216,
+            "cpu_us_sum": 3844657
+          },
+          "broker": {
+            "count": 1,
+            "rss_sum_bytes": 5877760,
+            "high_water_rss_sum_bytes": 25804800,
+            "vsz_sum_bytes": 27529216,
+            "cpu_us_sum": 6394810
+          }
+        },
+        "limits": {
+          "max_files": 16384,
+          "open_files": 2668,
+          "max_processes": 2048,
+          "processes": 695
+        },
+        "all_roles_rss_sum_bytes": 3382431744
+      },
+      "seconds": 1.287,
+      "workers_and_frontends_reaped": true
+    },
+    "after_clients_disconnected": {
+      "vm_bytes": {
+        "total": 1019154432,
+        "free": 717549568,
+        "active": 100573184,
+        "inactive": 0,
+        "wired": 27017216,
+        "anon": 54398976,
+        "file": 50987008,
+        "exec": 22765568,
+        "kernel_pool": 161157120,
+        "boot_kernel": 35835904,
+        "file_clean": 73129984,
+        "file_dirty": 434176,
+        "swap_used": 0,
+        "swapout": 0
+      },
+      "roles": {
+        "broker": {
+          "count": 1,
+          "rss_sum_bytes": 4530176,
+          "high_water_rss_sum_bytes": 24444928,
+          "vsz_sum_bytes": 25653248,
+          "cpu_us_sum": 23510
+        },
+        "ssh": {
+          "count": 1,
+          "rss_sum_bytes": 3870720,
+          "high_water_rss_sum_bytes": 6311936,
+          "vsz_sum_bytes": 22073344,
+          "cpu_us_sum": 86165
+        }
+      },
+      "limits": {
+        "max_files": 16384,
+        "open_files": 204,
+        "max_processes": 2048,
+        "processes": 23
+      },
+      "all_roles_rss_sum_bytes": 8400896
+    },
+    "fresh_login_after_load": "pass"
+  },
+  "shared_oracles": {
+    "schema": 1,
+    "results": [
+      {
+        "oracle": "pending registration and login have no community access",
+        "result": "pass"
+      },
+      {
+        "oracle": "active chat revocation rechecks current core epoch",
+        "result": "pass"
+      },
+      {
+        "oracle": "reapproval requires fresh login",
+        "result": "pass"
+      },
+      {
+        "oracle": "private channel grant removal terminates selected connection without redirect",
+        "result": "pass"
+      },
+      {
+        "oracle": "private channel foreign account denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "regrant does not revive prior private join",
+        "result": "pass"
+      },
+      {
+        "oracle": "failed second connection cannot borrow approved first session",
+        "result": "pass"
+      },
+      {
+        "oracle": "arrows hotkeys and core durable post",
+        "result": "pass"
+      },
+      {
+        "oracle": "frontend crash isolated from another member",
+        "result": "pass"
+      },
+      {
+        "oracle": "control bytes cannot import a session or owner command",
+        "result": "pass"
+      },
+      {
+        "oracle": "non-reading guest PTY bounded and disconnected",
+        "result": "pass",
+        "seconds": 5.083
+      },
+      {
+        "oracle": "fresh approved connection after forged control and slow reader",
+        "result": "pass"
+      },
+      {
+        "oracle": "other SSH member remains usable after slow reader",
+        "result": "pass"
+      },
+      {
+        "oracle": "backend crash closes member frontend",
+        "result": "pass"
+      },
+      {
+        "oracle": "backend crash restart preserves committed post and integrity",
+        "result": "pass"
+      },
+      {
+        "oracle": "fresh login and logout after backend crash",
+        "result": "pass"
+      }
+    ],
+    "scope": "focused experiment; full UI/grant/fairness adoption gates remain"
+  },
+  "prepared_fixture": {
+    "integrity": "ok",
+    "accounts": 1001,
+    "unique_hashes": 1001,
+    "rooms": 50,
+    "posts": 100000
+  },
+  "kernel_oom_events": 0,
+  "restored_kernel_limits": [
+    "1044",
+    "3404"
+  ],
+  "owner_launch_defaults_after_experiment": {
+    "soft_file_descriptors": 1024,
+    "soft_processes": 1024,
+    "soft_stack_kib": 8192,
+    "note": "observed with su - factiond after experiment limits restored; kernel limits during each run are in its ledger"
+  },
+  "exploratory_trials": {
+    "workers_admitted": 168,
+    "shared_admitted": 232,
+    "completed_menu_chat_stage": 100,
+    "note": "prior same-code runs; final driver adds saved pre-stop counters. Shared admission varies 224\u2013232; no passed 250 stage. Initial 100-user pilot had a host harness function-name collision after cleanup; corrected and rerun. Fresh-boot SSH binding readiness is verified after DHCP; no automatic appliance-boot claim."
+  },
+  "cleanup": {
+    "guest_stopped": true,
+    "private_inputs_removed": true,
+    "forwards_closed": true,
+    "scope": "Only this task VM/disk/keys/generated credentials/raw logs/forwards; host SSH and other VMs untouched"
+  },
+  "final_fixture_integrity": {
+    "integrity": "ok",
+    "accounts": 1002,
+    "unique_hashes": 1002,
+    "rooms": 50,
+    "posts": 100001
+  },
+  "final_backend_and_frontends_reaped": true
+}

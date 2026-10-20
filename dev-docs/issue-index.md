@@ -45,3 +45,8 @@ GitHub Issues hold live scope, status, acceptance criteria, and dependencies. Th
 | BBS-039 | [#45 Explore isolated ANSI game economies and blockchain wagering modules](https://github.com/gonz0w/faction-bbs/issues/45) | [Extension direction](../docs/extensions.md) |
 
 See the [roadmap](roadmap.md), [workflow](workflow.md), and [machine-readable provenance map](issue-map.json).
+
+Current focused small-host follow-ups:
+[#55: shared board ownership](https://github.com/gonz0w/faction-bbs/issues/55) and
+[#56: persistent credential peaks](https://github.com/gonz0w/faction-bbs/issues/56).
+GitHub open/closed state remains authoritative; see the [execution plan](plans/0015-shared-board-and-credential-peaks.md).

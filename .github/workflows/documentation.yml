@@ -41,6 +41,7 @@ jobs:
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py
+          python3 tools/check_shared_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Validate the local Rust core and real terminal flow
         env:
@@ -49,6 +50,10 @@ jobs:
         run: |
           rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
           cargo fmt --all -- --check
+          cargo fmt --manifest-path experiments/055-shared-board/Cargo.toml -- --check
+          python3 tools/check_shared_dependencies.py
+          cargo clippy --manifest-path experiments/055-shared-board/Cargo.toml --all-targets --release --locked -- -D warnings
+          cargo build --manifest-path experiments/055-shared-board/Cargo.toml --release --locked
           python3 tools/check_rust_dependencies.py
           cargo clippy --workspace --all-targets --release --locked -- -D warnings
           cargo test --workspace --locked --release

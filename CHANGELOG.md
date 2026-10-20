@@ -6,6 +6,18 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Isolated shared-board/readiness terminal prototype and matched native SSH
+  comparison, retaining base OpenSSH, terminal UID isolation and core approval/
+  epoch/private-grant checks. Final guarded 1-GiB NetBSD run admitted 224 menus
+  versus 168 workers, with matched 100-member menu/chat passes; earlier shared
+  trial reached 232. Sixteen native boundary/backpressure/crash/recovery oracles
+  passed. Default service remains eight; full shared UI/adoption and 250 remain
+  unvalidated. Added calibrated persistent native credential sampling with full
+  compact timing/counter ledgers: known 19/38-MiB controls captured exactly,
+  unchanged Argon2, held-slot/bad/good credential bursts and recovery. Observed
+  peaks remain lower bounds; private VM/keys/disks/logs/forwards removed. No new
+  registry dependency/features, normal schema or production default change.
+
 - Per-board cross-process credential work budget: two unchanged Argon2 operations,
   bounded busy denial, strict stored-cost checks and unsafe-lock regression tests.
   Added owner-only guarded session-count/launch-cadence experiments, a read-only

@@ -26,3 +26,5 @@ Use `NNNN-short-kebab-title.md` and the [template](template.md). Status is propo
 Use the [decision framework](../research/decision-framework.md) for gate screening, criteria, evidence/confidence, and prototype thresholds. Future technical decisions need primary-source research, retrieval dates, alternatives, confidence, reversal cost, and a named validation experiment. The question and evidence must be bounded.
 
 - [0014: Credential budget and guarded scaling experiments](0014-credential-budget-and-scaling-experiments.md)
+
+- [0015: Shared board/readiness experiment; production adoption deferred](0015-shared-board-readiness-experiment.md)
