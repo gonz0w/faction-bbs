@@ -2,6 +2,7 @@
 """Validate saved full shared UI evidence; does not rerun a NetBSD VM."""
 import hashlib,json,re
 from pathlib import Path
+from evidence_sources import source_bytes
 from headroom_memory import sample_guard,RESOURCES,ROLES
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -86,7 +87,7 @@ def check():
     assert d['reference_commit']=='76abb2f326698e1c75c7c7b366f36dc4612c3bf8'
     for name,digest in d['execution_sources'].items():
         assert re.fullmatch('[a-f0-9]{64}',digest)
-        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'executed source drift: '+name
+        assert hashlib.sha256(source_bytes(name,digest)).hexdigest()==digest,'executed source drift: '+name
     for name,digest in d['native_sources'].items():assert digest==d['execution_sources'][name]
     for folder in ['crates/faction-core','crates/faction-terminal','crates/faction-access','experiments/055-shared-ui']:
         assert any(name.startswith(folder+'/') for name in d['native_sources'])

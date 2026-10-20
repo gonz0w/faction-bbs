@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+from evidence_sources import source_bytes
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -38,7 +39,7 @@ def check():
     assert data['cleanup']['guest_stopped'] and data['cleanup']['private_inputs_removed']
     assert len(data['execution_sources'])>=40
     for name,expected in data['execution_sources'].items():
-        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==expected,'Executed profiling source changed: '+name
+        assert hashlib.sha256(source_bytes(name,expected)).hexdigest()==expected,'Executed profiling source changed: '+name
     assert data['execution_sources']['experiments/027-memory-scaling/netbsd_metrics.c']
     print('Saved native memory/scaling evidence passed: distinct-account SSH, guarded admission, budget/recovery, integrity, cleanup and executed source hashes. No VM rerun or production-capacity claim.')
 

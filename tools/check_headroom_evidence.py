@@ -5,6 +5,7 @@ import json
 import re
 from collections import Counter
 from pathlib import Path
+from evidence_sources import source_bytes
 from check_transport_evidence import stream
 from headroom_memory import live_limits,sample_guard,RESOURCES
 
@@ -31,7 +32,7 @@ def check():
     assert 900*1024**2<d['guest']['physical_ram_bytes']<=1024**3
     assert len(d['execution_sources'])>=60 and d['native_verified_source_count']>=45
     for name,sha in d['execution_sources'].items():
-        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==sha,'Executed input changed: '+name
+        assert hashlib.sha256(source_bytes(name,sha)).hexdigest()==sha,'Executed input changed: '+name
     for binary in d['native_binaries'].values():
         assert re.fullmatch('[0-9a-f]{64}',binary['sha256']) and binary['bytes']>0
     assert d['native_binaries']['faction-ssh']['sha256']==d['native_binaries']['faction-ssh-minimal']['sha256']

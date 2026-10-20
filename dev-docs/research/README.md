@@ -48,3 +48,5 @@ not change the normal eight-worker gateway or adopt a production replacement.
 - [0031: Repeatable 250-member headroom](0031-repeatable-headroom.md)
 
 - [0032: Full shared UI and ANSI themes](0032-shared-ui-themes.md)
+
+- [0033: Maintained shared service on NetBSD](0033-shared-service-integration.md)

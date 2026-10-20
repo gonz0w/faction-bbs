@@ -103,3 +103,11 @@ Native UI/fault checks and three short 250-member VM workloads pass the unchange
 guard with all SSH costs. Historical executed inputs remain byte-identical. This
 candidate does not change normal service architecture; confinement, frontend and
 scoped host-policy adoption remain #55/#20, with broad workload/soak/admission #28.
+
+The maintained [shared service](../docs/shared-service.md) now promotes the full
+UI to the NetBSD rc.d/SSH path. It has strict bounded owner configuration, fixed
+protected endpoint, native terminal-only frontend, shared core/theme state and
+eight-session defaults. The worker backend remains a tested rollback path using
+the same schema. Historical executed bytes are preserved under `evidence/`;
+new service evidence pins current sources directly. Operational integration does
+not accept production confinement, complete budgets or general 250-user capacity.

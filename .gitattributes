@@ -9,3 +9,6 @@ dev-docs/archive/** -text
 
 # Preserve the exact measured theme fixture, including its trailing blank line.
 experiments/055-shared-ui/fixtures/base/theme.toml whitespace=-blank-at-eof
+
+# Frozen executed build inputs retain exact bytes.
+dev-docs/evidence/sources/** -text whitespace=-blank-at-eof,-blank-at-eol

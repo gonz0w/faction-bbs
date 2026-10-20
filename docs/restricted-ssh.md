@@ -33,8 +33,9 @@ commands. The `faction` executable must **never** be the SSH forced command.
 | Process | OS identity and access |
 | --- | --- |
 | OpenSSH | Base OS transport and configured key policy; administrator-controlled. |
-| `faction-ssh` | Dedicated terminal UID. No database dependency, state path or host-command parser; connects only to the configured local handoff socket. |
-| `faction-broker` | Non-root board owner. Accepts one bounded terminal handoff and starts a fixed worker/config; no owner-operation RPC. |
+| `faction-tty` | Native NetBSD terminal frontend; dedicated terminal UID. No database dependency, state path or host-command parser; connects only to the configured local handoff socket. |
+| `faction-service` | Non-root shared board owner; full bounded member UI, internal connection-bound sessions and fixed credential workers. No owner-operation RPC. |
+| `faction-broker` | Rollback non-root board owner. Accepts one bounded terminal handoff and starts a fixed worker/config; no owner-operation RPC. |
 | `faction-member` | Trusted board-owner worker. Opens private SQLite state, performs BBS login/approval checks and runs shared terminal UI. Its entry point has no owner-console command parser. |
 | `faction` | Local owner console for initialization, recovery and snapshots. No direct member invocation. |
 
@@ -43,14 +44,18 @@ checks the handed-off kernel descriptor is a TTY owned by the configured termina
 UID; the frontend checks a protected socket owned by the configured backend UID.
 Local socket directory/group permissions are part of this boundary. They do not
 prove BBS membership or provide a process sandbox. The board owner/root still
-controls all local data; a compromise of a trusted worker has that owner's rights.
+controls all local data; a compromise of the shared owner or a trusted worker has that owner's rights.
 All frontends share one terminal UID, so code execution as that UID could affect
 other frontends/TTYs. No hostile-code isolation or anonymity guarantee follows.
 
 ## NetBSD owner setup outline
 
 Build the workspace with Rust 1.96+ and a native C compiler; both bundled SQLite
-and the small NetBSD descriptor bridge use C. Run tests first. These commands
+and the small NetBSD descriptor bridge use C. Run tests first (`cargo test --workspace --release --locked` and
+`cargo build --workspace --release --locked`). Build the maintained native
+frontend with `python3 tools/build_terminal_frontend.py --output target/release/faction-tty`.
+Its small C boundary passes native descriptor/TTY and static-analysis checks; it
+requires manual bounds/lifetime review and currently targets NetBSD only. These commands
 describe deliberate root setup **on the target NetBSD system**, not an installer
 or instructions to change the developer host. Use a fresh dedicated SSH instance;
 preserve your existing administrative access and review local account policy.
@@ -62,7 +67,7 @@ useradd -g factionipc -d /home/factionterm -s /bin/sh factionterm
 install -d -o factiond -g factionipc -m 700 /home/factiond /var/db/faction
 install -d -o root -g wheel -m 755 /home/factionterm /usr/local/libexec /etc/ssh/faction
 install -d -o factiond -g factionipc -m 710 /var/run/faction
-install -o root -g wheel -m 755 target/release/faction target/release/faction-member target/release/faction-ssh target/release/faction-broker /usr/local/libexec/
+install -o root -g wheel -m 755 target/release/faction target/release/faction-member target/release/faction-ssh target/release/faction-broker target/release/faction-service target/release/faction-tty /usr/local/libexec/
 su - factiond -c '/usr/local/libexec/faction --state-dir /var/db/faction init'
 ```
 
@@ -99,51 +104,40 @@ no overlay provider or public HTTP service is required or installed by Faction.
 Private-interface/overlay policy is the operator's responsibility and has no
 automated installer/accidental-exposure audit yet.
 
-Start the broker under the board owner using the terminal account's numeric UID:
+Use the [NetBSD shared service guide](service-lifecycle.md) to render the strict
+root-owned configuration and start the shared backend, then the dedicated SSH
+daemon. The maintained template forces `faction-tty`; it never invokes the owner
+console. The service refuses root, equal terminal/owner identities, unsafe state,
+invalid packs or live/unsafe endpoint replacement. Parent paths and binaries are
+trusted operator configuration. Keep `terminal.pid` and credential lock inodes
+in place while any backend is active.
 
-```sh
-faction_terminal_uid=$(id -u factionterm)
-su - factiond -c "/usr/local/libexec/faction-broker --socket /var/run/faction/terminal.sock --terminal-uid $faction_terminal_uid --worker /usr/local/libexec/faction-member --state-dir /var/db/faction"
-```
-
-It runs in the foreground. For managed startup, use the opt-in
-[NetBSD service scripts](service-lifecycle.md) after validating the dedicated SSH
-configuration. The broker refuses root, the same terminal/backend UID, unsafe
-state, a live socket or a writable/nonregular worker. Its locked pidfile permits
-conservative recovery of an owned disconnected socket; never delete a live lock.
-All parent paths/executables remain trusted administrator/owner configuration.
-
-Append `--theme /ABSOLUTE/OWNER/PACK --season /ABSOLUTE/OWNER/OVERRIDE` to the broker
-for [sysop packs](theme-packs.md), in that order. Paths go only from trusted broker
-configuration to the worker; members cannot select filesystem paths. Pack ownership
-must pass the existing owner checks. Invalid worker pack configuration closes that
-session. An empty configuration uses built-in text, without bundled scene art.
+The `theme` and `season` settings select [sysop packs](theme-packs.md) once at
+startup. Empty configuration uses built-in text without bundled scene art.
+Worker rollback remains available through the same guide and database schema.
 
 ## Limits, disconnects and evidence
 
-- Broker defaults to eight simultaneous handoffs/workers, burst eight launches, then one
-  replenished launch token per five seconds. OpenSSH handshake caps are separate.
-  No per-key/account/IP fair queue or capacity for 100–250 members is claimed.
-- Handoff is 72 bytes plus exactly one terminal descriptor, with a two-second
-  receive deadline after its serialized admission starts. Oversized/extra/truncated
-  rights and non-TTY/wrong-owner descriptors fail. No client command/state path is
-  transferred. TERM is at most 63 characters from a small ASCII alphabet.
-- Supervisor threads use 128-KiB stacks. Each member still has an application
-  process plus OpenSSH/frontend overhead. Whole-host shared/private memory and
-  busy-board costs remain to be measured before increasing the cap.
-- Line/password prompts have a 120-second receive budget. The broker defaults a
-  session to 30 minutes (owner may shorten with `--session-seconds 1..1800`);
-  OpenSSH also has configured handshake/channel/keepalive limits. These development
-  maxima are not a complete time policy.
-- Disconnect closes the frontend control socket. The broker permits up to one
-  second for normal PTY cleanup, then kills/reaps the worker; supervisor polling
-  adds scheduling delay. Abrupt kills can leave a chat lease until the existing
-  60-second expiry/reclamation rules apply. Normal logout restores terminal state.
-- A blocked output cannot hold a database transaction; the absolute session limit
-  bounds worker lifetime while the broker is running. Worker parent monitoring
-  now handles broker loss, and a synthetic blocked writer exercises the absolute
-  deadline. Production output deadlines and the complete
-  failure campaign remain separate validation.
+- Default shared service admits eight terminals, with burst eight then one
+  replenished launch token per five seconds. Higher/faster limits require an
+  explicit experimental setting. OpenSSH handshake controls are separate; there
+  is no complete per-key/account/IP fair queue or authenticated transport cap.
+- Handoff is 72 bytes plus exactly one kernel terminal descriptor, with a
+  two-second receive budget. Extra/truncated rights, non-TTY/wrong-owner
+  descriptors fail. No member ID, role, state path or command is transferred.
+  TERM is bounded to 63 allowed ASCII characters.
+- One board owner shares validated themes and bounded session state. A handoff
+  thread and two fixed credential threads replace per-member application workers;
+  two cross-process kernel slots still cover every Argon2 operation. Base OpenSSH
+  and one small native frontend per terminal remain in all memory accounting.
+- Prompts expire after 120 seconds; the configured session lifetime is 1–1800
+  seconds. Nonempty output batches expire after five seconds, with bounded encoded
+  output/input and rotating work. No transaction waits behind terminal output.
+- Disconnect drops that connection's opaque session/lease and restores terminal
+  state. Shared owner failure affects every attached member; worker rollback has
+  a smaller application failure scope. Abrupt termination can leave presence until
+  the existing 60-second lease expiry. Complete hostile-code confinement remains
+  unimplemented; the trusted service has owner access to the private database.
 
 Native NetBSD tests passed for real registration/pending/approval, room posting,
 two simultaneous chat members/draft preservation, current revocation, resize/plain
@@ -169,34 +163,20 @@ The private state directory contains persistent `credential-0.lock` and
 process may be running. They contain no credentials and are recreated for a
 fresh restored board; owner snapshot data does not package live locks.
 
-Normal service remains eight workers and the original launch cadence. Higher
-limits are explicit owner-only research controls, documented in the
-[memory/scaling experiment](../dev-docs/research/0027-memory-scaling.md), with
-whole-VM headroom guards and separate OS resource limits. They do not establish a
-supported member count or configure the host automatically.
+Normal shared service remains eight sessions and the original launch cadence.
+Higher/faster limits require explicit experimental configuration. The maintained
+service does not install whole-VM guards, sysctl changes or a tuning profile.
+See [service setup and rollback](service-lifecycle.md).
 
-## Shared-owner research boundary
+## Evidence and remaining work
 
-An [isolated shared-board prototype](../dev-docs/research/0029-shared-board-and-credential-peaks.md)
-now compares readiness terminals with per-member workers, using the same separate
-terminal UID and unmodified OpenSSH frontend. It is not installed by these setup
-instructions. Its incomplete theme/plain/resize/navigation behavior must pass
-parity and operational gates before member deployment. Keep the normal gateway
-at eight workers; higher research counts are not supported capacity.
-
-The [repeatable native headroom experiment](../dev-docs/research/0031-repeatable-headroom.md)
-passes three short 250-member VM workloads, including high-load member/owner
-credentials and known extra-memory controls under the unchanged guard. Its
-pageable time-daemon policy retains NTP and all other base services; original
-settings are restored after testing. Normal setup/rc.d defaults remain eight
-workers. The shared UI/minimal frontend, scoped allocator/host policy, clock
-precision under pressure and broader active-mix/soak/admission bounds need #55/
-#20/#28 adoption work. Keep research profiles confined to marked disposable VMs.
-
-The [full shared UI candidate](shared-ui.md) now supplies existing room/chat/sysop
-and theme behavior behind the same protected descriptor endpoint. Its 27 native
-UI/fault checks and three short guarded 250-member VM workloads include all SSH
-costs. Normal services still use eight workers; installing this standalone owner
-is an explicit experiment. #55 retains frontend/confinement/adoption review and
-#28 retains authenticated-transport admission and active-workload gates. Owner
-bootstrap/recovery/export/restore remain absent from the terminal entry point.
+The worker, shared-owner and full-UI comparisons remain historical executed
+research: [0029](../dev-docs/research/0029-shared-board-and-credential-peaks.md),
+[0031](../dev-docs/research/0031-repeatable-headroom.md), and
+[0032](../dev-docs/research/0032-shared-ui-themes.md). Their
+[source and result bytes](../dev-docs/evidence/README.md) remain verifiable.
+The maintained [shared service](shared-service.md) supplies the current setup.
+Short 250-member VM observations require an explicit experimental allocator and
+pageable-NTP profile, with all base services retained. Ordinary setup never
+applies it. Stronger confinement, maintained image/timekeeping policy and broader
+active workloads/soak/authenticated-transport admission remain #55/#20/#28 work.

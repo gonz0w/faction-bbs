@@ -34,3 +34,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0017: Repeatable headroom experiment](0017-repeatable-headroom.md)
 
 - [0018: Bounded shared UI candidate](0018-shared-ui-themes.md)
+
+- [0019: Maintained shared service and conservative admission](0019-maintained-shared-service.md)

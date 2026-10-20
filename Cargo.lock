@@ -150,6 +150,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-service"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-access",
+ "faction-core",
+ "faction-terminal",
+ "faction-unix",
+ "rustix",
+ "toml",
+ "zeroize",
+]
+
+[[package]]
 name = "faction-terminal"
 version = "0.1.0-alpha.1"
 dependencies = [

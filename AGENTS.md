@@ -2,32 +2,39 @@
 
 ## Read first
 
-Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008), with opt-in bounded ANSI menus/declarative themes (ADR 0009), BBS-local bounded chat (ADR 0010), owner-only private export/verify/restore (ADR 0011) and a restricted SSH development gateway with native NetBSD app evidence (ADR 0012). There is no network BBS release or accepted complete production stack. A standalone shared-board/readiness and persistent credential-peak experiment (ADR 0015, research 0029) now has native evidence; it is not installed by normal services, has incomplete UI parity, and does not establish production capacity. ADR 0016/research 0030 now record two short functional 250-member VM workloads (one final guard pass, one 4.10-MiB shortfall) using a versioned chat-sequence correction, isolated minimal C frontend and experimental native allocator profile. Guest-wide tuning is not installed by normal services; complete shared UI/fairness and scoped deployment/workload gates remain. Read docs/local-development.md, docs/theme-packs.md, docs/local-chat.md, docs/export-restore.md and docs/restricted-ssh.md before running it; the owner-capable console must never become an SSH forced command.
+Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008), with opt-in bounded ANSI menus/declarative themes (ADR 0009), BBS-local bounded chat (ADR 0010), owner-only private export/verify/restore (ADR 0011) and a restricted SSH development gateway with native NetBSD app evidence (ADR 0012). There is no supported network BBS release or accepted complete production stack.
+The maintained `crates/faction-service` now promotes the full shared UI into the
+opt-in NetBSD rc.d path, using strict root/owner TOML configuration, native
+`faction-tty`, base OpenSSH and eight-session/five-second defaults. Worker rollback
+remains available. See docs/shared-service.md, docs/service-lifecycle.md and the
+current integration plan 0019. Historical standalone experiments are preserved;
+all eight native records retain actual executed bytes in dev-docs/evidence, with
+a pinned buildable source snapshot. Never refresh old hashes to current code.
 
-ADR 0017/research 0031 now record three fresh-boot 250-member short-workload guard
-passes with 137.23 MiB lowest sampled stress headroom, using an experimental
-pageable NTP memory policy while keeping all base services. Normal eight-worker
-services and production adoption remain unchanged. Preserve separate standalone
-Cargo target directories; record the installed binary hash and actual repeated-
-chat regression, since source hashes alone missed a stale executable in a shared
-target. All historical executed source bytes must remain verifiable when later
-core changes introduce proper versioned source snapshots.
+Keep the two credential permits spanning queued/active/result lifetime, two kernel
+slots, unchanged Argon2, connection-bound opaque authority, current core role/
+epoch/grant checks, shared validated themes, lazy encoded output caps, rotating
+work and five-second pending-output deadlines. Default remains eight; explicit
+250/faster admission settings require experimental_capacity=true. Service scripts
+must not silently tune allocator/NTP/sysctls. Base services remain in resource
+accounting; shared-owner failure affects all connected members. Stronger process
+confinement, maintained host/timekeeping policy and full #28 workloads remain open.
 
-The separate full shared UI/theme candidate in `experiments/055-shared-ui`
-(ADR 0018/research 0032/results 033) now passes 27 native UI/fault checks and
-three fresh-boot 250-member full-UI/menu/chat/credential/control runs, with
-135.09 MiB lowest sampled stress headroom. Root libraries and historical
-experiments remain byte-identical. Keep unique packages/isolated targets, lazy
-encoded output bounds, rotating work, core role/epoch/grant checks and the
-two-permit credential lifetime. Normal service remains eight; scoped adoption,
-confinement, maintained host policy and full #28 workloads remain open.
+Current service integration (ADR 0019/research 0033/results 034) passes 27 native
+shared UI checks, 11 service configuration/lifecycle/rollback checks and three
+fresh-boot 250-member installed-service runs. Final headroom is 180.67–181.12 MiB;
+lowest stress sample is 135.23 MiB. Native Rust tests total 62; worker SSH/lifecycle
+and frontend checks remain recorded separately. Eight stays the default. These
+are short software VM observations with an explicit research host profile, not
+supported capacity or physical SBC claims. Current result pins current sources
+directly; preserve those bytes properly when it later becomes historical.
 
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.
 - Use Citadel-style message rooms, IRC-style command-driven chat, BBS menus, local file areas/mail, and optional isolated game doors. Existing games are reuse candidates, not implemented support claims.
 - Keep each sysop's identity, accounts/approval, content, files, games, directory, and local-only chat local. Only explicitly participating shared chat channels may federate in the future.
-- Ordinary SSH client access with optional invitation-only private-network mode is accepted product direction; network admission/SSH identity never implies local BBS approval or host shell access. A separate terminal UID/frontend, trusted broker and member worker now pass real NetBSD application SSH oracles. SSH keys grant admission only; local BBS identity/password/approval remain separate. Use the opt-in NetBSD rc.d scripts and bounded broker lifecycle (ADR 0013); never unlink a live pidfile lock. Keep the eight-worker default and owner tools out of the frontend; higher worker/launch limits are explicit owner-only profiling experiments (ADR 0014), never an implicit production capacity claim. Credential work has two cross-process slots per board; never unlink live credential lock files; complete production security/resource/deployment gates remain.
+- Ordinary SSH client access with optional invitation-only private-network mode is accepted product direction; network admission/SSH identity never implies local BBS approval or host shell access. A separate terminal UID/frontend, trusted broker and member worker rollback now pass real NetBSD application SSH oracles. SSH keys grant admission only; local BBS identity/password/approval remain separate. Use the opt-in NetBSD rc.d scripts and bounded broker lifecycle (ADR 0013); never unlink a live pidfile lock. Keep the eight-session default and owner tools out of the frontend; higher worker/launch limits are explicit owner-only profiling experiments (ADR 0014), never an implicit production capacity claim. Credential work has two cross-process slots per board; never unlink live credential lock files; complete production security/resource/deployment gates remain.
 - Direct network-terminal access is central. A browser portal/console is a goal that must be optional and may be private or disabled. Do not assume public HTTP exposure.
 - Privacy, security, exportability, low bandwidth, and lightweight operation are requirements. Use minimal opt-in telemetry; never log message bodies, credentials, or private content by default.
 - No JavaScript/TypeScript in source, tooling, dependencies, or browser-terminal assets. Do not introduce Node/npm, JS terminal libraries, or JS-based CI actions. Browser-console feasibility must be researched within this constraint.
