@@ -1,6 +1,6 @@
 # 0008: First local identity and room implementation
 
-Date: 2026-10-19. Status: implementation/checks complete; publish focused PR. Issues: #6/#9/#12/#21/#30/#35.
+Date: 2026-10-19. Status: published for review in [PR #48](https://github.com/gonz0w/faction-bbs/pull/48). Issues: #6/#9/#12/#21/#30/#35.
 
 ## Authorized outcome and scope
 
@@ -53,7 +53,8 @@ theme behavior remains the next UI increment and must not be claimed implemented
 - [x] Read accepted scope and relevant identity/domain/abuse issues; branch created.
 - [x] Implement and verify the first runnable local increment.
 - [x] Update docs/decisions/dependency evidence/CI.
-- [ ] Publish/attach PR and record CI result.
+- [x] Publish/attach PR #48. The linked PR carries the authoritative CI result;
+  local evidence is recorded below. No implicit merge.
 
 ## Evidence and handoff
 

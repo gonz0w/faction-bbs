@@ -44,6 +44,7 @@ console output may be larger: this is not a wire-bandwidth result. Listings show
 the first 100 rooms/accounts; sysop status commands still accept any exact handle.
 Every approved member currently sees/posts to every local room. Private-room ACLs,
 moderation, timestamps, quotas, search and full pagination remain later work.
+Exact unread counting and on-disk growth have no demonstrated server-work budget yet.
 
 Posting prints an OS-random submission ID. On database-busy feedback the console
 can retry the same body/ID. The core reconciles identical retries to the original
