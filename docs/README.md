@@ -21,3 +21,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Shared UI candidate](shared-ui.md) — experimental shared sessions and sysop themes.
 
 - [Maintained shared terminal backend](shared-service.md) — Rust owner, native terminal entry point and worker rollback.
+
+- [Experimental NetBSD filesystem/exec and IP policy](experimental-isolation.md) — explicit privileged profile, narrow evidence and recovery.

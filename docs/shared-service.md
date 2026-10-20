@@ -45,3 +45,10 @@ is not a supported capacity setting.
 See [native process confinement](process-confinement.md) for the current peer-UID,
 TTY/descriptor/environment checks, irreversible resource ceilings and remaining
 filesystem/network/exec isolation boundary.
+
+The separate [experimental filesystem/exec and IP profile](experimental-isolation.md)
+adds a minimal noexec root, permanent pre-main privilege drop and explicit NPF
+group/user policy. Its frontend alone uses setuid root and needs independent
+review before production adoption. Setup, host policy, loader/runtime trust and
+rollback are explicit. Defaults/core authorization/credentials/resource ceilings
+are unchanged; broader same-UID/process/all-family/admission threats stay open.

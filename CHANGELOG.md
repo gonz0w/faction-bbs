@@ -4,6 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Experimental NetBSD minimal noexec root and explicit stateless group/user IP
+  policy, pre-main native privilege drop, isolated root preflight and a separate
+  setuid frontend. Existing core/UI/credentials/limits/default eight remain intact.
+  A numeric sysctl lookup avoids per-frontend name-resolution allocation. Three
+  fresh-boot 250-member workloads pass with 132.71 MiB minimum stress headroom;
+  both earlier failed controls and their executed sources are retained. Native
+  filesystem/exec/network/privilege controls, 31 sealed frontend, 29 UI and 16
+  lifecycle checks pass. Independent privileged-code review and broader isolation,
+  workload and host-policy adoption remain open; no supported sandbox/capacity.
+
 - Native shared-service/frontend process envelope: kernel peer UID checks on both
   socket ends, inherited identity/FD/environment hygiene, strict owned stdio TTY
   and completion, irreversible verified resource ceilings. No new registry

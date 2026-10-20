@@ -128,3 +128,10 @@ lists values, startup ordering and remaining isolation scope. Root deployment
 must give both accounts only their intended primary group. The Rust owner CLI
 is a separate operation, not a member subprocess or control command. Future doors
 need a separate launcher; current processes deliberately cannot fork.
+
+The separate [experimental filesystem/exec and IP profile](experimental-isolation.md)
+adds a minimal noexec root, permanent pre-main privilege drop and explicit NPF
+group/user policy. Its frontend alone uses setuid root and needs independent
+review before production adoption. Setup, host policy, loader/runtime trust and
+rollback are explicit. Defaults/core authorization/credentials/resource ceilings
+are unchanged; broader same-UID/process/all-family/admission threats stay open.

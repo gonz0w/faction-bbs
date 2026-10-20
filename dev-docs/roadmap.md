@@ -91,3 +91,11 @@ peer UID verification, inherited-authority hygiene and kernel ceilings now have
 installed-service evidence. Filesystem/network/exec and same-UID isolation remain
 explicit next security gates, alongside #28 active/soak/transport admission and
 #20 maintained host/timekeeping policy. See [plan 0020](plans/0020-process-confinement.md).
+
+The [experimental OS profile](../docs/experimental-isolation.md) advances #55/#19
+with a minimal noexec view, permanent pre-main drop and explicit NPF group/user
+policy, preserving original ceilings and default eight. Three clean-boot 250-member
+VM runs pass with 132.71 MiB minimum stress headroom; two rejected allocation
+controls remain recorded. Independent setuid-code review, broader protocol/
+interface/process/same-UID and #28 active/soak/admission budgets plus maintained
+host policy remain gates. Lua/doors still need a separate constrained launcher.
