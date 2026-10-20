@@ -32,3 +32,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0016: Native allocator comparison](0016-native-allocator-comparison.md)
 
 - [0017: Repeatable headroom experiment](0017-repeatable-headroom.md)
+
+- [0018: Bounded shared UI candidate](0018-shared-ui-themes.md)

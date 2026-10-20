@@ -112,3 +112,11 @@ replaying identity art. These are deterministic renderer byte counts, not networ
 latency or server capacity results. Regression caps are 2 KiB full menu / 256 bytes
 for that focus update. Sysop labels/colors can change byte counts within schema
 bounds; application memory and 100/250-member accounting remain unmeasured.
+
+The [shared UI candidate](shared-ui.md) reuses this validator, safe CP437 importer
+and menu renderer for all members through one immutable owner snapshot. Select
+the base then manual season at owner startup; a restart changes the shared
+snapshot. Invalid explicit packs fail startup before binding. Normal local-console
+fallback behavior above is unchanged. Native theme/plain/resize/editor checks and
+three short 250-member VM workloads pass; automatic scheduling, hot reload and
+commissioned scene artwork remain separate work.

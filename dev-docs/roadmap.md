@@ -63,3 +63,11 @@ bounded #58 result keeps Rust/base OpenSSH/Argon2 and the normal eight-worker
 default. Next build: #55 full shared UI/fairness and scoped candidate adoption;
 #20 timekeeping/update/rollback and #28 active mixes, soak, complete budgets and
 authenticated-transport admission. Lua/isolated doors follow the useful core.
+
+The [full shared UI/theme candidate](../docs/shared-ui.md) now closes the prototype's
+room/reply/retry/sysop/chat and theme/season/plain/resize/editor gaps. Twenty-seven
+native UI/fault checks and three short guarded 250-member VM workloads pass with
+full SSH accounting. Next #55/#20 work is scoped frontend/owner confinement,
+maintained service selection and host-policy/timekeeping/rollback; #28 owns active
+mixes, soak, complete budgets and authenticated-transport admission. Normal defaults
+remain eight. Lua menus and isolated doors still follow the useful core.

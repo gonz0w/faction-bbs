@@ -98,3 +98,11 @@ settings are restored after testing. Normal setup/rc.d defaults remain eight
 workers. The shared UI/minimal frontend, scoped allocator/host policy, clock
 precision under pressure and broader active-mix/soak/admission bounds need #55/
 #20/#28 adoption work. Keep research profiles confined to marked disposable VMs.
+
+The [shared UI candidate](shared-ui.md) passes full member UI/fault checks and
+three short 250-member VM workloads, including stop/reap and fresh-login recovery.
+It is standalone and is not installed by these rc.d scripts. Stop/reap the normal
+broker before selecting the candidate's same protected endpoint; restarting the
+normal eight-worker broker restores the existing service path. Scoped host policy,
+clock precision, maintained configuration/update/rollback and candidate lifecycle
+integration remain #20/#55 work. Guest-wide allocator/NTP tuning stays experimental.

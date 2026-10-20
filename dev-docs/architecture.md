@@ -94,3 +94,12 @@ time-daemon memory pageable in the marked fixture, with all base services
 retained. This is a fixed-host policy result with complete live-limit and
 credential accounting. Normal eight-worker gateway and production architecture
 adoption remain unchanged; #55/#20/#28 own the remaining build/deployment gates.
+
+The [full shared UI candidate](../docs/shared-ui.md) adds explicit nonblocking
+room/post/retry/sysop/chat states using the unchanged core and terminal libraries.
+One owner theme/season snapshot, lazy encoded output queues and rotating bounded
+work preserve the existing interaction features without per-member worker stacks.
+Native UI/fault checks and three short 250-member VM workloads pass the unchanged
+guard with all SSH costs. Historical executed inputs remain byte-identical. This
+candidate does not change normal service architecture; confinement, frontend and
+scoped host-policy adoption remain #55/#20, with broad workload/soak/admission #28.

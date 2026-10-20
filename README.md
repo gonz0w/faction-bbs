@@ -25,8 +25,18 @@ The Rust core, base OpenSSH, UID/approval boundaries and Argon2 remain unchanged
 The experimental backend also corrects a credential handoff race while preserving
 the two-operation budget. The
 minimal handoff frontend and guest-wide allocator/host policy remain research
-candidates; full shared UI/fairness, clock policy, active workloads, soak and
+candidates; the original probe lacks the full UI supplied below. Clock policy, active workloads, soak and
 deployment adoption remain #55/#20/#28 work. These are software VM observations.
+
+The [full shared UI candidate](docs/shared-ui.md) now implements the existing
+room/chat/sysop flows with sysop ANSI packs, safe CP437 identity, custom arrows/
+hotkeys, manual seasons, plain mode and resize recovery in one bounded Rust owner.
+It passes 27 native UI/permission/fault checks and three fresh-boot 250-member
+NetBSD VM workloads, including room browsing/posting with 249 peers in chat.
+Completed-stage headroom is 180.39–180.51 MiB; the lowest sampled stress margin
+is 135.09 MiB under the unchanged guard. [Evidence and limits](dev-docs/research/0032-shared-ui-themes.md).
+Normal services still use eight workers; scoped deployment/confinement, broader
+active mixes, soak and authenticated-transport admission remain adoption work.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 

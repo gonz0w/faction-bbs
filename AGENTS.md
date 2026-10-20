@@ -13,6 +13,15 @@ chat regression, since source hashes alone missed a stale executable in a shared
 target. All historical executed source bytes must remain verifiable when later
 core changes introduce proper versioned source snapshots.
 
+The separate full shared UI/theme candidate in `experiments/055-shared-ui`
+(ADR 0018/research 0032/results 033) now passes 27 native UI/fault checks and
+three fresh-boot 250-member full-UI/menu/chat/credential/control runs, with
+135.09 MiB lowest sampled stress headroom. Root libraries and historical
+experiments remain byte-identical. Keep unique packages/isolated targets, lazy
+encoded output bounds, rotating work, core role/epoch/grant checks and the
+two-permit credential lifetime. Normal service remains eight; scoped adoption,
+confinement, maintained host policy and full #28 workloads remain open.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.

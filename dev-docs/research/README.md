@@ -46,3 +46,5 @@ not change the normal eight-worker gateway or adopt a production replacement.
 - [0030: Native allocator and remaining SSH transport memory](0030-transport-memory.md)
 
 - [0031: Repeatable 250-member headroom](0031-repeatable-headroom.md)
+
+- [0032: Full shared UI and ANSI themes](0032-shared-ui-themes.md)

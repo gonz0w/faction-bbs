@@ -17,3 +17,5 @@ These describe current requirements, the local console and an early restricted S
 Development practices, experiments, and architecture decisions belong in [dev-docs](../dev-docs/README.md). Historical draft inputs are in the [archive](../dev-docs/archive/README.md).
 
 - [NetBSD service lifecycle](service-lifecycle.md): managed development gateway start/stop/restart and crash recovery.
+
+- [Shared UI candidate](shared-ui.md) — experimental shared sessions and sysop themes.

@@ -91,3 +91,12 @@ the unchanged SSH/UID/approval/credential gates. A disposable time-daemon paging
 policy is host resource research, not new application confinement. Native tests
 record zero swap and successful time-daemon/service presence; sustained clock
 precision, per-service setup/rollback and full deployment security remain gates.
+
+The [full shared UI candidate](shared-ui.md) keeps domain sessions and leases
+inside their owning connection; cached menu-role presentation never grants an
+action. Current core approval/epochs/grants still authorize every action. Native
+denial/regrant/kick, forged control, cross-connection, backpressure and crash checks
+pass. Two credential permits cover queued/active/result lifetime; output and work
+are bounded without holding transactions behind terminal writes. These observations
+do not establish maintained shared-process confinement or hostile admission safety.
+Normal services remain eight; scoped adoption and broader workloads stay open.
