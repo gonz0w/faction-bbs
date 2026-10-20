@@ -1,0 +1,281 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "target": "aarch64-unknown-netbsd",
+  "scope": "Fresh isolated NetBSD application/SSH compatibility, not SBC/100-250-member capacity",
+  "image": {
+    "url": "https://cdn.netbsd.org/pub/NetBSD/NetBSD-11.0/evbarm-aarch64/binary/gzimg/arm64.img.gz",
+    "sha512": "50c8597cd83b73d12a466e67c1ecc49fb1969941171644b15a7fe377b0f482ccb190b3aa38b043eba3f5e7b4d6e38cf0e7d3c6fd5251813af869b49beda2ee80"
+  },
+  "kernel": {
+    "url": "https://cdn.netbsd.org/pub/NetBSD/NetBSD-11.0/evbarm-aarch64/binary/kernel/netbsd-GENERIC64.img.gz",
+    "sha512": "62a120ee688902e632f5e536e41aa9e6e74a55759a91d9c5bd3b2e12092b7d3bdaf00aa98c67b87466a04b8c0fff19b9d804814cd1efb0b665b6a82d39c0e179"
+  },
+  "manifest": {
+    "url": "https://cdn.NetBSD.org/pub/NetBSD/security/hashes/NetBSD-11.0_hashes.asc",
+    "signer_fingerprint": "271133262BF35CB50D4F504689261E17F5EF49FF",
+    "verification": "GPG good signature; signing public key retrieved through official HTTPS, no independent web-of-trust validation"
+  },
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "qemu": "QEMU emulator version 11.1.1"
+  },
+  "guest": {
+    "os": "NetBSD 11.0 evbarm",
+    "architecture": "aarch64",
+    "vcpus": 2,
+    "physical_ram_bytes": 1054990336,
+    "rust": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)",
+    "cc": "cc (nb3 20260326) 12.5.0",
+    "python": "Python 3.13.14",
+    "openssh": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+  },
+  "native_rust_tests": 54,
+  "native_pty_workflows": 4,
+  "native_build": "release --frozen -j 1 as non-root backend owner; bundled SQLite",
+  "cmsg_layout": {
+    "native_header_size": 12,
+    "native_payload_offset": 16,
+    "native_one_fd_space": 32,
+    "pinned_rust_payload_offset": 12,
+    "pinned_rust_one_fd_space": 16,
+    "positive_native_transfer": "pass"
+  },
+  "ssh": {
+    "schema": 1,
+    "scope": "NetBSD disposable real application SSH",
+    "results": [
+      {
+        "oracle": "separate_terminal_uid_cannot_read_database",
+        "result": "pass"
+      },
+      {
+        "oracle": "malformed_or_extra_local_descriptors_cannot_open_worker",
+        "result": "pass"
+      },
+      {
+        "oracle": "rejected_handoffs_preserve_broker_descriptor_count",
+        "result": "pass"
+      },
+      {
+        "oracle": "ordinary_ssh_shell_channel_enters_only_bbs",
+        "result": "pass"
+      },
+      {
+        "oracle": "no_pty_denied_before_board_access",
+        "result": "pass"
+      },
+      {
+        "oracle": "exec_denied_without_host_command",
+        "result": "pass"
+      },
+      {
+        "oracle": "blank_exec_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "sftp_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "direct_tcp_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "remote_tcp_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "remote_unix_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "unknown_transport_key_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "real_registration_pending_before_identity_and_menu",
+        "result": "pass"
+      },
+      {
+        "oracle": "approved_ansi_hotkey_room_post",
+        "result": "pass"
+      },
+      {
+        "oracle": "simultaneous_ssh_chat_preserves_draft",
+        "result": "pass"
+      },
+      {
+        "oracle": "active_ssh_chat_revocation_closes_session",
+        "result": "pass"
+      },
+      {
+        "oracle": "ssh_window_resize_plain_fallback_and_logout",
+        "result": "pass"
+      },
+      {
+        "oracle": "revoked_reconnect_cannot_reenter",
+        "result": "pass"
+      },
+      {
+        "oracle": "disconnect_stops_trusted_worker",
+        "result": "pass"
+      },
+      {
+        "oracle": "owner_export_unreachable_from_ssh_exec",
+        "result": "pass"
+      }
+    ],
+    "observations": {
+      "rejected_handoff_descriptor_rows": {
+        "before": 6,
+        "after": 6
+      },
+      "two_member_chat_process_sample": {
+        "faction-member": [
+          {
+            "rss_kib": 3816,
+            "vsz_kib": 23616
+          },
+          {
+            "rss_kib": 3820,
+            "vsz_kib": 17468
+          }
+        ],
+        "faction-broker": [
+          {
+            "rss_kib": 2456,
+            "vsz_kib": 17540
+          }
+        ],
+        "faction-ssh": [
+          {
+            "rss_kib": 1980,
+            "vsz_kib": 12664
+          },
+          {
+            "rss_kib": 1984,
+            "vsz_kib": 12668
+          }
+        ]
+      }
+    }
+  },
+  "binaries": {
+    "faction": {
+      "bytes": 2314512,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1",
+        "-lm.0 => /usr/lib/libm.so.0"
+      ]
+    },
+    "faction-member": {
+      "bytes": 2248976,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1",
+        "-lm.0 => /usr/lib/libm.so.0"
+      ]
+    },
+    "faction-ssh": {
+      "bytes": 398784,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1"
+      ]
+    },
+    "faction-broker": {
+      "bytes": 464288,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1"
+      ]
+    }
+  },
+  "sources": {
+    "Cargo.lock": "c5a0e4f548e968ff6f967abdecffb7dd7ce0b05c6bd7b89182ea9774b54d48dd",
+    "Cargo.toml": "00199e37439041786876ac3f060009456778a83529d8810139e1a3b37f7e1dde",
+    "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
+    "crates/faction-access/src/broker.rs": "652a000047d44a859c4b62d375bda94a1ce0d6f5085ec5a7a21f8de1a985e7b7",
+    "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
+    "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
+    "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
+    "crates/faction-cli/src/chat.rs": "61332f672c91e67585a0c9efa4f3a311accb544ea7ad5c4909ccbcb4b9f5195e",
+    "crates/faction-cli/src/lib.rs": "d157c188e5a0e369f034b4fc37f24199172597f016875fa870afb41d2ffd389b",
+    "crates/faction-cli/src/main.rs": "4f6d1d40afed6da13316991d7b13f0505261f57839cc3e0590c152ea2adbc140",
+    "crates/faction-cli/src/member.rs": "a7007b4a6563252c7fee008d3e15b83d1a8689c4a61ba9d5fa01b31d92896440",
+    "crates/faction-cli/src/terminal.rs": "a3bfecf29d2b7a7a2f02f7c47fca7015ff8e3278f66227abd93630fffae1199a",
+    "crates/faction-core/Cargo.toml": "a62682c6da2b6fdcd7a2e9cc0e3c0045cf41688351bebb452916b70747480e17",
+    "crates/faction-core/src/chat.rs": "1ad554998b5fe9c8435f8f84fec335aacc5de020e644537076f3305529c2de7a",
+    "crates/faction-core/src/lib.rs": "e936d754f317dd92101cac73d626cce3374e39a871a11b5adb64e0ee4fca17fd",
+    "crates/faction-core/src/snapshot.rs": "32432b6f2e76ddf0d453766949ab18cdd324c648f42c8f87c314c7bd80e22c2b",
+    "crates/faction-core/tests/chat.rs": "2012b8c2f3dfc731040b5493f2e06a079da0f970bdad2a2b22b03c9303fb91db",
+    "crates/faction-core/tests/core.rs": "c55c59a528d2b534506e57d3d59164a6ec4c53155e40f776881cdf64197d3845",
+    "crates/faction-core/tests/snapshot.rs": "74ee5b55b88ebdf0451505813efa8ad0e1bac0aa7c6f1b8b4e382d4a5d9c0de4",
+    "crates/faction-terminal/Cargo.toml": "6ca192866438705ee019001fd854451f35309bfabf87ba25cd7c1c78539fb367",
+    "crates/faction-terminal/src/art.rs": "5f0f2561b45159b276d34e2767b5e22742127e33767cab930741ab256bf5884c",
+    "crates/faction-terminal/src/editor.rs": "110c935ac2cb7915da060b82b8d1cae94790cb4032259e8bcd744aaf7f8004fb",
+    "crates/faction-terminal/src/keys.rs": "5d0a38d3c65e424198d7facedcf9d9141408b0a393dd0d3621aa674d66a5a5ee",
+    "crates/faction-terminal/src/lib.rs": "d14ee7e9264ca4d997662a68e6250289ccc90a23a3caa190a75a7cc1789d3822",
+    "crates/faction-terminal/src/theme.rs": "4657a18e21e926dca8b4f5e9bd821e9ed541c7fbc9146ce854e8e21ae9982b5d",
+    "crates/faction-terminal/tests/terminal.rs": "e8e15d519855fba39a01333daec4c42fcb9ee51e68b64af2bcdc0c73b0f43a99",
+    "crates/faction-unix/Cargo.toml": "2e0eaea46081f07c3fc76b81de83ac2d972db0c59b1e8d98d4643584dbc8210b",
+    "crates/faction-unix/build.rs": "792eb4f3ba7bdb4ed8601d779e9535d11b44be174ada1750ae5fbe8cd208041d",
+    "crates/faction-unix/src/lib.rs": "45514a55381e531bff8d880200fce9de0d38d1619e2904d504adafea0a68ca87",
+    "crates/faction-unix/src/terminal_fd.c": "a97160e8499877395e574116289afb0b7fc4c9563733e378b8439a799520bf8c",
+    "deploy/netbsd/sshd_config.in": "60245b9ea2849b203b95c726341466291348014840f74d94e30a16e073ec60a8",
+    "dev-docs/dependencies/local-core.json": "a56146655ad124e9cc82d541da097b7126e1bd2e99ab1203c4b429fdf567deeb",
+    "tools/check_restricted_ssh.py": "d5bf7e0fbae1f9268319e7f00aefb5d1360eae48aed36e7127b5a8d643ca1d33",
+    "tools/smoke_export_restore.py": "d69786c3ae58a5faa8d713667bb39c3c6ff0fe8f20fa76a1dfb262ca0e0cf074",
+    "tools/smoke_local_chat.py": "2d48ff29315d2a7ff4fb0cd42a1fd2f6998dcc417e781cac14b84fd247c40ab7",
+    "tools/smoke_local_console.py": "d466f37efcf21c86ac5238a2e93a3c6d6926f1d92bcdf7acc359ff4c58258374",
+    "tools/smoke_member_worker.py": "ab33aa514858e2e6c621d86222f0b2a27bee92e6c61cdea02fb1403466cc7974"
+  },
+  "effective_ssh_policy": {
+    "logingracetime": "30",
+    "maxsessions": "1",
+    "unusedconnectiontimeout": "30",
+    "passwordauthentication": "no",
+    "kbdinteractiveauthentication": "no",
+    "x11forwarding": "no",
+    "permittty": "yes",
+    "permituserrc": "no",
+    "allowtcpforwarding": "no",
+    "allowagentforwarding": "no",
+    "disableforwarding": "yes",
+    "allowstreamlocalforwarding": "no",
+    "authenticationmethods": "publickey",
+    "channeltimeout": "session=15m",
+    "maxstartups": "3:30:8",
+    "permittunnel": "no",
+    "permituserenvironment": "no"
+  },
+  "cleanup": {
+    "guest_stopped": true,
+    "private_inputs_removed": true,
+    "scope": "Only this task private VM/disk/keys/raw logs and forwards; developer-host SSH untouched"
+  },
+  "limits": [
+    "8 simultaneous handoffs/workers",
+    "128 KiB supervisor thread stacks",
+    "8 launch burst; one refill per 5 seconds",
+    "2 s receive deadline after serialized admission",
+    "120 s prompt read budget",
+    "1800 s session lifetime"
+  ],
+  "unperformed": [
+    "100/250-session or SBC capacity",
+    "complete OpenSSH/host shared-private memory accounting",
+    "output-deadline and broker-crash/fault campaign",
+    "independent agent/X11/tunnel wire attacks",
+    "physical SBC and other NetBSD architectures",
+    "maintained appliance/rc.d installation and overlay/firewall exposure audit"
+  ]
+}

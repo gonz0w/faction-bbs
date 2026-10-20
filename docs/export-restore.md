@@ -97,7 +97,7 @@ has been linked; inspect/verify that path and use a fresh name for a retry. A ki
 power loss can leave a private `.faction-stage-*` directory or an empty reserved
 restore directory. After all relevant processes stop, inspect/remove only that
 abandoned scratch data. The commands do not recursively delete existing paths.
-Native NetBSD filesystem/power-loss behavior is not yet tested for this application.
+Native NetBSD application export/restore tests now pass; filesystem/power-loss fault injection remains open.
 
 ## Initial limits and evidence
 
@@ -110,7 +110,7 @@ for the staging copy and SQLite compaction/journal scratch, potentially several
 times the database size. No full-store Rust buffer is used, but total RAM, temporary
 disk, busy-board latency and SBC capacity have not been measured for these tools.
 
-Developer-host and CI checks include committed live-WAL roundtrips, source-session
+Developer-host, native NetBSD and CI checks include committed live-WAL roundtrips, source-session
 continuity, durable IDs/replies/unread/status/grants, old-capability denial, removed
 receipt bytes, malformed catalogs/data/credentials, unsafe paths/sidecars, sparse
 over-size input, competing restores, failure cleanup and a real CLI/PTY rehearsal:
@@ -123,5 +123,5 @@ python3 tools/smoke_export_restore.py target/release/faction
 
 Member-scoped logical/interchange exports, old/future format adapters, deletions,
 encrypted/authenticated archives, scheduled/incremental backups, full installation
-packaging, native NetBSD app checks and fault-injected power-loss/disk-full recovery
+packaging and fault-injected power-loss/disk-full recovery
 remain work under #9/#18/#19/#35. See [ADR 0011](../dev-docs/decisions/0011-private-export-restore.md).

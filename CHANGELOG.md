@@ -6,6 +6,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Restricted OpenSSH development access: separate database-inaccessible terminal UID,
+  bounded Unix terminal handoff/broker and member-only entry point, shared ANSI/chat
+  UI through inherited descriptors and owner-controlled themes. Native NetBSD 11 ARM64
+  full Rust/PTY/snapshot and real application SSH oracles now pass. Added a narrow
+  native CMSG bridge after reproducing a pinned libc ARM64 ancillary-layout mismatch,
+  explicit FFI/descriptor ownership tests, source-tied sanitized evidence and SSH setup
+  guide. Default eight-worker gate, separate BBS approval and remaining production
+  load/failure/OS-confinement/appliance work are explicit; no public deployment implied.
+
 - Owner-only private export/verify/restore: incremental committed SQLite/WAL snapshot,
   versioned current-schema artifact, exact catalog/integrity/FK/domain validation,
   owner-private staging, compact standalone file, no-overwrite publication and fresh

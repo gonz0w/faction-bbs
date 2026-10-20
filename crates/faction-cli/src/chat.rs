@@ -3,7 +3,6 @@ use crate::{Result, bounded_line, safe, terminal};
 use faction_core::{Board, ChatCommand, ChatKind, ChatLease, ChatPage, Error, Session};
 use faction_terminal::{LINE_BYTES, LineEditor, LineEvent};
 use std::{
-    fs::OpenOptions,
     io::{self, Write},
     time::{Duration, Instant},
 };
@@ -124,7 +123,7 @@ fn heartbeat(board: &mut Board, lease: &ChatLease, last: &mut Instant) -> Result
 }
 fn plain(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) -> Result<()> {
     println!("Plain chat: Enter submits; /poll or blank line reads new messages.");
-    let mut tty = OpenOptions::new().read(true).open("/dev/tty")?;
+    let mut tty = crate::tty()?;
     let mut last = Instant::now();
     loop {
         print!("{}", state.label());

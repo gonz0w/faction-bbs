@@ -51,6 +51,10 @@ can retry the same body/ID. The core reconciles identical retries to the origina
 durable post; reusing the ID with changed content fails. The console does not yet
 persist an unsent draft across process exit or offer manual ID-based recovery.
 
+Line and hidden-password prompts have a two-minute input budget in both owner
+and member sessions. The SSH gateway adds its own documented admission/session
+limits; these current development defaults are not yet sysop-configurable.
+
 ## Local state and operator recovery
 
 The explicit state directory is created with mode `0700`; the database is `0600`.
@@ -102,6 +106,7 @@ cargo build --workspace --locked --release
 python3 tools/smoke_local_console.py target/release/faction
 python3 tools/smoke_local_chat.py target/release/faction
 python3 tools/smoke_export_restore.py target/release/faction
+python3 tools/smoke_member_worker.py target/release/faction target/release/faction-member
 ```
 
 The PTY smoke generates disposable passwords/private state outside the checkout
@@ -121,8 +126,10 @@ passthrough. No historical art is bundled. Broader/long ANSI, SAUCE/iCE metadata
 grid layouts, calendar themes and visual review of actual artwork remain work.
 
 [Local chat](local-chat.md) now has a bounded simultaneous-console baseline.
-Remaining account/room lifecycle, native NetBSD app
-validation and a distinct restricted SSH adapter are next; Lua menus/isolated
+[Restricted SSH](restricted-ssh.md) now uses a separate frontend/broker/member worker;
+the complete workspace and terminal/recovery flows passed natively on NetBSD 11 ARM64.
+Remaining account/room lifecycle, complete load/failure accounting and deployment
+lifecycle are next; Lua menus/isolated
 doors follow the useful local core. See [scope](../dev-docs/first-local-slice.md),
 [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md) and
 [ADR 0009](../dev-docs/decisions/0009-safe-terminal-menus-and-themes.md).

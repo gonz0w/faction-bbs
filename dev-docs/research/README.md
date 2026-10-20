@@ -30,4 +30,6 @@ The [extensible ANSI research](0010-extensible-ansi-platform.md) compares option
 
 The [menu/theme and art reference study](0025-menu-and-art-direction.md) captures Oblivion/2-inspired dual navigation, sysop/seasonal themes and attributed ACiD/iCE/Razor-related references. It proposes software menu/parser/theme tests; none is claimed executed.
 
+The [restricted SSH/native application report](0024-restricted-ssh-netbsd.md) records actual member flows, complete Rust/PTY/recovery tests and the native CMSG ABI repair; `python3 tools/check_netbsd_application_evidence.py` checks saved source provenance without rerunning a VM.
+
 The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.

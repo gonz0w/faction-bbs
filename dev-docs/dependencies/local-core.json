@@ -204,6 +204,8 @@
       "features": [
         "alloc",
         "event",
+        "fs",
+        "net",
         "process",
         "std",
         "termios"
@@ -490,9 +492,13 @@
         "elf",
         "errno",
         "general",
+        "if_ether",
         "ioctl",
+        "net",
+        "netlink",
         "no_std",
-        "prctl"
+        "prctl",
+        "xdp"
       ],
       "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
       "name": "linux-raw-sys",
@@ -539,6 +545,8 @@
       "features": [
         "alloc",
         "event",
+        "fs",
+        "net",
         "process",
         "std",
         "termios"

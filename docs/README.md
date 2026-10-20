@@ -1,8 +1,9 @@
 # Product, member, and sysop documentation
 
-These describe current requirements and the early local console. There is no network BBS release.
+These describe current requirements, the local console and an early restricted SSH development gateway. There is no supported network release.
 
 - [Build and try the local core](local-development.md)
+- [Restricted SSH member access and owner setup](restricted-ssh.md)
 - [Private export, verify and restore rehearsal](export-restore.md)
 - [Project direction and boundaries](project.md)
 - [Login, approval, and BBS session](session.md)

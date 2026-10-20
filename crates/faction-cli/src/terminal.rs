@@ -6,7 +6,7 @@ use rustix::{
     termios::{self, InputModes, LocalModes, OptionalActions, SpecialCodeIndex, Termios},
 };
 use std::{
-    fs::{File, OpenOptions},
+    fs::File,
     io::{self, IsTerminal, Read, Write},
     time::Instant,
 };
@@ -16,7 +16,7 @@ pub(super) struct Raw {
 }
 impl Raw {
     pub(super) fn open() -> Result<Self> {
-        let tty = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
+        let tty = crate::tty()?;
         let saved = termios::tcgetattr(&tty)?;
         let mut mode = saved.clone();
         mode.local_modes.remove(
