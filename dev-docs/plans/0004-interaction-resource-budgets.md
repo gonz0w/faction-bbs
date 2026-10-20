@@ -1,7 +1,7 @@
 # 0004: Small interactions and small hosts
 
 Issues: [#8](https://github.com/gonz0w/faction-bbs/issues/8), [#28](https://github.com/gonz0w/faction-bbs/issues/28)
-Status: local research deliverables complete; publication/review pending. Budgets proposed; no production stack selected.
+Status: research deliverables published in PR #38, pending review/merge. Budgets proposed; no production stack selected.
 
 ## Goal and constraints
 
@@ -14,7 +14,7 @@ Owner clarifications on 2026-10-19: 1–2 cores / about 1 GiB host RAM; 100–25
 - [x] Read requirements, dependencies, and acceptance criteria; merge authorized PR #37.
 - [x] Author and run bounded local experiments; preserve sanitized results.
 - [x] Record proposed budgets, evidence, tradeoffs, unknowns, and follow-on tests.
-- [ ] Update docs, validate, publish a reviewable PR and issue evidence.
+- [x] Update docs, validate, publish a reviewable PR and issue evidence.
 
 ## Steps and commands
 
@@ -42,4 +42,8 @@ No kernel shaper, real terminal client or constrained SBC was available/exercise
 | #28 reproducible read/post/chat/render/storage/door measurements | 0028 measurement contract, failure oracles, required environments/repetitions and publication fields. Full-server harness remains later work. |
 | #28 comparison criteria/security/portability/deployment tradeoffs | 0028 mechanisms/source table, gate states, proposed anchors and bounded allocation evidence; no language/storage/provider selected. |
 
-Remaining: publish reviewable PR, update issue evidence and verify CI. Issues stay open until merge; numeric budgets remain proposed research inputs.
+## Publication and handoff
+
+[PR #38](https://github.com/gonz0w/faction-bbs/pull/38) delivers this research and closes #8/#28 on merge. Both issues now contain criterion evidence and explicit experiment limitations; #4 records the owner clarification and resource/technology inputs without adopting a language.
+
+The required `Documentation and policy` check passed for research commit `b2d9dd3564c4d2d0c4ad8b23eea0064c5890b4ec` in [GitHub CI](https://github.com/gonz0w/faction-bbs/actions/runs/39351534629). This publication-only revision uses the same required check; final status is tracked in the PR. PR #38 remains open for review, not authorized for automatic merge by the instruction to merge #37. Issues stay open until merge; numeric budgets remain proposed research inputs. Next runtime/storage and full-server prototype work is in the existing linked issues.
