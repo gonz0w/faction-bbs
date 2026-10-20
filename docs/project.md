@@ -20,10 +20,10 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
 | Federation | Future optional subscriptions to shared chat channels only. Other BBS data, accounts/approval, directory entries, and local-only chat remain local. |
-| Terminal | Network terminal applications are central; physical serial terminals are not a current target. |
+| Terminal | Ordinary SSH terminal clients are the initial secure-access direction, with optional invitation-only private-network operation (owner acceptance 2026-10-19). Overlay admission, SSH identity and local BBS approval remain distinct; no member host shell is implied. Physical serial terminals are not a current target. Backend/enforcement unvalidated. |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
 | Networks | Initial focus: modern private networks, with occasional poor/interrupted connections (owner clarification 2026-10-19). Constrained links remain research inputs; future mesh/non-IP networks are separately evaluated and no specific alternative transport is promised. |
-| Operations | Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
+| Operations | Approachable hobby operation on small SBCs/Raspberry Pi or a small VM appliance; MINIX is a candidate, not mandatory (owner clarification 2026-10-19). Compare whole runtime images and update/recovery burden, not full distribution size. Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
 | Privacy | Minimal opt-in telemetry, deliberate exposure and retention policies, no mandatory public directory or central service. |
 | Technology | No JavaScript or TypeScript anywhere in project source/tooling/dependencies, including browser-terminal assets. Select fast/lightweight implementation options through comparison and prototypes. |
 
@@ -37,9 +37,9 @@ Transport-specific addresses, discovery, routing, and connection behavior must s
 
 ## Research before production implementation
 
-No language, framework, storage engine, access protocol, federation protocol, extension runtime, or deployment topology has been selected. Familiarity, nostalgia, and popularity alone are insufficient evidence. JavaScript/TypeScript is excluded by explicit owner instruction.
+No production language, framework, storage engine, SSH backend, federation protocol, extension runtime or deployment OS has been accepted. SSH with optional private-network mode is accepted access direction. The proposed next validation slice uses Rust/readiness I/O and local SQLite WAL; [ADR 0005](../dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the experiment and required evidence before production adoption. Familiarity, nostalgia, and popularity alone are insufficient evidence. JavaScript/TypeScript is excluded by explicit owner instruction.
 
-The founder explicitly prioritizes tiny working sets and scalable low-memory native options, including selective assembly if measurements justify it. Historical 640K BBSes are an efficiency inspiration, not a literal modern security/host ceiling. Unusual runtimes, specialized operating systems, blockchain and optional public helpers may be investigated, but must satisfy the same privacy, local-authority and independent-operation constraints. No external service is selected. Proposed numeric application budgets and bounded experiments are in the [small-host research](../dev-docs/research/0028-small-host-budgets.md).
+The founder welcomes newer and older technologies on merit and explicitly prioritizes tiny working sets and scalable low-memory native options, including selective assembly if measurements justify it. Historical 640K BBSes are an efficiency inspiration, not a literal modern security/host ceiling. Unusual runtimes, specialized operating systems, blockchain and optional public helpers may be investigated, but must satisfy the same privacy, local-authority and independent-operation constraints. No external service is selected. Proposed numeric application budgets and bounded experiments are in the [small-host research](../dev-docs/research/0028-small-host-budgets.md).
 
 Security, privacy, terminal compatibility, resource use, and local deployment simplicity must be measured. A private/underground atmosphere is not an anonymity guarantee; public source availability says nothing about whether an operator exposes their deployment.
 
@@ -50,7 +50,7 @@ Original game availability and compatibility are per-title questions. This proje
 - Registration fields, approval/status/rejection/revocation, account recovery, and operator bootstrap.
 - Room reading order, unread state, quoting/reply behavior, and retention/moderation.
 - Whether existing IRC clients must interoperate, beyond IRC-style commands within the BBS.
-- Secure terminal access, any Telnet compatibility conditions, and disabled/private portal operation.
+- SSH backend, identity/bootstrap mapping, confinement and private-only binding validation; any legacy Telnet compatibility remains separate from the accepted secure-access direction. Disabled/private portal operation remains required.
 - Whether a useful browser console is achievable with no JavaScript dependencies; permitted alternatives and explicit tradeoffs need research.
 - Character encodings, ANSI capabilities, safe parsing, plain-text fallback, and link budgets.
 - File transfer protocols, quotas, untrusted upload handling, mail semantics, and search scope.
