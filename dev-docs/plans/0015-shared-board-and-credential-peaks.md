@@ -2,7 +2,7 @@
 
 Issues: [#55](https://github.com/gonz0w/faction-bbs/issues/55),
 [#56](https://github.com/gonz0w/faction-bbs/issues/56).
-Status: implementation/native validation complete; PR publication pending. #54 merged at `26ae82f`.
+Status: implementation/native validation complete; [PR #57](https://github.com/gonz0w/faction-bbs/pull/57) open for review. #54 merged at `26ae82f`.
 
 ## Goal and constraints
 
@@ -19,7 +19,7 @@ Normal gateway remains eight workers; experiments are not an appliance release.
 - [x] Build isolated shared-board prototype and persistent collector/calibration.
 - [x] Validate authorization, failure/slow-reader isolation and terminal behavior.
 - [x] Run matched native loads and credential calibration/bursts; freeze inputs.
-- [ ] Publish sanitized evidence, ADR, current docs, issue updates and focused PR.
+- [x] Publish sanitized evidence, ADR, current docs, issue updates and focused PR.
 
 ## Design to test
 
@@ -80,3 +80,11 @@ without replacing base OpenSSH or weakening admission/credentials. #56's bounded
 calibrated ledger is ready for closure with the PR; full production/hardware
 capacity remains outside it. Never refresh frozen native hashes without matched
 execution; old temporary builders can overwrite newer sources.
+
+PR #57 published and attached. Required Linux CI passed at implementation head
+`17b8138`; final documentation handoff also requires current-head CI. #55/#56 and
+broader #28/#20 have concrete result comments. #56 closes on PR merge; #55 remains
+open for parity/adoption. [#58](https://github.com/gonz0w/faction-bbs/issues/58)
+captures remaining per-transport attribution/reduction toward guarded 250, keeping
+base OpenSSH, full denial oracles, credential policy and whole-host accounting.
+The current PR is not merged by this task; only requested #54 was merged.

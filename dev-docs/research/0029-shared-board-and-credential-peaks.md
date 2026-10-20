@@ -176,8 +176,8 @@ input checks passed; Argon2 was neither weakened nor slowed for measurement.
 Continue shared ownership as an isolated measured candidate; retain the normal
 eight-worker path. Compare trimmed workers and shared RPC/UI workers against the
 same requirements if full UI/fairness recovery becomes too costly. Do not replace
-base OpenSSH or accept a new crypto dependency from this memory result. Attribute
-and reduce remaining per-transport costs, preserve all admission/approval/terminal
+base OpenSSH or accept a new crypto dependency from this memory result. [#58](https://github.com/gonz0w/faction-bbs/issues/58) scopes attribution and
+reduction of remaining per-transport costs. Preserve all admission/approval/terminal
 denials, close UI/operational parity and full workload/repeat/soak gates, then
 rerun guarded 250 before changing defaults. Hardware tests gate later SBC claims.
 

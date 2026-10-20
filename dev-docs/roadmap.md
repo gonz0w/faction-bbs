@@ -50,3 +50,7 @@ and the [comparison](research/0029-shared-board-and-credential-peaks.md). Keep t
 full member UI and base OpenSSH approval/isolation behavior while deciding how
 to reduce remaining per-transport cost. An isolated prototype is not adoption;
 250-user capacity and the broader #28 workload/soak gates remain unvalidated.
+
+[#58](https://github.com/gonz0w/faction-bbs/issues/58) isolates remaining
+per-transport costs after the shared-owner comparison; it preserves base OpenSSH,
+current approval/credential/terminal denials and all mandatory process accounting.

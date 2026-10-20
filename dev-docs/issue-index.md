@@ -50,3 +50,6 @@ Current focused small-host follow-ups:
 [#55: shared board ownership](https://github.com/gonz0w/faction-bbs/issues/55) and
 [#56: persistent credential peaks](https://github.com/gonz0w/faction-bbs/issues/56).
 GitHub open/closed state remains authoritative; see the [execution plan](plans/0015-shared-board-and-credential-peaks.md).
+
+[#58: remaining per-transport memory toward 250](https://github.com/gonz0w/faction-bbs/issues/58)
+tracks the next bounded footprint comparison while #55 retains shared UI/adoption gates.
