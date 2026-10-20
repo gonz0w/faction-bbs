@@ -43,3 +43,14 @@ Memory/scaling now proceeds under [plan 0014](plans/0014-memory-scaling.md): bou
 credential work, native whole-VM/process/SSH metrics, guarded distinct-account
 experiments and measured architecture follow-up. Default service limits and the
 full #28 workload/soak/production gates remain separate from short profiling runs.
+
+The next small-host increment compares shared board/readiness ownership (#55)
+and calibrated persistent credential peaks (#56); see [ADR 0015](decisions/0015-shared-board-readiness-experiment.md)
+and the [comparison](research/0029-shared-board-and-credential-peaks.md). Keep the
+full member UI and base OpenSSH approval/isolation behavior while deciding how
+to reduce remaining per-transport cost. An isolated prototype is not adoption;
+250-user capacity and the broader #28 workload/soak gates remain unvalidated.
+
+[#58](https://github.com/gonz0w/faction-bbs/issues/58) isolates remaining
+per-transport costs after the shared-owner comparison; it preserves base OpenSSH,
+current approval/credential/terminal denials and all mandatory process accounting.

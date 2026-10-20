@@ -37,3 +37,8 @@ The [managed lifecycle/load report](0026-service-lifecycle-load.md) extends this
 The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.
 
 - [0027: Native memory profiling and distinct-account SSH scaling](0027-memory-scaling.md)
+
+The [shared-board and persistent credential-peak comparison](0029-shared-board-and-credential-peaks.md)
+extends #55/#56 with an isolated readiness terminal owner, matched full SSH loads,
+native authorization/failure oracles and calibrated persistent sampling. It does
+not change the normal eight-worker gateway or adopt a production replacement.

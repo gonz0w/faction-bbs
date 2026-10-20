@@ -70,3 +70,10 @@ without bound; configured Argon2 work is unchanged. These advisory locks assume
 trusted owner/root and cooperating workers. They are not hostile-code isolation,
 per-account fairness or a whole-host memory guarantee. Higher session limits are
 operator-only profiling controls; normal service keeps eight workers.
+
+The [shared-owner experiment](../dev-docs/decisions/0015-shared-board-readiness-experiment.md)
+keeps opaque sessions and chat leases inside their owning terminal connection;
+member input cannot import an identity/role/capability or invoke owner tools.
+Two fixed credential workers still use the kernel-slot budget. A shared backend
+has a larger failure domain than separate member workers; completed prototype
+checks do not replace full UI, fairness, confinement or production review.

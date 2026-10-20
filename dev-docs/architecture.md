@@ -70,3 +70,12 @@ owner-only experimental limits support guarded profiling. A fresh NetBSD study
 passed 150 distinct-account SSH menu/chat sessions and stopped admission at 168.
 Whole-VM anonymous/kernel-pool growth motivates a bounded shared-board/readiness
 comparison before 250-user adoption; RSS sums are not exact private memory.
+
+[ADR 0015](decisions/0015-shared-board-readiness-experiment.md) tests a standalone
+readiness terminal/shared-board owner against workers, retaining base OpenSSH,
+the separate terminal UID, current core sessions/approval/grants and the credential
+budget. Connection generations are internal; no member identity/owner RPC exists.
+The [native comparison](research/0029-shared-board-and-credential-peaks.md) and
+calibrated persistent credential sampler provide the next evidence. Complete
+themes/plain/resize/UI parity, fairness, full workloads and adoption remain gates;
+the normal broker/member path and eight-worker default are unchanged.

@@ -1,7 +1,7 @@
 # 0014: Profile memory and scale connected sessions
 
 Issues: [#28](https://github.com/gonz0w/faction-bbs/issues/28), [#20](https://github.com/gonz0w/faction-bbs/issues/20), [#18](https://github.com/gonz0w/faction-bbs/issues/18), [#23](https://github.com/gonz0w/faction-bbs/issues/23).
-Status: implementation/native validation complete; [PR #54](https://github.com/gonz0w/faction-bbs/pull/54) open for review. #53 merged at `c9abca9`.
+Status: complete; [PR #54](https://github.com/gonz0w/faction-bbs/pull/54) merged at `26ae82f`. #53 merged at `c9abca9`.
 
 ## Goal and constraints
 
@@ -55,8 +55,8 @@ Full #28 workload/repeat/soak/hardware and appliance acceptance remain open.
 
 ## Review and continuation
 
-Branch `codex/28-memory-scaling`, PR #54. Require current-head Linux CI before
-merge; native evidence is saved, not rerun by CI. Fresh profiling inputs are
+Branch `codex/28-memory-scaling`, PR #54 merged after passing current-head Linux CI;
+native evidence is saved, not rerun by CI. Fresh profiling inputs are
 frozen in results/027; do not refresh their hashes without a matching execution.
 Default service remains eight workers; higher limits are owner-only experiments.
 

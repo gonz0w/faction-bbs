@@ -174,3 +174,12 @@ limits are explicit owner-only research controls, documented in the
 [memory/scaling experiment](../dev-docs/research/0027-memory-scaling.md), with
 whole-VM headroom guards and separate OS resource limits. They do not establish a
 supported member count or configure the host automatically.
+
+## Shared-owner research boundary
+
+An [isolated shared-board prototype](../dev-docs/research/0029-shared-board-and-credential-peaks.md)
+now compares readiness terminals with per-member workers, using the same separate
+terminal UID and unmodified OpenSSH frontend. It is not installed by these setup
+instructions. Its incomplete theme/plain/resize/navigation behavior must pass
+parity and operational gates before member deployment. Keep the normal gateway
+at eight workers; higher research counts are not supported capacity.

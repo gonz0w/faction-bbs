@@ -26,3 +26,5 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.
 
 - [0014: Memory profiling and connected-session scaling](0014-memory-scaling.md)
+
+- [0015: Shared board ownership and credential peaks](0015-shared-board-and-credential-peaks.md)

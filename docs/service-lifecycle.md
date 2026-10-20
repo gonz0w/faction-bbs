@@ -83,3 +83,9 @@ Stop every owner/member process before replacing/removing them. Ordinary service
 restart and owner snapshot export do not remove them. Credential saturation fails
 that login/registration attempt explicitly; see [the SSH guide](restricted-ssh.md).
 Experimental scaling flags do not change normal service defaults or sysctl limits.
+
+The [shared-owner/credential comparison](../dev-docs/research/0029-shared-board-and-credential-peaks.md)
+is an opt-in standalone experiment, not a replacement for these rc.d scripts.
+Normal service defaults and the locked pidfile/credential inode rules remain.
+Its direct terminal-owner lifecycle and incomplete UI need explicit adoption
+review; a larger experimental admission count does not change service capacity.
