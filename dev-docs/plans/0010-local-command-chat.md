@@ -1,6 +1,6 @@
 # 0010: BBS-local command chat
 
-Date: 2026-10-19. Status: implementation and local checks complete; publishing PR. Issues: #26/#6/#9/#12/#21/#29/#35.
+Date: 2026-10-19. Status: published for review in [PR #50](https://github.com/gonz0w/faction-bbs/pull/50). Issues: #26/#6/#9/#12/#21/#29/#35.
 Owner authorized merge #49 and continuation. #49 merged as
 d96bf48e0de0a62343184084a3b040bd12d4ea37; main was clean and checks passed.
 
@@ -52,7 +52,7 @@ redraw; plain fallback uses Enter and /poll. No listener/SSH/HTTP/Lua/financial 
 - [x] Core schema/chat actions, command grammar and tests.
 - [x] Local chat UI, bounded editor and simultaneous PTYs.
 - [x] Current docs/decision/source/checks.
-- [ ] Publish and attach the focused PR; CI result remains authoritative there.
+- [x] Publish and attach PR #50; its checks carry the authoritative CI result. Broad issues remain open.
 
 No physical hardware gate. New NetBSD application execution remains pending;
 no implicit merge of the next PR. The owner-capable CLI must never become an SSH
