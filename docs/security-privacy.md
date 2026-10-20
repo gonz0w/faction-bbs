@@ -63,3 +63,10 @@ workers and detects broker loss; native eight-session overload/fault checks pass
 Its pidfile lock must never be unlinked while live. Native signal handling extends
 the explicit FFI exception; it is not a process sandbox or hard realtime guarantee.
 Whole-host capacity, account/key fairness and durable failure remain open.
+
+Credential derivation now has two nonblocking cross-process slots per board and
+strict stored-cost checks before verification. Busy work is rejected, not queued
+without bound; configured Argon2 work is unchanged. These advisory locks assume
+trusted owner/root and cooperating workers. They are not hostile-code isolation,
+per-account fairness or a whole-host memory guarantee. Higher session limits are
+operator-only profiling controls; normal service keeps eight workers.

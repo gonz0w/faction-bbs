@@ -125,3 +125,8 @@ Member-scoped logical/interchange exports, old/future format adapters, deletions
 encrypted/authenticated archives, scheduled/incremental backups, full installation
 packaging and fault-injected power-loss/disk-full recovery
 remain work under #9/#18/#19/#35. See [ADR 0011](../dev-docs/decisions/0011-private-export-restore.md).
+
+Credential-budget lock files coordinate running local processes and contain no
+passwords. They are not part of the snapshot artifact; a fresh restored board
+creates new locks on credential work. Never unlink them from a live source board
+or interpret their presence as approval/authentication state.

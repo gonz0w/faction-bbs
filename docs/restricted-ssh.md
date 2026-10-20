@@ -121,7 +121,7 @@ session. An empty configuration uses built-in text, without bundled scene art.
 
 ## Limits, disconnects and evidence
 
-- Broker caps eight simultaneous handoffs/workers, burst eight launches, then one
+- Broker defaults to eight simultaneous handoffs/workers, burst eight launches, then one
   replenished launch token per five seconds. OpenSSH handshake caps are separate.
   No per-key/account/IP fair queue or capacity for 100–250 members is claimed.
 - Handoff is 72 bytes plus exactly one terminal descriptor, with a two-second
@@ -157,3 +157,20 @@ See [native application evidence](../dev-docs/research/0024-restricted-ssh-netbs
 [ADR 0012](../dev-docs/decisions/0012-restricted-ssh-and-terminal-handoff.md) and
 [private recovery](export-restore.md). Keep backups/themes separate and validate
 account policy before cutting over a restored board.
+
+## Credential work and scaling experiments
+
+Each board now permits two simultaneous password derivations across cooperating
+owner/member processes. Excess credential work closes that attempt with
+`credential work busy; reconnect later`; reconnect and try again. Local approval
+still applies after successful password verification. Argon2 costs remain unchanged.
+The private state directory contains persistent `credential-0.lock` and
+`credential-1.lock` coordination files; never unlink/replace them while any board
+process may be running. They contain no credentials and are recreated for a
+fresh restored board; owner snapshot data does not package live locks.
+
+Normal service remains eight workers and the original launch cadence. Higher
+limits are explicit owner-only research controls, documented in the
+[memory/scaling experiment](../dev-docs/research/0027-memory-scaling.md), with
+whole-VM headroom guards and separate OS resource limits. They do not establish a
+supported member count or configure the host automatically.

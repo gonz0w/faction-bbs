@@ -13,8 +13,8 @@
     "python": "Python 3.13.14",
     "openssh": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
   },
-  "native_rust_tests": 54,
-  "native_pty_workflows": 4,
+  "native_rust_tests": 58,
+  "native_pty_workflows": 5,
   "native_local_lifecycle": {
     "passed": [
       "duplicate_instance_refused",
@@ -25,7 +25,7 @@
       "non_socket_and_symlink_paths_preserved",
       "symlink_pidfile_refused"
     ],
-    "stalled_shutdown_seconds": 6.265
+    "stalled_shutdown_seconds": 6.077
   },
   "lifecycle": {
     "schema": 1,
@@ -88,13 +88,63 @@
       "eight_chat_processes": [
         {
           "role": "sshd",
-          "rss_kib": 4752,
-          "vsz_kib": 19560
+          "rss_kib": 4376,
+          "vsz_kib": 19564
+        },
+        {
+          "role": "sshd",
+          "rss_kib": 3568,
+          "vsz_kib": 21948
         },
         {
           "role": "sshd-session",
-          "rss_kib": 8008,
-          "vsz_kib": 25088
+          "rss_kib": 4672,
+          "vsz_kib": 28368
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4672,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4064,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 26976
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4692,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4056,
+          "vsz_kib": 19848
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4672,
+          "vsz_kib": 27744
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8060,
+          "vsz_kib": 25084
         },
         {
           "role": "sshd-session",
@@ -103,148 +153,108 @@
         },
         {
           "role": "sshd-session",
-          "rss_kib": 4672,
-          "vsz_kib": 28896
+          "rss_kib": 4676,
+          "vsz_kib": 27380
+        },
+        {
+          "role": "faction-broker",
+          "rss_kib": 3256,
+          "vsz_kib": 29772
         },
         {
           "role": "sshd-session",
-          "rss_kib": 4664,
-          "vsz_kib": 25224
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8820,
-          "vsz_kib": 26188
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8008,
-          "vsz_kib": 25088
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 6164,
-          "vsz_kib": 26516
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8004,
-          "vsz_kib": 25088
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 4672,
-          "vsz_kib": 26400
-        },
-        {
-          "role": "faction-member",
-          "rss_kib": 4036,
-          "vsz_kib": 19844
-        },
-        {
-          "role": "sshd",
-          "rss_kib": 3784,
-          "vsz_kib": 21492
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8008,
-          "vsz_kib": 25088
-        },
-        {
-          "role": "faction-member",
-          "rss_kib": 4044,
-          "vsz_kib": 19848
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 4688,
-          "vsz_kib": 25224
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8000,
+          "rss_kib": 8064,
           "vsz_kib": 25084
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8060,
+          "vsz_kib": 25084
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8060,
+          "vsz_kib": 25084
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8064,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8060,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8812,
+          "vsz_kib": 26184
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4068,
+          "vsz_kib": 19852
         },
         {
           "role": "faction-member",
           "rss_kib": 4060,
-          "vsz_kib": 19844
-        },
-        {
-          "role": "faction-member",
-          "rss_kib": 4044,
-          "vsz_kib": 19844
-        },
-        {
-          "role": "faction-member",
-          "rss_kib": 4040,
-          "vsz_kib": 19848
-        },
-        {
-          "role": "faction-broker",
-          "rss_kib": 3248,
-          "vsz_kib": 29768
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8008,
-          "vsz_kib": 25088
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 8004,
-          "vsz_kib": 25084
-        },
-        {
-          "role": "faction-member",
-          "rss_kib": 4040,
           "vsz_kib": 19848
         },
         {
           "role": "sshd-session",
-          "rss_kib": 8000,
+          "rss_kib": 8060,
           "vsz_kib": 25084
         },
         {
-          "role": "sshd-session",
-          "rss_kib": 4680,
-          "vsz_kib": 25224
+          "role": "faction-member",
+          "rss_kib": 4092,
+          "vsz_kib": 19852
         },
         {
           "role": "sshd-session",
-          "rss_kib": 4672,
-          "vsz_kib": 25224
-        },
-        {
-          "role": "sshd-session",
-          "rss_kib": 4676,
-          "vsz_kib": 31140
+          "rss_kib": 8060,
+          "vsz_kib": 25084
         },
         {
           "role": "faction-member",
-          "rss_kib": 4040,
-          "vsz_kib": 19844
+          "rss_kib": 4064,
+          "vsz_kib": 19848
         },
         {
-          "role": "faction-member",
-          "rss_kib": 4040,
-          "vsz_kib": 19844
-        },
-        {
-          "role": "faction-ssh",
-          "rss_kib": 1984,
-          "vsz_kib": 12668
-        },
-        {
-          "role": "faction-ssh",
-          "rss_kib": 1984,
-          "vsz_kib": 12668
+          "role": "sshd-session",
+          "rss_kib": 6180,
+          "vsz_kib": 28340
         },
         {
           "role": "faction-ssh",
           "rss_kib": 1980,
           "vsz_kib": 12664
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12664
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1980,
+          "vsz_kib": 12664
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1988,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1988,
+          "vsz_kib": 12668
         },
         {
           "role": "faction-ssh",
@@ -259,31 +269,21 @@
         {
           "role": "faction-ssh",
           "rss_kib": 1984,
-          "vsz_kib": 12664
-        },
-        {
-          "role": "faction-ssh",
-          "rss_kib": 1984,
-          "vsz_kib": 12668
-        },
-        {
-          "role": "faction-ssh",
-          "rss_kib": 1984,
           "vsz_kib": 12668
         }
       ],
       "vmstat_summary": [
-        "    64666 pages free",
-        "   109434 pages active",
-        "    39961 pages inactive"
+        "   154748 pages free",
+        "    19111 pages active",
+        "    24566 pages inactive"
       ],
-      "eight_chat_cpu_sample": "0",
-      "eight_chat_delivery_seconds": 0.116,
+      "eight_chat_cpu_sample": "1",
+      "eight_chat_delivery_seconds": 0.321,
       "over_cap_local_offers": [
         {
           "offered": 100,
           "rejected": 100,
-          "seconds": 0.086
+          "seconds": 0.045
         },
         {
           "offered": 250,
@@ -295,8 +295,8 @@
         "before": 15,
         "after": 15
       },
-      "active_stop_seconds": 5.481,
-      "broker_loss_worker_exit_seconds": 0.167,
+      "active_stop_seconds": 5.466,
+      "broker_loss_worker_exit_seconds": 0.146,
       "blocked_writer_completed_chunks": 0
     }
   },
@@ -341,7 +341,7 @@
     "Cargo.lock": "c5a0e4f548e968ff6f967abdecffb7dd7ce0b05c6bd7b89182ea9774b54d48dd",
     "Cargo.toml": "00199e37439041786876ac3f060009456778a83529d8810139e1a3b37f7e1dde",
     "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
-    "crates/faction-access/src/broker.rs": "6f6895d23dbd34992bad63a7a1ff5d80fd394714daa5edc7bcdbde490349c000",
+    "crates/faction-access/src/broker.rs": "c5935dae87e3ec062f252708377a719e699dfa04d4e1892f3fe80a2b2065e463",
     "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
     "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
     "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
@@ -351,11 +351,14 @@
     "crates/faction-cli/src/member.rs": "658aa9cae2c4d1ae3d537fe79f8c03181b81822c259662b6bc20ef4660c9e161",
     "crates/faction-cli/src/terminal.rs": "a3bfecf29d2b7a7a2f02f7c47fca7015ff8e3278f66227abd93630fffae1199a",
     "crates/faction-core/Cargo.toml": "a62682c6da2b6fdcd7a2e9cc0e3c0045cf41688351bebb452916b70747480e17",
+    "crates/faction-core/examples/profile_seed.rs": "0ccf4c4f32af84c0740d4ba5b1f8625a250ed34a72abec644c600e851b889e30",
     "crates/faction-core/src/chat.rs": "1ad554998b5fe9c8435f8f84fec335aacc5de020e644537076f3305529c2de7a",
-    "crates/faction-core/src/lib.rs": "e936d754f317dd92101cac73d626cce3374e39a871a11b5adb64e0ee4fca17fd",
+    "crates/faction-core/src/credentials.rs": "6220efbbcc2a60d566b22f1efd0e3112d2a4852e5dd1f268364970cab4312d2d",
+    "crates/faction-core/src/lib.rs": "bcb0ce4160c910088040a0fb9a9da8b0ff218d78d0b306ff7b79b9a2b6baee8d",
     "crates/faction-core/src/snapshot.rs": "32432b6f2e76ddf0d453766949ab18cdd324c648f42c8f87c314c7bd80e22c2b",
     "crates/faction-core/tests/chat.rs": "2012b8c2f3dfc731040b5493f2e06a079da0f970bdad2a2b22b03c9303fb91db",
     "crates/faction-core/tests/core.rs": "c55c59a528d2b534506e57d3d59164a6ec4c53155e40f776881cdf64197d3845",
+    "crates/faction-core/tests/credential_budget.rs": "edfda7feab89fdfa034e76e72613633058dfca299c2a4f1f2e4c69608109230e",
     "crates/faction-core/tests/snapshot.rs": "74ee5b55b88ebdf0451505813efa8ad0e1bac0aa7c6f1b8b4e382d4a5d9c0de4",
     "crates/faction-terminal/Cargo.toml": "6ca192866438705ee019001fd854451f35309bfabf87ba25cd7c1c78539fb367",
     "crates/faction-terminal/src/art.rs": "5f0f2561b45159b276d34e2767b5e22742127e33767cab930741ab256bf5884c",
@@ -372,6 +375,7 @@
     "deploy/netbsd/sshd_config.in": "60245b9ea2849b203b95c726341466291348014840f74d94e30a16e073ec60a8",
     "dev-docs/dependencies/local-core.json": "a56146655ad124e9cc82d541da097b7126e1bd2e99ab1203c4b429fdf567deeb",
     "tools/check_restricted_ssh.py": "3d7207c0703ae0143b89bfb87f3efca44629a67cf7c0c936ad95245e217d67eb",
+    "tools/smoke_credential_budget.py": "58ccf359165919a6f46068c05292ba60068a35b89cfd8d7aac7a5cb67199aa3c",
     "tools/smoke_export_restore.py": "d69786c3ae58a5faa8d713667bb39c3c6ff0fe8f20fa76a1dfb262ca0e0cf074",
     "tools/smoke_local_chat.py": "2d48ff29315d2a7ff4fb0cd42a1fd2f6998dcc417e781cac14b84fd247c40ab7",
     "tools/smoke_local_console.py": "d466f37efcf21c86ac5238a2e93a3c6d6926f1d92bcdf7acc359ff4c58258374",
@@ -380,7 +384,7 @@
     "deploy/netbsd/faction_sshd": "290d75c7ba04d59c03eb65fa6fda751b61a011da7568feded197cf34fc3e31ca",
     "tools/smoke_broker_lifecycle.py": "f5b7117800e2c14b979cdbca30bddb465f195991ad7dbc5c567d2b9187ba679a",
     "tools/check_service_lifecycle.py": "a1688656f7d634545035e3a7bb4d0dd5ab19ee3f323bbca3f4d119953ca36365",
-    "tools/check_service_evidence.py": "c5c7fe3f42e29d3642d9eeff8f2862aa8383d1fcdcefdbc0151f59325b897db4"
+    "tools/check_service_evidence.py": "1a3e7dd92676f1b32527c90be157d400a72f77ce197e276808961150020021ba"
   },
   "cleanup": {
     "guest_stopped": true,
@@ -393,10 +397,5 @@
     "physical SBC/other NetBSD architectures",
     "long-duration churn and disk-full/power-loss/upgrade rollback",
     "real application slow-output deadlines across poor SSH links"
-  ],
-  "workload": {
-    "concurrent_ssh_sessions": 8,
-    "distinct_accounts_in_eight_session_sample": 1,
-    "scope": "one approved fixture account, eight independent transports/workers/chat leases; application suite separately covers two distinct accounts"
-  }
+  ]
 }

@@ -123,3 +123,11 @@ power loss or complete upgrade rollback tested here. Native ELF sizes and RSS do
 not measure minimal boot-image size. Retain existing Argon2 security parameters.
 Investigate measured whole-system costs before replacing process isolation or
 raising concurrency; Lua/game doors remain separate, resource-bounded work.
+
+## Memory/scaling follow-up
+
+[Report 0027](0027-memory-scaling.md) adds the two-slot credential budget and guarded
+distinct-account scaling. Current saved 024/026 regression evidence was refreshed
+with 58 Rust tests and five PTY workflows; the 20 SSH/13 service/seven lifecycle
+oracles remain passing. Original #53 measurements remain in its merge revision.
+Default eight-worker behavior still applies outside explicit profiling experiments.
