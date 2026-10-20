@@ -6,7 +6,7 @@ Updated 2026-10-19. GitHub issue and milestone state is authoritative; see the [
 
 The repository now has a product baseline, BSD-3-Clause licensing, contribution/security guidance, a Codex-friendly workflow, documentation checks, and an issue backlog. No BBS runtime or production stack exists.
 
-The next research milestone is Architecture & validation: define measurable constraints and use small experiments to retire the riskiest decisions before feature implementation. Start with decision criteria, a complete approved-login/room/chat journey, privacy and threat boundaries, terminal/link/resource budgets, and language/runtime comparison. Browser-console feasibility under the strict no-JS policy is an explicit decision gate.
+Architecture & validation research is starting with [issue #1](https://github.com/gonz0w/faction-bbs/issues/1): the proposed [decision framework](research/decision-framework.md), refined templates, and a documented approval-boundary example. The example rejects an incompatible option and proposes tests; it does not implement authorization. Next: define measurable constraints and use small experiments to retire the riskiest decisions before feature implementation. Start with decision criteria, a complete approved-login/room/chat journey, privacy and threat boundaries, terminal/link/resource budgets, and language/runtime comparison. Browser-console feasibility under the strict no-JS policy is an explicit decision gate.
 
 ## Proposed build gates
 

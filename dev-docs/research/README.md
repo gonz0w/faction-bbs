@@ -4,4 +4,6 @@ Use the [template](template.md) for a bounded investigation, linked to an issue 
 
 An experiment answers one named uncertainty with stated inputs, resource/link conditions, pass/fail observations, and cleanup boundaries. Keep disposable prototype code under an issue-named `experiments/` directory only when an issue calls for it; do not create a production stack by accident. No JS/TS dependencies are permitted.
 
-The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the current questions. No research reports or product experiments have been completed yet.
+The [decision framework](decision-framework.md) defines gate screening, comparison criteria, evidence/confidence, reversal cost, and prototype requirements. The [approval-boundary worked example](0001-approval-enforcement-example.md) exercises the method; it contains no measured product behavior or adopted runtime architecture.
+
+The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. No product experiments have been completed yet.

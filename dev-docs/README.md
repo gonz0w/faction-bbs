@@ -9,7 +9,7 @@ Faction BBS is establishing its architecture. There is no production stack or ru
 | [Architecture](architecture.md) | Confirmed boundaries and unresolved technical decisions. |
 | [Issue index](issue-index.md) | Stable work IDs, GitHub links, and migration traceability. |
 | [Decision records](decisions/README.md) | Accepted/superseded decisions with evidence and validation. |
-| [Research](research/README.md) | Bounded investigations and prototype criteria. |
+| [Research](research/README.md) | [Decision framework](research/decision-framework.md), bounded investigations, and prototype criteria. |
 | [Execution plans](plans/README.md) | Self-contained plans for substantial work. |
 | [Migration](migration.md) | How the old planning system was retired. |
 | [Archive](archive/README.md) | Immutable historical context, not current authority. |
