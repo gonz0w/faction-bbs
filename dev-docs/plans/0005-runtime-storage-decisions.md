@@ -1,6 +1,6 @@
 # 0005: Narrow the runtime and local storage choices
 
-Issues: #4 and #9; related #18/#23. Status: local research complete; publication/review pending.
+Issues: #4 and #9; related #18/#23. Status: research published in PR #39, dependent on PR #38; review/merge pending.
 Base: PR #38 (`f9adfcb`), still open; use a dependent PR, do not merge it implicitly.
 
 ## Outcome and scope
@@ -43,7 +43,7 @@ Compiler failures or missing candidates are evidence gaps, not losing scores.
 - [x] Capture owner steering and explain private-network access.
 - [x] Build/run bounded experiments and record limitations.
 - [x] Record comparative research and proposed decision records.
-- [ ] Update docs, checks, issues and dependent PR; verify CI.
+- [x] Update docs, checks, issues and dependent PR; verify CI.
 
 ## Discoveries and owner decisions — 2026-10-19
 
@@ -75,3 +75,20 @@ real fan-out, power cut, door or provider was tested/configured.
 
 CI verifies saved evidence only; no compiler, registry fetch, timing threshold or DB
 benchmark rerun is required. Required PR CI and publication/issue handoff remain next.
+
+## Publication and handoff
+
+[PR #39](https://github.com/gonz0w/faction-bbs/pull/39) publishes the recommendations,
+accepted SSH/private-network owner direction, scoped probes and raw observations.
+It is based on PR #38's branch because #38 remains open; merge the prerequisite and
+retarget #39 to main before merging this follow-on. Neither PR was implicitly merged.
+Issues #4/#9/#18/#23 now record evidence, owner clarification and narrowed next work;
+they remain open for integrated/backend/operations validation.
+
+Required `Documentation and policy` passed for research commit
+`d07951b407ecce3be9b9b227910ad2c86d7e07c2` in
+[GitHub CI](https://github.com/gonz0w/faction-bbs/actions/runs/39353569940).
+This publication-only revision runs the same check; final status is tracked in the PR.
+All 23 local tests passed; no production stack/backend/image support was accepted.
+The next useful step is the bounded integrated secure read/post/chat validation slice,
+not another broad technology survey.
