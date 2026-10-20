@@ -22,6 +22,10 @@ Use a work type (`type:research`, `type:design`, `type:feature`, `type:chore`, o
 
 The repository-foundation milestone records this initialization. Architecture & validation groups the next research questions without selecting a language or committing all later features. Future implementation milestones require an explicit scope and validated prerequisites.
 
+## Main-branch policy
+
+Normal changes use pull requests with the `Documentation and policy` check passing against current `main`, resolved review conversations, and no force-push or deletion. The initial foundation was bootstrapped directly before protection was enabled. Maintainers should review the GitHub settings when adding new checks; this policy does not require a second maintainer to approve every PR.
+
 ## Keeping the README current
 
 Every PR reviews the README status, implemented/support claims, setup/check commands, and links. If any change, update them in that PR and update its status date. Avoid time-based claims such as “coming soon.” Do not add installation instructions before a tested runnable path exists. CI checks structure, links, policy, and archive integrity; review must judge semantic freshness.
