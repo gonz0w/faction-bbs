@@ -1,7 +1,7 @@
 # 0003: Research constrained-network user journeys
 
 Issue: [#3 / BBS-003](https://github.com/gonz0w/faction-bbs/issues/3)
-Status: in progress
+Status: research deliverables complete; proposed inputs pending PR review/merge
 
 ## Goal and scope
 
@@ -15,7 +15,7 @@ After owner-authorized merge of PR #36, define representative approved-session, 
 - [x] Retrieve primary Citadel, netem, and RFC 4838 references.
 - [x] Write eight journeys, three synthetic profiles, twelve workload traces, proposed observations, and a reproducible analytical model.
 - [x] Validate the model, generated results, current docs, and archive integrity.
-- [ ] Publish an issue-linked PR and verify CI; leave new research adoption to review.
+- [x] Publish [PR #37](https://github.com/gonz0w/faction-bbs/pull/37) and verify CI; leave new research adoption to review.
 
 ## Decisions and limits — 2026-10-19
 
@@ -43,3 +43,9 @@ Run the payload model and its focused correctness tests; make the generated repo
 - No real networking, traffic shaper, authentication/session prototype, terminal renderer, game, or file transfer was executed. No production performance/security result or target support is established.
 
 Remaining publication/review state is tracked in the linked issue/PR; no following issue has been implemented by this work.
+
+## Publication and handoff
+
+[PR #37](https://github.com/gonz0w/faction-bbs/pull/37) delivers all three criteria and closes issue #3 when merged. The required `Documentation and policy` check passed for research commit `f4db7c2` in [GitHub CI](https://github.com/gonz0w/faction-bbs/actions/runs/39349385396). The handoff-only revision runs the same workflow; final status is tracked in the PR. Issue #3 remains open pending merge, and the new profile/workload controls remain proposed inputs.
+
+PR #36 is merged and issue #1 closed. The process is accepted; no runtime architecture was adopted. Next bounded work should establish #8 interaction budgets and #28 hardware/resource workloads from these inputs, with actual measurements and security constraints; those issues are not completed by this report.
