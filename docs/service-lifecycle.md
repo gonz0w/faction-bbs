@@ -1,108 +1,120 @@
-# NetBSD gateway service lifecycle
+# NetBSD shared terminal service
 
-Updated 2026-10-20. Development service path for the existing restricted SSH
-gateway, tested on a disposable NetBSD 11 ARM64 VM. No supported appliance or
-public installation is implied. Complete [restricted SSH setup](restricted-ssh.md)
-and local owner bootstrap first; keep administrative SSH separate.
+Updated 2026-10-20. The maintained `faction-service` Rust binary runs the full
+member UI in one board-owner process. The NetBSD rc.d path selects it by default;
+services remain disabled until deliberately enabled. This is a development gateway,
+with eight sessions by default. It is not a supported appliance release.
 
-## Install and enable deliberately
+## Install and configure
 
-On the target system as root, after building/testing and installing the four
-binaries and dedicated SSH configuration, install the two scripts. For a fresh
-installation, create the private operational log; preserve existing logs on updates.
+Complete [restricted SSH setup](restricted-ssh.md), private owner bootstrap and
+native builds first. Keep administrative SSH separate. On the target NetBSD host:
 
 ```sh
+install -d -o root -g wheel -m 755 /etc/faction
+faction_terminal_uid=$(id -u factionterm)
+sed "s/@FACTION_TERMINAL_UID@/$faction_terminal_uid/" deploy/netbsd/service.toml.in > /etc/faction/service.toml
+chown root:wheel /etc/faction/service.toml
+chmod 644 /etc/faction/service.toml
+su -m factiond -c '/usr/local/libexec/faction-service --check-config /etc/faction/service.toml'
 install -o root -g wheel -m 555 deploy/netbsd/faction_broker deploy/netbsd/faction_sshd /etc/rc.d/
 touch /var/log/faction-broker.log
 chown root:wheel /var/log/faction-broker.log
 chmod 600 /var/log/faction-broker.log
 ```
 
-Set `faction_broker=YES` and `faction_sshd=YES` in root-owned `/etc/rc.conf` or the
-corresponding `/etc/rc.conf.d/faction_broker` and `faction_sshd` files. Defaults are
-NO. Scripts assume the named accounts/paths in the SSH guide. They never initialize
-or restore a database, admit a key, edit firewall rules or broaden the listener.
-Boot ordering places broker before the dedicated SSH instance; shutdown reverses
-that order. The broker script recreates its volatile `/var/run/faction` directory
-with owner/group `factiond:factionipc` and mode `0710`.
+Preserve existing configuration/logs during updates. Set `faction_broker=YES` and
+`faction_sshd=YES` in the corresponding root-owned `/etc/rc.conf.d/` files, or in
+`/etc/rc.conf`. Both default to NO. `faction_broker_backend=shared` is the default
+selector; its configuration path is fixed at `/etc/faction/service.toml`.
 
 ```sh
 /etc/rc.d/faction_broker start
 /etc/rc.d/faction_broker status
 /etc/rc.d/faction_sshd start
-/etc/rc.d/faction_sshd status
-# Stop admission first, then active application workers:
+# Stop admission before ending current sessions:
 /etc/rc.d/faction_sshd stop
 /etc/rc.d/faction_broker stop
 ```
 
-For a deliberate broker restart, `/etc/rc.d/faction_broker restart` ends current
-sessions and starts the same fixed configuration. Apply pack changes or binary
-updates with a restart. HUP also stops the broker; it does not reload. Root-owned
-`faction_broker_flags` may specify `--theme /ABSOLUTE/PACK --season /ABSOLUTE/PACK`
-and/or `--session-seconds 900`. It is privileged shell configuration, never member
-input; quote paths as needed. Session duration is 1–1800 seconds (default 1800).
-The existing 120-second individual prompt budgets are separate.
+Scripts recreate the protected volatile socket directory. They do not initialize
+or restore state, admit keys, expose a public interface, adjust kernel limits, or
+change allocator/timekeeping settings. The database must already exist. Owner
+bootstrap/recovery/export/restore remain separate `faction` commands.
 
-## Drain, failure and recovery
+## Configuration contract
 
-TERM/INT/HUP close admission, drain for up to five seconds, then kill/reap remaining
-member workers and join supervisor threads. Pending receives have a two-second
-budget once they hold the spawn lock; waiting threads check shutdown. The service
-stop command checks for exit for ten seconds and reports failure instead of
-silently sending KILL. Kernel I/O/scheduler stalls can exceed ordinary measured
-timings; inspect a failed stop before forced recovery.
+[The template](../deploy/netbsd/service.toml.in) lists all settings. Version 1 and
+the nonzero terminal UID are required. The service rejects unknown keys, wrong
+types, unsafe files, relative/traversing/control-containing paths and invalid
+themes. Configuration is at most 8 KiB, regular, singly linked, root/owner-owned,
+and not group/world writable; a symlink or FIFO fails. Parent directories and the
+board owner/root remain trusted. Keep `/etc/faction` root-owned and nonwritable by
+members. Mode 0644 exposes only nonsecret settings; never put passwords in this file.
 
-The `terminal.pid` file is also the single-instance kernel lock. It remains on
-disk, empty after an orderly stop; do **not** remove or replace it while any broker
-may be running. Duplicate starts are refused. After a crash, a new broker acquires
-the released lock and recovers only an owned disconnected socket. It refuses
-symlinks, ordinary files and live sockets. Parent paths and same-UID processes are
-trusted; this is not a defense against a compromised board owner/root.
+| Setting | Default / allowed value |
+| --- | --- |
+| `socket` | `/var/run/faction/terminal.sock`; version 1 requires this fixed path. |
+| `state_dir` | `/var/db/faction`; existing private board. |
+| `max_sessions` | 8; 1–250. |
+| `launch_ms` | 5000; 100–60000, burst eight. |
+| `session_seconds` | 1800; 1–1800. Individual prompts also have a 120-second limit. |
+| `ansi` | true; terminal capability/size still controls plain fallback. |
+| `theme`, `season` | Optional absolute paths; validate once at startup, base then manual override. |
+| `experimental_capacity` | false; must be explicitly true for more than eight sessions or admission faster than five seconds. |
 
-On broker death, real member workers detect their kernel-parent change every
-200 ms and exit, including a blocked UI. The terminal frontend restores saved
-terminal settings and exits when its control socket closes. Forced termination
-may leave chat presence until the existing 60-second lease expiry/reclamation.
-No automatic service restart loop is installed; inspect private operational logs,
-restart deliberately, and verify an authenticated member can enter again.
+`--check-config FILE` validates configuration/theme without opening the board or
+listener. Run it as `factiond` to check real access. `--config FILE` runs the
+service in the foreground as the non-root board owner. The service accepts no
+member-selected paths or owner-console commands. Version 1 fixes the socket path so rc.d status/stop and the SSH template
+always refer to the same lock and endpoint. Custom endpoints/multiple boards
+require a separately designed instance configuration.
 
-Logs contain service readiness, generic failures and aggregate rejected-admission
-counts, not handles, credentials or message text. Configure local log rotation for
-`/var/log/faction-broker.log`; no remote telemetry is installed. An operator's own
-additional SSH logging configuration remains separate.
+Restart after configuration, pack or binary changes. Theme/season data is shared
+across sessions, with no per-menu disk reads. ANSI menus support arrows/Enter and
+the displayed hotkeys; plain/resize recovery, rooms/replies/retry IDs, local chat
+and role-checked sysop controls use the existing core. Doors remain disabled.
 
-Keep eight workers until broader measurements justify a change. OpenSSH processes
-and pre-admission connections cost additional memory/CPU; its handshake settings
-are not a complete authenticated connection cap. See [measured scope and remaining
-gates](../dev-docs/research/0026-service-lifecycle-load.md). File sharing, mail, Lua
-doors, federation, HTTP and physical-device support do not follow from this service.
+## Lifecycle and rollback
 
-The two per-board credential lock files are also persistent coordination inodes.
-Stop every owner/member process before replacing/removing them. Ordinary service
-restart and owner snapshot export do not remove them. Credential saturation fails
-that login/registration attempt explicitly; see [the SSH guide](restricted-ssh.md).
-Experimental scaling flags do not change normal service defaults or sysctl limits.
+`restart` ends existing sessions and starts the selected backend. TERM/INT/HUP
+stop admission, finish the bounded credential jobs, close leases/TTYs and exit;
+HUP does not reload. Nonempty output batches have a five-second deadline. The rc.d
+stop command waits up to ten seconds and reports a failed stop without automatic
+KILL. A stalled kernel/scheduler can exceed ordinary measured timings.
 
-The [shared-owner/credential comparison](../dev-docs/research/0029-shared-board-and-credential-peaks.md)
-is an opt-in standalone experiment, not a replacement for these rc.d scripts.
-Normal service defaults and the locked pidfile/credential inode rules remain.
-Its direct terminal-owner lifecycle and incomplete UI need explicit adoption
-review; a larger experimental admission count does not change service capacity.
+`terminal.pid` is a persistent kernel-lock inode. Never remove or replace it
+while either backend may be running. Two credential lock inodes are persistent
+too; never unlink them while any board process is active. A new process recovers
+only an owned disconnected socket after obtaining the lock. Duplicate starts and
+unsafe/live socket replacement fail. Backend death closes frontend control
+connections; the frontend restores terminal state. Abrupt termination can leave
+presence until the existing 60-second lease expiry. No automatic restart loop is
+installed. Logs contain aggregate setup/readiness/errors, not passwords/content.
 
-The [repeatable native headroom experiment](../dev-docs/research/0031-repeatable-headroom.md)
-passes three short 250-member VM workloads, including high-load member/owner
-credentials and known extra-memory controls under the unchanged guard. Its
-pageable time-daemon policy retains NTP and all other base services; original
-settings are restored after testing. Normal setup/rc.d defaults remain eight
-workers. The shared UI/minimal frontend, scoped allocator/host policy, clock
-precision under pressure and broader active-mix/soak/admission bounds need #55/
-#20/#28 adoption work. Keep research profiles confined to marked disposable VMs.
+To roll back, stop admission and the backend, set `faction_broker_backend=workers`,
+then start the backend and dedicated SSH daemon. Keep installed `faction-broker`
+and `faction-member`; they use the identical database schema. Worker configuration
+uses root-owned `faction_broker_flags` for existing `--theme`, `--season` and
+`--session-seconds` options. Clear those flags when selecting shared mode: shared
+mode rejects them rather than silently ignoring limits. Status/stop identify the
+actual known backend even if the selector was edited while it was running.
 
-The [shared UI candidate](shared-ui.md) passes full member UI/fault checks and
-three short 250-member VM workloads, including stop/reap and fresh-login recovery.
-It is standalone and is not installed by these rc.d scripts. Stop/reap the normal
-broker before selecting the candidate's same protected endpoint; restarting the
-normal eight-worker broker restores the existing service path. Scoped host policy,
-clock precision, maintained configuration/update/rollback and candidate lifecycle
-integration remain #20/#55 work. Guest-wide allocator/NTP tuning stays experimental.
+The maintained native `faction-tty` frontend works with both backends. The Rust
+`faction-ssh` entry point remains available for developer-host/worker comparisons;
+switching frontends requires editing/testing the root-owned ForceCommand and
+restarting the dedicated SSH daemon. Stop/reap sessions before replacing binaries.
+
+## Resource scope
+
+An explicit 250-session setting is research configuration, not a capacity promise.
+The service does not enforce the experimental whole-host memory guard. Mandatory
+SSH processes/frontends and pre-admission transports still cost memory; eight
+application slots do not cap authenticated idle SSH transports. Complete budgets,
+active mixes, soak, hostile admission and stronger process confinement remain open.
+
+The existing 250-member VM results require an explicit experimental compact
+allocator and pageable-NTP image profile. Do not apply that profile to an existing
+host implicitly. Maintained image/update/rollback and timekeeping under pressure
+remain #20; wider workloads and admission remain #28. See [integration research](../dev-docs/research/0033-shared-service-integration.md)
+for actual service-path measurements. Physical SBC claims await later hardware.

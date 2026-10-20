@@ -5,6 +5,7 @@ import json
 import re
 import statistics
 from pathlib import Path
+from evidence_sources import source_bytes
 
 ROOT=Path(__file__).resolve().parents[1]
 RESULTS=ROOT/'dev-docs/research/results'
@@ -38,7 +39,7 @@ def check():
         assert len(d[name]['results'])==count and all(x['result']=='pass' for x in d[name]['results'])
     assert d['native_verified_source_count']>=40 and len(d['execution_sources'])>=50
     for name,sha in d['execution_sources'].items():
-        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==sha,'Executed source changed: '+name
+        assert hashlib.sha256(source_bytes(name,sha)).hexdigest()==sha,'Executed source changed: '+name
     for binary in d['native_binaries'].values():assert re.fullmatch('[0-9a-f]{64}',binary['sha256']) and binary['bytes']>0
     for model in ['worker_model','shared_model']:
         run=d[model];assert run['model']=={'worker_model':'workers','shared_model':'shared'}[model]

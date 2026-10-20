@@ -5,6 +5,7 @@ import json
 import re
 import statistics
 from pathlib import Path
+from evidence_sources import source_bytes
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -35,7 +36,7 @@ def check():
     assert 900*1024*1024<d['guest']['physical_ram_bytes']<=1024**3
     assert d['native_verified_source_count']>=40 and len(d['execution_sources'])>=52
     for name,sha in d['execution_sources'].items():
-        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==sha,'Executed source changed: '+name
+        assert hashlib.sha256(source_bytes(name,sha)).hexdigest()==sha,'Executed source changed: '+name
     for binary in d['native_binaries'].values():
         assert re.fullmatch('[0-9a-f]{64}',binary['sha256']) and binary['bytes']>0
     for profile in ['default','compact','minimal']:

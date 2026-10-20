@@ -1,7 +1,8 @@
 # Shared UI candidate
 
-Updated 2026-10-20. This is an opt-in experiment; normal services remain the
-eight-worker development gateway. There is no supported network release.
+Updated 2026-10-20. This page describes the preserved standalone candidate. The maintained
+[shared service](shared-service.md) now supplies the opt-in NetBSD service path,
+with eight sessions by default. There is no supported network release.
 
 The [shared UI candidate](../experiments/055-shared-ui/README.md) now brings the
 local room/chat/sysop behavior and [sysop theme packs](theme-packs.md) into one

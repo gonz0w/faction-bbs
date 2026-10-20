@@ -4,6 +4,19 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Maintained shared Rust terminal backend and NetBSD native terminal frontend,
+  strict bounded owner configuration, opt-in rc.d integration and tested worker
+  rollback. Default admission remains eight / five seconds; larger/faster settings
+  require explicit experimental configuration. Full themes/rooms/chat/sysop UI,
+  core authority and credential budgets are retained. Historical executed sources
+  and all eight result files are preserved; no new registry dependency or schema
+  change. Actual native service-path validation is recorded separately; complete
+  capacity, stronger confinement and maintained host policy remain open. Three
+  fresh-boot 250-member installed-service runs pass, with 135.23 MiB lowest
+  sampled stress headroom under the unchanged guard; 27 UI and 11 service
+  configuration/lifecycle checks pass.
+
+
 ### Added — 2026-10-20
 
 - Full bounded shared UI candidate: sysop ANSI/CP437 packs/manual seasons,

@@ -19,3 +19,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [NetBSD service lifecycle](service-lifecycle.md): managed development gateway start/stop/restart and crash recovery.
 
 - [Shared UI candidate](shared-ui.md) — experimental shared sessions and sysop themes.
+
+- [Maintained shared terminal backend](shared-service.md) — Rust owner, native terminal entry point and worker rollback.

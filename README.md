@@ -12,31 +12,36 @@ The goal is private, human-scale communities whose operators own their systems a
 
 **Early working core · updated 2026-10-20 · local console and restricted SSH development gateway; no supported release.**
 
-The first Rust core and local console implement sysop bootstrap, hidden-password login, pending registration, approval/revocation, and durable chronological rooms with replies/unread cursors and retry IDs. [Try the local core](docs/local-development.md). The local console now has opt-in ANSI arrows/Enter and direct hotkeys, safe bounded CP437 identity import, sysop TOML packs and manual seasonal overrides ([theme guide](docs/theme-packs.md)). [BBS-local chat](docs/local-chat.md) now supports simultaneous consoles, IRC-style slash commands, board/private channels and bounded since-join history. [Private export/verify/restore](docs/export-restore.md) now preserves durable local state in a versioned snapshot and restores into a new directory with fresh sessions. [Restricted SSH](docs/restricted-ssh.md) now reaches the actual member flow through a separate terminal OS identity, with [native NetBSD application evidence](dev-docs/research/0024-restricted-ssh-netbsd.md). Managed [NetBSD service lifecycle](docs/service-lifecycle.md) and [native eight-session load/failure checks](dev-docs/research/0026-service-lifecycle-load.md) now extend the gateway. A [memory/scaling experiment](dev-docs/research/0027-memory-scaling.md) now adds bounded credential work and staged distinct-account SSH profiling; complete resource accounting, capacity and maintained appliance work remain open. This repository also contains the product requirements, development workflow, preserved design history, and GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** Software/developer-host and NetBSD VM validation drive development; physical SBC testing is deferred until the owner can load a complete product. Normal gateway defaults remain eight workers. Shared ownership, complete resource budgets, full workload/soak and deployment adoption remain experimental. Privacy, security and performance statements describe requirements to validate rather than complete deployment guarantees.
+The working Rust core provides approved local accounts, hidden-password login,
+Citadel-style rooms/replies/unread cursors, bounded local IRC-style chat, sysop
+controls and private export/restore. [Try the local console](docs/local-development.md).
+[Sysop theme packs](docs/theme-packs.md) support ANSI arrows/Enter and displayed
+hotkeys, safe CP437 identity, manual seasons and plain/resize recovery.
 
-A [repeatable headroom follow-up](dev-docs/research/0031-repeatable-headroom.md)
-now passes short **250-distinct-member SSH workloads across three fresh boots**
-on the 2-vCPU/1-GiB NetBSD VM, including real member/fresh-owner credentials and
-calibrated extra-memory controls. Final headroom is 180.68–182.69 MiB;
-the lowest sampled stress margin is 137.23 MiB under the unchanged 128-MiB guard.
-Native attribution identified locked time-daemon memory; the experimental profile
-keeps NTP and all base services running while making that daemon's memory pageable.
-The Rust core, base OpenSSH, UID/approval boundaries and Argon2 remain unchanged.
-The experimental backend also corrects a credential handoff race while preserving
-the two-operation budget. The
-minimal handoff frontend and guest-wide allocator/host policy remain research
-candidates; the original probe lacks the full UI supplied below. Clock policy, active workloads, soak and
-deployment adoption remain #55/#20/#28 work. These are software VM observations.
+The maintained [shared terminal backend](docs/shared-service.md) now runs this full
+UI through the actual NetBSD rc.d/SSH path. It uses strict owner configuration,
+base OpenSSH, a separate terminal UID and small native terminal frontend. Services
+are opt-in, with **eight sessions by default** and tested worker rollback using the
+same database. [Setup and lifecycle](docs/service-lifecycle.md).
+**Rust is selected; NetBSD is the primary target.** No JavaScript/TypeScript or
+public HTTP service is required. Software/VM validation drives development;
+physical SBC tests follow a usable product.
 
-The [full shared UI candidate](docs/shared-ui.md) now implements the existing
-room/chat/sysop flows with sysop ANSI packs, safe CP437 identity, custom arrows/
-hotkeys, manual seasons, plain mode and resize recovery in one bounded Rust owner.
-It passes 27 native UI/permission/fault checks and three fresh-boot 250-member
-NetBSD VM workloads, including room browsing/posting with 249 peers in chat.
-Completed-stage headroom is 180.39–180.51 MiB; the lowest sampled stress margin
-is 135.09 MiB under the unchanged guard. [Evidence and limits](dev-docs/research/0032-shared-ui-themes.md).
-Normal services still use eight workers; scoped deployment/confinement, broader
-active mixes, soak and authenticated-transport admission remain adoption work.
+Three fresh-boot **250-distinct-member service workloads** pass on the 2-vCPU /
+1-GiB NetBSD 11 ARM64 VM, including room/post/chat work, real member/owner
+credentials, memory controls, loaded stop and fresh-login recovery. Final sampled
+headroom is **180.67–181.12 MiB**; the lowest stress sample is **135.23 MiB** under
+the unchanged 128-MiB guard. All mandatory SSH/frontends and base services count.
+[Actual service evidence and limits](dev-docs/research/0033-shared-service-integration.md).
+
+The 250-session configuration and compact-allocator/pageable-NTP host profile are
+explicit research inputs, never installed by ordinary service setup. Broader
+active mixes, worst-case themes/output, soak, authenticated-transport admission,
+complete budgets, stronger confinement and maintained image/timekeeping policy
+remain open. These observations are not supported capacity or physical SBC claims.
+[Historical evidence](dev-docs/evidence/README.md) retains original executed bytes
+as the maintained code evolves. Privacy/security/performance requirements remain
+validation obligations; there is no supported network release.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 

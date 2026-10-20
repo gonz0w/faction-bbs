@@ -33,4 +33,4 @@ PrintMotd no
 PrintLastLog no
 UseDNS no
 LogLevel ERROR
-ForceCommand /usr/local/libexec/faction-ssh --socket /var/run/faction/terminal.sock --owner-uid @FACTION_OWNER_UID@
+ForceCommand /usr/local/libexec/faction-tty --socket /var/run/faction/terminal.sock --owner-uid @FACTION_OWNER_UID@

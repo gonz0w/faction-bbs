@@ -34,3 +34,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0017: Repeatable 250-member memory headroom](0017-repeatable-headroom.md)
 
 - [0018: Shared UI and ANSI themes](0018-shared-ui-themes.md)
+
+- [0019: Shared backend service integration](0019-shared-service.md)

@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+from evidence_sources import source_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULT = ROOT / 'dev-docs/research/results/024-netbsd-application.json'
@@ -19,9 +20,9 @@ def check():
     observed = data['ssh']['observations']['rejected_handoff_descriptor_rows']
     assert observed['before'] >= 4 and observed['before'] == observed['after']
     for name, expected in data['sources'].items():
-        assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, 'Native evidence source changed: ' + name
+        assert hashlib.sha256(source_bytes(name,expected)).hexdigest() == expected, 'Native evidence source changed: ' + name
     assert data['sources'], 'native source inventory missing'
-    print('Saved NetBSD app evidence passed: native tests, 5 PTY flows, 20 SSH oracles, cleanup and current source hashes. This does not rerun the VM.')
+    print('Saved NetBSD app evidence passed: native tests, 5 PTY flows, 20 SSH oracles, cleanup and preserved executed source hashes. This does not rerun the VM.')
 
 if __name__ == '__main__':
     check()

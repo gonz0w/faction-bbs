@@ -71,3 +71,17 @@ full SSH accounting. Next #55/#20 work is scoped frontend/owner confinement,
 maintained service selection and host-policy/timekeeping/rollback; #28 owns active
 mixes, soak, complete budgets and authenticated-transport admission. Normal defaults
 remain eight. Lua menus and isolated doors still follow the useful core.
+
+The maintained [shared service](../docs/shared-service.md) now promotes the full UI
+into the actual NetBSD rc.d/SSH path, with strict configuration, the small native
+terminal entry point, conservative eight-session defaults and worker rollback.
+[Plan 0019](plans/0019-shared-service.md) tracks native service-path validation.
+The shared implementation advances #55 while stronger confinement, broader #28
+workloads and #20 maintained image/timekeeping/update policy remain open. No
+service script installs the experimental host profile automatically.
+
+The installed-service evidence is now [research 0033](research/0033-shared-service-integration.md)
+and ADR 0019: three fresh-boot 250-member runs pass with 135.23 MiB lowest sampled
+stress headroom, while normal admission remains eight. Native UI 27 and actual
+service lifecycle/configuration/rollback 11 checks pass. #18/#20/#28 retain the
+maintained image, broader active/soak/admission and timekeeping/confinement gates.

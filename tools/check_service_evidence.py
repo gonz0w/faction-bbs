@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Verify saved native lifecycle oracles/current provenance; does not run a VM."""
+"""Verify saved native lifecycle oracles/frozen provenance; does not run a VM."""
 import hashlib
 import json
 from pathlib import Path
+from evidence_sources import source_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
@@ -47,8 +48,8 @@ def check():
     assert data['cleanup']['guest_stopped'] and data['cleanup']['private_inputs_removed']
     assert len(data['sources']) >= 40
     for name, expected in data['sources'].items():
-        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == expected, 'Lifecycle evidence source changed: '+name
-    print('Saved NetBSD lifecycle evidence passed: 7 local + 13 real service/load/fault oracles and current source hashes. Does not rerun the VM or prove 100/250-member capacity.')
+        assert hashlib.sha256(source_bytes(name,expected)).hexdigest() == expected, 'Lifecycle evidence source changed: '+name
+    print('Saved NetBSD lifecycle evidence passed: 7 local + 13 real service/load/fault oracles and preserved executed source hashes. Does not rerun the VM or prove 100/250-member capacity.')
 
 
 if __name__ == '__main__':
