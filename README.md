@@ -1,14 +1,6 @@
 # Faction BBS
 
-```text
-+------------------------------------------------------------+
-|  F A C T I O N   /   B B S                                  |
-|  independent boards. private communities. shared frequencies.|
-|                                                            |
-|  [M]essage rooms   [C]hat   [F]iles   [D]oors                 |
-|  your sysop. your scene. your system.                       |
-+------------------------------------------------------------+
-```
+**Independent boards. Private communities. Shared frequencies.**
 
 **An independent, terminal-first BBS with a modern foundation and an underground soul.**
 
@@ -20,13 +12,17 @@ The goal is private, human-scale communities whose operators own their systems a
 
 **Research and repository foundation · updated 2026-10-19 · no release or runnable BBS yet.**
 
-This repository contains the product requirements, development workflow, preserved design history, and a GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** There is no implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
+This repository contains the product requirements, development workflow, preserved design history, and a GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** Software/developer-host and NetBSD VM validation drive development; physical SBC testing is deferred until the owner can load a complete product. There is no implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 
-**Selected direction: Rust on NetBSD; next slice: readiness I/O and SQLite WAL.** The [native comparison](dev-docs/research/0004-runtime-comparison.md) and [storage/recovery research](dev-docs/research/0009-local-storage-comparison.md) support this proposed experiment choice. The owner has accepted Rust/NetBSD in [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md). [ADR 0005](dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the integrated security/hardware tests required before production adoption.
+**Selected direction: Rust on NetBSD; next slice: readiness I/O and SQLite WAL.** The [native comparison](dev-docs/research/0004-runtime-comparison.md) and [storage/recovery research](dev-docs/research/0009-local-storage-comparison.md) support this proposed experiment choice. The owner has accepted Rust/NetBSD in [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md). [ADR 0005](dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the integrated security/hardware tests required before production adoption. [ADR 0007](dev-docs/decisions/0007-software-first-and-extension-direction.md) makes physical SBC testing a later hardware-claim gate, not a prerequisite for software work.
 
 [SSH access with optional private-network-only operation](dev-docs/decisions/0004-ssh-and-optional-private-network.md) is accepted product direction. [Native NetBSD 11 ARM64 checks](dev-docs/research/0023-netbsd-dependencies.md) passed for Mio, bundled/pkgsrc SQLite and nine restricted OpenSSH gateway oracles. The production SSH backend, minimal appliance, real SBC behavior and complete server capacity remain unvalidated. [The roadmap](dev-docs/roadmap.md) separates research from future capabilities; [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
+
+The [first local software slice](dev-docs/first-local-slice.md) gives the core a concrete finish line. **Lua menus and isolated game doors come next.** A [16-oracle Rust/Lua boundary probe](dev-docs/research/0010-extensible-ansi-platform.md) now exercises synthetic approval/capability checks, worker limits and crash/deadline cleanup on the developer host; it is not a released plugin sandbox. [Optional extension research](docs/extensions.md) covers permanent-message rooms, modern networks, ANSI shops, payment models and game economies without requiring them in the core.
+
+[Menu and art direction](docs/menus-and-themes.md): Oblivion/2-inspired arrow-key highlighting plus direct hotkeys, sysop-defined themes and optional seasonal identity screens. ACiD/iCE ANSI and Razor/scene ASCII typography guide the visual reference work; no historical artwork is bundled.
 
 ## Enter the board
 
@@ -45,7 +41,7 @@ connect -> log in / register -> local sysop approval required
 
 ## The boundaries matter
 
-Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Only participating shared chat channels may federate.** Local-only channels and everything else remain local. A directory listing establishes neither federation nor remote approval.
+Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Only participating shared chat channels may federate.** Local-only channels and other core data remain local. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
 
 Privacy, security, lightweight operation, and efficient text interaction are core requirements. Telemetry must be minimal and opt-in. Constrained, intermittent, private, and future mesh networks are research targets; no alternative-network support is claimed today. Public discovery, an HTTP portal, and shared chat must not become prerequisites for operating an independent BBS.
 

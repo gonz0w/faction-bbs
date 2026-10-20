@@ -6,6 +6,7 @@ Faction BBS is establishing its architecture. Rust and primary NetBSD direction 
 | --- | --- |
 | [Workflow](workflow.md) | Issue -> bounded research/plan -> validation -> PR -> updated docs. |
 | [Roadmap](roadmap.md) | Current research and future scope, without treating every issue as initial release work. |
+| [First local software slice](first-local-slice.md) | Concrete local core build sequence, VM checks and deferred features. |
 | [Architecture](architecture.md) | Confirmed boundaries and unresolved technical decisions. |
 | [Issue index](issue-index.md) | Stable work IDs, GitHub links, and migration traceability. |
 | [Decision records](decisions/README.md) | Accepted/superseded decisions with evidence and validation. |

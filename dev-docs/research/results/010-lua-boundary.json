@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "date": "2026-10-19",
+  "scope": "synthetic developer-host Rust/Lua worker boundary; not NetBSD runtime or BBS",
+  "environment": {
+    "os": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64",
+    "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+    "cc": "Apple clang version 21.0.0 (clang-2100.3.20.102)",
+    "lua": "Lua 5.5.1  Copyright (C) 1994-2026 Lua.org, PUC-Rio",
+    "lua_shared_library_sha256": "503f6d03c9c71cf53d9e8f6d598a53e78fb2289756d8095856adc0c592c28214"
+  },
+  "limits": {
+    "lua_heap_bytes": 1048576,
+    "hook_interval": 1000,
+    "hook_ticks": 20,
+    "events": 8,
+    "body_bytes": 120,
+    "script_bytes": 4096,
+    "parent_seconds": 2
+  },
+  "oracles": [
+    {
+      "name": "dispatch_0",
+      "result": "pass",
+      "observation": "result=ok peak_lua_bytes=6007 live_after_close=0"
+    },
+    {
+      "name": "dispatch_1",
+      "result": "pass",
+      "observation": "result=ok peak_lua_bytes=6001 live_after_close=0"
+    },
+    {
+      "name": "dispatch_2",
+      "result": "pass",
+      "observation": "result=ok peak_lua_bytes=6001 live_after_close=0"
+    },
+    {
+      "name": "dispatch_3",
+      "result": "pass",
+      "observation": "result=ok peak_lua_bytes=6001 live_after_close=0"
+    },
+    {
+      "name": "dispatch_4",
+      "result": "pass",
+      "observation": "result=ok peak_lua_bytes=6001 live_after_close=0"
+    },
+    {
+      "name": "dispatch_5",
+      "result": "pass",
+      "observation": "result=ok peak_lua_bytes=7404 live_after_close=0"
+    },
+    {
+      "name": "reject_memory",
+      "result": "pass",
+      "observation": "result=memory peak_lua_bytes=1021825 live_after_close=0"
+    },
+    {
+      "name": "reject_loop",
+      "result": "pass",
+      "observation": "result=instruction peak_lua_bytes=5818 live_after_close=0"
+    },
+    {
+      "name": "reject_controls",
+      "result": "pass",
+      "observation": "result=controls peak_lua_bytes=6133 live_after_close=0"
+    },
+    {
+      "name": "reject_length",
+      "result": "pass",
+      "observation": "result=length peak_lua_bytes=7163 live_after_close=0"
+    },
+    {
+      "name": "reject_events",
+      "result": "pass",
+      "observation": "result=events peak_lua_bytes=6364 live_after_close=0"
+    },
+    {
+      "name": "reject_badapi",
+      "result": "pass",
+      "observation": "result=script peak_lua_bytes=6369 live_after_close=0"
+    },
+    {
+      "name": "child_crash_reaped",
+      "result": "pass",
+      "observation": ""
+    },
+    {
+      "name": "child_deadline_reaped",
+      "result": "pass",
+      "observation": ""
+    },
+    {
+      "name": "healthy_after_failures",
+      "result": "pass",
+      "observation": ""
+    },
+    {
+      "name": "forged_api_and_control_bytes_denied",
+      "result": "pass",
+      "observation": ""
+    }
+  ],
+  "sources": {
+    "experiments/010-lua-boundary/worker.c": "a00fe00e199cd87392ae778a601c40bb061a33d5e31a16f25571bfc7b8c1769c",
+    "experiments/010-lua-boundary/supervisor.rs": "27fff525868cca289b928c9eb7cb05a745bd544406e2fb346da998ad5581cff3",
+    "tools/probe_lua_boundary.py": "aa18ea288e5c0faf66d4265999bd33bb3238d0f7a9eac80a3278603f4a2adc88",
+    "experiments/010-lua-boundary/fixtures/apis.lua": "132a21acb637584615b3c1aef7f87d7171c27f6b8d9932784d615364dda5fb50",
+    "experiments/010-lua-boundary/fixtures/badapi.lua": "c70fc273bdd1287d508a0f15b00ec963d0a44682cc0b8521d07e5d9d6a203513",
+    "experiments/010-lua-boundary/fixtures/controls.lua": "d4c3b533bd229bbfea1f2467810952eed9e63f4ec8070e4d2bacd625f4d69a35",
+    "experiments/010-lua-boundary/fixtures/events.lua": "e1ed96e8126405cd13e03419526b2a2fffbe604aed46a8f8e2e54e0a4dec60b7",
+    "experiments/010-lua-boundary/fixtures/length.lua": "9a5647327cfd39681c6bb83a37703d6edbbc668434f7c36240f62f80a15327c9",
+    "experiments/010-lua-boundary/fixtures/loop.lua": "422c84684bbeb2dae7fd9f7f61eb5eba108ce1f31e3ba756083ffcb71a5b50fd",
+    "experiments/010-lua-boundary/fixtures/memory.lua": "8ae5bf695d63d42b0231d7fa8bde3f2e7277888d30d5c4fda6f674a8fbea48de",
+    "experiments/010-lua-boundary/fixtures/menu.lua": "77880b4db66da871c25a8a0cf68f195680050b8120afed4f2a4ae71682db635b",
+    "experiments/010-lua-boundary/fixtures/post.lua": "079864c9ded7387405958a40b9554f313b02b403b26d6da73dfc88141fd1d854"
+  }
+}

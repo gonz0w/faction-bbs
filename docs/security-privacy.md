@@ -18,6 +18,13 @@ Status: mandatory design constraints and open research, not a claim of implement
 - Define retention, export, deletion, backups, restore, and recovery as local operator responsibilities with useful safe defaults to validate.
 - An underground/private atmosphere does not establish anonymity, confidentiality, encryption, or resistance to traffic analysis. Record actual guarantees and limitations only after validation.
 
+## Optional extensions and external publication
+
+- Optional helpers must not inherit unrestricted local-room/file, publication or spending access. The host rechecks current identity, approval, room scope and grants for every action; remote signatures/payments never grant local membership.
+- A proposed public/permanent publishing room is separate from private local rooms and chat-only BBS federation. Require deliberate exact-content/destination disclosure and author intent; never silently export private history. Remote copies may outlive local moderation/deletion.
+- Payment models remain under comparison, including external wallets and separate sysop services. Keep order intent, signing/custody, settlement and entitlements distinct. Current tests use synthetic data/fake providers/nonredeemable credits; no keys or funded operations.
+- Lua worker processes/API restrictions are not an OS sandbox. Production doors require restricted OS privileges, bounded resources/concurrency, terminal-safe output and reliable termination/recovery.
+
 ## Isolation and untrusted content
 
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.
