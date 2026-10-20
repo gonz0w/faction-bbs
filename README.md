@@ -31,21 +31,32 @@ The service/native frontend now verify both local socket peers, sanitize inherit
 authority and apply irreversible process/thread/descriptor/core/locked-memory
 ceilings. [Exact confinement boundary](docs/process-confinement.md).
 
-Three fresh-boot **250-distinct-member hardened-service workloads** pass on the
-2-vCPU / 1-GiB NetBSD 11 ARM64 VM, including room/post/chat work, real credentials,
-loaded stop and fresh-login recovery. Final sampled headroom is
-**183.25–184.33 MiB**; lowest stress headroom is **137.61 MiB** under the unchanged
-128-MiB guard. Every measured owner/frontend retains its kernel ceilings. Full
-SSH/frontend and base-service costs count. [Native evidence and limits](dev-docs/research/0034-process-confinement.md).
+An opt-in [filesystem/exec and IP-policy profile](docs/experimental-isolation.md)
+now runs the same UI inside a minimal noexec root after native privilege drop.
+It uses explicit group/user NPF rules and a separately installed **setuid frontend**.
+This adds trusted startup code and remains experimental pending independent review.
+Ordinary binaries and worker rollback remain available; setup never replaces an
+operator firewall or silently tunes the host.
+
+Three fresh-boot **250-distinct-member isolated-service workloads** pass on the
+2-vCPU / 1-GiB NetBSD 11 ARM64 VM, with full SSH/frontend and base-service costs,
+real credentials, rooms/posts/chat, loaded stop and fresh-login recovery. Final
+sampled headroom is **178.11–178.84 MiB**; lowest stress headroom is **132.71 MiB**
+under the unchanged 128-MiB guard, with zero swap and all kernel ceilings intact.
+[Native evidence, rejected candidates and limits](dev-docs/research/0035-os-isolation.md).
+
+The initial isolation candidate failed the memory gate twice. Replacing a fixed
+named sysctl lookup with its numeric identifier removed unnecessary frontend
+allocation; the failed controls and executed bytes are retained. No security
+check, credential setting or memory guard was weakened.
 
 The 250-session configuration and compact-allocator/pageable-NTP host profile are
-explicit research inputs, never installed by ordinary service setup. Broader
-active mixes, worst-case themes/output, soak, authenticated-transport admission,
-complete budgets, filesystem/network/exec isolation and maintained image/timekeeping policy
-remain open. These observations are not supported capacity or physical SBC claims.
-[Historical evidence](dev-docs/evidence/README.md) retains original executed bytes
-as the maintained code evolves. Privacy/security/performance requirements remain
-validation obligations; there is no supported network release.
+explicit research inputs. **Eight remains the default.** Broader active/soak
+loads, worst-case themes/output, authenticated-transport admission, all-family/
+same-UID/process isolation, complete budgets and maintained image/timekeeping
+policy remain open. These short software observations are not supported capacity
+or physical SBC claims. [Historical evidence](dev-docs/evidence/README.md) retains
+actual executed bytes. There is no supported network release.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 

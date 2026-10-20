@@ -1,0 +1,62 @@
+#!/bin/sh
+# PROVIDE: faction_isolated
+# REQUIRE: DAEMON
+# BEFORE: faction_sshd
+# KEYWORD: shutdown
+. /etc/rc.subr
+name="faction_isolated"
+rcvar=$name
+command="/usr/local/libexec/faction-isolated/faction-service"
+pidfile="/var/run/faction/terminal.pid"
+start_cmd="isolated_start"
+status_cmd="isolated_status"
+stop_cmd="isolated_stop"
+isolated_pid()
+{
+    check_pidfile "$pidfile" "$command"
+}
+isolated_status()
+{
+    p=$(isolated_pid)
+    [ -n "$p" ] || { echo "faction_isolated is not running."; return 1; }
+    echo "faction_isolated is running as pid $p."
+}
+isolated_start()
+{
+    [ -z "$(isolated_pid)" ] || return 1
+    [ -z "$(check_pidfile "$pidfile" /usr/local/libexec/faction-service)" ] || return 1
+    [ -z "$(check_pidfile "$pidfile" /usr/local/libexec/faction-broker)" ] || return 1
+    /usr/pkg/bin/python3.13 /usr/local/libexec/faction-isolated/prepare_isolation.py --verify || return 1
+    [ ! -L /var/log/faction-isolated.log ] || return 1
+    if [ ! -e /var/log/faction-isolated.log ]; then
+        /usr/bin/install -o root -g wheel -m 600 /dev/null /var/log/faction-isolated.log || return 1
+    fi
+    # The pre-main initializer requires private root-owned stdio log authority.
+    /usr/bin/env -i PATH=/usr/bin:/bin "$command" --check-config /etc/faction/service.toml </dev/null >>/var/log/faction-isolated.log 2>&1 || return 1
+    /usr/bin/env -i PATH=/usr/bin:/bin "$command" --config /etc/faction/service.toml </dev/null >>/var/log/faction-isolated.log 2>&1 &
+    n=0
+    while [ "$n" -lt 50 ]; do
+        [ -z "$(isolated_pid)" ] || { [ ! -S /var/run/faction/terminal.sock ] || return 0; }
+        sleep 0.1
+        n=$((n+1))
+    done
+    warn "isolated service did not become ready"
+    return 1
+}
+isolated_stop()
+{
+    p=$(isolated_pid)
+    [ -n "$p" ] || return 0
+    kill -TERM "$p" || return 1
+    n=0
+    while [ "$n" -lt 100 ]; do
+        [ -n "$(isolated_pid)" ] || return 0
+        sleep 0.1
+        n=$((n+1))
+    done
+    warn "isolated backend remains running; inspect before recovery"
+    return 1
+}
+load_rc_config "$name"
+: ${faction_isolated:=NO}
+run_rc_command "$1"

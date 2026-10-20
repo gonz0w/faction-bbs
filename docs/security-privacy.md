@@ -111,3 +111,10 @@ retain local approval and connection-bound authority. They do not isolate a
 compromised shared owner from its database, restrict its filesystem/network/exec
 syscalls, or isolate hostile code sharing an allowed UID. Stronger isolation,
 authenticated SSH transport admission and production review remain open.
+
+The separate [experimental filesystem/exec and IP profile](experimental-isolation.md)
+adds a minimal noexec root, permanent pre-main privilege drop and explicit NPF
+group/user policy. Its frontend alone uses setuid root and needs independent
+review before production adoption. Setup, host policy, loader/runtime trust and
+rollback are explicit. Defaults/core authorization/credentials/resource ceilings
+are unchanged; broader same-UID/process/all-family/admission threats stay open.

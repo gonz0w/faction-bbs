@@ -3,8 +3,9 @@
 The NetBSD shared service and native `faction-tty` frontend apply irreversible
 resource ceilings and authenticate both ends of the local terminal socket.
 This is development hardening, with native software-VM evidence. The shared
-owner remains trusted with the board database. Filesystem, network, exec and
-same-UID hostile-code isolation remain open security gates.
+owner remains trusted with the board database. The separate [experimental OS profile](experimental-isolation.md) adds specific
+filesystem/exec/IP restrictions. Complete same-UID/process/arbitrary-code isolation
+remains an open security gate.
 
 | Kernel resource | Shared service | Native frontend |
 | --- | --- | --- |
@@ -51,8 +52,9 @@ requires EOF within two seconds of a success byte, preserving TTY restoration.
 It provides no command, file, owner-tool or extension channel.
 
 Defaults remain eight sessions and five-second token refill. Larger/faster
-settings require explicit experimental configuration. No script installs allocator,
-NTP, sysctl, chroot or global tracing policy. [Research 0034](../dev-docs/research/0034-process-confinement.md)
+settings require explicit experimental configuration. Ordinary scripts install no host tuning or chroot. The explicit experimental
+setup creates its minimal mounts; it never applies allocator/NTP/sysctl settings
+or enables/replaces NPF. No global tracing policy is installed. [Research 0034](../dev-docs/research/0034-process-confinement.md)
 records native tests and full 250-member measurements. These short VM observations
 are not a supported capacity or physical SBC claim.
 

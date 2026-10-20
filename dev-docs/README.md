@@ -19,6 +19,7 @@ Product/member/sysop documentation lives in [docs](../docs/README.md). Repositor
 
 [Versioned executed sources](evidence/README.md) preserve historical native measurements as current code evolves.
 
-Current confinement work: [plan 0020](plans/0020-process-confinement.md),
-[research 0034](research/0034-process-confinement.md) and
-[ADR 0020](decisions/0020-native-process-envelope.md).
+Current confinement work: [plan 0021](plans/0021-os-isolation.md),
+[research 0035](research/0035-os-isolation.md) and
+[ADR 0021](decisions/0021-experimental-os-isolation.md). The prior
+[process envelope](../docs/process-confinement.md) remains in both profiles.

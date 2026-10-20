@@ -30,11 +30,28 @@ service files `2 * max_sessions + 48`/additional LWPs 3 ceilings. Service starts
 three helpers first. Preserve both kernel peer UID checks, same owned stdio TTY,
 descriptor/environment hygiene and strict status+EOF completion. Never relax
 these limits to launch doors; extensions need a separate launcher/UID boundary.
-See docs/process-confinement.md and plan 0020. Filesystem/network/exec/same-UID
-isolation and authenticated-transport admission remain open. These short software
+See docs/process-confinement.md and plan 0020. Normal-mode filesystem/network/exec isolation and broader same-UID/admission
+gates remain open; the separate experimental profile below narrows specific paths. These short software
 VM observations are not supported capacity or physical SBC claims. Current result
 pins current sources directly; preserve those bytes properly before they become
 historical. Both buildable snapshots and all nine old record hashes remain fixed.
+
+The separate experimental isolation profile (ADR 0021/research 0035/results 036)
+adds a pre-main C initializer, one common minimal noexec nullfs view, root-only
+policy/config sources, permanent privilege drop and explicit dedicated-GID/two-UID
+NPF policy. Only its native frontend is setuid; never setuid ordinary frontends or
+Rust binaries. Base loader/runtime libraries and the initializer are trusted.
+Preserve the numeric fixed sysctl lookup: a named lookup caused avoidable startup
+allocation and two 250-member controls failed (126.36/123.47 MiB). Final candidate
+passes three fresh boots with 132.71 MiB minimum stress and 178.11–178.84 MiB final
+headroom, zero swap and original ceilings. Native 31 frontend/29 UI/16 lifecycle
+checks plus live boundary/lock-alias controls pass. See docs/experimental-isolation.md
+and plan 0021. Do not turn narrow TCP/UDP/noexec tests into all-family, process,
+same-UID or arbitrary-code sandbox claims. Never auto-apply NPF or host tuning;
+Lua/doors need a separate boundary. Independent privileged-code review remains.
+Both current records 035/036 pin executed sources directly; preserve actual
+bytes before changing them. All nine historical records/two full snapshots and
+the rejected-candidate overrides remain unchanged.
 
 ## Product constraints
 
