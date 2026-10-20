@@ -1,7 +1,7 @@
 # 0016: Remaining transport memory
 
 Issue: [#58](https://github.com/gonz0w/faction-bbs/issues/58).
-Status: bounded comparison complete; #58 repeatable headroom remains open; review pending. PR #57 merged at `1826376` on 2026-10-20.
+Status: bounded comparison merged as PR #59; plan 0017 records the later repeatable-headroom result. PR #57 merged at `1826376` on 2026-10-20.
 
 ## Question and constraints
 

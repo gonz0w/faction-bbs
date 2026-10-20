@@ -87,3 +87,10 @@ same code. [Two short functional 250-member VM workloads (one final guard pass, 
 include all SSH/frontends and high-load real credentials. Guest-wide allocator
 tuning is experimental; normal services stay at eight workers. Complete #55
 behavior/fairness and #28 scoped deployment/full workloads remain required.
+
+The [repeatable headroom study](research/0031-repeatable-headroom.md) now leaves
+measured margin at 250 useful SSH members across three fresh boots by making
+time-daemon memory pageable in the marked fixture, with all base services
+retained. This is a fixed-host policy result with complete live-limit and
+credential accounting. Normal eight-worker gateway and production architecture
+adoption remain unchanged; #55/#20/#28 own the remaining build/deployment gates.

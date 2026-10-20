@@ -44,3 +44,5 @@ native authorization/failure oracles and calibrated persistent sampling. It does
 not change the normal eight-worker gateway or adopt a production replacement.
 
 - [0030: Native allocator and remaining SSH transport memory](0030-transport-memory.md)
+
+- [0031: Repeatable 250-member headroom](0031-repeatable-headroom.md)

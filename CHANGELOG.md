@@ -6,6 +6,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Repeatable native 250-member headroom experiment: three fresh-boot all-service
+  NetBSD VM passes with 180.68–182.69 MiB final headroom and
+  137.23 MiB lowest sampled credential/control headroom under the unchanged
+  guard. Identified locked NTP memory and tested its supported pageable-memory
+  option with exact rollback; rejected allocator-only alternatives. Added live
+  process limits, fresh owner credentials, complete calibrated ledgers and actual
+  SSH re-entry regression; isolated same-name standalone Cargo outputs after a
+  reproduced stale-executable pilot. Normal eight-worker services/schema/crypto
+  are unchanged; UI/adoption, clock precision and broader workload gates remain.
+
 - Versioned native allocator/transport comparison: two short functional 250-member
   SSH menu/chat workloads, with only one final headroom-guard pass, on a 2-vCPU/1-GiB NetBSD VM, with full SSH/frontend costs,
   calibrated high-load real credentials, failures/recovery, repeated fresh boots
