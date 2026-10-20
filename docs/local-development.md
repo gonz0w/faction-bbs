@@ -51,6 +51,10 @@ can retry the same body/ID. The core reconciles identical retries to the origina
 durable post; reusing the ID with changed content fails. The console does not yet
 persist an unsent draft across process exit or offer manual ID-based recovery.
 
+Line and hidden-password prompts have a two-minute input budget in both owner
+and member sessions. The SSH gateway adds its own documented admission/session
+limits; these current development defaults are not yet sysop-configurable.
+
 ## Local state and operator recovery
 
 The explicit state directory is created with mode `0700`; the database is `0600`.
