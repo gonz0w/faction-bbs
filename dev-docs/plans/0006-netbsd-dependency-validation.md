@@ -1,7 +1,7 @@
 # 0006: Verify the chosen Rust/NetBSD direction
 
 Issues: #4/#9/#18/#23/#31; follows PR #39, which remains dependent on #38.
-Status: local research and validation complete; publishing dependent PR for review. Date: 2026-10-19.
+Status: complete research deliverable; PR #40 open for review. Date: 2026-10-19.
 
 ## Owner decision and outcome
 
@@ -42,7 +42,7 @@ Stop/clean up the VM and forwards after validation; no deployment is authorized.
 - [x] Read current requirements, issues and pending PR state; start a dependent branch.
 - [x] Retrieve/verify official VM inputs and boot the bounded local guest. Signed global manifest matched image/kernel; HVF vmt probe required a documented userconf workaround.
 - [x] Run dependency/build/runtime and negative gateway probes, record limitations. Both native DB variants passed; nine SSH oracles passed. Base SQLite shadowing was found and corrected with explicit pkgsrc runtime path. Embedded SSH remains a manifest-only comparison, explicitly unverified.
-- [x] Update accepted direction, research/ADRs/docs and checks. Native bundled/pkgsrc runs and all nine SSH oracles passed; 14 selected crate sources passed the reproducible policy scan. All repository/provenance checks and 23 existing tests passed. GitHub publication tracked below.
+- [x] Update accepted direction, research/ADRs/docs and checks. Native bundled/pkgsrc runs and all nine SSH oracles passed; 14 selected crate sources passed the reproducible policy scan. All repository/provenance checks and 23 existing tests passed. GitHub evidence added to #4/#9/#18/#23/#31; publication tracked below.
 
 ## Cleanup and remaining work
 
@@ -55,4 +55,9 @@ registration/mapping, private-overlay/firewall test, physical SBC test or comple
 100/250-member load test was done. These are explicit follow-ups in the report,
 not reasons to reinterpret the narrow passes as production readiness.
 
-PR will target the PR #39 branch while #38/#39 remain open; no implicit merges.
+[PR #40](https://github.com/gonz0w/faction-bbs/pull/40) targets the PR #39 branch
+while #38/#39 remain open; no implicit merges. Initial Documentation and policy
+CI passed: [run](https://github.com/gonz0w/faction-bbs/actions/runs/39356382214).
+
+Next work is the report’s real-identity/local approval slice and complete-session
+cost comparison, followed by named physical SBC and appliance update/restore tests.
