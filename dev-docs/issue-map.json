@@ -278,5 +278,37 @@
     "number": 35,
     "url": "https://github.com/gonz0w/faction-bbs/issues/35",
     "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-036",
+    "legacy_id": null,
+    "title": "Research explicit public permanent-message rooms and decentralized storage",
+    "number": 42,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/42",
+    "source": "docs/extensions.md"
+  },
+  {
+    "key": "BBS-037",
+    "legacy_id": null,
+    "title": "Compare terminal wallet and payment-service integration models",
+    "number": 43,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/43",
+    "source": "docs/extensions.md"
+  },
+  {
+    "key": "BBS-038",
+    "legacy_id": null,
+    "title": "Research an optional ANSI marketplace and payment-backed file delivery",
+    "number": 44,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/44",
+    "source": "docs/extensions.md"
+  },
+  {
+    "key": "BBS-039",
+    "legacy_id": null,
+    "title": "Explore isolated ANSI game economies and blockchain wagering modules",
+    "number": 45,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/45",
+    "source": "docs/extensions.md"
   }
 ]

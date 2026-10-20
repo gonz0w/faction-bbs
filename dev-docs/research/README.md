@@ -17,7 +17,7 @@ python3 tools/measure_buffer_probe.py --check
 
 `--check` verifies saved source/result provenance without rerunning timing or requiring a compiler. Deliberate `--run` refreshes observations on the current host; it is not a CI performance gate. Buffer `--run` additionally requires `cc` and uses disposable binaries outside the checkout. Python remains research tooling, C remains an isolated probe; neither selects the product stack.
 
-The [native runtime comparison](0004-runtime-comparison.md), [local storage/recovery comparison](0009-local-storage-comparison.md), and [hobby appliance/access direction](0018-appliance-and-access-direction.md) narrow the next slice to a proposed Rust/readiness + SQLite WAL experiment. SSH/private-network product intent is accepted; production stack and image/backend selection remain unvalidated.
+The [native runtime comparison](0004-runtime-comparison.md), [local storage/recovery comparison](0009-local-storage-comparison.md), and [hobby appliance/access direction](0018-appliance-and-access-direction.md) narrow the next slice to a proposed Rust/readiness + SQLite WAL experiment. SSH/private-network product intent is accepted; Rust and primary NetBSD are now accepted direction ([ADR 0006](../decisions/0006-rust-and-primary-netbsd.md)); complete production stack and image/backend selection remain unvalidated. See the [native NetBSD dependency/gateway report](0023-netbsd-dependencies.md) and `python3 experiments/023-netbsd-dependencies/verify_evidence.py` for saved provenance checks.
 
 ```sh
 python3 tools/measure_native_sessions.py --check
@@ -25,5 +25,9 @@ python3 experiments/009-local-storage/probe.py --check
 ```
 
 Fresh `--run` native probes require C/Rust/Cargo/Go and initial crate access; saved-evidence checks require only Python. SQLite fresh runs require stdlib SQLite with FTS5. Both use synthetic local disposable data; there is no deployable BBS in these experiment folders.
+
+The [extensible ANSI research](0010-extensible-ansi-platform.md) compares optional storage, wallets, shops, games and modern networks, with a separate Rust/Lua boundary experiment. `python3 tools/probe_lua_boundary.py --check` verifies saved provenance; native reruns require Rust/C/Lua as documented. Physical SBC tests are deferred, with software/VM core work first.
+
+The [menu/theme and art reference study](0025-menu-and-art-direction.md) captures Oblivion/2-inspired dual navigation, sysop/seasonal themes and attributed ACiD/iCE/Razor-related references. It proposes software menu/parser/theme tests; none is claimed executed.
 
 The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.

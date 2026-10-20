@@ -39,5 +39,9 @@ GitHub Issues hold live scope, status, acceptance criteria, and dependencies. Th
 | BBS-033 | [#33 Design local private mail and sysop-contact behavior](https://github.com/gonz0w/faction-bbs/issues/33) | [Current direction](../docs/project.md) |
 | BBS-034 | [#34 Build a reuse-first legacy door-game compatibility inventory](https://github.com/gonz0w/faction-bbs/issues/34) | [Current direction](../docs/project.md) |
 | BBS-035 | [#35 Define the first useful local BBS slice and build-readiness gates](https://github.com/gonz0w/faction-bbs/issues/35) | [Current direction](../docs/project.md) |
+| BBS-036 | [#42 Research explicit public permanent-message rooms and decentralized storage](https://github.com/gonz0w/faction-bbs/issues/42) | [Extension direction](../docs/extensions.md) |
+| BBS-037 | [#43 Compare terminal wallet and payment-service integration models](https://github.com/gonz0w/faction-bbs/issues/43) | [Extension direction](../docs/extensions.md) |
+| BBS-038 | [#44 Research an optional ANSI marketplace and payment-backed file delivery](https://github.com/gonz0w/faction-bbs/issues/44) | [Extension direction](../docs/extensions.md) |
+| BBS-039 | [#45 Explore isolated ANSI game economies and blockchain wagering modules](https://github.com/gonz0w/faction-bbs/issues/45) | [Extension direction](../docs/extensions.md) |
 
 See the [roadmap](roadmap.md), [workflow](workflow.md), and [machine-readable provenance map](issue-map.json).

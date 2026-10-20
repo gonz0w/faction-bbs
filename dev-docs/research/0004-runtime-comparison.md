@@ -1,5 +1,7 @@
 # 0004: Native core comparison and first validation choice
 
+Later direction: [ADR 0006](../decisions/0006-rust-and-primary-netbsd.md) accepts Rust and primary NetBSD. [Native NetBSD evidence](0023-netbsd-dependencies.md) adds pinned dependency/gateway checks; earlier comparative observations below remain historical evidence, not contrary current authority.
+
 Status: bounded comparative research complete; recommend Rust/readiness I/O for the next validation slice. Production stack not accepted.
 Date: 2026-10-19. Issue: [#4](https://github.com/gonz0w/faction-bbs/issues/4).
 Owner: Codex research; maintainer reviews the implementation recommendation.

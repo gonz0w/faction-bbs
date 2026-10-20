@@ -19,4 +19,10 @@ This file records meaningful project changes. Product releases will use versione
 - Accepted SSH-client access with optional invitation-only private-network deployment direction; clarified small hobby SBC/Pi or VM appliance goals, with MINIX considered but not mandatory.
 - Proposed Rust/readiness I/O + SQLite WAL validation slice, backed by 20 native-session process runs and ten seeded SQLite recovery/export experiments. Rejected idle millisecond scans in the probe; recorded generic SQL-dump restoration failure and successful explicit record export/search rebuild. No production stack, SSH backend or appliance OS accepted.
 
+- Accepted owner direction: Rust and NetBSD as primary target, initially validating NetBSD 11 ARM64. Native Mio/rusqlite bundled/pkgsrc SQLite checks and nine restricted OpenSSH gateway oracles passed in an isolated 2-vCPU/1-GiB guest; recorded HVF boot workaround and corrected SQLite runtime-library shadowing. No all-port, physical SBC, production security or capacity claim.
+
+- Accepted software/VM-first sequencing: physical SBC hardware tests deferred until the owner can load a complete product; core local BBS first, Lua menus/isolated doors next. Added a concrete software build scope, modern extension/storage/network/payment research, four scoped future GitHub candidates, and a 16-oracle Rust authorization/separate Lua-worker boundary experiment. No production sandbox, blockchain, commerce, gambling or network integration claimed.
+
+- Recorded Oblivion/2-inspired highlighted-arrow/Enter menus plus direct hotkeys, foundational sysop themes and optional seasonal palettes/login identity art. Added attributed, examined ACiD/iCE/scene ASCII references and proposed software navigation/theme/terminal oracles; no artwork bundled or menu implementation claimed. Replaced the README placeholder box masthead with text.
+
 No BBS runtime, supported transports, game compatibility, or release has been delivered.
