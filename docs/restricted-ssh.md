@@ -183,3 +183,11 @@ terminal UID and unmodified OpenSSH frontend. It is not installed by these setup
 instructions. Its incomplete theme/plain/resize/navigation behavior must pass
 parity and operational gates before member deployment. Keep the normal gateway
 at eight workers; higher research counts are not supported capacity.
+
+A [transport/allocator follow-up](../dev-docs/research/0030-transport-memory.md)
+completes two functional 250-member VM workloads, including credentials and
+SSH denial checks. Only one passed the final headroom guard; #58 remains open.
+Its minimal C frontend, guest-wide allocator setting and corrected standalone
+Rust chat variant are experiments, not part of these setup instructions. Keep the
+normal eight-worker default until complete shared UI, scoped configuration,
+workload/soak and transport-admission gates pass. No physical SBC capacity claim.

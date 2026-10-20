@@ -46,10 +46,15 @@ GitHub Issues hold live scope, status, acceptance criteria, and dependencies. Th
 
 See the [roadmap](roadmap.md), [workflow](workflow.md), and [machine-readable provenance map](issue-map.json).
 
-Current focused small-host follow-ups:
+Small-host evidence and follow-ups:
 [#55: shared board ownership](https://github.com/gonz0w/faction-bbs/issues/55) and
-[#56: persistent credential peaks](https://github.com/gonz0w/faction-bbs/issues/56).
+[#56: persistent credential peaks](https://github.com/gonz0w/faction-bbs/issues/56)
+(closed by merged PR #57).
 GitHub open/closed state remains authoritative; see the [execution plan](plans/0015-shared-board-and-credential-peaks.md).
 
 [#58: remaining per-transport memory toward 250](https://github.com/gonz0w/faction-bbs/issues/58)
 tracks the next bounded footprint comparison while #55 retains shared UI/adoption gates.
+
+[Research 0030](research/0030-transport-memory.md) records #58's functional 250-member
+VM comparisons (only one retained the final guard margin) and exact guard/KDF/failure evidence. #55 retains complete UI/
+fairness and scoped deployment adoption; #28 retains broad workload/soak budgets.

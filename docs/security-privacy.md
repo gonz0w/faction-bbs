@@ -77,3 +77,11 @@ member input cannot import an identity/role/capability or invoke owner tools.
 Two fixed credential workers still use the kernel-slot budget. A shared backend
 has a larger failure domain than separate member workers; completed prototype
 checks do not replace full UI, fairness, confinement or production review.
+
+The [allocator/transport experiment](../dev-docs/decisions/0016-native-allocator-comparison.md)
+keeps base OpenSSH, private terminal/owner identities, current approval/epochs/
+grants and unchanged two-slot Argon2. A short 250-member VM result is not a
+production confinement/admission guarantee. The unchanged headroom predicate is
+sampled between admissions; saved batch overshoot must not be represented as a
+continuously maintained reserve. Guest-wide tuning requires scoped deployment
+and broader workload review before adoption.

@@ -89,3 +89,11 @@ is an opt-in standalone experiment, not a replacement for these rc.d scripts.
 Normal service defaults and the locked pidfile/credential inode rules remain.
 Its direct terminal-owner lifecycle and incomplete UI need explicit adoption
 review; a larger experimental admission count does not change service capacity.
+
+The [native allocator experiment](../dev-docs/research/0030-transport-memory.md)
+now has two functional 250-member VM workloads; only one retained the final
+headroom margin, so #58 remains open. Its guest-wide allocation policy
+also affects unrelated services and is not installed by these rc.d scripts.
+Scoped configuration/rollback, full shared UI/fairness, active workloads and
+authenticated-SSH admission bounds remain deployment gates. Normal defaults
+stay eight workers; do not copy research settings into a live board.

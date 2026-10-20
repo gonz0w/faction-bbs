@@ -54,3 +54,12 @@ to reduce remaining per-transport cost. An isolated prototype is not adoption;
 [#58](https://github.com/gonz0w/faction-bbs/issues/58) isolates remaining
 per-transport costs after the shared-owner comparison; it preserves base OpenSSH,
 current approval/credential/terminal denials and all mandatory process accounting.
+
+The [native allocator/transport follow-up](research/0030-transport-memory.md)
+now completes functional 250-member SSH menu/chat and high-load credential
+checks in two fresh-boot 1-GiB NetBSD VM trials; only one retained the final guard
+margin. #58 remains open for repeatable margin. Rust/base OpenSSH remain; a versioned
+standalone backend fixes new-chat-lease sequencing. This is not adopted capacity.
+Next: #55 complete shared UI/fairness and scoped allocator configuration, with
+#28 active-mix/soak/host-service/admission budgets before deployment adoption.
+Repeatable 250-member headroom remains #58. Normal gateway defaults remain eight; Lua/isolated doors follow the useful core.

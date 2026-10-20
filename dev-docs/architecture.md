@@ -79,3 +79,11 @@ The [native comparison](research/0029-shared-board-and-credential-peaks.md) and
 calibrated persistent credential sampler provide the next evidence. Complete
 themes/plain/resize/UI parity, fairness, full workloads and adoption remain gates;
 the normal broker/member path and eight-worker default are unchanged.
+
+[ADR 0016](decisions/0016-native-allocator-comparison.md) records a native
+allocator comparison before another transport/runtime rewrite. Its versioned
+shared backend resets chat sequencing for each new lease; both profiles use the
+same code. [Two short functional 250-member VM workloads (one final guard pass, one 4.10-MiB shortfall)](research/0030-transport-memory.md)
+include all SSH/frontends and high-load real credentials. Guest-wide allocator
+tuning is experimental; normal services stay at eight workers. Complete #55
+behavior/fairness and #28 scoped deployment/full workloads remain required.

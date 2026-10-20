@@ -28,3 +28,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0014: Credential budget and guarded scaling experiments](0014-credential-budget-and-scaling-experiments.md)
 
 - [0015: Shared board/readiness experiment; production adoption deferred](0015-shared-board-readiness-experiment.md)
+
+- [0016: Native allocator comparison](0016-native-allocator-comparison.md)
