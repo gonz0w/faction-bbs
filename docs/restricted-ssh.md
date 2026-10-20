@@ -192,3 +192,11 @@ settings are restored after testing. Normal setup/rc.d defaults remain eight
 workers. The shared UI/minimal frontend, scoped allocator/host policy, clock
 precision under pressure and broader active-mix/soak/admission bounds need #55/
 #20/#28 adoption work. Keep research profiles confined to marked disposable VMs.
+
+The [full shared UI candidate](shared-ui.md) now supplies existing room/chat/sysop
+and theme behavior behind the same protected descriptor endpoint. Its 27 native
+UI/fault checks and three short guarded 250-member VM workloads include all SSH
+costs. Normal services still use eight workers; installing this standalone owner
+is an explicit experiment. #55 retains frontend/confinement/adoption review and
+#28 retains authenticated-transport admission and active-workload gates. Owner
+bootstrap/recovery/export/restore remain absent from the terminal entry point.

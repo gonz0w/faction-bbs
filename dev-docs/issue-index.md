@@ -64,3 +64,10 @@ repeatable short-workload guard gate at 250 members. #55 retains full UI/fairnes
 and scoped frontend/configuration adoption; #20 timekeeping/appliance policy;
 #28 broader active mixes, soak, budgets and authenticated-transport limits.
 GitHub open/closed state and the focused PR remain authoritative.
+
+[#55](https://github.com/gonz0w/faction-bbs/issues/55) now has a
+[full shared UI/theme candidate](research/0032-shared-ui-themes.md) with 27 native
+UI/fault checks and three short guarded 250-member VM workloads. It remains open
+for scoped deployment/confinement/frontend adoption; #20 owns maintained host
+policy/timekeeping/rollback and #28 owns active mixes, soak and admission. GitHub
+remains authoritative; normal service stays eight workers.

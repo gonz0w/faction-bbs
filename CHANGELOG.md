@@ -6,6 +6,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Full bounded shared UI candidate: sysop ANSI/CP437 packs/manual seasons,
+  reordered arrows/hotkeys, plain/resize/editor recovery, selected room pages,
+  replies/exact post retries and role-checked sysop/local-chat controls. Shared
+  themes load once, output grows lazily within an encoded cap and work rotates.
+  Twenty-seven native UI/fault checks and three fresh-boot 250-member NetBSD
+  workloads pass the unchanged guard; complete source/binary, SSH, memory,
+  control, limits and cleanup evidence is saved. Normal services remain eight;
+  scoped deployment/confinement and active-workload/soak adoption stay open.
+
 - Repeatable native 250-member headroom experiment: three fresh-boot all-service
   NetBSD VM passes with 180.68–182.69 MiB final headroom and
   137.23 MiB lowest sampled credential/control headroom under the unchanged

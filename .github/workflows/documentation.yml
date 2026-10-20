@@ -44,6 +44,7 @@ jobs:
           python3 tools/check_shared_evidence.py
           python3 tools/check_transport_evidence.py
           python3 tools/check_headroom_evidence.py
+          python3 tools/check_ui_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Validate the local Rust core and real terminal flow
         env:
@@ -55,6 +56,11 @@ jobs:
           cargo fmt --manifest-path experiments/055-shared-board/Cargo.toml -- --check
           cargo fmt --manifest-path experiments/058-transport-memory/Cargo.toml -- --check
           cargo fmt --manifest-path experiments/058-headroom/Cargo.toml -- --check
+          cargo fmt --manifest-path experiments/055-shared-ui/Cargo.toml -- --check
+          python3 tools/check_ui_dependencies.py
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo clippy --manifest-path experiments/055-shared-ui/Cargo.toml --all-targets --release --locked -- -D warnings
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo test --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo build --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked
           python3 tools/check_headroom_dependencies.py
           CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo clippy --manifest-path experiments/058-headroom/Cargo.toml --all-targets --release --locked -- -D warnings
           CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo test --manifest-path experiments/058-headroom/Cargo.toml --release --locked
