@@ -1,7 +1,7 @@
 # 0011: Private local export and non-overwriting restore
 
 Issues: [#18](https://github.com/gonz0w/faction-bbs/issues/18), [#19](https://github.com/gonz0w/faction-bbs/issues/19), [#35](https://github.com/gonz0w/faction-bbs/issues/35)
-Status: implementation validated locally; publishing for review, 2026-10-20.
+Status: published for review in [PR #51](https://github.com/gonz0w/faction-bbs/pull/51), 2026-10-20.
 
 ## Goal and constraints
 
@@ -21,7 +21,8 @@ Themes/art live outside the database and need a separate operator copy.
 - [x] Validate live WAL consistency, durable roundtrip, old-session denial, malformed
   input, permissions, no overwrite, concurrent publication and real CLI workflow.
 - [x] Record decision, setup/limitations, dependency feature inventory and current status.
-- [ ] Open/attach focused PR and finish required CI; update broad issues without closing them.
+- [x] Open/attach focused PR and update broad issues without closing them.
+- Required CI is tracked by the PR check on its current head; verify it before merge.
 
 ## Steps and commands
 
@@ -81,3 +82,12 @@ SQL triggers. Both failures were reproduced and the focused tests passed afterwa
 Remaining: native NetBSD application, power-loss/filesystem fault injection,
 remote-safe operator separation, encryption/authentication, member-scoped exports,
 incremental/scheduled backups and theme/file-area packaging remain outside this PR.
+
+## Review handoff
+
+PR #51 is attached to the project chat. Issues #9/#18/#19/#35 have progress and
+remaining-gate comments; none is closed by this bounded increment. Branch
+`codex/18-export-restore` starts at the merged #50 main revision. No production
+deployment or automatic merge of #51 is implied. The next build should focus on
+restricted SSH/identity separation and native NetBSD application validation, with
+remaining lifecycle/resource/failure work tracked in the existing issues.
