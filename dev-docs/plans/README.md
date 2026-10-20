@@ -5,5 +5,6 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 - [0001: Repository foundation](0001-repository-foundation.md)
 - [0002: Architecture decision framework](0002-architecture-decision-framework.md)
 - [0003: Constrained-network user journeys](0003-constrained-user-journeys.md)
+- [0004: Small interactions and small hosts](0004-interaction-resource-budgets.md)
 
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.

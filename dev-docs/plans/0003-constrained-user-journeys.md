@@ -1,7 +1,7 @@
 # 0003: Research constrained-network user journeys
 
 Issue: [#3 / BBS-003](https://github.com/gonz0w/faction-bbs/issues/3)
-Status: research deliverables complete; proposed inputs pending PR review/merge
+Status: research deliverables merged in PR #37; issue #3 closed; numeric controls remain proposed research inputs
 
 ## Goal and scope
 
@@ -49,3 +49,7 @@ Remaining publication/review state is tracked in the linked issue/PR; no followi
 [PR #37](https://github.com/gonz0w/faction-bbs/pull/37) delivers all three criteria and closes issue #3 when merged. The required `Documentation and policy` check passed for research commit `f4db7c2` in [GitHub CI](https://github.com/gonz0w/faction-bbs/actions/runs/39349385396). The handoff-only revision runs the same workflow; final status is tracked in the PR. Issue #3 remains open pending merge, and the new profile/workload controls remain proposed inputs.
 
 PR #36 is merged and issue #1 closed. The process is accepted; no runtime architecture was adopted. Next bounded work should establish #8 interaction budgets and #28 hardware/resource workloads from these inputs, with actual measurements and security constraints; those issues are not completed by this report.
+
+## Merge follow-through — 2026-10-19
+
+Owner-authorized PR #37 merged at `6df1c65294e1860fba135e306b39d7d303959a90`; issue #3 is closed. Earlier publication notes above record the state at handoff. #8/#28 now continue in [plan 0004](0004-interaction-resource-budgets.md); no production protocol/runtime or support claim was adopted by the journey merge.

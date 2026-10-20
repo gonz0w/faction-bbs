@@ -14,4 +14,6 @@ This file records meaningful project changes. Product releases will use versione
 - Architecture decision framework with mandatory gates, comparison/evidence rules, risk-based prototype requirements, refined templates, and a bounded approval-enforcement example; accepted through PR #36 / issue #1.
 - Issue #3 research: private/poor/interrupted-link journeys, synthetic profile/workload controls, repeatable payload calculations with correctness tests, and explicit handoff to interaction/resource budget research. No runtime benchmark or network support is claimed.
 
+- Issues #8/#28 research: proposed text/page/queue and tiny-host resource budgets, measured local ASCII/ANSI pacing replay, a C allocation-ownership probe, reproducible sanitized observations, and runtime/storage/operations measurement contracts. Includes compact-language, selective-assembly, specialized-OS and optional public-service hypotheses; no production stack or server benchmark claim.
+
 No BBS runtime, supported transports, game compatibility, or release has been delivered.

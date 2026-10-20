@@ -32,4 +32,6 @@ jobs:
         run: |
           python3 tools/check_repository.py
           python3 tools/model_link_budget.py --check
+          python3 tools/measure_text_replay.py --check
+          python3 tools/measure_buffer_probe.py --check
           python3 -m unittest discover -s tools -p 'test_*.py'
