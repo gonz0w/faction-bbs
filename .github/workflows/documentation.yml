@@ -38,6 +38,7 @@ jobs:
           python3 experiments/009-local-storage/probe.py --check
           python3 experiments/023-netbsd-dependencies/verify_evidence.py
           python3 tools/probe_lua_boundary.py --check
+          python3 tools/check_netbsd_application_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Validate the local Rust core and real terminal flow
         env:
@@ -53,3 +54,4 @@ jobs:
           python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_local_chat.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_export_restore.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_member_worker.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"

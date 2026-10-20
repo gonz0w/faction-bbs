@@ -19,4 +19,6 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 
 - [0011: Private export/restore implementation and recovery validation](0011-local-export-restore.md)
 
+- [0012: Restricted SSH and native NetBSD application validation](0012-restricted-ssh-netbsd.md)
+
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.

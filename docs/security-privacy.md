@@ -45,6 +45,15 @@ to a remote member entry point or treat an export as authority to publish data.
 - Only participating shared chat channels may federate. Local-only channels, boards, files, mail, games, directories, and account/approval data stay local.
 - No JavaScript/TypeScript code or dependencies, including browser-terminal assets and project tooling. Track dependency provenance, licenses, updates, and supply-chain risk for the eventual stack.
 
+The [restricted SSH development gateway](restricted-ssh.md) separates the terminal
+UID from database ownership and keeps owner commands out of its remote entry point.
+Native member/approval/TTY/escape-denial oracles pass. Socket permissions and TTY
+ownership do not authenticate a BBS member; password/status/role/epoch checks do.
+Trusted worker/root compromise and same-UID frontend compromise are not sandboxed.
+The narrow NetBSD C/FFI bridge has an explicit ownership boundary and native positive
+regression; do not describe the whole system as unsafe-free Rust. Keep the fixed
+development caps until complete host/failure and remote hardening work is measured.
+
 ## Evidence required
 
 Write the threat model and pass/fail tests before claiming a security baseline. Research must cover authorization across both access surfaces, interrupted and revoked sessions, terminal parsing, file handling, door isolation, default exposure, and shared-channel/local-data separation. No production deployment or supported version exists yet.

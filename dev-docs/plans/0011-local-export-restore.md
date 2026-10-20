@@ -1,7 +1,7 @@
 # 0011: Private local export and non-overwriting restore
 
 Issues: [#18](https://github.com/gonz0w/faction-bbs/issues/18), [#19](https://github.com/gonz0w/faction-bbs/issues/19), [#35](https://github.com/gonz0w/faction-bbs/issues/35)
-Status: published for review in [PR #51](https://github.com/gonz0w/faction-bbs/pull/51), 2026-10-20.
+Status: merged in [PR #51](https://github.com/gonz0w/faction-bbs/pull/51), 2026-10-20; continuation is [plan 0012](0012-restricted-ssh-netbsd.md).
 
 ## Goal and constraints
 

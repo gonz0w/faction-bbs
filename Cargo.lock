@@ -122,6 +122,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-access"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-unix",
+ "rustix",
+]
+
+[[package]]
 name = "faction-cli"
 version = "0.1.0-alpha.1"
 dependencies = [
@@ -147,6 +155,13 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "rustix",
  "toml",
+]
+
+[[package]]
+name = "faction-unix"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "cc",
 ]
 
 [[package]]

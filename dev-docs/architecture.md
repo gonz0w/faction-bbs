@@ -47,3 +47,11 @@ discards chat leases/joins/receipts and rotates internal session binding. Privat
 paths/no-overwrite publication are checked; external theme packaging, member-scoped
 interchange, protected archives and native NetBSD/power-loss validation remain work.
 These APIs must not be delegated by a future member transport adapter.
+
+[ADR 0012](decisions/0012-restricted-ssh-and-terminal-handoff.md) adds the restricted
+OpenSSH frontend under a database-inaccessible OS identity, a protected local
+terminal handoff and trusted owner worker. Transport admission stays separate from
+BBS identity/password/approval. Owner commands remain in the local console only.
+A small native NetBSD CMSG bridge has an explicit C/FFI ownership boundary; all
+other application crates forbid unsafe Rust. Default cap is eight workers; complete
+host/load/failure and hostile-code confinement remain required before production.

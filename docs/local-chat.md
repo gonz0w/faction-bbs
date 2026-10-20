@@ -1,7 +1,7 @@
 # BBS-local command chat
 
-Updated 2026-10-19. Implemented in the local development console; no IRC wire
-server, SSH listener or federation. [Build/setup](local-development.md) and
+Updated 2026-10-20. Implemented in the local console and [restricted SSH member worker](restricted-ssh.md);
+there is no IRC wire server or federation. [Build/setup](local-development.md) and
 [ANSI/theme options](theme-packs.md) still apply. This owner-capable executable
 must never be exposed as an SSH forced command or member OS shell.
 

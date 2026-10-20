@@ -1,7 +1,7 @@
 # Local ANSI menus and sysop theme packs
 
-Updated 2026-10-19. Implemented in the local development console; no network BBS
-release. This is a vertical menu/identity baseline, not a complete art editor or
+Updated 2026-10-20. Implemented in the local console and trusted SSH member worker; a supported
+network release remains work. This is a vertical menu/identity baseline, not a complete art editor or
 historical terminal emulator. See [build/setup](local-development.md).
 
 ```sh
