@@ -1,6 +1,6 @@
 # 0009: Safe ANSI menu and sysop themes
 
-Date: 2026-10-19. Status: implementation and local validation complete; publishing PR. Issues: #13/#21/#25/#29/#31/#35.
+Date: 2026-10-19. Status: published for review in [PR #49](https://github.com/gonz0w/faction-bbs/pull/49). Issues: #13/#21/#25/#29/#31/#35.
 Owner authorized merge of PR #48 and continued implementation. #48 merged as
 c7abd006896e5389dac06feaf1c3d1920c400afc with required checks passing.
 
@@ -42,7 +42,7 @@ named bounded subset, converted to safe cells; document unsupported formats.
 - [x] Implement parser, pack validation, cell renderer and regression tests.
 - [x] Integrate the local console and extend the disposable PTY smoke.
 - [x] Review dependency changes, record ADR/docs/README/changelog and CI evidence.
-- [ ] Publish and attach the next focused PR; leave broad issues open.
+- [x] Publish and attach PR #49; broad issues remain open. The PR carries the authoritative CI result.
 
 Next native NetBSD/application and restricted SSH work remains explicit. No physical
 hardware is required. No implicit merge of the next PR.
