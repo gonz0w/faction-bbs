@@ -1,7 +1,7 @@
 # 0014: Profile memory and scale connected sessions
 
 Issues: [#28](https://github.com/gonz0w/faction-bbs/issues/28), [#20](https://github.com/gonz0w/faction-bbs/issues/20), [#18](https://github.com/gonz0w/faction-bbs/issues/18), [#23](https://github.com/gonz0w/faction-bbs/issues/23).
-Status: implementation/native validation complete; preparing PR. #53 merged at `c9abca9`.
+Status: implementation/native validation complete; [PR #54](https://github.com/gonz0w/faction-bbs/pull/54) open for review. #53 merged at `c9abca9`.
 
 ## Goal and constraints
 
@@ -17,7 +17,7 @@ member entry point, mandatory external service, hardware gate or production clai
 - [x] Add per-board cross-process credential budget and meaningful regression tests.
 - [x] Add guarded opt-in scaling, profiler and reproducible distinct-account load.
 - [x] Measure fresh native baseline, authentication peaks, idle/chat and recovery.
-- [ ] Record findings/decision, update docs/backlog and publish focused PR.
+- [x] Record findings/decision, update docs/backlog and publish focused PR #54.
 
 ## Method and stopping conditions
 
@@ -52,3 +52,20 @@ also changes repeat headroom. Remote auth sampling missed the short KDF spike;
 four cumulative successes/four busy rejections do not imply four concurrent KDFs.
 Two locks bound KDF arrays, but persistent in-guest peak sampling remains next.
 Full #28 workload/repeat/soak/hardware and appliance acceptance remain open.
+
+## Review and continuation
+
+Branch `codex/28-memory-scaling`, PR #54. Require current-head Linux CI before
+merge; native evidence is saved, not rerun by CI. Fresh profiling inputs are
+frozen in results/027; do not refresh their hashes without a matching execution.
+Default service remains eight workers; higher limits are owner-only experiments.
+
+Next bounded comparisons are [#55](https://github.com/gonz0w/faction-bbs/issues/55)
+(shared board/session ownership versus per-member workers) and
+[#56](https://github.com/gonz0w/faction-bbs/issues/56) (persistent in-guest credential
+peak sampling). Both preserve SSH/approval, local data and the two-slot budget.
+Do not interpret 168 admitted menu sessions as a passed 200-user stage or raise
+production defaults from a short 150-session menu/chat run. Pilot OOM and remote
+sampling gaps stay visible. Full active mix/repeat/soak/fairness/storage/appliance
+and later physical-device gates remain open. Obsolete temporary builders can
+clobber newer work; use current checked-in sources and this plan.

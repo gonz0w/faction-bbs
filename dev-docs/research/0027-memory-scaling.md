@@ -153,3 +153,6 @@ measured fixed/session/SSH/auth/SQL costs. Compare bounded shared readiness/sess
 state against process workers if per-user costs or polling scale poorly; keep
 authorization, output/failure boundaries and equivalent SSH security in comparison.
 No mandatory public helper/blockchain service is justified by this local workload.
+
+Focused follow-ups: [#55 shared-board comparison](https://github.com/gonz0w/faction-bbs/issues/55)
+and [#56 persistent credential-peak sampling](https://github.com/gonz0w/faction-bbs/issues/56).
