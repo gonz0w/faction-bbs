@@ -19,4 +19,6 @@ This file records meaningful project changes. Product releases will use versione
 - Accepted SSH-client access with optional invitation-only private-network deployment direction; clarified small hobby SBC/Pi or VM appliance goals, with MINIX considered but not mandatory.
 - Proposed Rust/readiness I/O + SQLite WAL validation slice, backed by 20 native-session process runs and ten seeded SQLite recovery/export experiments. Rejected idle millisecond scans in the probe; recorded generic SQL-dump restoration failure and successful explicit record export/search rebuild. No production stack, SSH backend or appliance OS accepted.
 
+- Accepted owner direction: Rust and NetBSD as primary target, initially validating NetBSD 11 ARM64. Native Mio/rusqlite bundled/pkgsrc SQLite checks and nine restricted OpenSSH gateway oracles passed in an isolated 2-vCPU/1-GiB guest; recorded HVF boot workaround and corrected SQLite runtime-library shadowing. No all-port, physical SBC, production security or capacity claim.
+
 No BBS runtime, supported transports, game compatibility, or release has been delivered.

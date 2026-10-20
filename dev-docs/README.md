@@ -1,6 +1,6 @@
 # Development documentation
 
-Faction BBS is establishing its architecture. There is no production stack or runnable product yet.
+Faction BBS is establishing its architecture. Rust and primary NetBSD direction are selected; there is no accepted complete production stack or runnable product yet.
 
 | Material | Purpose |
 | --- | --- |

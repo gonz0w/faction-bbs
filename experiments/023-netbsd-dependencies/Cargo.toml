@@ -1,0 +1,23 @@
+[package]
+name = "faction-netbsd-probe"
+version = "0.0.0"
+edition = "2024"
+publish = false
+license = "BSD-3-Clause"
+
+[[bin]]
+name = "faction-netbsd-probe"
+path = "probe.rs"
+
+[features]
+default = ["bundled-sqlite"]
+bundled-sqlite = ["rusqlite/bundled"]
+
+[dependencies]
+mio = { version = "=1.2.4", features = ["os-poll", "net"] }
+rusqlite = { version = "=0.40.1", default-features = false, features = ["backup", "limits"] }
+
+[profile.release]
+opt-level = 2
+panic = "abort"
+strip = true
