@@ -4,6 +4,15 @@
 
 Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008), with opt-in bounded ANSI menus/declarative themes (ADR 0009), BBS-local bounded chat (ADR 0010), owner-only private export/verify/restore (ADR 0011) and a restricted SSH development gateway with native NetBSD app evidence (ADR 0012). There is no network BBS release or accepted complete production stack. A standalone shared-board/readiness and persistent credential-peak experiment (ADR 0015, research 0029) now has native evidence; it is not installed by normal services, has incomplete UI parity, and does not establish production capacity. ADR 0016/research 0030 now record two short functional 250-member VM workloads (one final guard pass, one 4.10-MiB shortfall) using a versioned chat-sequence correction, isolated minimal C frontend and experimental native allocator profile. Guest-wide tuning is not installed by normal services; complete shared UI/fairness and scoped deployment/workload gates remain. Read docs/local-development.md, docs/theme-packs.md, docs/local-chat.md, docs/export-restore.md and docs/restricted-ssh.md before running it; the owner-capable console must never become an SSH forced command.
 
+ADR 0017/research 0031 now record three fresh-boot 250-member short-workload guard
+passes with 137.23 MiB lowest sampled stress headroom, using an experimental
+pageable NTP memory policy while keeping all base services. Normal eight-worker
+services and production adoption remain unchanged. Preserve separate standalone
+Cargo target directories; record the installed binary hash and actual repeated-
+chat regression, since source hashes alone missed a stale executable in a shared
+target. All historical executed source bytes must remain verifiable when later
+core changes introduce proper versioned source snapshots.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.

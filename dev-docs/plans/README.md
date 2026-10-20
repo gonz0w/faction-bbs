@@ -30,3 +30,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0015: Shared board ownership and credential peaks](0015-shared-board-and-credential-peaks.md)
 
 - [0016: Remaining transport memory](0016-transport-memory.md)
+
+- [0017: Repeatable 250-member memory headroom](0017-repeatable-headroom.md)

@@ -30,3 +30,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0015: Shared board/readiness experiment; production adoption deferred](0015-shared-board-readiness-experiment.md)
 
 - [0016: Native allocator comparison](0016-native-allocator-comparison.md)
+
+- [0017: Repeatable headroom experiment](0017-repeatable-headroom.md)

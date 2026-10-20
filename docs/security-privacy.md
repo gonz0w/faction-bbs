@@ -85,3 +85,9 @@ production confinement/admission guarantee. The unchanged headroom predicate is
 sampled between admissions; saved batch overshoot must not be represented as a
 continuously maintained reserve. Guest-wide tuning requires scoped deployment
 and broader workload review before adoption.
+
+The [headroom follow-up](../dev-docs/research/0031-repeatable-headroom.md) retains
+the unchanged SSH/UID/approval/credential gates. A disposable time-daemon paging
+policy is host resource research, not new application confinement. Native tests
+record zero swap and successful time-daemon/service presence; sustained clock
+precision, per-service setup/rollback and full deployment security remain gates.

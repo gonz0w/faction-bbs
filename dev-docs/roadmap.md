@@ -55,11 +55,11 @@ to reduce remaining per-transport cost. An isolated prototype is not adoption;
 per-transport costs after the shared-owner comparison; it preserves base OpenSSH,
 current approval/credential/terminal denials and all mandatory process accounting.
 
-The [native allocator/transport follow-up](research/0030-transport-memory.md)
-now completes functional 250-member SSH menu/chat and high-load credential
-checks in two fresh-boot 1-GiB NetBSD VM trials; only one retained the final guard
-margin. #58 remains open for repeatable margin. Rust/base OpenSSH remain; a versioned
-standalone backend fixes new-chat-lease sequencing. This is not adopted capacity.
-Next: #55 complete shared UI/fairness and scoped allocator configuration, with
-#28 active-mix/soak/host-service/admission budgets before deployment adoption.
-Repeatable 250-member headroom remains #58. Normal gateway defaults remain eight; Lua/isolated doors follow the useful core.
+The [repeatable headroom follow-up](research/0031-repeatable-headroom.md) now
+passes three short fresh-boot 250-member menu/chat/credential/control workloads
+under the unchanged guard. A supported pageable time-daemon policy leaves
+137.23 MiB lowest sampled stress headroom while all base services remain. This
+bounded #58 result keeps Rust/base OpenSSH/Argon2 and the normal eight-worker
+default. Next build: #55 full shared UI/fairness and scoped candidate adoption;
+#20 timekeeping/update/rollback and #28 active mixes, soak, complete budgets and
+authenticated-transport admission. Lua/isolated doors follow the useful core.

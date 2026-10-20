@@ -184,10 +184,11 @@ instructions. Its incomplete theme/plain/resize/navigation behavior must pass
 parity and operational gates before member deployment. Keep the normal gateway
 at eight workers; higher research counts are not supported capacity.
 
-A [transport/allocator follow-up](../dev-docs/research/0030-transport-memory.md)
-completes two functional 250-member VM workloads, including credentials and
-SSH denial checks. Only one passed the final headroom guard; #58 remains open.
-Its minimal C frontend, guest-wide allocator setting and corrected standalone
-Rust chat variant are experiments, not part of these setup instructions. Keep the
-normal eight-worker default until complete shared UI, scoped configuration,
-workload/soak and transport-admission gates pass. No physical SBC capacity claim.
+The [repeatable native headroom experiment](../dev-docs/research/0031-repeatable-headroom.md)
+passes three short 250-member VM workloads, including high-load member/owner
+credentials and known extra-memory controls under the unchanged guard. Its
+pageable time-daemon policy retains NTP and all other base services; original
+settings are restored after testing. Normal setup/rc.d defaults remain eight
+workers. The shared UI/minimal frontend, scoped allocator/host policy, clock
+precision under pressure and broader active-mix/soak/admission bounds need #55/
+#20/#28 adoption work. Keep research profiles confined to marked disposable VMs.

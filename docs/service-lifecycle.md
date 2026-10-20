@@ -90,10 +90,11 @@ Normal service defaults and the locked pidfile/credential inode rules remain.
 Its direct terminal-owner lifecycle and incomplete UI need explicit adoption
 review; a larger experimental admission count does not change service capacity.
 
-The [native allocator experiment](../dev-docs/research/0030-transport-memory.md)
-now has two functional 250-member VM workloads; only one retained the final
-headroom margin, so #58 remains open. Its guest-wide allocation policy
-also affects unrelated services and is not installed by these rc.d scripts.
-Scoped configuration/rollback, full shared UI/fairness, active workloads and
-authenticated-SSH admission bounds remain deployment gates. Normal defaults
-stay eight workers; do not copy research settings into a live board.
+The [repeatable native headroom experiment](../dev-docs/research/0031-repeatable-headroom.md)
+passes three short 250-member VM workloads, including high-load member/owner
+credentials and known extra-memory controls under the unchanged guard. Its
+pageable time-daemon policy retains NTP and all other base services; original
+settings are restored after testing. Normal setup/rc.d defaults remain eight
+workers. The shared UI/minimal frontend, scoped allocator/host policy, clock
+precision under pressure and broader active-mix/soak/admission bounds need #55/
+#20/#28 adoption work. Keep research profiles confined to marked disposable VMs.

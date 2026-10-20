@@ -58,3 +58,9 @@ tracks the next bounded footprint comparison while #55 retains shared UI/adoptio
 [Research 0030](research/0030-transport-memory.md) records #58's functional 250-member
 VM comparisons (only one retained the final guard margin) and exact guard/KDF/failure evidence. #55 retains complete UI/
 fairness and scoped deployment adoption; #28 retains broad workload/soak budgets.
+
+[Research 0031](research/0031-repeatable-headroom.md) completes #58's bounded
+repeatable short-workload guard gate at 250 members. #55 retains full UI/fairness
+and scoped frontend/configuration adoption; #20 timekeeping/appliance policy;
+#28 broader active mixes, soak, budgets and authenticated-transport limits.
+GitHub open/closed state and the focused PR remain authoritative.
