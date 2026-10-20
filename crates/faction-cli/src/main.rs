@@ -69,7 +69,7 @@ fn secret(prompt: &str) -> Result<Zeroizing<String>> {
     // Announce readiness only after echo has been disabled.
     (&tty).write_all(prompt.as_bytes())?;
     (&tty).flush()?;
-    let mut bytes = Zeroizing::new(Vec::new());
+    let mut bytes = Zeroizing::new(Vec::with_capacity(128));
     let mut byte = Zeroizing::new([0]);
     let result = (|| -> Result<Zeroizing<String>> {
         loop {
