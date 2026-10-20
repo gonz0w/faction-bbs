@@ -36,3 +36,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0018: Bounded shared UI candidate](0018-shared-ui-themes.md)
 
 - [0019: Maintained shared service and conservative admission](0019-maintained-shared-service.md)
+
+- [0020: Native process envelope and authenticated terminal peers](0020-native-process-envelope.md)

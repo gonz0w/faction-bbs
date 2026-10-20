@@ -80,8 +80,14 @@ The shared implementation advances #55 while stronger confinement, broader #28
 workloads and #20 maintained image/timekeeping/update policy remain open. No
 service script installs the experimental host profile automatically.
 
-The installed-service evidence is now [research 0033](research/0033-shared-service-integration.md)
+The prior service-integration evidence is [research 0033](research/0033-shared-service-integration.md)
 and ADR 0019: three fresh-boot 250-member runs pass with 135.23 MiB lowest sampled
 stress headroom, while normal admission remains eight. Native UI 27 and actual
 service lifecycle/configuration/rollback 11 checks pass. #18/#20/#28 retain the
 maintained image, broader active/soak/admission and timekeeping/confinement gates.
+
+The [native process envelope](../docs/process-confinement.md) advances #55/#19:
+peer UID verification, inherited-authority hygiene and kernel ceilings now have
+installed-service evidence. Filesystem/network/exec and same-UID isolation remain
+explicit next security gates, alongside #28 active/soak/transport admission and
+#20 maintained host/timekeeping policy. See [plan 0020](plans/0020-process-confinement.md).

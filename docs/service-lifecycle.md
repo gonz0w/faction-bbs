@@ -116,5 +116,15 @@ active mixes, soak, hostile admission and stronger process confinement remain op
 The existing 250-member VM results require an explicit experimental compact
 allocator and pageable-NTP image profile. Do not apply that profile to an existing
 host implicitly. Maintained image/update/rollback and timekeeping under pressure
-remain #20; wider workloads and admission remain #28. See [integration research](../dev-docs/research/0033-shared-service-integration.md)
+remain #20; wider workloads and admission remain #28. See [native confinement research](../dev-docs/research/0034-process-confinement.md)
 for actual service-path measurements. Physical SBC claims await later hardware.
+
+## Startup authority and resource ceilings
+
+Shared launches now use a minimal pre-exec environment and fail on inherited
+UID/GID/group/descriptor authority before board open. The service and native
+frontend set irreversible limits; [the exact contract](process-confinement.md)
+lists values, startup ordering and remaining isolation scope. Root deployment
+must give both accounts only their intended primary group. The Rust owner CLI
+is a separate operation, not a member subprocess or control command. Future doors
+need a separate launcher; current processes deliberately cannot fork.

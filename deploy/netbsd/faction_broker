@@ -36,8 +36,9 @@ faction_start()
     shared)
         [ -z "$faction_broker_flags" ] || { warn "worker flags cannot configure shared service"; return 1; }
         command=/usr/local/libexec/faction-service
-        /usr/bin/su -m factiond -c "$command --check-config /etc/faction/service.toml" || return 1
+        /usr/bin/su -m factiond -c "/usr/bin/env -i PATH=/usr/bin:/bin HOME=/home/factiond USER=factiond LOGNAME=factiond $command --check-config /etc/faction/service.toml" || return 1
         args="--config /etc/faction/service.toml"
+        command="/usr/bin/env -i PATH=/usr/bin:/bin HOME=/home/factiond USER=factiond LOGNAME=factiond /usr/local/libexec/faction-service"
         ;;
     workers)
         [ -f /var/db/faction/faction.sqlite3 ] && [ -x /usr/local/libexec/faction-member ] || return 1
@@ -47,12 +48,14 @@ faction_start()
         ;;
     *) warn "faction_broker_backend must be shared or workers"; return 1 ;;
     esac
+    process_name=/usr/local/libexec/faction-service
+    [ "$faction_broker_backend" != workers ] || process_name=/usr/local/libexec/faction-broker
     # rc.conf is root-owned shell configuration. The backend owns its locked
     # persistent pidfile; $! would identify su. Never unlink a live lock inode.
     /usr/bin/su -m factiond -c "exec $command $args" </dev/null >>/var/log/faction-broker.log 2>&1 &
     n=0
     while [ "$n" -lt 50 ]; do
-        if [ -n "$(check_pidfile "$pidfile" "$command")" ] && [ -S /var/run/faction/terminal.sock ]; then return 0; fi
+        if [ -n "$(check_pidfile "$pidfile" "$process_name")" ] && [ -S /var/run/faction/terminal.sock ]; then return 0; fi
         sleep 0.1
         n=$((n+1))
     done

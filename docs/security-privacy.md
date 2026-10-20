@@ -98,5 +98,16 @@ action. Current core approval/epochs/grants still authorize every action. Native
 denial/regrant/kick, forged control, cross-connection, backpressure and crash checks
 pass. Two credential permits cover queued/active/result lifetime; output and work
 are bounded without holding transactions behind terminal writes. These observations
-do not establish maintained shared-process confinement or hostile admission safety.
+do not establish filesystem/network/exec isolation or hostile admission safety.
 Normal services remain eight; scoped adoption and broader workloads stay open.
+
+## Current native process envelope
+
+The maintained NetBSD shared service/native frontend now authenticate both Unix
+socket peers before passing terminal descriptors, sanitize inherited authority,
+and apply verified hard resource ceilings. See [the exact operator boundary](process-confinement.md)
+and [native evidence](../dev-docs/research/0034-process-confinement.md). These checks
+retain local approval and connection-bound authority. They do not isolate a
+compromised shared owner from its database, restrict its filesystem/network/exec
+syscalls, or isolate hostile code sharing an allowed UID. Stronger isolation,
+authenticated SSH transport admission and production review remain open.

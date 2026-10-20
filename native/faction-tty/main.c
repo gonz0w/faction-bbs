@@ -20,6 +20,10 @@
 #include <time.h>
 #include <unistd.h>
 
+extern char **environ;
+extern int faction_prepare_process(void);
+extern int faction_process_limits(int, unsigned);
+extern int faction_peer_uid(int, uint32_t *);
 extern ssize_t faction_send_fd(int, int, const unsigned char *, size_t);
 
 static int64_t now_ms(void) {
@@ -58,7 +62,7 @@ static int owner_uid(const char *text, uid_t *owner) {
 static int run(int argc, char **argv) {
     int tty = -1, control = -1, saved = 0, result = -1;
     struct termios original;
-    struct stat st;
+    struct stat st, input, output, error_output;
     struct sockaddr_un address;
     char parent[sizeof(address.sun_path)];
     unsigned char packet[72] = {0};
@@ -67,8 +71,13 @@ static int run(int argc, char **argv) {
         getenv("SSH_ORIGINAL_COMMAND") != NULL || getenv("SSH_CONNECTION") == NULL ||
         !isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO) || owner_uid(argv[4], &owner) < 0)
         goto done;
+    if (fstat(STDIN_FILENO, &input) < 0 || fstat(STDOUT_FILENO, &output) < 0 ||
+        fstat(STDERR_FILENO, &error_output) < 0 || !isatty(STDERR_FILENO) ||
+        input.st_uid != geteuid() || input.st_dev != output.st_dev || input.st_ino != output.st_ino ||
+        input.st_rdev != output.st_rdev || input.st_dev != error_output.st_dev ||
+        input.st_ino != error_output.st_ino || input.st_rdev != error_output.st_rdev) goto done;
     size_t length = strnlen(argv[2], sizeof(address.sun_path));
-    if (!length || length >= sizeof(address.sun_path)) goto done;
+    if (argv[2][0] != '/' || !length || length >= sizeof(address.sun_path)) goto done;
     const char *slash = strrchr(argv[2], '/');
     if (!slash) goto done;
     size_t prefix = (size_t)(slash - argv[2]);
@@ -89,6 +98,14 @@ static int run(int argc, char **argv) {
               (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '+' || c == '.'))
             goto done;
     }
+    /* Copy the only presentation hint before scrubbing the environment. */
+    memcpy(packet, "FBSTTY01", 8);
+    packet[8] = (unsigned char)term_length;
+    memcpy(packet + 9, term, term_length);
+    /* This C entry point is single-threaded and owns its descriptor table. */
+    if (closefrom(3) < 0 && errno != EBADF) goto done;
+    environ = NULL;
+    if (faction_prepare_process() < 0 || faction_process_limits(0, 0) < 0) goto done;
     tty = fcntl(STDIN_FILENO, F_DUPFD_CLOEXEC, 3);
     if (tty < 0 || tcgetattr(tty, &original) < 0) goto done;
     saved = 1;
@@ -108,9 +125,8 @@ static int run(int argc, char **argv) {
         if (getsockopt(control, SOL_SOCKET, SO_ERROR, &error, &size) < 0 || size != sizeof(error) || error)
             goto done;
     }
-    memcpy(packet, "FBSTTY01", 8);
-    packet[8] = (unsigned char)term_length;
-    memcpy(packet + 9, term, term_length);
+    uint32_t actual_owner;
+    if (faction_peer_uid(control, &actual_owner) < 0 || actual_owner != owner) goto done;
     int64_t send_started = now_ms();
     if (send_started < 0) goto done;
     ssize_t sent;
@@ -132,9 +148,22 @@ static int run(int argc, char **argv) {
     if (wait_started < 0) goto done;
     for (;;) {
         if (ready(control, POLLIN, wait_started + 1900000) < 0) goto done;
-        unsigned char status;
-        ssize_t n = read(control, &status, 1);
-        if (n == 1) { if (status == 0) result = 0; break; }
+        unsigned char status[2];
+        ssize_t n = read(control, status, sizeof(status));
+        if (n > 0) {
+            if (n != 1 || status[0] != 0) break;
+            int64_t end_started = now_ms();
+            if (end_started < 0) break;
+            /* Success is one status byte followed by EOF, with no extension
+             * channel or trailing command bytes. Normal backends close here. */
+            for (;;) {
+                if (ready(control, POLLIN, end_started + 2000) < 0) break;
+                n = read(control, status, sizeof(status));
+                if (n == 0) { result = 0; break; }
+                if (n > 0 || (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)) break;
+            }
+            break;
+        }
         if (n == 0 || (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)) break;
     }
 done:

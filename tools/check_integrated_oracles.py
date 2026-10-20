@@ -152,7 +152,7 @@ def run(args):
         drop(a);children.remove(a);time.sleep(.2);a=login()
         quit_chat(b);passed('busy menu peer preserves useful chat service with bounded observed latency')
         drop(b);children.remove(b);a.raw(b'r');a.expect('More rooms?');a.send('n');pause(a);passed('frontend crash leaves another member usable')
-        probe=remote('/usr/pkg/bin/python3.13 '+root+'/../terminal_probe.py',secret.encode());results.extend(json.loads(probe.stdout)['results'])
+        probe=remote('/usr/pkg/bin/python3.13 '+'/home/factiond/build/experiments/055-confinement/terminal_probe.py',secret.encode());results.extend(json.loads(probe.stdout)['results'])
         stop(pid,'KILL');a.finish(1);sysop.finish(1);passed('backend crash closes member frontends')
         pid=start();a=login()
         code="import sqlite3; c=sqlite3.connect('/var/db/faction-profile/faction.sqlite3'); assert c.execute('pragma integrity_check').fetchone()[0]=='ok'; assert c.execute('select count(*) from posts where body=?',("+repr(body)+",)).fetchone()[0]==1"

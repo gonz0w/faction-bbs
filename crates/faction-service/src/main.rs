@@ -14,6 +14,7 @@ use rustix::{
 use std::{
     fs::{self, File},
     io::{Read, Write},
+    os::fd::AsFd,
     os::unix::{
         fs::{FileTypeExt, MetadataExt, PermissionsExt},
         net::{UnixListener, UnixStream},
@@ -355,6 +356,7 @@ fn run() -> Result<()> {
     if owner == 0 || terminal_uid == owner {
         return Err(denied());
     }
+    faction_unix::prepare_process()?;
     let state = config.state_dir.clone();
     if !state.join("faction.sqlite3").is_file() {
         return Err(denied());
@@ -393,6 +395,9 @@ fn run() -> Result<()> {
                 }
                 tokens -= 1;
                 if stream.set_nonblocking(false).is_err() {
+                    continue;
+                }
+                if faction_unix::peer_uid(stream.as_fd()).ok() != Some(terminal_uid) {
                     continue;
                 }
                 if let Ok((tty, term)) = receive_terminal(&stream, terminal_uid) {
@@ -439,6 +444,7 @@ fn run() -> Result<()> {
         );
     }
     drop(auth_tx);
+    faction_unix::process_limits(max_sessions as u32)?;
     let mut clients: Vec<Client> = Vec::with_capacity(max_sessions);
     let mut generation = 0u64;
     eprintln!(
