@@ -10,13 +10,13 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
-**Research and repository foundation · updated 2026-10-19 · no release or runnable BBS yet.**
+**Early local core · updated 2026-10-19 · runnable development console, no network BBS release.**
 
-This repository contains the product requirements, development workflow, preserved design history, and a GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** Software/developer-host and NetBSD VM validation drive development; physical SBC testing is deferred until the owner can load a complete product. There is no implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
+The first Rust core and local console implement sysop bootstrap, hidden-password login, pending registration, approval/revocation, and durable chronological rooms with replies/unread cursors and retry IDs. [Try the local core](docs/local-development.md). Full ANSI/theme navigation, chat and restricted SSH are the next increments. This repository also contains the product requirements, development workflow, preserved design history, and GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** Software/developer-host and NetBSD VM validation drive development; physical SBC testing is deferred until the owner can load a complete product. There is no implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 
-**Selected direction: Rust on NetBSD; next slice: readiness I/O and SQLite WAL.** The [native comparison](dev-docs/research/0004-runtime-comparison.md) and [storage/recovery research](dev-docs/research/0009-local-storage-comparison.md) support this proposed experiment choice. The owner has accepted Rust/NetBSD in [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md). [ADR 0005](dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the integrated security/hardware tests required before production adoption. [ADR 0007](dev-docs/decisions/0007-software-first-and-extension-direction.md) makes physical SBC testing a later hardware-claim gate, not a prerequisite for software work.
+**Selected direction: Rust on NetBSD; local identity/rooms now use SQLite WAL ([ADR 0008](dev-docs/decisions/0008-local-core-and-credentials.md)).** The [native comparison](dev-docs/research/0004-runtime-comparison.md) and [storage/recovery research](dev-docs/research/0009-local-storage-comparison.md) support this proposed experiment choice. The owner has accepted Rust/NetBSD in [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md). [ADR 0005](dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the integrated security/hardware tests required before production adoption. [ADR 0007](dev-docs/decisions/0007-software-first-and-extension-direction.md) makes physical SBC testing a later hardware-claim gate, not a prerequisite for software work.
 
 [SSH access with optional private-network-only operation](dev-docs/decisions/0004-ssh-and-optional-private-network.md) is accepted product direction. [Native NetBSD 11 ARM64 checks](dev-docs/research/0023-netbsd-dependencies.md) passed for Mio, bundled/pkgsrc SQLite and nine restricted OpenSSH gateway oracles. The production SSH backend, minimal appliance, real SBC behavior and complete server capacity remain unvalidated. [The roadmap](dev-docs/roadmap.md) separates research from future capabilities; [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
 
@@ -60,17 +60,20 @@ Privacy, security, lightweight operation, and efficient text interaction are cor
 | Review architecture decisions | [Decision records](dev-docs/decisions/README.md) |
 | Report a vulnerability | [Security policy](SECURITY.md) |
 
-## Work on the foundation
+## Build the local core
 
-Python 3.10 or newer and Git are sufficient for the repository checks. Python is repository tooling, not a production language decision.
+Use Rust 1.96+ and a native C compiler for the local application. Python 3.10+ and Git support repository checks. The console needs a real Unix terminal; new application tests ran on the developer host, while native NetBSD validation of this increment remains open.
 
 ```sh
 git clone https://github.com/gonz0w/faction-bbs.git
 cd faction-bbs
 python3 tools/check_repository.py
+cargo build --workspace --locked --release
+./target/release/faction --state-dir "$HOME/.faction-dev" init
+./target/release/faction --state-dir "$HOME/.faction-dev" login
 ```
 
-There is no application to launch yet. Start with an issue, read its dependencies, and use the research/decision templates for architecture work. Keep this README's status and the relevant documentation current whenever behavior, scope, setup, or support changes.
+See [local development](docs/local-development.md) for member registration, sysop approval, posting, recovery and tests. This owner-capable console opens no listener and must never be used as an SSH forced command. It is a plain-text development surface; the full BBS experience is still being built. Start contributions with an issue and keep this README and affected docs current.
 
 ## License and heritage
 

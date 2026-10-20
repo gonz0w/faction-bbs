@@ -1,6 +1,6 @@
 # Privacy and security requirements
 
-Status: mandatory design constraints and open research, not a claim of implemented protection. Report sensitive findings through [SECURITY.md](../SECURITY.md).
+Status: mandatory design constraints and open research. Narrow local authorization/credential behavior is implemented/tested in [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md); this is not a complete security or remote-deployment claim. Report sensitive findings through [SECURITY.md](../SECURITY.md).
 
 ## Membership and authority
 

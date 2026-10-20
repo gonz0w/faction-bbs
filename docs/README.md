@@ -1,7 +1,8 @@
 # Product, member, and sysop documentation
 
-These are current requirements for a research-stage project. They describe the intended system, not an available release.
+These describe current requirements and the early local console. There is no network BBS release.
 
+- [Build and try the local core](local-development.md)
 - [Project direction and boundaries](project.md)
 - [Login, approval, and BBS session](session.md)
 - [ANSI, menus, and customization](customization.md)

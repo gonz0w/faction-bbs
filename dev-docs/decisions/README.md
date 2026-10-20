@@ -11,4 +11,6 @@ Use `NNNN-short-kebab-title.md` and the [template](template.md). Status is propo
 
 - [0007: Software first, core first, Lua next — accepted sequencing](0007-software-first-and-extension-direction.md)
 
+- [0008: First local core, durable room actions and credentials](0008-local-core-and-credentials.md)
+
 Use the [decision framework](../research/decision-framework.md) for gate screening, criteria, evidence/confidence, and prototype thresholds. Future technical decisions need primary-source research, retrieval dates, alternatives, confidence, reversal cost, and a named validation experiment. The question and evidence must be bounded.

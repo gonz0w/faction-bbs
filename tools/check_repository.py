@@ -17,7 +17,7 @@ from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
-IGNORED = {'.git', '__pycache__', '.venv', 'local', 'node_modules'}
+IGNORED = {'.git', '__pycache__', '.venv', 'target', 'local', 'node_modules'}
 JS_SUFFIXES = {'.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.mts', '.cts'}
 JS_MANIFESTS = {'package.json', 'package-lock.json', 'npm-shrinkwrap.json',
                 'yarn.lock', 'pnpm-lock.yaml', 'bun.lock', 'bun.lockb',

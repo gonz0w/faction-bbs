@@ -11,4 +11,6 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 
 - [0007: Software-first core and extensibility](0007-software-first-extensibility.md)
 
+- [0008: First local identity and room implementation](0008-local-core.md)
+
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.

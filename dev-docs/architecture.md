@@ -1,6 +1,6 @@
 # Architecture: boundaries to validate
 
-Status: Rust/primary NetBSD direction accepted; no production implementation or accepted complete production stack. Product requirements are in [docs/project.md](../docs/project.md).
+Status: Rust/primary NetBSD direction accepted; early local core implemented, no accepted complete production stack. Product requirements are in [docs/project.md](../docs/project.md).
 
 Separate community semantics from transport-specific addressing, discovery, routing, and connections. Candidate responsibilities are local accounts/approval, message rooms/unread state, chat/channel policy, files/mail/directory data, session/menu presentation, persistence/search, transport adapters, operations, and optional game/extension hosts. This is a research map, not a prescribed code/module layout.
 
@@ -20,8 +20,16 @@ Separate community semantics from transport-specific addressing, discovery, rout
 
 [ADR 0007](decisions/0007-software-first-and-extension-direction.md) establishes software/VM validation now, local core first and Lua menus/isolated doors next. [Core scope](first-local-slice.md) and [extension research](research/0010-extensible-ansi-platform.md) describe bounded host/helper responsibilities. Deliberate public publication, payment intent/signing/settlement and entitlements are separate proposed capabilities, not automatic private-data federation or selected APIs.
 
+## First implementation boundary
+
+[ADR 0008](decisions/0008-local-core-and-credentials.md) introduces `faction-core`
+(local accounts/current authorization and SQLite room actions) and a separate local
+`faction` CLI. [Runnable instructions and limits](../docs/local-development.md)
+distinguish development behavior from product requirements. No transport receives
+owner recovery authority; the current CLI is not a remote adapter.
+
 ## Open decisions
 
 With Rust and primary NetBSD selected, compare local persistence/search, command/session representation, secure terminal access, optional HTTP exposure, no-JS browser-console feasibility, file transfers, room reply semantics, IRC interoperability, extension mechanisms, and later shared-channel/mesh delivery against measurable constraints. Each material choice needs a source-attributed decision record and a falsifiable validation plan. See [the issue index](issue-index.md).
 
-No database schema, federation protocol, transport adapter contract, framework, production performance guarantee or supported device list is adopted by this document. Select fast/lightweight options on measured evidence, including deployment burden and security, rather than language familiarity.
+The initial development schema is version 1 under ADR 0008; it has no stable on-disk compatibility promise yet. No federation protocol, transport adapter contract, framework, production performance guarantee or supported device list is adopted by this document. Select fast/lightweight options on measured evidence, including deployment burden and security, rather than language familiarity.
