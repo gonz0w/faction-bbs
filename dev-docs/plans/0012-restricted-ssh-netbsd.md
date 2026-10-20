@@ -97,3 +97,5 @@ before cleanup. Host-only docs/handoff changes do not alter that native source s
 No public deployment or automatic merge of #52 is implied. Next bound service
 lifecycle/output/crash and complete host resource/load tests before raising the
 eight-worker cap, while retaining the first-core/then-Lua sequencing.
+
+Merged as #52 at `08c50bb`; managed lifecycle and load/failure work continues in [plan 0013](0013-service-lifecycle-load.md).

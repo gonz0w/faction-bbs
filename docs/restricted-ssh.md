@@ -106,11 +106,11 @@ faction_terminal_uid=$(id -u factionterm)
 su - factiond -c "/usr/local/libexec/faction-broker --socket /var/run/faction/terminal.sock --terminal-uid $faction_terminal_uid --worker /usr/local/libexec/faction-member --state-dir /var/db/faction"
 ```
 
-It runs in the foreground. Start `/usr/sbin/sshd -f /etc/ssh/faction/sshd_config`
-separately after validation. A maintained rc.d supervisor/service lifecycle is
-still work. The broker refuses root, the same terminal/backend UID, unsafe state,
-an existing socket path or a writable/nonregular worker. Stop all relevant
-processes before inspecting/removing a stale socket; it is never auto-unlinked.
+It runs in the foreground. For managed startup, use the opt-in
+[NetBSD service scripts](service-lifecycle.md) after validating the dedicated SSH
+configuration. The broker refuses root, the same terminal/backend UID, unsafe
+state, a live socket or a writable/nonregular worker. Its locked pidfile permits
+conservative recovery of an owned disconnected socket; never delete a live lock.
 All parent paths/executables remain trusted administrator/owner configuration.
 
 Append `--theme /ABSOLUTE/OWNER/PACK --season /ABSOLUTE/OWNER/OVERRIDE` to the broker
@@ -131,16 +131,19 @@ session. An empty configuration uses built-in text, without bundled scene art.
 - Supervisor threads use 128-KiB stacks. Each member still has an application
   process plus OpenSSH/frontend overhead. Whole-host shared/private memory and
   busy-board costs remain to be measured before increasing the cap.
-- Line/password prompts have a 120-second receive budget. The broker limits a
-  session to 30 minutes; OpenSSH also has configured handshake/channel/keepalive
-  limits. These current development limits are fixed, not a complete time policy.
+- Line/password prompts have a 120-second receive budget. The broker defaults a
+  session to 30 minutes (owner may shorten with `--session-seconds 1..1800`);
+  OpenSSH also has configured handshake/channel/keepalive limits. These development
+  maxima are not a complete time policy.
 - Disconnect closes the frontend control socket. The broker permits up to one
   second for normal PTY cleanup, then kills/reaps the worker; supervisor polling
   adds scheduling delay. Abrupt kills can leave a chat lease until the existing
   60-second expiry/reclamation rules apply. Normal logout restores terminal state.
 - A blocked output cannot hold a database transaction; the absolute session limit
-  bounds worker lifetime while the broker is running. Production output deadlines,
-  broker-crash recovery and all failure/signal paths remain separate validation.
+  bounds worker lifetime while the broker is running. Worker parent monitoring
+  now handles broker loss, and a synthetic blocked writer exercises the absolute
+  deadline. Production output deadlines and the complete
+  failure campaign remain separate validation.
 
 Native NetBSD tests passed for real registration/pending/approval, room posting,
 two simultaneous chat members/draft preservation, current revocation, resize/plain

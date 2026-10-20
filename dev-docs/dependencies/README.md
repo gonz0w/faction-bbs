@@ -26,3 +26,8 @@ OpenSSH is an OS dependency for the development gateway. The small faction-unix 
 ownership boundary is explicit; other application crates still forbid unsafe Rust. The new
 TOML dependency uses only std/parse/serde with default features disabled; some
 unselected derive/proc-macro packages can remain in the lock without compilation.
+
+ADR 0013 extends the same in-tree native helper with a small C11 lock-free signal
+flag on all build hosts. It uses the existing C compiler/`cc` build dependency;
+selected registry graph/versions are unchanged. Native descriptor ownership and
+signal/process lifecycle require independent positive tests, not just compilation.

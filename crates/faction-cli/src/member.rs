@@ -7,7 +7,35 @@ use std::{
     io::{self, IsTerminal},
     path::PathBuf,
 };
+fn watch_broker() -> Result<()> {
+    let Some(expected) = std::env::var_os("FACTION_BROKER_PID") else {
+        return Ok(()); // direct local PTY development worker
+    };
+    let expected: u32 = expected
+        .to_str()
+        .ok_or_else(|| invalid("broker PID"))?
+        .parse()?;
+    if expected <= 1 || rustix::process::getppid().map(|p| p.as_raw_pid() as u32) != Some(expected)
+    {
+        return Err(invalid("broker unavailable"));
+    }
+    std::thread::Builder::new()
+        .name("broker-watch".into())
+        .stack_size(64 * 1024)
+        .spawn(move || {
+            loop {
+                if rustix::process::getppid().map(|p| p.as_raw_pid() as u32) != Some(expected) {
+                    // Also ends a worker blocked on terminal output or database I/O.
+                    // Abrupt exit intentionally relies on existing chat lease expiry.
+                    std::process::exit(1);
+                }
+                std::thread::sleep(std::time::Duration::from_millis(200));
+            }
+        })?;
+    Ok(())
+}
 fn run() -> Result<()> {
+    watch_broker()?;
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.len() < 2
         || args[0] != "--state-dir"

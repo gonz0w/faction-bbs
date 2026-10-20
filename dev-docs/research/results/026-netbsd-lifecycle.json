@@ -1,0 +1,402 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "target": "aarch64-unknown-netbsd",
+  "guest": {
+    "os": "NetBSD 11.0 evbarm",
+    "architecture": "aarch64",
+    "vcpus": 2,
+    "physical_ram_bytes": 1054990336,
+    "rust": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)",
+    "cc": "cc (nb3 20260326) 12.5.0",
+    "python": "Python 3.13.14",
+    "openssh": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+  },
+  "native_rust_tests": 54,
+  "native_pty_workflows": 4,
+  "native_local_lifecycle": {
+    "passed": [
+      "duplicate_instance_refused",
+      "eight_pending_handoffs_cap_admission",
+      "term_drains_stalled_handoffs_and_releases_socket",
+      "kill_then_restart_recovers_owned_stale_socket",
+      "hup_is_stop_not_configuration_reload",
+      "non_socket_and_symlink_paths_preserved",
+      "symlink_pidfile_refused"
+    ],
+    "stalled_shutdown_seconds": 6.265
+  },
+  "lifecycle": {
+    "schema": 1,
+    "scope": "disposable NetBSD eight-member SSH and lifecycle/fault tests",
+    "results": [
+      {
+        "oracle": "rc_status_and_duplicate_start",
+        "result": "pass"
+      },
+      {
+        "oracle": "rc_restart_idle",
+        "result": "pass"
+      },
+      {
+        "oracle": "eight_approved_ssh_members_chat",
+        "result": "pass"
+      },
+      {
+        "oracle": "ninth_ssh_member_rejected_at_cap",
+        "result": "pass"
+      },
+      {
+        "oracle": "100_and_250_over_cap_offers_preserve_sessions_and_descriptors",
+        "result": "pass"
+      },
+      {
+        "oracle": "worker_crash_isolated_and_reaped",
+        "result": "pass"
+      },
+      {
+        "oracle": "rc_stop_drains_then_reaps_active_members",
+        "result": "pass"
+      },
+      {
+        "oracle": "broker_sigkill_exits_member_without_host_shell",
+        "result": "pass"
+      },
+      {
+        "oracle": "stale_socket_recovery_and_fresh_authenticated_login",
+        "result": "pass"
+      },
+      {
+        "oracle": "sqlite_write_contention_bounded_retry_and_recovery",
+        "result": "pass"
+      },
+      {
+        "oracle": "absolute_session_deadline_reaps_observably_blocked_writer",
+        "result": "pass"
+      },
+      {
+        "oracle": "dedicated_sshd_rc_restart",
+        "result": "pass"
+      },
+      {
+        "oracle": "fresh_login_after_service_failures_and_ordered_stop",
+        "result": "pass"
+      }
+    ],
+    "observations": {
+      "eight_chat_processes": [
+        {
+          "role": "sshd",
+          "rss_kib": 4752,
+          "vsz_kib": 19560
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8008,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4672,
+          "vsz_kib": 28896
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4664,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8820,
+          "vsz_kib": 26188
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8008,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 6164,
+          "vsz_kib": 26516
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8004,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4672,
+          "vsz_kib": 26400
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4036,
+          "vsz_kib": 19844
+        },
+        {
+          "role": "sshd",
+          "rss_kib": 3784,
+          "vsz_kib": 21492
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8008,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4044,
+          "vsz_kib": 19848
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4688,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8000,
+          "vsz_kib": 25084
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4060,
+          "vsz_kib": 19844
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4044,
+          "vsz_kib": 19844
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4040,
+          "vsz_kib": 19848
+        },
+        {
+          "role": "faction-broker",
+          "rss_kib": 3248,
+          "vsz_kib": 29768
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8008,
+          "vsz_kib": 25088
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8004,
+          "vsz_kib": 25084
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4040,
+          "vsz_kib": 19848
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 8000,
+          "vsz_kib": 25084
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4680,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4672,
+          "vsz_kib": 25224
+        },
+        {
+          "role": "sshd-session",
+          "rss_kib": 4676,
+          "vsz_kib": 31140
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4040,
+          "vsz_kib": 19844
+        },
+        {
+          "role": "faction-member",
+          "rss_kib": 4040,
+          "vsz_kib": 19844
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1980,
+          "vsz_kib": 12664
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1988,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12664
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        },
+        {
+          "role": "faction-ssh",
+          "rss_kib": 1984,
+          "vsz_kib": 12668
+        }
+      ],
+      "vmstat_summary": [
+        "    64666 pages free",
+        "   109434 pages active",
+        "    39961 pages inactive"
+      ],
+      "eight_chat_cpu_sample": "0",
+      "eight_chat_delivery_seconds": 0.116,
+      "over_cap_local_offers": [
+        {
+          "offered": 100,
+          "rejected": 100,
+          "seconds": 0.086
+        },
+        {
+          "offered": 250,
+          "rejected": 250,
+          "seconds": 0.001
+        }
+      ],
+      "overload_broker_descriptor_rows": {
+        "before": 15,
+        "after": 15
+      },
+      "active_stop_seconds": 5.481,
+      "broker_loss_worker_exit_seconds": 0.167,
+      "blocked_writer_completed_chunks": 0
+    }
+  },
+  "binaries": {
+    "faction": {
+      "bytes": 2314512,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1",
+        "-lm.0 => /usr/lib/libm.so.0"
+      ]
+    },
+    "faction-member": {
+      "bytes": 2314544,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1",
+        "-lm.0 => /usr/lib/libm.so.0"
+      ]
+    },
+    "faction-ssh": {
+      "bytes": 398784,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1"
+      ]
+    },
+    "faction-broker": {
+      "bytes": 464288,
+      "dynamic_libraries": [
+        "-lpthread.1 => /usr/lib/libpthread.so.1",
+        "-lc.12 => /usr/lib/libc.so.12",
+        "-lgcc_s.1 => /usr/lib/libgcc_s.so.1"
+      ]
+    }
+  },
+  "release_provenance": "024-netbsd-application.json",
+  "sources": {
+    "Cargo.lock": "c5a0e4f548e968ff6f967abdecffb7dd7ce0b05c6bd7b89182ea9774b54d48dd",
+    "Cargo.toml": "00199e37439041786876ac3f060009456778a83529d8810139e1a3b37f7e1dde",
+    "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
+    "crates/faction-access/src/broker.rs": "6f6895d23dbd34992bad63a7a1ff5d80fd394714daa5edc7bcdbde490349c000",
+    "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
+    "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
+    "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
+    "crates/faction-cli/src/chat.rs": "61332f672c91e67585a0c9efa4f3a311accb544ea7ad5c4909ccbcb4b9f5195e",
+    "crates/faction-cli/src/lib.rs": "d157c188e5a0e369f034b4fc37f24199172597f016875fa870afb41d2ffd389b",
+    "crates/faction-cli/src/main.rs": "4f6d1d40afed6da13316991d7b13f0505261f57839cc3e0590c152ea2adbc140",
+    "crates/faction-cli/src/member.rs": "658aa9cae2c4d1ae3d537fe79f8c03181b81822c259662b6bc20ef4660c9e161",
+    "crates/faction-cli/src/terminal.rs": "a3bfecf29d2b7a7a2f02f7c47fca7015ff8e3278f66227abd93630fffae1199a",
+    "crates/faction-core/Cargo.toml": "a62682c6da2b6fdcd7a2e9cc0e3c0045cf41688351bebb452916b70747480e17",
+    "crates/faction-core/src/chat.rs": "1ad554998b5fe9c8435f8f84fec335aacc5de020e644537076f3305529c2de7a",
+    "crates/faction-core/src/lib.rs": "e936d754f317dd92101cac73d626cce3374e39a871a11b5adb64e0ee4fca17fd",
+    "crates/faction-core/src/snapshot.rs": "32432b6f2e76ddf0d453766949ab18cdd324c648f42c8f87c314c7bd80e22c2b",
+    "crates/faction-core/tests/chat.rs": "2012b8c2f3dfc731040b5493f2e06a079da0f970bdad2a2b22b03c9303fb91db",
+    "crates/faction-core/tests/core.rs": "c55c59a528d2b534506e57d3d59164a6ec4c53155e40f776881cdf64197d3845",
+    "crates/faction-core/tests/snapshot.rs": "74ee5b55b88ebdf0451505813efa8ad0e1bac0aa7c6f1b8b4e382d4a5d9c0de4",
+    "crates/faction-terminal/Cargo.toml": "6ca192866438705ee019001fd854451f35309bfabf87ba25cd7c1c78539fb367",
+    "crates/faction-terminal/src/art.rs": "5f0f2561b45159b276d34e2767b5e22742127e33767cab930741ab256bf5884c",
+    "crates/faction-terminal/src/editor.rs": "110c935ac2cb7915da060b82b8d1cae94790cb4032259e8bcd744aaf7f8004fb",
+    "crates/faction-terminal/src/keys.rs": "5d0a38d3c65e424198d7facedcf9d9141408b0a393dd0d3621aa674d66a5a5ee",
+    "crates/faction-terminal/src/lib.rs": "d14ee7e9264ca4d997662a68e6250289ccc90a23a3caa190a75a7cc1789d3822",
+    "crates/faction-terminal/src/theme.rs": "4657a18e21e926dca8b4f5e9bd821e9ed541c7fbc9146ce854e8e21ae9982b5d",
+    "crates/faction-terminal/tests/terminal.rs": "e8e15d519855fba39a01333daec4c42fcb9ee51e68b64af2bcdc0c73b0f43a99",
+    "crates/faction-unix/Cargo.toml": "2e0eaea46081f07c3fc76b81de83ac2d972db0c59b1e8d98d4643584dbc8210b",
+    "crates/faction-unix/build.rs": "fad25481dacba11863882186822329fbb34af51ab03a292298d255faa7909fc2",
+    "crates/faction-unix/src/lib.rs": "64e8a349439c33814c4f274c7436332833e576e1d3caae4591e447425eacbe07",
+    "crates/faction-unix/src/shutdown.c": "e263bcd624fd4b67a3b7648e480a88d71faee644390f08e46e1ed9ae0dee11db",
+    "crates/faction-unix/src/terminal_fd.c": "a97160e8499877395e574116289afb0b7fc4c9563733e378b8439a799520bf8c",
+    "deploy/netbsd/sshd_config.in": "60245b9ea2849b203b95c726341466291348014840f74d94e30a16e073ec60a8",
+    "dev-docs/dependencies/local-core.json": "a56146655ad124e9cc82d541da097b7126e1bd2e99ab1203c4b429fdf567deeb",
+    "tools/check_restricted_ssh.py": "3d7207c0703ae0143b89bfb87f3efca44629a67cf7c0c936ad95245e217d67eb",
+    "tools/smoke_export_restore.py": "d69786c3ae58a5faa8d713667bb39c3c6ff0fe8f20fa76a1dfb262ca0e0cf074",
+    "tools/smoke_local_chat.py": "2d48ff29315d2a7ff4fb0cd42a1fd2f6998dcc417e781cac14b84fd247c40ab7",
+    "tools/smoke_local_console.py": "d466f37efcf21c86ac5238a2e93a3c6d6926f1d92bcdf7acc359ff4c58258374",
+    "tools/smoke_member_worker.py": "ab33aa514858e2e6c621d86222f0b2a27bee92e6c61cdea02fb1403466cc7974",
+    "deploy/netbsd/faction_broker": "be2b90e0e1f0c66f6f51765b467574f262b3a37ace7ebca767c285b87fb1c42f",
+    "deploy/netbsd/faction_sshd": "290d75c7ba04d59c03eb65fa6fda751b61a011da7568feded197cf34fc3e31ca",
+    "tools/smoke_broker_lifecycle.py": "f5b7117800e2c14b979cdbca30bddb465f195991ad7dbc5c567d2b9187ba679a",
+    "tools/check_service_lifecycle.py": "a1688656f7d634545035e3a7bb4d0dd5ab19ee3f323bbca3f4d119953ca36365",
+    "tools/check_service_evidence.py": "c5c7fe3f42e29d3642d9eeff8f2862aa8383d1fcdcefdbc0151f59325b897db4"
+  },
+  "cleanup": {
+    "guest_stopped": true,
+    "private_inputs_removed": true,
+    "scope": "Only this task private VM/disk/keys/raw logs and forwards; developer-host SSH untouched"
+  },
+  "unperformed": [
+    "100/250 actual connected members",
+    "USS/PSS/shared-page attribution and authentication peaks",
+    "physical SBC/other NetBSD architectures",
+    "long-duration churn and disk-full/power-loss/upgrade rollback",
+    "real application slow-output deadlines across poor SSH links"
+  ],
+  "workload": {
+    "concurrent_ssh_sessions": 8,
+    "distinct_accounts_in_eight_session_sample": 1,
+    "scope": "one approved fixture account, eight independent transports/workers/chat leases; application suite separately covers two distinct accounts"
+  }
+}

@@ -135,3 +135,13 @@ High confidence in these native software oracles; low confidence in unmeasured
 capacity, hostile-code confinement, other NetBSD ports, physical hardware or full
 production security. Native/application compatibility now has direct evidence;
 that does not select a production backend or supported appliance by implication.
+
+## Managed lifecycle follow-up
+
+After #52 merged, [report 0026](0026-service-lifecycle-load.md) adds the fresh native
+service/load/failure campaign. Saved 024 application evidence was refreshed from
+that same final code with all 54 Rust/four PTY/20 SSH oracles passing. Its JSON
+now records the updated binary/process observations and source hashes; the
+original #52 merge retains the original observations. Broad unperformed gates
+above remain except the bounded lifecycle/broker-loss cases explicitly covered
+by 0026. This is still eight-worker software evidence, not production capacity.

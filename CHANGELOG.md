@@ -6,6 +6,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Managed development gateway lifecycle: opt-in NetBSD rc.d scripts, locked pidfile,
+  conservative stale-socket recovery, TERM/INT/HUP draining, joined/reaped workers
+  and member exit after broker loss. Owner may shorten the session deadline.
+  Added stalled-handoff, overload, service/worker/broker failure, SQLite contention
+  and blocked-output supervision oracles; eight-worker cap remains unchanged.
+  No 100–250-member capacity or production appliance claim.
+
 - Restricted OpenSSH development access: separate database-inaccessible terminal UID,
   bounded Unix terminal handoff/broker and member-only entry point, shared ANSI/chat
   UI through inherited descriptors and owner-controlled themes. Native NetBSD 11 ARM64

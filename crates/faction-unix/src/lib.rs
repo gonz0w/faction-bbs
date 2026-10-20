@@ -1,4 +1,4 @@
-//! Narrow NetBSD CMSG ABI bridge. All application crates still forbid unsafe.
+//! Narrow native descriptor/signal bridge. Application crates forbid unsafe.
 #![deny(unsafe_op_in_unsafe_fn)]
 #[cfg(target_os = "netbsd")]
 mod netbsd {
@@ -82,4 +82,24 @@ mod tests {
         data_a.read_exact(&mut proof).unwrap();
         assert_eq!(&proof, b"original alive");
     }
+}
+
+unsafe extern "C" {
+    fn faction_install_shutdown() -> i32;
+    fn faction_shutdown_requested() -> i32;
+}
+/// Install process-global TERM/INT/HUP handlers. Call once during broker startup.
+/// A handler only stores into a C11 lock-free atomic; no Rust executes in it.
+pub fn install_shutdown() -> std::io::Result<()> {
+    // SAFETY: no pointers or borrowed state cross this call. C owns the static
+    // atomic/handlers for process lifetime. On partial failure the broker exits.
+    if unsafe { faction_install_shutdown() } == -1 {
+        Err(std::io::Error::last_os_error())
+    } else {
+        Ok(())
+    }
+}
+pub fn shutdown_requested() -> bool {
+    // SAFETY: reads the process-lifetime C lock-free atomic, with no pointers.
+    unsafe { faction_shutdown_requested() != 0 }
 }

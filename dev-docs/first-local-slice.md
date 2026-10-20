@@ -10,7 +10,8 @@ implementation and tests; approval, sessions, durable posts/replies/unread/retri
 work locally. A local vertical ANSI/theme/dual-navigation baseline now covers part of step 2
 ([pack guide](../docs/theme-packs.md), ADR 0009); full art/terminal support, account
 lifecycle and room ACLs remain. Step 5 now has a [restricted SSH development gateway](../docs/restricted-ssh.md)
-and [native full-application tests](research/0024-restricted-ssh-netbsd.md); 100/250
+and [native full-application tests](research/0024-restricted-ssh-netbsd.md), plus
+[managed service/eight-session failure checks](research/0026-service-lifecycle-load.md); 100/250
 load/failure accounting and maintained deployment gates remain. Step 3 now has
 [private export/verify/restore](../docs/export-restore.md) for current durable state
 (ADR 0011); full installation/member interchange and power-loss gates remain.

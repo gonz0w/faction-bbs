@@ -55,3 +55,10 @@ BBS identity/password/approval. Owner commands remain in the local console only.
 A small native NetBSD CMSG bridge has an explicit C/FFI ownership boundary; all
 other application crates forbid unsafe Rust. Default cap is eight workers; complete
 host/load/failure and hostile-code confinement remain required before production.
+
+[ADR 0013](decisions/0013-managed-gateway-lifecycle.md) adds opt-in NetBSD rc.d,
+locked single-instance ownership, signal draining, member parent monitoring and
+bounded native load/failure evidence. The narrow native helper also implements
+a lock-free shutdown flag; no new registry dependency or schema is added. Eight
+workers remain the development cap. Process/SSH RSS sums are not private memory
+or evidence for 100–250 connected members.

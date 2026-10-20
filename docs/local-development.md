@@ -128,8 +128,9 @@ grid layouts, calendar themes and visual review of actual artwork remain work.
 [Local chat](local-chat.md) now has a bounded simultaneous-console baseline.
 [Restricted SSH](restricted-ssh.md) now uses a separate frontend/broker/member worker;
 the complete workspace and terminal/recovery flows passed natively on NetBSD 11 ARM64.
-Remaining account/room lifecycle, complete load/failure accounting and deployment
-lifecycle are next; Lua menus/isolated
+Managed [NetBSD service lifecycle](service-lifecycle.md) and bounded load/failure
+checks now pass; account/room lifecycle, complete resource/capacity accounting and
+maintained deployment remain next; Lua menus/isolated
 doors follow the useful local core. See [scope](../dev-docs/first-local-slice.md),
 [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md) and
 [ADR 0009](../dev-docs/decisions/0009-safe-terminal-menus-and-themes.md).
