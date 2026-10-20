@@ -1,12 +1,12 @@
 # The BBS session
 
-Status: product flow confirmed; screens, keys, protocols, and storage are not implemented.
+Status: product flow confirmed; an early local account/room console exists. The network login, ANSI identity/theme flow and complete BBS menu remain to build. See [local development](local-development.md) for actual behavior and limits.
 
 ## Entry and membership
 
 Users connect from a network terminal application or, where enabled and feasible under the no-JS constraint, a browser console. They log in or submit a registration request. Registration creates no automatic community access. Pending, rejected, or revoked users cannot read boards, join chat, browse files, use mail, launch doors, or open the other-BBS directory. Entry/registration/status feedback is the only pre-approval experience to design.
 
-Approval is controlled locally by the sysop. Both authentication and approval must be enforced by the server for every community action, not just by hiding menu entries. Role and recovery details remain research questions.
+Approval is controlled locally by the sysop. Both authentication and approval must be enforced by the server for every community action, not just by hiding menu entries. The local increment has sysop/member roles, pending/approved/revoked status and separate filesystem-owner recovery. Moderator, multi-operator and remote recovery policies remain open.
 
 ## Approved login
 

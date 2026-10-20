@@ -2,7 +2,7 @@
 
 ## Read first
 
-Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is a research-stage project; Rust and primary NetBSD direction are selected (ADR 0006), but there is no runnable BBS or accepted complete production stack yet.
+Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008). There is no network BBS release or accepted complete production stack. Read docs/local-development.md before running it; the owner-capable console must never become an SSH forced command.
 
 ## Product constraints
 

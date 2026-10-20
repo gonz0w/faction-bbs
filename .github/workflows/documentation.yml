@@ -17,7 +17,7 @@ jobs:
   documentation:
     name: Documentation and policy
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Fetch the public repository revision
         env:
@@ -39,3 +39,15 @@ jobs:
           python3 experiments/023-netbsd-dependencies/verify_evidence.py
           python3 tools/probe_lua_boundary.py --check
           python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Validate the local Rust core and real terminal flow
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo fmt --all -- --check
+          python3 tools/check_rust_dependencies.py
+          cargo clippy --workspace --all-targets --release --locked -- -D warnings
+          cargo test --workspace --locked --release
+          cargo build --workspace --locked --release
+          python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"

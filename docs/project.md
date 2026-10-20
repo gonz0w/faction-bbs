@@ -1,6 +1,6 @@
 # Faction BBS: product direction
 
-Status: confirmed product intent, technical design unvalidated. Updated 2026-10-19. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
+Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-19. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
 
 ## Purpose and character
 
@@ -39,7 +39,7 @@ Transport-specific addresses, discovery, routing, and connection behavior must s
 
 ## Research before production implementation
 
-The owner selected **Rust** and **NetBSD as primary target** on 2026-10-19 ([ADR 0006](../dev-docs/decisions/0006-rust-and-primary-netbsd.md)). Framework, storage engine, production SSH backend, federation protocol, extension runtime and appliance configuration remain research decisions. SSH with optional private-network mode is accepted access direction. Native NetBSD ARM64 probes verified Mio readiness, rusqlite with bundled/pkgsrc SQLite, and a synthetic restricted OpenSSH gateway; full security, capacity and hardware validation remain open. The next integrated validation slice uses Rust/readiness I/O and local SQLite WAL; [ADR 0005](../dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the experiment and required evidence before production adoption. Familiarity, nostalgia, and popularity alone are insufficient evidence. JavaScript/TypeScript is excluded by explicit owner instruction.
+The owner selected **Rust** and **NetBSD as primary target** on 2026-10-19 ([ADR 0006](../dev-docs/decisions/0006-rust-and-primary-netbsd.md)). The first development core uses local SQLite WAL and Argon2id credentials ([ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md)); the production backend, SSH integration, federation protocol, extension runtime and appliance configuration still need validation. SSH with optional private-network mode is accepted access direction. Native NetBSD ARM64 probes verified Mio readiness, rusqlite with bundled/pkgsrc SQLite, and a synthetic restricted OpenSSH gateway; full security, capacity and hardware validation remain open. The next integrated validation slice uses Rust/readiness I/O and local SQLite WAL; [ADR 0005](../dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the experiment and required evidence before production adoption. Familiarity, nostalgia, and popularity alone are insufficient evidence. JavaScript/TypeScript is excluded by explicit owner instruction.
 
 The founder welcomes newer and older technologies on merit and explicitly prioritizes tiny working sets and scalable low-memory native options, including selective assembly if measurements justify it. Historical 640K BBSes are an efficiency inspiration, not a literal modern security/host ceiling. Unusual runtimes, specialized operating systems, blockchain and optional public helpers may be investigated, but must satisfy the same privacy, local-authority and independent-operation constraints. No external service is selected. Proposed numeric application budgets and bounded experiments are in the [small-host research](../dev-docs/research/0028-small-host-budgets.md).
 
@@ -51,7 +51,7 @@ Current sequencing is [software-first local core, then Lua](../dev-docs/decision
 
 ## Unresolved questions
 
-- Registration fields, approval/status/rejection/revocation, account recovery, and operator bootstrap.
+- Full account lifecycle, registration fields and remote-safe recovery; local bootstrap, pending/approved/revoked status and owner-only recovery exist in the [development console](local-development.md).
 - Room reading order, unread state, quoting/reply behavior, and retention/moderation.
 - Whether existing IRC clients must interoperate, beyond IRC-style commands within the BBS.
 - SSH backend, identity/bootstrap mapping, confinement and private-only binding validation; any legacy Telnet compatibility remains separate from the accepted secure-access direction. Disabled/private portal operation remains required.

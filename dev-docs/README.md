@@ -1,6 +1,6 @@
 # Development documentation
 
-Faction BBS is establishing its architecture. Rust and primary NetBSD direction are selected; there is no accepted complete production stack or runnable product yet.
+Faction BBS has an early local Rust identity/room core and development console. NetBSD remains primary; a network BBS and complete production stack are still being built/validated. See [local development](../docs/local-development.md) and [dependency inventory](dependencies/README.md).
 
 | Material | Purpose |
 | --- | --- |

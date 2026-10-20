@@ -25,4 +25,4 @@ This file records meaningful project changes. Product releases will use versione
 
 - Recorded Oblivion/2-inspired highlighted-arrow/Enter menus plus direct hotkeys, foundational sysop themes and optional seasonal palettes/login identity art. Added attributed, examined ACiD/iCE/scene ASCII references and proposed software navigation/theme/terminal oracles; no artwork bundled or menu implementation claimed. Replaced the README placeholder box masthead with text.
 
-No BBS runtime, supported transports, game compatibility, or release has been delivered.
+- First local Rust application increment: private SQLite state, one-time sysop bootstrap, bounded hidden Argon2id credentials, pending registration, current approval/role/epoch checks, revoke/reapprove and local-owner recovery. Durable chronological rooms/posts, same-room replies, unread cursors and retry reconciliation; plain-text console, Rust integration tests, PTY flow checks and selected Linux/NetBSD dependency inventory in shell-only CI. No network listener, full ANSI/themes, chat, door-game support or release yet.

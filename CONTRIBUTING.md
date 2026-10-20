@@ -1,6 +1,6 @@
 # Contributing to Faction BBS
 
-We are establishing the architecture for a private, terminal-first BBS. Useful contributions today are bounded research, explicit requirements, and small experiments that test a named uncertainty.
+We are building the first local core for a private, terminal-first BBS alongside bounded research. Useful contributions include tested implementation increments, requirements and experiments that resolve named uncertainties.
 
 1. Read [the product requirements](docs/project.md), [security/privacy requirements](docs/security-privacy.md), and [development workflow](dev-docs/workflow.md).
 2. Find or open a GitHub issue. Check the [issue index](dev-docs/issue-index.md) for related work and dependencies. An open issue does not promise an initial-release feature.
@@ -9,7 +9,7 @@ We are establishing the architecture for a private, terminal-first BBS. Useful c
 5. Run `python3 tools/check_repository.py`, plus the relevant checks for any experiment. State what was actually validated and what remains unknown.
 6. Open a PR linking the issue. Include the result, relevant validation, and documentation updates. Keep the README's stage and support statements accurate.
 
-No production stack has been selected. There is no application build/test/start command yet. JavaScript/TypeScript, including third-party browser assets and JS-based tooling/actions, is prohibited. Python 3.10+ is used only for repository checks.
+Rust/primary NetBSD direction and the first local SQLite/credential choices are recorded in the ADRs; a complete production stack remains open. See [local development](docs/local-development.md) for application build/run/tests. JavaScript/TypeScript, including third-party browser assets and JS-based tooling/actions, is prohibited. Python 3.10+ is used only for repository checks.
 
 Keep documentation in plain Markdown. Use relative repository links, descriptive headings, readable prose, and named decision records. Product/member/sysop docs belong in `docs/`; engineering material belongs in `dev-docs/`. Historical archives are immutable and excluded from current design authority.
 

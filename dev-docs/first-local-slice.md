@@ -1,8 +1,14 @@
 # First local software slice
 
-Status: proposed build scope under #35, 2026-10-19. Owner accepts core first,
+Status: build underway under #35, 2026-10-19. Owner accepts core first,
 software/VM validation now, Lua menus/isolated doors next. This plan gives the
-next implementation a finish line; it does not claim a complete product exists.
+implementation a finish line; it does not claim a complete product exists.
+
+First increment: [local identity/room core and console](../docs/local-development.md),
+[ADR 0008](decisions/0008-local-core-and-credentials.md). Steps 1 and 3 have partial
+implementation and tests; approval, sessions, durable posts/replies/unread/retries
+work locally. Full account lifecycle, export/restore, safe ANSI/theme menus, room
+ACLs, chat, SSH and native NetBSD application checks remain open.
 
 ## Build sequence and observable completion
 
