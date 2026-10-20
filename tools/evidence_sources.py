@@ -2,7 +2,7 @@
 import hashlib,json,re
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-MANIFEST_SHA256="023fcfd2575b82251c42bb181746e798ec332ecac36d61c103b36d3634af05b6"
+MANIFEST_SHA256="cfbb0a840f3db6dc79954dfc49a80eb5f3a637560494e2eb4cfda7cb4ff717ac"
 
 def manifest(root=ROOT):
     raw=(root/'dev-docs/evidence/manifest.json').read_bytes()
@@ -13,8 +13,10 @@ def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    if m['files'].get(name)==expected:
-        target=root/'dev-docs/evidence'/m['source_root']/name
+    candidates=[m]+m.get('snapshots',[])
+    matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
+    if matches:
+        target=root/'dev-docs/evidence'/matches[0]['source_root']/name
     else:target=root/name
     assert target.resolve().is_relative_to(root.resolve()),'source path escaped repository'
     raw=target.read_bytes()

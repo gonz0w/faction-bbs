@@ -24,4 +24,22 @@ class ExecutedSources(unittest.TestCase):
                 (root/'dev-docs/evidence/manifest.json').write_bytes(b'{}')
                 with self.assertRaises(AssertionError):evidence.source_bytes('Cargo.toml',newhash,root)
 
+    def test_two_revisions_of_same_path_resolve_by_recorded_digest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);base=root/'dev-docs/evidence';base.mkdir(parents=True)
+            versions=[b'first executed',b'second executed']
+            snapshots=[]
+            for i,raw in enumerate(versions):
+                folder=base/str(i);folder.mkdir();(folder/'same.rs').write_bytes(raw)
+                snapshots.append({'source_root':str(i),'files':{'same.rs':hashlib.sha256(raw).hexdigest()}})
+            (root/'same.rs').write_bytes(b'current is different')
+            raw=json.dumps(dict(snapshots[0],snapshots=[snapshots[1]])).encode()
+            (base/'manifest.json').write_bytes(raw)
+            with patch.object(evidence,'MANIFEST_SHA256',hashlib.sha256(raw).hexdigest()):
+                for version,snapshot in zip(versions,snapshots):
+                    self.assertEqual(evidence.source_bytes('same.rs',snapshot['files']['same.rs'],root),version)
+                (base/'1/same.rs').write_bytes(versions[0])
+                with self.assertRaisesRegex(AssertionError,'executed source bytes changed'):
+                    evidence.source_bytes('same.rs',snapshots[1]['files']['same.rs'],root)
+
 if __name__=='__main__':unittest.main()

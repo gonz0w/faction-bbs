@@ -3,14 +3,16 @@
 import hashlib,json,re
 from pathlib import Path
 from check_ui_evidence import validate_trial
+from evidence_sources import source_bytes
 
 ROOT=Path(__file__).resolve().parents[1]
 
-def validate_sources(sources,root=ROOT):
+def validate_sources(sources,root=ROOT,historical=False):
     for name,digest in sources.items():
         p=Path(name);assert not p.is_absolute() and '..' not in p.parts
         assert re.fullmatch('[a-f0-9]{64}',digest)
-        assert hashlib.sha256((root/p).read_bytes()).hexdigest()==digest,'current service execution drift: '+name
+        raw=source_bytes(name,digest,root) if historical else (root/p).read_bytes()
+        assert hashlib.sha256(raw).hexdigest()==digest,'current service execution drift: '+name
 
 
 def check():
@@ -19,7 +21,7 @@ def check():
     assert d['reference_commit']=='09b506ea4f6da2830a0f2f480918ffb5048749aa'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
     sources=d['execution_sources']
-    validate_sources(sources)
+    validate_sources(sources,historical=True)
     for name in ['Cargo.toml','Cargo.lock','crates/faction-service/src/main.rs','crates/faction-service/src/ui.rs','crates/faction-service/src/config.rs','crates/faction-core/src/schema.sql','crates/faction-core/src/chat.sql','native/faction-tty/main.c','tools/build_terminal_frontend.py','deploy/netbsd/faction_broker','deploy/netbsd/sshd_config.in','deploy/netbsd/service.toml.in']:
         assert name in sources
     assert d['native_sources']==sources,'native transferred bytes differ'
@@ -46,6 +48,6 @@ def check():
     assert any(row[0]=='ntpd' and row[3]>0 for row in settings['restored']['host']['processes'])
     assert d['final_fixture']=={'integrity':'ok','accounts':1001,'unique_hashes':1001,'rooms':50,'posts':100000}
     assert all(d['cleanup'][k] for k in ['guest_stopped','private_inputs_removed','forwards_closed'])
-    print('Installed shared service evidence passed: strict current source pins, 250 members across three boots, lifecycle/rollback and unchanged guard; minimum %.2f MiB.'%(min(minima)/1024/1024))
+    print('Installed shared service evidence passed: preserved executed source pins, 250 members across three boots, lifecycle/rollback and unchanged guard; minimum %.2f MiB.'%(min(minima)/1024/1024))
 
 if __name__=='__main__':check()

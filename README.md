@@ -27,17 +27,21 @@ same database. [Setup and lifecycle](docs/service-lifecycle.md).
 public HTTP service is required. Software/VM validation drives development;
 physical SBC tests follow a usable product.
 
-Three fresh-boot **250-distinct-member service workloads** pass on the 2-vCPU /
-1-GiB NetBSD 11 ARM64 VM, including room/post/chat work, real member/owner
-credentials, memory controls, loaded stop and fresh-login recovery. Final sampled
-headroom is **180.67–181.12 MiB**; the lowest stress sample is **135.23 MiB** under
-the unchanged 128-MiB guard. All mandatory SSH/frontends and base services count.
-[Actual service evidence and limits](dev-docs/research/0033-shared-service-integration.md).
+The service/native frontend now verify both local socket peers, sanitize inherited
+authority and apply irreversible process/thread/descriptor/core/locked-memory
+ceilings. [Exact confinement boundary](docs/process-confinement.md).
+
+Three fresh-boot **250-distinct-member hardened-service workloads** pass on the
+2-vCPU / 1-GiB NetBSD 11 ARM64 VM, including room/post/chat work, real credentials,
+loaded stop and fresh-login recovery. Final sampled headroom is
+**183.25–184.33 MiB**; lowest stress headroom is **137.61 MiB** under the unchanged
+128-MiB guard. Every measured owner/frontend retains its kernel ceilings. Full
+SSH/frontend and base-service costs count. [Native evidence and limits](dev-docs/research/0034-process-confinement.md).
 
 The 250-session configuration and compact-allocator/pageable-NTP host profile are
 explicit research inputs, never installed by ordinary service setup. Broader
 active mixes, worst-case themes/output, soak, authenticated-transport admission,
-complete budgets, stronger confinement and maintained image/timekeeping policy
+complete budgets, filesystem/network/exec isolation and maintained image/timekeeping policy
 remain open. These observations are not supported capacity or physical SBC claims.
 [Historical evidence](dev-docs/evidence/README.md) retains original executed bytes
 as the maintained code evolves. Privacy/security/performance requirements remain

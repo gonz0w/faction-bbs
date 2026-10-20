@@ -7,9 +7,9 @@ The maintained `crates/faction-service` now promotes the full shared UI into the
 opt-in NetBSD rc.d path, using strict root/owner TOML configuration, native
 `faction-tty`, base OpenSSH and eight-session/five-second defaults. Worker rollback
 remains available. See docs/shared-service.md, docs/service-lifecycle.md and the
-current integration plan 0019. Historical standalone experiments are preserved;
-all eight native records retain actual executed bytes in dev-docs/evidence, with
-a pinned buildable source snapshot. Never refresh old hashes to current code.
+previous integration plan 0019. Historical standalone experiments are preserved;
+all nine historical native records retain actual executed bytes in dev-docs/evidence,
+with two pinned buildable source snapshots. Never refresh old hashes to current code.
 
 Keep the two credential permits spanning queued/active/result lifetime, two kernel
 slots, unchanged Argon2, connection-bound opaque authority, current core role/
@@ -20,14 +20,21 @@ must not silently tune allocator/NTP/sysctls. Base services remain in resource
 accounting; shared-owner failure affects all connected members. Stronger process
 confinement, maintained host/timekeeping policy and full #28 workloads remain open.
 
-Current service integration (ADR 0019/research 0033/results 034) passes 27 native
-shared UI checks, 11 service configuration/lifecycle/rollback checks and three
-fresh-boot 250-member installed-service runs. Final headroom is 180.67–181.12 MiB;
-lowest stress sample is 135.23 MiB. Native Rust tests total 62; worker SSH/lifecycle
-and frontend checks remain recorded separately. Eight stays the default. These
-are short software VM observations with an explicit research host profile, not
-supported capacity or physical SBC claims. Current result pins current sources
-directly; preserve those bytes properly when it later becomes historical.
+Current native confinement (ADR 0020/research 0034/results 035) passes 29 shared
+UI/peer/failure checks, 31 frontend checks, five inherited-authority startup checks,
+11 shared lifecycle/rollback, 20 SSH, 13 worker lifecycle and 63 native Rust tests.
+Three fresh-boot hardened-service 250-member runs pass; final sampled headroom is
+183.25–184.33 MiB, lowest stress 137.61 MiB. Every measured owner/frontend has
+verified soft/hard core/memlock/process zero, frontend files 8/additional LWPs 0,
+service files `2 * max_sessions + 48`/additional LWPs 3 ceilings. Service starts its fixed
+three helpers first. Preserve both kernel peer UID checks, same owned stdio TTY,
+descriptor/environment hygiene and strict status+EOF completion. Never relax
+these limits to launch doors; extensions need a separate launcher/UID boundary.
+See docs/process-confinement.md and plan 0020. Filesystem/network/exec/same-UID
+isolation and authenticated-transport admission remain open. These short software
+VM observations are not supported capacity or physical SBC claims. Current result
+pins current sources directly; preserve those bytes properly before they become
+historical. Both buildable snapshots and all nine old record hashes remain fixed.
 
 ## Product constraints
 

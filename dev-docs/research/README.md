@@ -50,3 +50,7 @@ not change the normal eight-worker gateway or adopt a production replacement.
 - [0032: Full shared UI and ANSI themes](0032-shared-ui-themes.md)
 
 - [0033: Maintained shared service on NetBSD](0033-shared-service-integration.md)
+
+The [native confinement report](0034-process-confinement.md) records kernel peer
+authentication, inherited-authority denials and irreversible process ceilings on
+the maintained shared service, with new complete 250-member VM measurements.

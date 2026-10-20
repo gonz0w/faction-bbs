@@ -37,7 +37,11 @@ Lua menus and isolated doors remain the next extension priority after the useful
 core. Files, mail, federation, browser access and external networks remain backlog
 items; the shared service does not enable them implicitly.
 
-[Installed-service evidence](../dev-docs/research/0033-shared-service-integration.md)
-records three fresh-boot 250-member runs with 135.23 MiB lowest sampled stress
+[Hardened installed-service evidence](../dev-docs/research/0034-process-confinement.md)
+records three fresh-boot 250-member runs with 137.61 MiB lowest sampled stress
 headroom. The eight-session default is unchanged; the larger research profile
 is not a supported capacity setting.
+
+See [native process confinement](process-confinement.md) for the current peer-UID,
+TTY/descriptor/environment checks, irreversible resource ceilings and remaining
+filesystem/network/exec isolation boundary.

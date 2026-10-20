@@ -7,7 +7,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--cc',default=os.environ.get('CC','cc'));a=p.parse_args()
     if not sys.platform.startswith('netbsd'):raise SystemExit('The C terminal entry point currently targets native NetBSD only; use faction-ssh for developer-host console checks.')
     a.output.parent.mkdir(parents=True,exist_ok=True)
-    subprocess.run([a.cc,'-std=c11','-O2','-Wall','-Wextra','-Werror','-fstack-protector-strong','-D_FORTIFY_SOURCE=2','-fPIE','-pie','-Wl,-z,relro,-z,now',str(ROOT/'native/faction-tty/main.c'),str(ROOT/'crates/faction-unix/src/terminal_fd.c'),'-o',str(a.output)],check=True)
+    subprocess.run([a.cc,'-std=c11','-O2','-Wall','-Wextra','-Werror','-fstack-protector-strong','-D_FORTIFY_SOURCE=2','-fPIE','-pie','-Wl,-z,relro,-z,now',str(ROOT/'native/faction-tty/main.c'),str(ROOT/'crates/faction-unix/src/terminal_fd.c'),str(ROOT/'crates/faction-unix/src/process_security.c'),'-o',str(a.output)],check=True)
     a.output.chmod(0o755)
     print('Built NetBSD terminal-only frontend; no SSH/account/service configuration changed.')
 if __name__=='__main__':main()

@@ -18,3 +18,7 @@ Faction BBS has an early local Rust identity/room core and development console, 
 Product/member/sysop documentation lives in [docs](../docs/README.md). Repository checks run with `python3 tools/check_repository.py` using Python 3.10+ and no third-party packages. Current Codex guidance is in [AGENTS.md](../AGENTS.md).
 
 [Versioned executed sources](evidence/README.md) preserve historical native measurements as current code evolves.
+
+Current confinement work: [plan 0020](plans/0020-process-confinement.md),
+[research 0034](research/0034-process-confinement.md) and
+[ADR 0020](decisions/0020-native-process-envelope.md).

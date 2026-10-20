@@ -3,10 +3,19 @@
 import hashlib
 from evidence_sources import ROOT,manifest,source_bytes
 def check():
-    data=manifest();base=ROOT/'dev-docs/evidence'/data['source_root']
+    data=manifest();snapshots=[data]+data.get('snapshots',[])
     assert data['schema']==1 and data['origin_commit']=='09b506ea4f6da2830a0f2f480918ffb5048749aa'
-    assert {str(p.relative_to(base)) for p in base.rglob('*') if p.is_file()}==set(data['files'])
-    for name,digest in data['files'].items():assert hashlib.sha256(source_bytes(name,digest)).hexdigest()==digest
-    for name,digest in data['records'].items():assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'historical record changed: '+name
-    print('Frozen sources and eight historical records passed; no recorded hashes refreshed.')
+    assert len(snapshots)==2 and snapshots[1]['origin_commit']=='627a8241bf736db2371938641d8bef88785d374a'
+    count=0
+    for snapshot in snapshots:
+        base=ROOT/'dev-docs/evidence'/snapshot['source_root']
+        assert {str(p.relative_to(base)) for p in base.rglob('*') if p.is_file()}==set(snapshot['files'])
+        for name,digest in snapshot['files'].items():
+            assert hashlib.sha256((base/name).read_bytes()).hexdigest()==digest
+            assert hashlib.sha256(source_bytes(name,digest)).hexdigest()==digest
+        for name,digest in snapshot['records'].items():
+            assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'historical record changed: '+name
+            count+=1
+    assert count==9
+    print('Both executed source snapshots and nine unchanged historical records passed.')
 if __name__=='__main__':check()

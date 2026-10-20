@@ -4,6 +4,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Native shared-service/frontend process envelope: kernel peer UID checks on both
+  socket ends, inherited identity/FD/environment hygiene, strict owned stdio TTY
+  and completion, irreversible verified resource ceilings. No new registry
+  dependency, schema or automatic host tuning. Native security/lifecycle checks
+  and three fresh-boot 250-member runs pass with 137.61 MiB lowest stress
+  headroom under the unchanged guard; eight sessions remain the default.
+  Filesystem/network/exec isolation and wider capacity adoption stay open.
+  Preserved #62 executed inputs and all nine historical records before changes.
+
 - Maintained shared Rust terminal backend and NetBSD native terminal frontend,
   strict bounded owner configuration, opt-in rc.d integration and tested worker
   rollback. Default admission remains eight / five seconds; larger/faster settings
