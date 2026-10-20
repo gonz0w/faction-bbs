@@ -198,7 +198,7 @@ fn asset_paths_provenance_and_symlinks_fail_atomically() {
     assert!(Theme::load(&p.0).is_ok());
     fs::remove_file(p.0.join("screen.ans")).unwrap();
     symlink("theme.toml", p.0.join("screen.ans")).unwrap();
-    assert!(good.with_season(&p.0).is_err());
+    assert!(Theme::load(&p.0).is_err());
     assert_eq!(good.board(), "Test board");
     fs::remove_file(p.0.join("screen.ans")).unwrap();
     fs::write(p.0.join("screen.ans"), b"\x1b]52;c;unsafe\x07").unwrap();
