@@ -345,7 +345,7 @@ fn private_files_symlinks_and_future_schema() {
     fs::set_permissions(&bad.0, fs::Permissions::from_mode(0o755)).unwrap();
     assert!(matches!(Board::open(&bad.0), Err(Error::UnsafeState)));
     let db = rusqlite::Connection::open(f.dir.0.join("faction.sqlite3")).unwrap();
-    db.pragma_update(None, "user_version", 2).unwrap();
+    db.pragma_update(None, "user_version", 3).unwrap();
     assert!(matches!(
         Board::open(&f.dir.0),
         Err(Error::UnsupportedSchema)

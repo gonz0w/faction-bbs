@@ -30,6 +30,12 @@ pub struct Decoder {
     utf8_remaining: u8,
 }
 impl Decoder {
+    pub(crate) fn text_ready(&self) -> bool {
+        matches!(self.state, State::Ground) && self.utf8_remaining == 0
+    }
+    pub(crate) fn quarantined(&self) -> bool {
+        matches!(self.state, State::Quarantine)
+    }
     pub fn new() -> Self {
         Self {
             sequence: Vec::with_capacity(16),

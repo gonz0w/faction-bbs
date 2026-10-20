@@ -1,6 +1,6 @@
 # The BBS session
 
-Status: product flow confirmed; an early local account/room console exists. A local ANSI identity/theme/dual-navigation baseline now exists; network login and the complete BBS feature menu remain to build. See [local development](local-development.md) for actual behavior and limits.
+Status: product flow confirmed; an early local account/room console exists. Local command chat and an ANSI identity/theme/dual-navigation baseline now exist; network login and the complete BBS feature menu remain to build. See [local development](local-development.md) for actual behavior and limits.
 
 ## Entry and membership
 

@@ -2,7 +2,9 @@
 #![forbid(unsafe_code)]
 #[cfg(not(unix))]
 compile_error!("The first local core supports Unix state ownership semantics only");
+mod chat;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
+pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
 use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
 use std::{
     fmt, fs,
@@ -287,13 +289,25 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || version != 1 {
+        } else if app != APP_ID || !(1..=2).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || actual_version != 1 {
+        if actual_app != APP_ID || !(1..=2).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
+        }
+        db.pragma_update(None, "foreign_keys", true)?;
+        if actual_version == 1 {
+            let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+            let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+            if v == 1 {
+                tx.execute_batch(include_str!("chat.sql"))?;
+                tx.pragma_update(None, "user_version", 2)?;
+            } else if v != 2 {
+                return Err(Error::UnsupportedSchema);
+            }
+            tx.commit()?;
         }
         db.execute_batch("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA cache_size=-2048; PRAGMA mmap_size=0;")?;
         let identity: Vec<u8> =

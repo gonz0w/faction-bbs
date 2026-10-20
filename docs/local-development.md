@@ -33,7 +33,7 @@ reapproval does not revive those sessions. Only the bootstrap sysop exists in th
 increment; member-facing commands cannot promote users or revoke that sysop.
 
 Plain mode commands require Enter; [opt-in ANSI menus](theme-packs.md) add arrows/Enter and direct hotkeys. `R` lists rooms; `N` reads new messages; `H` reads history;
-`P` posts a single line or a reply to a post ID in that room. The sysop can create
+`C` enters [local command chat](local-chat.md). `P` posts a single line or a reply to a post ID in that room. The sysop can create
 rooms with `S` then `C`. Pages are chronological, without Reddit-style nesting or
 votes. After a page is flushed successfully to the terminal, its last post becomes
 the unread cursor. This acknowledges local output, not proof the human read it.
@@ -58,7 +58,8 @@ Existing state must belong to the effective OS user, have no group/world access,
 and use regular files rather than symlinks. Parent directories must already exist
 and be trusted. Keep state outside the checkout. No content is encrypted at rest;
 the filesystem owner can read/change it. There is no application telemetry or
-message-body log. Development terminal scrollback can still contain displayed posts.
+operational message-body log; chat history/receipts are explicit local application
+data with [documented retention](local-chat.md). Development terminal scrollback can still contain displayed posts.
 
 If the sysop password is lost, the filesystem owner can run:
 
@@ -74,11 +75,13 @@ account. The future restricted adapter needs a separate entry point and reviewed
 identity mapping. Local possession of the private store already gives equivalent
 operator authority; this command is not a remote recovery protocol.
 
-There is no backup/export command or upgrade migration yet. For a disposable
+There is no backup/export command yet. Schema 1 -> 2 now migrates transactionally
+for chat; stop older consoles and take the full private snapshot before upgrading.
+Older binaries reject schema 2; rollback requires that pre-upgrade copy. For a disposable
 development snapshot, stop every console and copy the complete state directory,
 retaining owner-only permissions. Do not copy only a live SQLite database file:
 committed data may still be in its WAL. Foreign/future schema versions are rejected.
-Use test data until migrations, backup/restore and data lifecycle are implemented.
+Use test data until broader upgrade, backup/restore and data lifecycle gates are implemented.
 
 ## Validate
 
@@ -91,6 +94,7 @@ cargo clippy --workspace --all-targets --release --locked -- -D warnings
 cargo test --workspace --locked --release
 cargo build --workspace --locked --release
 python3 tools/smoke_local_console.py target/release/faction
+python3 tools/smoke_local_chat.py target/release/faction
 ```
 
 The PTY smoke generates disposable passwords/private state outside the checkout
@@ -109,7 +113,8 @@ text remains escaped; sysop art uses a bounded CP437/cell importer, never raw
 passthrough. No historical art is bundled. Broader/long ANSI, SAUCE/iCE metadata,
 grid layouts, calendar themes and visual review of actual artwork remain work.
 
-Local chat, remaining account/room lifecycle, export/restore, native NetBSD app
+[Local chat](local-chat.md) now has a bounded simultaneous-console baseline.
+Remaining account/room lifecycle, export/restore, native NetBSD app
 validation and a distinct restricted SSH adapter are next; Lua menus/isolated
 doors follow the useful local core. See [scope](../dev-docs/first-local-slice.md),
 [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md) and

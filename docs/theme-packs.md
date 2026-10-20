@@ -69,10 +69,13 @@ same-UID operator processes are trusted; this is not a hostile-filesystem sandbo
 | `version`, `id` | Required version 1; ID is 1–32 lowercase ASCII letters/digits/hyphens. |
 | `board`, `welcome`, `logout` | Optional printable ASCII, maximum 36 / 36 / 60 bytes. Built-in defaults fill omissions. |
 | `normal`, `focus`, `hotkey`, `disabled` | Optional inline/style tables: required `fg`/`bg` integers 0–15, optional `bold` boolean. Foreground and background must differ. Numbers use ANSI ordering, including bright 8–15. No raw escape strings. |
-| `[[menu]]` | Optional 6–7 entries, in display order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes. |
-| Core actions | Exactly one each of `rooms`, `new`, `history`, `post`, `sysop`, `quit`; optional one `doors` entry is always disabled. Unknown/duplicate actions fail. Permissions remain compiled/core-checked. |
+| `[[menu]]` | Optional 6–8 entries, in display order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes. |
+| Core actions | Exactly one each of `rooms`, `new`, `history`, `post`, `sysop`, `quit`; optional one `chat` entry enables local chat; optional one `doors` entry is always disabled. Unknown/duplicate actions fail. Permissions remain compiled/core-checked. |
 | `identity_ascii`, `identity_ansi` | Optional simple local filenames, at most 64 bytes, starting with an alphanumeric and containing only letters/digits/dot/underscore/hyphen. No directories or traversal. |
 | `creator`, `source`, `permission` | Required printable provenance text (at most 160 bytes each) when an identity file is selected. Record real authorship/rights; text declarations do not prove licensing. |
+
+Older custom version-1 menus can omit chat; add an entry with `action="chat"`,
+`key="C"` and a label to expose it. The shipped base includes it.
 
 Omitted art displays the board name as text. No generic block-font logo or archived
 artwork is bundled. ASCII identity files allow printable ASCII/CRLF/LF, at most
@@ -103,7 +106,7 @@ files and their provenance. They cannot change board name, menu labels, keys,
 actions or order. Missing fields retain the base; any invalid field/file rejects
 the entire override. No scheduling/timezone/overlap or mid-session switching yet.
 
-The built-in seven-entry menu emits 668 UTF-8 bytes for the full initial render
+The built-in eight-entry menu emits 736 UTF-8 bytes for the full initial render
 and 137 bytes for the tested first focus move, updating old/new rows without
 replaying identity art. These are deterministic renderer byte counts, not network
 latency or server capacity results. Regression caps are 2 KiB full menu / 256 bytes

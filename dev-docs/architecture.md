@@ -30,8 +30,13 @@ network authority; its local TTY adapter maps both navigation routes to core che
 distinguish development behavior from product requirements. No transport receives
 owner recovery authority; the current CLI is not a remote adapter.
 
+[ADR 0010](decisions/0010-bounded-local-chat.md) adds checked local channels, grants,
+lease-scoped joins, bounded history and explicit schema 1 -> 2 migration. The local
+TTY adapter polls owned pages without holding a DB transaction during output;
+server event notification/output limits remain separate integrated work.
+
 ## Open decisions
 
 With Rust and primary NetBSD selected, compare local persistence/search, command/session representation, secure terminal access, optional HTTP exposure, no-JS browser-console feasibility, file transfers, room reply semantics, IRC interoperability, extension mechanisms, and later shared-channel/mesh delivery against measurable constraints. Each material choice needs a source-attributed decision record and a falsifiable validation plan. See [the issue index](issue-index.md).
 
-The initial development schema is version 1 under ADR 0008; it has no stable on-disk compatibility promise yet. No federation protocol, transport adapter contract, framework, production performance guarantee or supported device list is adopted by this document. Select fast/lightweight options on measured evidence, including deployment burden and security, rather than language familiarity.
+The development schema is version 2 under ADR 0010, with a transactional migration from the initial ADR 0008 schema; it has no stable on-disk compatibility promise yet. No federation protocol, transport adapter contract, framework, production performance guarantee or supported device list is adopted by this document. Select fast/lightweight options on measured evidence, including deployment burden and security, rather than language familiarity.

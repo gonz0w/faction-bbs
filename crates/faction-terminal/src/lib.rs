@@ -1,7 +1,9 @@
 //! Bounded terminal presentation; actions carry no authorization.
 #![forbid(unsafe_code)]
 mod art;
+mod editor;
 mod keys;
+pub use editor::{LINE_BYTES, LineEditor, LineEvent};
 mod theme;
 pub use art::Art;
 pub use keys::{Decoder, Key};

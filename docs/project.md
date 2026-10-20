@@ -15,7 +15,7 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | Membership | Login/registration and local sysop approval before community access. |
 | Session | WWIV-inspired flow: approved login, BBS-specific ANSI identity art, sysop-defined welcome/broadcast/quote, main menu. |
 | Boards | Citadel-style rooms: discover/enter a room, read new messages, post, reply. Exact reply presentation remains open. |
-| Chat | IRC-style commands and channels. Initial shared chat stays within one installation; channels may be local-only. |
+| Chat | IRC-style commands and channels. A local-console baseline now has board/private channels and bounded history ([guide](local-chat.md)); network chat and future shared-channel participation remain separate. |
 | Files/mail | Local file areas, messaging, and sysop-owned sharing/access policy. Detailed transfer and mail semantics require design. |
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
@@ -53,7 +53,7 @@ Current sequencing is [software-first local core, then Lua](../dev-docs/decision
 
 - Full account lifecycle, registration fields and remote-safe recovery; local bootstrap, pending/approved/revoked status and owner-only recovery exist in the [development console](local-development.md).
 - Room reading order, unread state, quoting/reply behavior, and retention/moderation.
-- Whether existing IRC clients must interoperate, beyond IRC-style commands within the BBS.
+- Whether existing IRC clients must interoperate; the implemented console slash commands do not provide an IRC wire server.
 - SSH backend, identity/bootstrap mapping, confinement and private-only binding validation; any legacy Telnet compatibility remains separate from the accepted secure-access direction. Disabled/private portal operation remains required.
 - Whether a useful browser console is achievable with no JavaScript dependencies; permitted alternatives and explicit tradeoffs need research.
 - Character encodings, ANSI capabilities, safe parsing, plain-text fallback, and link budgets.
