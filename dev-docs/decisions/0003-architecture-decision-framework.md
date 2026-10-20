@@ -1,6 +1,7 @@
 # 0003: Use gated, evidence-based architecture decisions
 
-Status: proposed
+Status: accepted
+Acceptance: owner authorized merge on 2026-10-19; [PR #36](https://github.com/gonz0w/faction-bbs/pull/36) merged as `2b23e39`. Process adoption only; no runtime architecture accepted.
 Date: 2026-10-19
 Owner: project founder/authorized maintainer through review and merge
 Issue: [#1 / BBS-001](https://github.com/gonz0w/faction-bbs/issues/1)
@@ -18,7 +19,7 @@ How should Faction compare architecture options without premature stack selectio
 | Require a full formal architecture evaluation for every choice | Structured analysis of interacting qualities. | Excessive process for small/reversible research questions; no mature architecture to evaluate yet. |
 | Use a small gated framework with risk-based evidence requirements | Shared constraints and explicit tradeoffs, scaled to decision consequence. | Requires disciplined scenario definitions and review; weights can create false precision if used without evidence. |
 
-## Proposed decision
+## Decision
 
 Adopt the third approach in [the framework](../research/decision-framework.md). Screen mandatory gates first, then compare viable options. Keep unknowns visible, tie confidence to claims, predeclare metrics/anchors/weights before numerical scoring, test ranking sensitivity, and make prototype requirements proportional to risk/reversal cost. Use the refined research/ADR templates. Routine reversible edits need no matrix.
 

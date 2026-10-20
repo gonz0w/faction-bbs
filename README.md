@@ -22,7 +22,7 @@ The goal is private, human-scale communities whose operators own their systems a
 
 This repository contains the product requirements, development workflow, preserved design history, and a GitHub issue backlog. There is no selected production language, implemented server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
 
-Architecture research has begun with a proposed [decision framework](dev-docs/research/decision-framework.md) and a bounded approval-enforcement example. These define how to compare options; no runtime architecture or stack has been selected. [The roadmap](dev-docs/roadmap.md) separates current research from future capabilities. [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
+The [decision framework](dev-docs/research/decision-framework.md) is accepted. Current research defines [user journeys on private, poor, and interrupted links](dev-docs/research/0003-constrained-user-journeys.md), with reproducible synthetic payload calculations. These are research inputs, not measured BBS performance; no runtime architecture or stack has been selected. [The roadmap](dev-docs/roadmap.md) separates current research from future capabilities. [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
 
 ## Enter the board
 

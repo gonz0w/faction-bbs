@@ -6,4 +6,6 @@ An experiment answers one named uncertainty with stated inputs, resource/link co
 
 The [decision framework](decision-framework.md) defines gate screening, comparison criteria, evidence/confidence, reversal cost, and prototype requirements. The [approval-boundary worked example](0001-approval-enforcement-example.md) exercises the method; it contains no measured product behavior or adopted runtime architecture.
 
+The [private/poor/interrupted-link journey report](0003-constrained-user-journeys.md) and [synthetic payload results](0003-link-budget-results.md) provide proposed test inputs for #8/#28. Reproduce them with `python3 tools/model_link_budget.py --check`; regenerate deliberately with `--write` when fixtures or arithmetic change. This model is Python repository tooling, not a product stack or runtime/network experiment.
+
 The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. No product experiments have been completed yet.

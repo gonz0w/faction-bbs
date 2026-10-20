@@ -22,7 +22,7 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | Federation | Future optional subscriptions to shared chat channels only. Other BBS data, accounts/approval, directory entries, and local-only chat remain local. |
 | Terminal | Network terminal applications are central; physical serial terminals are not a current target. |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
-| Networks | Ordinary IP plus research into constrained, intermittent, private, future mesh/non-IP networks. No specific alternative transport is promised. |
+| Networks | Initial focus: modern private networks, with occasional poor/interrupted connections (owner clarification 2026-10-19). Constrained links remain research inputs; future mesh/non-IP networks are separately evaluated and no specific alternative transport is promised. |
 | Operations | Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. |
 | Privacy | Minimal opt-in telemetry, deliberate exposure and retention policies, no mandatory public directory or central service. |
 | Technology | No JavaScript or TypeScript anywhere in project source/tooling/dependencies, including browser-terminal assets. Select fast/lightweight implementation options through comparison and prototypes. |

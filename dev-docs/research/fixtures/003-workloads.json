@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-19",
+  "assumptions": "Synthetic sequential application exchanges. No protocol, implementation, or runtime behavior is selected.",
+  "profiles": [
+    {
+      "id": "P1-private",
+      "up_bps": 1000000,
+      "down_bps": 1000000,
+      "rtt_ms": 40,
+      "one_way_jitter_ms": 5,
+      "loss_percent_per_direction": 0,
+      "outage_seconds": 0
+    },
+    {
+      "id": "P2-poor",
+      "up_bps": 64000,
+      "down_bps": 64000,
+      "rtt_ms": 400,
+      "one_way_jitter_ms": 50,
+      "loss_percent_per_direction": 1,
+      "outage_seconds": 0
+    },
+    {
+      "id": "P3-interrupted",
+      "up_bps": 64000,
+      "down_bps": 64000,
+      "rtt_ms": 400,
+      "one_way_jitter_ms": 50,
+      "loss_percent_per_direction": 1,
+      "outage_seconds": 10
+    }
+  ],
+  "workloads": [
+    {
+      "id": "registration-status",
+      "description": "Pending registration response; no community content",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC REGISTRATION REQUEST\r\n",
+          "server": "Request received. Local sysop approval is required.\r\nCommunity access is unavailable while pending.\r\n",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "approved-welcome",
+      "description": "Identity and main menu after authentication/approval",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC APPROVED ENTRY\r\n",
+          "server": "\u001b[2J\u001b[H+------------------+\r\n|   FACTION BBS    |\r\n+------------------+\r\nWelcome. Quote: Make your own scene.\r\n[M] Rooms  [C] Chat  [F] Files  [D] Doors\r\n[O] Other BBSes  [H] Help  [Q] Logout\r\nChoice> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "optional-64KiB-art",
+      "description": "Sized stand-in for optional large artwork, plus menu",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC APPROVED ENTRY\r\n",
+          "server": "[M] Rooms  [C] Chat  [F] Files  [D] Doors\r\n[O] Other BBSes  [H] Help  [Q] Logout\r\nChoice> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 65536
+        }
+      ]
+    },
+    {
+      "id": "room-catchup-10",
+      "description": "Room list and two pages of five synthetic messages",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC ROOM LIST\r\n",
+          "server": "Workshop: 10 new\r\nSelect room> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        },
+        {
+          "client": "Workshop\r\n",
+          "server": "Room: Workshop (synthetic)\r\nMessage 001 / fixture-member\r\nSynthetic message 001. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 002 / fixture-member\r\nSynthetic message 002. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 003 / fixture-member\r\nSynthetic message 003. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 004 / fixture-member\r\nSynthetic message 004. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 005 / fixture-member\r\nSynthetic message 005. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\n[N] Next  [B] Back> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        },
+        {
+          "client": "NEXT\r\n",
+          "server": "Room: Workshop (synthetic)\r\nMessage 006 / fixture-member\r\nSynthetic message 006. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 007 / fixture-member\r\nSynthetic message 007. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 008 / fixture-member\r\nSynthetic message 008. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 009 / fixture-member\r\nSynthetic message 009. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\nMessage 010 / fixture-member\r\nSynthetic message 010. Room conversation. Room conversation. Roo\r\nm conversation. Room conversation. Room conversation. Room conve\r\nrsation. Room conversation. Room conversation. Room conversation\r\n. Room conversation. Room conversation. Room conversation. Room \r\n[N] Next  [B] Back> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "post-one-exchange",
+      "description": "512-byte body submitted with one confirmation exchange",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC POST INTENT\r\n",
+          "server": "Outcome: committed (synthetic acknowledgement).\r\n",
+          "client_payload_bytes": 512,
+          "server_payload_bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "post-four-exchanges",
+      "description": "Same 512-byte body with four sequential prompt exchanges",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC COMPOSE\r\n",
+          "server": "Room> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        },
+        {
+          "client": "Workshop\r\n",
+          "server": "Subject> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        },
+        {
+          "client": "Fixture subject\r\n",
+          "server": "Body> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        },
+        {
+          "client": "",
+          "server": "Outcome: committed (synthetic acknowledgement).\r\n",
+          "client_payload_bytes": 512,
+          "server_payload_bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "chat-line",
+      "description": "One synthetic outgoing line and one displayed echo",
+      "exchanges": [
+        {
+          "client": "Hello from a fixture member.\r\n",
+          "server": "fixture-member: Hello from a fixture member.\r\n",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        }
+      ]
+    },
+    {
+      "id": "chat-burst-32",
+      "description": "32 displayed records sized to 256 bytes each",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC CHAT CATCHUP\r\n",
+          "server": "End of synthetic burst.\r\n",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 8192
+        }
+      ]
+    },
+    {
+      "id": "file-64KiB",
+      "description": "Authorized 64 KiB file body; transfer protocol overhead excluded",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC AUTHORIZED FILE\r\n",
+          "server": "Fixture metadata; body follows.\r\n",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 65536
+        }
+      ]
+    },
+    {
+      "id": "file-1MiB",
+      "description": "Authorized 1 MiB file body; transfer protocol overhead excluded",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC AUTHORIZED FILE\r\n",
+          "server": "Fixture metadata; body follows.\r\n",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 1048576
+        }
+      ]
+    },
+    {
+      "id": "door-three-screens",
+      "description": "Three illustrative 80 x 24 single-byte screen payloads",
+      "exchanges": [
+        {
+          "client": "ENTER\r\n",
+          "server": "",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 1920
+        },
+        {
+          "client": "ACTION\r\n",
+          "server": "",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 1920
+        },
+        {
+          "client": "EXIT\r\n",
+          "server": "[M] Rooms  [C] Chat  [F] Files  [D] Doors\r\n[O] Other BBSes  [H] Help  [Q] Logout\r\nChoice> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 1920
+        }
+      ]
+    },
+    {
+      "id": "reconnect-summary",
+      "description": "Small resume summary after fresh authentication/approval",
+      "exchanges": [
+        {
+          "client": "SYNTHETIC RESUME QUERY\r\n",
+          "server": "Approved session. Workshop: unread position available.\r\nUnconfirmed submissions require outcome reconciliation.\r\n[M] Rooms  [C] Chat  [F] Files  [D] Doors\r\n[O] Other BBSes  [H] Help  [Q] Logout\r\nChoice> ",
+          "client_payload_bytes": 0,
+          "server_payload_bytes": 0
+        }
+      ]
+    }
+  ],
+  "inbound_streams": [
+    {
+      "id": "quiet-chat",
+      "record_bytes": 256,
+      "records_per_second": 1
+    },
+    {
+      "id": "busy-chat-stress",
+      "record_bytes": 256,
+      "records_per_second": 32
+    }
+  ]
+}
