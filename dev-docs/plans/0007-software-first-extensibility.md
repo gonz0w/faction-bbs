@@ -1,6 +1,6 @@
 # 0007: Software-first core and optional modern extensions
 
-Date: 2026-10-19. Status: local work complete; publishing for review. Issues: #5/#10/#18/#20/#35, plus new owner-derived candidates after overlap review.
+Date: 2026-10-19. Status: completed research/prototype deliverable; PR #46 open for review. Issues: #5/#10/#18/#20/#35, plus new owner-derived candidates after overlap review.
 
 ## Owner direction
 
@@ -43,7 +43,7 @@ research after a report, executable evidence and explicit next build steps exist
 - [x] Owner chose Lua first after core; compare both payment models.
 - [x] Build/run software probe: 16 developer-host oracles passed, allocator cleanup confirmed, native stalled/crashed children reaped; no NetBSD Lua or OS-sandbox claim. Native binaries were temporary and cleaned up.
 - [x] Research, software-first core plan and backlog captured. New issues #42–#45; existing #5/#9/#10/#17/#18/#20/#28/#35 updated rather than duplicated. All repository/saved-evidence checks and 23 existing unit tests pass.
-- [ ] Publish PR and verify CI.
+- [x] [PR #46](https://github.com/gonz0w/faction-bbs/pull/46) published on #40; initial [Documentation and policy CI](https://github.com/gonz0w/faction-bbs/actions/runs/39358187314) passed. No prior PR merged.
 
 ## Handoff
 
