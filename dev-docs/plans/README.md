@@ -28,3 +28,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0014: Memory profiling and connected-session scaling](0014-memory-scaling.md)
 
 - [0015: Shared board ownership and credential peaks](0015-shared-board-and-credential-peaks.md)
+
+- [0016: Remaining transport memory](0016-transport-memory.md)

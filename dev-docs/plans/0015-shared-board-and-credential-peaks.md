@@ -2,7 +2,7 @@
 
 Issues: [#55](https://github.com/gonz0w/faction-bbs/issues/55),
 [#56](https://github.com/gonz0w/faction-bbs/issues/56).
-Status: implementation/native validation complete; [PR #57](https://github.com/gonz0w/faction-bbs/pull/57) open for review. #54 merged at `26ae82f`.
+Status: merged in [PR #57](https://github.com/gonz0w/faction-bbs/pull/57) at `1826376`. #56 closed; #55 parity/adoption remains open.
 
 ## Goal and constraints
 
@@ -87,4 +87,5 @@ broader #28/#20 have concrete result comments. #56 closes on PR merge; #55 remai
 open for parity/adoption. [#58](https://github.com/gonz0w/faction-bbs/issues/58)
 captures remaining per-transport attribution/reduction toward guarded 250, keeping
 base OpenSSH, full denial oracles, credential policy and whole-host accounting.
-The current PR is not merged by this task; only requested #54 was merged.
+PR #57 subsequently merged on 2026-10-20 at owner request. Continue #58 through
+[plan 0016](0016-transport-memory.md); do not refresh the frozen evidence.

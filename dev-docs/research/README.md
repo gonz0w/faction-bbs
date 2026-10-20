@@ -42,3 +42,5 @@ The [shared-board and persistent credential-peak comparison](0029-shared-board-a
 extends #55/#56 with an isolated readiness terminal owner, matched full SSH loads,
 native authorization/failure oracles and calibrated persistent sampling. It does
 not change the normal eight-worker gateway or adopt a production replacement.
+
+- [0030: Native allocator and remaining SSH transport memory](0030-transport-memory.md)

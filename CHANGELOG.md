@@ -6,6 +6,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Versioned native allocator/transport comparison: two short functional 250-member
+  SSH menu/chat workloads, with only one final headroom-guard pass, on a 2-vCPU/1-GiB NetBSD VM, with full SSH/frontend costs,
+  calibrated high-load real credentials, failures/recovery, repeated fresh boots
+  and exact guard/batch ledgers. Corrected chat re-entry sequencing in the
+  standalone variant; historical evidence preserved. Guest-wide tuning remains
+  experimental, normal service stays eight workers, and shared UI/adoption,
+  full workload/soak and physical-device claims remain open. No new registry dependency,
+  weaker credentials or normal application/schema/default change.
+
 - Isolated shared-board/readiness terminal prototype and matched native SSH
   comparison, retaining base OpenSSH, terminal UID isolation and core approval/
   epoch/private-grant checks. Final guarded 1-GiB NetBSD run admitted 224 menus
