@@ -8,4 +8,13 @@ The [decision framework](decision-framework.md) defines gate screening, comparis
 
 The [private/poor/interrupted-link journey report](0003-constrained-user-journeys.md) and [synthetic payload results](0003-link-budget-results.md) provide proposed test inputs for #8/#28. Reproduce them with `python3 tools/model_link_budget.py --check`; regenerate deliberately with `--write` when fixtures or arithmetic change. This model is Python repository tooling, not a product stack or runtime/network experiment.
 
-The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. No product experiments have been completed yet.
+The [interaction budget research](0008-interaction-budget.md) includes [measured application-paced ASCII/ANSI replay](0008-replay-results.md). The [small-host research](0028-small-host-budgets.md) defines proposed memory/CPU/storage/load targets and records a C allocation-ownership probe. These are bounded research experiments, not an implemented or measured BBS.
+
+```sh
+python3 tools/measure_text_replay.py --check
+python3 tools/measure_buffer_probe.py --check
+```
+
+`--check` verifies saved source/result provenance without rerunning timing or requiring a compiler. Deliberate `--run` refreshes observations on the current host; it is not a CI performance gate. Buffer `--run` additionally requires `cc` and uses disposable binaries outside the checkout. Python remains research tooling, C remains an isolated probe; neither selects the product stack.
+
+The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.

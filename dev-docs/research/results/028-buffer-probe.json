@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "date": "2026-10-19",
+  "source_hashes": {
+    "probe.c": "3f5255f39d83eed9d49acb9c377dd9903369f408b37e4a057d32c46cda047546",
+    "measure_buffer_probe.py": "dc0769ac970b1cf112460c94423c0c879b08219dd6af3777f6e34041f8e7c67e"
+  },
+  "environment": "Darwin / arm64",
+  "compiler": "Apple clang version 21.0.0 (clang-2100.3.20.102)",
+  "flags": [
+    "-std=c11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "runs": [
+    {
+      "mode": "copy",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 16386000,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "shared",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 577536,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "copy",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 16386000,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "shared",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 577536,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "copy",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 16386000,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "shared",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 577536,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "copy",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 16386000,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "shared",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 577536,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "copy",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 16386000,
+      "checksum": 2047293750
+    },
+    {
+      "mode": "shared",
+      "sessions": 250,
+      "pointer_bytes": 8,
+      "requested_live_bytes": 577536,
+      "checksum": 2047293750
+    }
+  ]
+}

@@ -23,7 +23,7 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | Terminal | Network terminal applications are central; physical serial terminals are not a current target. |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
 | Networks | Initial focus: modern private networks, with occasional poor/interrupted connections (owner clarification 2026-10-19). Constrained links remain research inputs; future mesh/non-IP networks are separately evaluated and no specific alternative transport is promised. |
-| Operations | Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. |
+| Operations | Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
 | Privacy | Minimal opt-in telemetry, deliberate exposure and retention policies, no mandatory public directory or central service. |
 | Technology | No JavaScript or TypeScript anywhere in project source/tooling/dependencies, including browser-terminal assets. Select fast/lightweight implementation options through comparison and prototypes. |
 
@@ -38,6 +38,8 @@ Transport-specific addresses, discovery, routing, and connection behavior must s
 ## Research before production implementation
 
 No language, framework, storage engine, access protocol, federation protocol, extension runtime, or deployment topology has been selected. Familiarity, nostalgia, and popularity alone are insufficient evidence. JavaScript/TypeScript is excluded by explicit owner instruction.
+
+The founder explicitly prioritizes tiny working sets and scalable low-memory native options, including selective assembly if measurements justify it. Historical 640K BBSes are an efficiency inspiration, not a literal modern security/host ceiling. Unusual runtimes, specialized operating systems, blockchain and optional public helpers may be investigated, but must satisfy the same privacy, local-authority and independent-operation constraints. No external service is selected. Proposed numeric application budgets and bounded experiments are in the [small-host research](../dev-docs/research/0028-small-host-budgets.md).
 
 Security, privacy, terminal compatibility, resource use, and local deployment simplicity must be measured. A private/underground atmosphere is not an anonymity guarantee; public source availability says nothing about whether an operator exposes their deployment.
 
