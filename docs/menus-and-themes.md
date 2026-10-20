@@ -1,7 +1,9 @@
 # Menus, sysop themes and seasonal identity
 
-Status: confirmed owner interaction/art direction, 2026-10-19; implementation details
-below are proposed. No menu engine, theme scheduler or art pack is released.
+Status: confirmed owner direction, 2026-10-19. A local vertical-menu/theme baseline
+is implemented; [the pack guide](theme-packs.md) states exact supported behavior.
+The broader design below includes future requirements. No scheduler, historical
+art pack or network BBS release is available.
 Issues: #13/#21/#25/#29/#31. [Visual references](../dev-docs/research/0025-menu-and-art-direction.md).
 
 ## Interaction that belongs on a BBS

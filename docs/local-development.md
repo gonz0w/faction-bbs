@@ -32,7 +32,7 @@ log in again. `S` then `V` revokes a member and invalidates its existing session
 reapproval does not revive those sessions. Only the bootstrap sysop exists in this
 increment; member-facing commands cannot promote users or revoke that sysop.
 
-Commands require Enter. `R` lists rooms; `N` reads new messages; `H` reads history;
+Plain mode commands require Enter; [opt-in ANSI menus](theme-packs.md) add arrows/Enter and direct hotkeys. `R` lists rooms; `N` reads new messages; `H` reads history;
 `P` posts a single line or a reply to a post ID in that room. The sysop can create
 rooms with `S` then `C`. Pages are chronological, without Reddit-style nesting or
 votes. After a page is flushed successfully to the terminal, its last post becomes
@@ -100,11 +100,17 @@ no credentials or transcripts. CI uses Rust 1.96.0 on Linux with shell/Python st
 The [dependency inventory](../dev-docs/dependencies/README.md) covers selected
 Linux/NetBSD crate-source graphs; it is not a vulnerability/security audit.
 
-## Next increment
+## Presentation and next increment
 
-This is a plain-text development surface. All untrusted non-ASCII/control output
-is escaped; this console does not render member-supplied ANSI. The approved product
-flow still requires sysop-defined identity art/welcome, safe ANSI, Oblivion/2-style
-arrow/Enter and direct hotkeys, sysop/seasonal themes, local chat and restricted SSH.
-Lua menus/isolated doors follow the local core. See the [scope](../dev-docs/first-local-slice.md)
-and [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md).
+Plain text remains the default. [ANSI/theme packs](theme-packs.md) now add the
+approved identity -> welcome -> vertical arrow/Enter/direct-hotkey menu flow to
+the local console, with manual seasonal overrides and resize fallback. Room/member
+text remains escaped; sysop art uses a bounded CP437/cell importer, never raw
+passthrough. No historical art is bundled. Broader/long ANSI, SAUCE/iCE metadata,
+grid layouts, calendar themes and visual review of actual artwork remain work.
+
+Local chat, remaining account/room lifecycle, export/restore, native NetBSD app
+validation and a distinct restricted SSH adapter are next; Lua menus/isolated
+doors follow the useful local core. See [scope](../dev-docs/first-local-slice.md),
+[ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md) and
+[ADR 0009](../dev-docs/decisions/0009-safe-terminal-menus-and-themes.md).

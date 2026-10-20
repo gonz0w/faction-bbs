@@ -14,3 +14,4 @@ path = "src/main.rs"
 faction-core = { path = "../faction-core" }
 rustix.workspace = true
 zeroize.workspace = true
+faction-terminal = { path = "../faction-terminal" }

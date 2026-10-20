@@ -13,4 +13,6 @@ Use `NNNN-short-kebab-title.md` and the [template](template.md). Status is propo
 
 - [0008: First local core, durable room actions and credentials](0008-local-core-and-credentials.md)
 
+- [0009: Bounded ANSI presentation, dual navigation and declarative themes](0009-safe-terminal-menus-and-themes.md)
+
 Use the [decision framework](../research/decision-framework.md) for gate screening, criteria, evidence/confidence, and prototype thresholds. Future technical decisions need primary-source research, retrieval dates, alternatives, confidence, reversal cost, and a named validation experiment. The question and evidence must be bounded.

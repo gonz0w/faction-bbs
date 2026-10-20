@@ -81,6 +81,12 @@
       "version": "0.11.3"
     },
     {
+      "features": [],
+      "license": "Apache-2.0 OR MIT",
+      "name": "equivalent",
+      "version": "1.0.3"
+    },
+    {
       "features": [
         "std"
       ],
@@ -118,8 +124,22 @@
     {
       "features": [],
       "license": "MIT OR Apache-2.0",
+      "name": "hashbrown",
+      "version": "0.17.1"
+    },
+    {
+      "features": [],
+      "license": "MIT OR Apache-2.0",
       "name": "hybrid-array",
       "version": "0.4.15"
+    },
+    {
+      "features": [
+        "std"
+      ],
+      "license": "Apache-2.0 OR MIT",
+      "name": "indexmap",
+      "version": "2.14.2"
     },
     {
       "features": [
@@ -180,6 +200,7 @@
     {
       "features": [
         "alloc",
+        "event",
         "process",
         "std",
         "termios"
@@ -187,6 +208,25 @@
       "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
       "name": "rustix",
       "version": "1.1.5"
+    },
+    {
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_core",
+      "version": "1.0.229"
+    },
+    {
+      "features": [
+        "alloc",
+        "serde",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_spanned",
+      "version": "1.1.2"
     },
     {
       "features": [
@@ -205,6 +245,44 @@
     },
     {
       "features": [
+        "parse",
+        "serde",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml",
+      "version": "1.1.8+spec-1.1.0"
+    },
+    {
+      "features": [
+        "alloc",
+        "serde",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml_datetime",
+      "version": "1.1.2+spec-1.1.0"
+    },
+    {
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml_parser",
+      "version": "1.1.5+spec-1.1.0"
+    },
+    {
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml_writer",
+      "version": "1.1.3+spec-1.1.0"
+    },
+    {
+      "features": [
         "const-generics"
       ],
       "license": "MIT OR Apache-2.0",
@@ -216,6 +294,12 @@
       "license": "MIT/Apache-2.0",
       "name": "vcpkg",
       "version": "0.2.15"
+    },
+    {
+      "features": [],
+      "license": "MIT",
+      "name": "winnow",
+      "version": "1.0.4"
     },
     {
       "features": [
@@ -315,6 +399,12 @@
       "version": "0.11.3"
     },
     {
+      "features": [],
+      "license": "Apache-2.0 OR MIT",
+      "name": "equivalent",
+      "version": "1.0.3"
+    },
+    {
       "features": [
         "std"
       ],
@@ -352,8 +442,22 @@
     {
       "features": [],
       "license": "MIT OR Apache-2.0",
+      "name": "hashbrown",
+      "version": "0.17.1"
+    },
+    {
+      "features": [],
+      "license": "MIT OR Apache-2.0",
       "name": "hybrid-array",
       "version": "0.4.15"
+    },
+    {
+      "features": [
+        "std"
+      ],
+      "license": "Apache-2.0 OR MIT",
+      "name": "indexmap",
+      "version": "2.14.2"
     },
     {
       "features": [
@@ -428,6 +532,7 @@
     {
       "features": [
         "alloc",
+        "event",
         "process",
         "std",
         "termios"
@@ -435,6 +540,25 @@
       "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
       "name": "rustix",
       "version": "1.1.5"
+    },
+    {
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_core",
+      "version": "1.0.229"
+    },
+    {
+      "features": [
+        "alloc",
+        "serde",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "serde_spanned",
+      "version": "1.1.2"
     },
     {
       "features": [
@@ -453,6 +577,44 @@
     },
     {
       "features": [
+        "parse",
+        "serde",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml",
+      "version": "1.1.8+spec-1.1.0"
+    },
+    {
+      "features": [
+        "alloc",
+        "serde",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml_datetime",
+      "version": "1.1.2+spec-1.1.0"
+    },
+    {
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml_parser",
+      "version": "1.1.5+spec-1.1.0"
+    },
+    {
+      "features": [
+        "alloc",
+        "std"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "toml_writer",
+      "version": "1.1.3+spec-1.1.0"
+    },
+    {
+      "features": [
         "const-generics"
       ],
       "license": "MIT OR Apache-2.0",
@@ -464,6 +626,12 @@
       "license": "MIT/Apache-2.0",
       "name": "vcpkg",
       "version": "0.2.15"
+    },
+    {
+      "features": [],
+      "license": "MIT",
+      "name": "winnow",
+      "version": "1.0.4"
     },
     {
       "features": [

@@ -1,6 +1,6 @@
 # A board with its own scene
 
-Status: design requirements, not implemented features.
+Status: broader design requirements with an implemented local [TOML theme/menu baseline](theme-packs.md); scripting, scheduler, full layout/art compatibility and network deployment remain open.
 
 Faction BBS should give sysops room to create a recognizable place: ANSI identity art, ASCII/1337 typography, colors, prompts, menus, quotes, announcements, file areas, rooms, chat, and a selection of doors. The founder's references include WWIV session flow, Citadel room interaction, Vision-X, Vision/2, Oblivion, and the personal BBS modifications they remember writing and using.
 

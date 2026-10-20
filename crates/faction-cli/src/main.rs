@@ -1,6 +1,8 @@
 //! Local development console; never install this owner-capable command as an SSH forced command.
 #![forbid(unsafe_code)]
+mod terminal;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
+use faction_terminal::{Action, Theme};
 use rustix::termios::{self, LocalModes, OptionalActions, SpecialCodeIndex, Termios};
 use std::{
     fs::{File, OpenOptions},
@@ -16,7 +18,7 @@ fn invalid(reason: &'static str) -> Box<dyn std::error::Error> {
 fn line(prompt: &str, max: usize) -> Result<String> {
     print!("{prompt}");
     io::stdout().flush()?;
-    bounded_line(&mut io::stdin().lock(), max)
+    bounded_line(&mut OpenOptions::new().read(true).open("/dev/tty")?, max)
 }
 fn bounded_line(input: &mut impl Read, max: usize) -> Result<String> {
     let mut bytes = Vec::new();
@@ -232,7 +234,7 @@ fn sysop(board: &mut Board, s: &Session) -> Result<()> {
     }
     Ok(())
 }
-fn menu(board: &mut Board, s: &Session) -> Result<()> {
+fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
     let member = board.whoami(s)?;
     if member.status != Status::Approved {
         println!(
@@ -241,8 +243,9 @@ fn menu(board: &mut Board, s: &Session) -> Result<()> {
         );
         return Ok(());
     }
+    terminal::identity(theme, ansi)?;
     println!(
-        "\nFaction BBS - local development console\nWelcome, {}.\nPlain-text surface; ANSI identity/themes and SSH are still to come.",
+        "Welcome, {}. Local development console.",
         safe(&member.handle)
     );
     loop {
@@ -250,27 +253,35 @@ fn menu(board: &mut Board, s: &Session) -> Result<()> {
         if member.status != Status::Approved {
             return Err(Error::Denied.into());
         }
-        println!(
-            "\n[R]ooms  [N]ew messages  [H]istory  [P]ost  {}[Q]uit",
-            if member.role == Role::Sysop {
-                "[S]ysop  "
+        let selected = if ansi {
+            terminal::select(theme, member.role == Role::Sysop)?
+        } else {
+            None
+        };
+        let used_ansi = selected.is_some();
+        let action = if let Some(action) = selected {
+            Some(action)
+        } else {
+            print!("{}", theme.plain_menu(member.role == Role::Sysop));
+            let command = line("Command (then Enter): ", 8)?;
+            if command.len() == 1 {
+                theme.hotkey(command.as_bytes()[0], member.role == Role::Sysop)
             } else {
-                ""
+                None
             }
-        );
-        let command = line("Command (then Enter): ", 8)?.to_ascii_lowercase();
-        if command == "q" {
-            println!("Logged out.");
-            return Ok(());
-        }
-        let result = match command.as_str() {
-            "r" => show_rooms(board, s),
-            "n" => read_room(board, s, true),
-            "h" => read_room(board, s, false),
-            "p" => post(board, s),
-            "s" => sysop(board, s),
+        };
+        let result = match action {
+            Some(Action::Quit) => {
+                println!("{}\nLogged out.", theme.logout());
+                return Ok(());
+            }
+            Some(Action::Rooms) => show_rooms(board, s),
+            Some(Action::New) => read_room(board, s, true),
+            Some(Action::History) => read_room(board, s, false),
+            Some(Action::Post) => post(board, s),
+            Some(Action::Sysop) => sysop(board, s),
             _ => {
-                println!("Unknown command.");
+                println!("Unknown or unavailable command.");
                 Ok(())
             }
         };
@@ -290,23 +301,63 @@ fn menu(board: &mut Board, s: &Session) -> Result<()> {
                 return Err(e);
             }
         }
+        if used_ansi {
+            line("Press Enter to return to menu: ", 1)?;
+        }
     }
 }
 fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
         );
         return Ok(());
     }
-    if args.len() != 3 || args[0] != "--state-dir" {
+    if args.len() < 3 || args[0] != "--state-dir" {
         return Err(invalid("use --help for syntax"));
     }
     let path = PathBuf::from(&args[1]);
     let command = args[2].to_str().ok_or_else(|| invalid("invalid command"))?;
     if !["init", "register", "login", "recover"].contains(&command) {
         return Err(invalid("unknown command"));
+    }
+    let (mut ansi, mut base_path, mut season_path) = (false, None, None);
+    if command != "login" && args.len() > 3 {
+        return Err(invalid("theme options apply only to login"));
+    }
+    let mut index = 3;
+    while index < args.len() {
+        match args[index].to_str() {
+            Some("--ansi") => ansi = true,
+            Some("--plain") => ansi = false,
+            Some("--theme") | Some("--season") => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| invalid("theme option needs a directory"))?;
+                if args[index] == "--theme" {
+                    base_path = Some(PathBuf::from(value));
+                } else {
+                    season_path = Some(PathBuf::from(value));
+                }
+                index += 1;
+            }
+            _ => return Err(invalid("unknown login option")),
+        }
+        index += 1;
+    }
+    let mut theme = Theme::default();
+    if let Some(directory) = base_path {
+        match Theme::load(&directory) {
+            Ok(t) => theme = t,
+            Err(reason) => eprintln!("Theme rejected: {reason}; using built-in text fallback."),
+        }
+    }
+    if let Some(directory) = season_path {
+        match theme.with_season(&directory) {
+            Ok(t) => theme = t,
+            Err(reason) => eprintln!("Season rejected: {reason}; using the unchanged base theme."),
+        }
     }
     let mut board = Board::open(&path)?;
     let name = line("Handle: ", 24)?;
@@ -325,7 +376,7 @@ fn run() -> Result<()> {
             let value = secret("Password (hidden): ")?;
             let s = board.authenticate(&name, &value)?;
             drop(value);
-            menu(&mut board, &s)?;
+            menu(&mut board, &s, &theme, ansi)?;
         }
         "recover" => {
             if line("Local filesystem-owner recovery. Type RECOVER: ", 8)? != "RECOVER" {
