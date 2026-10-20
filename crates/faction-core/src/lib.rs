@@ -3,9 +3,11 @@
 #[cfg(not(unix))]
 compile_error!("The first local core supports Unix state ownership semantics only");
 mod chat;
+mod snapshot;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
 pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
 use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
+pub use snapshot::{SNAPSHOT_BYTES, SnapshotSummary, export_local, restore_local, verify_export};
 use std::{
     fmt, fs,
     os::unix::fs::{DirBuilderExt, MetadataExt, OpenOptionsExt},

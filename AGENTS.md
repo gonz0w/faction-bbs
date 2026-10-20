@@ -2,7 +2,7 @@
 
 ## Read first
 
-Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008), with opt-in bounded ANSI menus/declarative themes (ADR 0009) and BBS-local bounded chat (ADR 0010). There is no network BBS release or accepted complete production stack. Read docs/local-development.md, docs/theme-packs.md and docs/local-chat.md before running it; the owner-capable console must never become an SSH forced command.
+Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008), with opt-in bounded ANSI menus/declarative themes (ADR 0009), BBS-local bounded chat (ADR 0010) and owner-only private export/verify/restore (ADR 0011). There is no network BBS release or accepted complete production stack. Read docs/local-development.md, docs/theme-packs.md, docs/local-chat.md and docs/export-restore.md before running it; the owner-capable console must never become an SSH forced command.
 
 ## Product constraints
 

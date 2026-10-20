@@ -52,3 +52,4 @@ jobs:
           cargo build --workspace --locked --release
           python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_local_chat.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_export_restore.py "$CARGO_TARGET_DIR/release/faction"

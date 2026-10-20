@@ -1,6 +1,6 @@
 # Development documentation
 
-Faction BBS has an early local Rust identity/room core and development console, including opt-in safe ANSI menus, declarative theme packs and BBS-local command chat. NetBSD remains primary; a network BBS and complete production stack are still being built/validated. See [local development](../docs/local-development.md) and [dependency inventory](dependencies/README.md).
+Faction BBS has an early local Rust identity/room core and development console, including opt-in safe ANSI menus, declarative theme packs, BBS-local command chat and [private export/restore](../docs/export-restore.md). NetBSD remains primary; a network BBS and complete production stack are still being built/validated. See [local development](../docs/local-development.md) and [dependency inventory](dependencies/README.md).
 
 | Material | Purpose |
 | --- | --- |

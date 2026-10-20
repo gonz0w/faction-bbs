@@ -190,7 +190,10 @@
     },
     {
       "features": [
+        "backup",
         "bundled",
+        "hooks",
+        "limits",
         "modern_sqlite"
       ],
       "license": "MIT",
@@ -522,7 +525,10 @@
     },
     {
       "features": [
+        "backup",
         "bundled",
+        "hooks",
+        "limits",
         "modern_sqlite"
       ],
       "license": "MIT",

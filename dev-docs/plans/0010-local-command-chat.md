@@ -1,6 +1,6 @@
 # 0010: BBS-local command chat
 
-Date: 2026-10-19. Status: published for review in [PR #50](https://github.com/gonz0w/faction-bbs/pull/50). Issues: #26/#6/#9/#12/#21/#29/#35.
+Date: 2026-10-19. Status: merged in [PR #50](https://github.com/gonz0w/faction-bbs/pull/50) on 2026-10-20; continuation is [plan 0011](0011-local-export-restore.md). Issues: #26/#6/#9/#12/#21/#29/#35.
 Owner authorized merge #49 and continuation. #49 merged as
 d96bf48e0de0a62343184084a3b040bd12d4ea37; main was clean and checks passed.
 

@@ -122,8 +122,9 @@ network server or a substitute for future SSH output timeouts/backpressure.
 History and latest retry bodies are plaintext application data in the private
 SQLite store, not telemetry or operational body logs. Row retention/expiry does
 not guarantee secure deletion from SQLite pages, WAL, snapshots or backups. Total
-database size, account/grant quotas, retention administration, export/restore and
-full server accounting remain separate work.
+database size, account/grant quotas, retention administration and full server
+accounting remain separate work. [Private snapshots](export-restore.md) include retained
+chat and grants, remove live leases/joins/receipts and require fresh joins after restore.
 
 ## Schema upgrade and checks
 
@@ -132,7 +133,8 @@ without replacing board identity, account hashes, room messages or unread cursor
 Before upgrading, stop every old console and make a complete private copy of the
 state directory. Older binaries reject schema 2. There is no downgrade migration;
 rollback requires the pre-upgrade copy, not editing the version pragma. Keep test
-data until the broader backup/restore and lifecycle gates are implemented.
+data until broader lifecycle/deployment gates are met; schema-2
+[export and restore](export-restore.md) is now available for local recovery rehearsal.
 
 ```sh
 cargo test --workspace --locked --release
