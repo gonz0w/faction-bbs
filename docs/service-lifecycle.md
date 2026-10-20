@@ -77,3 +77,9 @@ and pre-admission connections cost additional memory/CPU; its handshake settings
 are not a complete authenticated connection cap. See [measured scope and remaining
 gates](../dev-docs/research/0026-service-lifecycle-load.md). File sharing, mail, Lua
 doors, federation, HTTP and physical-device support do not follow from this service.
+
+The two per-board credential lock files are also persistent coordination inodes.
+Stop every owner/member process before replacing/removing them. Ordinary service
+restart and owner snapshot export do not remove them. Credential saturation fails
+that login/registration attempt explicitly; see [the SSH guide](restricted-ssh.md).
+Experimental scaling flags do not change normal service defaults or sysctl limits.

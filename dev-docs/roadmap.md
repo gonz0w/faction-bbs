@@ -38,3 +38,8 @@ No live provider, publication, financial operation or production sandbox is adop
 Original-game compatibility, broader file/mail features, customization, imports, operational tooling, optional/private HTTP access, subscribed shared-chat federation, Reticulum, and mesh/store-and-forward experiments have different dependencies. Research leads may begin early; product support requires later evidence and explicit acceptance.
 
 Only shared chat may federate. Boards, files, mail, games, directories, local-only channels, and local accounts/approval remain local. A separate optional public-publishing module is under research; it is never an implicit export of private core data. Alternative-network research must not make every deployment run every adapter. No release date or production support commitment is set.
+
+Memory/scaling now proceeds under [plan 0014](plans/0014-memory-scaling.md): bounded
+credential work, native whole-VM/process/SSH metrics, guarded distinct-account
+experiments and measured architecture follow-up. Default service limits and the
+full #28 workload/soak/production gates remain separate from short profiling runs.

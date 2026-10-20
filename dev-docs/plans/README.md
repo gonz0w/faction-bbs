@@ -24,3 +24,5 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 - [0013: Managed gateway lifecycle and load/failure validation](0013-service-lifecycle-load.md)
 
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.
+
+- [0014: Memory profiling and connected-session scaling](0014-memory-scaling.md)

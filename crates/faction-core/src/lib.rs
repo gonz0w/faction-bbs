@@ -3,6 +3,7 @@
 #[cfg(not(unix))]
 compile_error!("The first local core supports Unix state ownership semantics only");
 mod chat;
+mod credentials;
 mod snapshot;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
 pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
@@ -32,6 +33,7 @@ pub enum Error {
     UnsafeState,
     UnsupportedSchema,
     Busy,
+    CredentialBusy,
     Storage(rusqlite::Error),
     Io(std::io::Error),
     Entropy,
@@ -53,6 +55,7 @@ impl fmt::Display for Error {
             }
             Self::UnsupportedSchema => "unsupported or foreign database schema",
             Self::Busy => "database busy; retry later",
+            Self::CredentialBusy => "credential work busy; reconnect later",
             Self::Storage(_) => "database operation failed",
             Self::Io(_) => "state I/O failed",
             Self::Entropy => "OS entropy unavailable",
@@ -122,6 +125,7 @@ impl fmt::Debug for Session {
 pub struct Board {
     db: Connection,
     identity: [u8; 32],
+    credential_directory: std::path::PathBuf,
 }
 
 fn private(path: &Path, directory: bool) -> Result<()> {
@@ -319,11 +323,15 @@ impl Board {
         Ok(Self {
             db,
             identity: identity.try_into().map_err(|_| Error::UnsupportedSchema)?,
+            credential_directory: fs::canonicalize(directory)?,
         })
     }
     pub fn bootstrap(&mut self, name: &str, secret: &str) -> Result<()> {
         let name = handle(name)?;
-        let hashed = hash(secret)?;
+        let hashed = {
+            let _slot = credentials::acquire(&self.credential_directory)?;
+            hash(secret)?
+        };
         let tx = self
             .db
             .transaction_with_behavior(TransactionBehavior::Immediate)?;
@@ -338,7 +346,10 @@ impl Board {
     }
     pub fn register(&mut self, name: &str, secret: &str) -> Result<()> {
         let name = handle(name)?;
-        let hashed = hash(secret)?;
+        let hashed = {
+            let _slot = credentials::acquire(&self.credential_directory)?;
+            hash(secret)?
+        };
         let tx = self
             .db
             .transaction_with_behavior(TransactionBehavior::Immediate)?;
@@ -378,9 +389,13 @@ impl Board {
         let Some((member, stored, epoch)) = row else {
             return Err(Error::Credentials);
         };
-        hasher()
-            .verify_password(secret.as_bytes(), stored.as_str())
-            .map_err(|_| Error::Credentials)?;
+        credentials::validate_record(&stored)?;
+        {
+            let _slot = credentials::acquire(&self.credential_directory)?;
+            hasher()
+                .verify_password(secret.as_bytes(), stored.as_str())
+                .map_err(|_| Error::Credentials)?;
+        }
         Ok(Session {
             board: self.identity,
             member,
@@ -446,7 +461,10 @@ impl Board {
     /// Possession of the private database already gives the operator equivalent authority.
     pub fn recover_local_sysop(&mut self, name: &str, new_secret: &str) -> Result<()> {
         let name = handle(name)?;
-        let hashed = hash(new_secret)?;
+        let hashed = {
+            let _slot = credentials::acquire(&self.credential_directory)?;
+            hash(new_secret)?
+        };
         let tx = self
             .db
             .transaction_with_behavior(TransactionBehavior::Immediate)?;

@@ -6,6 +6,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ### Added — 2026-10-20
 
+- Per-board cross-process credential work budget: two unchanged Argon2 operations,
+  bounded busy denial, strict stored-cost checks and unsafe-lock regression tests.
+  Added owner-only guarded session-count/launch-cadence experiments, a read-only
+  NetBSD whole-VM/process/SSH profiler, independently salted synthetic-account/data
+  fixture and distinct-account SSH scaling driver. Default service remains eight
+  workers. Final fresh-boot NetBSD study passed 150 distinct-account SSH menu/chat
+  sessions, stopped admission at 168 for headroom, reaped active workers and
+  recovered. Earlier OOM/guard defect and missed authentication sampling peak are
+  explicit; profiling is not production capacity or private-page attribution.
+
 - Managed development gateway lifecycle: opt-in NetBSD rc.d scripts, locked pidfile,
   conservative stale-socket recovery, TERM/INT/HUP draining, joined/reaped workers
   and member exit after broker loss. Owner may shorten the session deadline.

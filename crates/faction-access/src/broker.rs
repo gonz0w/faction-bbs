@@ -133,6 +133,31 @@ fn run() -> Result<()> {
     }
     let mut theme_args = args[8..].to_vec();
     let mut session_seconds = 1800u64;
+    // Owner-only experiment controls. Normal service remains eight workers and
+    // one replenished launch / five seconds; no production capacity adoption.
+    let mut limit = LIMIT;
+    let mut launch_ms = 5000u64;
+    for flag in ["--experimental-workers", "--experimental-launch-ms"] {
+        if let Some(i) = theme_args.iter().position(|a| a == flag) {
+            let n: u64 = theme_args
+                .get(i + 1)
+                .and_then(|a| a.to_str())
+                .ok_or_else(denied)?
+                .parse()?;
+            if flag == "--experimental-workers" {
+                if !(1..=250).contains(&n) {
+                    return Err(denied());
+                }
+                limit = n as usize;
+            } else {
+                if !(100..=5000).contains(&n) {
+                    return Err(denied());
+                }
+                launch_ms = n;
+            }
+            theme_args.drain(i..i + 2);
+        }
+    }
     if let Some(i) = theme_args.iter().position(|a| a == "--session-seconds") {
         session_seconds = theme_args
             .get(i + 1)
@@ -220,12 +245,12 @@ fn run() -> Result<()> {
     pidfile.sync_all()?;
     let active = Arc::new(AtomicUsize::new(0));
     let stopping = Arc::new(AtomicBool::new(false));
-    let mut threads: Vec<thread::JoinHandle<()>> = Vec::with_capacity(LIMIT);
+    let mut threads: Vec<thread::JoinHandle<()>> = Vec::with_capacity(limit);
     let mut tokens = LIMIT;
     let mut refill = Instant::now();
     let mut rejected = 0u64;
     let mut listener_failed = false;
-    eprintln!("Faction broker: ready; worker limit {LIMIT}.");
+    eprintln!("Faction broker: ready; worker limit {limit}.");
     while !faction_unix::shutdown_requested() {
         let mut index = 0;
         while index < threads.len() {
@@ -248,12 +273,12 @@ fn run() -> Result<()> {
                 break;
             }
         };
-        let elapsed = refill.elapsed().as_secs() / 5;
+        let elapsed = refill.elapsed().as_millis() / u128::from(launch_ms);
         if elapsed > 0 {
-            tokens = (tokens + elapsed.min(LIMIT as u64) as usize).min(LIMIT);
-            refill += Duration::from_secs(elapsed * 5);
+            tokens = (tokens + elapsed.min(LIMIT as u128) as usize).min(LIMIT);
+            refill += Duration::from_millis(elapsed as u64 * launch_ms);
         }
-        if tokens == 0 || active.load(Ordering::SeqCst) >= LIMIT {
+        if tokens == 0 || active.load(Ordering::SeqCst) >= limit {
             rejected = rejected.saturating_add(1);
             drop(stream);
             continue;

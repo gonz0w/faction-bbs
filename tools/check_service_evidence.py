@@ -22,8 +22,8 @@ EXPECTED = {
 def check():
     data = json.loads((ROOT/'dev-docs/research/results/026-netbsd-lifecycle.json').read_text())
     assert data['schema'] == 1 and data['target'] == 'aarch64-unknown-netbsd'
-    assert data['guest']['vcpus'] == 2 and data['native_rust_tests'] == 54
-    assert data['native_pty_workflows'] == 4
+    assert data['guest']['vcpus'] == 2 and data['native_rust_tests'] == 58
+    assert data['native_pty_workflows'] == 5
     assert len(data['native_local_lifecycle']['passed']) == 7
     assert data['native_local_lifecycle']['stalled_shutdown_seconds'] < 8
     campaign = data['lifecycle']

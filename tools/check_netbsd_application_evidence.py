@@ -10,7 +10,7 @@ RESULT = ROOT / 'dev-docs/research/results/024-netbsd-application.json'
 def check():
     data = json.loads(RESULT.read_text())
     assert data['schema'] == 1 and data['target'] == 'aarch64-unknown-netbsd'
-    assert data['native_rust_tests'] == 54 and data['native_pty_workflows'] == 4
+    assert data['native_rust_tests'] == 58 and data['native_pty_workflows'] == 5
     assert len(data['ssh']['results']) == 20
     assert all(item['result'] == 'pass' for item in data['ssh']['results'])
     assert data['cleanup']['guest_stopped'] and data['cleanup']['private_inputs_removed']
@@ -21,7 +21,7 @@ def check():
     for name, expected in data['sources'].items():
         assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, 'Native evidence source changed: ' + name
     assert data['sources'], 'native source inventory missing'
-    print('Saved NetBSD app evidence passed: native tests, 4 PTY flows, 20 SSH oracles, cleanup and current source hashes. This does not rerun the VM.')
+    print('Saved NetBSD app evidence passed: native tests, 5 PTY flows, 20 SSH oracles, cleanup and current source hashes. This does not rerun the VM.')
 
 if __name__ == '__main__':
     check()

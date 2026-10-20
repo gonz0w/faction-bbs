@@ -58,3 +58,5 @@ issue is closed. After merge, measure whole-system private/shared costs and
 concurrent authentication before changing the eight-worker gate. Existing native
 ABI/CMSG regression remains required. Do not rerun obsolete temporary builder
 scripts: they can overwrite newer code. Near-term work stays software/VM-first.
+
+Merged as #53 at `c9abca9`; memory/scaling work continues in [plan 0014](0014-memory-scaling.md).

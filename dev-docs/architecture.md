@@ -62,3 +62,11 @@ bounded native load/failure evidence. The narrow native helper also implements
 a lock-free shutdown flag; no new registry dependency or schema is added. Eight
 workers remain the development cap. Process/SSH RSS sums are not private memory
 or evidence for 100–250 connected members.
+
+[ADR 0014](decisions/0014-credential-budget-and-scaling-experiments.md) bounds all
+cooperating per-board credential derivations with two protected kernel locks and
+rejects unsupported encoded costs before KDF work. Normal admission remains eight;
+owner-only experimental limits support guarded profiling. A fresh NetBSD study
+passed 150 distinct-account SSH menu/chat sessions and stopped admission at 168.
+Whole-VM anonymous/kernel-pool growth motivates a bounded shared-board/readiness
+comparison before 250-user adoption; RSS sums are not exact private memory.

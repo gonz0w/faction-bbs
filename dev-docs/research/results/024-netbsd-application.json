@@ -32,8 +32,8 @@
     "python": "Python 3.13.14",
     "openssh": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
   },
-  "native_rust_tests": 54,
-  "native_pty_workflows": 4,
+  "native_rust_tests": 58,
+  "native_pty_workflows": 5,
   "native_build": "release --frozen -j 1 as non-root backend owner; bundled SQLite",
   "cmsg_layout": {
     "native_header_size": 12,
@@ -134,29 +134,29 @@
         "after": 7
       },
       "two_member_chat_process_sample": {
+        "faction-broker": [
+          {
+            "rss_kib": 2492,
+            "vsz_kib": 17580
+          }
+        ],
         "faction-member": [
           {
-            "rss_kib": 4024,
+            "rss_kib": 4048,
             "vsz_kib": 19848
           },
           {
-            "rss_kib": 4032,
+            "rss_kib": 4064,
             "vsz_kib": 19848
-          }
-        ],
-        "faction-broker": [
-          {
-            "rss_kib": 2484,
-            "vsz_kib": 17576
           }
         ],
         "faction-ssh": [
           {
-            "rss_kib": 1984,
-            "vsz_kib": 12668
+            "rss_kib": 1980,
+            "vsz_kib": 12664
           },
           {
-            "rss_kib": 1984,
+            "rss_kib": 1988,
             "vsz_kib": 12668
           }
         ]
@@ -203,7 +203,7 @@
     "Cargo.lock": "c5a0e4f548e968ff6f967abdecffb7dd7ce0b05c6bd7b89182ea9774b54d48dd",
     "Cargo.toml": "00199e37439041786876ac3f060009456778a83529d8810139e1a3b37f7e1dde",
     "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
-    "crates/faction-access/src/broker.rs": "6f6895d23dbd34992bad63a7a1ff5d80fd394714daa5edc7bcdbde490349c000",
+    "crates/faction-access/src/broker.rs": "c5935dae87e3ec062f252708377a719e699dfa04d4e1892f3fe80a2b2065e463",
     "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
     "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
     "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
@@ -213,11 +213,14 @@
     "crates/faction-cli/src/member.rs": "658aa9cae2c4d1ae3d537fe79f8c03181b81822c259662b6bc20ef4660c9e161",
     "crates/faction-cli/src/terminal.rs": "a3bfecf29d2b7a7a2f02f7c47fca7015ff8e3278f66227abd93630fffae1199a",
     "crates/faction-core/Cargo.toml": "a62682c6da2b6fdcd7a2e9cc0e3c0045cf41688351bebb452916b70747480e17",
+    "crates/faction-core/examples/profile_seed.rs": "0ccf4c4f32af84c0740d4ba5b1f8625a250ed34a72abec644c600e851b889e30",
     "crates/faction-core/src/chat.rs": "1ad554998b5fe9c8435f8f84fec335aacc5de020e644537076f3305529c2de7a",
-    "crates/faction-core/src/lib.rs": "e936d754f317dd92101cac73d626cce3374e39a871a11b5adb64e0ee4fca17fd",
+    "crates/faction-core/src/credentials.rs": "6220efbbcc2a60d566b22f1efd0e3112d2a4852e5dd1f268364970cab4312d2d",
+    "crates/faction-core/src/lib.rs": "bcb0ce4160c910088040a0fb9a9da8b0ff218d78d0b306ff7b79b9a2b6baee8d",
     "crates/faction-core/src/snapshot.rs": "32432b6f2e76ddf0d453766949ab18cdd324c648f42c8f87c314c7bd80e22c2b",
     "crates/faction-core/tests/chat.rs": "2012b8c2f3dfc731040b5493f2e06a079da0f970bdad2a2b22b03c9303fb91db",
     "crates/faction-core/tests/core.rs": "c55c59a528d2b534506e57d3d59164a6ec4c53155e40f776881cdf64197d3845",
+    "crates/faction-core/tests/credential_budget.rs": "edfda7feab89fdfa034e76e72613633058dfca299c2a4f1f2e4c69608109230e",
     "crates/faction-core/tests/snapshot.rs": "74ee5b55b88ebdf0451505813efa8ad0e1bac0aa7c6f1b8b4e382d4a5d9c0de4",
     "crates/faction-terminal/Cargo.toml": "6ca192866438705ee019001fd854451f35309bfabf87ba25cd7c1c78539fb367",
     "crates/faction-terminal/src/art.rs": "5f0f2561b45159b276d34e2767b5e22742127e33767cab930741ab256bf5884c",
@@ -234,6 +237,7 @@
     "deploy/netbsd/sshd_config.in": "60245b9ea2849b203b95c726341466291348014840f74d94e30a16e073ec60a8",
     "dev-docs/dependencies/local-core.json": "a56146655ad124e9cc82d541da097b7126e1bd2e99ab1203c4b429fdf567deeb",
     "tools/check_restricted_ssh.py": "3d7207c0703ae0143b89bfb87f3efca44629a67cf7c0c936ad95245e217d67eb",
+    "tools/smoke_credential_budget.py": "58ccf359165919a6f46068c05292ba60068a35b89cfd8d7aac7a5cb67199aa3c",
     "tools/smoke_export_restore.py": "d69786c3ae58a5faa8d713667bb39c3c6ff0fe8f20fa76a1dfb262ca0e0cf074",
     "tools/smoke_local_chat.py": "2d48ff29315d2a7ff4fb0cd42a1fd2f6998dcc417e781cac14b84fd247c40ab7",
     "tools/smoke_local_console.py": "d466f37efcf21c86ac5238a2e93a3c6d6926f1d92bcdf7acc359ff4c58258374",

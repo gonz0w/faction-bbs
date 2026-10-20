@@ -145,3 +145,7 @@ now records the updated binary/process observations and source hashes; the
 original #52 merge retains the original observations. Broad unperformed gates
 above remain except the bounded lifecycle/broker-loss cases explicitly covered
 by 0026. This is still eight-worker software evidence, not production capacity.
+
+Memory/scaling [follow-up 0027](0027-memory-scaling.md) refreshes current regression
+provenance again: 58 Rust tests/five PTY workflows/20 application SSH oracles pass
+with bounded credential work and unchanged SSH approval/owner-operation boundaries.
