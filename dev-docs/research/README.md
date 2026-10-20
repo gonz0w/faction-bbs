@@ -26,4 +26,6 @@ python3 experiments/009-local-storage/probe.py --check
 
 Fresh `--run` native probes require C/Rust/Cargo/Go and initial crate access; saved-evidence checks require only Python. SQLite fresh runs require stdlib SQLite with FTS5. Both use synthetic local disposable data; there is no deployable BBS in these experiment folders.
 
+The [extensible ANSI research](0010-extensible-ansi-platform.md) compares optional storage, wallets, shops, games and modern networks, with a separate Rust/Lua boundary experiment. `python3 tools/probe_lua_boundary.py --check` verifies saved provenance; native reruns require Rust/C/Lua as documented. Physical SBC tests are deferred, with software/VM core work first.
+
 The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.

@@ -49,6 +49,8 @@ account mapping may be too costly for our complete tiny-host budgets. Embedded
 SSH remains a source-screened, unbuilt alternative. Neither a successful key login
 nor optional private-network admission substitutes for current local BBS approval.
 
+Later sequencing: [ADR 0007](0007-software-first-and-extension-direction.md) supersedes any near-term physical-SBC dependency below. The owner has no hardware; software/VM work proceeds, and physical testing gates only later hardware-specific claims.
+
 ## Acceptance gates and reversal
 
 Retain ADR 0005's integrated security, authorization, dependency, capacity,

@@ -37,4 +37,5 @@ jobs:
           python3 tools/measure_native_sessions.py --check
           python3 experiments/009-local-storage/probe.py --check
           python3 experiments/023-netbsd-dependencies/verify_evidence.py
+          python3 tools/probe_lua_boundary.py --check
           python3 -m unittest discover -s tools -p 'test_*.py'

@@ -21,4 +21,6 @@ This file records meaningful project changes. Product releases will use versione
 
 - Accepted owner direction: Rust and NetBSD as primary target, initially validating NetBSD 11 ARM64. Native Mio/rusqlite bundled/pkgsrc SQLite checks and nine restricted OpenSSH gateway oracles passed in an isolated 2-vCPU/1-GiB guest; recorded HVF boot workaround and corrected SQLite runtime-library shadowing. No all-port, physical SBC, production security or capacity claim.
 
+- Accepted software/VM-first sequencing: physical SBC hardware tests deferred until the owner can load a complete product; core local BBS first, Lua menus/isolated doors next. Added a concrete software build scope, modern extension/storage/network/payment research, four scoped future GitHub candidates, and a 16-oracle Rust authorization/separate Lua-worker boundary experiment. No production sandbox, blockchain, commerce, gambling or network integration claimed.
+
 No BBS runtime, supported transports, game compatibility, or release has been delivered.

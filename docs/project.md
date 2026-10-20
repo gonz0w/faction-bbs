@@ -23,7 +23,8 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | Terminal | Ordinary SSH terminal clients are the initial secure-access direction, with optional invitation-only private-network operation (owner acceptance 2026-10-19). Overlay admission, SSH identity and local BBS approval remain distinct; no member host shell is implied. Physical serial terminals are not a current target. Backend/enforcement unvalidated. |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
 | Networks | Initial focus: modern private networks, with occasional poor/interrupted connections (owner clarification 2026-10-19). Constrained links remain research inputs; future mesh/non-IP networks are separately evaluated and no specific alternative transport is promised. |
-| Operations | Approachable hobby operation on small SBCs/Raspberry Pi or a small VM appliance; MINIX is a candidate, not mandatory (owner clarification 2026-10-19). Compare whole runtime images and update/recovery burden, not full distribution size. Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
+| Operations | Software/developer-host and NetBSD VM validation now; physical SBC testing deferred until a complete product can be loaded by the owner. No physical hardware gate on software work. Approachable hobby operation on small SBCs/Raspberry Pi or a small VM appliance; MINIX is a candidate, not mandatory (owner clarification 2026-10-19). Compare whole runtime images and update/recovery burden, not full distribution size. Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
+| Extensions | Core first, then Lua menus/isolated game doors. Research optional public permanent rooms, ANSI commerce/payment models, blockchain-linked game economies and modern network adapters; no provider/custody/runtime adopted. See [extension direction](extensions.md). |
 | Privacy | Minimal opt-in telemetry, deliberate exposure and retention policies, no mandatory public directory or central service. |
 | Technology | Rust selected; NetBSD primary target, initially validating NetBSD 11 ARM64. No broad NetBSD-port or physical SBC support claim. No JavaScript or TypeScript anywhere in project source/tooling/dependencies, including browser-terminal assets. Select fast/lightweight implementation options through comparison and prototypes. |
 
@@ -31,7 +32,7 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 
 Each BBS controls its identity, members, local roles, rooms, mail, files, games, directory, and policies. Shared chat needs only the author/delivery context necessary for participating channels; it does not imply replicated account databases, shared approvals, or access to another board.
 
-A directory listing is not federation, trust, or membership. Visiting another BBS crosses into that sysop's access boundary. A local-only chat channel must never become shared implicitly.
+A directory listing is not federation, trust, or membership. Visiting another BBS crosses into that sysop's access boundary. A local-only chat channel must never become shared implicitly. The proposed public-publishing room is a separate explicit outbound category under research; it is not automatic BBS federation or authority to mirror private local rooms. Exact preview, author intent and separate publish permissions remain design requirements.
 
 Transport-specific addresses, discovery, routing, and connection behavior must stay separate from community semantics. Core behavior, persistence, client/session surfaces, adapters, and extensions are boundaries to validate, not a finalized module layout.
 
@@ -44,6 +45,8 @@ The founder welcomes newer and older technologies on merit and explicitly priori
 Security, privacy, terminal compatibility, resource use, and local deployment simplicity must be measured. A private/underground atmosphere is not an anonymity guarantee; public source availability says nothing about whether an operator exposes their deployment.
 
 Original game availability and compatibility are per-title questions. This project includes no original game executables or third-party artwork. Future ports are separate work, not a prerequisite for the first useful BBS.
+
+Current sequencing is [software-first local core, then Lua](../dev-docs/decisions/0007-software-first-and-extension-direction.md). The [first software slice](../dev-docs/first-local-slice.md) defines the build scope; physical SBC hardware is not a near-term dependency. Both external-member-wallet and sysop-payment-service models remain open comparison candidates.
 
 ## Unresolved questions
 

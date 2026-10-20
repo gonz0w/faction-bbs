@@ -6,5 +6,6 @@ These are current requirements for a research-stage project. They describe the i
 - [Login, approval, and BBS session](session.md)
 - [ANSI, menus, and customization](customization.md)
 - [Privacy and security requirements](security-privacy.md)
+- [Optional modern extensions, public rooms, shops and games](extensions.md)
 
 Development practices, experiments, and architecture decisions belong in [dev-docs](../dev-docs/README.md). Historical draft inputs are in the [archive](../dev-docs/archive/README.md).
