@@ -1,7 +1,7 @@
 # 0013: Managed gateway lifecycle and bounded load/failure evidence
 
 Issues: [#18](https://github.com/gonz0w/faction-bbs/issues/18), [#20](https://github.com/gonz0w/faction-bbs/issues/20), [#23](https://github.com/gonz0w/faction-bbs/issues/23), [#35](https://github.com/gonz0w/faction-bbs/issues/35).
-Status: implementation and native validation complete; preparing PR. #52 merged at `08c50bb`.
+Status: implementation/native validation complete; [PR #53](https://github.com/gonz0w/faction-bbs/pull/53) open for review. #52 merged at `08c50bb`.
 
 ## Goal and constraints
 
@@ -15,8 +15,8 @@ physical SBC, production deployment or 100–250-user capacity claim.
 
 - [x] Read requirements and #18/#20; merge verified passing #52.
 - [x] Implement lifecycle and operator scripts without new registry dependencies.
-- [x] Run host checks and fresh native NetBSD software evidence; Linux CI pending PR.
-- [ ] Publish documentation, measured results and focused PR.
+- [x] Run host checks and fresh native NetBSD software evidence; Linux CI required on the current PR head.
+- [x] Publish documentation, measured results and focused PR #53.
 
 ## Steps and commands
 
@@ -49,3 +49,12 @@ four PTYs, seven lifecycle, 23 Python and dependency/repository checks passed.
 Remaining: whole-host USS/PSS/authentication peaks and 100/250 actual connected
 members before raising cap; storage/power-loss, upgrade rollback, packaging and
 physical-target claims remain separate gates. No schema/dependency version change.
+
+## Review handoff
+
+Branch `codex/18-service-lifecycle`, PR #53. Native evidence/source identity and
+cleanup checks pass; CI must pass on the current PR head before merge. No broad
+issue is closed. After merge, measure whole-system private/shared costs and
+concurrent authentication before changing the eight-worker gate. Existing native
+ABI/CMSG regression remains required. Do not rerun obsolete temporary builder
+scripts: they can overwrite newer code. Near-term work stays software/VM-first.
