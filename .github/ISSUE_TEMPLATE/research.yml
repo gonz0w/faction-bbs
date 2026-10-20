@@ -1,0 +1,31 @@
+name: Research / architecture question
+description: Compare options or validate one named uncertainty.
+title: "Research: "
+labels: ["type:research", "status:needs-triage"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and problem
+      description: State one decision and why it matters.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and alternatives
+      description: Include privacy/security, no-JS, terminal, deployment, and resource constraints.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and related work
+      description: Primary sources, retrieval dates, versions, related issues, and dependencies.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Deliverables and falsifiable validation
+      description: Define the bounded output and measurable pass/fail observations.
+    validations:
+      required: true

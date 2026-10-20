@@ -1,0 +1,282 @@
+[
+  {
+    "key": "BBS-001",
+    "legacy_id": "BG-001",
+    "title": "Define architecture decision framework",
+    "number": 1,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/1",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-001--define-architecture-decision-framework.md"
+  },
+  {
+    "key": "BBS-002",
+    "legacy_id": "BG-002",
+    "title": "Research modern BBS and community-platform landscape",
+    "number": 2,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/2",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-002--research-modern-bbs-and-community-platform-landscape.md"
+  },
+  {
+    "key": "BBS-003",
+    "legacy_id": "BG-003",
+    "title": "Research constrained-network user journeys",
+    "number": 3,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/3",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-003--research-constrained-network-user-journeys.md"
+  },
+  {
+    "key": "BBS-004",
+    "legacy_id": "BG-004",
+    "title": "Evaluate core language and runtime candidates",
+    "number": 4,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/4",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-004--evaluate-core-language-and-runtime-candidates.md"
+  },
+  {
+    "key": "BBS-005",
+    "legacy_id": "BG-005",
+    "title": "Define transport adapter contract",
+    "number": 5,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/5",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-005--define-transport-adapter-contract.md"
+  },
+  {
+    "key": "BBS-006",
+    "legacy_id": "BG-006",
+    "title": "Research identity trust and authorization models",
+    "number": 6,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/6",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-006--research-identity-trust-and-authorization-models.md"
+  },
+  {
+    "key": "BBS-007",
+    "legacy_id": "BG-007",
+    "title": "Compare node topology and interconnection models",
+    "number": 7,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/7",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-007--compare-node-topology-and-interconnection-models.md"
+  },
+  {
+    "key": "BBS-008",
+    "legacy_id": "BG-008",
+    "title": "Research low-bandwidth client protocol and interaction budget",
+    "number": 8,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/8",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-008--research-low-bandwidth-client-protocol-and-interaction-budget.md"
+  },
+  {
+    "key": "BBS-009",
+    "legacy_id": "BG-009",
+    "title": "Evaluate persistence search and replication options",
+    "number": 9,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/9",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-009--evaluate-persistence-search-and-replication-options.md"
+  },
+  {
+    "key": "BBS-010",
+    "legacy_id": "BG-010",
+    "title": "Evaluate customization and extension models",
+    "number": 10,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/10",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-010--evaluate-customization-and-extension-models.md"
+  },
+  {
+    "key": "BBS-011",
+    "legacy_id": "BG-011",
+    "title": "Build architecture decision prototype program",
+    "number": 11,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/11",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-011--build-architecture-decision-prototype-program.md"
+  },
+  {
+    "key": "BBS-012",
+    "legacy_id": "BG-012",
+    "title": "Define core community and content domain model",
+    "number": 12,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/12",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-012--define-core-community-and-content-domain-model.md"
+  },
+  {
+    "key": "BBS-013",
+    "legacy_id": "BG-013",
+    "title": "Design terminal and ANSI client baseline",
+    "number": 13,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/13",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-013--design-terminal-and-ansi-client-baseline.md"
+  },
+  {
+    "key": "BBS-014",
+    "legacy_id": "BG-014",
+    "title": "Design web and richer client layering",
+    "number": 14,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/14",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-014--design-web-and-richer-client-layering.md"
+  },
+  {
+    "key": "BBS-015",
+    "legacy_id": "BG-015",
+    "title": "Research Reticulum integration feasibility",
+    "number": 15,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/15",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-015--research-reticulum-integration-feasibility.md"
+  },
+  {
+    "key": "BBS-016",
+    "legacy_id": "BG-016",
+    "title": "Research mesh and store-and-forward operation",
+    "number": 16,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/16",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-016--research-mesh-and-store-and-forward-operation.md"
+  },
+  {
+    "key": "BBS-017",
+    "legacy_id": "BG-017",
+    "title": "Define federation and node-linking boundaries",
+    "number": 17,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/17",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-017--define-federation-and-node-linking-boundaries.md"
+  },
+  {
+    "key": "BBS-018",
+    "legacy_id": "BG-018",
+    "title": "Design sysop operations and deployment model",
+    "number": 18,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/18",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-018--design-sysop-operations-and-deployment-model.md"
+  },
+  {
+    "key": "BBS-019",
+    "legacy_id": "BG-019",
+    "title": "Design security privacy and data portability baseline",
+    "number": 19,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/19",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-019--design-security-privacy-and-data-portability-baseline.md"
+  },
+  {
+    "key": "BBS-020",
+    "legacy_id": "BG-020",
+    "title": "Define test and interoperability strategy",
+    "number": 20,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/20",
+    "source": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-020--define-test-and-interoperability-strategy.md"
+  },
+  {
+    "key": "BBS-021",
+    "legacy_id": null,
+    "title": "Specify the complete approved-login and main-menu journey",
+    "number": 21,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/21",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-022",
+    "legacy_id": null,
+    "title": "Design local file areas and secure terminal file transfers",
+    "number": 22,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/22",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-023",
+    "legacy_id": null,
+    "title": "Evaluate secure terminal access and legacy Telnet compatibility",
+    "number": 23,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/23",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-024",
+    "legacy_id": null,
+    "title": "Test browser-console feasibility with no JavaScript dependencies",
+    "number": 24,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/24",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-025",
+    "legacy_id": null,
+    "title": "Design ANSI scene styling and safe sysop menu customization",
+    "number": 25,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/25",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-026",
+    "legacy_id": null,
+    "title": "Design BBS-local chat channels and command interaction",
+    "number": 26,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/26",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-027",
+    "legacy_id": null,
+    "title": "Design the local other-BBS directory and visit handoff",
+    "number": 27,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/27",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-028",
+    "legacy_id": null,
+    "title": "Define lightweight deployment and performance measurement budgets",
+    "number": 28,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/28",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-029",
+    "legacy_id": null,
+    "title": "Define adversarial terminal and untrusted-input validation",
+    "number": 29,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/29",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-030",
+    "legacy_id": null,
+    "title": "Specify approval, login, revocation, and recovery abuse tests",
+    "number": 30,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/30",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-031",
+    "legacy_id": null,
+    "title": "Define dependency provenance and third-party asset policy",
+    "number": 31,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/31",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-032",
+    "legacy_id": null,
+    "title": "Establish the public Faction BBS repository foundation",
+    "number": 32,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/32",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-033",
+    "legacy_id": null,
+    "title": "Design local private mail and sysop-contact behavior",
+    "number": 33,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/33",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-034",
+    "legacy_id": null,
+    "title": "Build a reuse-first legacy door-game compatibility inventory",
+    "number": 34,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/34",
+    "source": "docs/project.md"
+  },
+  {
+    "key": "BBS-035",
+    "legacy_id": null,
+    "title": "Define the first useful local BBS slice and build-readiness gates",
+    "number": 35,
+    "url": "https://github.com/gonz0w/faction-bbs/issues/35",
+    "source": "docs/project.md"
+  }
+]

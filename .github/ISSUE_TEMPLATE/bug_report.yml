@@ -1,0 +1,24 @@
+name: Bug / documentation defect
+description: Report a reproducible non-sensitive problem; report vulnerabilities privately.
+title: "Bug: "
+labels: ["bug", "status:needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "There is no product release yet. Documentation and repository-check defects are welcome. Use SECURITY.md for sensitive findings. Remove credentials, private addresses, and user content."
+  - type: input
+    id: version
+    attributes:
+      label: Commit or affected document
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps, expected result, and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized environment and evidence

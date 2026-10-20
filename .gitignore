@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+*.log
+*.key
+*.pem
+*.p12
+*.pfx
+/local/
+/tmp/
+/build/
+/dist/
+/coverage/

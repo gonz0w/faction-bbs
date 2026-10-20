@@ -1,0 +1,31 @@
+# Privacy and security requirements
+
+Status: mandatory design constraints and open research, not a claim of implemented protection. Report sensitive findings through [SECURITY.md](../SECURITY.md).
+
+## Membership and authority
+
+- Authenticate users and require local sysop approval before every community action.
+- Define registration, pending, approval, rejection, suspension/revocation, recovery, and operator bootstrap explicitly.
+- Separate member, moderator, sysop, extension, and remote-channel privileges. A local directory entry grants no remote trust or access.
+- Preserve local account and approval authority when shared chat is introduced. Do not federate account databases.
+
+## Exposure and privacy
+
+- A board must function without a public HTTP service, public listing, central service, or federation.
+- An optional HTTP portal may be private or disabled; bind/listen/discovery behavior needs secure defaults and testing.
+- Compare secure network-terminal access against any legacy Telnet compatibility requirement. Treat the protocol choice as a security decision; no public Telnet deployment is selected or recommended by current docs.
+- Minimize collected registration information, operational logs, retained addresses, and metadata. Telemetry is minimal and opt-in. Do not log message bodies, passwords, tokens, or private content by default.
+- Define retention, export, deletion, backups, restore, and recovery as local operator responsibilities with useful safe defaults to validate.
+- An underground/private atmosphere does not establish anonymity, confidentiality, encryption, or resistance to traffic analysis. Record actual guarantees and limitations only after validation.
+
+## Isolation and untrusted content
+
+- Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.
+- Prevent terminal escape injection, path traversal, resource exhaustion, unauthorized file access, and approval bypasses.
+- Keep legacy doors and extensions optional and isolated, with bounded filesystem/network/process privileges, resource limits, and reliable session cleanup.
+- Only participating shared chat channels may federate. Local-only channels, boards, files, mail, games, directories, and account/approval data stay local.
+- No JavaScript/TypeScript code or dependencies, including browser-terminal assets and project tooling. Track dependency provenance, licenses, updates, and supply-chain risk for the eventual stack.
+
+## Evidence required
+
+Write the threat model and pass/fail tests before claiming a security baseline. Research must cover authorization across both access surfaces, interrupted and revoked sessions, terminal parsing, file handling, door isolation, default exposure, and shared-channel/local-data separation. No production deployment or supported version exists yet.

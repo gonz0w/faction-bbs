@@ -1,0 +1,232 @@
+[
+  {
+    "original": ".planning/BACKLOG.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/BACKLOG.md",
+    "sha256": "3822a5f49a464b323c6ac74eed9ae66ce38175df641308c64d4e9a00ddf96664"
+  },
+  {
+    "original": ".planning/INTENT.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/INTENT.md",
+    "sha256": "77bab5c8327162d7ec91b8cd7b00e689872c4bffb9b47c0aad3b529addbf196f"
+  },
+  {
+    "original": ".planning/PROJECT.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/PROJECT.md",
+    "sha256": "b72d9f4824a143572f57f5c658fa97d555ebb8148253db1dc5f1f232398fb16a"
+  },
+  {
+    "original": ".planning/ROADMAP.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/ROADMAP.md",
+    "sha256": "699e782e5aea8b9d55701e094fb9cc8f3ce625a19a389a4601081deaf91feb30"
+  },
+  {
+    "original": ".planning/STATE.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/STATE.md",
+    "sha256": "b7a6f5f0df85b275bd0f779310050c1a007229d2be5b0cb627cd69b5f5948b75"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-001--define-architecture-decision-framework.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-001--define-architecture-decision-framework.md",
+    "sha256": "eba67c82f12a5aed31e946a866bc8447c26d5046800a417a05a230cdc03ce65e"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-002--research-modern-bbs-and-community-platform-landscape.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-002--research-modern-bbs-and-community-platform-landscape.md",
+    "sha256": "a1d49ba770cf346e11ddd206b18430c2b578283cd53cf809127179668b95a7ce"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-003--research-constrained-network-user-journeys.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-003--research-constrained-network-user-journeys.md",
+    "sha256": "332f7669b31de27b192821f1426c14c7f1e44c23802fd4690fad014ebe6b7bc5"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-004--evaluate-core-language-and-runtime-candidates.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-004--evaluate-core-language-and-runtime-candidates.md",
+    "sha256": "f16fd618acd6fcaebd942f94aa74e69a0c36f54fda5dab64d2e912972ae4a788"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-005--define-transport-adapter-contract.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-005--define-transport-adapter-contract.md",
+    "sha256": "60760a04f74c6e30d0f98c8b20452dc6f05feb65cae136e6abcafa1d08797600"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-006--research-identity-trust-and-authorization-models.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-006--research-identity-trust-and-authorization-models.md",
+    "sha256": "aa371baa54fe8385be084453c0093d6a4ede017b16c9d27f67d5310d44ede57d"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-007--compare-node-topology-and-interconnection-models.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-007--compare-node-topology-and-interconnection-models.md",
+    "sha256": "a0b602a89b3508c8a9efa39240681c4e4cacd2dd44d60a689694da9fc9082e4a"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-008--research-low-bandwidth-client-protocol-and-interaction-budget.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-008--research-low-bandwidth-client-protocol-and-interaction-budget.md",
+    "sha256": "4e6dd15df39a26c107e844baa08147b95c3ffa8180bbae766e3fcd3e0ac0c444"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-009--evaluate-persistence-search-and-replication-options.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-009--evaluate-persistence-search-and-replication-options.md",
+    "sha256": "10a7af7641ff11059a283948bdde48e04426b0ae0dcacfe83f04057f82d12a24"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-010--evaluate-customization-and-extension-models.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-010--evaluate-customization-and-extension-models.md",
+    "sha256": "89272b43728b633ca7cbf40d6ae3e75ac6b1a2ba81a531fb2e07800438e048e1"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-011--build-architecture-decision-prototype-program.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-011--build-architecture-decision-prototype-program.md",
+    "sha256": "123c03a8966a1638c09fc595d341e775bdf7f475e7360036104c308f527fa1fd"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-012--define-core-community-and-content-domain-model.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-012--define-core-community-and-content-domain-model.md",
+    "sha256": "4ba9fc1492d272cca0ed5b5af7287b46c3b376da9713a0a12b679a367adb250d"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-013--design-terminal-and-ansi-client-baseline.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-013--design-terminal-and-ansi-client-baseline.md",
+    "sha256": "da5a2ff5147fb73d77317b1e46fb3ce61dd791eb8b3158859e29dbffa260c465"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-014--design-web-and-richer-client-layering.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-014--design-web-and-richer-client-layering.md",
+    "sha256": "37a4fcaf87317ccc0400da7ac8a1e8d89f83ee74fb8076c779d64c7bc7d1c238"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-015--research-reticulum-integration-feasibility.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-015--research-reticulum-integration-feasibility.md",
+    "sha256": "e77bf44695078c1a0662bf4c97534e33a12e2814f2e263facf2bbfdadb02ded7"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-016--research-mesh-and-store-and-forward-operation.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-016--research-mesh-and-store-and-forward-operation.md",
+    "sha256": "1b7b577e77f7cfd5a718b973e9d945c4bd1743f8232de7a3d64ab6e158e9629b"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-017--define-federation-and-node-linking-boundaries.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-017--define-federation-and-node-linking-boundaries.md",
+    "sha256": "e8548a8019d2a88c6947e5ff6f109ba2c6a614ce52275af8ef2c08faa153ae8e"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-018--design-sysop-operations-and-deployment-model.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-018--design-sysop-operations-and-deployment-model.md",
+    "sha256": "f3399362c241ef31b327b6217c1a0e84fbc2f796d1b2b6d0a740d7ee3908164f"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-019--design-security-privacy-and-data-portability-baseline.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-019--design-security-privacy-and-data-portability-baseline.md",
+    "sha256": "a573fa5f8ef39cff976e91d5794687af0859d02a68cd77d8026c82d88ec53837"
+  },
+  {
+    "original": ".planning/backlog/captured/BG-020--define-test-and-interoperability-strategy.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/backlog/captured/BG-020--define-test-and-interoperability-strategy.md",
+    "sha256": "f21d0816becdbdd670f300d268bbf03033e29bba828829cea2af6560b19c25d3"
+  },
+  {
+    "original": ".planning/codebase/architecture.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/architecture.md",
+    "sha256": "8182d6717de9c53a30d6cf7fad3d21df92d4634f6d8a7e105c6e53c3c9ab9dce"
+  },
+  {
+    "original": ".planning/codebase/concerns.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/concerns.md",
+    "sha256": "2c6ac227725bfb14885e00a282620b64e59207d823a95a250105c317abb08500"
+  },
+  {
+    "original": ".planning/codebase/conventions.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/conventions.md",
+    "sha256": "c03daf062c9402247b5ffe2722536e62cdf8efcbcd63da15c59431504cf75cc1"
+  },
+  {
+    "original": ".planning/codebase/integrations.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/integrations.md",
+    "sha256": "2e2fe87c9086fc4dd0502ea6700128e1768de550e6e89b160b9c39284c2d8cd8"
+  },
+  {
+    "original": ".planning/codebase/stack.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/stack.md",
+    "sha256": "14a91d7e9bff8bfb2be478402703ab2ee3fc1dcf336d8e17c232ae84876874c4"
+  },
+  {
+    "original": ".planning/codebase/structure.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/structure.md",
+    "sha256": "4a541367b24a060afbc9314bab0dd87287ddc52e766413ebfd4875602cb4a8cc"
+  },
+  {
+    "original": ".planning/codebase/testing.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/codebase/testing.md",
+    "sha256": "270fc3b6d54bfabe094ac7ea997f7799c32c05fb57ab5cad0d341b243ff4c62d"
+  },
+  {
+    "original": ".planning/memory/facts.json",
+    "archived": "dev-docs/archive/planning-2026-10-19/memory/facts.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "original": ".planning/memory/lessons.json",
+    "archived": "dev-docs/archive/planning-2026-10-19/memory/lessons.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "original": ".planning/memory/open-questions.json",
+    "archived": "dev-docs/archive/planning-2026-10-19/memory/open-questions.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "original": ".planning/memory/pitfalls.json",
+    "archived": "dev-docs/archive/planning-2026-10-19/memory/pitfalls.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/arch/ARCHITECTURE.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/arch/ARCHITECTURE.md",
+    "sha256": "123287bff45b1c3cbf489b2ca8152b013170af57445049b3346981684368ab12"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/arch/STRUCTURE.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/arch/STRUCTURE.md",
+    "sha256": "fe866e96f43937fdc7552aa765da2b0f3ce62a484308a325a030e14d7892fd62"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/concerns/CONCERNS.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/concerns/CONCERNS.md",
+    "sha256": "6d839a9be306116d471037c045c5ac4be35cdad36946e07703f12b983a0f03ec"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/quality/CONVENTIONS.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/quality/CONVENTIONS.md",
+    "sha256": "e6faef4e50ca9b7ddd0130ae3288aeb86813c01199acb3d90fb1a9d21779efda"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/quality/TESTING.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/quality/TESTING.md",
+    "sha256": "2b96f8ceaeb78de622b2196189d7c6ec45224b64ea242d0f37ad040abf641d83"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/tech/INTEGRATIONS.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/tech/INTEGRATIONS.md",
+    "sha256": "9b3959128bde2ea3de31abaf8178fd91ad4bc5454a2ef9c57d435ef6a9cf44ec"
+  },
+  {
+    "original": ".planning/tmp/codebase-map/tech/STACK.md",
+    "archived": "dev-docs/archive/planning-2026-10-19/tmp/codebase-map/tech/STACK.md",
+    "sha256": "a7fb17b05158e1988cb9e2bd9f98dfd9196b25380ce0b19cafd4320f43b0da5f"
+  },
+  {
+    "original": "docs/initial-seed-prd.md",
+    "archived": "dev-docs/archive/seed/initial-seed-prd.md",
+    "sha256": "c8805aef769da6983b51c45e153e2e9abea163ded001faec6da65ae0af8c62d5"
+  },
+  {
+    "original": "docs/transport-erd.md",
+    "archived": "dev-docs/archive/seed/transport-erd.md",
+    "sha256": "6a394c5e14c3421406317cfbbd93baa51f6f8d98f83e2232193ec22519bb477e"
+  },
+  {
+    "original": "AGENTS.md",
+    "archived": "dev-docs/archive/AGENTS.pre-migration.md",
+    "sha256": "6d7eda11942bb55a4cd533d9c7154b26d42b3f6a2a04f7992598b09b48fb5883"
+  }
+]
