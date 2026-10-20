@@ -1,7 +1,7 @@
 # 0012: Restricted SSH and native NetBSD application validation
 
 Issues: [#23](https://github.com/gonz0w/faction-bbs/issues/23), #18/#19/#20/#30/#35.
-Status: implementation/native validation complete; publishing for review, 2026-10-20. Owner requested merge #51 and continue this slice.
+Status: published for review in [PR #52](https://github.com/gonz0w/faction-bbs/pull/52), 2026-10-20. Owner requested merge #51 and continue this slice.
 
 ## Goal and boundaries
 
@@ -21,8 +21,9 @@ No HTTP, public listener, overlay/provider or physical SBC required.
   forwarding denial, bounded startup/session work and disconnect handling.
 - [x] Retrieve/verify/boot a fresh disposable NetBSD 11 ARM64 VM; native Rust build,
   complete app tests, all local PTYs/recovery plus real restricted SSH oracles.
-- [ ] Record primary-source decision, current setup/threat limits and sanitized
-  evidence; update README/backlog, publish/attach PR and verify final CI.
+- [x] Record primary-source decision, current setup/threat limits and sanitized
+  evidence; update README/backlog and publish/attach PR.
+- Required CI is tracked on the PR current head and must pass before merge.
 
 ## Design to falsify
 
@@ -85,3 +86,14 @@ load/resource accounting, account/key lifecycle/fairness, broader confinement an
 physical SBC support. Native compatibility is demonstrated; no production release
 or higher session count is authorized by this result. Record final PR/check status
 on GitHub; broad linked issues stay open.
+
+## Review handoff
+
+PR #52 is attached to the project chat. Issues #18/#20/#23/#31/#35 have progress
+and remaining-gate comments; none is closed by this slice. Branch
+`codex/23-restricted-ssh-netbsd` starts from merged #51. Saved native evidence is
+tied to 37 relevant source/config/lock/harness files, verified against the guest
+before cleanup. Host-only docs/handoff changes do not alter that native source set.
+No public deployment or automatic merge of #52 is implied. Next bound service
+lifecycle/output/crash and complete host resource/load tests before raising the
+eight-worker cap, while retaining the first-core/then-Lua sequencing.
