@@ -1,7 +1,7 @@
 # 0002: Establish the architecture decision framework
 
 Issue: [BBS-001 / #1](https://github.com/gonz0w/faction-bbs/issues/1)
-Status: in progress
+Status: research deliverables complete; adoption pending PR review/merge
 
 ## Goal and boundaries
 
@@ -13,7 +13,7 @@ Refine the ADR/research templates, define evidence/scoring/prototype rules, and 
 - [x] Review primary guidance from NASA decision analysis, CMU SEI architecture evaluation, and OWASP authorization.
 - [x] Write the framework, updated templates, proposed process ADR, and membership-approval worked example.
 - [x] Check acceptance coverage, sources/claims, links, policy, and archive integrity.
-- [ ] Publish an issue-linked PR and verify CI; leave adoption to review/merge.
+- [x] Publish [PR #36](https://github.com/gonz0w/faction-bbs/pull/36) and verify CI; leave adoption to review/merge.
 
 ## Decisions and discoveries — 2026-10-19
 
@@ -39,3 +39,9 @@ Work on `research/1-decision-framework`. Run `python3 tools/check_repository.py`
 - `git diff --check`: passed. Editorial review checked the proposed starting weights sum to 100, requirements cannot be traded for scores, unknowns do not become zero/pass, and the example makes no runtime/security measurement claims.
 - Primary sources were actually retrieved on 2026-10-19 and attributed at their supported claims. No historical archive, product constraint, runtime dependency, or executable code was changed.
 - Runtime approval tests, resource measurements, and the production stack remain unvalidated and outside issue #1. Framework adoption is proposed pending PR review/merge.
+
+## Publication and review handoff
+
+[PR #36](https://github.com/gonz0w/faction-bbs/pull/36) delivers all three acceptance criteria and closes #1 when merged. The `Documentation and policy` check passed for research commit `ccef803` in [GitHub CI](https://github.com/gonz0w/faction-bbs/actions/runs/39348219595). The final handoff-document revision is checked by the same required PR workflow; its live status remains in the PR. No product-code or runtime experiment was added.
+
+The framework and ADR 0003 remain proposed until authorized review/adoption. Issue #1 stays open pending merge. Follow-on research should use existing issues #3/#8/#28 to establish journey/link/resource targets and #6/#20/#21/#30 for the approval experiment; this handoff does not start or resolve those issues.
