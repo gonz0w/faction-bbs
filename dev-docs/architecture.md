@@ -24,7 +24,9 @@ Separate community semantics from transport-specific addressing, discovery, rout
 
 [ADR 0008](decisions/0008-local-core-and-credentials.md) introduces `faction-core`
 (local accounts/current authorization and SQLite room actions) and a separate local
-`faction` CLI. [Runnable instructions and limits](../docs/local-development.md)
+`faction` CLI. [ADR 0009](decisions/0009-safe-terminal-menus-and-themes.md) adds
+`faction-terminal` for validated presentation/action IDs with no account, store or
+network authority; its local TTY adapter maps both navigation routes to core checks. [Runnable instructions and limits](../docs/local-development.md)
 distinguish development behavior from product requirements. No transport receives
 owner recovery authority; the current CLI is not a remote adapter.
 

@@ -7,8 +7,9 @@ implementation a finish line; it does not claim a complete product exists.
 First increment: [local identity/room core and console](../docs/local-development.md),
 [ADR 0008](decisions/0008-local-core-and-credentials.md). Steps 1 and 3 have partial
 implementation and tests; approval, sessions, durable posts/replies/unread/retries
-work locally. Full account lifecycle, export/restore, safe ANSI/theme menus, room
-ACLs, chat, SSH and native NetBSD application checks remain open.
+work locally. A local vertical ANSI/theme/dual-navigation baseline now covers part of step 2
+([pack guide](../docs/theme-packs.md), ADR 0009); full art/terminal support, account
+lifecycle, export/restore, room ACLs, chat, SSH and native NetBSD app checks remain.
 
 ## Build sequence and observable completion
 

@@ -12,7 +12,7 @@ The goal is private, human-scale communities whose operators own their systems a
 
 **Early local core · updated 2026-10-19 · runnable development console, no network BBS release.**
 
-The first Rust core and local console implement sysop bootstrap, hidden-password login, pending registration, approval/revocation, and durable chronological rooms with replies/unread cursors and retry IDs. [Try the local core](docs/local-development.md). Full ANSI/theme navigation, chat and restricted SSH are the next increments. This repository also contains the product requirements, development workflow, preserved design history, and GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** Software/developer-host and NetBSD VM validation drive development; physical SBC testing is deferred until the owner can load a complete product. There is no implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
+The first Rust core and local console implement sysop bootstrap, hidden-password login, pending registration, approval/revocation, and durable chronological rooms with replies/unread cursors and retry IDs. [Try the local core](docs/local-development.md). The local console now has opt-in ANSI arrows/Enter and direct hotkeys, safe bounded CP437 identity import, sysop TOML packs and manual seasonal overrides ([theme guide](docs/theme-packs.md)). Local chat, export/restore, restricted SSH and native NetBSD application validation remain next. This repository also contains the product requirements, development workflow, preserved design history, and GitHub issue backlog. **Rust is selected and NetBSD is the primary target.** Software/developer-host and NetBSD VM validation drive development; physical SBC testing is deferred until the owner can load a complete product. There is no implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 
@@ -70,10 +70,10 @@ cd faction-bbs
 python3 tools/check_repository.py
 cargo build --workspace --locked --release
 ./target/release/faction --state-dir "$HOME/.faction-dev" init
-./target/release/faction --state-dir "$HOME/.faction-dev" login
+./target/release/faction --state-dir "$HOME/.faction-dev" login --ansi --theme themes/base
 ```
 
-See [local development](docs/local-development.md) for member registration, sysop approval, posting, recovery and tests. This owner-capable console opens no listener and must never be used as an SSH forced command. It is a plain-text development surface; the full BBS experience is still being built. Start contributions with an issue and keep this README and affected docs current.
+See [local development](docs/local-development.md) for member registration, sysop approval, posting, recovery and tests. This owner-capable console opens no listener and must never be used as an SSH forced command. It supports plain text and opt-in ANSI menus; the full BBS experience is still being built. Start contributions with an issue and keep this README and affected docs current.
 
 ## License and heritage
 

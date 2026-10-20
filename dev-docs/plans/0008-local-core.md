@@ -1,6 +1,6 @@
 # 0008: First local identity and room implementation
 
-Date: 2026-10-19. Status: published for review in [PR #48](https://github.com/gonz0w/faction-bbs/pull/48). Issues: #6/#9/#12/#21/#30/#35.
+Date: 2026-10-19. Status: merged by owner authorization in [PR #48](https://github.com/gonz0w/faction-bbs/pull/48). Issues: #6/#9/#12/#21/#30/#35.
 
 ## Authorized outcome and scope
 
