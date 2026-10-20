@@ -1,9 +1,11 @@
 # 0005: Carry Rust, readiness I/O and SQLite into the validation slice
 
-Status: proposed implementation-experiment decision; production adoption not accepted
+Status: proposed integrated implementation experiment; language choice superseded by accepted ADR 0006. Complete production adoption not accepted
 Date: 2026-10-19. Owner: maintainer review/merge authority.
 Issues: [#4](https://github.com/gonz0w/faction-bbs/issues/4), [#9](https://github.com/gonz0w/faction-bbs/issues/9), #11/#18/#20/#23/#31/#35.
 Supersedes: none. Evidence: [native comparison](../research/0004-runtime-comparison.md), [storage/recovery](../research/0009-local-storage-comparison.md).
+
+Later owner acceptance: [ADR 0006](0006-rust-and-primary-netbsd.md) selects Rust and primary NetBSD. The security/hardware/durability gates below remain in force; this historical proposal does not override that direction.
 
 ## Proposed decision
 

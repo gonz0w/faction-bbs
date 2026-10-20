@@ -14,7 +14,7 @@ Which constraints govern the public foundation? The founder requested a name in 
 
 Other names were proposed but the founder preferred the Faction direction. Keep earlier names only in migration/history. No browser JS exception is authorized; the prior xterm.js research lead is superseded. An HTTP portal/browser console remains a goal but must be evaluated without JS dependencies. If feasible behavior cannot satisfy these constraints, record the conflict and alternatives rather than introducing an exception silently.
 
-No production language, transport, federation protocol, database, or extension runtime is selected. Repository checks use Python's standard library only; this is not a product runtime selection. CI uses shell/Python and no JavaScript-based marketplace actions.
+At this foundation decision no production language, transport, federation protocol, database, or extension runtime was selected. [ADR 0006](0006-rust-and-primary-netbsd.md) later selects Rust and primary NetBSD; the remaining choices still require validation. Repository checks use Python's standard library only; this is not a product runtime selection. CI uses shell/Python and no JavaScript-based marketplace actions.
 
 ## Evidence and confidence
 

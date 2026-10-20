@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "retrieved": "2026-10-19",
+  "measured_utc": "2026-10-20",
+  "scope": "Native NetBSD 11.0 ARM64 guest compatibility, QEMU 11.1.1 HVF, 2 vCPU / 1024 MiB configured; not SBC performance",
+  "image": {
+    "url": "https://cdn.netbsd.org/pub/NetBSD/NetBSD-11.0/evbarm-aarch64/binary/gzimg/arm64.img.gz",
+    "sha512": "50c8597cd83b73d12a466e67c1ecc49fb1969941171644b15a7fe377b0f482ccb190b3aa38b043eba3f5e7b4d6e38cf0e7d3c6fd5251813af869b49beda2ee80"
+  },
+  "kernel": {
+    "url": "https://cdn.netbsd.org/pub/NetBSD/NetBSD-11.0/evbarm-aarch64/binary/kernel/netbsd-GENERIC64.img.gz",
+    "sha512": "62a120ee688902e632f5e536e41aa9e6e74a55759a91d9c5bd3b2e12092b7d3bdaf00aa98c67b87466a04b8c0fff19b9d804814cd1efb0b665b6a82d39c0e179"
+  },
+  "manifest": {
+    "url": "https://cdn.NetBSD.org/pub/NetBSD/security/hashes/NetBSD-11.0_hashes.asc",
+    "signer_fingerprint": "271133262BF35CB50D4F504689261E17F5EF49FF",
+    "verification": "GPG good signature; signing public key retrieved through official HTTPS, no independent web-of-trust validation"
+  },
+  "boot": {
+    "initial": "HVF host CPU hit IllegalInstruction in vmt_probe/vm_cmd",
+    "workaround": "kernel -c; disable vmt; quit; not a general hardware workaround"
+  },
+  "builds": [
+    {
+      "variant": "bundled",
+      "selftest": {
+        "exit_code": 0,
+        "stdout": "PASS tcp_readiness unix_readiness stalled_peer bounded_input\nPASS sqlite=3.53.2 wal_full foreign_keys parameters fts5 busy_timeout_ms=230 approval backup record_roundtrip",
+        "stderr": ""
+      },
+      "dynamic_dependencies": {
+        "exit_code": 0,
+        "stdout": "/root/research/probe-bundled:\n\t-lpthread.1 => /usr/lib/libpthread.so.1\n\t-lc.12 => /usr/lib/libc.so.12\n\t-lgcc_s.1 => /usr/lib/libgcc_s.so.1\n\t-lm.0 => /usr/lib/libm.so.0",
+        "stderr": ""
+      },
+      "binary_bytes": 1855752
+    },
+    {
+      "variant": "pkgsrc-rpath",
+      "selftest": {
+        "exit_code": 0,
+        "stdout": "PASS tcp_readiness unix_readiness stalled_peer bounded_input\nPASS sqlite=3.53.2 wal_full foreign_keys parameters fts5 busy_timeout_ms=226 approval backup record_roundtrip",
+        "stderr": ""
+      },
+      "dynamic_dependencies": {
+        "exit_code": 0,
+        "stdout": "/root/research/probe-pkgsrc:\n\t-lsqlite3 => /usr/pkg/lib/libsqlite3.so\n\t-lpthread.1 => /usr/lib/libpthread.so.1\n\t-lc.12 => /usr/lib/libc.so.12\n\t-lm.0 => /usr/lib/libm.so.0\n\t-lgcc_s.1 => /usr/lib/libgcc_s.so.1",
+        "stderr": ""
+      },
+      "binary_bytes": 464304
+    }
+  ],
+  "environment": {
+    "exit_code": 0,
+    "stdout": "NetBSD 11.0 evbarm\nhw.machine_arch = aarch64\nhw.ncpu = 2\nhw.physmem64 = 1054990336\nrustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-unknown-netbsd\nrelease: 1.96.0\nLLVM version: 22.1.2\ncargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)\ncc (nb3 20260326) 12.5.0\nrust-bin-1.96.0     Safe, concurrent, practical language (pre-built distribution)\nsqlite3-3.53.2      SQL Database Engine in a C Library",
+    "stderr": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+  },
+  "base_loader_observation": {
+    "selected_library": "/usr/lib/libsqlite3.so",
+    "runtime_version": "3.45.1",
+    "outcome": "same selftest passed, but this was not the intended pkgsrc runtime; corrected with explicit rpath and verified ldd/version"
+  },
+  "gateway": {
+    "schema": 1,
+    "scope": "NetBSD ARM64 isolated synthetic SSH gateway",
+    "results": [
+      {
+        "oracle": "key_auth_forced_probe_pending_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "unknown_key_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "exec_request_denied_no_host_shell",
+        "result": "pass"
+      },
+      {
+        "oracle": "sftp_subsystem_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "direct_tcp_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "remote_tcp_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "remote_unix_forward_denied",
+        "result": "pass"
+      },
+      {
+        "oracle": "oversized_command_disconnect",
+        "result": "pass"
+      },
+      {
+        "oracle": "pty_live_approval_and_revocation_read_post",
+        "result": "pass"
+      }
+    ]
+  },
+  "gateway_effective_settings": {
+    "exit_code": 0,
+    "stdout": "passwordauthentication no\nkbdinteractiveauthentication no\nx11forwarding no\npermittty yes\npermituserrc no\nallowtcpforwarding no\nallowagentforwarding no\ndisableforwarding yes\nallowstreamlocalforwarding no\nauthenticationmethods publickey\npermittunnel no",
+    "stderr": ""
+  },
+  "dependencies": [
+    {
+      "name": "bitflags",
+      "version": "2.13.2",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "cc",
+      "version": "1.9.0",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "fallible-iterator",
+      "version": "0.3.0",
+      "license": "MIT/Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "fallible-streaming-iterator",
+      "version": "0.1.9",
+      "license": "MIT/Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "find-msvc-tools",
+      "version": "0.1.15",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "libc",
+      "version": "0.2.191",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "libsqlite3-sys",
+      "version": "0.38.2",
+      "license": "MIT",
+      "forbidden_files": []
+    },
+    {
+      "name": "log",
+      "version": "0.4.34",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "mio",
+      "version": "1.2.4",
+      "license": "MIT",
+      "forbidden_files": []
+    },
+    {
+      "name": "pkg-config",
+      "version": "0.3.34",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "rusqlite",
+      "version": "0.40.1",
+      "license": "MIT",
+      "forbidden_files": []
+    },
+    {
+      "name": "shlex",
+      "version": "2.0.1",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "smallvec",
+      "version": "1.16.3",
+      "license": "MIT OR Apache-2.0",
+      "forbidden_files": []
+    },
+    {
+      "name": "vcpkg",
+      "version": "0.2.15",
+      "license": "MIT/Apache-2.0",
+      "forbidden_files": []
+    }
+  ],
+  "sources": {
+    "experiments/023-netbsd-dependencies/Cargo.lock": "7036dcf98f6fe7159d030129f7188be7a919cc2eda92e762faa635de909141f5",
+    "experiments/023-netbsd-dependencies/Cargo.toml": "7f214ac1e371312c751fd3dffd5d44a3848cd28b44613f1223f70c0a0c69f678",
+    "experiments/023-netbsd-dependencies/check_gateway.py": "68fe4b5f7e02e9952bee98000f2b8bcce41cc3eb4c1659516a0cabc854e62649",
+    "experiments/023-netbsd-dependencies/gateway-match.conf": "3154ab41d9426d7effe06194bff5209f1440263887ba81b79ca92b9ac2f0b69b",
+    "experiments/023-netbsd-dependencies/probe.rs": "02e78eb6e7bb5c6c6151ba7921d72f4180a714eb5f94191b504f49c266a04d99",
+    "experiments/023-netbsd-dependencies/audit_sources.py": "53ca80f0c072a5ec82ee6509270235392ef4baad1785b1aef2035d8064bf2a2a"
+  }
+}

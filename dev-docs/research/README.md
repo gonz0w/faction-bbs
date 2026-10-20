@@ -17,7 +17,7 @@ python3 tools/measure_buffer_probe.py --check
 
 `--check` verifies saved source/result provenance without rerunning timing or requiring a compiler. Deliberate `--run` refreshes observations on the current host; it is not a CI performance gate. Buffer `--run` additionally requires `cc` and uses disposable binaries outside the checkout. Python remains research tooling, C remains an isolated probe; neither selects the product stack.
 
-The [native runtime comparison](0004-runtime-comparison.md), [local storage/recovery comparison](0009-local-storage-comparison.md), and [hobby appliance/access direction](0018-appliance-and-access-direction.md) narrow the next slice to a proposed Rust/readiness + SQLite WAL experiment. SSH/private-network product intent is accepted; production stack and image/backend selection remain unvalidated.
+The [native runtime comparison](0004-runtime-comparison.md), [local storage/recovery comparison](0009-local-storage-comparison.md), and [hobby appliance/access direction](0018-appliance-and-access-direction.md) narrow the next slice to a proposed Rust/readiness + SQLite WAL experiment. SSH/private-network product intent is accepted; Rust and primary NetBSD are now accepted direction ([ADR 0006](../decisions/0006-rust-and-primary-netbsd.md)); complete production stack and image/backend selection remain unvalidated. See the [native NetBSD dependency/gateway report](0023-netbsd-dependencies.md) and `python3 experiments/023-netbsd-dependencies/verify_evidence.py` for saved provenance checks.
 
 ```sh
 python3 tools/measure_native_sessions.py --check

@@ -1,5 +1,7 @@
 # 0018: Hobby appliance and private terminal access direction
 
+Later direction: [ADR 0006](../decisions/0006-rust-and-primary-netbsd.md) accepts Rust and primary NetBSD. [Native NetBSD evidence](0023-netbsd-dependencies.md) adds pinned dependency/gateway checks; earlier comparative observations below remain historical evidence, not contrary current authority.
+
 Status: owner clarified direction; OS/SSH backend and images remain research.
 Date: 2026-10-19. Related [#18](https://github.com/gonz0w/faction-bbs/issues/18), [#23](https://github.com/gonz0w/faction-bbs/issues/23), #4/#9.
 Owner: founder confirms product intent; implementation recommendations require validation.

@@ -1,5 +1,7 @@
 # 0009: Local storage, recovery and export
 
+Later direction: [ADR 0006](../decisions/0006-rust-and-primary-netbsd.md) accepts Rust and primary NetBSD. [Native NetBSD evidence](0023-netbsd-dependencies.md) adds pinned dependency/gateway checks; earlier comparative observations below remain historical evidence, not contrary current authority.
+
 Status: bounded research complete; recommend SQLite WAL for the next validation slice. Production persistence contract remains proposed.
 Date: 2026-10-19. Issue: [#9](https://github.com/gonz0w/faction-bbs/issues/9).
 Owner: Codex research; maintainer reviews adoption. Stopping condition: compare credible storage roles, run bounded recovery/export evidence, and specify remaining filesystem/security tests. [Decision framework](decision-framework.md).
