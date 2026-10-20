@@ -10,4 +10,6 @@ ANSI compatibility is a capability to specify and test. Study character encoding
 
 Use original or explicitly distributable assets. Historical game/software names are references; existing artwork and game executables are not automatically available for redistribution. Keep per-title/per-asset provenance and terms when introducing third-party material.
 
+The owner confirms **Oblivion/2-inspired arrow-key highlighting plus direct hotkeys** (for example `[D]oors` -> `D`), first-class sysop-defined themes and optional seasonal colors/login identity screens. [The menu/theme direction](menus-and-themes.md) specifies the intended behavior; the [attributed reference catalog](../dev-docs/research/0025-menu-and-art-direction.md) records ACiD/iCE/Razor-related works actually examined. These are visual targets, not permission to bundle historical art or implemented menu support.
+
 The initial menu inventory is in [the session guide](session.md). The extension and terminal questions live in [the issue index](../dev-docs/issue-index.md).

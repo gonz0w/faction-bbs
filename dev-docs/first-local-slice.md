@@ -9,7 +9,7 @@ next implementation a finish line; it does not claim a complete product exists.
 | Step | Deliverable | Software acceptance evidence / existing issue |
 | --- | --- | --- |
 | 1 | Local identity, registration/pending, sysop bootstrap/approve/revoke and explicit session identity mapping | #6/#12/#21/#30: pending/revoked users cannot read/post/chat; permission changes affect active sessions; persistence/restart and owner recovery tested |
-| 2 | Approved session -> safe board identity/art -> sysop welcome -> menu; useful ASCII fallback | #13/#21/#25/#29: malicious controls cannot execute terminal actions; bounded input/output, screen limits, partial input and disconnect cleanup tested |
+| 2 | Approved session -> safe board identity/art -> sysop welcome -> menu; useful ASCII fallback | #13/#21/#25/#29: malicious controls cannot execute terminal actions; arrow highlight/Enter and direct hotkeys route identically, sysop theme surfaces exercised; bounded input/output, screen limits, partial input and disconnect cleanup tested |
 | 3 | Local Citadel room list/enter/read/unread/post/reply baseline with durable IDs | #9/#12: transactions and current room/membership checks, retry-after-lost-ack reconciliation, export/backup/restore and restart tests |
 | 4 | BBS-local command chat and a second simultaneous member | #26: channel ACLs, bounded fan-out/slow readers, membership revoke and reconnect behavior; no federation required |
 | 5 | Ordinary SSH access and sysop-run VM setup/recovery | #18/#23: real identity mapping, no member host shell/exec/SFTP/forwarding; optional HTTP/overlays absent; named NetBSD VM tests and 100/250-session load accounting |

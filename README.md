@@ -1,14 +1,6 @@
 # Faction BBS
 
-```text
-+------------------------------------------------------------+
-|  F A C T I O N   /   B B S                                  |
-|  independent boards. private communities. shared frequencies.|
-|                                                            |
-|  [M]essage rooms   [C]hat   [F]iles   [D]oors                 |
-|  your sysop. your scene. your system.                       |
-+------------------------------------------------------------+
-```
+**Independent boards. Private communities. Shared frequencies.**
 
 **An independent, terminal-first BBS with a modern foundation and an underground soul.**
 
@@ -29,6 +21,8 @@ The [decision framework](dev-docs/research/decision-framework.md) is accepted. R
 [SSH access with optional private-network-only operation](dev-docs/decisions/0004-ssh-and-optional-private-network.md) is accepted product direction. [Native NetBSD 11 ARM64 checks](dev-docs/research/0023-netbsd-dependencies.md) passed for Mio, bundled/pkgsrc SQLite and nine restricted OpenSSH gateway oracles. The production SSH backend, minimal appliance, real SBC behavior and complete server capacity remain unvalidated. [The roadmap](dev-docs/roadmap.md) separates research from future capabilities; [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
 
 The [first local software slice](dev-docs/first-local-slice.md) gives the core a concrete finish line. **Lua menus and isolated game doors come next.** A [16-oracle Rust/Lua boundary probe](dev-docs/research/0010-extensible-ansi-platform.md) now exercises synthetic approval/capability checks, worker limits and crash/deadline cleanup on the developer host; it is not a released plugin sandbox. [Optional extension research](docs/extensions.md) covers permanent-message rooms, modern networks, ANSI shops, payment models and game economies without requiring them in the core.
+
+[Menu and art direction](docs/menus-and-themes.md): Oblivion/2-inspired arrow-key highlighting plus direct hotkeys, sysop-defined themes and optional seasonal identity screens. ACiD/iCE ANSI and Razor/scene ASCII typography guide the visual reference work; no historical artwork is bundled.
 
 ## Enter the board
 

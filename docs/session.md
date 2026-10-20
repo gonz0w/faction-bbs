@@ -30,6 +30,8 @@ Artwork capability negotiation, bandwidth limits, safe escape handling, skip beh
 | Help / contact sysop | Navigation help and local operator contact. |
 | Logout | Deliberate session exit. |
 
+On capable terminals, arrow keys highlight entries and Enter activates the selected action. Displayed hotkeys also activate directly: `[D]oors` means D/d, independent of current highlight. Both routes enforce current local approval/roles; typed editor/chat content must not be interpreted as menu hotkeys. Sysops define the theme/layout, with optional seasonal identity art and colors. See [menus and themes](menus-and-themes.md).
+
 This is a research inventory, not a fixed key map or a first-release feature commitment. Sysops should be able to shape relevant menus within permission and upgrade boundaries. Administrative tools require the appropriate local role.
 
 ## Between systems
