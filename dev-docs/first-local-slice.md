@@ -9,7 +9,9 @@ First increment: [local identity/room core and console](../docs/local-developmen
 implementation and tests; approval, sessions, durable posts/replies/unread/retries
 work locally. A local vertical ANSI/theme/dual-navigation baseline now covers part of step 2
 ([pack guide](../docs/theme-packs.md), ADR 0009); full art/terminal support, account
-lifecycle, export/restore, room ACLs, SSH and native NetBSD app checks remain.
+lifecycle, room ACLs, SSH and native NetBSD app checks remain. Step 3 now has
+[private export/verify/restore](../docs/export-restore.md) for current durable state
+(ADR 0011); full installation/member interchange and power-loss gates remain.
 Step 4 now has a [local-console chat baseline](../docs/local-chat.md), including
 private grants/joins, bounded history/presence and simultaneous PTYs (ADR 0010);
 server-level fan-out, rate limits and network output enforcement remain open.

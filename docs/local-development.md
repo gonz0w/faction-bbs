@@ -75,13 +75,19 @@ account. The future restricted adapter needs a separate entry point and reviewed
 identity mapping. Local possession of the private store already gives equivalent
 operator authority; this command is not a remote recovery protocol.
 
-There is no backup/export command yet. Schema 1 -> 2 now migrates transactionally
-for chat; stop older consoles and take the full private snapshot before upgrading.
-Older binaries reject schema 2; rollback requires that pre-upgrade copy. For a disposable
-development snapshot, stop every console and copy the complete state directory,
-retaining owner-only permissions. Do not copy only a live SQLite database file:
+[Private export/verify/restore](export-restore.md) now provides a live-WAL-aware,
+versioned snapshot and restores to a fresh private directory. It preserves durable
+accounts/rooms/chat state, removes live chat entries and renews session binding.
+Read the guide for private paths, included credential hashes, external theme copies,
+initial limits and required account-policy review before cutover. Existing targets
+are never overwritten; exports are neither encrypted nor authenticated.
+
+Schema 1 -> 2 migrates transactionally for chat; stop older consoles and take a
+complete private offline state-directory copy before upgrading from schema 1.
+The new exporter only accepts schema 2. Older binaries reject schema 2; rollback
+requires that pre-upgrade copy. Do not copy only a live SQLite database file:
 committed data may still be in its WAL. Foreign/future schema versions are rejected.
-Use test data until broader upgrade, backup/restore and data lifecycle gates are implemented.
+Use test data until broader upgrade, data lifecycle and deployment gates are met.
 
 ## Validate
 
@@ -95,6 +101,7 @@ cargo test --workspace --locked --release
 cargo build --workspace --locked --release
 python3 tools/smoke_local_console.py target/release/faction
 python3 tools/smoke_local_chat.py target/release/faction
+python3 tools/smoke_export_restore.py target/release/faction
 ```
 
 The PTY smoke generates disposable passwords/private state outside the checkout
@@ -114,7 +121,7 @@ passthrough. No historical art is bundled. Broader/long ANSI, SAUCE/iCE metadata
 grid layouts, calendar themes and visual review of actual artwork remain work.
 
 [Local chat](local-chat.md) now has a bounded simultaneous-console baseline.
-Remaining account/room lifecycle, export/restore, native NetBSD app
+Remaining account/room lifecycle, native NetBSD app
 validation and a distinct restricted SSH adapter are next; Lua menus/isolated
 doors follow the useful local core. See [scope](../dev-docs/first-local-slice.md),
 [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md) and

@@ -17,4 +17,6 @@ Use `NNNN-short-kebab-title.md` and the [template](template.md). Status is propo
 
 - [0010: Bounded BBS-local chat, grants, history and schema migration](0010-bounded-local-chat.md)
 
+- [0011: Private current-format export and fresh-directory restore](0011-private-export-restore.md)
+
 Use the [decision framework](../research/decision-framework.md) for gate screening, criteria, evidence/confidence, and prototype thresholds. Future technical decisions need primary-source research, retrieval dates, alternatives, confidence, reversal cost, and a named validation experiment. The question and evidence must be bounded.

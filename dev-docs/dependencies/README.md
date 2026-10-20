@@ -1,7 +1,7 @@
 # Local application dependencies
 
-Reviewed 2026-10-19. [ADR 0008](../decisions/0008-local-core-and-credentials.md)
-adopts the initial core dependencies; [ADR 0009](../decisions/0009-safe-terminal-menus-and-themes.md) adds a pinned TOML parser for declarative themes. `Cargo.lock` pins
+Reviewed 2026-10-20. [ADR 0008](../decisions/0008-local-core-and-credentials.md)
+adopts the initial core dependencies; [ADR 0009](../decisions/0009-safe-terminal-menus-and-themes.md) adds a pinned TOML parser for declarative themes. [ADR 0011](../decisions/0011-private-export-restore.md) enables rusqlite backup/hooks/limits for private snapshot tools without adding registry packages. `Cargo.lock` pins
 versions/checksums. [The inventory](local-core.json) records selected dependency
 versions, declared license expressions and features for NetBSD ARM64 and Linux
 x86-64, including build dependencies. Current selected graphs contain 39 / 41 registry packages respectively; all added declarations offer MIT/Apache-2.0 choices except winnow (MIT). It does not mean the application ran on

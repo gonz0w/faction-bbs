@@ -30,6 +30,13 @@ under current local approval/role/epoch checks. Bounded retained messages/receip
 are plaintext application data, not secure deletion or confidentiality from the
 operator. A denied channel clears the selected draft; it is never redirected.
 
+[Owner-only export/restore](export-restore.md) includes credential hashes and private
+content in a standalone local plaintext snapshot. Private paths, exact schema/data
+checks and fresh restored session binding are implemented; encryption, authenticity,
+member-scoped disclosure and full installation backups are not. Review approvals
+and password resets when restoring older policy. Never expose these owner tools
+to a remote member entry point or treat an export as authority to publish data.
+
 ## Isolation and untrusted content
 
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.

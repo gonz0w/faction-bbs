@@ -312,7 +312,18 @@ fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+        );
+        return Ok(());
+    }
+    if args.first().is_some_and(|v| v == "verify-export") {
+        if args.len() != 2 {
+            return Err(invalid("verify-export needs one private file"));
+        }
+        let summary = faction_core::verify_export(&PathBuf::from(&args[1]))?;
+        println!(
+            "Export verified: {} members, {} rooms, {} posts, {} channels, {} retained chat messages.",
+            summary.members, summary.rooms, summary.posts, summary.channels, summary.chat_messages
         );
         return Ok(());
     }
@@ -321,6 +332,31 @@ fn run() -> Result<()> {
     }
     let path = PathBuf::from(&args[1]);
     let command = args[2].to_str().ok_or_else(|| invalid("invalid command"))?;
+    if ["export", "restore"].contains(&command) {
+        if args.len() != 4 {
+            return Err(invalid("export/restore needs exactly one export file path"));
+        }
+        let file = PathBuf::from(&args[3]);
+        let summary = if command == "restore" {
+            faction_core::restore_local(&file, &path)?
+        } else {
+            faction_core::export_local(&path, &file)?
+        };
+        println!(
+            "{} complete: {} members, {} rooms, {} posts, {} channels, {} retained chat messages. Private plaintext data; no live sessions or external theme files.",
+            if command == "export" {
+                "Export"
+            } else {
+                "Restore"
+            },
+            summary.members,
+            summary.rooms,
+            summary.posts,
+            summary.channels,
+            summary.chat_messages
+        );
+        return Ok(());
+    }
     if !["init", "register", "login", "recover"].contains(&command) {
         return Err(invalid("unknown command"));
     }

@@ -3,6 +3,7 @@
 These describe current requirements and the early local console. There is no network BBS release.
 
 - [Build and try the local core](local-development.md)
+- [Private export, verify and restore rehearsal](export-restore.md)
 - [Project direction and boundaries](project.md)
 - [Login, approval, and BBS session](session.md)
 - [ANSI, menus, and customization](customization.md)

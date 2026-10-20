@@ -4,6 +4,17 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+### Added — 2026-10-20
+
+- Owner-only private export/verify/restore: incremental committed SQLite/WAL snapshot,
+  versioned current-schema artifact, exact catalog/integrity/FK/domain validation,
+  owner-private staging, compact standalone file, no-overwrite publication and fresh
+  restore directory/session binding. Preserves accounts/hashes/approval, rooms/posts/
+  replies/unread/retry IDs and retained local chat/grants; discards live chat entries
+  and receipts. Added corrupt-input/permissions/concurrency/roundtrip tests and a real
+  CLI/PTY rehearsal in CI. Initial size/work limits and external-theme/encryption/
+  authenticity/power-loss/NetBSD gaps are explicit; no remote backup or release claim.
+
 ### Added — 2026-10-19
 
 - Faction BBS identity and BSD-3-Clause license.

@@ -17,4 +17,6 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 
 - [0010: BBS-local command chat](0010-local-command-chat.md)
 
+- [0011: Private export/restore implementation and recovery validation](0011-local-export-restore.md)
+
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.

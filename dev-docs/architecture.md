@@ -40,3 +40,10 @@ server event notification/output limits remain separate integrated work.
 With Rust and primary NetBSD selected, compare local persistence/search, command/session representation, secure terminal access, optional HTTP exposure, no-JS browser-console feasibility, file transfers, room reply semantics, IRC interoperability, extension mechanisms, and later shared-channel/mesh delivery against measurable constraints. Each material choice needs a source-attributed decision record and a falsifiable validation plan. See [the issue index](issue-index.md).
 
 The development schema is version 2 under ADR 0010, with a transactional migration from the initial ADR 0008 schema; it has no stable on-disk compatibility promise yet. No federation protocol, transport adapter contract, framework, production performance guarantee or supported device list is adopted by this document. Select fast/lightweight options on measured evidence, including deployment burden and security, rather than language familiarity.
+
+[ADR 0011](decisions/0011-private-export-restore.md) adds owner-only current-format
+SQLite export/verify and new-directory restore. It preserves durable local data,
+discards chat leases/joins/receipts and rotates internal session binding. Private
+paths/no-overwrite publication are checked; external theme packaging, member-scoped
+interchange, protected archives and native NetBSD/power-loss validation remain work.
+These APIs must not be delegated by a future member transport adapter.
