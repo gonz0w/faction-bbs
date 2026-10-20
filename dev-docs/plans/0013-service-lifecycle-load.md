@@ -40,7 +40,7 @@ Native NetBSD 11 ARM64: 54 Rust tests, four PTY workflows, seven local lifecycle
 oracles, 20 actual application SSH oracles and 13 service/load/failure oracles
 passed. Current-source evidence is in [report 0026](../research/0026-service-lifecycle-load.md)
 and saved 024/026 JSON. Seven active members drained/reaped in 5.481 s; broker-loss
-member exit observed in 0.167 s. Eight-member chat and rejected 100/250 local
+member exit observed in 0.167 s. Eight-session chat (one approved fixture account) and rejected 100/250 local
 offers passed without descriptor growth. These offers are not 100/250 members.
 43 source/config/lock/harness/checker hashes match. Guest/keys/raw logs/disks and
 forwards were removed; host SSH and other VMs untouched. Host release Clippy/Rust,

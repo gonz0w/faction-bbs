@@ -28,7 +28,10 @@ Run the existing `tools/check_restricted_ssh.py` private fixture arguments with
 reusing generated credentials in memory. Never run this administrative harness
 against an existing board: it requires a marker and initially absent database.
 
-Eight real approved SSH sessions must enter chat and observe a delivered message.
+Eight real concurrent SSH sessions use one approved fixture account (`bobby`)
+and must enter chat and observe a delivered message. This tests eight transports/
+workers/leases; it is not eight distinct accounts or a representative board
+dataset. The preceding application suite separately exercises two distinct accounts.
 A ninth must fail while all eight workers remain observable. Then offer 100 and
 250 additional **local control connections**, all rejected at the cap; verify
 eight workers, unchanged broker descriptor rows and healthy chat afterward. Those
@@ -68,7 +71,7 @@ developer-host SSH and unrelated VMs were untouched.
 
 | Observation | Native result |
 | --- | --- |
-| Eight approved SSH members, all in chat | Pass; all observed one arrival within 0.116 s in this local VM fixture |
+| Eight approved SSH sessions using one fixture account, all in chat | Pass; all observed one arrival within 0.116 s in this local VM fixture |
 | Ninth SSH connection at cap | Denied; eight workers remained |
 | 100 then 250 local over-cap offers | All rejected; broker descriptor rows 15 before / 15 after; existing chat still worked |
 | Service stop with seven surviving active members | 5.481 s; no member processes/socket remained |
@@ -78,7 +81,7 @@ developer-host SSH and unrelated VMs were untouched.
 | Blocked synthetic writer | Live writer stopped progressing on its first 8-KiB write; PTY contained output; two-second session limit reaped it; probe completion verified |
 | Dedicated SSH service | status/restart/fresh login/ordered stop passed |
 
-One quiescent eight-chat process sample:
+One quiescent eight-chat-session process sample (one approved fixture account):
 
 | Role | Count | Individual RSS KiB | Sum RSS MiB |
 | --- | --- | --- | --- |

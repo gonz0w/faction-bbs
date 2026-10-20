@@ -393,5 +393,10 @@
     "physical SBC/other NetBSD architectures",
     "long-duration churn and disk-full/power-loss/upgrade rollback",
     "real application slow-output deadlines across poor SSH links"
-  ]
+  ],
+  "workload": {
+    "concurrent_ssh_sessions": 8,
+    "distinct_accounts_in_eight_session_sample": 1,
+    "scope": "one approved fixture account, eight independent transports/workers/chat leases; application suite separately covers two distinct accounts"
+  }
 }
