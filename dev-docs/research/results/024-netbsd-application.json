@@ -130,30 +130,30 @@
     ],
     "observations": {
       "rejected_handoff_descriptor_rows": {
-        "before": 6,
-        "after": 6
+        "before": 7,
+        "after": 7
       },
       "two_member_chat_process_sample": {
         "faction-member": [
           {
-            "rss_kib": 3816,
-            "vsz_kib": 23616
+            "rss_kib": 4024,
+            "vsz_kib": 19848
           },
           {
-            "rss_kib": 3820,
-            "vsz_kib": 17468
+            "rss_kib": 4032,
+            "vsz_kib": 19848
           }
         ],
         "faction-broker": [
           {
-            "rss_kib": 2456,
-            "vsz_kib": 17540
+            "rss_kib": 2484,
+            "vsz_kib": 17576
           }
         ],
         "faction-ssh": [
           {
-            "rss_kib": 1980,
-            "vsz_kib": 12664
+            "rss_kib": 1984,
+            "vsz_kib": 12668
           },
           {
             "rss_kib": 1984,
@@ -174,7 +174,7 @@
       ]
     },
     "faction-member": {
-      "bytes": 2248976,
+      "bytes": 2314544,
       "dynamic_libraries": [
         "-lpthread.1 => /usr/lib/libpthread.so.1",
         "-lc.12 => /usr/lib/libc.so.12",
@@ -203,14 +203,14 @@
     "Cargo.lock": "c5a0e4f548e968ff6f967abdecffb7dd7ce0b05c6bd7b89182ea9774b54d48dd",
     "Cargo.toml": "00199e37439041786876ac3f060009456778a83529d8810139e1a3b37f7e1dde",
     "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
-    "crates/faction-access/src/broker.rs": "652a000047d44a859c4b62d375bda94a1ce0d6f5085ec5a7a21f8de1a985e7b7",
+    "crates/faction-access/src/broker.rs": "6f6895d23dbd34992bad63a7a1ff5d80fd394714daa5edc7bcdbde490349c000",
     "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
     "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
     "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
     "crates/faction-cli/src/chat.rs": "61332f672c91e67585a0c9efa4f3a311accb544ea7ad5c4909ccbcb4b9f5195e",
     "crates/faction-cli/src/lib.rs": "d157c188e5a0e369f034b4fc37f24199172597f016875fa870afb41d2ffd389b",
     "crates/faction-cli/src/main.rs": "4f6d1d40afed6da13316991d7b13f0505261f57839cc3e0590c152ea2adbc140",
-    "crates/faction-cli/src/member.rs": "a7007b4a6563252c7fee008d3e15b83d1a8689c4a61ba9d5fa01b31d92896440",
+    "crates/faction-cli/src/member.rs": "658aa9cae2c4d1ae3d537fe79f8c03181b81822c259662b6bc20ef4660c9e161",
     "crates/faction-cli/src/terminal.rs": "a3bfecf29d2b7a7a2f02f7c47fca7015ff8e3278f66227abd93630fffae1199a",
     "crates/faction-core/Cargo.toml": "a62682c6da2b6fdcd7a2e9cc0e3c0045cf41688351bebb452916b70747480e17",
     "crates/faction-core/src/chat.rs": "1ad554998b5fe9c8435f8f84fec335aacc5de020e644537076f3305529c2de7a",
@@ -227,12 +227,13 @@
     "crates/faction-terminal/src/theme.rs": "4657a18e21e926dca8b4f5e9bd821e9ed541c7fbc9146ce854e8e21ae9982b5d",
     "crates/faction-terminal/tests/terminal.rs": "e8e15d519855fba39a01333daec4c42fcb9ee51e68b64af2bcdc0c73b0f43a99",
     "crates/faction-unix/Cargo.toml": "2e0eaea46081f07c3fc76b81de83ac2d972db0c59b1e8d98d4643584dbc8210b",
-    "crates/faction-unix/build.rs": "792eb4f3ba7bdb4ed8601d779e9535d11b44be174ada1750ae5fbe8cd208041d",
-    "crates/faction-unix/src/lib.rs": "45514a55381e531bff8d880200fce9de0d38d1619e2904d504adafea0a68ca87",
+    "crates/faction-unix/build.rs": "fad25481dacba11863882186822329fbb34af51ab03a292298d255faa7909fc2",
+    "crates/faction-unix/src/lib.rs": "64e8a349439c33814c4f274c7436332833e576e1d3caae4591e447425eacbe07",
+    "crates/faction-unix/src/shutdown.c": "e263bcd624fd4b67a3b7648e480a88d71faee644390f08e46e1ed9ae0dee11db",
     "crates/faction-unix/src/terminal_fd.c": "a97160e8499877395e574116289afb0b7fc4c9563733e378b8439a799520bf8c",
     "deploy/netbsd/sshd_config.in": "60245b9ea2849b203b95c726341466291348014840f74d94e30a16e073ec60a8",
     "dev-docs/dependencies/local-core.json": "a56146655ad124e9cc82d541da097b7126e1bd2e99ab1203c4b429fdf567deeb",
-    "tools/check_restricted_ssh.py": "d5bf7e0fbae1f9268319e7f00aefb5d1360eae48aed36e7127b5a8d643ca1d33",
+    "tools/check_restricted_ssh.py": "3d7207c0703ae0143b89bfb87f3efca44629a67cf7c0c936ad95245e217d67eb",
     "tools/smoke_export_restore.py": "d69786c3ae58a5faa8d713667bb39c3c6ff0fe8f20fa76a1dfb262ca0e0cf074",
     "tools/smoke_local_chat.py": "2d48ff29315d2a7ff4fb0cd42a1fd2f6998dcc417e781cac14b84fd247c40ab7",
     "tools/smoke_local_console.py": "d466f37efcf21c86ac5238a2e93a3c6d6926f1d92bcdf7acc359ff4c58258374",
@@ -273,9 +274,9 @@
   "unperformed": [
     "100/250-session or SBC capacity",
     "complete OpenSSH/host shared-private memory accounting",
-    "output-deadline and broker-crash/fault campaign",
+    "complete end-to-end output-deadline and storage/power-loss fault campaign",
     "independent agent/X11/tunnel wire attacks",
     "physical SBC and other NetBSD architectures",
-    "maintained appliance/rc.d installation and overlay/firewall exposure audit"
+    "maintained appliance and overlay/firewall exposure audit"
   ]
 }

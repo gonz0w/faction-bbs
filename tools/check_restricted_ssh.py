@@ -78,7 +78,10 @@ def run(args):
 
     def enter(choice, handle=None):
         c = SSHConsole(member[:-1] + ['-tt', member[-1]])
-        children.append(c); c.expect('[L]ogin [R]egister [Q]uit: '); c.send(choice)
+        children.append(c)
+        if choice is None:
+            return c
+        c.expect('[L]ogin [R]egister [Q]uit: '); c.send(choice)
         if handle:
             c.expect('Handle: '); c.send(handle)
             if choice == 'r':
@@ -204,6 +207,10 @@ for count in [1,2,80]:
         assert p.returncode != 0
         remote('test ! -e /tmp/leak')
         passed('owner_export_unreachable_from_ssh_exec')
+        if args.lifecycle_output:
+            from check_service_lifecycle import exercise
+            evidence = exercise(remote, approved, enter, children)
+            args.lifecycle_output.write_text(json.dumps(evidence, indent=2)+'\n')
         for c in children:
             assert password.encode() not in c.transcript, 'BBS credential echoed'
     finally:
@@ -224,4 +231,5 @@ if __name__ == '__main__':
     parser.add_argument('--unknown-identity', required=True, type=Path)
     parser.add_argument('--known-hosts', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--lifecycle-output', type=Path)
     run(parser.parse_args())

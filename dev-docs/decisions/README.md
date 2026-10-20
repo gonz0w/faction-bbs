@@ -21,4 +21,6 @@ Use `NNNN-short-kebab-title.md` and the [template](template.md). Status is propo
 
 - [0012: Restricted OpenSSH and separate-UID terminal handoff](0012-restricted-ssh-and-terminal-handoff.md)
 
+- [0013: Managed gateway lifecycle](0013-managed-gateway-lifecycle.md)
+
 Use the [decision framework](../research/decision-framework.md) for gate screening, criteria, evidence/confidence, and prototype thresholds. Future technical decisions need primary-source research, retrieval dates, alternatives, confidence, reversal cost, and a named validation experiment. The question and evidence must be bounded.

@@ -21,4 +21,6 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 
 - [0012: Restricted SSH and native NetBSD application validation](0012-restricted-ssh-netbsd.md)
 
+- [0013: Managed gateway lifecycle and load/failure validation](0013-service-lifecycle-load.md)
+
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.

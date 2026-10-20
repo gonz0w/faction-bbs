@@ -57,3 +57,9 @@ development caps until complete host/failure and remote hardening work is measur
 ## Evidence required
 
 Write the threat model and pass/fail tests before claiming a security baseline. Research must cover authorization across both access surfaces, interrupted and revoked sessions, terminal parsing, file handling, door isolation, default exposure, and shared-channel/local-data separation. No production deployment or supported version exists yet.
+
+The [managed service path](service-lifecycle.md) now drains ordinary stops, reaps
+workers and detects broker loss; native eight-member overload/fault checks passed.
+Its pidfile lock must never be unlinked while live. Native signal handling extends
+the explicit FFI exception; it is not a process sandbox or hard realtime guarantee.
+Whole-host capacity, account/key fairness and durable failure remain open.
