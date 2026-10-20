@@ -26,6 +26,8 @@ class Console:
         if self.pid == 0:
             fcntl.ioctl(0, termios.TIOCSWINSZ, struct.pack('HHHH', rows, columns, 0, 0))
             os.environ['TERM'] = 'xterm-256color'
+            # A new child must not retain another live console's master PTY.
+            os.closerange(3, os.sysconf('SC_OPEN_MAX'))
             os.execv(str(binary), [str(binary), '--state-dir', str(state), command, *extra])
         self.buffer = b''
         self.transcript = b''
@@ -74,17 +76,32 @@ class Console:
                 assert os.waitstatus_to_exitcode(status) == code, 'unexpected console exit'
                 assert termios.tcgetattr(self.fd)[3] & termios.ECHO, 'terminal echo not restored'
                 return
-            select.select([], [], [], 0.02)
+            # Drain trailing output while waiting: Darwin may wait for its PTY
+            # output queue during exit, so waiting without reading can deadlock.
+            if select.select([self.fd], [], [], 0.02)[0]:
+                try:
+                    data = os.read(self.fd, 8192)
+                    self.transcript += data
+                    self.buffer += data
+                except OSError as exc:
+                    if exc.errno != errno.EIO:
+                        raise
         raise AssertionError('console failed to exit')
 
     def close(self):
         if not self.done:
             try:
                 os.kill(self.pid, signal.SIGKILL)
-                os.waitpid(self.pid, 0)
             except ProcessLookupError:
                 pass
-        os.close(self.fd)
+            # Close before waitpid so pending terminal output cannot hold exit.
+            os.close(self.fd)
+            try:
+                os.waitpid(self.pid, 0)
+            except ChildProcessError:
+                pass
+        else:
+            os.close(self.fd)
 
 
 def smoke(binary):

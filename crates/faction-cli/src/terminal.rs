@@ -10,9 +10,57 @@ use std::{
     io::{self, IsTerminal, Read, Write},
     time::Instant,
 };
-struct Raw {
+pub(super) struct Raw {
     tty: File,
     saved: Termios,
+}
+impl Raw {
+    pub(super) fn open() -> Result<Self> {
+        let tty = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
+        let saved = termios::tcgetattr(&tty)?;
+        let mut mode = saved.clone();
+        mode.local_modes.remove(
+            LocalModes::ECHO
+                | LocalModes::ECHONL
+                | LocalModes::ICANON
+                | LocalModes::ISIG
+                | LocalModes::IEXTEN,
+        );
+        mode.input_modes.remove(
+            InputModes::ICRNL
+                | InputModes::INLCR
+                | InputModes::IGNCR
+                | InputModes::IXON
+                | InputModes::IXOFF,
+        );
+        mode.special_codes[SpecialCodeIndex::VMIN] = 1;
+        mode.special_codes[SpecialCodeIndex::VTIME] = 0;
+        termios::tcsetattr(&tty, OptionalActions::Flush, &mode)?;
+        Ok(Self { tty, saved })
+    }
+    pub(super) fn read_byte(&self) -> io::Result<u8> {
+        let mut byte = [0];
+        (&self.tty).read_exact(&mut byte)?;
+        Ok(byte[0])
+    }
+}
+pub(super) fn ready() -> Result<bool> {
+    let stdin = io::stdin();
+    let mut fds = [PollFd::new(&stdin, PollFlags::IN)];
+    poll(
+        &mut fds,
+        Some(&Timespec {
+            tv_sec: 0,
+            tv_nsec: 100_000_000,
+        }),
+    )?;
+    if fds[0]
+        .revents()
+        .intersects(PollFlags::HUP | PollFlags::ERR | PollFlags::NVAL)
+    {
+        return Err(io::Error::from(io::ErrorKind::UnexpectedEof).into());
+    }
+    Ok(fds[0].revents().contains(PollFlags::IN))
 }
 impl Drop for Raw {
     fn drop(&mut self) {
@@ -21,14 +69,14 @@ impl Drop for Raw {
         let _ = io::stdout().flush();
     }
 }
-fn size() -> Option<(u16, u16)> {
+pub(super) fn size() -> Option<(u16, u16)> {
     if !io::stdin().is_terminal() || !io::stdout().is_terminal() {
         return None;
     }
     let w = termios::tcgetwinsize(io::stdin()).ok()?;
     Some((w.ws_col, w.ws_row))
 }
-fn capable() -> bool {
+pub(super) fn capable() -> bool {
     matches!(size(), Some((40..=240, 18..=100)))
         && std::env::var("TERM").is_ok_and(|s| s != "dumb" && !s.is_empty())
 }
@@ -62,27 +110,7 @@ pub fn select(theme: &Theme, sysop: bool) -> Result<Option<Action>> {
         return Ok(None);
     }
     let dimensions = size();
-    let tty = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
-    let saved = termios::tcgetattr(&tty)?;
-    let mut mode = saved.clone();
-    mode.local_modes.remove(
-        LocalModes::ECHO
-            | LocalModes::ECHONL
-            | LocalModes::ICANON
-            | LocalModes::ISIG
-            | LocalModes::IEXTEN,
-    );
-    mode.input_modes.remove(
-        InputModes::ICRNL
-            | InputModes::INLCR
-            | InputModes::IGNCR
-            | InputModes::IXON
-            | InputModes::IXOFF,
-    );
-    mode.special_codes[SpecialCodeIndex::VMIN] = 1;
-    mode.special_codes[SpecialCodeIndex::VTIME] = 0;
-    termios::tcsetattr(&tty, OptionalActions::Flush, &mode)?;
-    let raw = Raw { tty, saved };
+    let raw = Raw::open()?;
     let (mut decoder, mut menu) = (Decoder::new(), Menu::new(theme, sysop));
     let mut output = io::stdout();
     output.write_all(b"\x1b[?25l")?;

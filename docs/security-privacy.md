@@ -25,6 +25,11 @@ Status: mandatory design constraints and open research. Narrow local authorizati
 - Payment models remain under comparison, including external wallets and separate sysop services. Keep order intent, signing/custody, settlement and entitlements distinct. Current tests use synthetic data/fake providers/nonredeemable credits; no keys or funded operations.
 - Lua worker processes/API restrictions are not an OS sandbox. Production doors require restricted OS privileges, bounded resources/concurrency, terminal-safe output and reliable termination/recovery.
 
+The [local chat baseline](local-chat.md) keeps private grants/joins/history floors
+under current local approval/role/epoch checks. Bounded retained messages/receipts
+are plaintext application data, not secure deletion or confidentiality from the
+operator. A denied channel clears the selected draft; it is never redirected.
+
 ## Isolation and untrusted content
 
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.

@@ -15,4 +15,6 @@ For substantial multi-step work, create an issue-linked `NNNN-short-title.md` us
 
 - [0009: Safe ANSI menu and sysop themes](0009-ansi-menu-themes.md)
 
+- [0010: BBS-local command chat](0010-local-command-chat.md)
+
 Routine small edits need no execution plan. Do not create a parallel hidden planning framework.

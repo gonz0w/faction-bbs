@@ -283,3 +283,41 @@ fn checked_in_base_and_season_examples_validate() {
         );
     }
 }
+
+#[test]
+fn chat_editor_is_a_separate_bounded_context() {
+    use faction_terminal::{LINE_BYTES, LineEditor, LineEvent};
+    let mut editor = LineEditor::default();
+    let now = Instant::now();
+    for b in b"P is text\x1b[D!" {
+        editor.feed(*b, now);
+    }
+    assert_eq!(editor.text(), "P is text!");
+    assert_eq!(editor.viewport(5), "text!");
+    assert_eq!(
+        editor.feed(b'\r', now),
+        Some(LineEvent::Submit("P is text!".into()))
+    );
+    assert_eq!(editor.feed(b'\n', now), None);
+    for _ in 0..=LINE_BYTES {
+        editor.feed(b'P', now);
+    }
+    assert_eq!(editor.feed(b'\r', now), Some(LineEvent::Discarded));
+    assert!(editor.text().is_empty());
+    assert_eq!(editor.feed(b'\n', now), None);
+    for b in b"/me\x1b]52;c;/quit\n\x1b\\ waves" {
+        editor.feed(*b, now);
+    }
+    assert_eq!(
+        editor.feed(b'\n', now),
+        Some(LineEvent::Submit("/me waves".into()))
+    );
+    editor.feed(27, now);
+    assert_eq!(
+        editor.expire(now + Duration::from_secs(1)),
+        Some(LineEvent::Discarded)
+    );
+    editor.feed(b'P', now + Duration::from_secs(1));
+    assert!(editor.text().is_empty());
+    assert_eq!(editor.feed(3, now), Some(LineEvent::Cancel));
+}

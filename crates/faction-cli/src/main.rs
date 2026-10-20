@@ -1,5 +1,6 @@
 //! Local development console; never install this owner-capable command as an SSH forced command.
 #![forbid(unsafe_code)]
+mod chat;
 mod terminal;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
 use faction_terminal::{Action, Theme};
@@ -280,6 +281,7 @@ fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()>
             Some(Action::History) => read_room(board, s, false),
             Some(Action::Post) => post(board, s),
             Some(Action::Sysop) => sysop(board, s),
+            Some(Action::Chat) => chat::run(board, s, ansi),
             _ => {
                 println!("Unknown or unavailable command.");
                 Ok(())

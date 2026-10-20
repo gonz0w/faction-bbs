@@ -1,6 +1,6 @@
 # 0009: Safe ANSI menu and sysop themes
 
-Date: 2026-10-19. Status: published for review in [PR #49](https://github.com/gonz0w/faction-bbs/pull/49). Issues: #13/#21/#25/#29/#31/#35.
+Date: 2026-10-19. Status: merged by owner authorization in [PR #49](https://github.com/gonz0w/faction-bbs/pull/49). Issues: #13/#21/#25/#29/#31/#35.
 Owner authorized merge of PR #48 and continued implementation. #48 merged as
 c7abd006896e5389dac06feaf1c3d1920c400afc with required checks passing.
 

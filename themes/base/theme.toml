@@ -33,6 +33,10 @@ action = "post"
 key = "P"
 label = "Post a message"
 [[menu]]
+action = "chat"
+key = "C"
+label = "Local chat"
+[[menu]]
 action = "sysop"
 key = "S"
 label = "Sysop controls"

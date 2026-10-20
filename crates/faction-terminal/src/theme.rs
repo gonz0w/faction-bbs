@@ -14,6 +14,7 @@ pub enum Action {
     New,
     History,
     Post,
+    Chat,
     Sysop,
     Doors,
     Quit,
@@ -25,6 +26,7 @@ impl Action {
             "new" => Ok(Self::New),
             "history" => Ok(Self::History),
             "post" => Ok(Self::Post),
+            "chat" => Ok(Self::Chat),
             "sysop" => Ok(Self::Sysop),
             "doors" => Ok(Self::Doors),
             "quit" => Ok(Self::Quit),
@@ -118,6 +120,7 @@ impl Default for Theme {
                 (Action::New, b'N', "New messages"),
                 (Action::History, b'H', "Room history"),
                 (Action::Post, b'P', "Post a message"),
+                (Action::Chat, b'C', "Local chat"),
                 (Action::Sysop, b'S', "Sysop controls"),
                 (Action::Doors, b'D', "Doors (not installed)"),
                 (Action::Quit, b'Q', "Log out"),
@@ -332,8 +335,8 @@ impl Theme {
         theme.apply(root, &t)?;
         if let Some(value) = t.get("menu") {
             let values = value.as_array().ok_or("menu must be an array")?;
-            if !(6..=7).contains(&values.len()) {
-                return Err("menu needs 6-7 entries");
+            if !(6..=8).contains(&values.len()) {
+                return Err("menu needs 6-8 entries");
             }
             let (mut keys, mut actions, mut entries) =
                 (BTreeSet::new(), BTreeSet::new(), Vec::new());
