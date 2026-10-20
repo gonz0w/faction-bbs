@@ -1,7 +1,7 @@
 # 0002: Establish the architecture decision framework
 
 Issue: [BBS-001 / #1](https://github.com/gonz0w/faction-bbs/issues/1)
-Status: research deliverables complete; adoption pending PR review/merge
+Status: completed; process accepted by owner-authorized merge of PR #36 on 2026-10-19
 
 ## Goal and boundaries
 
@@ -45,3 +45,7 @@ Work on `research/1-decision-framework`. Run `python3 tools/check_repository.py`
 [PR #36](https://github.com/gonz0w/faction-bbs/pull/36) delivers all three acceptance criteria and closes #1 when merged. The `Documentation and policy` check passed for research commit `ccef803` in [GitHub CI](https://github.com/gonz0w/faction-bbs/actions/runs/39348219595). The final handoff-document revision is checked by the same required PR workflow; its live status remains in the PR. No product-code or runtime experiment was added.
 
 The framework and ADR 0003 remain proposed until authorized review/adoption. Issue #1 stays open pending merge. Follow-on research should use existing issues #3/#8/#28 to establish journey/link/resource targets and #6/#20/#21/#30 for the approval experiment; this handoff does not start or resolve those issues.
+
+## Adoption follow-through — 2026-10-19
+
+The owner instructed “merge it and move on.” PR #36 was squash-merged as `2b23e39`, closing issue #1. This supersedes the pending-review state in the historical handoff above. ADR 0003 and the framework now record acceptance of the process only; the approval-boundary example remains unvalidated architecture research.

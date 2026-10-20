@@ -31,4 +31,5 @@ jobs:
       - name: Validate documentation, policies, and archive
         run: |
           python3 tools/check_repository.py
+          python3 tools/model_link_budget.py --check
           python3 -m unittest discover -s tools -p 'test_*.py'

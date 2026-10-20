@@ -1,6 +1,6 @@
 # Architecture decision framework
 
-Status: proposed for adoption through [issue #1](https://github.com/gonz0w/faction-bbs/issues/1) and [ADR 0003](../decisions/0003-architecture-decision-framework.md). Updated 2026-10-19. These are project evaluation rules, not an external certification or a selected architecture.
+Status: accepted through owner-authorized merge of [PR #36](https://github.com/gonz0w/faction-bbs/pull/36), closing [issue #1](https://github.com/gonz0w/faction-bbs/issues/1); see [ADR 0003](../decisions/0003-architecture-decision-framework.md). Updated 2026-10-19. These are project evaluation rules, not an external certification or a selected architecture.
 
 ## Use the smallest sufficient decision record
 

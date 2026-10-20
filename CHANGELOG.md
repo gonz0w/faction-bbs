@@ -11,6 +11,7 @@ This file records meaningful project changes. Product releases will use versione
 - Explicit privacy/security, lightweight-operation, and no-JavaScript/TypeScript constraints.
 - Codex agent guidance, GitHub contribution templates, documentation checks, and an issue-based research workflow with 35 scoped issues and two milestones.
 - Verified historical archive and migration map for the retired planning system and draft seed documents.
-- Proposed architecture decision framework with mandatory gates, comparison/evidence rules, risk-based prototype requirements, refined research/ADR templates, and a bounded approval-enforcement example for issue #1.
+- Architecture decision framework with mandatory gates, comparison/evidence rules, risk-based prototype requirements, refined templates, and a bounded approval-enforcement example; accepted through PR #36 / issue #1.
+- Issue #3 research: private/poor/interrupted-link journeys, synthetic profile/workload controls, repeatable payload calculations with correctness tests, and explicit handoff to interaction/resource budget research. No runtime benchmark or network support is claimed.
 
 No BBS runtime, supported transports, game compatibility, or release has been delivered.
