@@ -74,7 +74,7 @@ developer-host SSH and unrelated VMs were untouched.
 | Eight approved SSH sessions using one fixture account, all in chat | Pass; all observed one arrival within 0.116 s in this local VM fixture |
 | Ninth SSH connection at cap | Denied; eight workers remained |
 | 100 then 250 local over-cap offers | All rejected; broker descriptor rows 15 before / 15 after; existing chat still worked |
-| Service stop with seven surviving active members | 5.481 s; no member processes/socket remained |
+| Service stop with seven surviving active sessions | 5.481 s; no member processes/socket remained |
 | Broker SIGKILL with a live real member | Member exit observed after 0.167 s; stale socket recovered on start; fresh login passed |
 | Eight stalled handoffs at shutdown | 6.265 s; no premature handoff closures mistaken for successful waiting |
 | SQLite write contention | Bounded busy retry prompt; decline returned to menu, logout and later fresh login passed |
