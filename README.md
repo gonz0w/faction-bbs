@@ -14,15 +14,19 @@
 
 Faction brings together the things that made a BBS feel like somewhere: a distinctive ANSI welcome, a sysop's own menus, rooms full of conversation, file areas, late-night chat, and a door into another game. The spirit comes from WWIV, Citadel, and the colorful, heavily customized BBS scenes its founder remembers from the 1980s and 1990s—Vision-X, Vision/2, Oblivion, and the many personal hacks that made each board its own world.
 
-The goal is private, human-scale communities whose operators own their systems and their data. Terminal access is central. A web portal is a future optional access surface; a sysop must be able to keep a board off the public web.
+The goal is private, human-scale communities whose operators own their systems and their data. Ordinary SSH terminal access is the initial secure-access direction, with optional private-network-only deployments. A web portal is a future optional access surface; a sysop must be able to keep a board off the public web.
 
 ## Status
 
 **Research and repository foundation · updated 2026-10-19 · no release or runnable BBS yet.**
 
-This repository contains the product requirements, development workflow, preserved design history, and a GitHub issue backlog. There is no selected production language, implemented server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
+This repository contains the product requirements, development workflow, preserved design history, and a GitHub issue backlog. There is no selected production language, implemented BBS server, verified door-game support, or supported deployment command. Privacy, security, and performance statements below describe requirements to validate, not guarantees of existing software.
 
-The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research now includes [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [proposed text/ANSI interaction budgets and measured local replay](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets and an allocation experiment](dev-docs/research/0028-small-host-budgets.md). The owner target is a 1–2 core / roughly 1 GiB SBC or VM with 100–250 connected members, while application memory targets are much smaller. Local pacing and allocation probes do not establish server performance or network support; no production stack has been selected. [The roadmap](dev-docs/roadmap.md) separates current research from future capabilities. [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
+The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
+
+**Recommended next validation slice: Rust with readiness-based I/O and SQLite WAL.** The [native comparison](dev-docs/research/0004-runtime-comparison.md) and [storage/recovery research](dev-docs/research/0009-local-storage-comparison.md) support this proposed experiment choice. Go remains a measured fallback. [ADR 0005](dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the integrated security/hardware tests required before production adoption.
+
+[SSH access with optional private-network-only operation](dev-docs/decisions/0004-ssh-and-optional-private-network.md) is accepted product direction. No SSH backend or appliance OS is selected. Local probes do not establish complete server performance or network support. [The roadmap](dev-docs/roadmap.md) separates research from future capabilities; [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
 
 ## Enter the board
 

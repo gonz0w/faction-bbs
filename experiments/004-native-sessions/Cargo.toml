@@ -1,0 +1,18 @@
+[package]
+name = "faction-session-research"
+version = "0.0.0"
+edition = "2024"
+publish = false
+license = "BSD-3-Clause"
+
+[[bin]]
+name = "session-mio"
+path = "session_mio.rs"
+
+[dependencies]
+mio = { version = "=1.2.4", features = ["os-poll", "net"] }
+
+[profile.release]
+opt-level = 2
+panic = "abort"
+strip = true

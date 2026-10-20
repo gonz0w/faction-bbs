@@ -17,4 +17,13 @@ python3 tools/measure_buffer_probe.py --check
 
 `--check` verifies saved source/result provenance without rerunning timing or requiring a compiler. Deliberate `--run` refreshes observations on the current host; it is not a CI performance gate. Buffer `--run` additionally requires `cc` and uses disposable binaries outside the checkout. Python remains research tooling, C remains an isolated probe; neither selects the product stack.
 
+The [native runtime comparison](0004-runtime-comparison.md), [local storage/recovery comparison](0009-local-storage-comparison.md), and [hobby appliance/access direction](0018-appliance-and-access-direction.md) narrow the next slice to a proposed Rust/readiness + SQLite WAL experiment. SSH/private-network product intent is accepted; production stack and image/backend selection remain unvalidated.
+
+```sh
+python3 tools/measure_native_sessions.py --check
+python3 experiments/009-local-storage/probe.py --check
+```
+
+Fresh `--run` native probes require C/Rust/Cargo/Go and initial crate access; saved-evidence checks require only Python. SQLite fresh runs require stdlib SQLite with FTS5. Both use synthetic local disposable data; there is no deployable BBS in these experiment folders.
+
 The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.

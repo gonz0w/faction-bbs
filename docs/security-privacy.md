@@ -13,7 +13,7 @@ Status: mandatory design constraints and open research, not a claim of implement
 
 - A board must function without a public HTTP service, public listing, central service, or federation.
 - An optional HTTP portal may be private or disabled; bind/listen/discovery behavior needs secure defaults and testing.
-- Compare secure network-terminal access against any legacy Telnet compatibility requirement. Treat the protocol choice as a security decision; no public Telnet deployment is selected or recommended by current docs.
+- Ordinary SSH client access with optional private-network mode is accepted direction; transport/network admission never substitutes for local BBS approval. Evaluate the SSH backend, registration/bootstrap, host identity and deny shell/exec/SFTP/forwarding escape paths. Compare any legacy Telnet compatibility separately. Treat the protocol choice as a security decision; no public Telnet deployment is selected or recommended by current docs.
 - Minimize collected registration information, operational logs, retained addresses, and metadata. Telemetry is minimal and opt-in. Do not log message bodies, passwords, tokens, or private content by default.
 - Define retention, export, deletion, backups, restore, and recovery as local operator responsibilities with useful safe defaults to validate.
 - An underground/private atmosphere does not establish anonymity, confidentiality, encryption, or resistance to traffic analysis. Record actual guarantees and limitations only after validation.

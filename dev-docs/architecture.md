@@ -1,6 +1,6 @@
 # Architecture: boundaries to validate
 
-Status: no implementation or production stack selected. Product requirements are in [docs/project.md](../docs/project.md).
+Status: no production implementation or accepted production stack. Product requirements are in [docs/project.md](../docs/project.md).
 
 Separate community semantics from transport-specific addressing, discovery, routing, and connections. Candidate responsibilities are local accounts/approval, message rooms/unread state, chat/channel policy, files/mail/directory data, session/menu presentation, persistence/search, transport adapters, operations, and optional game/extension hosts. This is a research map, not a prescribed code/module layout.
 
@@ -13,6 +13,10 @@ Separate community semantics from transport-specific addressing, discovery, rout
 - Doors are optional and isolated from the core, with explicit resources, privileges, lifecycle, and return/recovery behavior.
 - Text/ASCII remains useful; ANSI capabilities and legacy encodings need a compatibility contract.
 - No JS/TS in source or dependencies, including the optional browser console and repository tooling.
+
+## Current direction and proposed validation slice
+
+[SSH with optional private-network-only operation](decisions/0004-ssh-and-optional-private-network.md) is accepted product intent; its backend and enforcement remain unvalidated. [ADR 0005](decisions/0005-rust-sqlite-validation-slice.md) proposes hosted Rust/readiness I/O and local SQLite WAL for the next integrated validation slice, based on native-session and storage/recovery probes. It rejects millisecond scanning as the initial I/O approach and keeps Go as a measured fallback. No production stack or appliance OS has been accepted.
 
 ## Open decisions
 
