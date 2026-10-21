@@ -126,6 +126,25 @@ Keep schema-2 backups readable, exact schema validation and fresh restored board
 identity. Scores are local hobby records, not currency or verified game outcomes.
 Native/DOS compatibility remains separate work.
 
+## Optional classic server doors
+
+Issue #77 / ADR 0029 adds docs/classic-game-doors.md. Owner accepted original
+servers and isolated original DOS binaries; keep both under #34/#78/#79. Do not
+rewrite a classic before reuse testing. The new connector has owned-fixture
+NetBSD evidence only; no real TradeWars/LORD title claim. No local classic runs
+under factiond/factionterm/Lua and no process/thread/credential limits are relaxed.
+
+Only trusted-config literal endpoints (six maximum), no DNS/member-selected
+address, and explicit destination/legacy-link confirmation before connect. Lua
+can request only the host list/confirmation, never change a destination or send
+BBS authority. The original game runs on a separate host; bounded safe Rust
+Telnet/CP437/basic-ANSI parsing runs in the shared owner and is not a process
+sandbox. Preserve all buffer/byte/deadline/terminal-control gates, eight active
+remote sockets, current approval and Ctrl-] local return. Remote saves/scores
+stay remote. No JS/TS dependency, mandatory helper or auto-enabled public service.
+Keep the Lua installer root keys before any TOML array tables. No experimental
+network policy/tuning is automatically changed for remote games.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.

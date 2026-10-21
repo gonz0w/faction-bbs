@@ -3,7 +3,11 @@
 Status: owner research direction, 2026-10-19; no extension, wallet, chain or network
 integration is released as a supported product. The optional shared-backend
 [Lua arcade](lua-doors.md) now provides a sysop Lua lobby and two original games
-under a separate game identity; broader native/legacy hosting remains future work. Core local BBS software comes first. Physical SBC hardware
+under a separate game identity. The optional
+[classic server connector](classic-game-doors.md) now provides fixed-destination
+Telnet/ANSI/CP437 connections; its NetBSD tests use owned fixtures, not verified
+original titles. The owner accepted both unchanged original servers and isolated
+original DOS hosting on 2026-10-21; the latter remains follow-up work. Core local BBS software comes first. Physical SBC hardware
 is unavailable; the owner will test a complete product later. Software/VM evidence
 drives development now; hardware-specific support claims wait for actual tests.
 

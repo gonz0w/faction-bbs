@@ -61,6 +61,16 @@ handle. Scoreboards show approved members only; retained rows for revoked member
 remain in private owner exports. Root-installed game code controls scoring and
 can cheat, so scores grant no privileges, currency or payment entitlement.
 
+The optional [classic game connector](classic-game-doors.md) opens only trusted
+configuration literal endpoints after approved-member destination confirmation.
+It sends no automatic account/session/credential data. Member-typed game traffic
+crosses a legacy unencrypted hop, requiring a separately protected sysop-managed
+path. The original game executes on its own server/compatibility host; bounded
+Telnet/terminal parsing runs in the shared owner. This adds protocol surface,
+not local native-game execution or a parser-process sandbox. Local escape, current
+approval, terminal-control filtering, byte/queue/socket limits and cleanup remain
+mandatory. External game saves/scores never mutate local board state.
+
 ## Evidence required
 
 Write the threat model and pass/fail tests before claiming a security baseline. Research must cover authorization across both access surfaces, interrupted and revoked sessions, terminal parsing, file handling, door isolation, default exposure, and shared-channel/local-data separation. No production deployment or supported version exists yet.

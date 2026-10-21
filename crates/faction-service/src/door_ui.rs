@@ -9,6 +9,9 @@ impl Client {
     ) -> faction_core::Result<()> {
         self.approved(board)?;
         let Some(uid) = self.doors_uid else {
+            if self.classic_games.as_ref().is_some_and(|g| !g.is_empty()) {
+                return self.classic_list(board, theme);
+            }
             self.queue("Doors are not installed.\n");
             self.pause();
             return Ok(());
@@ -56,6 +59,12 @@ impl Client {
                 }
                 let d = self.door.as_mut().ok_or(Error::Denied)?;
                 d.pending = None;
+                let mut screen = screen;
+                if self.classic_games.as_ref().is_none_or(|g| g.is_empty()) {
+                    screen.choices.retain(|c| {
+                        !matches!(c.target, doors::Target::Classics | doors::Target::Server(_))
+                    });
+                }
                 d.screen = Some(screen);
                 d.focus = 0;
                 self.door_save_score(board)?;
@@ -167,7 +176,7 @@ impl Client {
         d.focus = 0;
         self.door_show(theme)
     }
-    fn door_show(&mut self, theme: &Theme) -> faction_core::Result<()> {
+    pub(super) fn door_show(&mut self, theme: &Theme) -> faction_core::Result<()> {
         let d = self.door.as_ref().ok_or(Error::Denied)?;
         let s = d.screen.as_ref().ok_or(Error::Denied)?;
         let (normal, focus, hotkey) = theme.menu_styles();
@@ -267,6 +276,9 @@ impl Client {
                 doors::Target::Game(game) => self.door_open(&game, board, theme)?,
                 doors::Target::Input(input) => self.door_submit(&input, board, theme)?,
                 doors::Target::Scores(game) => self.door_scores(&game, board, theme)?,
+                doors::Target::Classics => self.classic_list(board, theme)?,
+                doors::Target::Server(slug) => self.classic_confirm(&slug, board, theme)?,
+                doors::Target::Connect(slug) => self.classic_connect(&slug, board, theme)?,
                 doors::Target::Resume => {
                     let d = self.door.as_mut().ok_or(Error::Denied)?;
                     d.screen = Some(d.resume.take().ok_or(Error::Denied)?);

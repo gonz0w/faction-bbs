@@ -14,8 +14,10 @@ A broken/unavailable door returns to the BBS; rooms and chat remain usable.
 
 This first Lua menu is the arcade lobby. The main BBS menu remains declarative.
 Local owner consoles and worker rollback retain their existing menus with Doors
-unavailable. Native/DOS games such as TradeWars are future compatibility work;
-this runner executes text Lua scripts only.
+unavailable. Original-game server connections are a separate optional
+[classic doorway](classic-game-doors.md), available from the updated lobby.
+Actual TradeWars/DOS title play remains future compatibility work; the Lua runner
+executes text Lua scripts only.
 
 ## Scores, rules and one more turn
 
@@ -125,7 +127,8 @@ library, `tonumber`, and this `bbs` table are available:
 | `bbs.random(max)` | An OS-random integer from 1 through max; max at most 1,000,000 |
 
 Targets are `back`, `lobby`, `game:slug` (fresh game), `input:value` (next turn
-of the current game), and `scores:slug` (host-owned local top ten). Line input is at most 128 bytes. Field values exclude
+of the current game), and `scores:slug` (host-owned local top ten), `classics` (configured server list), and
+`server:slug` (destination confirmation for an existing configured server). Line input is at most 128 bytes. Field values exclude
 control characters and the protocol separator `|`. A screen must have a title,
 state (empty by default), and either choices or a prompt. The host validates the
 entire response and current local approval before displaying it or acting on a

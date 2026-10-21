@@ -50,3 +50,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0027: Separate-UID Lua arcade](0027-lua-arcade-boundary.md) — optional menu/game turns without backend execution privileges.
 
 - [0028: Local arcade bests under host-owned run authority](0028-local-arcade-scores.md)
+
+- [0029: Fixed classic-server door](0029-classic-server-door.md) — original remote game execution with bounded local parsing.

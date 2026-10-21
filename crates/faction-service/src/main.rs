@@ -3,6 +3,8 @@
 use faction_access::{Result, check_directory, denied, receive_terminal};
 use faction_core::{Board, ChatCommand, ChatKind, ChatLease, Error, Session, Status};
 use faction_terminal::{Action, Decoder, Key, LineEditor, LineEvent, Menu, Theme};
+mod classic;
+mod classic_ui;
 mod config;
 mod door_ui;
 mod doors;
@@ -65,6 +67,7 @@ enum State {
     DoorPending,
     DoorMenu,
     DoorInput,
+    Classic,
 }
 struct Request {
     connection: u64,
@@ -160,6 +163,8 @@ struct Client {
     next_input: Instant,
     doors_uid: Option<u32>,
     door: Option<doors::Door>,
+    classic_games: Option<Arc<Vec<classic::Game>>>,
+    classic: Option<classic::Connection>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -228,6 +233,8 @@ impl Client {
             next_input: now,
             doors_uid: None,
             door: None,
+            classic_games: None,
+            classic: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -357,7 +364,8 @@ fn run() -> Result<()> {
     if let Some(path) = &config.season {
         theme = theme.with_season(path).map_err(|_| denied())?;
     }
-    theme.set_doors_enabled(config.doors_uid.is_some());
+    theme.set_doors_enabled(config.doors_uid.is_some() || !config.classic_games.is_empty());
+    let classic_games = Arc::new(config.classic_games.clone());
     if args[0] == "--check-config" {
         return Ok(());
     }
@@ -482,6 +490,7 @@ fn run() -> Result<()> {
             generation = generation.checked_add(1).ok_or_else(denied)?;
             if let Ok(mut client) = Client::new(generation, control, tty, &term, ansi) {
                 client.doors_uid = config.doors_uid;
+                client.classic_games = Some(Arc::clone(&classic_games));
                 clients.push(client);
             }
         }
@@ -567,6 +576,13 @@ fn run() -> Result<()> {
                     c.door = None;
                 }
             }
+            if work > 0 && matches!(c.state, State::Classic) && c.output.is_empty() && !c.close {
+                work -= 1;
+                if let Err(e) = c.classic_poll(&theme, &mut board) {
+                    c.classic = None;
+                    c.recover(e, &mut board, &theme);
+                }
+            }
             if work > 0 && c.geometry_check.elapsed() >= Duration::from_millis(100) {
                 work -= 1;
                 c.geometry_check = now;
@@ -582,6 +598,13 @@ fn run() -> Result<()> {
                 }
             }
             if !c.output.is_empty() && c.output_started.elapsed() > Duration::from_secs(5) {
+                c.close = true;
+            }
+            if matches!(c.state, State::Classic)
+                && c.prompt_started.elapsed() > Duration::from_secs(120)
+                && c.classic_return("Classic game input timed out.", &theme, &mut board)
+                    .is_err()
+            {
                 c.close = true;
             }
             if c.started.elapsed() > Duration::from_secs(session_seconds)

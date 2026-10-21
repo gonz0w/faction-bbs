@@ -1,0 +1,15 @@
+{
+  "historical_record": "dev-docs/validation/netbsd-arcade-scores.json",
+  "record_sha256": "30f4a8260387b6a4e674a39dd59141f035ed138f8a8174cfcdc1677ea3e6176d",
+  "source_commit": "ea96ca51f25fd5a25e0e79736c2d4d9eba1e94a7",
+  "preserved_changed_inputs": {
+    "crates/faction-service/src/config.rs": "c511357d3c50603b3dc513c418d6d2dd85ee8c5b238e577ebb8cde4a5796fce5",
+    "crates/faction-service/src/door_ui.rs": "6204978b7e71e1a4bf26a75407b547b9a7b87d51be62efedf3793bb702b9d71b",
+    "crates/faction-service/src/doors.rs": "3b54088537f27696ed7bda867ecfa33997309ce14cb2123c4effdc7ff72d707b",
+    "crates/faction-service/src/main.rs": "bdf92f86ec1dc9645792dbe65a6c0225bcc0ecbcc004ce2dd3df2cd3338cb7a0",
+    "crates/faction-service/src/ui.rs": "593c5aecfa6d8b4dbacfd1fd3e03d698781c19ecb3f7dbdcc216a6a0751ef854",
+    "doors/examples/doors.lua": "867d2c83741c3a2ec53d280d81600ae5c8df8289169bb51cfe320a003e711466",
+    "tools/install_lua_doors.py": "4bb00ec824ffb33ba8012e2d1d6efd73913c4a6449a50864c8b85635d19f4a0f"
+  },
+  "unchanged_inputs": "Resolve against the original record."
+}

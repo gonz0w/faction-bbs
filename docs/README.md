@@ -29,3 +29,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Experimental SSH admission](experimental-admission.md) — all-transport cap, global launch budget and explicit crash recovery.
 
 - [Experimental global SSH admission](experimental-global-admission.md) — fixed listener gate and private-source research; not production adoption.
+
+- [Classic game-server doors](classic-game-doors.md) — optional configured terminal connections and return.
