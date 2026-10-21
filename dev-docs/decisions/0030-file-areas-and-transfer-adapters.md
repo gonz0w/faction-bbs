@@ -1,6 +1,6 @@
 # 0030: Local file areas with separate transfer adapters
 
-Status: accepted owner direction; implementation/handler selection pending.
+Status: accepted owner direction; handler implementation follows ADR 0032.
 Date: 2026-10-21. Authority: owner's explicit SFTP-first clarification.
 Issues #22, #83, #5. Research: [0043](../research/0043-file-areas-and-sftp.md).
 

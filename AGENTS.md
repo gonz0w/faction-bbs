@@ -273,3 +273,27 @@ future edits; never refresh an old hash.
 GitHub #28 is closed for its budget-definition deliverable. References above to
 its remaining workloads mean implementation of that contract under #55/#18/#20/
 #23, not reopening #28 or claiming its original definition work is unfinished.
+
+
+## Optional file areas (#83)
+
+Read docs/file-areas.md and plan 0033. Schema 4 stores local catalog, policy,
+reservations and short-lived key-bound one-use transfers. factionfiles streams
+only opaque objects under its own UID; factionfileauth can only look up a current
+ready key. Neither opens the board DB. Preserve UID-checked bounded policy IPC,
+current approval/epoch/area/object checks on each request/chunk, private charged
+partials, immutable publication and explicit two-lock GC. Only sysops may inspect
+completed pending bytes. No member-selected host paths, exec, archive extraction,
+resume, new owner thread/process, credential change or automatic network exposure.
+
+The first installer leaves separate SSH disabled and binds loopback by default.
+File listeners/children must drain before backup/upgrades. Database exports include
+catalog but no file bytes and discard transfer grants; use the complete stopped/
+drained catalog/blob tool for file backup and fresh-identity restore. Never unlink
+live slot0/slot1 or owner PID locks. Physical hardware/250-user capacity and hostile
+native-code/all-family confinement remain unclaimed.
+
+The fifth source snapshot sources/pre83 freezes 220 old execution inputs before
+schema/theme/owner changes. The independently pinned file-areas baseline manifest
+also pins original LORD/classic records. All prior snapshots/result identities
+remain unchanged; new evidence validates current executed inputs directly.

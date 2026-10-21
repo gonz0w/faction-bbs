@@ -68,3 +68,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0042: Running original BBS games](0042-original-classic-games.md) — native LORD/DOSBox reuse and deferred TWGS activation.
 
 - [0043: File areas and SFTP](0043-file-areas-and-sftp.md); [0044: Home identities and encrypted mail](0044-home-identities-and-encrypted-mail.md) — owner choices, primary standards and bounded follow-ups.
+
+- [Native file-area implementation evidence](../evidence/file-areas-netbsd/README.md) — #83 scoped SFTP, quarantine and complete file-data recovery.

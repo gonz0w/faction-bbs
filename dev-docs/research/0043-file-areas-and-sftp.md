@@ -1,6 +1,6 @@
 # Local file areas with interchangeable transfer adapters
 
-Status: design complete; implementation not started. Date/retrieval: 2026-10-21.
+Status: original design complete; implemented under #83 (see plan 0033 and ADR 0032). Date/retrieval: 2026-10-21.
 Owner: project founder. #22; implementation #83. Decision: ADR 0030.
 Stopping condition: define area semantics, SFTP boundary, quotas, recovery and
 negative tests without claiming an installed transfer service.

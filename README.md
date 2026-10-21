@@ -39,10 +39,13 @@ bank gameplay and saved progress. This is a private software proof with one acti
 game, not a supported public game launcher. TWGS installation reached mandatory
 publisher activation, which the owner has deferred. Both original servers and
 isolated DOS hosting remain reuse paths, ahead of rewriting.
-Next is **[file areas with a separate restricted SFTP service](docs/file-areas.md)**.
+**[Local file areas and restricted SFTP](docs/file-areas.md)** now add an optional
+[F]iles lobby, private-area grants, quota reservations, sysop upload review,
+one-file key-bound transfers and complete catalog/blob backup and restore.
+The file listener is separate and disabled until the sysop starts it.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
-visited board. These are design/research directions, not implemented features.
+visited board. Mail and home identity are design/research directions, not implemented features.
 The other-BBS directory, federation, payments, mesh and browser access remain
 backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
@@ -81,7 +84,7 @@ connect -> log in / register -> local sysop approval required
 - **Approved membership.** Registration requests access; each sysop decides who enters. Community content requires authentication and local approval.
 - **Citadel-style message rooms.** Find a room, enter, catch up on new messages, post, and reply. Detailed reply presentation is still being designed.
 - **IRC-style conversation.** Command-driven chat begins within one BBS. Channels may stay local. Future shared channels let participating systems subscribe and talk together.
-- **Local file areas and mail.** Community resources, messages, and file-sharing policy belong to the local sysop. Transfer protocols and limits remain research decisions.
+- **Local file areas and mail.** Community resources, messages, and file-sharing policy belong to the local sysop. Optional separate SFTP provides scoped transfers; classic in-session protocols remain future adapters.
 - **Doors and original games.** Investigate reuse of classics such as TradeWars, including isolated compatibility hosting where appropriate. Ports may follow later. The optional Lua arcade includes two original examples; no legacy title is supported or bundled.
 - **A scene of independent boards.** A local Contacts / Other BBSes directory lets operators submit their systems for discovery. Visiting another BBS means entering that system's own membership process.
 

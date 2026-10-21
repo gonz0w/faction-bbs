@@ -4,8 +4,10 @@ Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [
 
 ## Product-first sequencing
 
-Latest owner steering: **local SFTP file areas (#83) first**, with native local
-client/home identity/encrypted mail research (#84) alongside. Use independent
+Latest owner steering: **local SFTP file areas (#83) first**. The optional shared
+Files/SFTP implementation and complete backup path are now available for the
+ordinary small-board preview; see [file-area setup](../docs/file-areas.md). Native local
+client/home identity/encrypted mail research (#84) follows alongside remaining UX work. Use independent
 invited home authorities, member-held keys and separately approved communities.
 No BBS/home server reads this private mail; ordinary SSH still serves local BBS
 features. See ADRs 0030/0031 and [extension contracts](extension-contracts.md).

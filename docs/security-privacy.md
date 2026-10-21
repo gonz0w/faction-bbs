@@ -179,4 +179,5 @@ SFTP file areas use a separate restricted service/UID and scoped grants, not a
 new subsystem on the terminal-only BBS listener. Current local approval, epoch,
 area, operation and client-key checks remain mandatory. Files stay local; partial
 uploads remain quota-charged/private until review and atomic publication. Current
-database exports do not include future file objects. See [file areas](file-areas.md).
+database exports include catalog policy but no file bytes and discard transfer
+grants. Use the stopped/drained complete catalog/blob backup for file recovery. See [file areas](file-areas.md).

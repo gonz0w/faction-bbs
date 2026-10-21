@@ -22,6 +22,8 @@ pub struct Config {
     pub launch_ms: u64,
     pub session_seconds: u64,
     pub ansi: bool,
+    pub files_uid: Option<u32>,
+    pub files_auth_uid: Option<u32>,
     pub doors_uid: Option<u32>,
     pub classic_games: Vec<super::classic::Game>,
 }
@@ -73,6 +75,28 @@ impl Config {
         } else {
             None
         };
+        let files_uid = if t.contains_key("files_uid") {
+            Some(integer(&mut t, "files_uid", None, 1, u32::MAX as u64)? as u32)
+        } else {
+            None
+        };
+        let files_auth_uid = if t.contains_key("files_auth_uid") {
+            Some(integer(&mut t, "files_auth_uid", None, 1, u32::MAX as u64)? as u32)
+        } else {
+            None
+        };
+        if files_uid.is_some() != files_auth_uid.is_some() {
+            return Err(denied());
+        }
+        let owner = rustix::process::geteuid().as_raw();
+        if let (Some(w), Some(a)) = (files_uid, files_auth_uid)
+            && (w == a
+                || [owner, terminal_uid, 0].contains(&w)
+                || [owner, terminal_uid, 0].contains(&a)
+                || doors_uid.is_some_and(|u| u == w || u == a))
+        {
+            return Err(denied());
+        }
         let mut classic_games = Vec::<super::classic::Game>::new();
         if let Some(value) = t.remove("classic_games") {
             let Value::Array(entries) = value else {
@@ -114,6 +138,8 @@ impl Config {
         }
         Ok(Self {
             terminal_uid,
+            files_uid,
+            files_auth_uid,
             socket,
             state_dir,
             theme,

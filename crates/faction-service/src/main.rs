@@ -8,6 +8,8 @@ mod classic_ui;
 mod config;
 mod door_ui;
 mod doors;
+mod file_ui;
+mod policy;
 mod ui;
 use config::Config;
 use rustix::{
@@ -68,6 +70,14 @@ enum State {
     DoorMenu,
     DoorInput,
     Classic,
+    Files,
+    FileUploadKey {
+        area: i64,
+        name: String,
+        description: String,
+        bytes: u32,
+    },
+    FileDownloadKey(String),
 }
 struct Request {
     connection: u64,
@@ -165,6 +175,7 @@ struct Client {
     door: Option<doors::Door>,
     classic_games: Option<Arc<Vec<classic::Game>>>,
     classic: Option<classic::Connection>,
+    files_enabled: bool,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -235,6 +246,7 @@ impl Client {
             door: None,
             classic_games: None,
             classic: None,
+            files_enabled: false,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -364,6 +376,9 @@ fn run() -> Result<()> {
     if let Some(path) = &config.season {
         theme = theme.with_season(path).map_err(|_| denied())?;
     }
+    theme
+        .set_files_enabled(config.files_uid.is_some())
+        .map_err(|_| denied())?;
     theme.set_doors_enabled(config.doors_uid.is_some() || !config.classic_games.is_empty());
     let classic_games = Arc::new(config.classic_games.clone());
     if args[0] == "--check-config" {
@@ -390,6 +405,10 @@ fn run() -> Result<()> {
     let launch_ms = u128::from(config.launch_ms);
     let session_seconds = config.session_seconds;
     let (listener, pid, _guard) = bind(&config.socket)?;
+    let mut file_policy = match (config.files_uid, config.files_auth_uid) {
+        (Some(worker), Some(auth)) => Some(policy::Policy::bind(worker, auth)?),
+        _ => None,
+    };
     faction_unix::install_shutdown()?;
     let stop = Arc::new(AtomicBool::new(false));
     let (admit_tx, admit_rx) = mpsc::sync_channel(8);
@@ -475,6 +494,9 @@ fn run() -> Result<()> {
     );
     let mut turn = 0usize;
     while !faction_unix::shutdown_requested() {
+        if let Some(p) = &mut file_policy {
+            p.pump(&mut board);
+        }
         while let Ok((control, tty, term)) = admit_rx.try_recv() {
             if clients.len() >= max_sessions {
                 continue;
@@ -489,6 +511,7 @@ fn run() -> Result<()> {
             }
             generation = generation.checked_add(1).ok_or_else(denied)?;
             if let Ok(mut client) = Client::new(generation, control, tty, &term, ansi) {
+                client.files_enabled = config.files_uid.is_some();
                 client.doors_uid = config.doors_uid;
                 client.classic_games = Some(Arc::clone(&classic_games));
                 clients.push(client);

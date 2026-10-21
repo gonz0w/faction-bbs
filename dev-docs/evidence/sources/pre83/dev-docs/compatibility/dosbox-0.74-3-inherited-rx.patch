@@ -1,0 +1,10 @@
+--- a/src/hardware/serialport/nullmodem.cpp
++++ b/src/hardware/serialport/nullmodem.cpp
+@@ -122,6 +122,7 @@
+ #if SERIAL_DEBUG
+ 					log_ser(dbg_aux,"Nullmodem: Connected to %s",peernamebuf);
+ #endif
++					rx_state=N_RX_IDLE;
+ 					setEvent(SERIAL_POLLING_EVENT, 1);
+ 
+ 					CSerial::Init_Registers ();

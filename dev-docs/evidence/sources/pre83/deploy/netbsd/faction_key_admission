@@ -1,0 +1,22 @@
+#!/bin/sh
+# PROVIDE: faction_key_admission
+# REQUIRE: faction_isolated
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+name="faction_key_admission"
+rcvar=$name
+command="/usr/sbin/sshd"
+pidfile="/var/run/faction-sshd.pid"
+command_args="-f /etc/ssh/faction/key_admission_sshd_config"
+required_files="/etc/ssh/faction/key_admission_sshd_config /etc/ssh/faction/authorized_keys"
+start_precmd="faction_key_admission_check"
+faction_key_admission_check()
+{
+    [ -S /var/run/faction/terminal.sock ] || return 1
+    /usr/bin/env -i PATH=/usr/pkg/bin:/usr/sbin:/sbin:/usr/bin:/bin /usr/pkg/bin/python3.13 -I -B /usr/local/libexec/check_key_admission_config.py --initialize || return 1
+    /usr/sbin/sshd -t -f /etc/ssh/faction/key_admission_sshd_config
+}
+load_rc_config "$name"
+: ${faction_key_admission:=NO}
+run_rc_command "$1"

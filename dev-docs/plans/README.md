@@ -46,3 +46,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0031: Run original DOS and TradeWars games](0031-original-classic-games.md) — unchanged LORD software proof; TWGS activation owner-deferred.
 
 - [0032: File areas and private mail](0032-file-areas-and-private-mail.md) — SFTP and independent-home/native-client direction.
+
+- [0033: File areas and restricted SFTP](0033-file-areas-sftp.md) — #83 implementation, native client flow and complete file-data recovery.

@@ -4,9 +4,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
-- Select separate restricted SFTP for the next local file-area increment, with
-  scoped transfer grants, private quota-charged upload review and separate file
-  backups; handler/service implementation remains #83.
+- Implement optional local file areas and separate restricted SFTP (#83): shared
+  Files menu, paginated metadata/search, private-area grants, quota-reserved
+  quarantine, sysop inspection/publication/removal and SHA256-verified downloads.
+  Reuse base OpenSSH signatures/transport with a bounded Rust single-object SFTP
+  v3 handler under a separate UID and a distinct key-lookup account. Add disabled
+  NetBSD setup, two-stream/32-KiB limits, explicit partial GC and complete private
+  catalog/blob backup/fresh restore. Schema 4 preserves older exports and strips
+  transfer authority from new ones. Resume and universal client support remain out
+  of scope; no owner thread/process/credential limits or eight-session default change.
 - Record independent invited home identities and native member-side encrypted
   mail as owner requirements. No BBS server may see plaintext; no server-readable
   fallback, automatic local membership or replicated credential database. Expand
@@ -14,7 +20,7 @@ This file records meaningful project changes. Product releases will use versione
   XMPP/E2EE/visiting-auth interoperability remains research #84.
 - Specify extension seams and retain future DOS/Amiga/other game-host adapters,
   with terminal-capability and isolation evidence required per title. No new
-  file service, client, mail protocol, emulator or plugin runtime is implemented.
+  native client, mail protocol, emulator or plugin runtime is implemented.
 
 - Prove unchanged original LORD 4.06 through the maintained SSH game doorway on a
   separate native NetBSD ARM64 VM. Add a disposable private game host/oracle,

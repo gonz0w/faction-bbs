@@ -4,7 +4,12 @@
 compile_error!("The first local core supports Unix state ownership semantics only");
 mod chat;
 mod credentials;
+mod files;
 mod scores;
+pub use files::{
+    AreaFile, FILE_BOARD_BYTES, FILE_BYTES, FILE_CHUNK, FILE_ROWS, FileArea, TransferGrant,
+    file_id, file_key, file_name,
+};
 mod snapshot;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
 pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
@@ -297,12 +302,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=3).contains(&version) {
+        } else if app != APP_ID || !(1..=4).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=3).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=4).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -312,7 +317,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=3).contains(&v) {
+            } else if !(2..=4).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -323,11 +328,20 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if v != 3 {
+            } else if !(3..=4).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
         }
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 3 {
+            tx.execute_batch(include_str!("files.sql"))?;
+            tx.pragma_update(None, "user_version", 4)?;
+        } else if v != 4 {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
         db.execute_batch("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA cache_size=-2048; PRAGMA mmap_size=0;")?;
         let identity: Vec<u8> =
             db.query_row("SELECT identity FROM board WHERE singleton=1", [], |r| {

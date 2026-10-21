@@ -18,7 +18,11 @@ After a room/sysop action, Enter returns to the menu. Message/editor input is a
 separate cooked input context, never dispatched as menu keys.
 
 Sysop controls are disabled for members. Doors are an explicitly unavailable
-placeholder; selecting or typing D cannot launch anything. Theme labels/keys/order
+placeholder in the local console; the shared backend can enable optional Lua
+Doors and Files at runtime. A `files` menu entry may choose its own key/label/order.
+When installed without an explicit files entry, the host adds `[F]ile areas` before
+Quit; a conflicting F key requires a custom files entry. Neither theme action
+enables its underlying service. Theme labels/keys/order
 do not grant privileges. Every real community action still checks the current
 database session/approval/role; revocation is enforced on the next checked action.
 This console still has filesystem-owner recovery authority: never expose it as an
@@ -69,7 +73,7 @@ same-UID operator processes are trusted; this is not a hostile-filesystem sandbo
 | `version`, `id` | Required version 1; ID is 1–32 lowercase ASCII letters/digits/hyphens. |
 | `board`, `welcome`, `logout` | Optional printable ASCII, maximum 36 / 36 / 60 bytes. Built-in defaults fill omissions. |
 | `normal`, `focus`, `hotkey`, `disabled` | Optional inline/style tables: required `fg`/`bg` integers 0–15, optional `bold` boolean. Foreground and background must differ. Numbers use ANSI ordering, including bright 8–15. No raw escape strings. |
-| `[[menu]]` | Optional 6–8 entries, in display order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes. |
+| `[[menu]]` | Optional 6–9 entries, in display order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes. |
 | Core actions | Exactly one each of `rooms`, `new`, `history`, `post`, `sysop`, `quit`; optional one `chat` entry enables local chat; optional one `doors` entry is always disabled. Unknown/duplicate actions fail. Permissions remain compiled/core-checked. |
 | `identity_ascii`, `identity_ansi` | Optional simple local filenames, at most 64 bytes, starting with an alphanumeric and containing only letters/digits/dot/underscore/hyphen. No directories or traversal. |
 | `creator`, `source`, `permission` | Required printable provenance text (at most 160 bytes each) when an identity file is selected. Record real authorship/rights; text declarations do not prove licensing. |
