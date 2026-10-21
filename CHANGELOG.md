@@ -4,6 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Experimental base-OpenSSH key admission: dedicated helper UID, fixed private
+  process-birth reservations/global budget, no fallback key files, strict native
+  preflight and quiescent runtime initialization. Authenticated caps survive
+  listener restart; no resident daemon or new SSH parser/crypto. Default eight;
+  preauthentication/fork/CPU/source-fairness gates remain separate. Native
+  admission/channel/UI/rollback checks and three fresh 250-member VM runs pass
+  with 129.34 MiB lowest sampled stress headroom under the unchanged guard.
+  The inetd listener's two failed memory controls and executed inputs are kept.
+  No supported capacity, physical SBC or production security claim.
+
 - Experimental NetBSD minimal noexec root and explicit stateless group/user IP
   policy, pre-main native privilege drop, isolated root preflight and a separate
   setuid frontend. Existing core/UI/credentials/limits/default eight remain intact.

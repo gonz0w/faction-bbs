@@ -53,6 +53,34 @@ Both current records 035/036 pin executed sources directly; preserve actual
 bytes before changing them. All nine historical records/two full snapshots and
 the rejected-candidate overrides remain unchanged.
 
+The selected experimental SSH admission path (ADR 0022/research 0036/results 037)
+uses base AuthorizedKeysCommand under dedicated noninteractive factionauth, with
+AuthorizedKeysFile none, strict root rc preflight and fixed private process-birth
+reservations. No resident admission daemon/proxy/SSH parser. Real-root identity
+survives OpenSSH's temporary effective-UID change during key lookup. Preserve
+signature verification, one channel, forwarding/forced-command restrictions,
+local BBS approval and all existing crypto/credential/resource limits. Default
+key cap/burst eight/refill 5000 ms; explicit 250 experiment uses 250-ms key refill
+and unchanged 100-ms application refill. This is not a total TCP/pre-fork limit:
+base MaxStartups permits up to eight additional preauth connections and base
+source penalties remain. Key counters called launches count reservations, not forks.
+Never unlink/reset a live registry. Missing state fails closed; root boot init
+must prove no member listener/terminal identity/orphan SSH session survives.
+Do not auto-lower security.curtain: the prototype requires default visibility.
+Helper UID/state are trusted and must never be reused for Lua/doors.
+
+Native 14 key/state/rate/restart/config checks, six channel/restart, 29 shared UI,
+31 sealed and 31 ordinary frontend, 20 ordinary SSH, 13 worker lifecycle, six native
+PTY flows and 63 Rust tests pass. Silent preauth is bounded at eight and expires.
+Three fresh selected 250-member boots pass: minimum stress 129.34 MiB; final
+174.66–175.23 MiB; zero swap. The rejected inetd listener completed functionality
+but failed two stress guards (125.50/126.04 MiB); preserve its actual sources,
+all three trials and earlier live-rlimit instrumentation failure. All 035/036/037
+current source pins, rejected overlays, nine historical records and two buildable
+snapshots remain authoritative. Preserve bytes before edits, never refresh old
+hashes. Independent authority review, preauth/lookup CPU floods, NAT fairness,
+complete budgets/soak and maintained host policy remain gates; #55 stays open.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.

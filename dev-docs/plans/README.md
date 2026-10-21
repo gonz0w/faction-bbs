@@ -36,3 +36,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0018: Shared UI and ANSI themes](0018-shared-ui-themes.md)
 
 - [0019: Shared backend service integration](0019-shared-service.md)
+
+- [0022 SSH admission](0022-ssh-admission.md) — native abuse/lifecycle and 250-member headroom gates.

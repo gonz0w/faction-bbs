@@ -118,3 +118,16 @@ group/user policy. Its frontend alone uses setuid root and needs independent
 review before production adoption. Setup, host policy, loader/runtime trust and
 rollback are explicit. Defaults/core authorization/credentials/resource ceilings
 are unchanged; broader same-UID/process/all-family/admission threats stay open.
+
+## Experimental SSH key admission
+
+The [key-admission profile](experimental-admission.md) adds a separate trusted
+helper UID and private fixed process-birth registry around base key lookup.
+Missing/corrupt authority fails closed; runtime initialization must prove
+quiescence, and listener restart cannot erase old authenticated reservations.
+No key-file fallback, new SSH parser/crypto or BBS approval shortcut is added.
+The default is eight reservations; base preauthentication controls remain separate.
+Source penalties/NAT fairness, pre-fork/lookup CPU pressure, default process
+visibility, independent review and complete active/soak budgets remain explicit
+limits. Do not turn short 250-member VM passes into production capacity or privacy
+sandbox claims. Never reuse the helper UID for doors or weaken member ceilings.

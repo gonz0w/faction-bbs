@@ -21,3 +21,12 @@ resolve pinned bytes here; new service evidence must check current source direct
 Run `python3 tools/check_evidence_sources.py`. It checks actual bytes and unchanged
 record hashes; it does not rerun native measurements. Source keeps its BSD-3-Clause
 license. Existing older planning archives remain separate and untouched.
+
+[Result 037](../research/results/037-netbsd-admission.json) preserves the selected
+base-SSH key helper, three passing 250-member trials, three rejected inetd-mode
+trials (two memory failures), and a live-ledger instrumentation diagnostic.
+`admission-ledger/` retains the actual differing diagnostic driver/collector;
+`ssh-inetd/` retains changed rejected-candidate input versions. Both manifests
+resolve exact bytes rather than refreshing earlier hashes. Current 035/036/037
+source pins and all nine historical records/two complete snapshots stay fixed.
+Before changing a measured source, preserve its actual executed version properly.
