@@ -65,7 +65,7 @@ impl Client {
     }
     fn focused<'a>(&self, theme: &'a Theme, sysop: bool) -> Menu<'a> {
         let mut menu = Menu::new(theme, sysop);
-        for _ in 0..8 {
+        for _ in 0..theme.entries().len() {
             if menu.focus() == self.focus {
                 break;
             }
@@ -77,7 +77,7 @@ impl Client {
         self.state = State::Pause;
         self.queue("Press Enter to return to menu: ");
     }
-    fn prompt(&mut self, state: State, label: &str) {
+    pub(super) fn prompt(&mut self, state: State, label: &str) {
         self.state = state;
         self.prompt_started = Instant::now();
         self.queue(label);
@@ -142,6 +142,7 @@ impl Client {
                 self.queue("Local chat. /help lists commands. All channels stay local.\n");
                 self.chat_prompt();
             }
+            Action::Files => self.file_lobby(board)?,
             Action::Doors => self.door_open("doors", board, theme)?,
         }
         Ok(())
@@ -248,6 +249,9 @@ impl Client {
     ) -> faction_core::Result<()> {
         let old = std::mem::replace(&mut self.state, State::Closing);
         match old {
+            State::Files | State::FileUploadKey { .. } | State::FileDownloadKey(_) => {
+                self.file_line(old, text, board, theme)?
+            }
             State::DoorInput => self.door_submit(text, board, theme)?,
             State::DoorMenu => {
                 if text.len() == 1 {

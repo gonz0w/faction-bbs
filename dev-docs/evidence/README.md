@@ -73,3 +73,12 @@ previous measured bytes are preserved under `classic-doors-netbsd/pr80/`, with
 the complete old connector record pinned by `sources.json`. The original JSON
 remains unchanged. `tools/check_original_games_evidence.py` checks those pins
 alongside the new actual-title record; it does not rerun native gameplay.
+
+
+The fifth snapshot `sources/pre83` preserves 220 execution inputs at the merged
+#82/#85 base `daae757a549003a55c23b32593ffe66f4f351b33`. Its independent
+`file-areas-baseline-manifest.json` also pins the unchanged original LORD and
+classic connector result identities. Together the source checker verifies five
+snapshots and seventeen historical record identities. This is an execution-input
+snapshot; older buildable snapshots retain their original meaning. No prior
+measurement/hash was refreshed to describe the file-area implementation.

@@ -100,7 +100,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=3).contains(&version) {
+    if app != APP_ID || !(2..=4).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -108,8 +108,11 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     let reference = Connection::open_in_memory()?;
     reference.execute_batch(include_str!("schema.sql"))?;
     reference.execute_batch(include_str!("chat.sql"))?;
-    if version == 3 {
+    if version >= 3 {
         reference.execute_batch(include_str!("scores.sql"))?;
+    }
+    if version == 4 {
+        reference.execute_batch(include_str!("files.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -251,7 +254,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     while let Some(row) = rows.next()? {
         text(&row.get::<_, String>(0)?, 512, false)?;
     }
-    if version == 3 {
+    if version >= 3 {
         let mut stmt = db.prepare("SELECT member_id,game,best,plays FROM game_scores")?;
         let mut rows = stmt.query([])?;
         while let Some(row) = rows.next()? {
@@ -274,6 +277,16 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
             return Err(Error::Invalid("snapshot game limit exceeded"));
         }
     }
+    if version == 4 {
+        crate::files::validate_catalog(db)?;
+        if exported
+            && db
+                .prepare("SELECT 1 FROM file_transfers LIMIT 1")?
+                .exists([])?
+        {
+            return Err(Error::Invalid("file grants must not survive export"));
+        }
+    }
     fn count(db: &Connection, sql: &str) -> Result<i64> {
         Ok(db.query_row(sql, [], |r| r.get(0))?)
     }
@@ -284,7 +297,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
         posts: count(db, "SELECT count(*) FROM posts")?,
         channels: channel_count,
         chat_messages: count(db, "SELECT count(*) FROM chat_messages")?,
-        game_scores: if version == 3 {
+        game_scores: if version >= 3 {
             count(db, "SELECT count(*) FROM game_scores")?
         } else {
             0
@@ -468,6 +481,10 @@ fn export_connection(
     // Validate the copied catalog before any writes that could fire imported SQL.
     validate(&db, false, deadline)?;
     db.execute_batch("DELETE FROM chat_sessions;")?;
+    let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+    if version == 4 {
+        db.execute_batch("DELETE FROM file_transfers;")?;
+    }
     db.execute_batch(INFO)?;
     db.execute("INSERT INTO faction_export VALUES(1,1)", [])?;
     let summary = validate(&db, true, deadline)?;

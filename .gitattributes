@@ -20,3 +20,8 @@ dev-docs/research/results/*.json linguist-generated=true
 
 # Unified-diff context preserves upstream tabs and mandatory prefix spaces.
 dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Historical source copies are generated evidence, not new runtime implementation.
+dev-docs/evidence/sources/** linguist-generated=true
+# A unified diff's required context prefix may precede upstream indentation tabs.
+dev-docs/evidence/sources/*/dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab

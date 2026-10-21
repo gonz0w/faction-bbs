@@ -17,6 +17,7 @@ pub enum Action {
     Chat,
     Sysop,
     Doors,
+    Files,
     Quit,
 }
 impl Action {
@@ -29,12 +30,13 @@ impl Action {
             "chat" => Ok(Self::Chat),
             "sysop" => Ok(Self::Sysop),
             "doors" => Ok(Self::Doors),
+            "files" => Ok(Self::Files),
             "quit" => Ok(Self::Quit),
             _ => Err("unknown menu action"),
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Doors && (self != Self::Sysop || sysop)
+        self != Self::Doors && self != Self::Files && (self != Self::Sysop || sysop)
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -101,6 +103,7 @@ pub struct Theme {
     hotkey: Style,
     disabled: Style,
     doors_enabled: bool,
+    files_enabled: bool,
     entries: Vec<Entry>,
     identity_ascii: Option<String>,
     identity_ansi: Option<Art>,
@@ -117,6 +120,7 @@ impl Default for Theme {
             hotkey: Style::new(11, 0, true),
             disabled: Style::new(8, 0, false),
             doors_enabled: false,
+            files_enabled: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
                 (Action::New, b'N', "New messages"),
@@ -263,12 +267,32 @@ fn style(value: &Value) -> Result<Style> {
     Ok(Style::new(fg, bg, bold))
 }
 impl Theme {
+    pub fn set_files_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.files_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Files) {
+            if self.entries.iter().any(|e| e.key == b'F') {
+                return Err("F is reserved by this pack; add a files action with another key");
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Files,
+                    key: b'F',
+                    label: "File areas".into(),
+                },
+            );
+        }
+        Ok(())
+    }
     /// Runtime capability, set only by the host; a theme cannot enable a door.
     pub fn set_doors_enabled(&mut self, enabled: bool) {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Doors && self.doors_enabled) || action.enabled(sysop)
+        (action == Action::Files && self.files_enabled)
+            || (action == Action::Doors && self.doors_enabled)
+            || action.enabled(sysop)
     }
     pub fn id(&self) -> &str {
         &self.id
@@ -347,8 +371,8 @@ impl Theme {
         theme.apply(root, &t)?;
         if let Some(value) = t.get("menu") {
             let values = value.as_array().ok_or("menu must be an array")?;
-            if !(6..=8).contains(&values.len()) {
-                return Err("menu needs 6-8 entries");
+            if !(6..=9).contains(&values.len()) {
+                return Err("menu needs 6-9 entries");
             }
             let (mut keys, mut actions, mut entries) =
                 (BTreeSet::new(), BTreeSet::new(), Vec::new());

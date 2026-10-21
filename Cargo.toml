@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service"]
+members = ["crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service", "crates/faction-files"]
 exclude = ["experiments/004-native-sessions", "experiments/023-netbsd-dependencies"]
 resolver = "3"
 
@@ -17,6 +17,8 @@ rusqlite = { version = "=0.40.1", default-features = false, features = ["bundled
 rustix = { version = "=1.1.5", default-features = false, features = ["std", "process", "termios", "event", "fs", "net"] }
 toml = { version = "=1.1.8", default-features = false, features = ["std", "parse", "serde"] }
 zeroize = "=1.9.1"
+base64 = "=0.23.1"
+sha2 = "=0.11.1"
 
 [profile.release]
 opt-level = 2

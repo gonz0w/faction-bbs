@@ -142,7 +142,7 @@ impl Client {
                 self.queue("Local chat. /help lists commands. All channels stay local.\n");
                 self.chat_prompt();
             }
-            Action::Doors => {
+            Action::Files | Action::Doors => {
                 self.queue("Doors are not installed.\n");
                 self.pause();
             }

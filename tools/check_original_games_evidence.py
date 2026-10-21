@@ -38,7 +38,7 @@ def check():
         path = Path(name)
         assert not path.is_absolute() and '..' not in path.parts
         assert re.fullmatch('[0-9a-f]{64}', digest)
-        assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest, name
+        assert hashlib.sha256(source_bytes(name, digest)).hexdigest() == digest, name
     assert all(d['execution_sources'][name] == digest for name, digest in d['native_product_sources'].items())
     ssh = d['ssh']
     assert ssh['result'] == 'pass' and len(ssh['checks']) == 12
