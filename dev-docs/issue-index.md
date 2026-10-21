@@ -85,3 +85,11 @@ scopes native integrated transfers and room/chat references while broader
 [#84](https://github.com/gonz0w/faction-bbs/issues/84) retains the two-home E2EE/identity
 proof. [#88](https://github.com/gonz0w/faction-bbs/issues/88) separately tracks
 device-encrypted attachments. GitHub open/closed state is authoritative.
+
+
+[#84](https://github.com/gonz0w/faction-bbs/issues/84)'s two-home research proof
+feeds [#90](https://github.com/gonz0w/faction-bbs/issues/90) native mail/keystore/
+verified-device/recovery integration and [#91](https://github.com/gonz0w/faction-bbs/issues/91)
+scoped identity-to-local-membership binding. [#92](https://github.com/gonz0w/faction-bbs/issues/92)
+records the native signer crash gate. [#88](https://github.com/gonz0w/faction-bbs/issues/88)
+retains device-encrypted attachments; parent #84 remains open.

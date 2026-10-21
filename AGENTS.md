@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-21): SFTP file areas, then native-client
-home identity/encrypted mail research.** See docs/file-areas.md,
+**Current priority (owner, 2026-10-21): native-device encrypted mail and scoped
+home identity (#84/#90/#91), after merged file areas/native transfers.** See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
 The owner selected independent invited home servers and a native local terminal
@@ -318,3 +318,25 @@ charged/private pending explicit sysop remove/GC. Mail/identity/attachments rema
 Sixth snapshot sources/pre84 freezes the 74 actual merged-#86 file-area inputs and
 pins its whole original result. Never refresh old hashes or counts to current code.
 Current native-client evidence is separate; no new 250-member or physical claim.
+
+## Encrypted-mail and roaming research (#84)
+
+Read research 0045, ADR 0034 and plan 0035. The separate Python reference oracle
+uses unchanged MIT OMEMO/Twomemo crypto and a bounded SCE adapter; it is **not** a
+new product runtime/library adoption. Twelve actual two-home mail controls and
+11 native certificate-verifier controls pass on software fixtures. The optional
+Slixmpp Rust/PyO3 graph has a prohibited JS asset and remains rejected; its upstream
+Python fallback is for reference testing only. No maintained runtime source/schema/
+SSH/default/owner/credential ceiling changes in this increment.
+
+Native mail UI, encrypted keystore, fingerprint/enrollment/recovery and independent
+interop are #90. Trusted issuer/connection-to-local-membership binding and online
+issuance are #91; neither typed claims nor user-writable SSH_USER_AUTH/environment
+is sufficient authority. Keep local approval/revocation and ordinary login. Native
+ssh-keygen signing exits SIGSEGV after emitting a certificate in four controls (#92).
+Never accept its artifact as success; externally minted control certificates prove
+only native verification. No server mail keys/plaintext, role import, custom
+cryptosystem, automatic public endpoint or independent audit/capacity claim.
+Device-encrypted attachments remain #88, separate from sysop-readable file areas.
+All previous evidence/source identities remain unchanged; preserve current record
+bytes before future source edits rather than refreshing historical measurements.

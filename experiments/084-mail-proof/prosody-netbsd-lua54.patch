@@ -1,0 +1,14 @@
+--- a/configure
++++ b/configure
+@@ -292,9 +292,9 @@
+       LUA_INCDIR_SET="yes"
+    fi
+    if [ "$OSPRESET" = "netbsd" ]; then
+-      LUA_INCDIR="/usr/pkg/include/lua-5.2"
++      LUA_INCDIR="/usr/pkg/include/lua-5.4"
+       LUA_INCDIR_SET=yes
+-      LUA_LIBDIR="/usr/pkg/lib/lua/5.2"
++      LUA_LIBDIR="/usr/pkg/lib"
+       LUA_LIBDIR_SET=yes
+       CFLAGS="-Wall -fPIC -I/usr/pkg/include"
+       LDFLAGS="-L/usr/pkg/lib -Wl,-rpath,/usr/pkg/lib -shared"

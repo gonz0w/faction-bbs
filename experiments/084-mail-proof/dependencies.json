@@ -1,0 +1,211 @@
+{
+  "build_count": 6,
+  "build_packages": [
+    {
+      "license": "Apache-2.0 OR BSD-2-Clause",
+      "name": "packaging",
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c",
+      "version": "26.3",
+      "wheel": "packaging-26.3-py3-none-any.whl"
+    },
+    {
+      "license": "BSD",
+      "name": "semantic-version",
+      "sha256": "de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177",
+      "version": "2.10.0",
+      "wheel": "semantic_version-2.10.0-py2.py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "setuptools",
+      "sha256": "ca140b45d5325a9478f880e351484f62fef15f336462e449ca0c03c873d589c2",
+      "version": "84.2.1",
+      "wheel": "setuptools-84.2.1-py3-none-any.whl"
+    },
+    {
+      "license": "License :: OSI Approved :: MIT License",
+      "name": "setuptools-rust",
+      "sha256": "666439c4d90e968bb625bcf87ec0aa02b4f49e599d2f5dc255c633a04e8eca99",
+      "version": "1.13.0",
+      "wheel": "setuptools_rust-1.13.0-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "setuptools-scm",
+      "sha256": "82f34c3e3084fc2b57d397200637cc13f2338004052d2fee47baa5f0e902464e",
+      "version": "10.3.4",
+      "wheel": "setuptools_scm-10.3.4-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "vcs-versioning",
+      "sha256": "f8bebd1302ebc12e67ceb30fc7dd698ec969414b6fa43b30c3f14ac9b1e72c41",
+      "version": "2.6.0",
+      "wheel": "vcs_versioning-2.6.0-py3-none-any.whl"
+    }
+  ],
+  "count": 21,
+  "no_js_ts_selected_filenames": true,
+  "packages": [
+    {
+      "license": "MIT",
+      "name": "aiodns",
+      "sha256": "c24dd605bac70a1676ce503f967a98483ff163507198557d8e9db16267e6cfd2",
+      "version": "4.0.4",
+      "wheel": "aiodns-4.0.4-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "annotated-types",
+      "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0",
+      "version": "0.8.0",
+      "wheel": "annotated_types-0.8.0-py3-none-any.whl"
+    },
+    {
+      "license": "MIT-0",
+      "name": "cffi",
+      "sha256": "19ee6127ee34de7d83ce3d371ebc5ed91addbdcc39f9ab15ce4eb35a4e534971",
+      "version": "2.1.1",
+      "wheel": "cffi-2.1.1-cp313-cp313-macosx_11_0_arm64.whl"
+    },
+    {
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "name": "cryptography",
+      "sha256": "fa8f5efb344d6908a1ce62f4a24e2e5780f825d6f53f5f50ec5ffacac72936cb",
+      "version": "50.0.2",
+      "wheel": "cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "doubleratchet",
+      "sha256": "a869c81aa175abd9d7cfcf0069a0fa1261116b2ff2684c1ac95a1b83b875b18d",
+      "version": "1.3.0",
+      "wheel": "doubleratchet-1.3.0-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "elementpath",
+      "sha256": "5ec8d7bb44b16c98414a6a95e20cb150f3cbfc3cac65edc14773288c7a937376",
+      "version": "5.1.4",
+      "wheel": "elementpath-5.1.4-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "omemo",
+      "sha256": "8319fae4a9764ff9038504384553862c49011d447353ab1890bf871349c146c0",
+      "version": "2.1.0",
+      "wheel": "omemo-2.1.0-py3-none-any.whl"
+    },
+    {
+      "license": "3-Clause BSD License",
+      "name": "protobuf",
+      "sha256": "cbc70b17ee27e28894c7fee8bb04be1abead49e936bc70eb60052531eee2079e",
+      "version": "7.36.2",
+      "wheel": "protobuf-7.36.2-cp310-abi3-macosx_10_9_universal2.whl"
+    },
+    {
+      "license": "BSD-2-Clause",
+      "name": "pyasn1",
+      "sha256": "deda9277cfd454080ec40b207fb6df82206a3a2688735233cdcd8d3d565f088b",
+      "version": "0.6.4",
+      "wheel": "pyasn1-0.6.4-py3-none-any.whl"
+    },
+    {
+      "license": "BSD",
+      "name": "pyasn1-modules",
+      "sha256": "29253a9207ce32b64c3ac6600edc75368f98473906e8fd1043bd6b5b1de2c14a",
+      "version": "0.4.2",
+      "wheel": "pyasn1_modules-0.4.2-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "pycares",
+      "sha256": "00d87ab92f8f19fc1b043aa0263e112133986047ae4aa8bc45c4506c68a6fdc5",
+      "version": "5.2.1",
+      "wheel": "pycares-5.2.1-cp313-cp313-macosx_11_0_arm64.whl"
+    },
+    {
+      "license": "BSD-3-Clause",
+      "name": "pycparser",
+      "sha256": "51d5a8ba2be0bbe440b99d2112604c95bbbc3c2748a64260186c541e1729cd80",
+      "version": "3.11",
+      "wheel": "pycparser-3.11-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "pydantic",
+      "sha256": "9195d967ec791692a04438115466764fb8b9a27b31f14a760437694f40d6b454",
+      "version": "2.14.1",
+      "wheel": "pydantic-2.14.1-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "pydantic-core",
+      "sha256": "0c003c3b7f49debb893d2d85ae099ac5959c9839e2f330fadb1fcdf7a6594482",
+      "version": "2.50.1",
+      "wheel": "pydantic_core-2.50.1-cp313-cp313-macosx_11_0_arm64.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "slixmpp",
+      "sha256": "f0069a4f7c4f380f82f8c73839c06cf2b01826d73dc2df778b4e1e2a0b32db83",
+      "version": "1.17.0",
+      "wheel": "slixmpp-1.17.0-cp313-cp313-macosx_26_0_arm64.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "twomemo",
+      "sha256": "dc799851d85f8badde8632511b5ad1091d9de95588a8d9c4d555764238f17f1a",
+      "version": "2.1.0",
+      "wheel": "twomemo-2.1.0-py3-none-any.whl"
+    },
+    {
+      "license": "PSF-2.0",
+      "name": "typing-extensions",
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "version": "4.16.0",
+      "wheel": "typing_extensions-4.16.0-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "typing-inspection",
+      "sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147",
+      "version": "0.4.4",
+      "wheel": "typing_inspection-0.4.4-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "x3dh",
+      "sha256": "92548974e0cd9eccf19315f59014e5796ee4c5440b6fe753a9168fb92dd6c914",
+      "version": "1.3.0",
+      "wheel": "x3dh-1.3.0-py3-none-any.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "xeddsa",
+      "sha256": "b9912475590c0018a4323f7315490725c82b39243bf3a39922dad5d3422dcc9a",
+      "version": "1.2.0",
+      "wheel": "xeddsa-1.2.0-cp313-cp313-macosx_15_0_arm64.whl"
+    },
+    {
+      "license": "MIT",
+      "name": "xmlschema",
+      "sha256": "cf5c970a30f6ebcb3da35260e694704cc0b6794d8ace46125bb2a95e38ed9307",
+      "version": "4.3.2",
+      "wheel": "xmlschema-4.3.2-py3-none-any.whl"
+    }
+  ],
+  "platform_artifact_lock": false,
+  "product_dependency": false,
+  "python": "3.13.15",
+  "roots": [
+    "OMEMO==2.1.0",
+    "Twomemo[xml]==2.1.0",
+    "slixmpp==1.17.0"
+  ],
+  "slixmpp_jid": "upstream Python fallback",
+  "slixmpp_source": {
+    "sha256": "05257ee0f2aecb42d6479f6071c89ad3c734fda0ee753eb4625ecdc6114d90b1",
+    "url": "https://files.pythonhosted.org/packages/6c/ff/aac46de291c29162da5f1ef45d68a6f649a538942da28b514c866b909e35/slixmpp-1.17.0.tar.gz"
+  }
+}

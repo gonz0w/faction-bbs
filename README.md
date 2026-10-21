@@ -50,7 +50,12 @@ the client can download recently seen links by number. This preview runs on macO
 and native NetBSD; ordinary SSH/manual SFTP remain available.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
-visited board. Mail, encrypted attachments and home identity remain design/research directions, not implemented features.
+visited board. Mail and roaming identity are still outside the native product. A
+[working two-home protocol experiment](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
+now passes encrypted subject/body/reply, offline/archive and verified-device refusal
+controls, plus scoped native SSH certificate admission. Native mail UI/keystore/
+recovery and trusted local identity binding remain #90/#91; native certificate
+signing has a recorded failure under #92. Encrypted attachments stay planned in #88.
 The other-BBS directory, federation, payments, mesh and browser access remain
 backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
