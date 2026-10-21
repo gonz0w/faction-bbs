@@ -1,0 +1,198 @@
+{
+  "capacity_claim": false,
+  "date": "2026-10-21",
+  "encrypted_attachments_implemented": false,
+  "encrypted_keystore_recovery_implemented": false,
+  "execution_sources": {
+    "experiments/084-mail-proof/build_prosody.py": "e57c0f4012cf517f2c0451cfc3fbe9a0d6f0d150a78deed2135d9f5adb5d1d0b",
+    "experiments/084-mail-proof/dependencies.json": "5a9c9560533104ba0b893b4f8a5932eee05cc736eae1beed3d4fb96929d6793a",
+    "experiments/084-mail-proof/inspect_dependencies.py": "c37d8c576a1e8bf86a3cd862513a27123f333ebe57a83d5173dd120e06fdc685",
+    "experiments/084-mail-proof/mail_probe.py": "cb1cdd2dc921ad1a3e807e8e9bafcd9a6b8200d33e8cd7b7bdc9fc6ce84e0da1",
+    "experiments/084-mail-proof/prepare_homes.py": "2f0cbbca8736fe9fa817adcedf8f1b5fe8c23ee93b00155e485a9c6b8663baf7",
+    "experiments/084-mail-proof/prosody-netbsd-lua54.patch": "4e1f49a30b2b4f50a8c750a7ccdd307c11d5dbacc0d9e5ea7b29c7eda7825ba4",
+    "experiments/084-mail-proof/sce.py": "0830a508688b6105ffbbb20f98cf84f3a8fe982ebe0e1c9b92d2fa4d8017df5c",
+    "experiments/084-mail-proof/signing_probe.py": "7253c7fbf99695ea262ac08e54d3e6c3d1324419dd38e0b1f490aa2df3dde257",
+    "experiments/084-mail-proof/ssh_cert_probe.py": "760c52254c864ef6cd1baf8c7b53716f8a06213e1b59ad782010724098d5f9c2",
+    "tools/test_mail_envelope.py": "5bc489936ed734bdbe4f05b460d6d71ffdb143ee3e8fc9ccb48b2adefc411876"
+  },
+  "fixture": {
+    "client_os": "macOS ARM64",
+    "client_python": "3.13.15",
+    "guest_ram_mib": 1024,
+    "http_listeners": false,
+    "installed_native_dependency_filename_scan": "pass",
+    "lua": "5.4.7",
+    "native_installed_packages": [
+      "lua54-5.4.7",
+      "lua54-expat-1.5.1",
+      "lua54-filesystem-1.9.0",
+      "lua54-socket-3.1.0nb1",
+      "lua54-sec-1.3.1nb1",
+      "xmlcatmgr-2.2nb1",
+      "libxml2-2.15.3",
+      "nghttp2-1.69.0",
+      "unbound-1.25.1",
+      "lua54-unbound-1.0.0nb9",
+      "icu-78.3",
+      "libidn-1.42",
+      "prosody-13.0.3",
+      "expat-2.8.3",
+      "libffi-3.5.2",
+      "libuuid-2.40.2",
+      "mpdecimal-4.0.1",
+      "readline-8.3nb1",
+      "sqlite3-3.53.2",
+      "python313-3.13.14"
+    ],
+    "native_python": "3.13.14",
+    "os": "NetBSD 11.0 ARM64",
+    "physical_hardware": false,
+    "private_loopback_host_forwards": true,
+    "prosody_runtime": "13.0.7",
+    "real_accounts_or_external_peers": false,
+    "separate_home_uids_and_stores": true,
+    "two_home_processes_one_vm": true,
+    "vcpus": 2
+  },
+  "footprint_is_peak": false,
+  "footprint_observation": {
+    "home_a": {
+      "process_count": 1,
+      "rss_kib": 17780
+    },
+    "home_b": {
+      "process_count": 1,
+      "rss_kib": 18048
+    }
+  },
+  "host_envelope_tests": 3,
+  "identity_verifier": {
+    "base_source_penalties_changed": false,
+    "checks": [
+      "home_a_certificate_and_device_possession_accepted",
+      "independent_home_b_same_handle_distinguished_by_full_principal",
+      "wrong_visited_board_principal_denied",
+      "home_a_cannot_assert_home_b_namespace",
+      "uninvited_signing_authority_denied",
+      "expired_certificate_denied",
+      "not_yet_valid_certificate_denied",
+      "certificate_without_device_private_key_denied",
+      "uncertified_raw_key_denied",
+      "remote_exec_stays_in_fixed_forced_command",
+      "visited_board_local_revoke_denies_old_certificate_other_home_still_works"
+    ],
+    "count": 11,
+    "distinct_loopback_sources": true,
+    "external_fixture_signer": true,
+    "mail_keys_used": false,
+    "online_issuer": false,
+    "product_integration": false,
+    "result": "pass"
+  },
+  "independent_client_interop": false,
+  "mail": {
+    "checks": [
+      "two_separate_homes_tls_login_and_device_publication",
+      "uninvited_home_route_denied",
+      "omemo2_device_encryption_sce_subject_body_and_cross_home_decryption",
+      "bidirectional_ratcheted_encrypted_reply",
+      "unknown_device_fails_closed_before_ciphertext_send",
+      "fresh_modified_ciphertext_does_not_open",
+      "valid_delivery_recovers_after_ciphertext_rejection",
+      "plaintext_message_refused_no_downgrade",
+      "offline_ciphertext_queue_and_same_device_reconnect",
+      "bounded_home_archive_fetch_has_stable_ids_and_no_private_subject_body",
+      "server_added_unverified_device_blocks_delivery_without_plaintext_fallback",
+      "outgoing_wire_envelopes_hide_subject_body"
+    ],
+    "count": 12,
+    "crypto_library": "Twomemo 2.1.0",
+    "independent_client_interop": false,
+    "namespace": "urn:xmpp:omemo:2",
+    "product_integration": false,
+    "result": "pass"
+  },
+  "native_membership_binding_implemented": false,
+  "native_signing": {
+    "controls": [
+      {
+        "artifact_produced": true,
+        "case": "basic",
+        "exit": -11
+      },
+      {
+        "artifact_produced": true,
+        "case": "short_validity",
+        "exit": -11
+      },
+      {
+        "artifact_produced": true,
+        "case": "clear_extensions",
+        "exit": -11
+      },
+      {
+        "artifact_produced": true,
+        "case": "forced_command",
+        "exit": -11
+      }
+    ],
+    "core_dumps_disabled": true,
+    "count": 4,
+    "keys_removed": true,
+    "result": "observed_failure",
+    "ssh_keygen_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648",
+    "ssh_version": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+  },
+  "post_proof_format_hardening": {
+    "change": "Require UTF-8 before XML declaration checks; reject alternate-encoding input rather than allowing declaration scanning to be bypassed.",
+    "host_tests": 3,
+    "real_network_replayed_after_hardening": false,
+    "sources": {
+      "experiments/084-mail-proof/sce.py": "0d6b17f0514d5d65714734b235f6919c028b35a402270bbea3453f1490e396e4",
+      "tools/test_mail_envelope.py": "6a7db4c0de70f1bd3c92af734f51de8e36749b6ce911f7f9cc55cfa5bb666def"
+    }
+  },
+  "product_default_sessions": 8,
+  "product_owner_or_credential_limits_changed": false,
+  "product_runtime_changed": false,
+  "production_crypto_adopted": false,
+  "reference_constructor_control": [
+    {
+      "accepted": true,
+      "case": "default64"
+    },
+    {
+      "accepted": false,
+      "case": "explicit16"
+    }
+  ],
+  "result": "reference_controls_pass_product_adoption_deferred",
+  "server_store_scan": {
+    "includes_stores_logs_configs": true,
+    "known_private_subject_body_absent": true,
+    "result": "pass",
+    "server_bytes_scanned": 97130,
+    "server_files_scanned": 36
+  },
+  "source_overrides": {
+    "experiments/084-mail-proof/sce.py": "dev-docs/evidence/encrypted-mail-netbsd/proof-inputs/sce.py",
+    "tools/test_mail_envelope.py": "dev-docs/evidence/encrypted-mail-netbsd/proof-inputs/test_mail_envelope.py"
+  },
+  "source_provenance": {
+    "prosody": {
+      "sha256": "f671df3c7535c7269afc89579ea26fc13d1006b40ef5df4ccb71a560197f151b",
+      "source_no_js_ts": true,
+      "url": "https://prosody.im/downloads/source/prosody-13.0.7.tar.gz",
+      "version": "13.0.7"
+    },
+    "s2s_override": {
+      "sha256": "88fed46b5095a8f589e429d68aae238a91deea011025e6aa8702ed9fd079d281",
+      "url": "https://hg.prosody.im/prosody-modules/raw-file/tip/mod_s2sout_override/mod_s2sout_override.lua"
+    }
+  },
+  "teardown": {
+    "private_inputs_removed": true,
+    "services_stopped": true,
+    "vm_process_stopped": true
+  }
+}

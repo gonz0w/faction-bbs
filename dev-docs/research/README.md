@@ -70,3 +70,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0043: File areas and SFTP](0043-file-areas-and-sftp.md); [0044: Home identities and encrypted mail](0044-home-identities-and-encrypted-mail.md) — owner choices, primary standards and bounded follow-ups.
 
 - [Native file-area implementation evidence](../evidence/file-areas-netbsd/README.md) — #83 scoped SFTP, quarantine and complete file-data recovery.
+
+- [0045: Two-home encrypted mail and scoped roaming proof](0045-encrypted-mail-and-roaming-proof.md) — actual reference mail/native verifier controls, dependency gates and native signing failure; #84 remains open.

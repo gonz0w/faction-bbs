@@ -14,7 +14,11 @@ invited home authorities, member-held keys and separately approved communities.
 No BBS/home server reads this private mail; ordinary SSH still serves local BBS
 features. See ADRs 0030/0031 and [extension contracts](extension-contracts.md).
 Pause game expansion under #81 while preserving DOS/Amiga/other-host adapters.
-XMPP/OMEMO/visiting auth are unvalidated candidates, not new runtime dependencies.
+The [two-home reference proof](research/0045-encrypted-mail-and-roaming-proof.md)
+passes encrypted mail/offline/archive/device-refusal controls and native scoped
+SSH certificate verification. No complete native crypto/SSO runtime is adopted.
+#90 builds native mail/keystore/recovery; #91 binds home identity to local membership;
+#92 investigates native signing failure. Attachments remain #88.
 These explicit mail/identity capabilities supersede older chat-only wording below.
 
 The owner explicitly redirected work toward a running product for ordinary users

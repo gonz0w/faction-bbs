@@ -89,3 +89,5 @@ merged #86 (`c85dbd1d60e9c8bb8646ed937f2ee4973e58f5f1`). Its independently pinne
 The earlier five snapshots/eighteen historical record identities remain fixed.
 [Native-client evidence](native-client-netbsd/README.md) records new current-source
 workflow tests separately; historical file-area tests were not relabeled as new runs.
+
+[Encrypted-mail/identity evidence](encrypted-mail-netbsd/README.md) adds a separate two-home protocol/native verifier record and retains native signing failure. No maintained executed input or older record was changed, so no historical snapshot is replaced or relabeled.

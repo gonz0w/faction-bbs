@@ -54,3 +54,13 @@ remote endpoints, local paths, mail keys or home identity. Stable local referenc
 are independent of transfer adapters. The native client can later host a separate
 mail presentation/keystore boundary, but #84/#88 must first prove actual encrypted
 messages/attachments and scoped home trust; terminal control is not an auth protocol.
+
+
+The [mail/identity proof](research/0045-encrypted-mail-and-roaming-proof.md) keeps
+routing/archives, device cryptography/trust, trusted local presentation, online
+issuer proof and local membership binding independent. Its Python/SCE reference
+adapter is not a product extension runtime. Current terminal file-control frames
+must never solicit home secrets, unlock a mail keystore or compose private mail.
+Native mail needs an explicitly local trusted interaction (#90); verified home
+identity needs a trusted connection-bound membership path (#91), with no role
+or approval import. Keep attachments under #88's ciphertext/key boundary.
