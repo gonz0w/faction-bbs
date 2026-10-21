@@ -27,7 +27,10 @@ The immediate priority is a useful small board: straightforward setup, an
 individual BBS identity, rooms, chat and recovery. The optional
 **[Lua arcade](docs/lua-doors.md)** now adds a sysop-editable Doors menu and two
 original games: **Signal Hunt** and **Neon Salvage**, with arrows/hotkeys and a
-separate game account/evaluator. Game failure returns to the board.
+separate game account/evaluator. Local top tens, persistent personal bests,
+completed-run counts and an arcade guide give members a reason to return. Scores
+survive reconnect/reboot and travel in private exports. Game failure returns to
+the board.
 Files, private mail, the other-BBS
 directory, federation, payments, mesh and browser access remain backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),

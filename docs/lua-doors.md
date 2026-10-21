@@ -7,14 +7,43 @@ choices. Plain terminals use hotkeys followed by Enter. Ctrl-C returns to the BB
 
 **Signal Hunt** gives you seven guesses to lock onto a pirate radio frequency.
 **Neon Salvage** is a five-sector run: safe salvage or risky hacking, then dock
-and count your points. Scores are local to that play session and have no monetary
-value. Disconnect, timeout, resize or returning to the lobby discards the game.
+and count your points. Completed scores persist on this BBS and have no monetary
+value. Disconnect, timeout, resize or returning to the lobby abandons an unfinished
+run; a score already saved remains.
 A broken/unavailable door returns to the BBS; rooms and chat remain usable.
 
 This first Lua menu is the arcade lobby. The main BBS menu remains declarative.
 Local owner consoles and worker rollback retain their existing menus with Doors
 unavailable. Native/DOS games such as TradeWars are future compatibility work;
 this runner executes text Lua scripts only.
+
+## Scores, rules and one more turn
+
+Choose **[I] Arcade guide** for both games' rules. Signal Hunt awards 100 points
+per remaining guess on a win (700 on the first guess, 100 on the seventh), and
+zero for a completed loss. Q abandons it without a score. Neon Salvage banks the
+points shown when you land, finish five sectors or run out of energy.
+
+A completed screen confirms the saved score, personal best and completed-run
+count. **[P]** starts a fresh run, **[T]** opens that game's top ten, **[L]** returns
+to the lobby and **[B]** returns to the BBS. The lobby has **[S] Signal Hunt high
+scores** and **[T] Neon Salvage high scores**. On a score screen, **[R]** restores
+the previous arcade screen; viewing scores again never counts the run twice.
+All choices also work with arrows/Enter. Score lists show your personal best even
+when you are outside the top ten. Higher scores win; ties use member registration
+order. Only currently approved local members can read them, and revoked members
+are hidden from the displayed top ten. Reapproval retains their old best.
+
+The owner stores one best/count row per member/game, at most 64 game keys per
+member, without a play log, addresses, timestamps, wallets or external service.
+Private owner exports include these rows. Active game/run capabilities are never
+exported or restored. There is no scoreboard reset/moderation command yet.
+
+If the database is busy, the completed screen says the score has **not** been
+saved; opening scores retries before leaving the run. Leaving/disconnecting before
+that retry succeeds loses the unsaved result. Invalid/partial game output cannot
+save anything. A sysop-installed game is trusted to calculate honest scores;
+these are hobby board records, not proof for a prize or payment system.
 
 ## Add the optional service
 
@@ -79,7 +108,7 @@ Doors label there if using an older pack that says "not installed". Lua cannot
 send arbitrary ANSI/control bytes. All examples are original project source
 under BSD-3-Clause; historical scene art and legacy games are not bundled.
 
-## Small screen API, version 1
+## Small screen API, FDS1 with optional completed score
 
 Each turn starts a fresh Lua state with `state` (the previous returned string) and
 `input` (this turn's submitted input). On entry both are empty. Only the string
@@ -92,14 +121,19 @@ library, `tonumber`, and this `bbs` table are available:
 | `bbs.option(key, label, target)` | Up to 8 distinct uppercase-letter hotkeys; label up to 48 bytes |
 | `bbs.prompt(text)` | One line-input prompt, up to 120 bytes; use instead of options |
 | `bbs.state(text)` | Return up to 1024 bytes for this connection's next turn |
+| `bbs.score(points)` | Once on a completed screen: integer 0–1,000,000,000; no prompt, live state or input choices |
 | `bbs.random(max)` | An OS-random integer from 1 through max; max at most 1,000,000 |
 
-Targets are `back`, `lobby`, `game:slug` (fresh game), and `input:value` (next turn
-of the current game). Line input is at most 128 bytes. Field values exclude
+Targets are `back`, `lobby`, `game:slug` (fresh game), `input:value` (next turn
+of the current game), and `scores:slug` (host-owned local top ten). Line input is at most 128 bytes. Field values exclude
 control characters and the protocol separator `|`. A screen must have a title,
 state (empty by default), and either choices or a prompt. The host validates the
 entire response and current local approval before displaying it or acting on a
-choice. No script target can approve an account or invoke an owner operation.
+choice. A `SCORE|points` field is accepted only after an input turn in the owning
+run, once, on a completed screen. The BBS supplies the authenticated player and
+game key from its own connection; Lua cannot select a player or submit SQL. The
+opaque core run is bound to the board/member/epoch and consumed after commit.
+No script target can approve an account or invoke an owner operation.
 
 ## Boundaries, updates and disablement
 
@@ -118,6 +152,17 @@ results are discarded; the parent kills/reaps overdue work. The Lua implementati
 C wrapper and OS remain trusted. Separate process/UID and restricted APIs are not
 a hostile-native-code or all-family network sandbox. Member-uploaded Lua and
 arbitrary native executables are outside this version's boundary.
+
+To upgrade from the first arcade, stop the board/door service, take a private
+export with the old owner tool and keep the old binaries/scripts. Install the
+new core/CLI/shared backend and evaluator **together** with the updated example
+scripts (including `arcade-guide.lua`), merging your own Lua edits. Do not rerun
+the first-install helper on an existing board. Opening the board transactionally
+migrates schema 2 to 3, including boards with Doors disabled. Old binaries cannot
+open schema 3: a downgrade requires restoring the pre-upgrade export into a new
+private directory using the matching older software. New software can verify and
+restore schema-2 exports without modifying them. Worker rollback using the same
+new build retains scores, though its Doors menu remains disabled.
 
 To update, stop the board and door service, preserve your edited Lua files, build
 and install the new evaluator/scripts, then start doors before the board. The

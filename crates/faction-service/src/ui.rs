@@ -3,7 +3,7 @@
 use super::*;
 
 impl Client {
-    fn session(&self) -> faction_core::Result<&Session> {
+    pub(super) fn session(&self) -> faction_core::Result<&Session> {
         self.session.as_ref().ok_or(Error::Denied)
     }
     fn lease(&self) -> faction_core::Result<&ChatLease> {
