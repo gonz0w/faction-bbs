@@ -181,3 +181,24 @@ area, operation and client-key checks remain mandatory. Files stay local; partia
 uploads remain quota-charged/private until review and atomic publication. Current
 database exports include catalog policy but no file bytes and discard transfer
 grants. Use the stopped/drained complete catalog/blob backup for file recovery. See [file areas](file-areas.md).
+
+## Native client and file-reference boundary
+
+The optional [native client](native-client.md) runs on the member device. A private
+local profile selects SSH/SFTP destinations and verified known-host keys. Base
+OpenSSH provides encryption/admission; local BBS login/approval remains separate.
+Remote terminal output is untrusted: filter terminal controls, decode only bounded
+file-control frames, and require local keyboard actions/path selection/confirmation
+before transfer. No remote-selected local path, endpoint, shell or agent forwarding.
+The Files session uses current connection authority, nonce and sequence, not a
+member/role asserted by the client. Client-only PTY/C code is outside the BBS owner.
+
+File references are public identifiers, not bearer grants. Sharing, per-reader
+metadata rendering and actual download each enforce current approval and area
+access. Arbitrary filenames/metadata typed as normal prose remain ordinary post
+content; reference redaction cannot retract that prose or an earlier authorized
+reader's copy. Public reference namespaces survive restore; private session identity
+rotates and transfer grants are discarded. No link automatically fetches from a
+remote BBS or publishes local files. Current file areas are readable by the sysop;
+future device-encrypted mail attachments require a separate ciphertext/key boundary
+under #88. The current client implements no mail encryption or roaming authentication.

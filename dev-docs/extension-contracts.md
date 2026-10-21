@@ -47,3 +47,10 @@ additional interaction/rendering design or remains unsupported; an emulator does
 not automatically convert it to a usable ANSI game. Do not bypass safe terminal
 parsing or start arbitrary emulators under factiond/factionterm/Lua. #81 owns the
 maintained host contract; concrete platforms/titles need independent reuse tests.
+
+The first [native Files control](native-file-control.md) is a narrow versioned
+terminal seam layered over the existing file grant/SFTP policy. It carries no
+remote endpoints, local paths, mail keys or home identity. Stable local references
+are independent of transfer adapters. The native client can later host a separate
+mail presentation/keystore boundary, but #84/#88 must first prove actual encrypted
+messages/attachments and scoped home trust; terminal control is not an auth protocol.

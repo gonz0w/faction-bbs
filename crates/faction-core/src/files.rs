@@ -83,7 +83,7 @@ pub fn file_key(s: &str) -> Result<String> {
     }
     Ok(v.into())
 }
-fn scope(tx: &Transaction<'_>, member: i64, area: i64) -> Result<()> {
+pub(crate) fn scope(tx: &Transaction<'_>, member: i64, area: i64) -> Result<()> {
     let ok=tx.prepare("SELECT 1 FROM file_areas a,members m WHERE a.id=?1 AND m.id=?2 AND m.status='approved' AND (m.role='sysop' OR a.private=0 OR EXISTS(SELECT 1 FROM file_area_grants g WHERE g.area_id=a.id AND g.member_id=m.id))")?.exists(params![area,member])?;
     if !ok {
         return Err(Error::Denied);
@@ -589,4 +589,28 @@ pub(crate) fn validate_catalog(db: &rusqlite::Connection) -> Result<()> {
         return Err(Error::Invalid("file transfer limit exceeded"));
     }
     Ok(())
+}
+
+impl Board {
+    /// Member cancellation affects only this session epoch's own file grant.
+    /// Upload reservations remain private and charged until explicit removal/GC.
+    pub fn file_abandon(&mut self, s: &Session, id: &str) -> Result<()> {
+        file_id(id)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        let own = tx
+            .prepare("SELECT 1 FROM file_transfers WHERE id=?1 AND member_id=?2 AND epoch=?3")?
+            .exists(params![id, s.member, s.epoch])?;
+        if !own {
+            return Err(Error::Denied);
+        }
+        tx.execute(
+            "UPDATE file_transfers SET state='failed' WHERE id=?1 AND state IN ('ready','active')",
+            [id],
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
 }

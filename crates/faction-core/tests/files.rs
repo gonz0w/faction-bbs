@@ -297,3 +297,144 @@ fn expired_grant_denies_lookup_and_claim_but_does_not_free_partial_quota() {
             .is_err()
     );
 }
+
+#[test]
+fn room_and_chat_links_do_not_grant_file_access_or_disclose_private_metadata() {
+    use faction_core::ChatKind;
+    let mut f = F::new();
+    let a = f.area(true, 100);
+    f.board.file_allow(&f.sysop, a, "alice", true).unwrap();
+    let id = f
+        .board
+        .file_upload(&f.alice, a, "secret.bin", "Private release", 3, &key(1))
+        .unwrap();
+    let object = f.complete(&id, 3);
+    assert!(f.board.file_reference(&f.alice, &object).is_err());
+    f.board.file_review(&f.sysop, &object, true).unwrap();
+    let link = f.board.file_reference(&f.alice, &object).unwrap();
+    assert!(f.board.file_resolve(&f.bob, &link).is_err());
+    f.board
+        .post(
+            &f.alice,
+            1,
+            &request_id().unwrap(),
+            &format!("Scene release: {link}"),
+            None,
+        )
+        .unwrap();
+    let allowed = f.board.posts(&f.alice, 1, 0).unwrap();
+    assert!(allowed[0].body.contains("secret.bin"));
+    assert!(allowed[0].body.contains(&link));
+    let denied = f.board.posts(&f.bob, 1, 0).unwrap();
+    assert!(!denied[0].body.contains("secret.bin"));
+    assert!(!denied[0].body.contains(&link));
+    assert!(denied[0].body.contains("[file unavailable]"));
+    assert!(
+        f.board
+            .post(&f.bob, 1, &request_id().unwrap(), &link, None)
+            .is_err()
+    );
+    let alice = f.board.chat_open(&f.alice).unwrap();
+    let bob = f.board.chat_open(&f.bob).unwrap();
+    f.board.chat_join(&alice, "#lobby").unwrap();
+    f.board.chat_join(&bob, "#lobby").unwrap();
+    f.board
+        .chat_send(&alice, "#lobby", 1, &link, ChatKind::Say)
+        .unwrap();
+    assert!(
+        f.board
+            .chat_send(&bob, "#lobby", 1, &link, ChatKind::Say)
+            .is_err()
+    );
+    assert!(
+        f.board.chat_read(&bob, "#lobby", 0).unwrap().messages[0]
+            .body
+            .contains("[file unavailable]")
+    );
+    f.board.file_allow(&f.sysop, a, "alice", false).unwrap();
+    assert!(
+        !f.board.posts(&f.alice, 1, 0).unwrap()[0]
+            .body
+            .contains("secret.bin")
+    );
+    assert!(f.board.file_resolve(&f.alice, &link).is_err());
+    f.board.file_allow(&f.sysop, a, "bobby", true).unwrap();
+    assert!(
+        f.board.chat_read(&bob, "#lobby", 0).unwrap().messages[0]
+            .body
+            .contains("secret.bin")
+    );
+    f.board.file_review(&f.sysop, &object, false).unwrap();
+    assert!(
+        !f.board.chat_read(&bob, "#lobby", 0).unwrap().messages[0]
+            .body
+            .contains("secret.bin")
+    );
+}
+
+#[test]
+fn public_file_namespace_and_references_survive_restore_but_sessions_do_not() {
+    let mut f = F::new();
+    let a = f.area(false, 100);
+    let id = f
+        .board
+        .file_upload(&f.alice, a, "release.bin", "description", 3, &key(1))
+        .unwrap();
+    let object = f.complete(&id, 3);
+    f.board.file_review(&f.sysop, &object, true).unwrap();
+    let link = f.board.file_reference(&f.alice, &object).unwrap();
+    f.board
+        .post(&f.alice, 1, &request_id().unwrap(), &link, None)
+        .unwrap();
+    let export = f.root.join("links.sqlite3");
+    f.board.export_local(&export).unwrap();
+    let dest = f.root.join("restored");
+    restore_local(&export, &dest).unwrap();
+    let mut b = Board::open(&dest).unwrap();
+    let s = b.authenticate("alice", &f.secret).unwrap();
+    assert_eq!(b.file_reference(&s, &object).unwrap(), link);
+    assert!(b.posts(&s, 1, 0).unwrap()[0].body.contains(&link));
+    assert!(b.file_resolve(&f.alice, &link).is_err());
+    assert_eq!(b.file_resolve(&s, &link).unwrap().filename, "release.bin");
+    let foreign = format!("faction-file:{}/{}", "0".repeat(32), object);
+    assert!(b.file_resolve(&s, &foreign).is_err());
+    assert!(
+        b.post(&s, 1, &request_id().unwrap(), &foreign, None)
+            .is_err()
+    );
+}
+
+#[test]
+fn ordinary_text_about_file_link_syntax_remains_readable() {
+    let mut f = F::new();
+    let body = "A link starts with faction-file: and has board/object IDs.";
+    f.board
+        .post(&f.alice, 1, &request_id().unwrap(), body, None)
+        .unwrap();
+    assert_eq!(f.board.posts(&f.alice, 1, 0).unwrap()[0].body, body);
+}
+
+#[test]
+fn member_can_abandon_own_ready_or_active_grant_without_releasing_reserved_bytes() {
+    let mut f = F::new();
+    let a = f.area(false, 5);
+    let id = f
+        .board
+        .file_upload(&f.alice, a, "abandon.bin", "description", 4, &key(1))
+        .unwrap();
+    assert!(f.board.file_abandon(&f.bob, &id).is_err());
+    f.board.file_abandon(&f.alice, &id).unwrap();
+    assert!(f.board.file_claim(&id).is_err());
+    assert!(
+        f.board
+            .file_upload(&f.alice, a, "other.bin", "description", 2, &key(1))
+            .is_err()
+    );
+    let other = f
+        .board
+        .file_upload(&f.bob, a, "other.bin", "description", 1, &key(2))
+        .unwrap();
+    let active = f.board.file_claim(&other).unwrap();
+    f.board.file_abandon(&f.bob, &other).unwrap();
+    assert!(f.board.file_check(&other, &active.lease).is_err());
+}

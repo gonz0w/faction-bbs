@@ -1,6 +1,8 @@
 # Home identities and encrypted private mail
 
-Status: owner-selected direction, **not implemented**. Native client/identity/mail
+Status: mail/identity remain owner-selected direction, **not implemented**.
+The [native terminal client](native-client.md) now provides SSH/Files integration;
+it does not yet hold mail keys, route XMPP or perform roaming authentication. Native client/identity/mail
 proof [#84](https://github.com/gonz0w/faction-bbs/issues/84); local mail #33 and
 federation #17. This supersedes the old blanket chat-only federation restriction
 only for explicit private-message delivery and scoped home-identity proofs.
@@ -13,7 +15,7 @@ federation peers and retain their own community admission decisions.
 
 ## One identity, separately approved communities
 
-A future native Faction terminal client owns the member's device keys. It keeps
+The future mail increment of the native Faction client will own the member's device keys. It keeps
 the ANSI/BBS feel while connecting to a visited board and the home mailbox through
 separate channels. Ordinary SSH remains useful for rooms, chat, files and games.
 It cannot provide server-blind mail by having the server decrypt and render text.
@@ -79,3 +81,22 @@ If a home server disappears, a portable private key does not automatically keep
 its domain/address or mailbox available. Export/recovery, domain continuity and
 contact verification after a move need an explicit design. Federation can route
 messages between invited homes without requiring every sysop to keep every inbox.
+
+## Encrypted attachments
+
+Tracked separately as [#88](https://github.com/gonz0w/faction-bbs/issues/88), under
+#84/#33. Encrypt bytes **on the member device before upload** with fresh attachment
+keys; filenames, media types and decryption/integrity material belong inside the
+E2EE envelope. Treat remote locators as untrusted, enforce destination/size/time
+bounds and require local confirmation before saving. Never send a private attachment
+through the current sysop-readable file area and call it server-blind.
+
+Evaluate reuse of [XEP-0447](https://xmpp.org/extensions/xep-0447.html) (Experimental
+v0.3.1, metadata/source sharing) and [XEP-0454](https://xmpp.org/extensions/xep-0454.html)
+(Historical/Experimental v0.1.0, encrypted media), retrieved 2026-10-21. They are
+research candidates, not adopted formats; the latter's historical status matters.
+Pin versions, assess actual OMEMO/client interoperability and library maintenance,
+and prove that homes, visited boards and blob stores cannot read content/private
+filename metadata or silently enroll a recipient device. Include tamper/wrong-key,
+revoked device, offline/expiry, retry/cancel, quotas and export/recovery experiments.
+Necessary routing, sizes and timing can still be visible. No plaintext fallback.

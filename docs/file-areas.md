@@ -10,8 +10,8 @@ This is an early hobby preview; read the validation limitations below.
 
 First complete [normal setup](quickstart-netbsd.md), initialize your sysop and
 build the current workspace. Before upgrading an existing board, export a private
-pre-upgrade database backup: schema 4 cannot be opened by an older binary. Existing
-schema-2/3 exports remain readable. Stop member SSH, wait for members to leave,
+pre-upgrade database backup: schema 5 cannot be opened by an older binary. Existing
+schema-2/3/4 exports remain readable. Stop member SSH, wait for members to leave,
 and stop the backend before replacing binaries or changing configuration.
 
 As root, from your source checkout:
@@ -129,6 +129,29 @@ per member; 64 grants globally. Removed objects remain charged until GC. Grants
 last five minutes, helper wall time at most five minutes, packet-input deadline
 30 seconds and output/policy deadlines three seconds. These are implementation
 bounds, not supported-capacity claims or general SSH preauthentication limits.
+
+## File references and integrated transfers
+
+The optional [native client](native-client.md) handles upload/download from the Files
+menu while the BBS session stays connected. Plain SSH retains the manual workflow.
+`link OBJECT_ID` produces a stable `faction-file:NAMESPACE/OBJECT_ID` reference for a
+published file you can access. Room posts and chat accept up to four such references
+per message; sending and reading check current membership/area permissions. Readers
+without access see `[file unavailable]` without private file metadata. A link grants
+no permissions and never fetches another board. Typed prose about malformed/incomplete
+references remains ordinary text. Metadata manually typed into a post is ordinary
+post content; redaction applies to recognized references, not arbitrary prose.
+
+Files `info` and `download` accept either local object IDs or full local references.
+`cancel TRANSFER_ID` abandons your current ready/active grant; incomplete upload
+reservations remain private/charged. The native client manages this automatically
+when a confirmed transfer fails. Recent link numbers are local client convenience,
+not server authority. Revoked access is rechecked when opening/downloading.
+
+Schema 5 preserves the public namespace and stored tokens through backup/restore,
+independently of the freshly rotated private session identity. Do not run restored
+clones as independent federated boards with the same namespace; namespace reassignment
+and cross-board file sharing are future design work.
 
 ## Complete backup and fresh restore
 

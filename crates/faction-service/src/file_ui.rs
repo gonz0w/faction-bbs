@@ -6,11 +6,14 @@ impl Client {
         if !self.files_enabled {
             return Err(Error::Denied);
         }
-        self.queue("Local file areas. Transfers use the separate restricted SFTP service.\nCommands: areas [after-id], list AREA [after-object], search AREA AFTER|- TEXT, info OBJECT,\n upload AREA NAME BYTES DESCRIPTION, download OBJECT, back.\n");
+        self.queue("Local file areas. Transfers use the separate restricted SFTP service.\nCommands: areas [after-id], list AREA [after-object], search AREA AFTER|- TEXT, info OBJECT, link OBJECT, cancel TRANSFER_ID,\n upload AREA NAME BYTES DESCRIPTION, download OBJECT, back.\n");
         if self.sysop_display {
             self.queue("Sysop: create SLUG members|private QUOTA TITLE, allow|deny AREA HANDLE,\n review AREA [after-object], publish OBJECT, remove OBJECT.\n");
         }
         self.prompt(State::Files, "files> ");
+        if self.ansi {
+            self.native_frame(&["ready"])?;
+        }
         Ok(())
     }
     pub(super) fn file_line(
@@ -49,6 +52,9 @@ impl Client {
                         .map_err(|_| Error::Invalid("invalid numeric argument"))
                 };
                 match cmd {
+                    "native-v1" if args.len() == 2 => {
+                        return self.native_enter(b, args[0], args[1]);
+                    }
                     "back" => return self.menu(theme, b),
                     "help" | "?" => return self.file_lobby(b),
                     "areas" if args.len() <= 1 => {
@@ -109,8 +115,20 @@ impl Client {
                             ));
                         }
                     }
+                    "cancel" if args.len() == 1 => {
+                        b.file_abandon(self.session()?, args[0])?;
+                        self.queue("Transfer cancelled. Incomplete uploads remain private and charged for sysop cleanup.\n");
+                    }
+                    "link" if args.len() == 1 => {
+                        let reference = b.file_reference(self.session()?, args[0])?;
+                        self.queue(&format!("{reference}\nPaste into a room post or chat; each reader still needs file access.\n"));
+                    }
                     "info" if args.len() == 1 => {
-                        let f = b.file_info(self.session()?, args[0])?;
+                        let f = if args[0].starts_with("faction-file:") {
+                            b.file_resolve(self.session()?, args[0])?
+                        } else {
+                            b.file_info(self.session()?, args[0])?
+                        };
                         self.queue(&format!(
                             "{} {}\n{} bytes; SHA256 {}\n{}\n",
                             f.id,
@@ -137,9 +155,14 @@ impl Client {
                         return Ok(());
                     }
                     "download" if args.len() == 1 => {
-                        faction_core::file_id(args[0])?;
+                        let object = if args[0].starts_with("faction-file:") {
+                            b.file_resolve(self.session()?, args[0])?.id
+                        } else {
+                            faction_core::file_id(args[0])?;
+                            args[0].into()
+                        };
                         self.prompt(
-                            State::FileDownloadKey(args[0].into()),
+                            State::FileDownloadKey(object),
                             "Transfer Ed25519 public key (one line): ",
                         );
                         return Ok(());

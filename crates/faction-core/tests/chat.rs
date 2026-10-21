@@ -368,7 +368,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
         .unwrap();
     f.board.mark_read(&f.alice, 1, post.id).unwrap();
     let db = f.db();
-    db.execute_batch("DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; DROP TABLE chat_joins; DROP TABLE chat_messages; DROP TABLE chat_grants; DROP TABLE chat_sessions; DROP TABLE chat_channels; PRAGMA user_version=1;").unwrap();
+    db.execute_batch("DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; DROP TABLE chat_joins; DROP TABLE chat_messages; DROP TABLE chat_grants; DROP TABLE chat_sessions; DROP TABLE chat_channels; PRAGMA user_version=1;").unwrap();
     // A conflicting table fails the migration transaction without deleting data.
     db.execute_batch("CREATE TABLE chat_messages(unrelated TEXT);")
         .unwrap();
@@ -411,7 +411,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
     assert_eq!(
         db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        4
+        5
     );
 }
 #[test]

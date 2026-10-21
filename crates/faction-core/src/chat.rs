@@ -325,6 +325,7 @@ impl Board {
         if previous.checked_add(1) != Some(request) {
             return Err(Error::RequestConflict);
         }
+        file_links::validate_links(&tx, lease.session.member, body)?;
         let sequence = c
             .sequence
             .checked_add(1)
@@ -374,7 +375,10 @@ impl Board {
                 r.get::<_, String>(3)?,
             ))
         })? {
-            let (sequence, author, body, kind) = row?;
+            let (sequence, author, mut body, kind) = row?;
+            if body.contains("faction-file:") {
+                body = file_links::render_links(&tx, lease.session.member, &body)?;
+            }
             let cost = author.len() + body.len() + 96;
             if charged + cost > PAGE_BYTES {
                 break;

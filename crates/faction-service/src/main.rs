@@ -9,6 +9,7 @@ mod config;
 mod door_ui;
 mod doors;
 mod file_ui;
+mod native_files;
 mod policy;
 mod ui;
 use config::Config;
@@ -71,6 +72,7 @@ enum State {
     DoorInput,
     Classic,
     Files,
+    NativeFiles,
     FileUploadKey {
         area: i64,
         name: String,
@@ -176,6 +178,7 @@ struct Client {
     classic_games: Option<Arc<Vec<classic::Game>>>,
     classic: Option<classic::Connection>,
     files_enabled: bool,
+    native: Option<native_files::Native>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -247,6 +250,7 @@ impl Client {
             classic_games: None,
             classic: None,
             files_enabled: false,
+            native: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)

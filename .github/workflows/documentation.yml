@@ -41,6 +41,7 @@ jobs:
           python3 tools/check_evidence_sources.py
           python3 tools/check_original_games_evidence.py
           python3 tools/check_file_area_evidence.py
+          python3 tools/check_native_client_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

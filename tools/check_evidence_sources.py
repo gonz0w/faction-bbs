@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify all frozen source bytes and historical result identities."""
 import hashlib
-from evidence_sources import ROOT,manifest,source_bytes,key_manifest,global_manifest,file_baseline_manifest
+from evidence_sources import ROOT,manifest,source_bytes,key_manifest,global_manifest,file_baseline_manifest,native_client_baseline_manifest
 def check():
     data=manifest();snapshots=[data]+data.get('snapshots',[])
     assert data['schema']==1 and data['origin_commit']=='09b506ea4f6da2830a0f2f480918ffb5048749aa'
@@ -51,5 +51,12 @@ def check():
         assert hashlib.sha256((base/name).read_bytes()).hexdigest()==digest
     for name,digest in extra['records'].items():
         assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,'historical file baseline record changed: '+name
-    print('Five source snapshots and seventeen unchanged historical records passed.')
+    extra=native_client_baseline_manifest()
+    base=ROOT/'dev-docs/evidence'/extra['source_root']
+    assert {str(p.relative_to(base)) for p in base.rglob('*') if p.is_file()}==set(extra['files'])
+    for name,digest in extra['files'].items():
+        assert hashlib.sha256((base/name).read_bytes()).hexdigest()==digest
+    for name,digest in extra['records'].items():
+        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest
+    print('Six source snapshots and eighteen unchanged historical records passed.')
 if __name__=='__main__':check()

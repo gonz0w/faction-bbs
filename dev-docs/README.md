@@ -35,3 +35,5 @@ SSH admission continuation: [plan 0022](plans/0022-ssh-admission.md),
 - [Original classic-game reuse](research/0042-original-classic-games.md): native LORD proof, [compatibility patch](compatibility/README.md) and separate game-host limits.
 
 - [Scoped extension contracts](extension-contracts.md) — file/identity/mail/door boundaries and selected next increments.
+
+The optional [native client](../docs/native-client.md) integrates Files transfers and local room/chat references; [ADR 0033](decisions/0033-native-terminal-files.md) records its boundary. Mail/identity/attachments remain #84/#88 research.
