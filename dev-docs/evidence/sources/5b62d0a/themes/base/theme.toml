@@ -1,0 +1,50 @@
+# Declarative example; artwork is deliberately supplied by the sysop.
+version = 1
+id = "faction-local"
+board = "Faction BBS"
+welcome = "Make this board your own."
+logout = "Until next time."
+normal = { fg = 7, bg = 0 }
+focus = { fg = 15, bg = 5, bold = true }
+hotkey = { fg = 14, bg = 0, bold = true }
+disabled = { fg = 8, bg = 0 }
+
+# Optional files in this directory; record actual rights before enabling.
+# identity_ascii = "login.txt"
+# identity_ansi = "login.ans"
+# creator = "Artist name"
+# source = "Original or explicitly licensed work"
+# permission = "The actual distribution/use permission"
+
+[[menu]]
+action = "rooms"
+key = "R"
+label = "Message rooms"
+[[menu]]
+action = "new"
+key = "N"
+label = "New messages"
+[[menu]]
+action = "history"
+key = "H"
+label = "Room history"
+[[menu]]
+action = "post"
+key = "P"
+label = "Post a message"
+[[menu]]
+action = "chat"
+key = "C"
+label = "Local chat"
+[[menu]]
+action = "sysop"
+key = "S"
+label = "Sysop controls"
+[[menu]]
+action = "doors"
+key = "D"
+label = "Doors (not installed)"
+[[menu]]
+action = "quit"
+key = "Q"
+label = "Log out"

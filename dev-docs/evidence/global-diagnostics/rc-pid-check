@@ -1,0 +1,26 @@
+#!/bin/sh
+# PROVIDE: faction_ssh_gate
+# REQUIRE: faction_isolated
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+name="faction_ssh_gate"
+rcvar=$name
+command="/usr/sbin/sshd"
+pidfile="/var/run/faction-sshd.pid"
+command_args="-f /etc/ssh/faction/key_admission_sshd_config"
+start_cmd="faction_ssh_gate_start"
+required_files="/etc/faction/ssh-gate.toml /usr/local/libexec/faction-ssh-gate.so /etc/ssh/faction/key_admission_sshd_config"
+faction_ssh_gate_start()
+{
+    [ -S /var/run/faction/terminal.sock ] || return 1
+    if check_pidfile "$pidfile" "$command" >/dev/null 2>&1; then
+        echo "Member SSH listener is already running."
+        return 1
+    fi
+    /usr/bin/env -i PATH=/usr/pkg/bin:/usr/sbin:/sbin:/usr/bin:/bin /usr/pkg/bin/python3.13 -I -B /usr/local/libexec/prepare_ssh_gate.py || return 1
+    /usr/bin/env -i PATH=/usr/sbin:/sbin:/usr/bin:/bin LD_PRELOAD=/usr/local/libexec/faction-ssh-gate.so LD_BIND_NOW=1 "$command" -f /etc/ssh/faction/key_admission_sshd_config
+}
+load_rc_config "$name"
+: ${faction_ssh_gate:=NO}
+run_rc_command "$1"

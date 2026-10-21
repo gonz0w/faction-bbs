@@ -153,7 +153,33 @@ minimum stress, zero swap). Active intervals explicitly use 250/249/250 members
 for useful chat plus fresh source-recovery checks; no reset/penalty weakening.
 The third snapshot sources/71491cc now freezes all 137 original 037/038 inputs
 and both records; original two snapshots/nine records/overrides remain unchanged.
-035/036 still pin current unmodified inputs. New 039 pins 145 current sources
-directly: preserve actual bytes before future edits, never refresh old hashes.
+035/036 still pin current unmodified inputs. Result 039 originally pinned 145 current sources; the global update below now
+preserves them in the fourth snapshot. Never refresh old hashes.
 Keep #55 adoption/independent review and #23/#18 global admission/source fairness,
 #20 CPU/host/timekeeping and #28 complete overlap/long-soak budgets open.
+
+## Global listener gate experiment
+
+ADR 0024/research 0039/result 040 add an opt-in listener-only C preload candidate,
+not production adoption. Keep original sockets, native source penalties/netblocks/
+exemptions, default eight, key helper v2/four lookups and all BBS/credential/crypto/
+resource guards. Root preflight pins exact base SSH/module bytes. Global state is
+120 bytes under private `/var/db/faction-gate`, fsynced before return to the base
+fork path; source table is 32 volatile entries (burst two, double global refill).
+Normal global burst eight/refill 5000 ms; faster settings require explicit opt-in.
+Never use `/var/run` for this persistent budget: its initial candidate failed
+reboot recovery and is preserved. Never delete/repair/reset live authority. HUP
+stops the listener; explicit restart retains authenticated key reservations.
+The library/environment must disappear at session exec; independent loader/
+privileged-code review and upgrade validation remain adoption gates. No proxy,
+resident rate daemon or member-side library is introduced. One NAT is still one
+source; owner selected unchanged penalties plus optional authenticated private
+identities, not exemptions. Native wg is experimental; no provider/250-peer
+support is adopted. Fourth snapshot `sources/5b62d0a` now freezes 145 original039
+inputs and its entire record; four snapshots/twelve historical records stay fixed.
+035/036 still pin unchanged current bytes. Preserve new040 executed bytes before
+future edits; never refresh an old hash.
+
+GitHub #28 is closed for its budget-definition deliverable. References above to
+its remaining workloads mean implementation of that contract under #55/#18/#20/
+#23, not reopening #28 or claiming its original definition work is unfinished.

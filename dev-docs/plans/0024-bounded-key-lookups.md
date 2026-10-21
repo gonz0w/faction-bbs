@@ -6,7 +6,7 @@ Status: complete bounded implementation/validation, 2026-10-21; PR review pendin
 ## Goal and constraints
 
 Bound repeated AuthorizedKeysCommand work on the measured NetBSD 11 ARM64/base
-OpenSSH 10.2 path without replacing SSH parsing/crypto, changing local approval,
+OpenSSH 10.3 path without replacing SSH parsing/crypto, changing local approval,
 Argon2, member ceilings, eight-session defaults or the 128 MiB/zero-swap guard.
 Keep native source penalties; this is not a total TCP/pre-fork limit. No physical
 SBC dependency. Never share factionauth with extensions.

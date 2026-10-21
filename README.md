@@ -60,6 +60,23 @@ Two further fresh-boot 250-member matrices pass: minimum active **155.14 MiB**,
 minimum stress **130.36 MiB**, zero swap. Three-minute abuse/recovery intervals
 retain useful chat (250 members before/after, 249 while testing fresh admission).
 
+The [global SSH admission experiment](dev-docs/research/0039-global-ssh-admission.md)
+now bounds accepted sockets before base OpenSSH forks using a listener-only native
+library, fixed 120-byte persistent budget and 32 volatile source slots. It adds
+no resident daemon or proxy. Native fork/restart/reboot/failure tests pass; the
+module disappears at session exec. **OpenSSH penalties remain unchanged.** Two
+private tunnel peers sharing one outer address pass separate-source penalties,
+fresh approved BBS/chat and forged-source UDP controls. Native NetBSD WireGuard
+remains experimental; this does not establish 250 private-peer support.
+
+Two new fresh-boot 250-member matrices pass every unchanged sampled guard:
+**132.86 MiB minimum stress headroom**, **141.14 MiB during bounded TCP pressure**,
+zero swap and 34,611 confirmed peer chat deliveries. The second includes two
+configured private peers in server accounting. Independent privileged-loader
+review, broader combined worst-case loads, readiness/host timing and long soaks
+remain open; retained preflight/setup failures are documented. See the
+[experimental boundary and rollback](docs/experimental-global-admission.md).
+
 The 250-session configuration and compact-allocator/pageable-NTP profile remain
 explicit research inputs. **Eight remains the default.** Native source penalties
 still temporarily deny legitimate callers sharing a source; finite lookup work

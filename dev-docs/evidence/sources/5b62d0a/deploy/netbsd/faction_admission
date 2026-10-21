@@ -1,0 +1,25 @@
+#!/bin/sh
+# PROVIDE: faction_admission
+# REQUIRE: faction_isolated
+# KEYWORD: shutdown
+. /etc/rc.subr
+name="faction_admission"
+rcvar=$name
+command="/usr/local/libexec/faction-admission"
+pidfile="/var/run/faction-sshd.pid"
+required_files="/etc/ssh/faction/admission_sshd_config /etc/ssh/faction/authorized_keys"
+start_precmd="faction_admission_check"
+stop_postcmd="faction_admission_stopped"
+faction_admission_check()
+{
+    [ -S /var/run/faction/terminal.sock ] || return 1
+    /usr/sbin/sshd -t -f /etc/ssh/faction/admission_sshd_config
+}
+faction_admission_stopped()
+{
+    # The persistent lock is deliberately never unlinked.
+    [ "$(cat "$pidfile")" = 0 ]
+}
+load_rc_config "$name"
+: ${faction_admission:=NO}
+run_rc_command "$1"

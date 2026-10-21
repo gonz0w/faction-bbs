@@ -123,3 +123,12 @@ unchanged guard (130.36 MiB lowest stress, zero swap). This resolves #66's
 finite helper-work uncertainty; #55 remains open for scoped adoption/independent
 review, #23/#18 global admission/source fairness, #20 host/CPU/timekeeping and
 #28 broader overlap/soak/complete budgets. Defaults remain eight.
+
+The [global SSH admission experiment](research/0039-global-ssh-admission.md) adds
+a listener-only pre-fork gate with fixed durable budget and volatile source
+shares, preserving native OpenSSH penalties and all existing BBS/crypto/resource
+boundaries. Private authenticated peer addresses are a separate shared-NAT
+research direction selected by the owner. Keep #55 adoption/independent loader
+review, #23/#18 broader source/admission policy, #20 maintained host/timekeeping
+and CPU interpretation, and implementation of #28's overlap/long-soak/budget
+contract under #55 open. #28 itself is the closed budget-definition deliverable.

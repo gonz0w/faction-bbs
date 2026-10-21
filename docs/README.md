@@ -25,3 +25,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Experimental NetBSD filesystem/exec and IP policy](experimental-isolation.md) — explicit privileged profile, narrow evidence and recovery.
 
 - [Experimental SSH admission](experimental-admission.md) — all-transport cap, global launch budget and explicit crash recovery.
+
+- [Experimental global SSH admission](experimental-global-admission.md) — fixed listener gate and private-source research; not production adoption.

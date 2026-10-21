@@ -139,3 +139,10 @@ state. Ordinary SSH signature/options and local BBS approval remain independent.
 The finite cohort budget does not bound all new TCP/fork/KEX activity or guarantee
 fresh-member availability behind a penalized source. Helper UID remains trusted,
 private and unavailable to extensions; independent review/adoption gates remain.
+
+The [global SSH admission candidate](experimental-global-admission.md) adds a
+separately trusted, listener-only native library and persistent root-only budget.
+It is an experiment requiring independent privileged-loader review; native source
+penalties remain unchanged. Private tunnel keys/inner addresses are an optional
+network-admission identity, separate from SSH invitation and local BBS approval.
+No forwarded address claim or shared NAT establishes a member identity.

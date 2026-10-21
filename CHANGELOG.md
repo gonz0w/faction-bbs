@@ -4,6 +4,19 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an opt-in listener-only global SSH admission experiment: fixed 120-byte
+  persistent root budget, 32 volatile source shares, original peer sockets and
+  unchanged base penalties/crypto/local approval. No proxy or resident daemon;
+  remove the module before session exec, preserve budget across restart/reboot,
+  and stop on HUP. Root preflight pins module/base bytes; adoption needs review.
+- Add native fork/state/mapping/exec/failure controls and unchanged-penalty private
+  peer separation with real approved BBS/chat and forged-source UDP controls.
+  Two fresh 250-member matrices pass unchanged guards (132.86 MiB minimum stress,
+  141.14 MiB under TCP pressure, zero swap, 34,611 confirmed peer deliveries).
+  Preserve failed candidates/setup diagnostics and all 145 original039 inputs in
+  a fourth snapshot. Defaults stay eight; no production or 250-VPN-peer claim.
+
+
 - Bound the experimental SSH helper to four durable lookups per monitor birth;
   exhausted calls skip key reads, state writes/fsyncs and cohort liveness scans.
   Preserve ordinary query/signature, local approval, eight-session defaults and
