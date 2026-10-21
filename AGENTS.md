@@ -118,3 +118,20 @@ complete budgets/soak and maintained host policy remain gates; #55 stays open.
 - Never commit credentials, actual deployment endpoints, user data, private artwork, generated secrets, or unlicensed third-party assets. Public repository visibility must not imply public deployment visibility.
 - Keep legacy games/extensions optional, permission-bounded, and failure-isolated. Treat input, file uploads, terminal control sequences, and remote channel traffic as untrusted.
 - During review, prioritize approval bypasses, accidental public exposure, local-data federation, JS/TS dependencies, unsafe terminal/file handling, and unsupported status claims.
+
+## Sustained workload evidence
+
+Research 0037/results 038/plan 0023 add two fresh-boot 15-minute active 250-member
+intervals with 425,500 confirmed chat deliveries, 23 UI/post/input-burst cycles
+and 11 fresh real logins each. Minimum active 152.97 MiB; minimum stress/control
+133.13 MiB; zero swap; all original limits/defaults/crypto and prior matrices
+remain. Actual first fixture has 1002 accounts/52 rooms/100004 non-load posts from
+UI oracles; retain first-trial posts across reboot, then use only the new bounded
+synthetic reset variant. Never use these reset tools on a real board.
+The native helper accepts 64 unsigned queries on one reservation: #66 must bound
+lookup work before adoption. Native penalties temporarily deny legitimate same-
+source callers; existing sessions survive. CPU tick/runtime counters disagree;
+retain raw calibration and withhold CPU-budget/throughput acceptance (#20/#28).
+Current 035/036/037/**038** source pins, nine historical records, two buildable
+snapshots and rejected overrides are authoritative. Preserve actual executed
+bytes before edits; never refresh old hashes. No long-soak/supported-capacity claim.

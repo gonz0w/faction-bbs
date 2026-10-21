@@ -4,6 +4,17 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add bounded 15-minute active/abuse workloads at 250 distinct SSH members with
+  unchanged service/crypto/credential/resource settings: two fresh boots pass all
+  sampled guards, 425,500 confirmed chat deliveries, post-load controls and
+  recovery; minimum stress/control headroom 133.13 MiB, zero swap. Preserve
+  complete native source/binary/counter evidence, actual retained fixture rows,
+  rollback and cleanup. Add saved-evidence corruption controls and CI checks.
+- Record 64 unsigned key queries on one reservation and temporary same-source
+  admission denial without weakening base protections. #66 bounds repeated lookup
+  work; source fairness and CPU/timekeeping interpretation remain adoption gates.
+  Defaults remain eight; no production capacity or long-soak claim.
+
 - Experimental base-OpenSSH key admission: dedicated helper UID, fixed private
   process-birth reservations/global budget, no fallback key files, strict native
   preflight and quiescent runtime initialization. Authenticated caps survive
