@@ -119,14 +119,19 @@ interval, including a short collector tail; `active_seconds` includes that tail.
 The final broadcast timestamps establish the actual activity interval separately.
 These two runs are longer software observations, not a long-duration soak.
 
-| Boot | Broadcasts / confirmed deliveries | Minimum active headroom | Minimum stress/control headroom | Final pre-stop headroom | Loaded stop |
+| Boot | Broadcasts / confirmed peer deliveries | Minimum active headroom | Minimum stress/control headroom | Final pre-stop headroom | Loaded stop |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 851 / 212,750 | 154.10 MiB | 134.33 MiB | 175.07 MiB | 1.352 s |
-| 2 | 851 / 212,750 | 152.97 MiB | 133.13 MiB | 173.93 MiB | 1.794 s |
+| 1 | 851 / 211,899 | 154.10 MiB | 134.33 MiB | 175.07 MiB | 1.352 s |
+| 2 | 851 / 211,899 | 152.97 MiB | 133.13 MiB | 173.93 MiB | 1.794 s |
 
-Total **425,500 confirmed member deliveries** from 1,702 broadcasts,
+Total **423,798 confirmed peer deliveries** from 1,702 broadcasts,
 plus 23 room/read/post/input-burst cycles and 11 fresh real-member logins per run.
-Every round confirms 250 distinct approved members. Each 2,048-invalid-key burst
+Every round confirms 250 distinct approved members. The native `recipients=250`
+field counts matching console observations, including the sender. The matcher
+cannot distinguish the sender's draft echo from its history display; exclude
+that console from confirmed peer-delivery counts. Thus 1,702 broadcasts produce
+**425,500 console-marker observations** and **423,798 non-sender receipts**. No
+protocol-level delivery acknowledgement or stronger self-delivery claim is made. Each 2,048-invalid-key burst
 has a separate 249-peer live-chat witness. All original sampled guards pass,
 including the post-active 38-MiB control; zero swap, original application hard
 ceilings and all SSH/frontend/base-service costs remain. Stop/reaping/fresh login

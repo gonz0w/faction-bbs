@@ -122,7 +122,7 @@ complete budgets/soak and maintained host policy remain gates; #55 stays open.
 ## Sustained workload evidence
 
 Research 0037/results 038/plan 0023 add two fresh-boot 15-minute active 250-member
-intervals with 425,500 confirmed chat deliveries, 23 UI/post/input-burst cycles
+intervals with 423,798 confirmed peer deliveries, 23 UI/post/input-burst cycles
 and 11 fresh real logins each. Minimum active 152.97 MiB; minimum stress/control
 133.13 MiB; zero swap; all original limits/defaults/crypto and prior matrices
 remain. Actual first fixture has 1002 accounts/52 rooms/100004 non-load posts from

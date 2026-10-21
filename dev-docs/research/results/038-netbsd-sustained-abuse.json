@@ -40814,5 +40814,6 @@
     "private_inputs_removed": true,
     "forwards_closed": true,
     "scope": "Only this task VM/disk/keys/generated credentials/raw logs/forwards; host SSH and other VMs untouched"
-  }
+  },
+  "delivery_counting": {"console_marker_observations": 425500, "non_sender_marker_receipts": 423798, "sender_observations": 1702, "sender_echo_distinguished": false, "scope": "native recipients counts matching consoles; exclude the sender from confirmed peer deliveries"}
 }

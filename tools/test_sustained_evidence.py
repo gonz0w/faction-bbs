@@ -19,6 +19,9 @@ class SustainedEvidenceTests(unittest.TestCase):
     def test_complete_record(self):
         self.assertEqual(len(validate(self.record)),2)
 
+    def test_sender_echo_cannot_be_counted_as_peer_receipt(self):
+        self.reject(lambda d:d['delivery_counting'].update(non_sender_marker_receipts=425500,sender_echo_distinguished=True))
+
     def test_missing_recipient(self):
         self.reject(lambda d:d['trials'][0]['measurement']['sustained_activity'][0]['rounds'][0].update(recipients=249))
 

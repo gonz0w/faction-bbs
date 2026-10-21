@@ -6,7 +6,7 @@ This file records meaningful project changes. Product releases will use versione
 
 - Add bounded 15-minute active/abuse workloads at 250 distinct SSH members with
   unchanged service/crypto/credential/resource settings: two fresh boots pass all
-  sampled guards, 425,500 confirmed chat deliveries, post-load controls and
+  sampled guards, 423,798 confirmed peer deliveries, post-load controls and
   recovery; minimum stress/control headroom 133.13 MiB, zero swap. Preserve
   complete native source/binary/counter evidence, actual retained fixture rows,
   rollback and cleanup. Add saved-evidence corruption controls and CI checks.

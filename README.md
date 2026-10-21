@@ -44,7 +44,7 @@ process-birth registry. It retains base SSH preauthentication controls and adds
 no resident admission daemon. Local BBS login and approval remain separate.
 
 Two fresh-boot **250-distinct-member runs** now include a **15-minute active
-interval** each: rotating chat senders, 425,500 confirmed member deliveries,
+interval** each: rotating chat senders, 423,798 confirmed peer deliveries,
 room/read/post cycles, fresh logins, busy input and silent SSH pressure. All
 sampled guards, post-load controls and recovery checks pass on the 2-vCPU / 1-GiB
 NetBSD 11 ARM64 VM. Minimum active headroom is **152.97 MiB**; minimum stress/control

@@ -58,7 +58,7 @@ def active_facts(active):
     assert max(s['roles']['ssh']['count'] for s in samples)>=515, 'loaded preauth costs were not sampled'
     cpu=active['whole_vm_interval']['whole_vm_cpu_percent_one_core'];assert 0<=cpu<=200
     guards=[sample_guard(s) for s in samples]
-    return {'rounds':len(rounds),'deliveries':250*len(rounds),'ui_cycles':len(ui),'fresh_logins':len(logins),
+    return {'rounds':len(rounds),'console_observations':250*len(rounds),'peer_deliveries':249*len(rounds),'ui_cycles':len(ui),'fresh_logins':len(logins),
             'minimum_bytes':min(g['reclaimable_headroom_bytes'] for g in guards),
             'all_guards_passed':all(g['passed'] for g in guards),'cpu_percent_one_core':cpu}
 
@@ -118,6 +118,8 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
         validate_trial(trial,d['binaries']['service']);validate_limits(t)
         assert fact['all_guards_passed']
         assert t['admission_after']['peak']==250 and t['admission_after']['full']==2 and t['admission_after']['rate']==0
+    assert d['delivery_counting']==dict(console_marker_observations=425500,non_sender_marker_receipts=423798,sender_observations=1702,sender_echo_distinguished=False,scope='native recipients counts matching consoles; exclude the sender from confirmed peer deliveries')
+    assert sum(f['console_observations'] for f in facts)==425500 and sum(f['peer_deliveries'] for f in facts)==423798
     context=d['fixture_context'];assert context['first_non_load_counts']==dict(accounts=1002,rooms=52,non_load_posts=100004)
     a,b=(context[k] for k in ['stopped_after_first','stopped_after_second'])
     assert a['integrity']==b['integrity']=='ok' and context['second_boot_retains_first_posts']
@@ -138,7 +140,7 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
 def check():
     d=json.loads((ROOT/'dev-docs/research/results/038-netbsd-sustained-abuse.json').read_text())
     facts=validate(d)
-    print('Sustained evidence: two fresh 250-member active intervals; %d verified deliveries; unsigned lookup and source-fairness limits retained.' % sum(f['deliveries'] for f in facts))
+    print('Sustained evidence: two fresh 250-member active intervals; %d verified non-sender receipts; unsigned lookup and source-fairness limits retained.' % sum(f['peer_deliveries'] for f in facts))
 
 
 if __name__=='__main__':check()

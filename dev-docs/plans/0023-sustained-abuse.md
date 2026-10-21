@@ -60,6 +60,9 @@ recorded before the second fresh boot, retaining 23 new workload posts. The
 second replication completed with every original guard and recovery check intact.
 Aggregate statistical CPU and process runtime accounting differ; a separate fixed CPU diagnostic runs only after both campaigns.
 Keep CPU-budget acceptance open, independently of memory/functional passes.
+Final count audit separates 425,500 console-marker observations from 423,798
+confirmed non-sender receipts: a sender match could be its own draft echo. Preserve
+the actual native fields and record this interpretation rather than rewriting them.
 
 ## Continuation and scope
 
