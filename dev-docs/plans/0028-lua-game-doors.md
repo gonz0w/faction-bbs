@@ -65,3 +65,9 @@ returned EINVAL. Native data 16 MiB/current 8-MiB stack with the Lua allocator c
 works. An initial SSH test also caught the old Theme disabling Doors; the host-only
 capability now covers both routes and has a regression test. No BBS ceiling or
 credential cost was changed. See the [final validation record](../validation/netbsd-lua-arcade.md) and exact source/binary JSON.
+
+First Linux CI caught FORTIFY's unused-result error for cleanup `ftruncate`.
+The final variant checks that result. Native Lua runtime/play input is preserved
+under dev-docs/evidence/lua-arcade-netbsd with the original unchanged JSON and
+source digests; Linux CI checks the small subsequent cleanup change. No native
+observation was silently relabeled as executing changed bytes.

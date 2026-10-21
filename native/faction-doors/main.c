@@ -224,5 +224,5 @@ int main(int argc,char **argv) {
         if(peer(fd,(uid_t)owner))serve(fd,scripts);
         close(fd);
     }
-    unlink(argv[2]);(void)ftruncate(pidfd,0);close(pidfd);close(listener);close(scripts);return 0;
+    unlink(argv[2]);int result=ftruncate(pidfd,0);close(pidfd);close(listener);close(scripts);return result==0?0:1;
 }

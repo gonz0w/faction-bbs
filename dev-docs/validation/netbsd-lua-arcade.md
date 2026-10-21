@@ -70,3 +70,14 @@ stays deferred; the useful core remains independent of the arcade.
 
 After validation the disposable VM/forwards and generated credentials/disks are
 removed. No private endpoint, raw transcript, key or board database is published.
+
+## Subsequent Linux cleanup fix
+
+Linux FORTIFY compilation rejected the ignored `ftruncate` return during orderly
+shutdown. Current code returns a failure status if clearing the private pidfile
+fails; its Lua/runtime/API/limit paths are unchanged. The final cleanup-return
+variant is checked by Linux CI; it was not rerun in the already-removed NetBSD VM.
+The original native JSON/digests remain unchanged. Its exact tested C source is
+preserved in [the native override](../evidence/lua-arcade-netbsd/main.c), pinned
+with the unchanged record by [its manifest](../evidence/lua-arcade-netbsd/manifest.json).
+Do not represent those native observations as a test of the later cleanup change.
