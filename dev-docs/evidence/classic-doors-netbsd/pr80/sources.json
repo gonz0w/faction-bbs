@@ -1,0 +1,9 @@
+{
+  "historical_record": "dev-docs/validation/netbsd-classic-doors.json",
+  "record_sha256": "ed166959543a8ed2a8e5dbcf602df7b7e60b7d7405058136afa44404f504a495",
+  "source_commit": "e4261bc56c376e113ae8565bdec8897d4b328672",
+  "preserved_changed_inputs": {
+    "crates/faction-service/src/classic.rs": "c34192b5881af204bcaefcf6166570f7a0a6ffc46a3244cb175aa9ee48466586"
+  },
+  "unchanged_inputs": "Resolve against the original record."
+}

@@ -130,8 +130,15 @@ Native/DOS compatibility remains separate work.
 
 Issue #77 / ADR 0029 adds docs/classic-game-doors.md. Owner accepted original
 servers and isolated original DOS binaries; keep both under #34/#78/#79. Do not
-rewrite a classic before reuse testing. The new connector has owned-fixture
-NetBSD evidence only; no real TradeWars/LORD title claim. No local classic runs
+rewrite a classic before reuse testing. The connector has owned-fixture
+NetBSD evidence and a narrow original LORD 4.06 software proof (research 0042,
+docs/original-lord.md). Keep the separate private game-only VM/UID, one active
+DOS game globally because record locking is unavailable, independent game tokens
+and unchanged original binaries. The external DOSBox receive-state patch and
+Python fixture are validation tools, not a production launcher/runtime adoption.
+TWGS activation is owner-deferred; no TradeWars gameplay claim. Preserve the old
+classic parser under dev-docs/evidence/classic-doors-netbsd/pr80 before future
+edits. No local classic runs
 under factiond/factionterm/Lua and no process/thread/credential limits are relaxed.
 
 Only trusted-config literal endpoints (six maximum), no DNS/member-selected

@@ -17,3 +17,6 @@ dev-docs/evidence/sources/** -text whitespace=-blank-at-eof,-blank-at-eol
 dev-docs/evidence/admission-ledger/** -text
 dev-docs/evidence/ssh-inetd/** -text
 dev-docs/research/results/*.json linguist-generated=true
+
+# Unified-diff context preserves upstream tabs and mandatory prefix spaces.
+dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab

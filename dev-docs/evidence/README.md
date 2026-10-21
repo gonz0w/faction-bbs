@@ -67,3 +67,9 @@ are checked. New ordinary-install/boot observations are documented separately;
 none of the historical capacity matrices is claimed to have measured the new rc
 script or startup helper. Preserve other still-current measured inputs before
 future changes. No old record or snapshot hash was refreshed.
+
+The original LORD experiment changes only the maintained classic parser. Its
+previous measured bytes are preserved under `classic-doors-netbsd/pr80/`, with
+the complete old connector record pinned by `sources.json`. The original JSON
+remains unchanged. `tools/check_original_games_evidence.py` checks those pins
+alongside the new actual-title record; it does not rerun native gameplay.

@@ -2,6 +2,11 @@
 
 Date/retrieval: 2026-10-21. Issues [#34](https://github.com/gonz0w/faction-bbs/issues/34)
 and [#77](https://github.com/gonz0w/faction-bbs/issues/77).
+Follow-up: [research 0042](0042-original-classic-games.md) records original LORD
+4.06 gameplay on native NetBSD and actual TWGS installation. The acquisition
+unknowns below describe the initial inventory; TWGS activation is now explicitly
+deferred by the owner.
+
 Owner accepted **both original servers and isolated DOS binaries**. Rewriting or
 porting is a fallback. Lua examples are original small games, not classic ports.
 
@@ -75,3 +80,9 @@ Owner intent is confirmed. Source listings and facilities above are documented;
 artifact legality/availability, real title compatibility and native emulator
 resource use remain unmeasured. Existing synthetic connector results may support
 its narrow implementation, never a supported-game or physical SBC claim.
+
+The initial inventory's unmeasured items above are superseded only for the exact
+artifacts/configuration in [0042](0042-original-classic-games.md). It records
+original LORD 4.06 play/persistence on native NetBSD and TWGS acquisition/license/
+installation, with mandatory activation owner-deferred. No broader title matrix
+or simultaneous DOS node support follows.
