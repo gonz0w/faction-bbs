@@ -249,6 +249,7 @@ impl Client {
     ) -> faction_core::Result<()> {
         let old = std::mem::replace(&mut self.state, State::Closing);
         match old {
+            State::NativeFiles => self.native_line(text, board, theme)?,
             State::Files | State::FileUploadKey { .. } | State::FileDownloadKey(_) => {
                 self.file_line(old, text, board, theme)?
             }
@@ -751,7 +752,10 @@ impl Client {
                 }
                 continue;
             }
-            let hidden = matches!(self.state, State::Password(..) | State::Confirm(..));
+            let hidden = matches!(
+                self.state,
+                State::Password(..) | State::Confirm(..) | State::NativeFiles
+            );
             if byte == b'\n' || byte == b'\r' {
                 self.skip_lf = byte == b'\r';
                 // Validate borrowed bytes so even invalid UTF-8 secrets stay in a
@@ -780,7 +784,8 @@ impl Client {
             } else if byte >= 32 && byte != 127 {
                 let cap = match self.state {
                     State::Password(..) | State::Confirm(..) => 128,
-                    State::PostBody(..) => 1024,
+                    State::PostBody(..) | State::Files | State::NativeFiles => 1024,
+                    State::FileUploadKey { .. } | State::FileDownloadKey(_) => 256,
                     _ => 128,
                 };
                 if self.input.len() >= cap {

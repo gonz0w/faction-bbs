@@ -297,3 +297,24 @@ The fifth source snapshot sources/pre83 freezes 220 old execution inputs before
 schema/theme/owner changes. The independently pinned file-areas baseline manifest
 also pins original LORD/classic records. All prior snapshots/result identities
 remain unchanged; new evidence validates current executed inputs directly.
+
+## Native terminal transfers and local references (#87)
+
+Read docs/native-client.md, ADR 0033 and plan 0034. Client-only openpty/libutil and
+OpenSSH execute on the member device, never the owner. Keep strict local profile/
+verified host keys, no shell/endpoint/path/action from remote text, bounded terminal
+filter/control frames and explicit local transfer confirmation. Files control binds
+the approved connection, nonce and ordered sequence; it does not import member IDs,
+roles or mail keys. Preserve scoped SFTP/current permission checks and owner limits.
+
+Schema 5's public random file namespace is distinct from private rotating session
+identity. References grant no authority; validate sending, render per viewer and
+recheck opening/downloading. Restore retains links and rotates session authority.
+Malformed reference prose remains readable; at most four recognized links/message.
+Native cancel abandons only the member's own current grant; upload bytes remain
+charged/private pending explicit sysop remove/GC. Mail/identity/attachments remain
+#84/#88 research; current file areas are sysop-readable, never E2EE storage.
+
+Sixth snapshot sources/pre84 freezes the 74 actual merged-#86 file-area inputs and
+pins its whole original result. Never refresh old hashes or counts to current code.
+Current native-client evidence is separate; no new 250-member or physical claim.

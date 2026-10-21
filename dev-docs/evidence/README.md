@@ -82,3 +82,10 @@ classic connector result identities. Together the source checker verifies five
 snapshots and seventeen historical record identities. This is an execution-input
 snapshot; older buildable snapshots retain their original meaning. No prior
 measurement/hash was refreshed to describe the file-area implementation.
+
+The sixth snapshot `sources/pre84` preserves 74 measured file-area inputs from
+merged #86 (`c85dbd1d60e9c8bb8646ed937f2ee4973e58f5f1`). Its independently pinned
+`native-client-baseline-manifest.json` retains the complete original file-area result.
+The earlier five snapshots/eighteen historical record identities remain fixed.
+[Native-client evidence](native-client-netbsd/README.md) records new current-source
+workflow tests separately; historical file-area tests were not relabeled as new runs.

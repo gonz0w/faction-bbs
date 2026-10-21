@@ -78,3 +78,10 @@ It retains base SSH, independent BBS approval, the fixed credential/resource lim
 and eight-session defaults. GitHub issue state remains authoritative.
 
 [#66](https://github.com/gonz0w/faction-bbs/issues/66) now has [bounded helper implementation/native evidence](research/0038-bounded-key-lookups.md); GitHub review/merge state remains authoritative. #55 and broader admission/host/budget gates stay open.
+
+Latest file/client work: [#83](https://github.com/gonz0w/faction-bbs/issues/83)
+provides local areas/restricted SFTP. [#87](https://github.com/gonz0w/faction-bbs/issues/87)
+scopes native integrated transfers and room/chat references while broader
+[#84](https://github.com/gonz0w/faction-bbs/issues/84) retains the two-home E2EE/identity
+proof. [#88](https://github.com/gonz0w/faction-bbs/issues/88) separately tracks
+device-encrypted attachments. GitHub open/closed state is authoritative.

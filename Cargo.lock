@@ -153,6 +153,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-client"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "base64",
+ "faction-client-pty",
+ "faction-files",
+ "faction-terminal",
+ "getrandom",
+ "rustix",
+ "sha2",
+ "toml",
+]
+
+[[package]]
+name = "faction-client-pty"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "faction-core"
 version = "0.1.0-alpha.1"
 dependencies = [
@@ -167,6 +188,7 @@ dependencies = [
 name = "faction-files"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "base64",
  "faction-unix",
  "rustix",
  "sha2",
@@ -177,6 +199,7 @@ dependencies = [
 name = "faction-service"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "base64",
  "faction-access",
  "faction-core",
  "faction-files",

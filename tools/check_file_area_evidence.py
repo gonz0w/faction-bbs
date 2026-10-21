@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check recorded native file-area observations; does not rerun SSH or the VM."""
 import hashlib
+from evidence_sources import source_bytes
 import json
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def check():
     for name, expected in data['execution_sources'].items():
         path = Path(name)
         assert not path.is_absolute() and '..' not in path.parts
-        assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest() == expected, 'file-area executed source changed: '+name
+        assert hashlib.sha256(source_bytes(name, expected)).hexdigest() == expected, 'file-area executed source changed: '+name
     print('Native file-area evidence passed: 13 real SSH/SFTP/recovery checks, 90 native Rust tests; RSS observation only, no capacity/physical claim.')
 
 

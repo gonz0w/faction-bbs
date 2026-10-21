@@ -4,6 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional native Rust terminal client (#87, continuing #84): base OpenSSH,
+  local PTY/terminal filtering, approved BBS login and integrated Files menus,
+  upload/download/progress/cancel without leaving the session, private no-overwrite
+  checksummed local saves, and recently seen room/chat links. Add schema-5 stable
+  public references with send/read/open permissions, private metadata redaction,
+  namespace-preserving restore and scoped transfer abandonment. Preserve normal
+  SSH/manual SFTP and owner/credential/eight-session limits. Real macOS and native
+  NetBSD software tests; no hardware/capacity claim. Keep device-encrypted mail
+  attachments under #88 and broader XMPP/E2EE/roaming proof #84 open.
+
 - Implement optional local file areas and separate restricted SFTP (#83): shared
   Files menu, paginated metadata/search, private-area grants, quota-reserved
   quarantine, sysop inspection/publication/removal and SHA256-verified downloads.

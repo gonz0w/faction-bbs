@@ -24,11 +24,17 @@ def file_baseline_manifest(root=ROOT):
     assert hashlib.sha256(raw).hexdigest()=='04e2da05bdb34f926bb7e85d181973bffde5bed1e0f8874f7492fabc7e57cfb5','frozen file baseline changed'
     return json.loads(raw)
 
+def native_client_baseline_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/native-client-baseline-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='8139ae0981e9418ef9f10a6877aa051ecffad825fc9b9e3da56ee1caaebdc231','frozen native client baseline changed'
+    return json.loads(raw)
+
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root)]
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name

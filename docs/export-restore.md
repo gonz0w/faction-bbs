@@ -29,12 +29,14 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2, 3 and 4 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2, 3, 4 and 5 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
-when files are installed. Verification is read-only; restored schema-2/3 boards
-upgrade to schema 4 when opened by the new build. For schema 1 upgrades, stop
+when files are installed. Schema 5 additionally preserves the stable **public**
+file namespace and room/chat references; this does not preserve session authority.
+Verification is read-only; restored schema-2/3/4 boards upgrade to schema 5 when
+opened by the new build. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
 before the existing transactional upgrade; this exporter cannot replace that copy.
 
@@ -57,7 +59,9 @@ unsafe permissions, symlinks, sidecars and malformed/inconsistent data fail.
 | Chat leases, joins, presence and latest per-lease retry receipts | Removed; restore starts with no live chat entries. |
 | In-memory session-binding identity | Restored store receives a new random nonce. Old source capabilities cannot transplant, even if restoring older account epochs. |
 | Theme packs, identity art, seasonal packs and their permissions/provenance | External to state; **not included**. Copy/review separately and select explicitly at login. |
-| Future file areas, mail, door games, SSH/host/private-network keys | Not implemented in this store; not part of this format. |
+| Arcade bests/run counts; file catalog, policy and public reference namespace | Preserved; no active game runs or transfer grants. |
+| File bytes | External; use the complete catalog/blob bundle. |
+| Mail, remote game saves, SSH/host/private-network/device keys | Not part of this format. |
 
 New logins and chat joins are required after restore. Private-channel grants survive,
 but the existing since-join history floor still prevents a new chat entry from
