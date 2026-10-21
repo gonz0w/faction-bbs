@@ -180,3 +180,9 @@ Short 250-member VM observations require an explicit experimental allocator and
 pageable-NTP profile, with all base services retained. Ordinary setup never
 applies it. Stronger confinement, maintained image/timekeeping policy and broader
 active workloads/soak/authenticated-transport admission remain #55/#20/#28 work.
+
+The separate [experimental key-admission profile](experimental-admission.md)
+adds an authenticated reservation cap and global key budget using base SSH's
+AuthorizedKeysCommand. It requires dedicated installation and keeps ordinary
+rollback independent. This is not a total TCP or pre-fork rate cap; local BBS
+approval and all ordinary SSH restrictions still apply.

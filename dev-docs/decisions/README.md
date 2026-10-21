@@ -38,3 +38,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0019: Maintained shared service and conservative admission](0019-maintained-shared-service.md)
 
 - [0020: Native process envelope and authenticated terminal peers](0020-native-process-envelope.md)
+
+- [0022 Experimental SSH admission](0022-ssh-admission.md) — bounded transport startup; production adoption deferred.

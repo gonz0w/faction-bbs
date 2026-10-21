@@ -38,23 +38,24 @@ This adds trusted startup code and remains experimental pending independent revi
 Ordinary binaries and worker rollback remain available; setup never replaces an
 operator firewall or silently tunes the host.
 
-Three fresh-boot **250-distinct-member isolated-service workloads** pass on the
-2-vCPU / 1-GiB NetBSD 11 ARM64 VM, with full SSH/frontend and base-service costs,
-real credentials, rooms/posts/chat, loaded stop and fresh-login recovery. Final
-sampled headroom is **178.11–178.84 MiB**; lowest stress headroom is **132.71 MiB**
-under the unchanged 128-MiB guard, with zero swap and all kernel ceilings intact.
-[Native evidence, rejected candidates and limits](dev-docs/research/0035-os-isolation.md).
+An opt-in [SSH key-admission profile](docs/experimental-admission.md) now caps
+reserved/authenticated monitors with a dedicated helper UID and a persistent
+process-birth registry. It retains base SSH preauthentication controls and adds
+no resident admission daemon. Local BBS login and approval remain separate.
 
-The initial isolation candidate failed the memory gate twice. Replacing a fixed
-named sysctl lookup with its numeric identifier removed unnecessary frontend
-allocation; the failed controls and executed bytes are retained. No security
-check, credential setting or memory guard was weakened.
+Three fresh-boot **250-distinct-member key-admission/isolation workloads** pass on
+the 2-vCPU / 1-GiB NetBSD 11 ARM64 VM, including full SSH/frontend/base-service
+costs, real credentials, rooms/posts/chat, loaded stop and fresh-login recovery.
+Final sampled headroom is **174.66–175.23 MiB**; lowest stress is **129.34 MiB**
+under the unchanged 128-MiB guard, with zero swap and all application ceilings
+intact. [Native evidence, rejected candidate and limits](dev-docs/research/0036-ssh-admission.md).
 
 The 250-session configuration and compact-allocator/pageable-NTP host profile are
-explicit research inputs. **Eight remains the default.** Broader active/soak
-loads, worst-case themes/output, authenticated-transport admission, all-family/
+explicit research inputs. **Eight remains the default.** Up to eight additional
+preauthentication connections remain possible; global pre-fork rate limiting,
+key-query amplification, source fairness/NAT penalties, broader active/soak loads,
 same-UID/process isolation, complete budgets and maintained image/timekeeping
-policy remain open. These short software observations are not supported capacity
+policy stay open. These short software observations are not supported capacity
 or physical SBC claims. [Historical evidence](dev-docs/evidence/README.md) retains
 actual executed bytes. There is no supported network release.
 

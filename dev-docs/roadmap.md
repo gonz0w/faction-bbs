@@ -99,3 +99,12 @@ VM runs pass with 132.71 MiB minimum stress headroom; two rejected allocation
 controls remain recorded. Independent setuid-code review, broader protocol/
 interface/process/same-UID and #28 active/soak/admission budgets plus maintained
 host policy remain gates. Lua/doors still need a separate constrained launcher.
+
+The [SSH key-admission follow-up](research/0036-ssh-admission.md) advances #55/#28:
+base OpenSSH, dedicated helper UID and persistent process-birth reservations now
+cap key admission without a resident supervisor. Native state/restart/abuse and
+full UI checks plus three fresh 250-member runs pass the unchanged guard
+(129.34 MiB lowest stress). An inetd candidate failed twice and is preserved.
+Normal defaults remain eight. Global pre-fork rate limits, repeated key-query
+amplification, shared-NAT penalties/fairness, active/soak/complete budgets,
+independent authority review and maintained host/timekeeping policy remain open.

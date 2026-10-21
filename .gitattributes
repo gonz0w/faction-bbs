@@ -12,3 +12,8 @@ experiments/055-shared-ui/fixtures/base/theme.toml whitespace=-blank-at-eof
 
 # Frozen executed build inputs retain exact bytes.
 dev-docs/evidence/sources/** -text whitespace=-blank-at-eof,-blank-at-eol
+
+# Preserve rejected executed inputs; collapse generated matrices in GitHub review.
+dev-docs/evidence/admission-ledger/** -text
+dev-docs/evidence/ssh-inetd/** -text
+dev-docs/research/results/*.json linguist-generated=true

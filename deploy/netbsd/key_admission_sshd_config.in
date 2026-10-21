@@ -1,0 +1,38 @@
+# Dedicated Faction development gateway. Render owner UID; sshd -t before use.
+# Loopback is deliberate. Choose/verify a private interface before remote exposure.
+Port 2222
+ListenAddress 127.0.0.1
+HostKey /etc/ssh/ssh_host_ed25519_key
+PidFile /var/run/faction-sshd.pid
+AuthorizedKeysFile none
+AuthorizedKeysCommand /usr/local/libexec/faction-key-admission --target-uid %U
+AuthorizedKeysCommandUser factionauth
+AllowUsers factionterm
+PermitRootLogin no
+AuthenticationMethods publickey
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+PermitUserEnvironment no
+PermitUserRC no
+PermitTTY yes
+DisableForwarding yes
+AllowTcpForwarding no
+AllowStreamLocalForwarding no
+AllowAgentForwarding no
+X11Forwarding no
+PermitTunnel no
+MaxAuthTries 3
+MaxSessions 1
+MaxStartups 3:30:8
+LoginGraceTime 30
+ClientAliveInterval 30
+ClientAliveCountMax 2
+ChannelTimeout session=15m
+UnusedConnectionTimeout 30s
+PrintMotd no
+PrintLastLog no
+UseDNS no
+LogLevel ERROR
+ForceCommand /usr/local/libexec/faction-isolated/faction-tty --socket /var/run/faction/terminal.sock --owner-uid @FACTION_OWNER_UID@

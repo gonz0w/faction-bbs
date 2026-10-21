@@ -54,3 +54,5 @@ not change the normal eight-worker gateway or adopt a production replacement.
 The [native confinement report](0034-process-confinement.md) records kernel peer
 authentication, inherited-authority denials and irreversible process ceilings on
 the maintained shared service, with new complete 250-member VM measurements.
+
+- [0036 SSH admission and abuse costs](0036-ssh-admission.md) — bounded native listener, base SSH inetd mode and complete accounting.

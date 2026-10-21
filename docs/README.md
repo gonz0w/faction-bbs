@@ -23,3 +23,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Maintained shared terminal backend](shared-service.md) — Rust owner, native terminal entry point and worker rollback.
 
 - [Experimental NetBSD filesystem/exec and IP policy](experimental-isolation.md) — explicit privileged profile, narrow evidence and recovery.
+
+- [Experimental SSH admission](experimental-admission.md) — all-transport cap, global launch budget and explicit crash recovery.

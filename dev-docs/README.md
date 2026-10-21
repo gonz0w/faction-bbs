@@ -23,3 +23,6 @@ Current confinement work: [plan 0021](plans/0021-os-isolation.md),
 [research 0035](research/0035-os-isolation.md) and
 [ADR 0021](decisions/0021-experimental-os-isolation.md). The prior
 [process envelope](../docs/process-confinement.md) remains in both profiles.
+
+SSH admission continuation: [plan 0022](plans/0022-ssh-admission.md),
+[research 0036](research/0036-ssh-admission.md), [ADR 0022](decisions/0022-ssh-admission.md).
