@@ -5,7 +5,7 @@ sysop-selected Telnet game server. The original game runs on that separate
 server or compatibility host. Faction does not rewrite it or launch a local DOS
 executable. This connector has owned-fixture NetBSD SSH evidence; **no original
 TradeWars/LORD title has yet been played through it**. See the
-[reuse inventory](../dev-docs/research/0039-classic-door-reuse.md).
+[reuse inventory](../dev-docs/research/0041-classic-door-reuse.md).
 
 Both original game servers and isolated original DOS binaries are accepted reuse
 paths. [#79](https://github.com/gonz0w/faction-bbs/issues/79) tracks actual TradeWars

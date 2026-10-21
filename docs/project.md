@@ -47,7 +47,7 @@ Security, privacy, terminal compatibility, resource use, and local deployment si
 
 The owner accepted both unchanged game-server reuse and isolated original DOS
 binaries on 2026-10-21. The [classic connector](classic-game-doors.md) has bounded
-owned-fixture NetBSD evidence; [the per-title inventory](../dev-docs/research/0039-classic-door-reuse.md)
+owned-fixture NetBSD evidence; [the per-title inventory](../dev-docs/research/0041-classic-door-reuse.md)
 records actual acquisition/interface unknowns. Original game availability and compatibility are per-title questions. This project includes no original game executables or third-party artwork. Future ports are separate work, not a prerequisite for the first useful BBS.
 
 Current sequencing is [software-first local core, then Lua](../dev-docs/decisions/0007-software-first-and-extension-direction.md). The [first software slice](../dev-docs/first-local-slice.md) defines the build scope; physical SBC hardware is not a near-term dependency. Both external-member-wallet and sysop-payment-service models remain open comparison candidates.

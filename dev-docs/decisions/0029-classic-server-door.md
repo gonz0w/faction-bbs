@@ -45,7 +45,7 @@ the member connection. Remote game scores/saves stay with their own host.
 ## Sources, evidence and reversal
 
 Primary protocol and title sources, retrieved 2026-10-21, are linked in the
-[reuse inventory](../research/0039-classic-door-reuse.md).
+[reuse inventory](../research/0041-classic-door-reuse.md).
 [Connection/codec](../../crates/faction-service/src/classic.rs),
 [UI](../../crates/faction-service/src/classic_ui.rs) and
 [configuration](../../crates/faction-service/src/config.rs) define actual behavior.
