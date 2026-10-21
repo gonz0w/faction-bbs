@@ -22,6 +22,7 @@ pub struct Config {
     pub launch_ms: u64,
     pub session_seconds: u64,
     pub ansi: bool,
+    pub doors_uid: Option<u32>,
 }
 impl Config {
     pub fn load(path: &Path) -> Result<Self> {
@@ -66,6 +67,11 @@ impl Config {
         let launch_ms = integer(&mut t, "launch_ms", Some(5000), 100, 60000)?;
         let session_seconds = integer(&mut t, "session_seconds", Some(1800), 1, 1800)?;
         let ansi = boolean(&mut t, "ansi", true)?;
+        let doors_uid = if t.contains_key("doors_uid") {
+            Some(integer(&mut t, "doors_uid", None, 1, u32::MAX as u64)? as u32)
+        } else {
+            None
+        };
         let experimental = boolean(&mut t, "experimental_capacity", false)?;
         if !t.is_empty() || (!experimental && (max_sessions > 8 || launch_ms < 5000)) {
             return Err(denied());
@@ -80,6 +86,7 @@ impl Config {
             launch_ms,
             session_seconds,
             ansi,
+            doors_uid,
         })
     }
 }

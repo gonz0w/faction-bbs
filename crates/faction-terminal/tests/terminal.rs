@@ -321,3 +321,17 @@ fn chat_editor_is_a_separate_bounded_context() {
     assert!(editor.text().is_empty());
     assert_eq!(editor.feed(3, now), Some(LineEvent::Cancel));
 }
+
+#[test]
+fn only_runtime_capability_enables_door_arrows_and_hotkeys() {
+    let mut theme = Theme::default();
+    assert_eq!(theme.hotkey(b'D', false), None);
+    theme.set_doors_enabled(true);
+    assert_eq!(theme.hotkey(b'd', false), Some(Action::Doors));
+    let mut menu = Menu::new(&theme, false);
+    menu.feed(Key::Up); // Quit
+    menu.feed(Key::Up); // Doors, enabled by host
+    assert_eq!(menu.feed(Key::Enter), Some(Action::Doors));
+    theme.set_doors_enabled(false);
+    assert_eq!(theme.hotkey(b'D', false), None);
+}

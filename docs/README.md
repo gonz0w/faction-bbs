@@ -2,6 +2,7 @@
 
 These describe current requirements, the local console and an early restricted SSH development gateway. There is no supported network release.
 
+- [Lua arcade: menus, original games, setup and boundary](lua-doors.md)
 - [Run a small NetBSD board](quickstart-netbsd.md) — first install, approved SSH, ANSI rooms/chat and backup.
 - [Build and try the local core](local-development.md)
 - [Restricted SSH member access and owner setup](restricted-ssh.md)

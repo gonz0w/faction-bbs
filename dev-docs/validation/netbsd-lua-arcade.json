@@ -1,0 +1,96 @@
+{
+  "system": "NetBSD 11.0",
+  "processor": "aarch64",
+  "lua_version": "Lua 5.4.6  Copyright (C) 1994-2023 Lua.org, PUC-Rio",
+  "distinct_game_uid_and_group": true,
+  "product_binaries_non_setuid": true,
+  "root_owned_scripts": true,
+  "experimental_profiles_absent": true,
+  "host_tuning_absent": true,
+  "schema": 1,
+  "date": "2026-10-21",
+  "base_commit": "8dc8c6a734b5d67413f1186fc816af46d11ba25f",
+  "scope": "optional ordinary shared BBS Lua arcade; no 250-user experiment",
+  "guest": {
+    "vcpus": 2,
+    "ram_bytes": 1073741824
+  },
+  "execution_sources": {
+    "crates/faction-service/src/main.rs": "bdf92f86ec1dc9645792dbe65a6c0225bcc0ecbcc004ce2dd3df2cd3338cb7a0",
+    "crates/faction-service/src/config.rs": "c511357d3c50603b3dc513c418d6d2dd85ee8c5b238e577ebb8cde4a5796fce5",
+    "crates/faction-service/src/ui.rs": "9406c7a77d52158f88779c8520002bcf83f2421ffe19e799e94163491d0e9b0c",
+    "crates/faction-service/src/doors.rs": "055faf0b666599d6539bb7cee62da966731eb7072fe06c71168a425eec354805",
+    "crates/faction-service/src/door_ui.rs": "612c6648b403b10145419a1ca6155c73a03dc06db094d72f5c1098928a6021f9",
+    "crates/faction-terminal/src/theme.rs": "d13783c78044ec7e5858600ab77831fbaa6eadad19ef664ae401b44b70d3b8f5",
+    "crates/faction-terminal/tests/terminal.rs": "48fa30e497db998dddc49b91d95b7f5a8a3bd0eab19c2a179839c192738c9782",
+    "native/faction-doors/main.c": "f61046e9ce31da98333a3800f71a9071279d7da437eb96a43b23652e24acd265",
+    "tools/build_lua_doors.py": "3ae52c072fa7c23a94e580d52839b3b681a2bc9e54c5876eef6ccb0e34122adc",
+    "tools/install_lua_doors.py": "4bb00ec824ffb33ba8012e2d1d6efd73913c4a6449a50864c8b85635d19f4a0f",
+    "tools/install_netbsd.py": "0f1254eb84e40af873445a11f74056363f7bac7134d506c2a13f0aab47aaf666",
+    "deploy/netbsd/faction_doors": "6c3621186d83b018c6de5ce8128e5d4ff363e491fe3752b9eb2f46b3c13163ae",
+    "themes/base/theme.toml": "21aa0620857231aef86d2769dbfb50df915603658958d7435266afab76b9e439",
+    "doors/examples/signal-hunt.lua": "f633fa254b1639a8da96c09c0e0ad76725fb5290ce7e8caf8b8ed12dfb61d7c7",
+    "doors/examples/neon-salvage.lua": "f19b3e58e6842ffe9bdd0555f283143fc1b7ec7e1fcc747eb32b0e9c04ba4a14",
+    "doors/examples/doors.lua": "67f29940e2aaf2c4333b56145b81045b92af01eee9e6a2f995c06543b2897952",
+    "tools/smoke_lua_worker.py": "4365ae589d05dbac405f90387d57f98abe949331f8fe9633dc3e1780d0fd768f",
+    "tools/smoke_lua_doors_ssh.py": "b0365d4e9eac12e331a0843bf77076d619e97f2a2931343b7af9b5992346d017"
+  },
+  "ssh": {
+    "schema": 1,
+    "result": "pass",
+    "checks": [
+      "optional_install_disabled_separate_uid_cannot_read_board",
+      "pending_member_cannot_enter_games_approved_member_can",
+      "lua_lobby_arrows_enter_signal_hunt_numeric_input_and_exit",
+      "neon_salvage_five_turn_run_score_and_return_to_bbs",
+      "peer_chat_works_after_playing_both_games",
+      "door_service_loss_returns_to_healthy_board_and_recovers",
+      "revocation_blocks_game_action_and_fresh_approval_resets_session",
+      "broken_lua_output_is_discarded_and_next_game_menu_works",
+      "resize_cancels_game_and_plain_terminal_can_play_and_return",
+      "unassisted_boot_starts_optional_doors_and_approved_arcade",
+      "no_bbs_password_echoed"
+    ],
+    "reboot_exercised": true
+  },
+  "evaluator": {
+    "schema": 1,
+    "result": "pass",
+    "checks": [
+      "real_lua_menu",
+      "signal_hunt_win_and_state_roundtrip",
+      "neon_salvage_complete_run",
+      "reject_loop",
+      "reject_memory",
+      "reject_controls",
+      "reject_bad-api",
+      "reject_partial",
+      "native_library_stall_killed_and_reaped",
+      "forged_paths_and_control_bytes_rejected",
+      "healthy_after_all_failures",
+      "orderly_shutdown_and_socket_cleanup"
+    ],
+    "native_stall_seconds": 0.272
+  },
+  "terminal_uid_game_ipc_denied": true,
+  "game_uid_board_database_denied": true,
+  "native_c_analyzer": "pass",
+  "native_rust_tests": 66,
+  "installed_binaries": {
+    "faction-service": "a1e49aa62b12f63fe96d942525ec00a20aa4bdfcc2ae2ffe1221328315386e82",
+    "faction-doors": "ad1430f559c299c32a8aaf34fdf35c5be33dd3be580a2c6e5a120a513526e62c",
+    "faction-tty": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c"
+  },
+  "failed_candidates": [
+    "64-MiB address cap: native Lua allocation failed before screen",
+    "1-MiB stack reduction: native setrlimit returned EINVAL",
+    "old menu disabled Doors until explicit host runtime capability",
+    "initial fresh-host helper made /usr/local private under umask and retained private build cwd; corrected"
+  ],
+  "cleanup": {
+    "guest_stopped": true,
+    "forwards_closed": true,
+    "private_credentials_disks_and_inputs_removed": true,
+    "unrelated_vms_untouched": true
+  }
+}

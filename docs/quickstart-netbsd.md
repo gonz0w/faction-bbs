@@ -113,8 +113,9 @@ sysop you initialized. You should see the board identity, welcome and menu.
    talk in `#lobby`, and use `/quit` to return to the menu. **Q** logs out.
 
 Try two terminals so you can see a peer's chat arrive. Lobby chat and all room
-content stay on this BBS. Files, private mail, directory listings, Lua menus,
-real game doors, federation, payments and browser access are still backlog work.
+content stay on this BBS. Add the optional [Lua arcade](lua-doors.md) for a sysop-defined Doors menu,
+Signal Hunt and Neon Salvage. Files, private mail, directory listings, native
+legacy-game hosting, federation, payments and browser access remain backlog work.
 The ordinary path keeps base SSH abuse protection; rapid reconnects may need a
 pause. It has no blanket arbitrary-code sandbox or 250-member capacity promise.
 
