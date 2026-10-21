@@ -35,5 +35,14 @@ def check():
         assert hashlib.sha256((base/name).read_bytes()).hexdigest()==digest
         assert hashlib.sha256(source_bytes(name,digest)).hexdigest()==digest
     for name,digest in extra['records'].items():assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest
-    print('Four executed source snapshots and twelve unchanged historical records passed.')
+    # These records also referenced the old normal rc script, whose exact bytes
+    # already exist in the fourth snapshot. Preserve results, never refresh hashes.
+    retired = {'035-netbsd-confinement.json': '00e929f1100ec2cb66fa03449e3709bc83459e00c55fdb02c658c257061e9bc8', '036-netbsd-isolation.json': '69dac3fe8ecd5a95aa00d1e1ca32ff39af9c72e3e2dcc649864951ce32266f4c', '040-netbsd-global-admission.json': 'de02985415c8df4b9f1ecca405f7e72ea882f843f9a258c6b37cd2aa0c55bf2b'}
+    import json
+    for name,digest in retired.items():
+        path=ROOT/'dev-docs/research/results'/name
+        assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,'historical record changed: '+name
+        for source,expected in json.loads(path.read_text())['execution_sources'].items():
+            assert hashlib.sha256(source_bytes(source,expected)).hexdigest()==expected
+    print('Four executed source snapshots and fifteen unchanged historical records passed.')
 if __name__=='__main__':check()

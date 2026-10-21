@@ -44,3 +44,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0023: Fixed SSH helper lookup allowance](0023-bounded-key-lookups.md) — explicit v2 migration and finite native lookup work.
 
 - [0024: Listener-scoped global SSH gate](0024-global-ssh-admission.md) — unchanged penalties and separate private-identity exploration.
+
+- [0026: Product-first small-board setup](0026-product-first-small-board.md) — ordinary eight-session preview and unprivileged boot detachment.

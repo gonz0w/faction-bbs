@@ -1,6 +1,22 @@
 # Roadmap and stage
 
-Updated 2026-10-20. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+
+## Product-first sequencing
+
+The owner explicitly redirected work toward a running product for ordinary users
+on 2026-10-21. [#71](https://github.com/gonz0w/faction-bbs/issues/71) supplies the
+[small-board install/member journey](../docs/quickstart-netbsd.md): eight-session
+shared backend, ordinary restricted SSH, sysop-owned ANSI theme, approved rooms
+and local chat, with private backup/recovery. Keep improving that experience.
+Lua menus and isolated game doors remain the first extension priority after it.
+
+Further 250-user combined abuse/recovery and uncommon host/isolation scenarios
+are deferred under #70/#55/#20. Preserve findings and security constraints; do not
+make experimental profile adoption, long-soak capacity or physical SBC testing a
+prerequisite for completing the ordinary board. Keep existing admission limits,
+local approval and credential protections. Files/mail/directory and later network
+features stay explicitly sequenced rather than becoming first-preview promises.
 
 ## Current stage: first local implementation
 

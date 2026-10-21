@@ -13,7 +13,7 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
     assert d['reference_commit']=='5b62d0a705c988e47ec2cc2ce4b74f87de600386'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
     assert d['guest']['versions']['ssh'].startswith('OpenSSH_10.3 ')
-    validate_sources(d['execution_sources'],root=root);assert d['native_sources']==d['execution_sources']
+    validate_sources(d['execution_sources'],root=root,historical=True);assert d['native_sources']==d['execution_sources']
     for name in ['native/faction-ssh-gate/gate.c','tools/prepare_ssh_gate.py','deploy/netbsd/faction_ssh_gate','experiments/055-global-admission/maps.c','experiments/055-global-admission/exec_environment.c']+['tools/'+n+'.py' for n in ['check_global_admission','check_global_scaling','check_global_host','global_workload','check_private_peers','check_global_channels','check_global_ui','check_gate_exec']]:assert name in d['execution_sources']
     assert d['contract']==dict(default_burst=8,default_global_refill_ms=5000,default_source_burst=2,default_source_refill_ms=10000,global_state_bytes=120,source_slots=32,experimental_global_refill_ms=250,experimental_source_refill_ms=500,default_key_capacity=8,experimental_key_capacity=250,key_lookup_limit=4,credential_slots=2,headroom_minimum_bytes=134217728,swap_allowed=False,pressure_seconds=60)
     assert all(re.fullmatch('[a-f0-9]{64}',h) for h in d['binaries'].values())

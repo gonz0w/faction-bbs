@@ -1,9 +1,26 @@
 # NetBSD shared terminal service
 
+For a fresh ordinary small board, start with the [NetBSD quickstart](quickstart-netbsd.md).
+It installs these existing components and their default configuration; this guide
+covers manual setup, configuration, maintenance and worker rollback.
+
+
 Updated 2026-10-20. The maintained `faction-service` Rust binary runs the full
 member UI in one board-owner process. The NetBSD rc.d path selects it by default;
 services remain disabled until deliberately enabled. This is a development gateway,
 with eight sessions by default. It is not a supported appliance release.
+
+The normal rc script now uses an **unprivileged, non-setuid startup helper**,
+`faction-daemon`, to detach before executing the fixed shared/worker backend.
+It exits after startup; there is no resident supervisor or per-member helper.
+This prevents boot-session teardown from sending the backend SIGHUP. The backend
+still owns its real pidfile/socket and remains responsible for shutdown. Existing
+manual installs must build/install the helper before updating the rc script; see
+the [build/setup guide](restricted-ssh.md). Neither Rust binary runs as root.
+The dedicated SSH rc script follows `LOGIN` and retries its exact configured
+listener for up to 30 seconds so a DHCP/private address can become available.
+It never falls back to a wildcard, another interface or another port; a permanent
+bind failure leaves SSH stopped and writes startup errors to the private log.
 
 ## Install and configure
 

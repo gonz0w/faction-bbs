@@ -12,6 +12,7 @@ pidfile="/var/run/faction/terminal.pid"
 start_cmd="faction_start"
 stop_cmd="faction_stop"
 status_cmd="faction_status"
+required_files="/usr/local/libexec/faction-daemon"
 
 # Detect the running backend independently of a changed rc.conf selection.
 faction_pid()
@@ -38,7 +39,6 @@ faction_start()
         command=/usr/local/libexec/faction-service
         /usr/bin/su -m factiond -c "/usr/bin/env -i PATH=/usr/bin:/bin HOME=/home/factiond USER=factiond LOGNAME=factiond $command --check-config /etc/faction/service.toml" || return 1
         args="--config /etc/faction/service.toml"
-        command="/usr/bin/env -i PATH=/usr/bin:/bin HOME=/home/factiond USER=factiond LOGNAME=factiond /usr/local/libexec/faction-service"
         ;;
     workers)
         [ -f /var/db/faction/faction.sqlite3 ] && [ -x /usr/local/libexec/faction-member ] || return 1
@@ -51,8 +51,9 @@ faction_start()
     process_name=/usr/local/libexec/faction-service
     [ "$faction_broker_backend" != workers ] || process_name=/usr/local/libexec/faction-broker
     # rc.conf is root-owned shell configuration. The backend owns its locked
-    # persistent pidfile; $! would identify su. Never unlink a live lock inode.
-    /usr/bin/su -m factiond -c "exec $command $args" </dev/null >>/var/log/faction-broker.log 2>&1 &
+    # persistent pidfile. Detach from the boot session before exec; $! is not
+    # the backend PID. Never unlink a live lock inode.
+    /usr/bin/su -m factiond -c "exec /usr/local/libexec/faction-daemon $command $args" </dev/null >>/var/log/faction-broker.log 2>&1 &
     n=0
     while [ "$n" -lt 50 ]; do
         if [ -n "$(check_pidfile "$pidfile" "$process_name")" ] && [ -S /var/run/faction/terminal.sock ]; then return 0; fi

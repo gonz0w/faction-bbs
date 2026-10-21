@@ -1,0 +1,68 @@
+{
+  "system": "NetBSD 11.0",
+  "processor": "aarch64",
+  "compiler": "cc (nb3 20260326) 12.5.0",
+  "execution_sources": {
+    "native/faction-daemon/main.c": "f3bca24d3265f990b5d54acd0454065990a449bd67f2d81763be8d7764689420",
+    "tools/build_service_daemon.py": "0e73209ced60928335cab5753736ba93fdedaa01038a2046cca82c96442195f6",
+    "tools/install_netbsd.py": "9360862b5cd96f088df5b8130336c0a1d03d03670fc5a6434431f63b7c3a9455",
+    "deploy/netbsd/faction_broker": "0d096bfbf756b150300f79a4fa5f15b30040ec04e5287173b1c87e575e762733",
+    "deploy/netbsd/faction_sshd": "5de07c9a82c1aaaf229b05ae4a67dc38c332a77ef46121f15db6bd77dc48a7b2",
+    "deploy/netbsd/sshd_config.in": "085d1b6c068d7c5e43e860bbf18388436f38e2cd16333700ba45a8a682b0da4b",
+    "deploy/netbsd/service.toml.in": "afbe20192a1fc814a075f465904bdd945c6350c6a4e82010cad7a4aa53c30493",
+    "themes/base/theme.toml": "49e91042fc58525888a7a1b551c8f71316c6642b9a63552c954c41cdac0c430b",
+    "tools/smoke_small_board_ssh.py": "a8aa351e78f3427ce1ac32ec8b9cafbe0af5a9d4cc6cec3d9e4c4daf53b4ef9f"
+  },
+  "binaries": {
+    "faction": "564d4b3ce018a54a38db190dbc596972e0d483d1972ab2b9e62efebb32423c2e",
+    "faction-member": "ad8977403fcb55222bb7eb3d24145aee7de2f4a002448cc62bc82ab62288c6e9",
+    "faction-broker": "c22c5f37b7026e7549f5bc0da5361e5402a44d90745b539aa32785ff3698767f",
+    "faction-service": "c4fda56db93c959bbbd366c359156f617c8af77040d98c1a6fab5ea106099056",
+    "faction-tty": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c",
+    "faction-daemon": "1712227c4637b1cf2ff25ba680f01fcced54cd0fc213ba0696d0bc68b89ccd1d"
+  },
+  "root_and_arbitrary_command_denied": true,
+  "all_product_binaries_non_setuid": true,
+  "normal_allocator_and_original_ntp": true,
+  "experimental_profiles_disabled": true,
+  "backend_after_rollback": "shared",
+  "schema": 1,
+  "checks": [
+    "installed_without_starting_services",
+    "interactive_sysop_bootstrap",
+    "ordinary_shared_backend_and_dedicated_ssh_start",
+    "private_database_and_no_setuid_product_binaries",
+    "registration_pending_cannot_see_board_identity_or_content",
+    "sysop_approval_through_ansi_menu",
+    "custom_identity_and_arrow_enter_navigation",
+    "hotkey_room_post",
+    "peer_reads_durable_message",
+    "two_approved_members_exchange_local_chat",
+    "normal_restart_preserves_approved_access_and_theme",
+    "fresh_boot_preserves_normal_service_and_login",
+    "worker_rollback_uses_same_approved_account_and_theme",
+    "return_to_shared_backend_preserves_member_access",
+    "private_export_and_verify",
+    "credentials_never_echoed"
+  ],
+  "result": "pass",
+  "reboot_exercised": true,
+  "date": "2026-10-21",
+  "application_commit": "befe804f2a31ee6a500bfea929e80bdc8b4de649",
+  "guest": {
+    "vcpus": 2,
+    "ram_bytes": 1073741824
+  },
+  "native_helper_strict_build_and_analyzer": "pass",
+  "owner_export_restore_pty": "pass",
+  "fresh_install_preflight": "pass",
+  "existing_install_refused": "pass",
+  "capacity_tested": false,
+  "physical_sbc_tested": false,
+  "cleanup": {
+    "guest_stopped": true,
+    "forwards_closed": true,
+    "private_vm_inputs_removed": true,
+    "paused_research_observations_retained_privately": true
+  }
+}
