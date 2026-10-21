@@ -62,3 +62,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0038: Bounded SSH key-lookup work](0038-bounded-key-lookups.md) — four charged lookups, native adversarial accounting and whole-host controls.
 
 - [0039: Global SSH admission and private peers](0039-global-ssh-admission.md) — native pre-fork gate, failure and headroom experiments.
+
+- [0039: Reuse-first classic BBS doors](0039-classic-door-reuse.md) — original server/DOS inventory, acquisition unknowns and comparison.

@@ -13,7 +13,10 @@ and local chat, with private backup/recovery. Keep improving that experience.
 [Lua arcade](../docs/lua-doors.md): sysop Lua lobby and two original games outside
 the backend under a separate game UID. The follow-up adds persistent local top
 tens/personal bests, run counts and an arcade guide. Native legacy compatibility
-and broader game APIs remain follow-ups; keep improving the
+and broader game APIs remain follow-ups. The owner accepted both original game
+servers and isolated DOS hosting; the [classic connector](../docs/classic-game-doors.md)
+now has owned-fixture NetBSD evidence. Actual original DOS play (#78) and TWGS
+validation (#79), with the per-title inventory (#34), follow. Keep improving the
 usable board before resuming combined 250-user edge research.
 
 Further 250-user combined abuse/recovery and uncommon host/isolation scenarios

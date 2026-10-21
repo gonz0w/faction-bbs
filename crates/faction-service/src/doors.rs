@@ -29,7 +29,10 @@ pub enum Target {
     Game(String),
     Input(String),
     Scores(String),
-    Resume, // Host-generated only; never accepted from a Lua frame.
+    Classics,
+    Server(String),
+    Connect(String), // Host-generated confirmation only.
+    Resume,          // Host-generated only; never accepted from a Lua frame.
 }
 #[derive(Clone, Debug)]
 pub struct Choice {
@@ -95,6 +98,10 @@ impl Screen {
                     let target = match fields[2] {
                         "back" => Target::Back,
                         "lobby" => Target::Lobby,
+                        "classics" => Target::Classics,
+                        s if s.strip_prefix("server:").is_some_and(slug) => {
+                            Target::Server(s[7..].into())
+                        }
                         s if s.strip_prefix("game:").is_some_and(slug) => {
                             Target::Game(s[5..].into())
                         }

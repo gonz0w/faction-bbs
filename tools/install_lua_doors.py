@@ -75,8 +75,12 @@ def main():
         fd = os.open(backup, os.O_WRONLY|os.O_CREAT|os.O_EXCL, 0o600)
         with os.fdopen(fd, 'w') as stream:
             stream.write(config.read_text())
-        with config.open('a') as stream:
-            stream.write(f'\n# Optional separate-UID Lua games. Remove to disable.\ndoors_uid = {games.pw_uid}\n')
+        # Root keys must precede any [[classic_games]] tables.
+        with config.open('r+') as stream:
+            original = stream.read()
+            stream.seek(0)
+            stream.write(f'# Optional separate-UID Lua games. Remove to disable.\ndoors_uid = {games.pw_uid}\n' + original)
+            stream.truncate()
         print('Lua doors installed, disabled. No listener was started.')
         print('Start /etc/rc.d/faction_doors onestart, then the normal shared backend and member SSH.')
         print('Edit /usr/local/share/faction/doors/doors.lua for your arcade. See docs/lua-doors.md.')

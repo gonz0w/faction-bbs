@@ -9,7 +9,7 @@ impl Client {
     fn lease(&self) -> faction_core::Result<&ChatLease> {
         self.lease.as_ref().ok_or(Error::Denied)
     }
-    fn size(&self) -> (u16, u16) {
+    pub(super) fn size(&self) -> (u16, u16) {
         termios::tcgetwinsize(&self.tty)
             .map(|w| (w.ws_col, w.ws_row))
             .unwrap_or((0, 0))
@@ -262,7 +262,7 @@ impl Client {
                     self.door_key(Key::Hotkey(0), theme, board)?;
                 }
             }
-            State::DoorPending => (),
+            State::DoorPending | State::Classic => (),
             State::Choice => match text.to_ascii_lowercase().as_str() {
                 "l" | "r" => self.prompt(State::Handle(text.eq_ignore_ascii_case("r")), "Handle: "),
                 "q" => {
@@ -575,12 +575,13 @@ impl Client {
     pub(super) fn resize(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
         if matches!(
             self.state,
-            State::DoorMenu | State::DoorInput | State::DoorPending
+            State::DoorMenu | State::DoorInput | State::DoorPending | State::Classic
         ) && self.size() != self.dimensions
         {
             self.door = None;
             self.ansi = false;
             self.dimensions = self.size();
+            self.classic = None;
             self.queue("Terminal resized; game closed.\n");
             self.menu(theme, board)?;
             return Ok(());
@@ -625,6 +626,22 @@ impl Client {
             Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => return Ok(()),
             Err(e) => return Err(e.into()),
         };
+        if matches!(self.state, State::Classic) {
+            self.approved(board)?;
+            for &byte in &bytes[..n] {
+                if byte == 29 {
+                    self.classic_return("Classic door closed.", theme, board)?;
+                    termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                    break;
+                }
+                if self.classic.as_mut().ok_or_else(denied)?.key(byte).is_err() {
+                    self.classic_return("Classic door unavailable.", theme, board)?;
+                    break;
+                }
+                self.prompt_started = Instant::now();
+            }
+            return Ok(());
+        }
         let mut redraw = false;
         for &byte in &bytes[..n] {
             if matches!(self.state, State::Closing | State::Authenticating) {

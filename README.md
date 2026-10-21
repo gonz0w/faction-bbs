@@ -30,7 +30,11 @@ original games: **Signal Hunt** and **Neon Salvage**, with arrows/hotkeys and a
 separate game account/evaluator. Local top tens, persistent personal bests,
 completed-run counts and an arcade guide give members a reason to return. Scores
 survive reconnect/reboot and travel in private exports. Game failure returns to
-the board.
+the board. Optional **[classic server doors](docs/classic-game-doors.md)** now
+connect to sysop-selected Telnet endpoints with destination confirmation,
+ANSI/CP437 display and a local return key. The connector passed owned-fixture
+NetBSD tests; actual TradeWars/DOS titles remain to be validated. Both original
+servers and isolated DOS hosting are accepted reuse paths, ahead of rewriting.
 Files, private mail, the other-BBS
 directory, federation, payments, mesh and browser access remain backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),

@@ -9,3 +9,5 @@ limitations visible; never relabel old measurements as current execution.
 - [NetBSD Lua arcade: actual games and failure isolation](netbsd-lua-arcade.md)
 
 - [NetBSD persistent arcade scores](netbsd-arcade-scores.md) — native score/run/backup tests, evaluator and real SSH play/reboot.
+
+- [NetBSD classic-server connector](netbsd-classic-doors.md) — 77 Rust tests and 13 real SSH/owned-fixture groups; no actual title claim.

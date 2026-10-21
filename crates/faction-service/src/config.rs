@@ -23,6 +23,7 @@ pub struct Config {
     pub session_seconds: u64,
     pub ansi: bool,
     pub doors_uid: Option<u32>,
+    pub classic_games: Vec<super::classic::Game>,
 }
 impl Config {
     pub fn load(path: &Path) -> Result<Self> {
@@ -72,6 +73,41 @@ impl Config {
         } else {
             None
         };
+        let mut classic_games = Vec::<super::classic::Game>::new();
+        if let Some(value) = t.remove("classic_games") {
+            let Value::Array(entries) = value else {
+                return Err(denied());
+            };
+            if entries.len() > 6 {
+                return Err(denied());
+            }
+            for entry in entries {
+                let Value::Table(mut entry) = entry else {
+                    return Err(denied());
+                };
+                let mut string = |key| match entry.remove(key) {
+                    Some(Value::String(s)) => Ok(s),
+                    _ => Err(denied()),
+                };
+                let slug = string("slug")?;
+                let title = string("title")?;
+                let address = string("address")?.parse().map_err(|_| denied())?;
+                let game = super::classic::Game {
+                    slug,
+                    title,
+                    address,
+                };
+                if !entry.is_empty()
+                    || !game.valid()
+                    || classic_games
+                        .iter()
+                        .any(|g| g.slug == game.slug || g.address == game.address)
+                {
+                    return Err(denied());
+                }
+                classic_games.push(game);
+            }
+        }
         let experimental = boolean(&mut t, "experimental_capacity", false)?;
         if !t.is_empty() || (!experimental && (max_sessions > 8 || launch_ms < 5000)) {
             return Err(denied());
@@ -87,6 +123,7 @@ impl Config {
             session_seconds,
             ansi,
             doors_uid,
+            classic_games,
         })
     }
 }
@@ -136,6 +173,37 @@ mod tests {
         os::unix::fs::{PermissionsExt, symlink},
     };
     const BASE: &str = "version=1\nterminal_uid=123\n";
+    #[test]
+    fn classic_destinations_are_fixed_bounded_and_disabled_by_default() {
+        assert!(Config::parse(BASE).unwrap().classic_games.is_empty());
+        let entry = "[[classic_games]]\nslug='trade-wars'\ntitle='TradeWars host'\naddress='127.0.0.1:2002'\n";
+        assert_eq!(
+            Config::parse(&format!("{BASE}{entry}"))
+                .unwrap()
+                .classic_games
+                .len(),
+            1
+        );
+        for bad in [
+            entry.replace("127.0.0.1:2002", "example.org:2002"),
+            entry.replace("127.0.0.1:2002", "0.0.0.0:2002"),
+            entry.replace("127.0.0.1:2002", "224.0.0.1:2002"),
+            entry.replace("127.0.0.1:2002", "127.0.0.1:0"),
+            entry.replace("trade-wars", "../shell"),
+            format!("{entry}shell='sh'\n"),
+            format!("{entry}{entry}"),
+        ] {
+            assert!(Config::parse(&format!("{BASE}{bad}")).is_err(), "{bad}");
+        }
+        let many = (0..7)
+            .map(|i| {
+                entry
+                    .replace("trade-wars", &format!("game-{i}"))
+                    .replace("2002", &(2002 + i).to_string())
+            })
+            .collect::<String>();
+        assert!(Config::parse(&format!("{BASE}{many}")).is_err());
+    }
     #[test]
     fn defaults_and_explicit_capacity() {
         let c = Config::parse(BASE).unwrap();

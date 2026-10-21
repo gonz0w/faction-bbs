@@ -4,6 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional fixed-destination classic game-server doors: explicit member
+  destination confirmation, bounded Telnet/CP437/basic ANSI, local Ctrl-] return,
+  safe control filtering and failure/resize/revocation cleanup. The original game
+  runs on a separate host; no local legacy launch or new dependency/limit increase.
+- Record both accepted original-server and original-DOS reuse paths, primary-source
+  title/acquisition inventory and concrete real-title follow-ups. Connector tests
+  use owned fixtures; no classic title, licensed binary or compatibility host is
+  bundled or claimed supported. Keep Lua installation compatible with TOML tables.
+
+
 ### Added
 
 - Persistent local arcade top tens, personal bests and completed-run counts for
