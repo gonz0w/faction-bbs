@@ -115,3 +115,11 @@ Keep #55 open: #66 bounds repeated unsigned key-lookup work; #23/#18 retain nati
 shared-source denial/admission policy, #20 CPU/timekeeping interpretation and
 maintained host policy, #28 broader active/long-soak/complete budgets. All historical
 measured bytes remain unchanged and normal defaults remain eight.
+
+The [bounded key-lookup follow-up](research/0038-bounded-key-lookups.md) now
+limits one monitor to four charged lookups, with explicit quiescent v2 migration,
+native adversarial syscall counts and two fresh 250-member matrices passing the
+unchanged guard (130.36 MiB lowest stress, zero swap). This resolves #66's
+finite helper-work uncertainty; #55 remains open for scoped adoption/independent
+review, #23/#18 global admission/source fairness, #20 host/CPU/timekeeping and
+#28 broader overlap/soak/complete budgets. Defaults remain eight.

@@ -1,0 +1,8 @@
+version = 1
+id = "shared-ui-winter-test"
+welcome = "Winter frequency."
+focus = { fg = 15, bg = 4, bold = true }
+identity_ansi = "identity.ans"
+creator = "Faction BBS contributors"
+source = "Original functional test text, not scene artwork"
+permission = "BSD-3-Clause"

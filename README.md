@@ -51,13 +51,22 @@ NetBSD 11 ARM64 VM. Minimum active headroom is **152.97 MiB**; minimum stress/co
 headroom is **133.13 MiB**, with zero swap and full SSH/frontend/base-service costs.
 [Native evidence and limits](dev-docs/research/0037-sustained-abuse.md).
 
+The [bounded key-lookup follow-up](dev-docs/research/0038-bounded-key-lookups.md)
+now charges at most **four lookups per SSH monitor** and requires explicit,
+quiescent registry migration. Eight known-key adversaries produce at most 32
+key-file reads/commits across 56 helper executions; exhausted calls avoid repeated
+key/state IO and cohort liveness scans. Ordinary SSH and local approval still work.
+Two further fresh-boot 250-member matrices pass: minimum active **155.14 MiB**,
+minimum stress **130.36 MiB**, zero swap. Three-minute abuse/recovery intervals
+retain useful chat (250 members before/after, 249 while testing fresh admission).
+
 The 250-session configuration and compact-allocator/pageable-NTP profile remain
-explicit research inputs. **Eight remains the default.** Bounded probes confirm
-two open admission limits: repeated unsigned key lookups and temporary denial to
-legitimate callers sharing a penalized source. CPU counters also need reconciliation.
-Longer soaks, complete budgets, independent authority review and maintained host
-policy remain gates. These software observations are not supported capacity or
-physical SBC claims. [Earlier admission evidence and rejected candidate](dev-docs/research/0036-ssh-admission.md)
+explicit research inputs. **Eight remains the default.** Native source penalties
+still temporarily deny legitimate callers sharing a source; finite lookup work
+is not a global TCP/fork-rate bound. CPU counters, broader overlaps/long soaks,
+complete budgets, independent authority review and maintained host policy remain
+gates. These software observations are not supported capacity or physical SBC
+claims. [Earlier admission evidence and rejected candidate](dev-docs/research/0036-ssh-admission.md)
 and [historical executed sources](dev-docs/evidence/README.md) are preserved.
 There is no supported network release.
 

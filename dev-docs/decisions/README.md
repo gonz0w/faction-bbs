@@ -40,3 +40,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0020: Native process envelope and authenticated terminal peers](0020-native-process-envelope.md)
 
 - [0022 Experimental SSH admission](0022-ssh-admission.md) — bounded transport startup; production adoption deferred.
+
+- [0023: Fixed SSH helper lookup allowance](0023-bounded-key-lookups.md) — explicit v2 migration and finite native lookup work.

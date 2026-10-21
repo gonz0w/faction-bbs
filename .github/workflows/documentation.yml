@@ -51,6 +51,7 @@ jobs:
           python3 tools/check_isolation_evidence.py
           python3 tools/check_admission_evidence.py
           python3 tools/check_sustained_evidence.py
+          python3 tools/check_lookup_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Validate the local Rust core and real terminal flow
         env:

@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #define CAP 250
+#define LOOKUPS 4
 #define MAGIC UINT64_C(0x464143544b455931)
 #define DIRECTORY "/var/run/faction-auth"
 #define STATE DIRECTORY "/admission.state"
@@ -32,6 +33,12 @@ struct state {
     uint64_t magic,version,capacity,refill_ms,burst,budget,last;
     uint64_t launches,reuses,full,rate,peak;
     struct identity slots[CAP];
+    uint64_t queries[CAP];
+    uint64_t checksum;
+};
+struct state_v1 {
+    uint64_t header[12];
+    struct identity slots[CAP];
     uint64_t checksum;
 };
 _Static_assert(sizeof(struct state)==offsetof(struct state,checksum)+8,"no trailing padding");
@@ -40,10 +47,13 @@ static uint64_t clock_ns(void) {
     struct timespec t;require(!clock_gettime(CLOCK_MONOTONIC,&t));
     return (uint64_t)t.tv_sec*1000000000+(uint64_t)t.tv_nsec;
 }
-static uint64_t digest(const struct state *s) {
-    const unsigned char *p=(const unsigned char *)s;uint64_t h=UINT64_C(14695981039346656037);
-    for(size_t i=0;i<offsetof(struct state,checksum);i++) { h^=p[i];h*=UINT64_C(1099511628211); }
+static uint64_t digest_bytes(const void *bytes,size_t length) {
+    const unsigned char *p=bytes;uint64_t h=UINT64_C(14695981039346656037);
+    for(size_t i=0;i<length;i++) { h^=p[i];h*=UINT64_C(1099511628211); }
     return h;
+}
+static uint64_t digest(const struct state *s) {
+    return digest_bytes(s,offsetof(struct state,checksum));
 }
 static unsigned number(const char *p,unsigned maximum) {
     char *end;errno=0;unsigned long n=strtoul(p,&end,10);
@@ -73,7 +83,7 @@ static unsigned prune(struct state *s) {
     unsigned n=0;
     for(unsigned i=0;i<CAP;i++) {
         if(live(s->slots[i])) n++;
-        else memset(&s->slots[i],0,sizeof(s->slots[i]));
+        else { memset(&s->slots[i],0,sizeof(s->slots[i]));s->queries[i]=0; }
     }
     return n;
 }
@@ -91,15 +101,28 @@ static void persist(int fd,struct state *s) {
     }
     require(!ftruncate(fd,sizeof(*s)) && !fsync(fd));
 }
+/* Root migration additionally requires the selected listener absent. Normal
+ * boot initialization's conservative terminal/orphan scan lives in preflight.
+ * Never infer quiescence merely from an empty registry. */
+static void listener_stopped(void) {
+    int fd=open("/var/run/faction-sshd.pid",O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK);
+    if(fd<0) { require(errno==ENOENT);return; }
+    struct stat st;char text[32]={0};require(!fstat(fd,&st) && S_ISREG(st.st_mode) && st.st_uid==0 &&
+        st.st_nlink==1 && !(st.st_mode&022) && st.st_size>0 && st.st_size<(off_t)sizeof(text));
+    require(read(fd,text,(size_t)st.st_size)==st.st_size);close(fd);
+    size_t n=strlen(text);if(n && text[n-1]=='\n') text[n-1]=0;
+    unsigned pid=number(text,INT_MAX);struct kinfo_proc2 p;require(pid>1 && !process(pid,&p));
+}
 static void fresh(struct state *s,unsigned capacity,unsigned refill) {
-    memset(s,0,sizeof(*s));s->magic=MAGIC;s->version=1;s->capacity=capacity;s->refill_ms=refill;s->burst=8;
+    memset(s,0,sizeof(*s));s->magic=MAGIC;s->version=2;s->capacity=capacity;s->refill_ms=refill;s->burst=8;
     s->budget=(uint64_t)refill*1000000*8;s->last=clock_ns();
 }
 int main(int argc,char **argv) {
-    unsigned capacity=8,refill=5000,target=0;int experimental=0,inspect=0,reset=0;
+    unsigned capacity=8,refill=5000,target=0;int experimental=0,inspect=0,reset=0,migrate=0;
     for(int i=1;i<argc;i++) {
         if(!strcmp(argv[i],"--experimental-capacity")) { experimental=1;continue; }
         if(!strcmp(argv[i],"--inspect")) { inspect=1;continue; }
+        if(!strcmp(argv[i],"--migrate-v1")) { migrate=1;continue; }
         if(!strcmp(argv[i],"--reset")) { reset=1;continue; }
         require(i+1<argc);const char *key=argv[i++],*value=argv[i];
         if(!strcmp(key,"--capacity")) capacity=number(value,CAP);
@@ -107,16 +130,16 @@ int main(int argc,char **argv) {
         else if(!strcmp(key,"--target-uid")) target=number(value,INT_MAX);
         else require(0);
     }
-    require(refill>=100 && (experimental || (capacity<=8 && refill>=5000)) && !(inspect && reset));
+    require(refill>=100 && (experimental || (capacity<=8 && refill>=5000)) && inspect+reset+migrate<=1);
     closefrom(3);umask(077);alarm(3);
     struct rlimit zero={0,0};require(!setrlimit(RLIMIT_CORE,&zero) && !setrlimit(RLIMIT_MEMLOCK,&zero));
     struct passwd *pw=getpwnam("factionauth");require(pw && pw->pw_uid>0);uid_t helper=pw->pw_uid;
     pw=getpwnam("factionterm");require(pw && pw->pw_uid>0 && pw->pw_uid!=helper);uid_t terminal=pw->pw_uid;
-    require((inspect || reset)?(getuid()==0 && geteuid()==0):(getuid()==helper && geteuid()==helper && target==terminal));
+    require((inspect || reset || migrate)?(getuid()==0 && geteuid()==0):(getuid()==helper && geteuid()==helper && target==terminal));
     visibility();parents();
     struct stat dir;require(!lstat(DIRECTORY,&dir) && S_ISDIR(dir.st_mode) && dir.st_uid==helper && (dir.st_mode&0777)==0700);
     struct identity caller={0,0,0};
-    if(!inspect && !reset) {
+    if(!inspect && !reset && !migrate) {
         struct kinfo_proc2 parent;pid_t pid=getppid();require(process((uint64_t)pid,&parent));
         require(parent.p_ruid==0 && !strcmp(parent.p_comm,"sshd-session"));
         caller=(struct identity){(uint64_t)pid,(uint64_t)parent.p_ustart_sec,(uint64_t)parent.p_ustart_usec};
@@ -131,16 +154,44 @@ int main(int argc,char **argv) {
     require(!flock(fd,LOCK_EX));
     struct state s;memset(&s,0,sizeof(s));
     if(created) fresh(&s,capacity,refill);
+    else if(migrate) {
+        listener_stopped();struct state_v1 old;
+        require(!fstat(fd,&st) && st.st_size==(off_t)sizeof(old));
+        require(pread(fd,&old,sizeof(old),0)==(ssize_t)sizeof(old));
+        require(old.header[0]==MAGIC && old.header[1]==1 &&
+            old.checksum==digest_bytes(&old,offsetof(struct state_v1,checksum)));
+        require(old.header[2]>0 && old.header[2]<=CAP && old.header[3]>=100 && old.header[3]<=60000 &&
+            old.header[4]==8 && old.header[5]<=old.header[3]*1000000*8);
+        for(unsigned i=0;i<CAP;i++) require(!live(old.slots[i]));
+        fresh(&s,capacity,refill);persist(fd,&s);return 0;
+    }
     else {
         require(!fstat(fd,&st) && st.st_size==(off_t)sizeof(s));
         require(pread(fd,&s,sizeof(s),0)==(ssize_t)sizeof(s));
-        require(s.magic==MAGIC && s.version==1 && s.checksum==digest(&s));
+        require(s.magic==MAGIC && s.version==2 && s.checksum==digest(&s));
         require(s.capacity && s.capacity<=CAP && s.refill_ms>=100 && s.refill_ms<=60000 && s.burst==8);
         require(s.budget<=s.refill_ms*1000000*8);
+        for(unsigned i=0;i<CAP;i++) {
+            require(s.queries[i]<=LOOKUPS);
+            require(s.slots[i].pid?s.queries[i]>0:!s.queries[i]);
+        }
     }
-    unsigned active=prune(&s);
+    /* A known monitor takes the bounded fast path: no cohort-wide liveness
+     * scan. Exhaustion returns no keys and performs no write/fsync. OpenSSH
+     * counts these denied requests against MaxAuthTries, unlike PK_OK tests.
+     * The parent identity above still verifies real UID, command and birth. */
+    unsigned slot=CAP;int repeated=0;
+    if(!inspect && !reset) {
+        for(unsigned i=0;i<CAP;i++) if(s.slots[i].pid==caller.pid && s.slots[i].sec==caller.sec && s.slots[i].usec==caller.usec) { slot=i;repeated=1;break; }
+        if(repeated) {
+            require(s.capacity==capacity && s.refill_ms==refill && clock_ns()>=s.last);
+            if(s.queries[slot]>=LOOKUPS) return 1;
+            s.queries[slot]++;s.reuses++;
+        }
+    }
+    unsigned active=repeated?0:prune(&s);
     if(inspect) {
-        printf("{\"capacity\":%"PRIu64",\"burst\":%"PRIu64",\"refill_ms\":%"PRIu64",\"active\":%u,\"peak\":%"PRIu64",\"launches\":%"PRIu64",\"reuses\":%"PRIu64",\"full\":%"PRIu64",\"rate\":%"PRIu64"}\n",s.capacity,s.burst,s.refill_ms,active,s.peak,s.launches,s.reuses,s.full,s.rate);
+        printf("{\"version\":2,\"lookup_limit\":4,\"capacity\":%"PRIu64",\"burst\":%"PRIu64",\"refill_ms\":%"PRIu64",\"active\":%u,\"peak\":%"PRIu64",\"launches\":%"PRIu64",\"reuses\":%"PRIu64",\"full\":%"PRIu64",\"rate\":%"PRIu64"}\n",s.capacity,s.burst,s.refill_ms,active,s.peak,s.launches,s.reuses,s.full,s.rate);
         return 0;
     }
     if(reset) { require(!active);fresh(&s,capacity,refill);persist(fd,&s);return 0; }
@@ -151,16 +202,16 @@ int main(int argc,char **argv) {
     if(now<s.last) { require(!active);s.last=now;s.budget=maximum; }
     uint64_t delta=now-s.last;s.last=now;
     s.budget=delta>=maximum-s.budget?maximum:s.budget+delta;
-    unsigned slot=CAP;int repeated=0;
-    for(unsigned i=0;i<CAP;i++) if(s.slots[i].pid==caller.pid && s.slots[i].sec==caller.sec && s.slots[i].usec==caller.usec) { repeated=1;break; }
-    if(repeated) s.reuses++;
-    else {
+    if(!repeated) {
         if(active>=capacity) { s.full++;persist(fd,&s);return 1; }
         if(s.budget<step) { s.rate++;persist(fd,&s);return 1; }
         for(unsigned i=0;i<CAP;i++) if(!s.slots[i].pid) { slot=i;break; }
-        require(slot<CAP);s.slots[slot]=caller;active++;s.launches++;s.budget-=step;
+        require(slot<CAP);s.slots[slot]=caller;s.queries[slot]=1;active++;s.launches++;s.budget-=step;
         if(active>s.peak) s.peak=active;
     }
+    /* Charge the allowance durably before touching or returning any keys.
+     * Key-file failure cannot turn the next request into a free lookup. */
+    persist(fd,&s);require(!flock(fd,LOCK_UN));close(fd);
     /* Read bounded, root-managed key lines unchanged. OpenSSH alone parses and
      * validates the offered key/signature and the restrict,pty options. */
     int keys=open(KEYS,O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK);require(keys>=0);
@@ -170,7 +221,7 @@ int main(int argc,char **argv) {
         ssize_t n=read(keys,data+length,(size_t)st.st_size-length);if(n<0 && errno==EINTR) continue;
         require(n>0);length+=(size_t)n;
     }
-    close(keys);persist(fd,&s);require(!flock(fd,LOCK_UN));close(fd);
+    close(keys);
     size_t offset=0;while(offset<length) {
         ssize_t n=write(STDOUT_FILENO,data+offset,length-offset);if(n<0 && errno==EINTR) continue;
         require(n>0);offset+=(size_t)n;

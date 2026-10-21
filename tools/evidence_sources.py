@@ -9,11 +9,16 @@ def manifest(root=ROOT):
     assert hashlib.sha256(raw).hexdigest()==MANIFEST_SHA256,'frozen manifest changed'
     return json.loads(raw)
 
+def key_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/key-lookup-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='db2914814764384ffd16d04dfce5de16a8a769c67fa494bb085b9a113bc81176','frozen key manifest changed'
+    return json.loads(raw)
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name
