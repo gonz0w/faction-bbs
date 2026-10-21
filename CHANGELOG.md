@@ -25,7 +25,7 @@ This file records meaningful project changes. Product releases will use versione
   the board. Add opt-in NetBSD setup and runtime/SSH play/failure checks.
 - Fix fresh-host setup parent permissions and private build-directory handling
   discovered while installing the optional arcade. Keep native/DOS legacy doors,
-  persistent scores/economies and hostile native hosting as separate work.
+  game economies and hostile native hosting as separate work.
 
 - Prioritize the ordinary small-board product over further combined 250-user
   edge-case research. Add a native NetBSD first-install helper with read-only

@@ -1,6 +1,6 @@
 # Faction BBS: product direction
 
-Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-20. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
+Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-21. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
 
 ## Purpose and character
 
