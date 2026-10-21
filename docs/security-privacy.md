@@ -131,3 +131,11 @@ Source penalties/NAT fairness, pre-fork/lookup CPU pressure, default process
 visibility, independent review and complete active/soak budgets remain explicit
 limits. Do not turn short 250-member VM passes into production capacity or privacy
 sandbox claims. Never reuse the helper UID for doors or weaken member ceilings.
+
+The [bounded lookup update](../dev-docs/decisions/0023-bounded-key-lookups.md)
+charges four helper allowances per monitor birth, denies exhausted calls without
+key/state IO or cohort scans, and requires explicit quiescent migration of legacy
+state. Ordinary SSH signature/options and local BBS approval remain independent.
+The finite cohort budget does not bound all new TCP/fork/KEX activity or guarantee
+fresh-member availability behind a penalized source. Helper UID remains trusted,
+private and unavailable to extensions; independent review/adoption gates remain.

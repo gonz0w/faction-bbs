@@ -25,7 +25,7 @@ class AdmissionEvidence(unittest.TestCase):
         with self.assertRaises(AssertionError):validate(d)
     def test_launch_source_drift_is_rejected(self):
         d=copy.deepcopy(self.record);d['execution_sources']['native/faction-key-admission/main.c']='0'*64
-        with self.assertRaisesRegex(AssertionError,'execution drift'):validate(d)
+        with self.assertRaisesRegex(AssertionError,'executed source bytes changed'):validate(d)
     def test_host_profile_must_be_restored(self):
         d=copy.deepcopy(self.record);d['restored_isolation']['frontend_setuid_removed']=False
         with self.assertRaises(AssertionError):validate(d)

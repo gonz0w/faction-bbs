@@ -107,3 +107,9 @@ reservation, and native grace penalties temporarily deny new legitimate callers
 sharing a source. #66 scopes the lookup bound; #23/#18 own admission policy. CPU
 accounting disagreement keeps #20/#28 budget acceptance open. This does not alter
 the default eight, trusted UID/binary boundary or experimental adoption status.
+
+[ADR 0023](0023-bounded-key-lookups.md) amends repeated-lookup behavior and registry
+format: four durable allowances per monitor, exhausted-call fast denial, explicit
+quiescent v1 migration. Historical 037/038 evidence retains its actual old bytes;
+new native bounded-work and whole-host results are in research 0038/result 039.
+Global pre-fork/source-fairness and independent adoption gates remain open.

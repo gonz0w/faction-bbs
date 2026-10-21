@@ -3,7 +3,7 @@
 import argparse,json,os,pwd,shlex,stat,subprocess
 from pathlib import Path
 
-def check(initialize=False):
+def check(initialize=False,migrate=False):
     assert os.getuid()==os.geteuid()==0
     config=Path('/etc/ssh/faction/key_admission_sshd_config')
     for path in [config,*config.parents]:
@@ -47,8 +47,8 @@ def check(initialize=False):
     keys=Path('/etc/ssh/faction/authorized_keys').lstat()
     assert stat.S_ISREG(keys.st_mode) and keys.st_uid==0 and not keys.st_mode&0o022 and keys.st_nlink==1 and 0<keys.st_size<=65536
     state=runtime/'admission.state'
-    if not state.exists():
-        assert initialize,'missing admission state requires quiescent initialization'
+    if not state.exists() or migrate:
+        assert initialize or migrate,'missing admission state requires quiescent initialization'
         pidfile=Path('/var/run/faction-sshd.pid')
         if pidfile.exists():
             value=pidfile.read_text().strip();assert value.isdigit()
@@ -66,11 +66,11 @@ def check(initialize=False):
             assert not (int(ppid)==1 and comm.startswith('sshd-session')),'orphan SSH session prevents initialization'
         if not runtime.exists():
             runtime.mkdir(mode=0o700);os.chown(runtime,helper.pw_uid,helper.pw_gid)
-        subprocess.run([command[0],'--reset',*command[3:]],check=True,timeout=5)
+        subprocess.run([command[0],'--migrate-v1' if migrate else '--reset',*command[3:]],check=True,timeout=5)
     if state.exists():
         current=json.loads(subprocess.check_output(['/usr/local/libexec/faction-key-admission','--inspect'],timeout=5))
         assert not current['active'] or (current['capacity']==capacity and current['refill_ms']==refill)
     print('Base SSH key admission configuration verified; no host settings changed.')
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--initialize',action='store_true');a=p.parse_args();check(a.initialize)
+    p=argparse.ArgumentParser(description=__doc__);g=p.add_mutually_exclusive_group();g.add_argument('--initialize',action='store_true');g.add_argument('--migrate-v1',action='store_true');a=p.parse_args();check(a.initialize,a.migrate_v1)

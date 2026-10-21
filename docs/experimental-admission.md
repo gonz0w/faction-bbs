@@ -15,7 +15,13 @@ forwarding, changed forced commands and a privileged helper identity.
 
 Before emitting key lines, the helper reserves one of 250 fixed registry entries
 for its real-root SSH parent and kernel process birth timestamp. Repeated key
-lookups reuse that reservation. The parent temporarily has the helper effective
+lookups reuse that reservation and have a fixed **four charged lookups per
+monitor** allowance. Each allowance is persisted before key-file IO, including
+failed IO. After four, the helper returns no keys and skips key-file reads,
+state writes/fsyncs and cohort-wide liveness queries. Fixed state validation,
+identity comparison, parent checks and helper execution still occur. Normal
+query/signature sequences fit the measured limit; deliberately exhausting it
+requires reconnecting. The parent temporarily has the helper effective
 UID while OpenSSH collects output; its real-root identity and birth remain stable.
 A process must still present an authorized key/signature, and local BBS login and
 sysop approval remain separate. The registry stores no keys, addresses, BBS IDs,
@@ -36,6 +42,31 @@ cohort.** This is not a global pre-fork rate limiter or a total eight-TCP cap.
 Base SSH's source penalties remain enabled; failures behind one NAT can affect
 other members there. The helper adds no per-IP map or ban, and the native study
 admits 250 legitimate members through one fixture gateway.
+
+## Registry version and upgrade
+
+The current registry is version 2, 8104 bytes (2000 bytes larger than v1).
+Normal lookups, inspect, reset and rc startup **refuse v1**. Before installing a
+new helper over the old profile, stop the member listener, drain every old member
+transport/frontend and prevent concurrent starts. Keep old binaries stopped.
+Install the new root-owned helper and preflight, retaining protected state metadata.
+Then explicitly run:
+
+```sh
+/usr/pkg/bin/python3.13 -I -B /usr/local/libexec/check_key_admission_config.py --migrate-v1
+```
+
+This uses the configured capacity/refill, verifies listener/terminal/orphan
+quiescence and every recorded birth's death, validates v1 checksum/layout, and
+writes fresh v2 state under the existing flock inode. The C migration also
+refuses a live member pidfile/listener or recorded monitor. It never unlinks the
+state lock, accepts corrupt legacy data or converts during normal startup.
+A partial migration write fails closed; recovery remains an explicit quiescent
+operator action. Missing state uses the existing separate --initialize path.
+Never copy old state over live transports or run mixed registry versions. For
+rollback, drain/stop and choose the preserved ordinary faction_sshd path; local
+community content/export format are unchanged. Downgrading the experimental
+helper requires an explicit stopped/quiescent v1 reinitialization with old tooling.
 
 ## Explicit setup
 
@@ -87,8 +118,12 @@ Never unlink or replace its live lock inode. A checksum detects torn/corrupt
 records; malformed, writable, aliased or unreadable state fails closed. Root
 `--inspect` prints aggregate capacity/refill/active/peak/admission/denial counts;
 it does not print process identities. Its `launches` counter means newly reserved
-key-admission monitors, not TCP accepts or SSH forks; `reuses` counts repeat key
-lookups, and full/rate counters count denied key lookups. `--reset` requires no live recorded monitor.
+key-admission monitors, not TCP accepts or SSH forks. `reuses` counts charged
+repeat allowances, including attempts whose later key-file IO fails; these are
+not successful authentication or key-output counters. Exhausted denials do not
+write or increment them. Full/rate counters cover those specific denial paths.
+`version` and `lookup_limit` identify the checked format and fixed allowance.
+`--reset` requires no live recorded monitor.
 It does not silently repair corrupt authority records.
 
 A normal base-SSH listener stop preserves existing sessions. Restarting it keeps
@@ -130,8 +165,26 @@ testing with a rotating-sender 250-recipient chat workload, room/menu/post work,
 fresh credentials and bounded busy-input/silent-preauthentication pressure.
 Its separate known-key probe received **64 unsigned PK_OK replies in about two
 seconds**, charging one reservation and 63 reuses without authentication. The
-current helper does not bound repeat lookups per monitor; [#66](https://github.com/gonz0w/faction-bbs/issues/66)
-owns that explicit adoption gate. Successful unsigned key offers do not prove
+earlier helper did not bound repeat lookups per monitor; [#66](https://github.com/gonz0w/faction-bbs/issues/66)
+tracks the bounded follow-up below; its new helper replaces that measured old
+lookup behavior. Successful unsigned key offers do not prove
 private-key possession. Keep the helper registry and local BBS approval distinct.
 The probe's optional Python SSH client belongs only to the private research host,
 never the board service or normal repository checks.
+
+## Finite lookup work and remaining availability limits
+
+For a finite eight-monitor cohort on the verified base SSH release, four charged
+lookups followed by MaxAuthTries 3 yields at most 56 helpers, 32 key-file reads
+and 32 state commits. Unreserved full/rate denials can instead cause up to 6000
+recorded-process liveness queries across 24 helpers. These separate maxima do
+not all occur together. See [the exact budget and native counts](../dev-docs/research/0038-bounded-key-lookups.md).
+They are syscall/algorithm bounds, not CPU/wall-time/global TCP/fork-rate promises.
+Successful signed SSH still grants transport admission only; local BBS login and
+approval are always required. The helper UID remains unavailable to extensions.
+
+New bounded abuse controls keep existing members useful while native source
+penalties can temporarily deny a fresh caller behind the same source. No reset
+or disabled penalties is used to label that recovery a fairness pass. Broader
+acceptance/fork policy, NAT fairness, overlap/long soak, complete host/CPU budgets
+and independent authority review remain adoption gates; normal defaults stay eight.

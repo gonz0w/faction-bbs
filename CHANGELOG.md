@@ -4,6 +4,18 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Bound the experimental SSH helper to four durable lookups per monitor birth;
+  exhausted calls skip key reads, state writes/fsyncs and cohort liveness scans.
+  Preserve ordinary query/signature, local approval, eight-session defaults and
+  all crypto/credential/resource limits. Add explicit quiescent inode-preserving
+  v1-to-v2 registry migration; legacy/corrupt/live conversion fails closed.
+- Add native eight-adversary syscall accounting, signed/unknown-key/options,
+  migration/birth/restart controls and two fresh 250-member whole-host matrices.
+  Minimum stress headroom 130.36 MiB, zero swap; native source penalties retain
+  temporary same-source denial while peer chat continues. Preserve all measured
+  037/038 bytes in a third snapshot; new result 039 checks current sources.
+  No global TCP/fork-rate or production-capacity claim.
+
 - Add bounded 15-minute active/abuse workloads at 250 distinct SSH members with
   unchanged service/crypto/credential/resource settings: two fresh boots pass all
   sampled guards, 423,798 confirmed peer deliveries, post-load controls and

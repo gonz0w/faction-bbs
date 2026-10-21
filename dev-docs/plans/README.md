@@ -40,3 +40,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0022 SSH admission](0022-ssh-admission.md) — native abuse/lifecycle and 250-member headroom gates.
 
 - [0023 Sustained activity and abuse](0023-sustained-abuse.md) — 250-member active workload and unchanged guard.
+
+- [0024: Bound SSH helper lookup work](0024-bounded-key-lookups.md) — #66 execution and validation.

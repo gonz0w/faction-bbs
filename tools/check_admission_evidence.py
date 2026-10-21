@@ -11,7 +11,7 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
     assert d['schema']==1 and d['target']=='aarch64-unknown-netbsd'
     assert d['reference_commit']=='0c668ecd27bc9f25093a1b71cd04a98aae53bbb9'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
-    sources=d['execution_sources'];validate_sources(sources,root=root)
+    sources=d['execution_sources'];validate_sources(sources,root=root,historical=True)
     for n in ['native/faction-key-admission/main.c','tools/build_key_admission.py',
               'deploy/netbsd/faction_key_admission','deploy/netbsd/key_admission_sshd_config.in',
               'experiments/055-key-admission/netbsd_metrics.c','experiments/055-key-admission/live_limits.c',

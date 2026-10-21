@@ -67,7 +67,7 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
     assert d['schema']==1 and d['target']=='aarch64-unknown-netbsd'
     assert d['reference_commit']=='b672abf54c77d13dae784de55f837a7905f2b5b4'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
-    validate_sources(d['execution_sources'],root=root);assert d['native_sources']==d['execution_sources']
+    validate_sources(d['execution_sources'],root=root,historical=True);assert d['native_sources']==d['execution_sources']
     for name in ['check_sustained_host','check_sustained_scaling','sustained_workload','sustained_stream','check_unsigned_keys','check_source_fairness']:
         assert 'tools/'+name+'.py' in d['execution_sources']
     assert all(re.fullmatch('[a-f0-9]{64}',v) for v in d['binaries'].values())

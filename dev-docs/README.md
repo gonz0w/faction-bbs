@@ -29,3 +29,5 @@ SSH admission continuation: [plan 0022](plans/0022-ssh-admission.md),
 
 - [Sustained 250-member activity and bounded abuse](research/0037-sustained-abuse.md):
   longer active intervals, repeat key-query work and native source-fairness gates.
+
+- [Bounded SSH key-lookup research](research/0038-bounded-key-lookups.md), [ADR 0023](decisions/0023-bounded-key-lookups.md) and [plan 0024](plans/0024-bounded-key-lookups.md): native finite-work budget and two whole-host controls.

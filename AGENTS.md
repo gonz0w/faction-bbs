@@ -128,10 +128,32 @@ and 11 fresh real logins each. Minimum active 152.97 MiB; minimum stress/control
 remain. Actual first fixture has 1002 accounts/52 rooms/100004 non-load posts from
 UI oracles; retain first-trial posts across reboot, then use only the new bounded
 synthetic reset variant. Never use these reset tools on a real board.
-The native helper accepts 64 unsigned queries on one reservation: #66 must bound
-lookup work before adoption. Native penalties temporarily deny legitimate same-
+The historical result-038 helper accepts 64 unsigned queries on one reservation;
+the bounded lookup update below amends that behavior for #66. Native penalties temporarily deny legitimate same-
 source callers; existing sessions survive. CPU tick/runtime counters disagree;
 retain raw calibration and withhold CPU-budget/throughput acceptance (#20/#28).
 Current 035/036/037/**038** source pins, nine historical records, two buildable
 snapshots and rejected overrides are authoritative. Preserve actual executed
 bytes before edits; never refresh old hashes. No long-soak/supported-capacity claim.
+
+## Bounded SSH key-lookup update
+
+ADR 0023/research 0038/result 039 limit a real-root monitor birth to four durable
+helper allowances. Persist before key IO; exhausted calls emit no keys and skip
+writes/fsync/key reads/cohort liveness queries. Keep fixed state/identity validation,
+parent/visibility checks and base MaxAuthTries 3. Do not claim a global TCP/fork
+rate bound. Registry v2 is 8104 bytes; old v1 requires explicit stopped/drained,
+inode-preserving --migrate-v1 through root preflight. Never silently reset or mix
+helper versions. Keep helper UID separate from extensions and all original crypto,
+local approval, credential permits/locks, process ceilings and default eight.
+Eight native known-key adversaries measure 56 helpers/32 reads+commits; signed
+failure/unknown-key each 24, no authentication. Migration, exhausted-restart,
+options/ordinary clients and two fresh 250-member matrices pass (130.36 MiB
+minimum stress, zero swap). Active intervals explicitly use 250/249/250 members
+for useful chat plus fresh source-recovery checks; no reset/penalty weakening.
+The third snapshot sources/71491cc now freezes all 137 original 037/038 inputs
+and both records; original two snapshots/nine records/overrides remain unchanged.
+035/036 still pin current unmodified inputs. New 039 pins 145 current sources
+directly: preserve actual bytes before future edits, never refresh old hashes.
+Keep #55 adoption/independent review and #23/#18 global admission/source fairness,
+#20 CPU/host/timekeeping and #28 complete overlap/long-soak budgets open.

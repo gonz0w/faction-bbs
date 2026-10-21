@@ -42,3 +42,11 @@ raw post-load CPU controls, actual fixture counts and verified rollback/cleanup.
 It pins 137 project execution sources; the new evidence checker validates all
 905-sample active streams as well as the original short credential/control streams.
 CPU interpretation and combined worst-case pressure remain open gates.
+
+The third buildable snapshot `sources/71491cc` preserves all 137 current execution
+inputs of results 037/038 at merged PR #67. The separately pinned
+`key-lookup-manifest.json` freezes those bytes and both complete result files;
+the original manifest/two snapshots/nine records remain byte-for-byte unchanged.
+Historical 037/038 checkers now resolve their measured source versions here.
+New bounded-key evidence validates current source bytes directly. Run the same
+source check: it now verifies three snapshots and eleven historical records.
