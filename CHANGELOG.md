@@ -4,6 +4,18 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Select separate restricted SFTP for the next local file-area increment, with
+  scoped transfer grants, private quota-charged upload review and separate file
+  backups; handler/service implementation remains #83.
+- Record independent invited home identities and native member-side encrypted
+  mail as owner requirements. No BBS server may see plaintext; no server-readable
+  fallback, automatic local membership or replicated credential database. Expand
+  old chat-only federation scope only for explicit mail/identity capabilities;
+  XMPP/E2EE/visiting-auth interoperability remains research #84.
+- Specify extension seams and retain future DOS/Amiga/other game-host adapters,
+  with terminal-capability and isolation evidence required per title. No new
+  file service, client, mail protocol, emulator or plugin runtime is implemented.
+
 - Prove unchanged original LORD 4.06 through the maintained SSH game doorway on a
   separate native NetBSD ARM64 VM. Add a disposable private game host/oracle,
   exact artifact provenance and a small external DOSBox receive-state patch.

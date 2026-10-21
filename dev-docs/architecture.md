@@ -8,7 +8,7 @@ Separate community semantics from transport-specific addressing, discovery, rout
 
 - The server enforces approved membership for every community action on each access surface.
 - A node operates independently with no public HTTP service, shared-channel federation, central discovery, or alternative transport requirement.
-- Only explicitly participating shared chat may cross BBS boundaries. Local-only chat and all other BBS data stay local; necessary remote author/delivery metadata does not imply federated accounts.
+- Owner direction now permits explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs. Local-only chat, rooms, files and approval stores remain local; home mailbox access stays between the member device and home. No replicated passwords or automatic visited-board membership.
 - Directory listings are local discovery records, not membership grants or federation subscriptions.
 - Doors are optional and isolated from the core, with explicit resources, privileges, lifecycle, and return/recovery behavior.
 - Text/ASCII remains useful; ANSI capabilities and legacy encodings need a compatibility contract.
@@ -111,3 +111,14 @@ eight-session defaults. The worker backend remains a tested rollback path using
 the same schema. Historical executed bytes are preserved under `evidence/`;
 new service evidence pins current sources directly. Operational integration does
 not accept production confinement, complete budgets or general 250-user capacity.
+
+## File/identity/mail extension seams
+
+Owner-selected [SFTP file areas](../docs/file-areas.md) and
+[native-client home identity/encrypted mail](../docs/private-mail.md) use the
+[scoped extension contracts](extension-contracts.md). ADRs 0030/0031 distinguish
+accepted requirements from unselected runtimes, SFTP handlers, E2EE profiles and
+visiting-board auth protocols. No current login/database migration is introduced
+by these design records. Never move member-side plaintext/decryption into a BBS
+helper to preserve the old thin-SSH UI. #83 builds local files; #84 proves the
+separate home/client/mail model. Native games remain optional host adapters.

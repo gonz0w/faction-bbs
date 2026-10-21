@@ -4,6 +4,15 @@ Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [
 
 ## Product-first sequencing
 
+Latest owner steering: **local SFTP file areas (#83) first**, with native local
+client/home identity/encrypted mail research (#84) alongside. Use independent
+invited home authorities, member-held keys and separately approved communities.
+No BBS/home server reads this private mail; ordinary SSH still serves local BBS
+features. See ADRs 0030/0031 and [extension contracts](extension-contracts.md).
+Pause game expansion under #81 while preserving DOS/Amiga/other-host adapters.
+XMPP/OMEMO/visiting auth are unvalidated candidates, not new runtime dependencies.
+These explicit mail/identity capabilities supersede older chat-only wording below.
+
 The owner explicitly redirected work toward a running product for ordinary users
 on 2026-10-21. [#71](https://github.com/gonz0w/faction-bbs/issues/71) supplies the
 [small-board install/member journey](../docs/quickstart-netbsd.md): eight-session
@@ -62,7 +71,7 @@ No live provider, publication, financial operation or production sandbox is adop
 
 Original-game compatibility, broader file/mail features, customization, imports, operational tooling, optional/private HTTP access, subscribed shared-chat federation, Reticulum, and mesh/store-and-forward experiments have different dependencies. Research leads may begin early; product support requires later evidence and explicit acceptance.
 
-Only shared chat may federate. Boards, files, mail, games, directories, local-only channels, and local accounts/approval remain local. A separate optional public-publishing module is under research; it is never an implicit export of private core data. Alternative-network research must not make every deployment run every adapter. No release date or production support commitment is set.
+Shared chat, addressed device-encrypted mail and scoped home-identity proofs may cross boards. Rooms, files, games, directories, local-only channels and local accounts/approval stores remain local; visited boards do not replicate home mailboxes. A separate optional public-publishing module is under research; it is never an implicit export of private core data. Alternative-network research must not make every deployment run every adapter. No release date or production support commitment is set.
 
 Memory/scaling now proceeds under [plan 0014](plans/0014-memory-scaling.md): bounded
 credential work, native whole-VM/process/SSH metrics, guarded distinct-account

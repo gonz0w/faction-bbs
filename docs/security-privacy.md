@@ -21,7 +21,7 @@ Status: mandatory design constraints and open research. Narrow local authorizati
 ## Optional extensions and external publication
 
 - Optional helpers must not inherit unrestricted local-room/file, publication or spending access. The host rechecks current identity, approval, room scope and grants for every action; remote signatures/payments never grant local membership.
-- A proposed public/permanent publishing room is separate from private local rooms and chat-only BBS federation. Require deliberate exact-content/destination disclosure and author intent; never silently export private history. Remote copies may outlive local moderation/deletion.
+- A proposed public/permanent publishing room is separate from private local rooms and the explicitly scoped chat/mail/identity federation. Require deliberate exact-content/destination disclosure and author intent; never silently export private history. Remote copies may outlive local moderation/deletion.
 - Payment models remain under comparison, including external wallets and separate sysop services. Keep order intent, signing/custody, settlement and entitlements distinct. Current tests use synthetic data/fake providers/nonredeemable credits; no keys or funded operations.
 - Lua worker processes/API restrictions are not an OS sandbox. Production doors require restricted OS privileges, bounded resources/concurrency, terminal-safe output and reliable termination/recovery.
 
@@ -42,7 +42,7 @@ to a remote member entry point or treat an export as authority to publish data.
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.
 - Prevent terminal escape injection, path traversal, resource exhaustion, unauthorized file access, and approval bypasses.
 - Keep legacy doors and extensions optional and isolated, with bounded filesystem/network/process privileges, resource limits, and reliable session cleanup.
-- Only participating shared chat channels may federate. Local-only channels, boards, files, mail, games, directories, and account/approval data stay local.
+- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, rooms, files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards.
 - No JavaScript/TypeScript code or dependencies, including browser-terminal assets and project tooling. Track dependency provenance, licenses, updates, and supply-chain risk for the eventual stack.
 
 The [restricted SSH development gateway](restricted-ssh.md) separates the terminal
@@ -163,3 +163,20 @@ It is an experiment requiring independent privileged-loader review; native sourc
 penalties remain unchanged. Private tunnel keys/inner addresses are an optional
 network-admission identity, separate from SSH invitation and local BBS approval.
 No forwarded address claim or shared NAT establishes a member identity.
+
+## Selected encrypted-mail and file-transfer requirements
+
+The owner rejected server-readable private mail on 2026-10-21 and selected a
+native local client. Device keys and plaintext stay on member devices; an SSH
+server decrypting/rendering mail fails this requirement. Keep verified device
+enrollment, local keystore unlock, account authentication and local-board approval
+separate. Home password reset must not recover mail keys or silently add a trusted
+device. No plaintext fallback. Necessary routing/time/size metadata remains visible;
+new-device history/recovery and malicious-home key substitution require proof.
+See [private mail](private-mail.md); no implementation claim.
+
+SFTP file areas use a separate restricted service/UID and scoped grants, not a
+new subsystem on the terminal-only BBS listener. Current local approval, epoch,
+area, operation and client-key checks remain mandatory. Files stay local; partial
+uploads remain quota-charged/private until review and atomic publication. Current
+database exports do not include future file objects. See [file areas](file-areas.md).

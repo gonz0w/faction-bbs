@@ -2,7 +2,18 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-21): ordinary running product first.** Follow
+**Current priority (owner, 2026-10-21): SFTP file areas, then native-client
+home identity/encrypted mail research.** See docs/file-areas.md,
+docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
+optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
+The owner selected independent invited home servers and a native local terminal
+client. All new private mail must be device-encrypted: no server-readable fallback
+or server-side SSH decrypt/render. This explicitly supersedes the older chat-only
+federation rule for addressed mail and scoped home-identity proofs. It does not
+replicate rooms/files/local-only chat/account approval. Existing local auth stays
+until a verified adapter exists; XMPP/OMEMO is a candidate, not adopted SSO.
+
+Ordinary running product first. Follow
 [the NetBSD quickstart](docs/quickstart-netbsd.md), issue #71 and ADR 0026. Further
 combined 250-user edge cases are deferred. Research counts below are historical
 observations; old records 035/036/040 now resolve preserved rc-script versions and
@@ -156,7 +167,7 @@ network policy/tuning is automatically changed for remote games.
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.
 - Use Citadel-style message rooms, IRC-style command-driven chat, BBS menus, local file areas/mail, and optional isolated game doors. Existing games are reuse candidates, not implemented support claims.
-- Keep each sysop's identity, accounts/approval, content, files, games, directory, and local-only chat local. Only explicitly participating shared chat channels may federate in the future.
+- Keep each sysop's identity, accounts/approval, content, files, games, directory, and local-only chat local. Only explicit shared chat, addressed device-encrypted private mail and scoped home-identity proofs may cross boards in the selected future design; no automatic local-data/account replication.
 - Ordinary SSH client access with optional invitation-only private-network mode is accepted product direction; network admission/SSH identity never implies local BBS approval or host shell access. A separate terminal UID/frontend, trusted broker and member worker rollback now pass real NetBSD application SSH oracles. SSH keys grant admission only; local BBS identity/password/approval remain separate. Use the opt-in NetBSD rc.d scripts and bounded broker lifecycle (ADR 0013); never unlink a live pidfile lock. Keep the eight-session default and owner tools out of the frontend; higher worker/launch limits are explicit owner-only profiling experiments (ADR 0014), never an implicit production capacity claim. Credential work has two cross-process slots per board; never unlink live credential lock files; complete production security/resource/deployment gates remain.
 - Direct network-terminal access is central. A browser portal/console is a goal that must be optional and may be private or disabled. Do not assume public HTTP exposure.
 - Privacy, security, exportability, low bandwidth, and lightweight operation are requirements. Use minimal opt-in telemetry; never log message bodies, credentials, or private content by default.
@@ -180,7 +191,7 @@ network policy/tuning is automatically changed for remote games.
 - Physical SBC test hardware is unavailable. Build/research software on developer hosts and NetBSD VMs now; the owner will load a complete product onto hardware later. Physical tests gate hardware-specific claims, never near-term software work. Keep resource measurement and recovery/security tests.
 - Build the first useful local core first (`dev-docs/first-local-slice.md`, #35). Lua menus and isolated game doors are the first extension priority after it (#10); a boundary probe is evidence, not a production sandbox.
 - Optional permanent/public rooms, ANSI stores/payment adapters, blockchain games/wagers and modern networks are active future research. Compare both external-member-wallet and separate sysop-service models before choosing; no provider/custody/currency adopted. Follow `docs/extensions.md` and ADR 0007.
-- Automatic BBS federation stays chat-only. A public-publishing module is a separate explicit outbound category under research, never authority to export private local content. Keep external data, publication, payment requests and spending privileges distinct; no live/funded external actions are implied by prototype authorization.
+- The owner selected explicitly addressed encrypted private mail and scoped home identities in addition to optional shared chat (ADRs 0030/0031). Native member-side keys/decryption are required. A public-publishing module remains a separate explicit outbound category under research, never authority to export private local content. Keep external data, publication, payment requests and spending privileges distinct; no live/funded external actions are implied by prototype authorization.
 
 ## Work and documentation
 
