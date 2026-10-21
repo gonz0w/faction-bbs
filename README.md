@@ -39,8 +39,12 @@ bank gameplay and saved progress. This is a private software proof with one acti
 game, not a supported public game launcher. TWGS installation reached mandatory
 publisher activation, which the owner has deferred. Both original servers and
 isolated DOS hosting remain reuse paths, ahead of rewriting.
-Files, private mail, the other-BBS
-directory, federation, payments, mesh and browser access remain backlog work.
+Next is **[file areas with a separate restricted SFTP service](docs/file-areas.md)**.
+The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
+independent invited home servers, member-held keys and local approval at each
+visited board. These are design/research directions, not implemented features.
+The other-BBS directory, federation, payments, mesh and browser access remain
+backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
 including optional seasonal colors and identity screens.
 
@@ -83,7 +87,7 @@ connect -> log in / register -> local sysop approval required
 
 ## The boundaries matter
 
-Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Only participating shared chat channels may federate.** Local-only channels and other core data remain local. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
+Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Future cross-board capabilities are participating shared chat, explicitly addressed encrypted mail and scoped home-identity proofs.** Local-only channels, room/file data and local approval stores remain local; visited boards do not receive home mailboxes or decryption keys. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
 
 Privacy, security, lightweight operation, and efficient text interaction are core requirements. Telemetry must be minimal and opt-in. Constrained, intermittent, private, and future mesh networks are research targets; no alternative-network support is claimed today. Public discovery, an HTTP portal, and shared chat must not become prerequisites for operating an independent BBS.
 

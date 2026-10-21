@@ -34,8 +34,9 @@ transaction signing or spending is part of the current experiments.
 
 ## Local privacy and deliberate publication
 
-Local rooms/mail/files/accounts remain local by default; automatic BBS federation
-continues to apply only to subscribed shared chat. The proposed public publishing
+Local rooms/files/account approval remain local. The owner selected explicit
+shared chat plus addressed device-encrypted mail and scoped home identities;
+home mailboxes are not automatically replicated into visited boards. The proposed public publishing
 module is a separate, explicit outbound capability under research, not permission
 to mirror existing private rooms. It needs a distinct room type, public/permanent
 label, exact preview and deliberate author confirmation before any external send.
@@ -51,3 +52,24 @@ Do not turn a scripting API into direct database, shell or spending-key access.
 The [research and software build plan](../dev-docs/research/0010-extensible-ansi-platform.md)
 records sources, alternatives, actual probes and scoped follow-ups. GitHub Issues
 hold candidate status; these ideas do not all belong in the first release.
+
+## File, identity, mail and emulator adapters
+
+Owner direction on 2026-10-21 prioritizes [SFTP file areas](file-areas.md), then
+[native-client home identities and encrypted mail](private-mail.md). A native
+member-side client keeps keys/plaintext on member devices. Independent invited
+home servers route ciphertext; each visited sysop approves local community access.
+No permanent central account hub, password replication or plaintext mail fallback.
+XMPP/OMEMO is a reuse candidate; federation is not automatic cross-BBS login.
+
+The whole system needs [scoped versioned extension seams](../dev-docs/extension-contracts.md):
+transport, identity, file transfer/storage policy, encrypted mailbox/network,
+chat, presentation and doors. These are requirements/proposed contracts, not a
+released generic plugin SDK. Native/network helpers remain separate services;
+Lua cannot acquire raw database, filesystem, mail-key or shell authority.
+
+Game expansion pauses. Preserve other DOS titles and Amiga/other emulator hosts
+as optional adapters under #81. Each title still needs usable terminal/serial I/O,
+provenance, separate host state and failure/resource validation. A graphical-only
+game is not automatically usable in ANSI because its emulator runs. The existing
+LORD software proof and TWGS activation deferral remain unchanged.

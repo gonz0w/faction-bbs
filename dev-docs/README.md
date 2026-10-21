@@ -33,3 +33,5 @@ SSH admission continuation: [plan 0022](plans/0022-ssh-admission.md),
 - [Bounded SSH key-lookup research](research/0038-bounded-key-lookups.md), [ADR 0023](decisions/0023-bounded-key-lookups.md) and [plan 0024](plans/0024-bounded-key-lookups.md): native finite-work budget and two whole-host controls.
 
 - [Original classic-game reuse](research/0042-original-classic-games.md): native LORD proof, [compatibility patch](compatibility/README.md) and separate game-host limits.
+
+- [Scoped extension contracts](extension-contracts.md) — file/identity/mail/door boundaries and selected next increments.

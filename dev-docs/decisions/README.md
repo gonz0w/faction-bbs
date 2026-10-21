@@ -52,3 +52,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0028: Local arcade bests under host-owned run authority](0028-local-arcade-scores.md)
 
 - [0029: Fixed classic-server door](0029-classic-server-door.md) — original remote game execution with bounded local parsing.
+
+- [0030: File areas and transfer adapters](0030-file-areas-and-transfer-adapters.md); [0031: Home identities and client-encrypted mail](0031-home-identities-and-client-encrypted-mail.md).
