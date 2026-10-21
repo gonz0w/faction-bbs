@@ -1,7 +1,7 @@
 # 0022: Bounded SSH admission and abuse costs
 
 Issue: [#55](https://github.com/gonz0w/faction-bbs/issues/55), related #19/#20/#28.
-Status: implementation/native/host validation complete; focused PR and CI pending. #64 merged at `0c668ec`.
+Status: implementation/native/host validation complete; [PR #65](https://github.com/gonz0w/faction-bbs/pull/65) opened. GitHub check state is authoritative. #64 merged at `0c668ec`.
 
 ## Goal and constraints
 
@@ -24,7 +24,7 @@ No physical hardware, JS/TS, per-IP member tracking or automatic host/firewall t
   seed integrity/counts and private VM/key/log/disk/forward cleanup.
 - [x] Final host evidence/repository checks: 52 Python tests; all prior saved
   evidence/source checks pass.
-- [ ] Focused PR and required exact-head CI.
+- [x] Focused PR #65 created; required CI is tracked in GitHub before merge.
 
 ## Findings and current candidate
 
