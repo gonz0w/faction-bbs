@@ -3,7 +3,7 @@
 import json
 import subprocess
 from pathlib import Path
-from check_rust_dependencies import ROOT,INVENTORY,TARGETS,SUFFIXES,MANIFESTS
+from check_rust_dependencies import ROOT,INVENTORY,TARGETS,SUFFIXES,MANIFESTS,reviewed_subset
 
 
 def check():
@@ -17,7 +17,7 @@ def check():
         for p in data['packages']:
             if p['id'] not in selected or p['source'] is None:continue
             row={'name':p['name'],'version':p['version'],'license':p['license'],'features':sorted(selected[p['id']])}
-            assert expected.get((p['name'],p['version']))==row,'unreviewed experiment dependency/features'
+            assert reviewed_subset(row,expected.get((p['name'],p['version']))),'unreviewed experiment dependency/features'
             for f in Path(p['manifest_path']).parent.rglob('*'):
                 assert not (f.is_file() and (f.suffix.lower() in SUFFIXES or f.name in MANIFESTS)),'prohibited dependency source'
                 assert not (f.is_dir() and f.name=='node_modules'),'prohibited dependency directory'

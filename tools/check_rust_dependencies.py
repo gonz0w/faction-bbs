@@ -20,6 +20,14 @@ MANIFESTS = {'package.json', 'package-lock.json', 'npm-shrinkwrap.json', 'yarn.l
              'pnpm-lock.yaml', 'bun.lock', 'bun.lockb', 'deno.json', 'deno.jsonc'}
 
 
+def reviewed_subset(actual, expected):
+    """Standalone graphs may select fewer of the reviewed additive features."""
+    return (expected is not None
+            and {k: v for k, v in actual.items() if k != 'features'}
+            == {k: v for k, v in expected.items() if k != 'features'}
+            and set(actual['features']).issubset(expected['features']))
+
+
 def inventory():
     graphs = {}
     for target in TARGETS:

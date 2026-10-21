@@ -64,3 +64,12 @@ not tested/adopted. The first preview deliberately uses conservative fixed caps.
 Follow-ups remain separately scoped: self-service cancellation/partial retention,
 configurable policy caps, more client interoperability, classic in-session transfer
 adapters and native-client/home identity/encrypted mail (#84). Files remain local.
+
+The first PR CI run exposed stale standalone experiment lockfiles after the core's
+base64 addition. Refresh only those four current lockfiles; leave the historical
+measured versions in the frozen snapshots. The research UI explicitly keeps Files
+unavailable. Dependency checks allow a standalone feature subset of the reviewed
+workspace graph while retaining exact package/version/license and no-JS checks;
+unknown features/versions/licenses are rejected. All four Rust-1.96 research builds/
+lints, both applicable research test suites, dependency checks and unchanged saved
+evidence checks pass. This compatibility work is not a new native capacity trial.
