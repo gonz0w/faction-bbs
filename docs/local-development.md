@@ -1,10 +1,13 @@
 # Try the local core
 
-Updated 2026-10-19. Early development software, not a network BBS release. This
+For the networked hobby board, use the [NetBSD first-install guide](quickstart-netbsd.md).
+This page covers the local owner console and development checks.
+
+Updated 2026-10-21. Early development software, not a network BBS release. This
 console exercises real accounts, local sysop approval and durable Citadel-style
 rooms. It opens no listener and needs no HTTP, SSH, remote service or JavaScript.
-NetBSD remains the primary product target; this new application increment has
-developer-host evidence only. Earlier NetBSD dependency probes are separate.
+NetBSD remains the primary product target. The application and actual terminal/SSH
+workflows have native NetBSD 11 ARM64 VM evidence; physical SBCs remain untested.
 
 ## Build and enter
 

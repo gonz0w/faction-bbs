@@ -2,6 +2,7 @@
 """Validate current sealed-profile evidence and its rejected allocation candidate."""
 import hashlib,json,re
 from pathlib import Path
+from evidence_sources import source_bytes
 from check_integrated_evidence import ROOT,validate_sources
 from check_confinement_evidence import validate_limits
 from check_ui_evidence import unpack,validate_trial
@@ -14,7 +15,7 @@ def validate_rejected(candidate,root=ROOT):
     for name,digest in candidate['execution_sources'].items():
         relative=Path(replacements.get(name,name))
         assert not relative.is_absolute() and '..' not in relative.parts
-        assert hashlib.sha256((root/relative).read_bytes()).hexdigest()==digest,'rejected source drift: '+name
+        assert hashlib.sha256(source_bytes(relative.as_posix(),digest,root)).hexdigest()==digest,'rejected source drift: '+name
     assert len(candidate['trials'])==2
     minima=[]
     for trial in candidate['trials']:
@@ -33,7 +34,7 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
     assert d['schema']==1 and d['target']=='aarch64-unknown-netbsd'
     assert d['reference_commit']=='473feb479c7544b10e91515f9d7b22e4ab9b494c'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
-    sources=d['execution_sources'];validate_sources(sources,root=root)
+    sources=d['execution_sources'];validate_sources(sources,root=root,historical=True)
     for name in ['native/faction-isolation/startup.c','tools/prepare_isolation.py','tools/build_isolation.py',
                  'deploy/netbsd/faction_isolated','tools/check_isolation_lifecycle.py',
                  'tools/check_isolation_scaling.py','tools/check_isolation_host.py',

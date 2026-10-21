@@ -26,7 +26,7 @@ def check():
     assert d['schema']==1 and d['target']=='aarch64-unknown-netbsd'
     assert d['reference_commit']=='627a8241bf736db2371938641d8bef88785d374a'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
-    sources=d['execution_sources'];validate_sources(sources)
+    sources=d['execution_sources'];validate_sources(sources,historical=True)
     for name in ['Cargo.toml','Cargo.lock','crates/faction-service/src/main.rs',
                  'crates/faction-service/src/ui.rs','crates/faction-unix/src/process_security.c',
                  'crates/faction-unix/src/lib.rs','crates/faction-unix/build.rs',
@@ -66,7 +66,7 @@ def check():
     assert any(row[0]=='ntpd' and row[3]>0 for row in settings['restored']['host']['processes'])
     assert d['final_fixture']=={'integrity':'ok','accounts':1001,'unique_hashes':1001,'rooms':50,'posts':100000}
     assert all(d['cleanup'][k] for k in ['guest_stopped','private_inputs_removed','forwards_closed'])
-    print('Native confinement evidence passed: current source pins, kernel ceilings/peer denials, three 250-member boots; minimum %.2f MiB.'%(min(minima)/1024/1024))
+    print('Native confinement evidence passed: preserved executed source pins, kernel ceilings/peer denials, three 250-member boots; minimum %.2f MiB.'%(min(minima)/1024/1024))
 
 
 if __name__=='__main__':check()

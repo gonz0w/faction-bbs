@@ -4,6 +4,21 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Prioritize the ordinary small-board product over further combined 250-user
+  edge-case research. Add a native NetBSD first-install helper with read-only
+  preflight, protected owner/terminal accounts, restricted invitation keys,
+  editable ANSI theme and eight-session defaults. Installation never starts a
+  listener; boot services stay disabled until the sysop enables them.
+- Fix ordinary boot availability: detach the existing shared/worker backend via
+  a non-setuid helper executing as its service owner; retry the dedicated SSH
+  listener's exact interface for up to 30 seconds and verify the daemon pidfile.
+  No new resident supervisor, wildcard binding or host tuning. Preserve old rc
+  script execution bytes and unchanged historical capacity records.
+- Add the complete sysop/member quickstart and a disposable-VM SSH rehearsal for
+  bootstrap, pending approval, themed arrow/hotkey menus, rooms/chat, normal
+  restart/reboot and private export. Keep experimental isolation/admission and
+  host tuning separate. Lead the README with the runnable product path.
+
 - Add an opt-in listener-only global SSH admission experiment: fixed 120-byte
   persistent root budget, 32 volatile source shares, original peer sockets and
   unchanged base penalties/crypto/local approval. No proxy or resident daemon;

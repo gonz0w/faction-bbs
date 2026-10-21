@@ -2,6 +2,12 @@
 
 ## Read first
 
+**Current priority (owner, 2026-10-21): ordinary running product first.** Follow
+[the NetBSD quickstart](docs/quickstart-netbsd.md), issue #71 and ADR 0026. Further
+combined 250-user edge cases are deferred. Research counts below are historical
+observations; old records 035/036/040 now resolve preserved rc-script versions and
+must not be presented as measurements of the new normal startup helper.
+
 Read `README.md`, `docs/project.md`, `docs/security-privacy.md`, `dev-docs/roadmap.md`, and the relevant GitHub issue before proposing or changing work. Follow `dev-docs/workflow.md`. This is an early implementation/research project: Rust/primary NetBSD direction is selected (ADR 0006); a local account/room core and development console exist (ADR 0008), with opt-in bounded ANSI menus/declarative themes (ADR 0009), BBS-local bounded chat (ADR 0010), owner-only private export/verify/restore (ADR 0011) and a restricted SSH development gateway with native NetBSD app evidence (ADR 0012). There is no supported network BBS release or accepted complete production stack.
 The maintained `crates/faction-service` now promotes the full shared UI into the
 opt-in NetBSD rc.d path, using strict root/owner TOML configuration, native
@@ -81,6 +87,19 @@ snapshots remain authoritative. Preserve bytes before edits, never refresh old
 hashes. Independent authority review, preauth/lookup CPU floods, NAT fairness,
 complete budgets/soak and maintained host policy remain gates; #55 stays open.
 
+## Ordinary small-board startup
+
+Issue #71 / ADR 0026 prioritize docs/quickstart-netbsd.md. Build/install the
+unprivileged non-setuid `faction-daemon` with the normal rc script. It detaches
+before exec of the fixed shared/worker backend with fixed environment; there is
+no resident supervisor or per-member helper. Preserve real backend pidfile/socket
+readiness and live lock inodes. The dedicated SSH script follows LOGIN, retries
+only its configured interface for up to 30 seconds, and checks the actual daemon
+pidfile rather than the parent's successful return. Never silently bind wildcard,
+change host networking, add experimental profiles or start services in setup.
+Old 035/036/040 records now resolve preserved rc bytes and have pinned record
+identities. They do not claim current boot changes were measured at 250 users.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.
@@ -97,6 +116,14 @@ complete budgets/soak and maintained host policy remain gates; #55 stays open.
 - Honor the ANSI/ASCII, underground scene, and sysop customization direction without trading away access control, accessibility, or a usable plain-text baseline. Oblivion/2-inspired arrow-key highlighting + Enter and direct displayed hotkeys are owner requirements (`[D]oors` -> D/d); both routes use the same authorized action. Themes are sysop-defined, including optional seasonal palettes/login identity screens. Use `docs/menus-and-themes.md` and the attributed #25 art reference catalog: ACiD/iCE ANSI and Razor/scene ASCII typography inform art direction; generic block-font placeholders are not approved identity art. Never bundle archived work without rights/provenance.
 
 ## Current sequencing
+
+- Owner steering on 2026-10-21: prioritize a running product for ordinary users;
+  defer further edge-case and combined 250-user research. Start from the ordinary
+  eight-session shared SSH/ANSI/rooms/chat path in docs/quickstart-netbsd.md and
+  issue #71. Improve setup and member/sysop workflows, then Lua menus/isolated
+  doors. Keep existing approval, credential and access protections. Experimental
+  isolation/admission/host-tuning adoption is not a first-preview prerequisite;
+  preserve incomplete #70 findings without claiming its full matrix passed.
 
 - Physical SBC test hardware is unavailable. Build/research software on developer hosts and NetBSD VMs now; the owner will load a complete product onto hardware later. Physical tests gate hardware-specific claims, never near-term software work. Keep resource measurement and recovery/security tests.
 - Build the first useful local core first (`dev-docs/first-local-slice.md`, #35). Lua menus and isolated game doors are the first extension priority after it (#10); a boundary probe is evidence, not a production sandbox.

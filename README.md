@@ -10,92 +10,47 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
-**Early working core · updated 2026-10-21 · local console and restricted SSH development gateway; no supported release.**
+**Working hobby preview · updated 2026-10-21 · Rust on NetBSD; no supported release yet.**
 
-The working Rust core provides approved local accounts, hidden-password login,
-Citadel-style rooms/replies/unread cursors, bounded local IRC-style chat, sysop
-controls and private export/restore. [Try the local console](docs/local-development.md).
-[Sysop theme packs](docs/theme-packs.md) support ANSI arrows/Enter and displayed
-hotkeys, safe CP437 identity, manual seasons and plain/resize recovery.
+Faction already runs an approved-membership board with hidden-password login,
+ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
+controls and private export/restore. Arrows/Enter and displayed hotkeys both work.
+No JavaScript/TypeScript or public HTTP service is required.
 
-The maintained [shared terminal backend](docs/shared-service.md) now runs this full
-UI through the actual NetBSD rc.d/SSH path. It uses strict owner configuration,
-base OpenSSH, a separate terminal UID and small native terminal frontend. Services
-are opt-in, with **eight sessions by default** and tested worker rollback using the
-same database. [Setup and lifecycle](docs/service-lifecycle.md).
-**Rust is selected; NetBSD is the primary target.** No JavaScript/TypeScript or
-public HTTP service is required. Software/VM validation drives development;
-physical SBC tests follow a usable product.
+**[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
+run the first-install preflight/helper, initialize your sysop and explicitly start
+the dedicated SSH service. The normal shared backend starts with **eight sessions**.
+The installer leaves services disabled and binds loopback unless you choose a
+specific interface. You can also [try the local console](docs/local-development.md).
 
-The service/native frontend now verify both local socket peers, sanitize inherited
-authority and apply irreversible process/thread/descriptor/core/locked-memory
-ceilings. [Exact confinement boundary](docs/process-confinement.md).
+The immediate priority is a useful small board: straightforward setup, an
+individual BBS identity, rooms, chat and recovery. **Lua menus and isolated game
+doors are the next extension priority.** Files, private mail, the other-BBS
+directory, federation, payments, mesh and browser access remain backlog work.
+Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
+including optional seasonal colors and identity screens.
 
-An opt-in [filesystem/exec and IP-policy profile](docs/experimental-isolation.md)
-now runs the same UI inside a minimal noexec root after native privilege drop.
-It uses explicit group/user NPF rules and a separately installed **setuid frontend**.
-This adds trusted startup code and remains experimental pending independent review.
-Ordinary binaries and worker rollback remain available; setup never replaces an
-operator firewall or silently tunes the host.
+Native software validation uses a **NetBSD 11 ARM64 VM**. Physical SBCs and other
+NetBSD ports remain untested. The maintained service uses base OpenSSH, a separate
+terminal identity, private SQLite state and a small native terminal frontend;
+[service lifecycle and worker rollback](docs/service-lifecycle.md) remain available.
+Read the [security boundary](docs/process-confinement.md) before deployment.
 
-An opt-in [SSH key-admission profile](docs/experimental-admission.md) now caps
-reserved/authenticated monitors with a dedicated helper UID and a persistent
-process-birth registry. It retains base SSH preauthentication controls and adds
-no resident admission daemon. Local BBS login and approval remain separate.
+The earlier 250-member memory/admission work is preserved as
+[engineering evidence](dev-docs/research/README.md), with
+[experimental isolation](docs/experimental-isolation.md),
+[key admission](docs/experimental-admission.md) and
+[global admission](docs/experimental-global-admission.md) kept separate from normal
+setup. Combined-pressure/recovery, host timing, long soaks and independent
+privileged-code review stay open. **250 is a research target, not supported
+capacity.** These experiments and physical hardware tests do not block building
+the ordinary small-board experience.
 
-Two fresh-boot **250-distinct-member runs** now include a **15-minute active
-interval** each: rotating chat senders, 423,798 confirmed peer deliveries,
-room/read/post cycles, fresh logins, busy input and silent SSH pressure. All
-sampled guards, post-load controls and recovery checks pass on the 2-vCPU / 1-GiB
-NetBSD 11 ARM64 VM. Minimum active headroom is **152.97 MiB**; minimum stress/control
-headroom is **133.13 MiB**, with zero swap and full SSH/frontend/base-service costs.
-[Native evidence and limits](dev-docs/research/0037-sustained-abuse.md).
-
-The [bounded key-lookup follow-up](dev-docs/research/0038-bounded-key-lookups.md)
-now charges at most **four lookups per SSH monitor** and requires explicit,
-quiescent registry migration. Eight known-key adversaries produce at most 32
-key-file reads/commits across 56 helper executions; exhausted calls avoid repeated
-key/state IO and cohort liveness scans. Ordinary SSH and local approval still work.
-Two further fresh-boot 250-member matrices pass: minimum active **155.14 MiB**,
-minimum stress **130.36 MiB**, zero swap. Three-minute abuse/recovery intervals
-retain useful chat (250 members before/after, 249 while testing fresh admission).
-
-The [global SSH admission experiment](dev-docs/research/0039-global-ssh-admission.md)
-now bounds accepted sockets before base OpenSSH forks using a listener-only native
-library, fixed 120-byte persistent budget and 32 volatile source slots. It adds
-no resident daemon or proxy. Native fork/restart/reboot/failure tests pass; the
-module disappears at session exec. **OpenSSH penalties remain unchanged.** Two
-private tunnel peers sharing one outer address pass separate-source penalties,
-fresh approved BBS/chat and forged-source UDP controls. Native NetBSD WireGuard
-remains experimental; this does not establish 250 private-peer support.
-
-Two new fresh-boot 250-member matrices pass every unchanged sampled guard:
-**132.86 MiB minimum stress headroom**, **141.14 MiB during bounded TCP pressure**,
-zero swap and 34,611 confirmed peer chat deliveries. The second includes two
-configured private peers in server accounting. Independent privileged-loader
-review, broader combined worst-case loads, readiness/host timing and long soaks
-remain open; retained preflight/setup failures are documented. See the
-[experimental boundary and rollback](docs/experimental-global-admission.md).
-
-The 250-session configuration and compact-allocator/pageable-NTP profile remain
-explicit research inputs. **Eight remains the default.** Native source penalties
-still temporarily deny legitimate callers sharing a source; finite lookup work
-is not a global TCP/fork-rate bound. CPU counters, broader overlaps/long soaks,
-complete budgets, independent authority review and maintained host policy remain
-gates. These software observations are not supported capacity or physical SBC
-claims. [Earlier admission evidence and rejected candidate](dev-docs/research/0036-ssh-admission.md)
-and [historical executed sources](dev-docs/evidence/README.md) are preserved.
-There is no supported network release.
-
-The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
-
-**Selected direction: Rust on NetBSD; local identity/rooms now use SQLite WAL ([ADR 0008](dev-docs/decisions/0008-local-core-and-credentials.md)).** The [native comparison](dev-docs/research/0004-runtime-comparison.md) and [storage/recovery research](dev-docs/research/0009-local-storage-comparison.md) support this proposed experiment choice. The owner has accepted Rust/NetBSD in [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md). [ADR 0005](dev-docs/decisions/0005-rust-sqlite-validation-slice.md) defines the integrated security/hardware tests required before production adoption. [ADR 0007](dev-docs/decisions/0007-software-first-and-extension-direction.md) makes physical SBC testing a later hardware-claim gate, not a prerequisite for software work.
-
-[SSH access with optional private-network-only operation](dev-docs/decisions/0004-ssh-and-optional-private-network.md) is accepted product direction. [Native NetBSD 11 ARM64 checks](dev-docs/research/0023-netbsd-dependencies.md) passed for Mio, bundled/pkgsrc SQLite and nine restricted OpenSSH gateway oracles. A separate frontend/broker/member-worker gateway now passes complete application and real SSH tests on NetBSD 11 ARM64; native CMSG portability required a small explicit C/FFI bridge. Production backend/capacity, minimal appliance and real SBC behavior remain unvalidated. [The roadmap](dev-docs/roadmap.md) separates research from future capabilities; [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) track the work.
-
-The [first local software slice](dev-docs/first-local-slice.md) gives the core a concrete finish line. **Lua menus and isolated game doors come next.** A [16-oracle Rust/Lua boundary probe](dev-docs/research/0010-extensible-ansi-platform.md) now exercises synthetic approval/capability checks, worker limits and crash/deadline cleanup on the developer host; it is not a released plugin sandbox. [Optional extension research](docs/extensions.md) covers permanent-message rooms, modern networks, ANSI shops, payment models and game economies without requiring them in the core.
-
-[Menu and art direction](docs/menus-and-themes.md): Oblivion/2-inspired arrow-key highlighting plus direct hotkeys, sysop-defined themes and optional seasonal identity screens. ACiD/iCE ANSI and Razor/scene ASCII typography guide the visual reference work; no historical artwork is bundled.
+[Project direction](docs/project.md), [the roadmap](dev-docs/roadmap.md) and
+[GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) separate the working
+core from future features. Rust/primary NetBSD is selected in
+[ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md); local storage and
+identity use SQLite WAL under [ADR 0008](dev-docs/decisions/0008-local-core-and-credentials.md).
 
 ## Enter the board
 

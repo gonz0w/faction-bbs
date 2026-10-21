@@ -53,7 +53,9 @@ other frontends/TTYs. No hostile-code isolation or anonymity guarantee follows.
 Build the workspace with Rust 1.96+ and a native C compiler; both bundled SQLite
 and the small NetBSD descriptor bridge use C. Run tests first (`cargo test --workspace --release --locked` and
 `cargo build --workspace --release --locked`). Build the maintained native
-frontend with `python3 tools/build_terminal_frontend.py --output target/release/faction-tty`.
+frontend with `python3 tools/build_terminal_frontend.py --output target/release/faction-tty`
+and the unprivileged startup helper with
+`python3 tools/build_service_daemon.py --output target/release/faction-daemon`.
 Its small C boundary passes native descriptor/TTY and static-analysis checks; it
 requires manual bounds/lifetime review and currently targets NetBSD only. These commands
 describe deliberate root setup **on the target NetBSD system**, not an installer
@@ -67,7 +69,7 @@ useradd -g factionipc -d /home/factionterm -s /bin/sh factionterm
 install -d -o factiond -g factionipc -m 700 /home/factiond /var/db/faction
 install -d -o root -g wheel -m 755 /home/factionterm /usr/local/libexec /etc/ssh/faction
 install -d -o factiond -g factionipc -m 710 /var/run/faction
-install -o root -g wheel -m 755 target/release/faction target/release/faction-member target/release/faction-ssh target/release/faction-broker target/release/faction-service target/release/faction-tty /usr/local/libexec/
+install -o root -g wheel -m 755 target/release/faction target/release/faction-member target/release/faction-ssh target/release/faction-broker target/release/faction-service target/release/faction-tty target/release/faction-daemon /usr/local/libexec/
 su - factiond -c '/usr/local/libexec/faction --state-dir /var/db/faction init'
 ```
 

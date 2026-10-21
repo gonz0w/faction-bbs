@@ -1,8 +1,10 @@
 # First local software slice
 
-Status: build underway under #35, 2026-10-19. Owner accepts core first,
-software/VM validation now, Lua menus/isolated doors next. This plan gives the
-implementation a finish line; it does not claim a complete product exists.
+Status: working local core; small-board setup under #71, 2026-10-21. Owner accepts core first,
+software/VM validation now, Lua menus/isolated doors next. The owner now prioritizes the ordinary running product over further edge-case
+research. The [NetBSD quickstart](../docs/quickstart-netbsd.md) is the first-preview
+path. Further 250-user combined-pressure/profile adoption stays deferred;
+existing approval/credential/access protections remain.
 
 First increment: [local identity/room core and console](../docs/local-development.md),
 [ADR 0008](decisions/0008-local-core-and-credentials.md). Steps 1 and 3 have partial
@@ -27,7 +29,7 @@ server-level fan-out, rate limits and network output enforcement remain open.
 | 2 | Approved session -> safe board identity/art -> sysop welcome -> menu; useful ASCII fallback | #13/#21/#25/#29: malicious controls cannot execute terminal actions; arrow highlight/Enter and direct hotkeys route identically, sysop theme surfaces exercised; bounded input/output, screen limits, partial input and disconnect cleanup tested |
 | 3 | Local Citadel room list/enter/read/unread/post/reply baseline with durable IDs | #9/#12: transactions and current room/membership checks, retry-after-lost-ack reconciliation, export/backup/restore and restart tests |
 | 4 | BBS-local command chat and a second simultaneous member | #26: channel ACLs, bounded fan-out/slow readers, membership revoke and reconnect behavior; no federation required |
-| 5 | Ordinary SSH access and sysop-run VM setup/recovery | #18/#23: real identity mapping, no member host shell/exec/SFTP/forwarding; optional HTTP/overlays absent; named NetBSD VM tests and 100/250-session load accounting |
+| 5 | Ordinary SSH access and sysop-run VM setup/recovery | #18/#23: real identity mapping, no member host shell/exec/SFTP/forwarding; optional HTTP/overlays absent; named NetBSD VM setup, normal restart/reboot and recovery; 100/250 capacity is a separate research target |
 | 6 | Extension seam and first Lua menu/door | #10/#11: scoped host commands, explicit activation/revoke/version/cleanup, bounded helpers; a broken door returns safely without corrupting local data |
 
 Steps 1–5 define the first useful local core. Step 6 is the first extension track,

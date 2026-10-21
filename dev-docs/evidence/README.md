@@ -57,3 +57,13 @@ complete unchanged record. The resolver pins that manifest independently; all
 four snapshots and twelve historical records are verified. New result 040 checks
 its current source bytes directly. Records 035/036 retain their unmodified direct
 pins; neither historical records nor their original manifests were refreshed.
+
+The small-board boot fix changes the normal rc script. Its actual old bytes
+(`6d5fe76f…`) are already present in the fourth snapshot. Results 035, 036 and 040
+now resolve their historical execution maps through the existing source resolver;
+their complete unchanged JSON records are independently pinned by
+`check_evidence_sources.py`. Four source snapshots and fifteen result identities
+are checked. New ordinary-install/boot observations are documented separately;
+none of the historical capacity matrices is claimed to have measured the new rc
+script or startup helper. Preserve other still-current measured inputs before
+future changes. No old record or snapshot hash was refreshed.

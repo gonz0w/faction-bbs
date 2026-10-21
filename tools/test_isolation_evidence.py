@@ -17,8 +17,8 @@ class IsolationEvidence(unittest.TestCase):
         with self.assertRaises(AssertionError):validate(d)
         d=copy.deepcopy(self.record);d['rejected_named_sysctl_candidate']['trials'][0]['minimum_bytes']=128*1024*1024
         with self.assertRaises(AssertionError):validate(d)
-    def test_native_input_change_is_current_source_failure(self):
+    def test_native_input_change_is_historical_source_failure(self):
         d=copy.deepcopy(self.record);d['execution_sources']['native/faction-isolation/startup.c']='0'*64
-        with self.assertRaisesRegex(AssertionError,'execution drift'):validate(d)
+        with self.assertRaisesRegex(AssertionError,'executed source bytes changed'):validate(d)
 
 if __name__=='__main__':unittest.main()

@@ -2,6 +2,7 @@
 """Check saved SSH admission denials, live accounting and unchanged memory guards."""
 import hashlib,json,re
 from pathlib import Path
+from evidence_sources import source_bytes
 from check_integrated_evidence import ROOT,validate_sources
 from check_ui_evidence import validate_trial,unpack
 from check_confinement_evidence import validate_limits
@@ -64,7 +65,7 @@ def validate(d,root=ROOT,allow_pending_cleanup=False):
     for name,digest in rejected['inputs']['execution_sources'].items():
         name=rejected['inputs']['source_overrides'].get(name,name)
         path=Path(name);assert not path.is_absolute() and '..' not in path.parts
-        assert hashlib.sha256((root/path).read_bytes()).hexdigest()==digest,'rejected input drift: '+name
+        assert hashlib.sha256(source_bytes(path.as_posix(),digest,root)).hexdigest()==digest,'rejected input drift: '+name
     failed=0
     for trial in rejected['trials']:
         assert trial['measurement']['completed_stage']==250
