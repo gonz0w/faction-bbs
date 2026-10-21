@@ -3,9 +3,10 @@
 Faction's optional classic doorway connects an approved member's terminal to a
 sysop-selected Telnet game server. The original game runs on that separate
 server or compatibility host. Faction does not rewrite it or launch a local DOS
-executable. This connector has owned-fixture NetBSD SSH evidence; **no original
-TradeWars/LORD title has yet been played through it**. See the
-[reuse inventory](../dev-docs/research/0041-classic-door-reuse.md).
+executable. The connector has owned-fixture NetBSD SSH evidence and a narrow
+[original LORD 4.06 software proof](original-lord.md) on a separate native NetBSD
+game VM. TradeWars gameplay remains unvalidated; publisher activation is deferred.
+See the [reuse inventory](../dev-docs/research/0041-classic-door-reuse.md).
 
 Both original game servers and isolated original DOS binaries are accepted reuse
 paths. [#79](https://github.com/gonz0w/faction-bbs/issues/79) tracks actual TradeWars
@@ -90,8 +91,10 @@ window-size negotiation, CP437-to-UTF-8 display, classic 16-color SGR and bounde
 cursor/clear/save/restore operations. Unknown options are refused. Clipboard/title
 strings, device queries, alternate buffers and unsupported terminal commands
 never pass through to the member terminal. RIP/sixel/graphics, arbitrary UTF-8
-server streams, 256-color/truecolor, auto-login, rlogin/dropfiles and title-specific
-terminal quirks are outside this first connector.
+server streams, 256-color/truecolor, auto-login, automatic rlogin/dropfile
+generation and general title-specific terminal emulation are outside this connector. The original LORD proof adds a
+narrow discarded legacy RIP probe and 255-left cursor return; it never enables
+RIP or forwards terminal queries.
 
 The game executes remotely; only bounded safe-Rust network/terminal parsing runs
 in the shared backend. This expands its protocol surface and trusts that Rust/OS

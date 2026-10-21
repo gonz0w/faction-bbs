@@ -42,3 +42,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0023 Sustained activity and abuse](0023-sustained-abuse.md) — 250-member active workload and unchanged guard.
 
 - [0024: Bound SSH helper lookup work](0024-bounded-key-lookups.md) — #66 execution and validation.
+
+- [0031: Run original DOS and TradeWars games](0031-original-classic-games.md) — unchanged LORD software proof; TWGS activation owner-deferred.

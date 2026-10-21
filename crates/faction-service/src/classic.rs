@@ -375,6 +375,12 @@ impl Codec {
                     }
                     self.csi.clear();
                     self.escape = Escape::Text;
+                } else if byte == b'\r' && self.csi == b"!" {
+                    // Original LORD ends its legacy RIP probe ESC [ ! with CR.
+                    // Discard that query; never send it to the member terminal.
+                    self.csi.clear();
+                    self.escape = Escape::Text;
+                    out.push('\r');
                 } else if (0x20..=0x3f).contains(&byte) {
                     self.csi.push(byte);
                     if self.csi.len() > 48 {
@@ -434,7 +440,9 @@ fn safe_csi(params: &[u8], end: u8) -> bool {
             .iter()
             .all(|v| matches!(v,0|1|2|4|5|7|22|24|25|27|30..=37|39|40..=47|49|90..=97|100..=107)),
         b'H' | b'f' => n.len() <= 2 && n[0] <= 100 && n.get(1).is_none_or(|v| *v <= 240),
-        b'A' | b'B' | b'C' | b'D' | b'E' | b'F' | b'G' => n.len() == 1 && n[0] <= 240,
+        b'A' | b'B' | b'C' | b'E' | b'F' | b'G' => n.len() == 1 && n[0] <= 240,
+        // Classic art uses 255-left to reach the start of an <=240-column line.
+        b'D' => n.len() == 1 && n[0] <= 255,
         b'd' => n.len() == 1 && n[0] <= 100,
         b'J' | b'K' => n.len() == 1 && n[0] <= 2,
         b's' | b'u' => params.is_empty(),
@@ -496,6 +504,29 @@ mod tests {
         }
         assert_eq!(out, "Hello░▒▓█\r\nOK");
         assert_eq!(CP437.chars().count(), 128);
+    }
+    #[test]
+    fn original_lord_rip_probe_is_discarded_and_art_can_return_to_column_one() {
+        let bytes = b"\x1b[!\r\n\x1b[255DTitle\x1b[!p\x1b[6n";
+        for ansi in [false, true] {
+            for split in 0..=bytes.len() {
+                let mut codec = Codec::new(ansi, (80, 25));
+                let (a, reply) = codec.feed(&bytes[..split]).unwrap();
+                let (b, rest) = codec.feed(&bytes[split..]).unwrap();
+                assert!(reply.is_empty() && rest.is_empty());
+                assert_eq!(
+                    a + &b,
+                    if ansi {
+                        "\r\n\x1b[255DTitle"
+                    } else {
+                        "\r\nTitle"
+                    }
+                );
+            }
+        }
+        assert!(!safe_csi(b"256", b'D'));
+        assert!(!safe_csi(b"255", b'C'));
+        assert!(Codec::new(true, (80, 25)).feed(b"\x1b[12\r").is_err());
     }
     #[test]
     fn protocol_buffers_and_terminal_commands_are_bounded() {

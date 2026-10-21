@@ -4,6 +4,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Prove unchanged original LORD 4.06 through the maintained SSH game doorway on a
+  separate native NetBSD ARM64 VM. Add a disposable private game host/oracle,
+  exact artifact provenance and a small external DOSBox receive-state patch.
+  Keep one active game because DOS record locking is unavailable; no original
+  binary/art/data or supported production launcher is bundled.
+- Handle LORD's legacy RIP probe safely and allow its bounded 255-column cursor
+  return. Preserve the prior connector's measured parser/record bytes. Record
+  original TWGS installation with publisher activation deferred by the owner.
+
 - Add optional fixed-destination classic game-server doors: explicit member
   destination confirmation, bounded Telnet/CP437/basic ANSI, local Ctrl-] return,
   safe control filtering and failure/resize/revocation cleanup. The original game

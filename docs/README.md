@@ -31,3 +31,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Experimental global SSH admission](experimental-global-admission.md) — fixed listener gate and private-source research; not production adoption.
 
 - [Classic game-server doors](classic-game-doors.md) — optional configured terminal connections and return.
+
+- [Original LORD on NetBSD](original-lord.md) — unchanged original DOS game, private software proof and limits.

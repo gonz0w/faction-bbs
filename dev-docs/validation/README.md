@@ -11,3 +11,5 @@ limitations visible; never relabel old measurements as current execution.
 - [NetBSD persistent arcade scores](netbsd-arcade-scores.md) — native score/run/backup tests, evaluator and real SSH play/reboot.
 
 - [NetBSD classic-server connector](netbsd-classic-doors.md) — 77 Rust tests and 13 real SSH/owned-fixture groups; no actual title claim.
+
+- [Original LORD on NetBSD](netbsd-original-lord.md) — unchanged original title, separate private host, actual SSH gameplay/save/recovery and limits.

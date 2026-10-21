@@ -64,3 +64,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0039: Global SSH admission and private peers](0039-global-ssh-admission.md) — native pre-fork gate, failure and headroom experiments.
 
 - [0041: Reuse-first classic BBS doors](0041-classic-door-reuse.md) — original server/DOS inventory, acquisition unknowns and comparison.
+
+- [0042: Running original BBS games](0042-original-classic-games.md) — native LORD/DOSBox reuse and deferred TWGS activation.

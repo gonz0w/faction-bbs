@@ -33,8 +33,12 @@ survive reconnect/reboot and travel in private exports. Game failure returns to
 the board. Optional **[classic server doors](docs/classic-game-doors.md)** now
 connect to sysop-selected Telnet endpoints with destination confirmation,
 ANSI/CP437 display and a local return key. The connector passed owned-fixture
-NetBSD tests; actual TradeWars/DOS titles remain to be validated. Both original
-servers and isolated DOS hosting are accepted reuse paths, ahead of rewriting.
+NetBSD tests. **[Original LORD 4.06 now runs](docs/original-lord.md)** through the
+SSH doorway on a separate native NetBSD game VM, with original character creation,
+bank gameplay and saved progress. This is a private software proof with one active
+game, not a supported public game launcher. TWGS installation reached mandatory
+publisher activation, which the owner has deferred. Both original servers and
+isolated DOS hosting remain reuse paths, ahead of rewriting.
 Files, private mail, the other-BBS
 directory, federation, payments, mesh and browser access remain backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
