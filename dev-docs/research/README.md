@@ -56,3 +56,5 @@ authentication, inherited-authority denials and irreversible process ceilings on
 the maintained shared service, with new complete 250-member VM measurements.
 
 - [0036 SSH admission and abuse costs](0036-ssh-admission.md) — bounded native listener, base SSH inetd mode and complete accounting.
+
+- [0037 Sustained activity and abuse](0037-sustained-abuse.md) — longer active intervals and admission-work/fairness gates.

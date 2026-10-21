@@ -10,7 +10,7 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
-**Early working core · updated 2026-10-20 · local console and restricted SSH development gateway; no supported release.**
+**Early working core · updated 2026-10-21 · local console and restricted SSH development gateway; no supported release.**
 
 The working Rust core provides approved local accounts, hidden-password login,
 Citadel-style rooms/replies/unread cursors, bounded local IRC-style chat, sysop
@@ -43,21 +43,23 @@ reserved/authenticated monitors with a dedicated helper UID and a persistent
 process-birth registry. It retains base SSH preauthentication controls and adds
 no resident admission daemon. Local BBS login and approval remain separate.
 
-Three fresh-boot **250-distinct-member key-admission/isolation workloads** pass on
-the 2-vCPU / 1-GiB NetBSD 11 ARM64 VM, including full SSH/frontend/base-service
-costs, real credentials, rooms/posts/chat, loaded stop and fresh-login recovery.
-Final sampled headroom is **174.66–175.23 MiB**; lowest stress is **129.34 MiB**
-under the unchanged 128-MiB guard, with zero swap and all application ceilings
-intact. [Native evidence, rejected candidate and limits](dev-docs/research/0036-ssh-admission.md).
+Two fresh-boot **250-distinct-member runs** now include a **15-minute active
+interval** each: rotating chat senders, 423,798 confirmed peer deliveries,
+room/read/post cycles, fresh logins, busy input and silent SSH pressure. All
+sampled guards, post-load controls and recovery checks pass on the 2-vCPU / 1-GiB
+NetBSD 11 ARM64 VM. Minimum active headroom is **152.97 MiB**; minimum stress/control
+headroom is **133.13 MiB**, with zero swap and full SSH/frontend/base-service costs.
+[Native evidence and limits](dev-docs/research/0037-sustained-abuse.md).
 
-The 250-session configuration and compact-allocator/pageable-NTP host profile are
-explicit research inputs. **Eight remains the default.** Up to eight additional
-preauthentication connections remain possible; global pre-fork rate limiting,
-key-query amplification, source fairness/NAT penalties, broader active/soak loads,
-same-UID/process isolation, complete budgets and maintained image/timekeeping
-policy stay open. These short software observations are not supported capacity
-or physical SBC claims. [Historical evidence](dev-docs/evidence/README.md) retains
-actual executed bytes. There is no supported network release.
+The 250-session configuration and compact-allocator/pageable-NTP profile remain
+explicit research inputs. **Eight remains the default.** Bounded probes confirm
+two open admission limits: repeated unsigned key lookups and temporary denial to
+legitimate callers sharing a penalized source. CPU counters also need reconciliation.
+Longer soaks, complete budgets, independent authority review and maintained host
+policy remain gates. These software observations are not supported capacity or
+physical SBC claims. [Earlier admission evidence and rejected candidate](dev-docs/research/0036-ssh-admission.md)
+and [historical executed sources](dev-docs/evidence/README.md) are preserved.
+There is no supported network release.
 
 The [decision framework](dev-docs/research/decision-framework.md) is accepted. Research defines [private/poor/interrupted-link journeys](dev-docs/research/0003-constrained-user-journeys.md), [text/ANSI interaction budgets](dev-docs/research/0008-interaction-budget.md), and [small-host resource targets](dev-docs/research/0028-small-host-budgets.md). The owner target is a small SBC/Pi or VM with 1–2 cores, roughly 1 GiB host RAM and 100–250 connected members, while application memory targets are much smaller.
 

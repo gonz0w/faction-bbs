@@ -26,3 +26,6 @@ Current confinement work: [plan 0021](plans/0021-os-isolation.md),
 
 SSH admission continuation: [plan 0022](plans/0022-ssh-admission.md),
 [research 0036](research/0036-ssh-admission.md), [ADR 0022](decisions/0022-ssh-admission.md).
+
+- [Sustained 250-member activity and bounded abuse](research/0037-sustained-abuse.md):
+  longer active intervals, repeat key-query work and native source-fairness gates.

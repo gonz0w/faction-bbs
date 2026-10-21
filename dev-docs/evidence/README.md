@@ -30,3 +30,15 @@ trials (two memory failures), and a live-ledger instrumentation diagnostic.
 resolve exact bytes rather than refreshing earlier hashes. Current 035/036/037
 source pins and all nine historical records/two complete snapshots stay fixed.
 Before changing a measured source, preserve its actual executed version properly.
+
+The sustained/abuse follow-up uses new drivers and a new bounded synthetic reset
+variant. It leaves every previously measured source/result byte unchanged.
+All current 035/036/037 source pins and the historical snapshots/overrides still
+apply; preserve executed bytes before changing any source they reference.
+
+[Result 038](../research/results/038-netbsd-sustained-abuse.json) retains both
+15-minute active 250-member matrices, bounded unsigned-key/source-penalty probes,
+raw post-load CPU controls, actual fixture counts and verified rollback/cleanup.
+It pins 137 project execution sources; the new evidence checker validates all
+905-sample active streams as well as the original short credential/control streams.
+CPU interpretation and combined worst-case pressure remain open gates.

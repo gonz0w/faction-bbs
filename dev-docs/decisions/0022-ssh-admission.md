@@ -97,3 +97,13 @@ Actual outcome: 14 key/state/config/restart checks, six channel/restart checks,
 minimum stress 129.34 MiB, zero swap. The inetd candidate fails twice and remains
 rejected. See the complete result/research for exact sources, restoration,
 ordinary rollback and remaining gates. Production adoption remains deferred.
+
+## Subsequent active and abuse evidence
+
+[Research 0037](../research/0037-sustained-abuse.md) extends the unchanged candidate
+with two 15-minute active 250-member runs and post-load controls. The source-work
+and NAT-fairness gates are now observed directly: 64 unsigned key tests reuse one
+reservation, and native grace penalties temporarily deny new legitimate callers
+sharing a source. #66 scopes the lookup bound; #23/#18 own admission policy. CPU
+accounting disagreement keeps #20/#28 budget acceptance open. This does not alter
+the default eight, trusted UID/binary boundary or experimental adoption status.

@@ -71,3 +71,8 @@ UI/fault checks and three short guarded 250-member VM workloads. It remains open
 for scoped deployment/confinement/frontend adoption; #20 owns maintained host
 policy/timekeeping/rollback and #28 owns active mixes, soak and admission. GitHub
 remains authoritative; normal service stays eight workers.
+
+[#66: bound repeated SSH key-lookup work](https://github.com/gonz0w/faction-bbs/issues/66)
+is the scoped admission follow-up from [sustained/abuse research](research/0037-sustained-abuse.md).
+It retains base SSH, independent BBS approval, the fixed credential/resource limits
+and eight-session defaults. GitHub issue state remains authoritative.

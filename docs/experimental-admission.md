@@ -124,3 +124,14 @@ fairness/NAT penalties, IPv6/interoperability, complete active/soak budgets and
 maintained host/timekeeping/recovery policy remain adoption gates. A bounded peer
 can still deny availability. No supported 250-member or physical SBC claim follows.
 Lua/doors still need separate launch authority.
+
+The [sustained/abuse follow-up](../dev-docs/research/0037-sustained-abuse.md) extends
+testing with a rotating-sender 250-recipient chat workload, room/menu/post work,
+fresh credentials and bounded busy-input/silent-preauthentication pressure.
+Its separate known-key probe received **64 unsigned PK_OK replies in about two
+seconds**, charging one reservation and 63 reuses without authentication. The
+current helper does not bound repeat lookups per monitor; [#66](https://github.com/gonz0w/faction-bbs/issues/66)
+owns that explicit adoption gate. Successful unsigned key offers do not prove
+private-key possession. Keep the helper registry and local BBS approval distinct.
+The probe's optional Python SSH client belongs only to the private research host,
+never the board service or normal repository checks.

@@ -38,3 +38,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0019: Shared backend service integration](0019-shared-service.md)
 
 - [0022 SSH admission](0022-ssh-admission.md) — native abuse/lifecycle and 250-member headroom gates.
+
+- [0023 Sustained activity and abuse](0023-sustained-abuse.md) — 250-member active workload and unchanged guard.

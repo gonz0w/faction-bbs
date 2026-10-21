@@ -108,3 +108,10 @@ full UI checks plus three fresh 250-member runs pass the unchanged guard
 Normal defaults remain eight. Global pre-fork rate limits, repeated key-query
 amplification, shared-NAT penalties/fairness, active/soak/complete budgets,
 independent authority review and maintained host/timekeeping policy remain open.
+
+The [sustained/abuse follow-up](research/0037-sustained-abuse.md) now passes two
+fresh-boot 15-minute active 250-member intervals and original post-load controls.
+Keep #55 open: #66 bounds repeated unsigned key-lookup work; #23/#18 retain native
+shared-source denial/admission policy, #20 CPU/timekeeping interpretation and
+maintained host policy, #28 broader active/long-soak/complete budgets. All historical
+measured bytes remain unchanged and normal defaults remain eight.
