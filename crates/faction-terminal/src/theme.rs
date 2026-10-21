@@ -100,6 +100,7 @@ pub struct Theme {
     focus: Style,
     hotkey: Style,
     disabled: Style,
+    doors_enabled: bool,
     entries: Vec<Entry>,
     identity_ascii: Option<String>,
     identity_ansi: Option<Art>,
@@ -115,6 +116,7 @@ impl Default for Theme {
             focus: Style::new(15, 4, true),
             hotkey: Style::new(11, 0, true),
             disabled: Style::new(8, 0, false),
+            doors_enabled: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
                 (Action::New, b'N', "New messages"),
@@ -122,7 +124,7 @@ impl Default for Theme {
                 (Action::Post, b'P', "Post a message"),
                 (Action::Chat, b'C', "Local chat"),
                 (Action::Sysop, b'S', "Sysop controls"),
-                (Action::Doors, b'D', "Doors (not installed)"),
+                (Action::Doors, b'D', "Doors"),
                 (Action::Quit, b'Q', "Log out"),
             ]
             .into_iter()
@@ -261,6 +263,13 @@ fn style(value: &Value) -> Result<Style> {
     Ok(Style::new(fg, bg, bold))
 }
 impl Theme {
+    /// Runtime capability, set only by the host; a theme cannot enable a door.
+    pub fn set_doors_enabled(&mut self, enabled: bool) {
+        self.doors_enabled = enabled;
+    }
+    fn enabled(&self, action: Action, sysop: bool) -> bool {
+        (action == Action::Doors && self.doors_enabled) || action.enabled(sysop)
+    }
     pub fn id(&self) -> &str {
         &self.id
     }
@@ -272,6 +281,9 @@ impl Theme {
     }
     pub fn logout(&self) -> &str {
         &self.logout
+    }
+    pub fn menu_styles(&self) -> (Style, Style, Style) {
+        (self.normal, self.focus, self.hotkey)
     }
     pub fn entries(&self) -> &[Entry] {
         &self.entries
@@ -378,7 +390,7 @@ impl Theme {
                 "[{}] {}{}",
                 e.key as char,
                 e.label,
-                if e.action.enabled(sysop) {
+                if self.enabled(e.action, sysop) {
                     ""
                 } else {
                     " (unavailable)"
@@ -391,7 +403,7 @@ impl Theme {
     pub fn hotkey(&self, key: u8, sysop: bool) -> Option<Action> {
         self.entries
             .iter()
-            .find(|e| e.key == key.to_ascii_uppercase() && e.action.enabled(sysop))
+            .find(|e| e.key == key.to_ascii_uppercase() && self.enabled(e.action, sysop))
             .map(|e| e.action)
     }
 }
@@ -408,7 +420,7 @@ impl<'a> Menu<'a> {
             focus: theme
                 .entries
                 .iter()
-                .position(|e| e.action.enabled(sysop))
+                .position(|e| theme.enabled(e.action, sysop))
                 .expect("required core actions"),
         }
     }
@@ -428,7 +440,10 @@ impl<'a> Menu<'a> {
                     } else {
                         (self.focus + 1) % n
                     };
-                    if self.theme.entries[self.focus].action.enabled(self.sysop) {
+                    if self
+                        .theme
+                        .enabled(self.theme.entries[self.focus].action, self.sysop)
+                    {
                         break;
                     }
                 }
@@ -438,7 +453,7 @@ impl<'a> Menu<'a> {
     }
     fn row(&self, index: usize) -> String {
         let e = &self.theme.entries[index];
-        let enabled = e.action.enabled(self.sysop);
+        let enabled = self.theme.enabled(e.action, self.sysop);
         let focused = index == self.focus;
         let style = if !enabled {
             self.theme.disabled

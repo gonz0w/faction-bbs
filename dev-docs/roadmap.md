@@ -9,7 +9,11 @@ on 2026-10-21. [#71](https://github.com/gonz0w/faction-bbs/issues/71) supplies t
 [small-board install/member journey](../docs/quickstart-netbsd.md): eight-session
 shared backend, ordinary restricted SSH, sysop-owned ANSI theme, approved rooms
 and local chat, with private backup/recovery. Keep improving that experience.
-Lua menus and isolated game doors remain the first extension priority after it.
+[#73](https://github.com/gonz0w/faction-bbs/issues/73) adds the first optional
+[Lua arcade](../docs/lua-doors.md): sysop Lua lobby and two original games outside
+the backend under a separate game UID. Native legacy compatibility, persistent
+scores and broader game APIs remain separate follow-ups; keep improving the
+usable board before resuming combined 250-user edge research.
 
 Further 250-user combined abuse/recovery and uncommon host/isolation scenarios
 are deferred under #70/#55/#20. Preserve findings and security constraints; do not

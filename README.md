@@ -24,8 +24,11 @@ The installer leaves services disabled and binds loopback unless you choose a
 specific interface. You can also [try the local console](docs/local-development.md).
 
 The immediate priority is a useful small board: straightforward setup, an
-individual BBS identity, rooms, chat and recovery. **Lua menus and isolated game
-doors are the next extension priority.** Files, private mail, the other-BBS
+individual BBS identity, rooms, chat and recovery. The optional
+**[Lua arcade](docs/lua-doors.md)** now adds a sysop-editable Doors menu and two
+original games: **Signal Hunt** and **Neon Salvage**, with arrows/hotkeys and a
+separate game account/evaluator. Game failure returns to the board.
+Files, private mail, the other-BBS
 directory, federation, payments, mesh and browser access remain backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
 including optional seasonal colors and identity screens.
@@ -64,7 +67,7 @@ connect -> log in / register -> local sysop approval required
 - **Citadel-style message rooms.** Find a room, enter, catch up on new messages, post, and reply. Detailed reply presentation is still being designed.
 - **IRC-style conversation.** Command-driven chat begins within one BBS. Channels may stay local. Future shared channels let participating systems subscribe and talk together.
 - **Local file areas and mail.** Community resources, messages, and file-sharing policy belong to the local sysop. Transfer protocols and limits remain research decisions.
-- **Doors and original games.** Investigate reuse of classics such as TradeWars, including isolated compatibility hosting where appropriate. Ports may follow later; no title is currently supported or bundled.
+- **Doors and original games.** Investigate reuse of classics such as TradeWars, including isolated compatibility hosting where appropriate. Ports may follow later. The optional Lua arcade includes two original examples; no legacy title is supported or bundled.
 - **A scene of independent boards.** A local Contacts / Other BBSes directory lets operators submit their systems for discovery. Visiting another BBS means entering that system's own membership process.
 
 ## The boundaries matter

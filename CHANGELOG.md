@@ -4,6 +4,18 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an optional Lua-driven Doors lobby and two original games, Signal Hunt and
+  Neon Salvage. The shared BBS renders validated screens with sysop colors,
+  arrows/Enter, hotkeys and plain fallback. State stays with its own connection.
+- Run each Lua turn in a bounded, short-lived child under a separate game UID,
+  with no BBS state/identity/TTY/credential descriptors or Lua OS/I/O/module APIs.
+  One evaluator runs globally; the backend keeps all credential/process/thread
+  ceilings and uses nonblocking peer-verified requests. Failed doors return to
+  the board. Add opt-in NetBSD setup and runtime/SSH play/failure checks.
+- Fix fresh-host setup parent permissions and private build-directory handling
+  discovered while installing the optional arcade. Keep native/DOS legacy doors,
+  persistent scores/economies and hostile native hosting as separate work.
+
 - Prioritize the ordinary small-board product over further combined 250-user
   edge-case research. Add a native NetBSD first-install helper with read-only
   preflight, protected owner/terminal accounts, restricted invitation keys,

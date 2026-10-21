@@ -4,6 +4,8 @@ use faction_access::{Result, check_directory, denied, receive_terminal};
 use faction_core::{Board, ChatCommand, ChatKind, ChatLease, Error, Session, Status};
 use faction_terminal::{Action, Decoder, Key, LineEditor, LineEvent, Menu, Theme};
 mod config;
+mod door_ui;
+mod doors;
 mod ui;
 use config::Config;
 use rustix::{
@@ -60,6 +62,9 @@ enum State {
     RoomTitle(String),
     Chat,
     Closing,
+    DoorPending,
+    DoorMenu,
+    DoorInput,
 }
 struct Request {
     connection: u64,
@@ -153,6 +158,8 @@ struct Client {
     editor: LineEditor,
     skip_lf: bool,
     next_input: Instant,
+    doors_uid: Option<u32>,
+    door: Option<doors::Door>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -219,6 +226,8 @@ impl Client {
             editor: LineEditor::default(),
             skip_lf: false,
             next_input: now,
+            doors_uid: None,
+            door: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -348,12 +357,18 @@ fn run() -> Result<()> {
     if let Some(path) = &config.season {
         theme = theme.with_season(path).map_err(|_| denied())?;
     }
+    theme.set_doors_enabled(config.doors_uid.is_some());
     if args[0] == "--check-config" {
         return Ok(());
     }
     let terminal_uid = config.terminal_uid;
     let owner = rustix::process::geteuid().as_raw();
-    if owner == 0 || terminal_uid == owner {
+    if owner == 0
+        || terminal_uid == owner
+        || config
+            .doors_uid
+            .is_some_and(|u| u == owner || u == terminal_uid)
+    {
         return Err(denied());
     }
     faction_unix::prepare_process()?;
@@ -465,7 +480,8 @@ fn run() -> Result<()> {
                 continue;
             }
             generation = generation.checked_add(1).ok_or_else(denied)?;
-            if let Ok(client) = Client::new(generation, control, tty, &term, ansi) {
+            if let Ok(mut client) = Client::new(generation, control, tty, &term, ansi) {
+                client.doors_uid = config.doors_uid;
                 clients.push(client);
             }
         }
@@ -543,6 +559,14 @@ fn run() -> Result<()> {
                 c.close = true;
             }
             c.decoder.expire(now);
+            if work > 0 && matches!(c.state, State::DoorPending) && c.output.is_empty() && !c.close
+            {
+                work -= 1;
+                if let Err(e) = c.door_poll(&theme, &mut board) {
+                    c.recover(e, &mut board, &theme);
+                    c.door = None;
+                }
+            }
             if work > 0 && c.geometry_check.elapsed() >= Duration::from_millis(100) {
                 work -= 1;
                 c.geometry_check = now;

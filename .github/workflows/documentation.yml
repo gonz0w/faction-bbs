@@ -54,6 +54,15 @@ jobs:
           python3 tools/check_lookup_evidence.py
           python3 tools/check_global_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Validate optional Lua game evaluator and examples
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends liblua5.4-dev
+          python3 tools/build_lua_doors.py --include /usr/include/lua5.4 --library lua5.4 --output "$RUNNER_TEMP/faction-doors"
+          cc -std=c11 -D_GNU_SOURCE -Wall -Wextra -Werror -fanalyzer -I/usr/include/lua5.4 -fsyntax-only native/faction-doors/main.c
+          sudo install -d -o root -g root -m 755 "$RUNNER_TEMP/faction-door-fixtures"
+          sudo install -o root -g root -m 644 doors/examples/*.lua tools/fixtures/lua-doors/*.lua "$RUNNER_TEMP/faction-door-fixtures/"
+          python3 tools/smoke_lua_worker.py --binary "$RUNNER_TEMP/faction-doors" --scripts "$RUNNER_TEMP/faction-door-fixtures"
       - name: Validate the local Rust core and real terminal flow
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target

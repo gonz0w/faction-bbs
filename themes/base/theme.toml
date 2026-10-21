@@ -43,7 +43,7 @@ label = "Sysop controls"
 [[menu]]
 action = "doors"
 key = "D"
-label = "Doors (not installed)"
+label = "Doors"
 [[menu]]
 action = "quit"
 key = "Q"

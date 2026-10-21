@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "record": "dev-docs/validation/netbsd-lua-arcade.json",
+  "record_sha256": "24190d5602d7c4e767961adb59e484ebe5a296a1b4eb26580e90952ad240f82b",
+  "source_overrides": {
+    "native/faction-doors/main.c": {
+      "path": "dev-docs/evidence/lua-arcade-netbsd/main.c",
+      "sha256": "f61046e9ce31da98333a3800f71a9071279d7da437eb96a43b23652e24acd265"
+    }
+  },
+  "reason": "Native games/runtime were measured before the Linux FORTIFY shutdown return-value fix; preserve exact actual native input. Runtime/API/limits are unchanged; final shutdown error handling is checked by Linux CI."
+}

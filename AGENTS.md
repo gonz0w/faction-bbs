@@ -100,6 +100,26 @@ change host networking, add experimental profiles or start services in setup.
 Old 035/036/040 records now resolve preserved rc bytes and have pinned record
 identities. They do not claim current boot changes were measured at 250 users.
 
+## Optional Lua arcade
+
+Issue #73 / ADR 0027 adds docs/lua-doors.md: an optional shared-backend Doors
+lobby and two original games. Keep the host-only runtime Doors capability;
+local console/worker rollback retain disabled Doors. Lua never executes in the
+BBS process. factiongames has a separate primary group and cannot read board
+state. Both IPC peers are UID checked. Only complete bounded screen/state/choice
+frames are accepted, and current local approval is rechecked on actions/results.
+The host owns ANSI rendering and session state; no BBS identity/password/session,
+DB/TTY/log/listener descriptor or owner-operation API goes to Lua.
+
+Preserve the single evaluator child, Lua allocator/instruction/source/output
+caps, native data/stack/process/descriptor limits and parent wall timeout; failed
+or partial results are discarded and children reaped. Do not relax the existing
+backend process/thread or two credential permits/kernel slots to run games.
+The optional service/installer are non-setuid, opt-in, and do not change host
+network/NPF/tuning. This is sysop-installed text Lua, not member uploads, a native
+legacy launcher or hostile native-code/all-family network sandbox. Lua VM/C/OS
+remain trusted. Native/DOS compatibility and persistent scores are separate work.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.
@@ -120,7 +140,7 @@ identities. They do not claim current boot changes were measured at 250 users.
 - Owner steering on 2026-10-21: prioritize a running product for ordinary users;
   defer further edge-case and combined 250-user research. Start from the ordinary
   eight-session shared SSH/ANSI/rooms/chat path in docs/quickstart-netbsd.md and
-  issue #71. Improve setup and member/sysop workflows, then Lua menus/isolated
+  issue #71. Improve setup and member/sysop workflows, then extend the optional Lua arcade and work toward isolated legacy
   doors. Keep existing approval, credential and access protections. Experimental
   isolation/admission/host-tuning adoption is not a first-preview prerequisite;
   preserve incomplete #70 findings without claiming its full matrix passed.

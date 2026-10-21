@@ -131,6 +131,7 @@ def install(binary_dir: Path, keys: str, address: str, port: int) -> None:
     if os.getuid() != 0 or os.geteuid() != 0:
         raise ValueError('--install requires root on the target NetBSD host')
     os.umask(0o077)
+    os.chdir('/')  # The build user's private cwd need not be readable by factiond.
     run('/usr/sbin/groupadd', 'factionipc')
     for name in ('factiond', 'factionterm'):
         run('/usr/sbin/useradd', '-g', 'factionipc', '-d', f'/home/{name}', '-s', '/bin/sh', name)
@@ -149,7 +150,7 @@ def install(binary_dir: Path, keys: str, address: str, port: int) -> None:
     directory('/home/factiond', 'factiond', 'factionipc', '700')
     directory('/var/db/faction', 'factiond', 'factionipc', '700')
     directory('/var/run/faction', 'factiond', 'factionipc', '710')
-    for path in ('/home/factionterm', '/usr/local/libexec', '/etc/faction', '/etc/ssh/faction', '/etc/rc.conf.d'):
+    for path in ('/home/factionterm', '/usr/local', '/usr/local/libexec', '/etc/faction', '/etc/ssh/faction', '/etc/rc.conf.d'):
         directory(path, 'root', 'wheel', '755')
     for name in BINARIES:
         copy(binary_dir / name, f'/usr/local/libexec/{name}')

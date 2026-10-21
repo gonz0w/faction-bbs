@@ -43,7 +43,7 @@ impl Client {
             Self::safe(handle)
         ));
     }
-    fn menu(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
+    pub(super) fn menu(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
         self.approved(board)?;
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
@@ -73,7 +73,7 @@ impl Client {
         }
         menu
     }
-    fn pause(&mut self) {
+    pub(super) fn pause(&mut self) {
         self.state = State::Pause;
         self.queue("Press Enter to return to menu: ");
     }
@@ -142,10 +142,7 @@ impl Client {
                 self.queue("Local chat. /help lists commands. All channels stay local.\n");
                 self.chat_prompt();
             }
-            Action::Doors => {
-                self.queue("Doors are not installed.\n");
-                self.pause();
-            }
+            Action::Doors => self.door_open("doors", board, theme)?,
         }
         Ok(())
     }
@@ -251,6 +248,21 @@ impl Client {
     ) -> faction_core::Result<()> {
         let old = std::mem::replace(&mut self.state, State::Closing);
         match old {
+            State::DoorInput => self.door_submit(text, board, theme)?,
+            State::DoorMenu => {
+                if text.len() == 1 {
+                    self.door_key(
+                        Key::Hotkey(text.as_bytes()[0].to_ascii_uppercase()),
+                        theme,
+                        board,
+                    )?;
+                } else {
+                    // Keep a plain menu usable after an empty or invalid line.
+                    // The same path still rechecks current membership.
+                    self.door_key(Key::Hotkey(0), theme, board)?;
+                }
+            }
+            State::DoorPending => (),
             State::Choice => match text.to_ascii_lowercase().as_str() {
                 "l" | "r" => self.prompt(State::Handle(text.eq_ignore_ascii_case("r")), "Handle: "),
                 "q" => {
@@ -561,6 +573,18 @@ impl Client {
         }
     }
     pub(super) fn resize(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
+        if matches!(
+            self.state,
+            State::DoorMenu | State::DoorInput | State::DoorPending
+        ) && self.size() != self.dimensions
+        {
+            self.door = None;
+            self.ansi = false;
+            self.dimensions = self.size();
+            self.queue("Terminal resized; game closed.\n");
+            self.menu(theme, board)?;
+            return Ok(());
+        }
         if !matches!(self.state, State::Menu | State::Chat) || self.size() == self.dimensions {
             return Ok(());
         }
@@ -613,7 +637,14 @@ impl Client {
                 }
             }
             if byte == 3 || byte == 4 {
-                if matches!(self.state, State::Chat) {
+                if matches!(
+                    self.state,
+                    State::DoorMenu | State::DoorInput | State::DoorPending
+                ) {
+                    self.door = None;
+                    self.menu(theme, board)?;
+                    termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                } else if matches!(self.state, State::Chat) {
                     board.chat_close(self.lease()?)?;
                     self.lease = None;
                     self.editor.clear();
@@ -624,6 +655,27 @@ impl Client {
                     self.close = true;
                 }
                 break;
+            }
+            if matches!(self.state, State::DoorPending) {
+                continue;
+            }
+            if matches!(self.state, State::DoorMenu) && self.ansi {
+                if let Some(key) = self.decoder.feed(byte, Instant::now()) {
+                    match self.door_key(key, theme, board) {
+                        Ok(true) => {
+                            self.input.clear();
+                            self.decoder = Decoder::new();
+                            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                            break;
+                        }
+                        Ok(false) => (),
+                        Err(e) => {
+                            self.recover(e, board, theme);
+                            break;
+                        }
+                    }
+                }
+                continue;
             }
             if matches!(self.state, State::Menu) && self.ansi {
                 if let Some(key) = self.decoder.feed(byte, Instant::now()) {
