@@ -42,15 +42,27 @@ def run(binary, scripts):
             menu=request('doors');assert 'After Hours Arcade' in menu and 'game:signal-hunt' in menu
             checks.append('real_lua_menu')
             hunt=request('signal-hunt');state=next(x[6:] for x in hunt.splitlines() if x.startswith('STATE|'))
-            secret=state.split(':')[0];won=request('signal-hunt',state,secret);assert 'LOCKED ON!' in won
+            secret=state.split(':')[0];won=request('signal-hunt',state,secret);assert 'LOCKED ON!' in won and 'SCORE|700\n' in won
             checks.append('signal_hunt_win_and_state_roundtrip')
+            assert 'SCORE|500\n' in request('signal-hunt','42:5','42')
+            assert 'SCORE|0\n' in request('signal-hunt','42:1','41')
+            assert 'SCORE|' not in request('signal-hunt','42:5','q')
+            assert 'SCORE|' not in request('signal-hunt','42:5','bad')
+            assert 'SCORE|' not in request('signal-hunt')
+            checks.append('hunt_scoring_win_loss_abandon_and_invalid_input')
+            guide=request('arcade-guide');assert 'arcade guide' in guide and 'seven guesses' in guide
+            checks.append('installed_guide_explains_both_games')
             state=''
             for _ in range(6):
                 result=request('neon-salvage',state,'S' if state else '')
                 state=next(x[6:] for x in result.splitlines() if x.startswith('STATE|'))
-            assert 'dock before dawn' in result
+            assert 'dock before dawn' in result and 'SCORE|' in result
             checks.append('neon_salvage_complete_run')
-            for game in ['loop','memory','controls','bad-api','partial']:
+            landed=request('neon-salvage','2:4:17','L');assert 'SCORE|17\n' in landed
+            assert 'SCORE|' not in request('neon-salvage','1:4:0','S')
+            checks.append('salvage_early_landing_scores_only_completed_turn')
+            for game in ['loop','memory','controls','bad-api','partial','duplicate-score','negative-score','active-score']:
+
                 assert request(game)=='',game+' was not rejected'
                 checks.append('reject_'+game)
             began=time.monotonic();assert request('native-stall')==''

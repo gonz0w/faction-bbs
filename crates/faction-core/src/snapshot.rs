@@ -26,6 +26,7 @@ pub struct SnapshotSummary {
     pub posts: i64,
     pub channels: i64,
     pub chat_messages: i64,
+    pub game_scores: i64,
 }
 
 fn harden(db: &Connection, deadline: Instant) -> Result<()> {
@@ -99,7 +100,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || version != 2 {
+    if app != APP_ID || !(2..=3).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -107,6 +108,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     let reference = Connection::open_in_memory()?;
     reference.execute_batch(include_str!("schema.sql"))?;
     reference.execute_batch(include_str!("chat.sql"))?;
+    if version == 3 {
+        reference.execute_batch(include_str!("scores.sql"))?;
+    }
     if exported {
         reference.execute_batch(INFO)?;
     }
@@ -247,6 +251,29 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     while let Some(row) = rows.next()? {
         text(&row.get::<_, String>(0)?, 512, false)?;
     }
+    if version == 3 {
+        let mut stmt = db.prepare("SELECT member_id,game,best,plays FROM game_scores")?;
+        let mut rows = stmt.query([])?;
+        while let Some(row) = rows.next()? {
+            budget(deadline)?;
+            let member: i64 = row.get(0)?;
+            crate::scores::game_slug(&row.get::<_, String>(1)?)?;
+            let best: i64 = row.get(2)?;
+            let plays: i64 = row.get(3)?;
+            if member < 1
+                || !(0..=i64::from(crate::SCORE_MAX)).contains(&best)
+                || !(1..=i64::from(crate::SCORE_MAX)).contains(&plays)
+            {
+                return Err(Error::Invalid("invalid snapshot score"));
+            }
+        }
+        if db
+            .prepare("SELECT 1 FROM game_scores GROUP BY member_id HAVING count(*)>64 LIMIT 1")?
+            .exists([])?
+        {
+            return Err(Error::Invalid("snapshot game limit exceeded"));
+        }
+    }
     fn count(db: &Connection, sql: &str) -> Result<i64> {
         Ok(db.query_row(sql, [], |r| r.get(0))?)
     }
@@ -257,6 +284,11 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
         posts: count(db, "SELECT count(*) FROM posts")?,
         channels: channel_count,
         chat_messages: count(db, "SELECT count(*) FROM chat_messages")?,
+        game_scores: if version == 3 {
+            count(db, "SELECT count(*) FROM game_scores")?
+        } else {
+            0
+        },
     })
 }
 

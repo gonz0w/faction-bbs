@@ -28,8 +28,11 @@ restored directory inside it. Do not loosen permissions to make checks pass.
 Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
-foreign or older-schema source fails instead of creating/upgrading a board. Only
-current schema 2 is supported by this first format. For schema 1 upgrades, stop
+foreign or unsupported-schema source fails instead of creating/upgrading a board.
+Schemas 2 and 3 are supported by format 1. Schema 3 includes arcade personal bests
+and completed-run counts; no in-flight game state/run capabilities are exported.
+Verification is read-only; a restored schema-2 board upgrades when opened by the
+new build. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
 before the existing transactional upgrade; this exporter cannot replace that copy.
 

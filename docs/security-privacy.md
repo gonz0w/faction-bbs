@@ -54,6 +54,13 @@ The narrow NetBSD C/FFI bridge has an explicit ownership boundary and native pos
 regression; do not describe the whole system as unsafe-free Rust. Keep the fixed
 development caps until complete host/failure and remote hardening work is measured.
 
+The optional [Lua arcade](lua-doors.md) retains BBS-local personal bests and run
+counts. The host binds a one-shot run to the authenticated member/board/epoch and
+rechecks approval at completion and score reads. Lua receives no identity/DB
+handle. Scoreboards show approved members only; retained rows for revoked members
+remain in private owner exports. Root-installed game code controls scoring and
+can cheat, so scores grant no privileges, currency or payment entitlement.
+
 ## Evidence required
 
 Write the threat model and pass/fail tests before claiming a security baseline. Research must cover authorization across both access surfaces, interrupted and revoked sessions, terminal parsing, file handling, door isolation, default exposure, and shared-channel/local-data separation. No production deployment or supported version exists yet.

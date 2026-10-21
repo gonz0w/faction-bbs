@@ -43,7 +43,7 @@ static int ceiling(int which,rlim_t value) {
     struct rlimit r={value,value};return setrlimit(which,&r);
 }
 typedef struct {
-    size_t live;unsigned ticks,lines,options;int title,prompt;char output[FRAME],state[1025];size_t length;
+    size_t live;unsigned ticks,lines,options;int title,prompt,score;char output[FRAME],state[1025];size_t length;
 } Budget;
 static void *allocate(void *ud,void *ptr,size_t old,size_t size) {
     Budget *b=ud;if(!ptr)old=0;
@@ -82,6 +82,12 @@ static int option(lua_State *L) {
     char line[130];snprintf(line,sizeof line,"OPTION|%s|%s|%s\n",key,label,target);append(L,line);return 0;
 }
 static int state(lua_State *L) { snprintf(budget(L)->state,sizeof budget(L)->state,"%s",field(L,1,1024));return 0; }
+static int score(lua_State *L) {
+    if(budget(L)->score++)return luaL_error(L,"duplicate score");
+    lua_Integer points=luaL_checkinteger(L,1);
+    if(points<0 || points>1000000000)return luaL_error(L,"score range");
+    char line[40];snprintf(line,sizeof line,"SCORE|%ld\n",(long)points);append(L,line);return 0;
+}
 static int random_number(lua_State *L) {
     lua_Integer maximum=luaL_checkinteger(L,1);if(maximum<1 || maximum>1000000)return luaL_error(L,"random range");
     lua_pushinteger(L,1+arc4random_uniform((uint32_t)maximum));return 1;
@@ -110,10 +116,10 @@ static void evaluate(const char *source,size_t length,const char *previous,const
     lua_pushstring(L,input);lua_setglobal(L,"input");
     lua_newtable(L);
     const luaL_Reg api[]={{"title",title},{"text",text},{"prompt",prompt},{"option",option},
-        {"state",state},{"random",random_number},{NULL,NULL}};
+        {"state",state},{"score",score},{"random",random_number},{NULL,NULL}};
     luaL_setfuncs(L,api,0);lua_setglobal(L,"bbs");lua_sethook(L,tick,LUA_MASKCOUNT,1000);
     int status=luaL_loadbufferx(L,source,length,"door","t");if(!status)status=lua_pcall(L,0,0,0);
-    if(!status && b.title==1 && (b.prompt || b.options)) {
+    if(!status && b.title==1 && (b.prompt || b.options) && (!b.score || (!b.prompt && !b.state[0]))) {
         int n=snprintf(b.output+b.length,sizeof b.output-b.length,"STATE|%s\nEND\n",b.state);
         if(n>0 && (size_t)n<sizeof b.output-b.length) {
             b.length+=(size_t)n;size_t sent=0;

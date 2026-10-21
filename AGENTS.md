@@ -118,7 +118,13 @@ backend process/thread or two credential permits/kernel slots to run games.
 The optional service/installer are non-setuid, opt-in, and do not change host
 network/NPF/tuning. This is sysop-installed text Lua, not member uploads, a native
 legacy launcher or hostile native-code/all-family network sandbox. Lua VM/C/OS
-remain trusted. Native/DOS compatibility and persistent scores are separate work.
+remain trusted. Persistent personal bests/counts now use schema 3 and an opaque one-shot core run;
+Lua never selects the member or a SQL operation. Only complete terminal result
+screens after a gameplay input can submit one bounded score; approval/epoch is
+rechecked in the commit transaction. Never expose game_finish as a terminal RPC.
+Keep schema-2 backups readable, exact schema validation and fresh restored board
+identity. Scores are local hobby records, not currency or verified game outcomes.
+Native/DOS compatibility remains separate work.
 
 ## Product constraints
 

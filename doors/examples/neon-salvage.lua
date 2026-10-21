@@ -20,6 +20,8 @@ if input == "S" or input == "H" then
 end
 bbs.text(string.format("Sector %d / 5    Energy %d    Score %d", sector, energy, score))
 if sector > 5 or energy < 1 or input == "L" then
+    bbs.score(score)
+    bbs.option("T", "Neon Salvage high scores", "scores:neon-salvage")
     bbs.text(string.format("You dock before dawn with %d points. Run again?", score))
     bbs.option("P", "Another salvage run", "game:neon-salvage")
     bbs.option("L", "Arcade lobby", "lobby")

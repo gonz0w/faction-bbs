@@ -28,6 +28,8 @@ pub enum Target {
     Lobby,
     Game(String),
     Input(String),
+    Scores(String),
+    Resume, // Host-generated only; never accepted from a Lua frame.
 }
 #[derive(Clone, Debug)]
 pub struct Choice {
@@ -42,6 +44,7 @@ pub struct Screen {
     pub prompt: Option<String>,
     pub choices: Vec<Choice>,
     pub state: String,
+    pub score: Option<u32>,
 }
 impl Screen {
     fn parse(bytes: &[u8]) -> io::Result<Self> {
@@ -53,7 +56,7 @@ impl Screen {
             .strip_prefix("FDS1\n")
             .and_then(|s| s.strip_suffix("END\n"))
             .ok_or_else(invalid)?;
-        let (mut title, mut state, mut prompt) = (None, None, None);
+        let (mut title, mut state, mut prompt, mut score) = (None, None, None, None);
         let (mut lines, mut choices) = (Vec::new(), Vec::<Choice>::new());
         for line in text.lines() {
             let (kind, body) = line.split_once('|').ok_or_else(invalid)?;
@@ -62,6 +65,18 @@ impl Screen {
                     title = Some(body.into())
                 }
                 "STATE" if state.is_none() && field(body, 1024) => state = Some(body.into()),
+                "SCORE"
+                    if score.is_none()
+                        && !body.is_empty()
+                        && body.len() <= 10
+                        && body.bytes().all(|b| b.is_ascii_digit()) =>
+                {
+                    let points = body.parse::<u32>().map_err(|_| invalid())?;
+                    if points > faction_core::SCORE_MAX {
+                        return Err(invalid());
+                    }
+                    score = Some(points);
+                }
                 "TEXT" if lines.len() < 16 && field(body, 120) => lines.push(body.into()),
                 "PROMPT" if prompt.is_none() && !body.is_empty() && field(body, 120) => {
                     prompt = Some(body.into())
@@ -83,6 +98,9 @@ impl Screen {
                         s if s.strip_prefix("game:").is_some_and(slug) => {
                             Target::Game(s[5..].into())
                         }
+                        s if s.strip_prefix("scores:").is_some_and(slug) => {
+                            Target::Scores(s[7..].into())
+                        }
                         s if s.starts_with("input:") && field(&s[6..], 64) => {
                             Target::Input(s[6..].into())
                         }
@@ -100,7 +118,15 @@ impl Screen {
         if (prompt.is_some() && !choices.is_empty()) || (prompt.is_none() && choices.is_empty()) {
             return Err(invalid());
         }
+        if score.is_some()
+            && (prompt.is_some()
+                || state.as_deref() != Some("")
+                || choices.iter().any(|c| matches!(c.target, Target::Input(_))))
+        {
+            return Err(invalid());
+        }
         Ok(Self {
+            score,
             title: title.ok_or_else(invalid)?,
             state: state.ok_or_else(invalid)?,
             prompt,
@@ -192,6 +218,11 @@ pub struct Door {
     pub screen: Option<Screen>,
     pub focus: usize,
     pub pending: Option<Request>,
+    pub run: Option<faction_core::GameRun>,
+    pub turns: u32,
+    pub score_saved: bool,
+    pub resume: Option<Screen>,
+    pub notice: Option<String>,
 }
 impl Door {
     pub fn open(uid: u32, game: &str) -> io::Result<Self> {
@@ -200,6 +231,11 @@ impl Door {
             screen: None,
             focus: 0,
             pending: Some(Request::start(uid, game, "", "")?),
+            run: None,
+            turns: 0,
+            score_saved: false,
+            resume: None,
+            notice: None,
         })
     }
 }
@@ -224,6 +260,25 @@ mod tests {
             b"FDS1\nTITLE|x\nPROMPT|Guess\nSTATE|\nEND\nEXTRA\n",
         ] {
             assert!(Screen::parse(frame).is_err());
+        }
+    }
+    #[test]
+    fn scores_require_one_bounded_terminal_completion() {
+        let good = "FDS1\nTITLE|Win\nSCORE|700\nOPTION|T|Scores|scores:signal-hunt\nSTATE|\nEND\n";
+        assert_eq!(Screen::parse(good.as_bytes()).unwrap().score, Some(700));
+        for bad in [
+            good.replace("700", "-1"),
+            good.replace("700", "1000000001"),
+            good.replace("700", "1.5"),
+            good.replace("700", ""),
+            good.replace("SCORE|700", "SCORE|700\nSCORE|7"),
+            good.replace("STATE|\n", "STATE|running\n"),
+            good.replace("scores:signal-hunt", "input:again"),
+            good.replace("OPTION|T|Scores|scores:signal-hunt", "PROMPT|Continue: "),
+            good.replace("scores:signal-hunt", "scores:../db"),
+            good.replace("scores:signal-hunt", "resume"),
+        ] {
+            assert!(Screen::parse(bad.as_bytes()).is_err(), "{bad}");
         }
     }
     #[test]

@@ -1,0 +1,16 @@
+{
+  "historical_record": "dev-docs/validation/netbsd-lua-arcade.json",
+  "record_sha256": "24190d5602d7c4e767961adb59e484ebe5a296a1b4eb26580e90952ad240f82b",
+  "source_commit": "1627e02",
+  "preserved_changed_inputs": {
+    "crates/faction-service/src/ui.rs": "9406c7a77d52158f88779c8520002bcf83f2421ffe19e799e94163491d0e9b0c",
+    "crates/faction-service/src/doors.rs": "055faf0b666599d6539bb7cee62da966731eb7072fe06c71168a425eec354805",
+    "crates/faction-service/src/door_ui.rs": "612c6648b403b10145419a1ca6155c73a03dc06db094d72f5c1098928a6021f9",
+    "doors/examples/signal-hunt.lua": "f633fa254b1639a8da96c09c0e0ad76725fb5290ce7e8caf8b8ed12dfb61d7c7",
+    "doors/examples/neon-salvage.lua": "f19b3e58e6842ffe9bdd0555f283143fc1b7ec7e1fcc747eb32b0e9c04ba4a14",
+    "doors/examples/doors.lua": "67f29940e2aaf2c4333b56145b81045b92af01eee9e6a2f995c06543b2897952",
+    "tools/smoke_lua_worker.py": "4365ae589d05dbac405f90387d57f98abe949331f8fe9633dc3e1780d0fd768f",
+    "tools/smoke_lua_doors_ssh.py": "b0365d4e9eac12e331a0843bf77076d619e97f2a2931343b7af9b5992346d017"
+  },
+  "unchanged_inputs": "Resolve from the original record; native C uses the existing parent-directory override."
+}

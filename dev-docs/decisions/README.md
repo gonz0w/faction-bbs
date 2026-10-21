@@ -48,3 +48,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0026: Product-first small-board setup](0026-product-first-small-board.md) — ordinary eight-session preview and unprivileged boot detachment.
 
 - [0027: Separate-UID Lua arcade](0027-lua-arcade-boundary.md) — optional menu/game turns without backend execution privileges.
+
+- [0028: Local arcade bests under host-owned run authority](0028-local-arcade-scores.md)

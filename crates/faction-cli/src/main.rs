@@ -18,8 +18,13 @@ fn run() -> Result<()> {
         }
         let summary = faction_core::verify_export(&PathBuf::from(&args[1]))?;
         println!(
-            "Export verified: {} members, {} rooms, {} posts, {} channels, {} retained chat messages.",
-            summary.members, summary.rooms, summary.posts, summary.channels, summary.chat_messages
+            "Export verified: {} members, {} rooms, {} posts, {} channels, {} retained chat messages, {} game score entries.",
+            summary.members,
+            summary.rooms,
+            summary.posts,
+            summary.channels,
+            summary.chat_messages,
+            summary.game_scores
         );
         return Ok(());
     }
@@ -39,7 +44,7 @@ fn run() -> Result<()> {
             faction_core::export_local(&path, &file)?
         };
         println!(
-            "{} complete: {} members, {} rooms, {} posts, {} channels, {} retained chat messages. Private plaintext data; no live sessions or external theme files.",
+            "{} complete: {} members, {} rooms, {} posts, {} channels, {} retained chat messages, {} game score entries. Private plaintext data; no live sessions or external theme files.",
             if command == "export" {
                 "Export"
             } else {
@@ -49,7 +54,8 @@ fn run() -> Result<()> {
             summary.rooms,
             summary.posts,
             summary.channels,
-            summary.chat_messages
+            summary.chat_messages,
+            summary.game_scores
         );
         return Ok(());
     }

@@ -9,6 +9,7 @@ import argparse
 import json
 from pathlib import Path
 import secrets
+import re
 import shlex
 import subprocess
 import time
@@ -59,6 +60,10 @@ def smoke(a):
         sysop=login('sysop');status(sysop,'a');alice=login('alice')
         passed('pending_member_cannot_enter_games_approved_member_can')
         arcade(alice)
+        alice.raw(b'i');alice.expect('After Hours // arcade guide');alice.expect('Ctrl-C returns to the BBS.')
+        assert b'seven guesses' in alice.transcript and b'Five sectors' in alice.transcript
+        alice.raw(b'l');alice.expect('After Hours Arcade');alice.expect('Ctrl-C returns to the BBS.')
+        passed('installed_arcade_guide_and_return_to_lobby')
         alice.raw(b'\x1b[B');alice.expect('Neon Salvage')
         alice.raw(b'\x1b[A');alice.expect('Signal Hunt')
         alice.raw(b'\r');alice.expect('Frequency (1-99), or Q to leave: ')
@@ -70,7 +75,23 @@ def smoke(a):
         for _ in range(5):
             alice.raw(b's');alice.expect('Recovered ');alice.expect('Ctrl-C returns to the BBS.')
         assert b'You dock before dawn' in alice.transcript
+        score=int(re.findall(rb'Saved (\d+) points',alice.transcript)[-1]);assert 5<=score<=100
+        assert b'Completed runs: 1.' in alice.transcript
+        for _ in range(2):
+            alice.raw(b't');alice.expect('High scores // neon-salvage')
+            alice.expect(f'Your best: {score} points from 1 completed runs.');alice.expect('Ctrl-C returns to the BBS.')
+            alice.raw(b'r');alice.expect('You dock before dawn');alice.expect('Ctrl-C returns to the BBS.')
+        passed('persistent_best_and_repeated_score_browsing_does_not_resubmit')
+        alice.raw(b'p');alice.expect('Neon Salvage //');alice.expect('Ctrl-C returns to the BBS.')
+        alice.raw(b'l');alice.expect('Saved 0 points.');alice.expect('Ctrl-C returns to the BBS.')
+        assert b'Completed runs: 2.' in alice.transcript
+        alice.raw(b't');alice.expect(f'Your best: {score} points from 2 completed runs.');alice.expect('Ctrl-C returns to the BBS.')
         alice.raw(b'b');menu(alice)
+        passed('play_again_early_landing_retains_best_and_counts_one_new_run')
+        quit(alice);alice=login('alice');arcade(alice)
+        alice.raw(b't');alice.expect(f'Your best: {score} points from 2 completed runs.');alice.expect('Ctrl-C returns to the BBS.')
+        alice.raw(b'b');menu(alice)
+        passed('leaderboard_survives_disconnect_and_new_login')
         passed('neon_salvage_five_turn_run_score_and_return_to_bbs')
         for c in (alice,sysop):c.raw(b'c');c.expect('chat[#lobby]> ')
         sysop.send('Games over; welcome back to the board.');alice.expect('Games over; welcome back to the board.')
@@ -100,6 +121,13 @@ def smoke(a):
         alice.send('q');alice.expect('Choice (then Enter): ');alice.send('b')
         alice.expect('Command (then Enter): ');alice.send('q');alice.expect('Logged out.');alice.finish()
         quit(sysop)
+        export=remote("su - factiond -c '/usr/local/libexec/faction --state-dir /var/db/faction export /home/factiond/arcade-export.sqlite3'")
+        assert b'1 game score entries' in export.stdout
+        verified=remote("su - factiond -c '/usr/local/libexec/faction verify-export /home/factiond/arcade-export.sqlite3'")
+        assert b'1 game score entries' in verified.stdout
+        restored=remote("su - factiond -c '/usr/local/libexec/faction --state-dir /home/factiond/arcade-restored restore /home/factiond/arcade-export.sqlite3'")
+        assert b'1 game score entries' in restored.stdout
+        passed('owner_export_verify_restore_includes_local_scores')
         passed('resize_cancels_game_and_plain_terminal_can_play_and_return')
         if a.reboot:
             remote("printf 'faction_doors=YES\\n' > /etc/rc.conf.d/faction_doors; printf 'faction_broker=YES\\nfaction_broker_backend=shared\\n' > /etc/rc.conf.d/faction_broker; printf 'faction_sshd=YES\\n' > /etc/rc.conf.d/faction_sshd")
@@ -110,7 +138,10 @@ def smoke(a):
                     remote('/etc/rc.d/faction_doors onestatus; /etc/rc.d/faction_broker onestatus; /etc/rc.d/faction_sshd onestatus');break
                 except (AssertionError,subprocess.TimeoutExpired):time.sleep(1)
             else:raise AssertionError('ordinary arcade boot did not remain ready')
-            alice=login('alice');arcade(alice);alice.raw(b'b');menu(alice);quit(alice)
+            alice=login('alice');arcade(alice)
+            alice.raw(b't');alice.expect(f'Your best: {score} points from 2 completed runs.');alice.expect('Ctrl-C returns to the BBS.')
+            alice.raw(b'b');menu(alice);quit(alice)
+            passed('score_and_play_count_survive_unassisted_reboot')
             passed('unassisted_boot_starts_optional_doors_and_approved_arcade')
         for c in children:assert password.encode() not in c.transcript
         passed('no_bbs_password_echoed')

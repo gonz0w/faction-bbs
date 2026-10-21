@@ -4,10 +4,12 @@
 compile_error!("The first local core supports Unix state ownership semantics only");
 mod chat;
 mod credentials;
+mod scores;
 mod snapshot;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
 pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
 use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
+pub use scores::{GameRun, GameScore, SCORE_GAMES, SCORE_MAX, SCORE_ROWS, ScoreUpdate};
 pub use snapshot::{SNAPSHOT_BYTES, SnapshotSummary, export_local, restore_local, verify_export};
 use std::{
     fmt, fs,
@@ -295,12 +297,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=2).contains(&version) {
+        } else if app != APP_ID || !(1..=3).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=2).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=3).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -310,7 +312,18 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if v != 2 {
+            } else if !(2..=3).contains(&v) {
+                return Err(Error::UnsupportedSchema);
+            }
+            tx.commit()?;
+        }
+        if actual_version < 3 {
+            let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+            let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+            if v == 2 {
+                tx.execute_batch(include_str!("scores.sql"))?;
+                tx.pragma_update(None, "user_version", 3)?;
+            } else if v != 3 {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;

@@ -11,8 +11,9 @@ shared backend, ordinary restricted SSH, sysop-owned ANSI theme, approved rooms
 and local chat, with private backup/recovery. Keep improving that experience.
 [#73](https://github.com/gonz0w/faction-bbs/issues/73) adds the first optional
 [Lua arcade](../docs/lua-doors.md): sysop Lua lobby and two original games outside
-the backend under a separate game UID. Native legacy compatibility, persistent
-scores and broader game APIs remain separate follow-ups; keep improving the
+the backend under a separate game UID. The follow-up adds persistent local top
+tens/personal bests, run counts and an arcade guide. Native legacy compatibility
+and broader game APIs remain follow-ups; keep improving the
 usable board before resuming combined 250-user edge research.
 
 Further 250-user combined abuse/recovery and uncommon host/isolation scenarios

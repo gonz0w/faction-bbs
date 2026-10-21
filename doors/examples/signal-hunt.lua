@@ -1,5 +1,6 @@
 -- Original Faction game: find a pirate radio frequency in seven guesses.
 local secret, tries
+local won = false
 if state == "" then
     secret = bbs.random(99)
     tries = 7
@@ -16,6 +17,8 @@ elseif input ~= "" then
         bbs.text("Tune a whole frequency from 1 to 99.")
     elseif guess == secret then
         bbs.text("LOCKED ON! The underground broadcast is yours.")
+        won = true
+        bbs.score(tries * 100)
         tries = 0
     else
         tries = tries - 1
@@ -28,6 +31,8 @@ if tries > 0 and input ~= "Q" and input ~= "q" then
     bbs.state(string.format("%d:%d", secret, tries))
     bbs.prompt("Frequency (1-99), or Q to leave: ")
 else
+    if tries == 0 and not won then bbs.score(0) end
+    bbs.option("T", "Signal Hunt high scores", "scores:signal-hunt")
     if tries == 0 then bbs.text(string.format("Tonight's frequency was %d.", secret)) end
     bbs.option("P", "Hunt another signal", "game:signal-hunt")
     bbs.option("L", "Arcade lobby", "lobby")

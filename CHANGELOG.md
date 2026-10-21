@@ -4,6 +4,17 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+### Added
+
+- Persistent local arcade top tens, personal bests and completed-run counts for
+  Signal Hunt and Neon Salvage, an arcade rules guide, score browsing/return and
+  play-again navigation. Host-owned one-shot run authority keeps member identity
+  and SQLite out of Lua; completed frames carry one bounded score.
+- Transactional schema-3 upgrade and private score export/verify/restore, while
+  retaining read/restore compatibility for schema-2 exports. Older binaries need
+  a pre-upgrade snapshot to downgrade. No new dependencies or service-limit changes.
+
+
 - Add an optional Lua-driven Doors lobby and two original games, Signal Hunt and
   Neon Salvage. The shared BBS renders validated screens with sysop colors,
   arrows/Enter, hotkeys and plain fallback. State stays with its own connection.
@@ -14,7 +25,7 @@ This file records meaningful project changes. Product releases will use versione
   the board. Add opt-in NetBSD setup and runtime/SSH play/failure checks.
 - Fix fresh-host setup parent permissions and private build-directory handling
   discovered while installing the optional arcade. Keep native/DOS legacy doors,
-  persistent scores/economies and hostile native hosting as separate work.
+  game economies and hostile native hosting as separate work.
 
 - Prioritize the ordinary small-board product over further combined 250-user
   edge-case research. Add a native NetBSD first-install helper with read-only
