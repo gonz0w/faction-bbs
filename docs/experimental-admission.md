@@ -118,8 +118,12 @@ Never unlink or replace its live lock inode. A checksum detects torn/corrupt
 records; malformed, writable, aliased or unreadable state fails closed. Root
 `--inspect` prints aggregate capacity/refill/active/peak/admission/denial counts;
 it does not print process identities. Its `launches` counter means newly reserved
-key-admission monitors, not TCP accepts or SSH forks; `reuses` counts repeat key
-lookups, and full/rate counters count denied key lookups. `--reset` requires no live recorded monitor.
+key-admission monitors, not TCP accepts or SSH forks. `reuses` counts charged
+repeat allowances, including attempts whose later key-file IO fails; these are
+not successful authentication or key-output counters. Exhausted denials do not
+write or increment them. Full/rate counters cover those specific denial paths.
+`version` and `lookup_limit` identify the checked format and fixed allowance.
+`--reset` requires no live recorded monitor.
 It does not silently repair corrupt authority records.
 
 A normal base-SSH listener stop preserves existing sessions. Restarting it keeps
