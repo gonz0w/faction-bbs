@@ -50,3 +50,10 @@ the original manifest/two snapshots/nine records remain byte-for-byte unchanged.
 Historical 037/038 checkers now resolve their measured source versions here.
 New bounded-key evidence validates current source bytes directly. Run the same
 source check: it now verifies three snapshots and eleven historical records.
+
+The fourth snapshot `sources/5b62d0a` preserves all 145 executed result-039 inputs
+at merged PR #68. `global-admission-manifest.json` freezes those bytes and the
+complete unchanged record. The resolver pins that manifest independently; all
+four snapshots and twelve historical records are verified. New result 040 checks
+its current source bytes directly. Records 035/036 retain their unmodified direct
+pins; neither historical records nor their original manifests were refreshed.

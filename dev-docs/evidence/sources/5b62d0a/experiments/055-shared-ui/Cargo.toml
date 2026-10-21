@@ -1,0 +1,25 @@
+[package]
+name = "faction-shared-ui-research"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+publish = false
+license = "BSD-3-Clause"
+
+[workspace]
+
+[[bin]]
+name = "shared-bbs"
+path = "backend.rs"
+
+[dependencies]
+faction-core = { path = "../../crates/faction-core" }
+faction-access = { path = "../../crates/faction-access" }
+faction-terminal = { path = "../../crates/faction-terminal" }
+faction-unix = { path = "../../crates/faction-unix" }
+rustix = { version = "=1.1.5", default-features = false, features = ["std", "process", "termios", "event", "fs", "net"] }
+zeroize = "=1.9.1"
+
+[profile.release]
+opt-level = 2
+strip = true

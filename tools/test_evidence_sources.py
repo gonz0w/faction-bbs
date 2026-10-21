@@ -13,7 +13,7 @@ class ExecutedSources(unittest.TestCase):
             oldhash=hashlib.sha256(old).hexdigest();newhash=hashlib.sha256(new).hexdigest()
             raw=json.dumps({'files':{'Cargo.toml':oldhash},'source_root':'sources/revision'}).encode()
             (root/'dev-docs/evidence/manifest.json').write_bytes(raw)
-            with patch.object(evidence,'MANIFEST_SHA256',hashlib.sha256(raw).hexdigest()), patch.object(evidence,'key_manifest',return_value={'files':{}}):
+            with patch.object(evidence,'MANIFEST_SHA256',hashlib.sha256(raw).hexdigest()), patch.object(evidence,'key_manifest',return_value={'files':{}}), patch.object(evidence,'global_manifest',return_value={'files':{}}):
                 self.assertEqual(evidence.source_bytes('Cargo.toml',oldhash,root),old)
                 self.assertEqual(evidence.source_bytes('Cargo.toml',newhash,root),new)
                 with self.assertRaises(AssertionError):evidence.source_bytes('../outside',newhash,root)
@@ -35,7 +35,7 @@ class ExecutedSources(unittest.TestCase):
             (root/'same.rs').write_bytes(b'current is different')
             raw=json.dumps(dict(snapshots[0],snapshots=[snapshots[1]])).encode()
             (base/'manifest.json').write_bytes(raw)
-            with patch.object(evidence,'MANIFEST_SHA256',hashlib.sha256(raw).hexdigest()), patch.object(evidence,'key_manifest',return_value={'files':{}}):
+            with patch.object(evidence,'MANIFEST_SHA256',hashlib.sha256(raw).hexdigest()), patch.object(evidence,'key_manifest',return_value={'files':{}}), patch.object(evidence,'global_manifest',return_value={'files':{}}):
                 for version,snapshot in zip(versions,snapshots):
                     self.assertEqual(evidence.source_bytes('same.rs',snapshot['files']['same.rs'],root),version)
                 (base/'1/same.rs').write_bytes(versions[0])
@@ -52,5 +52,17 @@ class ExecutedSources(unittest.TestCase):
             (base/frozen.name).write_bytes(b'{}')
             with self.assertRaisesRegex(AssertionError,'frozen key manifest changed'):
                 evidence.key_manifest(root)
+
+    def test_global_snapshot_manifest_is_immutable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);base=root/'dev-docs/evidence';base.mkdir(parents=True)
+            frozen=evidence.ROOT/'dev-docs/evidence/global-admission-manifest.json'
+            (base/frozen.name).write_bytes(frozen.read_bytes())
+            data=evidence.global_manifest(root)
+            self.assertEqual(data['origin_commit'],'5b62d0a705c988e47ec2cc2ce4b74f87de600386')
+            self.assertEqual(len(data['files']),145)
+            (base/frozen.name).write_bytes(b'{}')
+            with self.assertRaisesRegex(AssertionError,'frozen global manifest changed'):
+                evidence.global_manifest(root)
 
 if __name__=='__main__':unittest.main()

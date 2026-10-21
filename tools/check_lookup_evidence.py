@@ -34,7 +34,7 @@ def activity(a):
 def validate(d,root=ROOT,allow_pending_cleanup=False):
     assert d['schema']==1 and d['target']=='aarch64-unknown-netbsd' and d['reference_commit']=='71491cc61bf4a6606ec65bb73ad72ed585f18927'
     assert d['guest']['vcpus']==2 and d['guest']['configured_ram_bytes']==1073741824
-    validate_sources(d['execution_sources'],root=root);assert d['native_sources']==d['execution_sources']
+    validate_sources(d['execution_sources'],root=root,historical=True);assert d['native_sources']==d['execution_sources']
     for name in ['native/faction-key-admission/main.c','tools/check_key_admission_config.py']+['tools/'+n+'.py' for n in ['lookup_probe','lookup_workload','lookup_trace','check_lookup_state','check_lookup_options','check_lookup_restart','check_lookup_scaling','check_lookup_host']]:assert name in d['execution_sources']
     assert d['contract']==dict(lookup_allowance=4,max_auth_tries=3,default_capacity=8,default_refill_ms=5000,experimental_capacity=250,key_refill_ms=250,application_refill_ms=100,credential_slots=2,headroom_minimum_bytes=134217728,swap_allowed=False,state_version=2,state_bytes=8104,active_interval_seconds=180)
     assert all(re.fullmatch('[a-f0-9]{64}',h) for h in d['binaries'].values())

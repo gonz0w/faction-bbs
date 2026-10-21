@@ -42,3 +42,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0022 Experimental SSH admission](0022-ssh-admission.md) — bounded transport startup; production adoption deferred.
 
 - [0023: Fixed SSH helper lookup allowance](0023-bounded-key-lookups.md) — explicit v2 migration and finite native lookup work.
+
+- [0024: Listener-scoped global SSH gate](0024-global-ssh-admission.md) — unchanged penalties and separate private-identity exploration.

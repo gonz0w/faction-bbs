@@ -9,7 +9,7 @@ Amends [ADR 0022](0022-ssh-admission.md); ordinary SSH rollback remains independ
 ## Question and mandatory gates
 
 Bound repeated successful unsigned invitation-key offers on the measured NetBSD
-11/base OpenSSH 10.2 path. Keep base SSH parser/options/signatures, local BBS
+11/base OpenSSH 10.3 path. Keep base SSH parser/options/signatures, local BBS
 approval, unchanged credentials/ceilings, dedicated helper UID, eight defaults,
 process birth/restart correctness and the 128 MiB/zero-swap sampled guard.
 No automatic host upgrade, firewall replacement or public exposure is authorized.

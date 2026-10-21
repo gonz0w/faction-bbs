@@ -60,3 +60,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0037 Sustained activity and abuse](0037-sustained-abuse.md) — longer active intervals and admission-work/fairness gates.
 
 - [0038: Bounded SSH key-lookup work](0038-bounded-key-lookups.md) — four charged lookups, native adversarial accounting and whole-host controls.
+
+- [0039: Global SSH admission and private peers](0039-global-ssh-admission.md) — native pre-fork gate, failure and headroom experiments.
