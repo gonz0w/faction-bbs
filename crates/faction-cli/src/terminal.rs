@@ -13,6 +13,7 @@ use std::{
 pub(super) struct Raw {
     tty: File,
     saved: Termios,
+    sync: bool,
 }
 impl Raw {
     pub(super) fn open() -> Result<Self> {
@@ -36,7 +37,11 @@ impl Raw {
         mode.special_codes[SpecialCodeIndex::VMIN] = 1;
         mode.special_codes[SpecialCodeIndex::VTIME] = 0;
         termios::tcsetattr(&tty, OptionalActions::Flush, &mode)?;
-        Ok(Self { tty, saved })
+        Ok(Self {
+            tty,
+            saved,
+            sync: false,
+        })
     }
     pub(super) fn read_byte(&self) -> io::Result<u8> {
         let mut byte = [0];
@@ -65,6 +70,9 @@ pub(super) fn ready() -> Result<bool> {
 impl Drop for Raw {
     fn drop(&mut self) {
         let _ = termios::tcsetattr(&self.tty, OptionalActions::Flush, &self.saved);
+        if self.sync {
+            let _ = io::stdout().write_all(b"\x1b[?2026l");
+        }
         let _ = io::stdout().write_all(b"\x1b[0m\x1b[?25h\r\n");
         let _ = io::stdout().flush();
     }
@@ -105,16 +113,21 @@ pub fn identity(theme: &Theme, ansi: bool) -> Result<()> {
 }
 /// None requests the canonical line-mode fallback. Drop restores terminal state
 /// and flushes pending typeahead before editor/sysop prompts get a new context.
-pub fn select(theme: &Theme, sysop: bool) -> Result<Option<Action>> {
+pub fn select(
+    theme: &Theme,
+    sysop: bool,
+    caps: faction_terminal::capabilities::Capabilities,
+) -> Result<Option<Action>> {
     if !capable() {
         return Ok(None);
     }
     let dimensions = size();
-    let raw = Raw::open()?;
+    let mut raw = Raw::open()?;
+    raw.sync = caps.synchronized;
     let (mut decoder, mut menu) = (Decoder::new(), Menu::new(theme, sysop));
     let mut output = io::stdout();
     output.write_all(b"\x1b[?25l")?;
-    output.write_all(menu.render().as_bytes())?;
+    output.write_all(caps.frame(&menu.render(), true).as_bytes())?;
     output.flush()?;
     let stdin = io::stdin();
     loop {
@@ -147,8 +160,34 @@ pub fn select(theme: &Theme, sysop: bool) -> Result<Option<Action>> {
             if let Some(action) = menu.feed(key) {
                 return Ok(Some(action));
             }
-            output.write_all(menu.redraw(previous).as_bytes())?;
+            output.write_all(caps.frame(&menu.redraw(previous), true).as_bytes())?;
             output.flush()?;
         }
     }
+}
+
+/// Dedicated raw-input state, ending in settings rather than a member action.
+pub(super) fn probe_sync() -> Result<bool> {
+    use faction_terminal::capabilities::{Probe, SYNC_QUERY};
+    let _raw = Raw::open()?;
+    print!("{SYNC_QUERY}");
+    io::stdout().flush()?;
+    let mut probe = Probe::default();
+    probe.begin(Instant::now());
+    while !probe.expired(Instant::now()) {
+        let readable = ready()?;
+        // Polling may wake after the deadline; never accept a late response.
+        if probe.expired(Instant::now()) {
+            break;
+        }
+        if readable {
+            probe
+                .feed(_raw.read_byte()?)
+                .map_err(|s| io::Error::new(io::ErrorKind::InvalidData, s))?;
+        }
+    }
+    termios::tcflush(&_raw.tty, termios::QueueSelector::IFlush)?;
+    probe
+        .result()
+        .map_err(|s| io::Error::new(io::ErrorKind::InvalidData, s).into())
 }

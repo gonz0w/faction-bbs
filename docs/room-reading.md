@@ -37,3 +37,7 @@ Posting now offers an [authored subject](room-articles.md) after the optional
 parent ID. Blank replies inherit a previewed subject with one Re: prefix; the
 reader shows the stored subject on every page. Chronological order and unread
 acknowledgment are unchanged.
+
+Optional [terminal settings](terminal-capabilities.md) now render native UTF-8
+room text and subjects with cell-based wrapping/clipping and safe per-scalar
+escapes. Classic remains the default; partial-unread/output-drain checks stay.

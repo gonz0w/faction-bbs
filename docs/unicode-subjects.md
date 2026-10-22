@@ -19,13 +19,15 @@ character intact. Malformed/control/oversized input ends that connection without
 posting and restores the local/worker terminal. Subject input has a 120-second
 local deadline and the existing shared prompt deadline/output/session bounds.
 
-The current **compatibility display is ASCII**: typing `café` stores those exact
+The default **compatibility display is ASCII**: typing `café` stores those exact
 UTF-8 bytes while echo/headers show `caf\u{e9}`. This also makes combining marks,
 bidi controls and terminal-control text inert. Paged headers and reply previews
 clip whole escape tokens to available columns, at most 119 cells; byte length is
 not used as a claim about native glyph width. Plain and ANSI sessions use the same
-text policy. Native Unicode glyphs, terminal-capability negotiation and graphics
-remain #96; neither TERM nor a terminal brand enables them automatically.
+text policy. [Terminal settings](terminal-capabilities.md) now opt into native width-one/two
+Unicode rendering and an isolated sync probe under #96. Invisible/cluster-dependent
+forms remain escaped; bitmap graphics are not enabled. Neither TERM nor a brand
+enables richer rendering automatically.
 
 Blank replies inherit one `Re: ` prefix. Defaults are clipped only at complete
 UTF-8 boundaries within 160 bytes, then trailing whitespace is removed. User

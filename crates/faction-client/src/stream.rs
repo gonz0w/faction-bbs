@@ -123,6 +123,24 @@ impl Filter {
 mod tests {
     use super::*;
     #[test]
+    fn modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered() {
+        let mut filter = Filter::default();
+        let mut text = Vec::new();
+        let input = "café 界\x1b[38;2;190;80;255mRGB\x1b[0m\x1b[?2026$p\x1b[?2026hframe\x1b[?2026l\x1b_Ga=T,t=f;L2V0Yy9wYXNzd2Q=\x1b\\\x1bPqgraphics\x1b\\\x1b]52;c;clipboard\x07";
+        for b in input.bytes() {
+            for e in filter.feed(&[b]).unwrap() {
+                match e {
+                    Event::Text(t) => text.extend(t),
+                    Event::Frame(_) => panic!("unexpected local action"),
+                }
+            }
+        }
+        assert_eq!(
+            String::from_utf8(text).unwrap(),
+            "café 界\x1b[38;2;190;80;255mRGB\x1b[0mframe"
+        );
+    }
+    #[test]
     fn fragmented_frames_and_terminal_queries_cannot_become_local_actions() {
         let frame = native::frame(&["ready"]).unwrap();
         let input = format!("hi\x1b]52;c;clipboard\x07\x1b[6n\x1bPbad\x1b\\{frame}世界\x1b[31mred");

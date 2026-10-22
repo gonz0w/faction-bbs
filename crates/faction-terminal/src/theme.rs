@@ -19,6 +19,7 @@ pub enum Action {
     Doors,
     Files,
     Quit,
+    Terminal,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -32,6 +33,7 @@ impl Action {
             "doors" => Ok(Self::Doors),
             "files" => Ok(Self::Files),
             "quit" => Ok(Self::Quit),
+            "terminal" => Ok(Self::Terminal),
             _ => Err("unknown menu action"),
         }
     }
@@ -129,6 +131,7 @@ impl Default for Theme {
                 (Action::Chat, b'C', "Local chat"),
                 (Action::Sysop, b'S', "Sysop controls"),
                 (Action::Doors, b'D', "Doors"),
+                (Action::Terminal, b'T', "Terminal settings"),
                 (Action::Quit, b'Q', "Log out"),
             ]
             .into_iter()

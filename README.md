@@ -108,8 +108,11 @@ common dates, plain-text MIME encodings and root/recent reply references. Origin
 INN passes twelve offline controls on macOS and NetBSD; no news service is enabled.
 [Unicode subject composing](docs/unicode-subjects.md) now works in local/worker and
 shared terminals with schema-7 metadata, UTF-8-safe reply clipping and inert
-classic-terminal echo/previews. Native Unicode rendering/graphics, live NNTP/provider
-integration and encrypted network mail remain future work.
+classic-terminal echo/previews. [Terminal settings](docs/terminal-capabilities.md)
+now opt into native Unicode subjects/room text, cell-aware paging, color depth,
+block/braille samples and bounded synchronized redraw with an isolated sync probe.
+Classic mode remains the default and immediate fallback. Bitmap graphics, extended
+input, live NNTP/provider integration and encrypted network mail remain future work.
 
 A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
 OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise

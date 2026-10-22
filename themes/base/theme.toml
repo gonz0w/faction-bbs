@@ -45,6 +45,10 @@ action = "doors"
 key = "D"
 label = "Doors"
 [[menu]]
+action = "terminal"
+key = "T"
+label = "Terminal settings"
+[[menu]]
 action = "quit"
 key = "Q"
 label = "Log out"

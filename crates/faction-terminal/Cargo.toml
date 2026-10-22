@@ -9,3 +9,4 @@ publish.workspace = true
 [dependencies]
 toml.workspace = true
 rustix.workspace = true
+unicode-width = { version = "=0.2.2", default-features = false }

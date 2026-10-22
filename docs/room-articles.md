@@ -19,7 +19,7 @@ subject, body, parent or room conflicts rather than overwriting content. Approva
 and the current session epoch are checked in the posting transaction. Subject
 controls, surrounding spaces and encoded-word syntax are rejected explicitly.
 [Unicode composing](unicode-subjects.md) preserves valid text bytes and uses ASCII
-escapes in the compatibility display. UTF-8
+escapes in the default compatibility display, with optional [native terminal text](terminal-capabilities.md). UTF-8
 bodies retain the current text limits and inert terminal presentation.
 
 Schema 7 adds UTF-8 validation and a byte-counted subject constraint. Its migration

@@ -142,6 +142,11 @@ impl Client {
                 self.queue("Local chat. /help lists commands. All channels stay local.\n");
                 self.chat_prompt();
             }
+            // Compatibility only: modern settings belong to the maintained UI.
+            Action::Terminal => {
+                self.queue("Optional section unavailable.\n");
+                self.pause();
+            }
             Action::Files | Action::Doors => {
                 self.queue("Doors are not installed.\n");
                 self.pause();
