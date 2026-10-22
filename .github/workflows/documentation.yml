@@ -45,6 +45,7 @@ jobs:
           python3 tools/check_room_reader_evidence.py
           python3 tools/check_post_metadata_evidence.py
           python3 tools/check_authored_articles_evidence.py
+          python3 tools/check_broader_articles_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
@@ -108,3 +109,21 @@ jobs:
           python3 tools/smoke_member_worker.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_broker_lifecycle.py "$CARGO_TARGET_DIR/release/faction-broker"
           python3 tools/smoke_credential_budget.py "$CARGO_TARGET_DIR/release/faction"
+
+      - name: Validate articles with original offline INN
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          umask 077
+          python3 - "$RUNNER_TEMP/inn-2.7.4.tar.gz" <<'PY'
+          import sys, urllib.request
+          from pathlib import Path
+          from tools.build_inn_reference import URL, SHA256
+          import hashlib
+          raw = urllib.request.urlopen(URL, timeout=30).read(10 * 1024 * 1024 + 1)
+          assert len(raw) <= 10 * 1024 * 1024 and hashlib.sha256(raw).hexdigest() == SHA256
+          Path(sys.argv[1]).write_bytes(raw)
+          PY
+          python3 tools/build_inn_reference.py --archive "$RUNNER_TEMP/inn-2.7.4.tar.gz" --work-dir "$RUNNER_TEMP/inn-reference"
+          python3 tools/check_inn_articles.py --reference-dir "$RUNNER_TEMP/inn-reference" --examples "$CARGO_TARGET_DIR/release/examples"

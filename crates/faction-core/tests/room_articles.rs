@@ -220,7 +220,7 @@ fn projection_roundtrips_without_private_identity_and_keeps_chronological_cursor
     );
 }
 #[test]
-fn legacy_unknown_dates_unsupported_lines_and_inaccessible_file_links_fail_closed() {
+fn legacy_unknown_dates_and_inaccessible_links_fail_but_long_lines_roundtrip() {
     let f = Fixture::new();
     let mut b = f.board();
     let s = b.authenticate("private-sysop", SECRET).unwrap();
@@ -238,10 +238,10 @@ fn legacy_unknown_dates_unsupported_lines_and_inaccessible_file_links_fail_close
     let long = b
         .post(&s, 1, &request_id().unwrap(), &"a".repeat(1024), None)
         .unwrap();
-    assert!(matches!(
-        b.room_article(&s, long.id),
-        Err(Error::Invalid(_))
-    ));
+    assert_eq!(
+        b.room_article(&s, long.id).unwrap().body(),
+        "a".repeat(1024)
+    );
     let private = b
         .post(&s, 1, &request_id().unwrap(), "file fixture", None)
         .unwrap();
@@ -283,10 +283,13 @@ fn reply_reference_work_is_bounded_and_cross_room_replies_stay_denied() {
             Some(p.id),
         )
         .unwrap();
-    assert!(matches!(
-        b.room_article(&s, next.id),
-        Err(Error::Invalid(_))
-    ));
+    let pruned = b.room_article(&s, next.id).unwrap();
+    assert_eq!(pruned.headers().references.len(), 16);
+    assert_eq!(pruned.headers().references[0], root);
+    assert_eq!(
+        pruned.headers().references.last().unwrap(),
+        &b.post_metadata(&s, p.id).unwrap().article_id
+    );
     let other = b.create_room(&s, "other", "Other room").unwrap();
     assert!(
         b.post_article(
@@ -301,4 +304,41 @@ fn reply_reference_work_is_bounded_and_cross_room_replies_stay_denied() {
     db.execute("UPDATE posts SET reply_to=id WHERE id=?1", [p.id])
         .unwrap();
     assert!(b.room_article(&s, p.id).is_err());
+}
+
+#[test]
+fn reply_pruning_keeps_root_and_nearest_ancestors_with_a_fixed_work_cap() {
+    let f = Fixture::new();
+    let mut b = f.board();
+    let s = b.authenticate("private-sysop", SECRET).unwrap();
+    let mut p = b.post(&s, 1, &request_id().unwrap(), "root", None).unwrap();
+    let root = b.post_metadata(&s, p.id).unwrap().article_id;
+    let mut ids = vec![root.clone()];
+    for _ in 0..128 {
+        p = b
+            .post(&s, 1, &request_id().unwrap(), "bounded reply", Some(p.id))
+            .unwrap();
+        ids.push(b.post_metadata(&s, p.id).unwrap().article_id);
+    }
+    let a = b.room_article(&s, p.id).unwrap();
+    assert_eq!(a.headers().references[0], root);
+    assert_eq!(&a.headers().references[1..], &ids[113..128]);
+    let too_deep = b
+        .post(
+            &s,
+            1,
+            &request_id().unwrap(),
+            "ordinary reading still works",
+            Some(p.id),
+        )
+        .unwrap();
+    assert!(matches!(
+        b.room_article(&s, too_deep.id),
+        Err(Error::Invalid(_))
+    ));
+    assert_eq!(b.unread_cursor(&s, 1).unwrap(), 0);
+    assert_eq!(
+        b.posts(&s, 1, too_deep.id - 1).unwrap()[0].body,
+        "ordinary reading still works"
+    );
 }

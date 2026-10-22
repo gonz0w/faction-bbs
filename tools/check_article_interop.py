@@ -15,7 +15,7 @@ def check(binary):
     assert str(article['Newsgroups'])=='faction.local.r1' and str(article['Path'])=='not-for-mail'
     assert str(article['References']).split()==['<root@fixture.invalid>','<parent@fixture.invalid>']
     assert article.get_content_type()=='text/plain' and article.get_content_charset()=='utf-8'
-    assert article.get_payload(decode=True).decode('utf-8').removesuffix('\r\n').replace('\r\n','\n')=='Unicode: café ☃\n> reply\n'
+    assert article.get_payload(decode=True).decode('utf-8').replace('\r\n','\n')=='Unicode: café ☃\n> reply\n'
     print('Independent Python email/MIME parser accepted synthetic headers, date, references and UTF-8 body; no news-server claim.')
 
 if __name__=='__main__':

@@ -11,7 +11,8 @@ Existing posts migrate with generated `Legacy message #ID` labels and **unknown
 original dates**. Their bodies, local IDs, replies and unread positions stay intact.
 These legacy labels are derived metadata, not recovered authored subjects.
 New subjects are authored or defaulted during posting; wider header/MIME and
-independent news-software interoperability remain #103.
+Unicode composer/storage compatibility is #114; bounded wire encoding and
+independent offline news-software controls are in the [v2 profile](article-profile.md).
 
 IDs use `<opaque-local-id@faction.invalid>` for this local proto-article stage.
 The reserved domain is not a deliverable mailbox or a home authority. IDs are

@@ -74,7 +74,6 @@ fn duplicate_missing_unknown_and_authority_headers_fail_closed() {
         "Subject",
         "MIME-Version",
         "Content-Type",
-        "Content-Transfer-Encoding",
     ] {
         let text = valid
             .split_inclusive("\r\n")
@@ -168,9 +167,10 @@ fn byte_line_reference_and_group_limits_are_enforced() {
         Err(Error::Limit)
     );
     assert!(Article::new(headers(), "a".repeat(LINE_BYTES)).is_ok());
+    let long = Article::new(headers(), "a".repeat(LINE_BYTES + 1)).unwrap();
     assert_eq!(
-        Article::new(headers(), "a".repeat(LINE_BYTES + 1)),
-        Err(Error::Limit)
+        Article::parse(long.to_wire().unwrap().as_bytes()).unwrap(),
+        long
     );
     let mut h = headers();
     h.references = (0..=REFERENCES)
@@ -187,7 +187,7 @@ fn attachments_html_and_unsupported_transfer_encoding_are_rejected() {
     for (old, new) in [
         ("text/plain; charset=utf-8", "text/html; charset=utf-8"),
         ("text/plain; charset=utf-8", "multipart/mixed; boundary=x"),
-        ("Encoding: 8bit", "Encoding: base64"),
+        ("Encoding: quoted-printable", "Encoding: rot13"),
     ] {
         assert_eq!(
             Article::parse(wire().replace(old, new).as_bytes()),
@@ -200,10 +200,10 @@ fn attachments_html_and_unsupported_transfer_encoding_are_rejected() {
 fn handwritten_article_fixture_and_unsupported_header_encodings() {
     let a = Article::parse(include_bytes!("fixtures/plain.article")).unwrap();
     assert_eq!(a.headers().message_id, "<fixture-1@home.example>");
-    assert_eq!(a.body(), "This is an offline article fixture.");
+    assert_eq!(a.body(), "This is an offline article fixture.\n");
     assert!(a.headers().references.is_empty());
     for text in [
-        wire().replace("Subject: After hours", "Subject: =?utf-8?b?Y2Fmw6k=?="),
+        wire().replace("Subject: After hours", "Subject: =?unknown?b?Y2Fmw6k=?="),
         wire().replace("References: <parent@peer.example>", "References: "),
         wire().replace("Subject: After hours", "Subject:After hours"),
     ] {

@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-21): continue #103 room articles and authored
-subjects after merging #112; keep hardening #106–#111 for later.** Native-device
+**Current priority (owner, 2026-10-21): finish #103's broader local article profile
+and original news-software validation after merging #113; keep hardening #106–#111 for later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -153,7 +153,7 @@ complete budgets/soak and maintained host policy remain gates; #55 stays open.
 
 ## Room article foundation and paged reading
 
-Owner batch #103/#21/#25: read docs/room-reading.md and ADR 0036. The dependency-free
+Owner batch #103/#21/#25: read docs/room-reading.md and ADR 0036. The bounded
 faction-articles codec is a bounded text-only profile, independent of board storage,
 authority and transport. Reject unsupported headers/MIME/control fields; no invented
 legacy subjects/dates, automatic NNTP feed, schema migration or IRC/XMPP conversion.
@@ -457,8 +457,8 @@ defaults. Do not overwrite generated/legacy provenance or invent dates. Local
 projection rechecks current approval and file permissions; it returns exact bodies
 or fails, never per-viewer rewrites under one ID. Per-article reserved author,
 local numeric group and not-for-mail aliases are not public/home/peering identities.
-At most sixteen same-room descending ancestors; reject deeper/cyclic chains rather
-than traverse unbounded history. No remote insertion, authority from headers,
+Traverse at most 128 same-room descending ancestors; emit root plus fifteen recent
+IDs. Reject cycles/deeper work rather than traverse unbounded history. No remote insertion, authority from headers,
 automatic export or network adapter. Strict normalized duplicate/conflict matching
 includes Path; future relay semantics need explicit validation. All existing owner,
 credential/session/helper/default limits stay. No new capacity or full-wire claim.
@@ -468,3 +468,25 @@ freeze #112's exact 90 execution inputs and original record before these changes
 Preserve all nine snapshots and twenty-one historical result identities unchanged.
 Requested OpenPGP/VM/storage hardening remains later phase; do not activate host,
 firewall or signing operations while continuing normal product work.
+
+## Broader local article profile and original INN (#103)
+
+Read docs/article-profile.md, ADR 0039, research 0048 and plan 0041. Profile v2
+supports bounded decoded UTF-8 subjects, numeric-zone dates and single text/plain
+MIME. Use reviewed base64, canonical QP soft breaks and normal final-newline
+semantics; no invented LF or body rewriting. Keep v1 historical bytes/results
+unchanged. Current schema-6 composer/storage validation stays ASCII; #114 owns
+versioned Unicode composing. No silent schema widening or imported member authority.
+
+INN 2.7.4 is an optional original reference build, not a product runtime or server.
+Pin/review its source and runtime artifacts. Its -D still resolves a hostname and
+opens NNTP: force synthetic INN_HOSTNAME and an owned temporary loopback fixture
+that emits only 400 and verifies zero client commands. No real boards/providers,
+credentials, posting, public listener or changed host/NPF policy. Perl is only an
+upstream reference-build tool, not a new BBS dependency. INN accepts a deliberately
+invalid Date; Faction must reject it independently. Live transport, relay semantics,
+consent/history and resource budgets remain #101/#104; hardening stays later.
+
+Tenth snapshot sources/pre103-broader and authored-articles-baseline-manifest.json
+preserve the exact 95 #113 inputs and original result. Keep all ten snapshots and
+twenty-two historical result identities fixed; never refresh old measurements.

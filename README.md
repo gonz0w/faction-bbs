@@ -94,7 +94,7 @@ manager or new IRC/forum federation protocol is implemented by this update.
 
 The [room reader](docs/room-reading.md) now shares wrapped, paged message screens
 across local/worker and shared-service sessions, with theme-aware ANSI transitions
-and complete-message unread acknowledgment. A dependency-free
+and complete-message unread acknowledgment. A bounded
 [Netnews text codec](docs/discussion-articles-and-news.md) is available offline;
 [schema-6 post metadata](docs/post-metadata.md) now gives new messages stable
 article IDs and recorded UTC times, while legacy dates remain unknown. Members
@@ -103,8 +103,11 @@ Stored posts project into local articles with reserved author/group aliases and
 bounded reply references, with strict duplicate/conflict comparison and no
 publication. Bodies/replies/unread stay intact and old exports remain readable.
 Follow the stopped-service backup/upgrade procedure before opening an older board.
-Live NNTP/provider integration, broader header/MIME interoperability, native Unicode
-graphics and encrypted network mail remain future work.
+The [v2 article profile](docs/article-profile.md) adds UTF-8 encoded wire subjects,
+common dates, plain-text MIME encodings and root/recent reply references. Original
+INN passes twelve offline controls on macOS and NetBSD; no news service is enabled.
+Live NNTP/provider integration, Unicode composing (#114), native Unicode graphics
+and encrypted network mail remain future work.
 
 A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
 OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise

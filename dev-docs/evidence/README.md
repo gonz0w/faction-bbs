@@ -97,3 +97,5 @@ workflow tests separately; historical file-area tests were not relabeled as new 
 - [Post metadata evidence](post-metadata-netbsd/README.md) — schema-6 migration/restore tests and real native metadata headers; no hardened deployment claim.
 
 - [Authored subjects and local article NetBSD software evidence](authored-articles-netbsd/README.md)
+
+- [Broader article profile and original INN software evidence](broader-articles-netbsd/README.md)

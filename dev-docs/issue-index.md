@@ -130,3 +130,5 @@ formatting enables no room publication or provider connection.
 - [#111](https://github.com/gonz0w/faction-bbs/issues/111): Run independent hardening validation, fuzzing and compromise-recovery exercises.
 
 See [phase requirements](../docs/later-phase-hardening.md). All are future work.
+
+- [#114: Internationalized subject composing and versioned metadata compatibility](https://github.com/gonz0w/faction-bbs/issues/114) — future terminal/storage follow-up; v2 wire support is #103.
