@@ -407,7 +407,11 @@ impl Client {
                 };
                 if let Some(parent) = reply {
                     let default = board.reply_subject(self.session()?, room, parent)?;
-                    self.queue(&format!("Reply subject: {default}\n"));
+                    let preview = faction_terminal::subject::preview(
+                        &format!("Reply subject: {default}"),
+                        usize::from(self.size().0).saturating_sub(1),
+                    );
+                    self.queue(&format!("{preview}\n"));
                 }
                 self.prompt(
                     State::PostSubject(room, reply),
@@ -809,6 +813,22 @@ impl Client {
                         if !self.ansi && (32..=126).contains(&byte) {
                             self.queue(&(byte as char).to_string());
                         }
+                    }
+                }
+                continue;
+            }
+            if matches!(self.state, State::PostSubject(..)) {
+                use faction_terminal::subject::{self, Edit};
+                match subject::feed(&mut self.input, byte).map_err(Error::Invalid)? {
+                    Edit::Echo(text) => self.queue(&text),
+                    Edit::Submit(text) => {
+                        self.skip_lf = byte == b'\r';
+                        self.queue("\n");
+                        if let Err(e) = self.line(&text, board, jobs, theme) {
+                            self.recover(e, board, theme);
+                        }
+                        termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                        break;
                     }
                 }
                 continue;

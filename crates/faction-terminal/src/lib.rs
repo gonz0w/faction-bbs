@@ -11,4 +11,5 @@ pub use theme::{Action, Entry, Menu, Style, Theme};
 pub type Result<T> = std::result::Result<T, &'static str>;
 
 mod reader;
+pub mod subject;
 pub use reader::{MESSAGE_BYTES, Message, MessageDetails, MessagePage, section};

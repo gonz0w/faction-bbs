@@ -138,11 +138,7 @@ impl Message<'_> {
         }
         if let Some(details) = details {
             for (name, value) in [("Subject", details.subject), ("Posted", details.posted)] {
-                let mut label = format!("{name}: {}", inert(value).replace('\n', "\\n"));
-                if label.len() > width {
-                    label.truncate(width - 3);
-                    label.push_str("...");
-                }
+                let label = crate::subject::preview(&format!("{name}: {value}"), width);
                 text.push_str(&label);
                 text.push('\n');
                 used += 1;

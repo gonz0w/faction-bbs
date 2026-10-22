@@ -100,7 +100,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=6).contains(&version) {
+    if app != APP_ID || !(2..=7).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -119,6 +119,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 6 {
         reference.execute_batch(include_str!("post_metadata.sql"))?;
+    }
+    if version >= 7 {
+        reference.execute_batch(include_str!("post_metadata_v7.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -297,7 +300,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
         }
     }
     if version >= 6 {
-        crate::post_metadata::validate(db, deadline)?;
+        crate::post_metadata::validate(db, deadline, version)?;
     }
     fn count(db: &Connection, sql: &str) -> Result<i64> {
         Ok(db.query_row(sql, [], |r| r.get(0))?)

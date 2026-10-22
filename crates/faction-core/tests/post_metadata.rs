@@ -206,3 +206,212 @@ fn readonly_export_of_a_legacy_live_store_never_upgrades_it() {
         5
     );
 }
+
+fn schema_six(f: &Fixture) {
+    let db = rusqlite::Connection::open(f.path().join("faction.sqlite3")).unwrap();
+    db.execute_batch(
+        "CREATE TEMP TABLE saved AS SELECT * FROM post_metadata; DROP TABLE post_metadata;",
+    )
+    .unwrap();
+    db.execute_batch(include_str!("../src/post_metadata.sql"))
+        .unwrap();
+    db.execute_batch("DELETE FROM post_metadata; INSERT INTO post_metadata SELECT * FROM saved; PRAGMA user_version=6;").unwrap();
+}
+#[test]
+fn unicode_subjects_preserve_bytes_retries_replies_authority_and_restore() {
+    use faction_core::PostDraft;
+    let f = Fixture::new();
+    let mut b = f.board();
+    let s = b.authenticate("sysop", SECRET).unwrap();
+    let subject = "a".to_owned() + &"界".repeat(53); // exactly 160 bytes
+    let key = request_id().unwrap();
+    let d = || PostDraft {
+        subject: &subject,
+        body: "unchanged body",
+        reply_to: None,
+    };
+    let lock = rusqlite::Connection::open(f.path().join("faction.sqlite3")).unwrap();
+    lock.execute_batch("BEGIN IMMEDIATE").unwrap();
+    assert!(matches!(b.post_article(&s, 1, &key, d()), Err(Error::Busy)));
+    lock.execute_batch("ROLLBACK").unwrap();
+    let post = b.post_article(&s, 1, &key, d()).unwrap();
+    assert_eq!(b.post_article(&s, 1, &key, d()).unwrap().id, post.id);
+    assert_eq!(b.post_metadata(&s, post.id).unwrap().subject, subject);
+    assert!(matches!(
+        b.post_article(
+            &s,
+            1,
+            &key,
+            PostDraft {
+                subject: "other",
+                ..d()
+            }
+        ),
+        Err(Error::RequestConflict)
+    ));
+    let expected = "Re: a".to_owned() + &"界".repeat(51);
+    assert_eq!(expected.len(), 158);
+    assert_eq!(b.reply_subject(&s, 1, post.id).unwrap(), expected);
+    let reply = b
+        .post(&s, 1, &request_id().unwrap(), "reply", Some(post.id))
+        .unwrap();
+    assert_eq!(b.reply_subject(&s, 1, reply.id).unwrap(), expected);
+    for subject in [
+        "é".repeat(81),
+        "🦀".repeat(41),
+        "bad\u{85}".into(),
+        "bad\n".into(),
+    ] {
+        assert!(
+            b.post_article(
+                &s,
+                1,
+                &request_id().unwrap(),
+                PostDraft {
+                    subject: &subject,
+                    ..d()
+                }
+            )
+            .is_err()
+        );
+    }
+    for subject in ["é".repeat(80), "🦀".repeat(40), "café e\u{301} שלום".into()] {
+        let p = b
+            .post_article(
+                &s,
+                1,
+                &request_id().unwrap(),
+                PostDraft {
+                    subject: &subject,
+                    ..d()
+                },
+            )
+            .unwrap();
+        let article = b.room_article(&s, p.id).unwrap();
+        assert_eq!(article.headers().subject, subject);
+        assert_eq!(
+            faction_articles::Article::parse(article.to_wire().unwrap().as_bytes())
+                .unwrap()
+                .headers()
+                .subject,
+            subject
+        );
+    }
+    let original = b.post_metadata(&s, post.id).unwrap();
+    let export = f.root.join("unicode.sqlite3");
+    b.export_local(&export).unwrap();
+    let dest = f.root.join("unicode-restore");
+    restore_local(&export, &dest).unwrap();
+    let mut restored = Board::open(&dest).unwrap();
+    let rs = restored.authenticate("sysop", SECRET).unwrap();
+    assert_eq!(restored.post_metadata(&rs, post.id).unwrap(), original);
+    b.register("reader", SECRET).unwrap();
+    b.set_status(&s, "reader", Status::Approved).unwrap();
+    let reader = b.authenticate("reader", SECRET).unwrap();
+    b.set_status(&s, "reader", Status::Revoked).unwrap();
+    assert!(matches!(
+        b.post_article(&reader, 1, &request_id().unwrap(), d()),
+        Err(Error::StaleSession)
+    ));
+    assert!(matches!(
+        b.reply_subject(&reader, 1, post.id),
+        Err(Error::StaleSession)
+    ));
+}
+#[test]
+fn schema_six_is_read_only_in_exports_and_upgrades_without_changing_metadata() {
+    let f = Fixture::new();
+    let mut b = f.board();
+    let s = b.authenticate("sysop", SECRET).unwrap();
+    let p = b
+        .post(&s, 1, &request_id().unwrap(), "retain", None)
+        .unwrap();
+    let metadata = b.post_metadata(&s, p.id).unwrap();
+    drop(b);
+    schema_six(&f);
+    let export = f.root.join("six.sqlite3");
+    export_local(&f.path(), &export).unwrap();
+    let bytes = fs::read(&export).unwrap();
+    verify_export(&export).unwrap();
+    let dest = f.root.join("restored-six");
+    restore_local(&export, &dest).unwrap();
+    let mut restored = Board::open(&dest).unwrap();
+    let rs = restored.authenticate("sysop", SECRET).unwrap();
+    assert_eq!(restored.post_metadata(&rs, p.id).unwrap(), metadata);
+    assert_eq!(fs::read(&export).unwrap(), bytes);
+    let db = rusqlite::Connection::open(dest.join("faction.sqlite3")).unwrap();
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        7
+    );
+    assert_eq!(
+        db.query_row(
+            "SELECT subject FROM post_metadata WHERE post_id=?1",
+            [p.id],
+            |r| r.get::<_, String>(0)
+        )
+        .unwrap(),
+        metadata.subject
+    );
+    assert!(
+        db.execute("UPDATE post_metadata SET subject=?1", ["é".repeat(81)])
+            .is_err()
+    );
+}
+#[test]
+fn old_contract_rejects_unicode_and_new_snapshots_reject_malformed_utf8() {
+    let f = Fixture::new();
+    let mut b = f.board();
+    let s = b.authenticate("sysop", SECRET).unwrap();
+    b.post(&s, 1, &request_id().unwrap(), "keep", None).unwrap();
+    drop(b);
+    schema_six(&f);
+    let db = rusqlite::Connection::open(f.path().join("faction.sqlite3")).unwrap();
+    db.execute("UPDATE post_metadata SET subject='café'", [])
+        .unwrap();
+    assert!(Board::open(&f.path()).is_err());
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        6
+    );
+    assert!(export_local(&f.path(), &f.root.join("bad-six.sqlite3")).is_err());
+    db.execute("UPDATE post_metadata SET subject='valid'", [])
+        .unwrap();
+    drop(db);
+    let b = Board::open(&f.path()).unwrap();
+    let export = f.root.join("bad-seven.sqlite3");
+    b.export_local(&export).unwrap();
+    let db = rusqlite::Connection::open(&export).unwrap();
+    db.execute_batch("UPDATE post_metadata SET subject=CAST(X'ff' AS TEXT)")
+        .unwrap();
+    drop(db);
+    assert!(verify_export(&export).is_err());
+    assert!(restore_local(&export, &f.root.join("bad-seven-restore")).is_err());
+}
+
+#[test]
+fn unknown_schema_six_metadata_catalog_is_not_silently_replaced() {
+    let f = Fixture::new();
+    let b = f.board();
+    drop(b);
+    schema_six(&f);
+    let db = rusqlite::Connection::open(f.path().join("faction.sqlite3")).unwrap();
+    db.execute_batch(
+        "CREATE TRIGGER unknown_metadata AFTER INSERT ON post_metadata BEGIN SELECT 1; END;",
+    )
+    .unwrap();
+    assert!(Board::open(&f.path()).is_err());
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        6
+    );
+    assert!(
+        db.prepare("SELECT 1 FROM sqlite_schema WHERE name='unknown_metadata'")
+            .unwrap()
+            .exists([])
+            .unwrap()
+    );
+}

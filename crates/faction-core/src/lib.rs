@@ -312,12 +312,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=6).contains(&version) {
+        } else if app != APP_ID || !(1..=7).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=6).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=7).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -327,7 +327,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=6).contains(&v) {
+            } else if !(2..=7).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -338,7 +338,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=6).contains(&v) {
+            } else if !(3..=7).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -348,7 +348,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=6).contains(&v) {
+        } else if !(4..=7).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -358,7 +358,7 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if !(5..=6).contains(&v) {
+        } else if !(5..=7).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -367,7 +367,42 @@ impl Board {
         if v == 5 {
             tx.execute_batch(include_str!("post_metadata.sql"))?;
             tx.pragma_update(None, "user_version", 6)?;
-        } else if v != 6 {
+        } else if !(6..=7).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 6 {
+            let expected = include_str!("post_metadata.sql")
+                .split("INSERT INTO")
+                .next()
+                .ok_or(Error::UnsupportedSchema)?
+                .trim()
+                .trim_end_matches(';');
+            let actual: String = tx.query_row(
+                "SELECT sql FROM sqlite_schema WHERE type='table' AND name='post_metadata'",
+                [],
+                |r| r.get(0),
+            )?;
+            let entries: i64 = tx.query_row(
+                "SELECT count(*) FROM sqlite_schema WHERE tbl_name='post_metadata'",
+                [],
+                |r| r.get(0),
+            )?;
+            if actual != expected || entries != 2 {
+                return Err(Error::UnsupportedSchema);
+            }
+            // Validate the old contract before widening it. Never bless UTF-8
+            // smuggled into schema 6, or replace existing public article IDs.
+            post_metadata::validate(
+                &tx,
+                std::time::Instant::now() + std::time::Duration::from_secs(5),
+                6,
+            )?;
+            tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
+            tx.pragma_update(None, "user_version", 7)?;
+        } else if v != 7 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -636,7 +671,7 @@ impl Board {
         } = draft;
         post_metadata::subject(subject)?;
         text(body, POST_BYTES, true)?;
-        if !(16..=64).contains(&request.len())
+        if !(16..=74).contains(&request.len())
             || !request
                 .bytes()
                 .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')

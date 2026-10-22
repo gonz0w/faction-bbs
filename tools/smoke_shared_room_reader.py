@@ -112,9 +112,34 @@ def smoke(args):
             c.expect('Subject: '+expected); c.expect('Shared reply body '+str(number))
             c.expect('More? [y/N]: '); c.send('n'); back(c); unread(c, 0)
             checks.append('shared_reply_default_subject' if number==2 else 'shared_authored_subject_override')
+        for number, subject, expected in [(4, 'Café 界', 'Caf\\u{e9} \\u{754c}'), (5, 'é'*80, '\\u{e9}'*4+'...'), (6, '', 'Re: Caf\\u{e9} \\u{754c}')]:
+            c.raw(b'p'); c.expect('Room ID: '); c.send('1')
+            c.expect('Reply to post ID (blank for new message): '); c.send('4' if number==6 else '')
+            c.expect('Subject (blank for generated/reply default): ')
+            if number == 4:
+                c.raw(b'Caf\xc3'); c.raw(b'\xa9\x7f\xc3'); c.raw(b'\xa9\xe2\x7f'); c.send(' 界')
+            else: c.send(subject)
+            c.expect('Message (one line, up to 1024 bytes): '); c.send('Unicode shared fixture '+str(number))
+            c.expect('Posted #'+str(number)+'.'); back(c)
+            c.raw(b'n'); c.expect('Room ID: '); c.send('1')
+            c.expect('Subject: '+expected); c.expect('Unicode shared fixture '+str(number))
+            c.expect('More? [y/N]: '); c.send('n'); back(c)
+            checks.append(['shared_split_utf8_and_backspace', 'shared_160_byte_subject_clipped_by_cells', 'shared_unicode_reply_default'][number-4])
+        for bad in [b'\xff\n', b'\xe2\n', b'\x1b[2J\n', b'x'*161+b'\n']:
+            other = member(); other.raw(b'p'); other.expect('Room ID: '); other.send('1')
+            other.expect('Reply to post ID (blank for new message): '); other.send('')
+            other.expect('Subject (blank for generated/reply default): '); other.raw(bad); other.finish(code=1)
+        checks.append('shared_malformed_incomplete_control_and_overflow_close')
+        # Keep a Unicode draft open while the other connection is paging.
+        draft = member(); draft.raw(b'p'); draft.expect('Room ID: '); draft.send('1')
+        draft.expect('Reply to post ID (blank for new message): '); draft.send('')
+        draft.expect('Subject (blank for generated/reply default): '); draft.send('Café')
+        draft.expect('Message (one line, up to 1024 bytes): ')
         c.raw(b'h'); c.expect('Room ID: '); c.send('1'); c.expect('More? [y/N]: ')
         status('v'); c.send('y'); c.expect('session expired; log in again'); c.finish(code=1)
         checks.append('current_revocation_denies_next_page')
+        draft.send('Revoked Unicode draft'); draft.expect('session expired; log in again'); draft.finish(code=1)
+        checks.append('shared_revocation_denies_unicode_draft_submission')
         remote('/etc/rc.d/faction_broker onestop')
         if args.output:
             args.output.write_text(json.dumps({'checks': checks, 'count': len(checks), 'result': 'pass',
