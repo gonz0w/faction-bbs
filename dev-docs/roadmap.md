@@ -18,6 +18,10 @@ Tab with classic fallback. Bounded SAUCE/iCE import enables original/licensed
 80-column login cards. Opt-in long-form identities now page in bounded screens
 with Enter/skip and classic recovery. Animation, larger formats and final scene
 identity stay open.
+The opt-in [Nightwire artwork](../docs/artwork-nightwire.md) now provides original
+bespoke lettering and radio-city scenes across short/paged and seasonal identities,
+with matched compact cards. Authoring source/previews are reproducible; owner
+visual acceptance and real terminal/font certification remain open.
 Hardening stays later.
 
 ## Modern terminal foundation

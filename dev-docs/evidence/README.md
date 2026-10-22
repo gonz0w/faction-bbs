@@ -133,3 +133,9 @@ record identities unchanged when adding long-form login art.
 135 final guest input matches, 171 Rust per OS / 112 host Python, eight paging
 PTY controls per OS and eight actual shared SSH/native paging controls, plus
 calendar/reader regressions. No fresh capacity/font/final artwork claim.
+
+[Original Nightwire artwork validation](nightwire-netbsd/README.md) records eighteen
+render profiles and seven local/worker routes per OS, seven actual SSH/native
+routes and 157 native input matches. All 144 prior paging inputs remain unchanged;
+new assets require no new frozen snapshot. Owner artwork acceptance and real
+emulator/font certification remain open, with no new capacity claim.

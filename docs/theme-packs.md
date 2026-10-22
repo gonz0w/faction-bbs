@@ -407,3 +407,12 @@ These are original Codex-assisted BSD template pages and reference-palette cell
 renders, not final accepted scene identity or terminal/font screenshots. Historical
 art still needs actual permission; importing SAUCE provides none. Larger/animated
 art and final original/licensed artistic acceptance remain #13/#25/#29 work.
+
+## Original Nightwire artwork
+
+The [Nightwire art guide](artwork-nightwire.md) provides a cohesive original
+radio-city identity, bespoke lettering, three-page/short variants, seasonal
+palettes and matching compact cards. Select a complete pack or its manual
+seasonal override using the existing options. These are new opt-in assets; no
+runtime parser, default installer, menu mapping or previously measured pack
+changes. Follow the guide for provenance, editing/reproduction and visual review.

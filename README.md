@@ -18,7 +18,11 @@ SAUCE/iCE import; the importer emits canonical cells, never raw art controls.
 Optional seasonal calendars pin colors/login screens for each approved session.
 Opt-in long-form ANSI login art now pages with Enter/skip controls, keeping
 classic ASCII recovery. A local authoring preview needs no running board. The
-example calendar stays disabled; final scene-art acceptance remains open.
+example calendar stays disabled. The optional [original Nightwire artwork](docs/artwork-nightwire.md)
+now adds bespoke lettering, a radio-city scene, coordinated seasons and a matching
+short/compact identity. Owner visual acceptance remains open.
+
+![Original Nightwire ANSI cover, reference-cell preview](docs/images/nightwire-cover.svg)
 
 
 **Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**

@@ -48,3 +48,6 @@ dev-docs/evidence/sources/pre25-paging/** -text
 
 # Intentional original CP437/SAUCE bytes.
 themes/longform/login.ans -text whitespace=cr-at-eol
+
+# Original Nightwire CP437/SAUCE artwork: preserve binary bytes.
+themes/nightwire*/**/*.ans -text whitespace=cr-at-eol

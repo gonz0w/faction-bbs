@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add original Nightwire CP437 artwork with bespoke slanted lettering, radio-city/
+  receiver scenes, matching short cover and autumn/winter/compact ASCII variants.
+- Add reproducible offline authoring source, product-based geometry/contrast/menu
+  checks and preview/login validation. Packs are opt-in; runtime/default installer,
+  earlier themes and measured inputs stay unchanged. Final owner art review open.
+
 - Add opt-in long ANSI login identities with bounded 16-row paging, Enter/skip,
   approval checks and compact/plain/resize recovery in local/worker/shared flows.
 - Add original three-page CP437 sample and deterministic page previews. Long
