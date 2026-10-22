@@ -11,7 +11,7 @@ fallback stays, hardening later. #124 merged as d659311.
 - [x] Add original long-art template and deterministic page previews.
 - [x] Validate host/native NetBSD PTYs, actual restricted SSH/native flow,
   paging/skip/resize/revocation, unchanged prior themes and normal limits.
-- [ ] Update docs, README, evidence, CI and #25; open/attach focused PR.
+- [x] Update docs, README, evidence, CI and #25; open/attach focused PR.
 
 Direction: opt-in long assets, maximum 80x256 cells and 64 KiB total input;
 fixed 16-row pages, <=16 KiB canonical art per page. Shared catalog owns assets,
@@ -52,3 +52,13 @@ known-cell renders were inspected. No emulator/font/final art acceptance claim.
 The new paging record compares 135 selected native inputs and pins nine harnesses
 and three new SVGs. Eighteen frozen snapshots/thirty historical record identities
 remain unchanged. No new RSS/CPU/250-user/hardware or host-hardening measurement.
+
+## Handoff
+
+[PR #125](https://github.com/gonz0w/faction-bbs/pull/125) is open and attached against
+feat/103-articles-and-room-reader; #25 progress is logged. Final native sources
+match, all thirty saved-evidence guards pass and a clean Git archive passes
+repository/frozen-source/seasonal/custom-menu/paging checks. The owned clone and
+private cache are removed; saved playground stays off. Current-head GitHub checks
+remain the merge gate. #25 stays open for the stated art/format acceptance work;
+hardening remains later. No authorization to merge this new PR is assumed.
