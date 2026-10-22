@@ -1,6 +1,6 @@
 # Local sysop console
 
-Updated 2026-10-22. The first read-only local operator console is available as
+Updated 2026-10-22. The read-only local operator console is available as
 `faction-sysop`. It is separate from member SSH and from the in-BBS sysop menu.
 Log into the operating system normally, then run the command as the board's Unix
 owner or an already-authorized root operator. A BBS sysop role grants no OS access.
@@ -45,19 +45,19 @@ console uses text panels rather than replaying login art or running theme code.
 
 | Panel | Contents |
 | --- | --- |
-| B: Board | Connected/capacity, credential permits, queued output, member/pending totals, room/post/channel/retained-chat totals, published/pending files, active transfers, completed games and active doors. |
-| H: Host | CPU count and 1/5/15-minute load, physical RAM capacity, board-filesystem available/total space, service PID and uptime. RAM used/free, network/peer/backup collectors remain unavailable. |
+| B: Board | Connected/capacity, credential permits, queued output, member/pending totals, room/post/channel/retained-chat totals, published/pending files, active transfers, completed games, active doors, service PID/uptime and connected history. |
+| H: Host | CPU count/busy percentage, 1/5/15-minute load, RAM used/free/physical capacity, board-filesystem available/total space, non-loopback network RX/TX rates and bounded CPU/RAM/network traces. Peer/backup collectors remain uninstrumented. |
 | I: Info | Local authority, controls and read-only scope. |
 
 Arrows/Tab and B/H/I switch panels. P pauses/resumes local sampling. R redraws
 without bypassing the sampling limit. Q or Ctrl-C/D exits back to the OS shell;
-terminal settings are restored. Unknown terminal sequences use the existing
+terminal settings are restored and ANSI exits place the shell below the dashboard. Unknown terminal sequences use the existing
 bounded decoder; after Escape, Enter recovers input. No shell-command field or
 host/member actions exist.
 
 Default refresh is five seconds; `--refresh 2..60` selects a bounded interval.
-History retains at most 60 connected-percentage samples; its ASCII trace uses
-`.` for zero and `:`/`*`/`#`/`@` for increasing usage bands. Pausing stops local
+Each connected/CPU/RAM/network history retains at most 60 samples, showing the most recent tail that fits the width. Its classic ASCII trace uses
+`.` for zero and `:`/`*`/`#`/`@` for increasing usage bands. Add `--unicode` alongside `--ansi` for optional UTF-8 block bars/sparklines when the operator knows the font supports them; plain/piped output stays ASCII. CPU/RAM traces use a fixed 0–100% scale; network RX+TX is relative to the observed window peak. Missing observations are gaps. Pausing stops local
 snapshot reads/host queries; it does not disable an explicitly enabled service
 publisher. ANSI mode changes only modified rows and handles resize; a right margin
 prevents wrapping. At 40x18 the panels still fit. Plain mode emits no ANSI controls,
@@ -91,13 +91,24 @@ frames. Unix permissions provide local operator authorization; this does not giv
 an untrusted process with the same Unix owner a new sandbox. Stronger containment
 remains in the later hardening work.
 
-Host sampling uses filesystem statvfs and one fixed, source-defined read-only
-sysctl invocation with a 250-ms deadline and 1-KiB output cap. No PATH search,
-shell, arbitrary keys or writes are accepted. On NetBSD these are `hw.ncpu`,
-`hw.physmem64`, `vm.loadavg`; physical capacity and load are distinct from used RAM
-or CPU utilization. The [NetBSD sysctl reference](https://man.netbsd.org/sysctl.7)
-defines those values; retrieved 2026-10-22. macOS uses its physical-capacity key;
-unsupported/missing collectors say unavailable.
+Host sampling uses filesystem `statvfs` and a small native read-only OS bridge,
+with no command launched on refresh. NetBSD reads `hw.ncpu`, `hw.physmem64`,
+`kern.cp_time`, `vm.uvmexp2`, load averages and routing-interface counters; macOS
+uses its corresponding sysctl/Mach APIs. The [NetBSD sysctl reference](https://man.netbsd.org/sysctl.7)
+and installed NetBSD 11 headers define those counters (checked 2026-10-22).
+Unsupported collectors remain unavailable. Native output is 64 integer slots;
+network enumeration uses one fixed 64-KiB buffer and at most 16 non-loopback
+interfaces. Oversized/changing tables fail that metric independently. No names,
+addresses, routing data, user commands or kernel pointers leave the bridge.
+
+CPU busy percentage uses non-idle tick deltas across all CPUs. RAM **used** is
+physical capacity minus free pages, including kernel reservations/cache; it is not
+an application working set or an estimate of reclaimable memory. Network rates
+sum non-loopback interface-byte deltas; tunnels/bridges can count traffic more than
+once. These are host interface observations, not unique BBS payload throughput.
+CPU/network require two valid samples. First sample, resumed sampling, counter
+reset or a changed interface/CPU scope warms up; missing metrics say unavailable.
+A one-shot report therefore gives capacities/load and warming interval counters.
 
 ## Optional operator-login launch and recovery
 
@@ -126,14 +137,16 @@ DB/blob/config/key backups follow the existing [backup guide](export-restore.md)
 
 ## Validation and remaining work
 
-See [native operator evidence](../dev-docs/evidence/operator-netbsd/README.md) and
-[plan 0052](../dev-docs/plans/0052-local-sysop-console.md). Software validation uses
-a disposable two-core/1-GiB NetBSD 11 ARM64 VM. The actual shared owner/member
-integration, OS-owner PTY, SSH window change, stop/restart and separate dashboard
-memory observations are recorded. Direct virtual-getty autolaunch and physical
-console/hardware testing remain unclaimed; no user login profile was changed.
+See the [initial operator evidence](../dev-docs/evidence/operator-netbsd/README.md),
+[host-stat/console evidence](../dev-docs/evidence/operator-host-netbsd/README.md)
+and [plan 0053](../dev-docs/plans/0053-host-stats-and-console-polish.md). Software
+validation uses an owned two-core/1-GiB NetBSD 11 ARM64 VM. Normal OS-password
+login, manual dashboard launch, panels, clean exit/termios restoration and logout
+are exercised through its real virtual serial/getty console. Actual shared-owner,
+restricted member SSH, owner PTY resize and stop/restart checks remain separate.
+No getty replacement, profile change, autologin or physical hardware claim.
 
-#95 remains open for complete host/network/peer/backup collectors and broader
-console validation. #98 host configuration applies/rollback and #97 firewall
-controls are separate. No new capacity or production-hardening claim. The saved
-playground remains off.
+#95 retains peer/backup adapter telemetry and any broader visual acceptance.
+Collectors cannot invent a peer protocol or a successful backup receipt. #98 host
+configuration applies/rollback, #97 firewall and hardening remain separate.
+No new capacity claim; the saved playground stays off.

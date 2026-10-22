@@ -51,4 +51,4 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 
 - [Nightwire terminal compatibility](artwork-terminal-compatibility.md): real-emulator cell placement, viewport requirements and classic recovery.
 
-- [Local sysop console](sysop-console.md): OS-authorized read-only BBS status, host summaries and classic/ANSI operator panels.
+- [Local sysop console](sysop-console.md): OS-authorized read-only BBS status, live CPU/RAM/network graphs, serial-login validation and classic/ANSI operator panels.

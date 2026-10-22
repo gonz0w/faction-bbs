@@ -11,7 +11,7 @@ The goal is private, human-scale communities whose operators own their systems a
 ## Status
 
 The optional [local sysop console](docs/sysop-console.md) now provides themed
-read-only BBS status, basic host summaries and explicit stale/unavailable health
+read-only BBS status, live CPU/RAM/network graphs and explicit stale/unavailable health
 after OS login. Private aggregate publication is opt-in; member SSH stays separate.
 
 The [BBS menus and sysop themes](docs/theme-packs.md) now support centered

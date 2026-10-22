@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #127, group related
-#95/#18/#98 local operator visibility and read-only diagnostics into a useful batch; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #128, batch remaining
+#95/#18/#98 host counters, recent graphs and local console polish; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -803,3 +803,34 @@ SSH/native art regressions. Resource samples use the default palette and one
 member: dashboard 2,396 KiB RSS / one LWP, owner 5,144 KiB / four LWPs. Keep the
 transient-host-helper/whole-VM sampling caveats; never call this new 250 capacity.
 Preserve these actual source/harness bytes and whole result before later edits.
+
+
+## Host-stat/console completion batch
+
+Read plan 0053 and ADR 0048. Twentieth snapshot `sources/pre95-hoststats` and
+`operator-baseline-manifest.json` freeze all 162 original operator/build inputs
+and the entire initial result before edits. Preserve all twenty snapshots and
+thirty-three historical result identities; never refresh old measurements.
+
+`faction-unix` now supplies fixed read-only counters: 64 scalar slots, one 64-KiB
+network query buffer, at most sixteen non-loopback interfaces. No per-refresh
+command/helper. RAM used includes cache/reservations; interface traffic can be
+counted more than once through tunnels/bridges. CPU/network need two valid
+samples; resets/scope changes/resume warm up, failures stay unavailable. Four
+histories cap at sixty entries and show their newest fitting tail. Explicit
+`--unicode` permits trusted width-one block graphs only in valid ANSI geometry;
+plain/pipes remain ASCII. Restore the shell cursor on a reserved bottom row.
+
+Serial/getty validation must authenticate a normal OS account on the owned clone,
+launch manually, restore termios and log out. A disposable synthetic owner password
+is not a BBS role or an installed profile/autologin change. Keep all credentials,
+serial logs and admin argv private; public evidence contains checks/numbers only.
+Peer/backup adapters are not implemented metrics. Hardening/host actions remain
+later; no new 250-user or physical console/capacity claim.
+
+The `operator-host-netbsd` record pins 155 actual selected native source matches
+and nine host harnesses. 183 Rust tests per OS, 115 host Python, eight themed UI
+controls per OS, ten shared controls, four actual serial/getty controls and seven
+shared artwork regressions pass. Dashboard 2,440 KiB RSS / one LWP; owner 5,144 KiB /
+four LWPs; minimum sampled whole-VM free 332.66 MiB. This one-member observation
+has no per-refresh helper; keep all source/result hashes fixed before later edits.

@@ -36,7 +36,7 @@ def run(a):
         assert denied.returncode!=0 and b'OS operator permission required' in denied.stderr
         checks.append('actual_member_uid_denied_operator_access')
         host=remote("su - factiond -c '/usr/local/libexec/faction-sysop --state-dir "+state+" --once --view host --plain'").stdout
-        assert b'Host CPUs: 2' in host and b'Physical RAM: unavailable' not in host and b'Board disk free: unavailable' not in host
+        assert b'CPU 2 busy: warming up' in host and b'RAM used: unavailable' not in host and b'Disk free: unavailable' not in host
         observations['host_summary']=host.decode().splitlines()
         checks.append('native_cpu_ram_load_and_disk_summary')
         c=SSHConsole(member);children.append(c);c.expect('[L]ogin [R]egister [Q]uit: ');c.send('l');c.expect('Handle: ');c.send('sysop');c.password(password)
@@ -46,13 +46,12 @@ def run(a):
         checks.append('actual_member_ssh_and_aggregate_visibility')
         command="su - factiond -c 'echo $$ > "+state+"/operator.fixture.pid; exec /usr/local/libexec/faction-sysop --state-dir "+state+" --ansi --refresh 2'"
         op=Operator(admin[:-1]+['-tt',admin[-1],command]);children.append(op)
-        op.expect('LOCAL SYSOP');op.expect('Connected: 1 / 8');op.raw(b'h');op.expect('Physical RAM:');op.raw(b'i');op.expect('OS owner/root access; not a BBS role.')
+        op.expect('LOCAL SYSOP');op.expect('Connected: 1 / 8');op.raw(b'h');op.expect('RAM used:');op.expect('Net RX/TX:');time.sleep(2.2);op.raw(b'r');op.expect('KiB/s');op.expect('CPU hist:');op.raw(b'i');op.expect('OS owner/root access; not a BBS role.')
         op.buffer=b'';op.resize(40,18);op.expect('40x18');op.expect('Q:quit P:pause R:redraw B/H/I:views');op.raw(b'b');op.expect('Connected: 1 / 8')
         checks.append('native_owner_pty_panels_and_actual_ssh_resize')
         samples=[]
         for _ in range(12):
-            # Include the whole VM's free-page count; transient sysctl helpers
-            # are not claimed to be measured by the per-process RSS sample.
+            # Whole VM free pages and separate dashboard/owner RSS; no collector helper.
             raw=remote("ps -o rss,vsz,nlwp -p $(cat /var/db/faction-profile-fixture/operator.fixture.pid) | awk 'NR==2 {print}'; ps -o rss,vsz,nlwp -p $(cat /var/run/faction/terminal.pid) | awk 'NR==2 {print}'; vmstat -s | awk '/pages free$/{print}'; /sbin/sysctl -n hw.pagesize").stdout.decode().splitlines()
             assert len(raw)==4, 'unexpected native resource sample'
             dash,owner=[list(map(int,line.split())) for line in raw[:2]]

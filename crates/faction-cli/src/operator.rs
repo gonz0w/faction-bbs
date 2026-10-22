@@ -5,89 +5,116 @@ use faction_terminal::{Decoder, Key, Theme};
 use std::{
     collections::VecDeque,
     fs,
-    io::{self, IsTerminal, Read, Write},
-    path::{Path, PathBuf},
-    process::{Command, Stdio},
-    thread,
+    io::{self, IsTerminal, Write},
+    path::PathBuf,
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
+mod host;
+use host::{Host, Reading, Sampler};
+
 #[derive(Default)]
-struct Host {
-    cpus: Option<u32>,
-    ram: Option<u64>,
-    load: Option<String>,
-    disk: Option<(u64, u64)>,
+struct History {
+    connected: VecDeque<Option<u8>>,
+    cpu: VecDeque<Option<u8>>,
+    ram: VecDeque<Option<u8>>,
+    network: VecDeque<Option<u64>>,
 }
-impl Host {
-    fn sample(directory: &Path) -> Self {
-        let mut host = Self::default();
-        if let Ok(v) = rustix::fs::statvfs(directory) {
-            host.disk = u64::try_from(u128::from(v.f_bavail) * u128::from(v.f_frsize))
-                .ok()
-                .zip(u64::try_from(u128::from(v.f_blocks) * u128::from(v.f_frsize)).ok());
-        }
-        let command = if cfg!(target_os = "netbsd") {
-            Some(("/sbin/sysctl", "hw.physmem64"))
-        } else if cfg!(target_os = "macos") {
-            Some(("/usr/sbin/sysctl", "hw.memsize"))
-        } else {
-            None
-        };
-        if let Some((binary, memory)) = command
-            && let Some(text) = query_host(binary, memory)
-        {
-            let lines: Vec<_> = text.lines().collect();
-            if lines.len() == 3 {
-                host.cpus = lines[0].trim().parse().ok();
-                host.ram = lines[1].trim().parse().ok();
-                let load = lines[2].trim().trim_matches(['{', '}']).trim();
-                if load.len() <= 48
-                    && load
-                        .bytes()
-                        .all(|b| b.is_ascii_digit() || b". ".contains(&b))
-                {
-                    host.load = Some(load.to_owned());
-                }
+impl History {
+    fn push(&mut self, snapshot: Option<&Snapshot>, available: bool, host: &Host) {
+        fn keep<T>(v: &mut VecDeque<T>, n: T) {
+            if v.len() == 60 {
+                v.pop_front();
             }
+            v.push_back(n);
         }
-        host
+        keep(
+            &mut self.connected,
+            snapshot
+                .filter(|s| {
+                    available && s.running && now().checked_sub(s.sampled).is_some_and(|a| a <= 15)
+                })
+                .map(|s| (u32::from(s.connected) * 100 / u32::from(s.capacity)) as u8),
+        );
+        keep(
+            &mut self.cpu,
+            match host.cpu {
+                Reading::Value(v) => Some(v),
+                _ => None,
+            },
+        );
+        keep(
+            &mut self.ram,
+            host.used
+                .zip(host.ram)
+                .filter(|(_, n)| *n > 0)
+                .map(|(used, n)| (u128::from(used) * 100 / u128::from(n)) as u8),
+        );
+        keep(
+            &mut self.network,
+            match host.network {
+                Reading::Value((rx, tx)) => rx.checked_add(tx),
+                _ => None,
+            },
+        );
     }
 }
-fn query_host(binary: &str, memory: &str) -> Option<String> {
-    // Source-defined absolute command/keys only. No PATH search, shell or -w.
-    let mut child = Command::new(binary)
-        .args(["-n", "hw.ncpu", memory, "vm.loadavg"])
-        .env_clear()
-        .env("LC_ALL", "C")
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn()
-        .ok()?;
-    let deadline = Instant::now() + Duration::from_millis(250);
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => {
-                if !status.success() {
-                    return None;
-                }
-                let mut text = String::new();
-                child
-                    .stdout
-                    .take()?
-                    .take(1025)
-                    .read_to_string(&mut text)
-                    .ok()?;
-                return (text.len() <= 1024 && text.is_ascii()).then_some(text);
-            }
-            Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-            _ => {
-                let _ = child.kill();
-                let _ = child.wait();
-                return None;
-            }
+fn trace(label: &str, values: &VecDeque<Option<u8>>, columns: usize, unicode: bool) -> String {
+    let width = columns.saturating_sub(label.len() + 1).min(60);
+    let start = values.len().saturating_sub(width);
+    let glyph = |value: Option<u8>| match value {
+        None => ' ',
+        Some(v) if unicode => {
+            ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'][usize::from(v.min(100)) * 7 / 100]
         }
+        Some(0) => '.',
+        Some(1..=25) => ':',
+        Some(26..=50) => '*',
+        Some(51..=75) => '#',
+        _ => '@',
+    };
+    format!(
+        "{label}{}",
+        values
+            .iter()
+            .skip(start)
+            .map(|v| glyph(*v))
+            .collect::<String>()
+    )
+}
+fn percent(value: Reading<u8>) -> String {
+    match value {
+        Reading::Value(v) => format!("{v}%"),
+        Reading::Warming => "warming up".into(),
+        Reading::Unavailable => "unavailable".into(),
+    }
+}
+fn bar(value: Option<u8>, width: usize, unicode: bool) -> String {
+    let Some(v) = value else {
+        return String::new();
+    };
+    let n = usize::from(v.min(100)) * width / 100;
+    format!(
+        " [{}{}]",
+        if unicode { "█" } else { "#" }.repeat(n),
+        "-".repeat(width - n)
+    )
+}
+struct ExitScreen {
+    ansi: bool,
+}
+impl Drop for ExitScreen {
+    fn drop(&mut self) {
+        let text = if self.ansi {
+            match terminal::size() {
+                Some((40..=240, rows @ 18..=100)) => format!("\x1b[{rows};1H\x1b[0m\n"),
+                _ => "\n".into(),
+            }
+        } else {
+            "\n".into()
+        };
+        let _ = io::stdout().write_all(text.as_bytes());
+        let _ = io::stdout().flush();
     }
 }
 fn now() -> u64 {
@@ -105,7 +132,7 @@ fn safe_line(text: &str, columns: usize) -> String {
     text.chars()
         .take(columns.saturating_sub(1))
         .map(|c| {
-            if c.is_ascii() && !c.is_ascii_control() {
+            if (c.is_ascii() && !c.is_ascii_control()) || ('▁'..='█').contains(&c) {
                 c
             } else {
                 '?'
@@ -134,10 +161,10 @@ fn lines(
     snapshot: Option<&Snapshot>,
     host: &Host,
     available: bool,
-    state: (usize, bool),
-    history: &VecDeque<Option<u8>>,
+    state: (usize, bool, usize, bool),
+    history: &History,
 ) -> Vec<String> {
-    let (view, paused) = state;
+    let (view, paused, columns, unicode) = state;
     let mut out = vec![
         format!("{} / LOCAL SYSOP", theme.board()),
         format!(
@@ -176,39 +203,80 @@ fn lines(
             "Active doors: {}",
             number(snapshot.map(|s| u64::from(s.doors)))
         ));
-        let trace: String = history
-            .iter()
-            .map(|v| match v {
-                None => ' ',
-                Some(0) => '.',
-                Some(1..=25) => ':',
-                Some(26..=50) => '*',
-                Some(51..=75) => '#',
-                _ => '@',
-            })
-            .collect();
-        out.push(format!("Connected history: {trace}"));
-        out.push("Counts are board-wide, not identities.".into());
-    } else if view == 1 {
-        out.push(format!("Host CPUs: {}", number(host.cpus.map(u64::from))));
-        out.push(format!(
-            "CPU load 1/5/15m: {}",
-            host.load.as_deref().unwrap_or("unavailable")
-        ));
-        out.push(format!("Physical RAM: {}", mib(host.ram)));
-        out.push("RAM used/free: unavailable".into());
-        out.push(format!("Board disk free: {}", mib(host.disk.map(|v| v.0))));
-        out.push(format!("Board disk size: {}", mib(host.disk.map(|v| v.1))));
-        out.push("Network/peers/backup: unavailable".into());
-        out.push(format!(
-            "Service PID: {}",
-            number(snapshot.map(|s| u64::from(s.pid)))
+        out.push(trace(
+            "Connected history: ",
+            &history.connected,
+            columns,
+            unicode,
         ));
         out.push(format!(
-            "Service uptime: {} s",
+            "PID {} / uptime {}s",
+            number(snapshot.map(|s| u64::from(s.pid))),
             number(snapshot.map(|s| s.uptime))
         ));
-        out.push("Fresh sample does not prove liveness.".into());
+        out.push("Counts are board-wide, not identities.".into());
+    } else if view == 1 {
+        let width = if columns >= 80 { 20 } else { 8 };
+        let cpu = match host.cpu {
+            Reading::Value(v) => Some(v),
+            _ => None,
+        };
+        out.push(format!(
+            "CPU {} busy: {}{}",
+            number(host.cpus.map(u64::from)),
+            percent(host.cpu),
+            bar(cpu, width, unicode)
+        ));
+        out.push(format!(
+            "Load 1/5/15m: {}",
+            host.load.as_deref().unwrap_or("unavailable")
+        ));
+        let used_percent = host
+            .used
+            .zip(host.ram)
+            .filter(|(_, n)| *n > 0)
+            .map(|(u, n)| (u128::from(u) * 100 / u128::from(n)) as u8);
+        out.push(format!(
+            "RAM used: {}/{}{}",
+            mib(host.used),
+            mib(host.ram),
+            bar(used_percent, width, unicode)
+        ));
+        out.push(format!(
+            "RAM free: {} (used includes cache)",
+            mib(host.free)
+        ));
+        out.push(format!(
+            "Disk free: {}/{}",
+            mib(host.disk.map(|v| v.0)),
+            mib(host.disk.map(|v| v.1))
+        ));
+        let network = match host.network {
+            Reading::Value((rx, tx)) => format!("{}/{} KiB/s", rx / 1024, tx / 1024),
+            Reading::Warming => "warming up".into(),
+            Reading::Unavailable => "unavailable".into(),
+        };
+        out.push(format!("Net RX/TX: {network}"));
+        out.push(format!(
+            "Non-loopback interfaces: {}",
+            number(host.interfaces.map(|n| n as u64))
+        ));
+        out.push(trace("CPU hist: ", &history.cpu, columns, unicode));
+        out.push(trace("RAM hist: ", &history.ram, columns, unicode));
+        let peak = history.network.iter().flatten().copied().max().unwrap_or(0);
+        let net = history
+            .network
+            .iter()
+            .map(|v| {
+                v.map(|n| {
+                    (u128::from(n) * 100)
+                        .checked_div(u128::from(peak))
+                        .unwrap_or(0) as u8
+                })
+            })
+            .collect();
+        out.push(trace("Net hist*: ", &net, columns, unicode));
+        out.push("*window peak; peers/backup uninstrumented".into());
     } else {
         out.extend(
             [
@@ -234,7 +302,7 @@ pub fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local sysop console (read-only, after OS login)\nUsage: faction-sysop --state-dir PATH [--theme PACK] [--ansi|--plain] [--once] [--view board|host|help] [--refresh 2..60]\nUnix state-owner/root access required. Never use as a member SSH forced command."
+            "Faction local sysop console (read-only, after OS login)\nUsage: faction-sysop --state-dir PATH [--theme PACK] [--ansi|--plain] [--unicode] [--once] [--view board|host|help] [--refresh 2..60]\nUnix state-owner/root access required. Never use as a member SSH forced command."
         );
         return Ok(());
     }
@@ -246,6 +314,7 @@ pub fn run() -> Result<()> {
     let mut directory = None;
     let mut theme = Theme::default();
     let mut ansi = false;
+    let mut unicode = false;
     let mut once = false;
     let mut refresh = 5;
     let mut view = 0;
@@ -278,6 +347,7 @@ pub fn run() -> Result<()> {
             }
             Some("--ansi") => ansi = true,
             Some("--plain") => ansi = false,
+            Some("--unicode") => unicode = true,
             Some("--once") => once = true,
             _ => return Err(invalid("unknown operator option")),
         }
@@ -305,8 +375,12 @@ pub fn run() -> Result<()> {
     } else {
         None
     };
-    let mut host = Host::sample(&directory);
-    let mut history = VecDeque::with_capacity(60);
+    let _exit =
+        (interactive || (ansi && io::stdout().is_terminal())).then_some(ExitScreen { ansi });
+    let mut sampler = Sampler::default();
+    let mut host = sampler.sample(&directory);
+    let mut history = History::default();
+    history.push(snapshot.as_ref(), available, &host);
     let mut decoder = Decoder::new();
     let mut paused = false;
     let mut previous = Vec::<String>::new();
@@ -323,20 +397,8 @@ pub fn run() -> Result<()> {
                 }
                 Err(_) => available = false,
             }
-            host = Host::sample(&directory);
-            if history.len() == 60 {
-                history.pop_front();
-            }
-            history.push_back(
-                snapshot
-                    .as_ref()
-                    .filter(|s| {
-                        available
-                            && s.running
-                            && now().checked_sub(s.sampled).is_some_and(|age| age <= 15)
-                    })
-                    .map(|s| ((u32::from(s.connected) * 100) / u32::from(s.capacity)) as u8),
-            );
+            host = sampler.sample(&directory);
+            history.push(snapshot.as_ref(), available, &host);
             redraw = true;
         }
         let size = terminal::size();
@@ -353,7 +415,7 @@ pub fn run() -> Result<()> {
                 snapshot.as_ref(),
                 &host,
                 available,
-                (view, paused),
+                (view, paused, usize::from(columns), unicode && use_ansi),
                 &history,
             );
             content[2].push_str(&format!(" | {columns}x{rows}"));
@@ -406,7 +468,10 @@ pub fn run() -> Result<()> {
                     Key::Hotkey(b'B') => view = 0,
                     Key::Hotkey(b'H') => view = 1,
                     Key::Hotkey(b'I') => view = 2,
-                    Key::Hotkey(b'P') => paused = !paused,
+                    Key::Hotkey(b'P') => {
+                        paused = !paused;
+                        sampler.reset();
+                    }
                     _ => (),
                 }
                 redraw = true;
@@ -438,6 +503,23 @@ mod tests {
         assert!(freshness(Some(&s), false, 101).starts_with("UNAVAILABLE"));
     }
     #[test]
+    fn histories_keep_recent_tail_and_fixed_bounds() {
+        let mut history = History::default();
+        let host = Host {
+            cpu: Reading::Value(100),
+            ..Host::default()
+        };
+        for _ in 0..80 {
+            history.push(None, false, &host);
+        }
+        assert_eq!(history.cpu.len(), 60);
+        assert_eq!(history.network.len(), 60);
+        history.cpu[59] = Some(0);
+        let tail = trace("CPU: ", &history.cpu, 10, false);
+        assert_eq!(tail, "CPU: @@@.");
+        assert!(trace("CPU: ", &history.cpu, 10, true).ends_with('▁'));
+    }
+    #[test]
     fn compact_lines_are_inert_and_leave_right_margin() {
         assert_eq!(safe_line("ab\x1bcd", 5), "ab?c");
         for view in 0..3 {
@@ -446,8 +528,8 @@ mod tests {
                 None,
                 &Host::default(),
                 false,
-                (view, false),
-                &VecDeque::new(),
+                (view, false, 40, false),
+                &History::default(),
             );
             assert!(rows.len() <= 17);
             assert!(rows.iter().all(|s| safe_line(s, 40).len() < 40));
