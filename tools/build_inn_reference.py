@@ -32,7 +32,10 @@ def build(archive, work):
     with (work/'build.log').open('wb') as log:
         for command in [['./configure',*options],['make','-C','include','-j2'],['make','-C','lib','-j2'],['make','-C','frontends','inews','-j2']]:
             result=subprocess.run(command,cwd=root,stdout=log,stderr=subprocess.STDOUT,timeout=300)
-            if result.returncode:raise RuntimeError('INN reference build failed; inspect private build.log')
+            if result.returncode:
+                log.flush()
+                print((work/'build.log').read_text(errors='replace')[-12000:],file=sys.stderr)
+                raise RuntimeError('INN reference build failed; inspect private build.log')
     binary=root/'frontends/inews'
     assert binary.is_file() and os.access(binary,os.X_OK)
     record={'version':VERSION,'source_url':URL,'archive_sha256':SHA256,

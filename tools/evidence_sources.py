@@ -54,11 +54,17 @@ def authored_articles_baseline_manifest(root=ROOT):
     return json.loads(raw)
 
 
+def broader_articles_baseline_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/broader-articles-baseline-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='7ad3539aa44efb95564aa342adeb7fce0e3dd2ed0f9ec573a14be740706fa6fa','frozen broader article baseline changed'
+    return json.loads(raw)
+
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root),authored_articles_baseline_manifest(root)]
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root),authored_articles_baseline_manifest(root),broader_articles_baseline_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name
