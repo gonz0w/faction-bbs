@@ -96,20 +96,64 @@ pub(super) fn capable() -> bool {
     matches!(size(), Some((40..=240, 18..=100)))
         && std::env::var("TERM").is_ok_and(|s| s != "dumb" && !s.is_empty())
 }
-pub fn identity(theme: &Theme, ansi: bool) -> Result<()> {
+pub fn identity(
+    theme: &Theme,
+    ansi_allowed: bool,
+    mut approved: impl FnMut() -> Result<()>,
+) -> Result<()> {
     let mut output = io::stdout();
-    let (columns, rows) = size().unwrap_or((0, 0));
-    let ansi = ansi && capable();
-    output.write_all(theme.identity_screen(columns, rows, ansi).as_bytes())?;
-    if theme.identity_needs_pause(columns, rows, ansi) {
-        write!(output, "{}\r\n", theme.welcome())?;
-        output.flush()?;
-        line("Press Enter to continue: ", 1)?;
-    } else {
-        writeln!(output, "\n{}", theme.welcome())?;
-        output.flush()?;
+    let mut page = 0;
+    loop {
+        approved()?;
+        let (columns, rows) = size().unwrap_or((0, 0));
+        let ansi = ansi_allowed && capable();
+        if let Some(screen) = theme.identity_page_screen(columns, rows, ansi, page) {
+            output.write_all(screen.as_bytes())?;
+        } else {
+            output.write_all(
+                theme
+                    .identity_fallback_screen(columns, rows, ansi)
+                    .as_bytes(),
+            )?;
+        }
+        if let Some(prompt) = theme.identity_page_prompt(page, columns, rows, ansi) {
+            output.flush()?;
+            loop {
+                termios::tcflush(&crate::tty()?, termios::QueueSelector::IFlush)?;
+                let command = line(&prompt, 1)?;
+                approved()?;
+                if command.is_empty() {
+                    page += 1;
+                    break;
+                }
+                if command.eq_ignore_ascii_case("s") {
+                    let (cols, rows) = size().unwrap_or((0, 0));
+                    output.write_all(
+                        theme
+                            .identity_fallback_screen(cols, rows, ansi_allowed && capable())
+                            .as_bytes(),
+                    )?;
+                    writeln!(output, "\n{}", theme.welcome())?;
+                    output.flush()?;
+                    line("Press Enter to continue: ", 1)?;
+                    approved()?;
+                    return Ok(());
+                }
+            }
+            continue;
+        }
+        if theme.identity_needs_pause(columns, rows, ansi) {
+            write!(output, "{}\r\n", theme.welcome())?;
+            output.flush()?;
+            termios::tcflush(&crate::tty()?, termios::QueueSelector::IFlush)?;
+            line("Press Enter to continue: ", 1)?;
+        } else {
+            writeln!(output, "\n{}", theme.welcome())?;
+            output.flush()?;
+        }
+        approved()?;
+        return Ok(());
     }
-    Ok(())
 }
 /// None requests the canonical line-mode fallback. Drop restores terminal state
 /// and flushes pending typeahead before editor/sysop prompts get a new context.

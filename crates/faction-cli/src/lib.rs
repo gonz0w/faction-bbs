@@ -464,7 +464,12 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
     }
     let mut caps = faction_terminal::capabilities::Capabilities::default();
     let mut last_graphics = None;
-    terminal::identity(theme, ansi)?;
+    terminal::identity(theme, ansi, || {
+        if board.whoami(s)?.status != Status::Approved {
+            return Err(Error::Denied.into());
+        }
+        Ok(())
+    })?;
     println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
     loop {
         let member = board.whoami(s)?;

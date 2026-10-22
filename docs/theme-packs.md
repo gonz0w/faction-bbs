@@ -78,7 +78,7 @@ same-UID operator processes are trusted; this is not a hostile-filesystem sandbo
 | `layout` | Optional base-only `list` (default) or `grid`; grid requires explicit menu entries and coordinates. |
 | `[[menu]]` | Optional 6–10 entries, in array/Tab/plain order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes, optional printable ASCII `description` up to 30 bytes. |
 | Core actions | Exactly one each of `rooms`, `new`, `history`, `post`, `sysop`, `quit`; optional one `chat` entry enables local chat; optional `doors`, `files` and `terminal` entries expose host capabilities/preferences. Doors/Files availability is decided by the host, never the theme. Unknown/duplicate actions fail. Permissions remain compiled/core-checked. |
-| `identity_ascii`, `identity_ansi` | Optional simple local filenames, at most 64 bytes, starting with an alphanumeric and containing only letters/digits/dot/underscore/hyphen. No directories or traversal. |
+| `identity_ascii`, `identity_ansi`, `identity_ansi_long` | Optional simple local filenames, at most 64 bytes, starting with an alphanumeric and containing only letters/digits/dot/underscore/hyphen. No directories or traversal. |
 | `creator`, `source`, `permission` | Required printable provenance text (at most 160 bytes each) when an identity file is selected. Record real authorship/rights; text declarations do not prove licensing. |
 
 Older custom version-1 menus can omit chat; add an entry with `action="chat"`,
@@ -109,7 +109,7 @@ background on/off, including subsequent basic background changes. Output uses
 100–107 backgrounds, never terminal blink. Font/spacing/aspect hints are ignored;
 terminal font metrics are outside this import profile. SAUCE is not permission.
 
-Long scrolling/animated art, arbitrary grids and per-room styling remain under
+Animation, larger art profiles, arbitrary grids and per-room styling remain under
 #13/#25/#29. Do not call the importer compatible with every archived art pack.
 The rights/provenance and [art direction](menus-and-themes.md) requirements still
 apply to every actual identity screen.
@@ -194,7 +194,7 @@ colors and order, then validate the copy. Retain the required core actions, uniq
 keys and fixed action names. Restart the shared owner after checking a stopped
 configuration; don't edit an active session's action mapping. A season changes
 only its allowed palette/welcome/identity fields; base descriptions and title stay
-coherent. Calendar scheduling is described below. Long art and native visual
+coherent. Calendar scheduling is described below. Larger/animated art and native visual
 acceptance of original/authorized scene identity art remain #25 follow-ups.
 
 ## Custom grid layouts and CP437 art
@@ -349,3 +349,61 @@ The examples/previews do not certify a particular emulator/font or final art.
 Keep matching older service configuration/CLI flags when rolling back to a binary
 that predates `theme_schedule`; no database migration is involved. Back up calendar,
 packs and configuration with your complete board backup.
+
+## Long-form login art and paging
+
+Set **`identity_ansi_long="login.ans"`** to opt into the
+[original three-page example](../themes/longform/theme.toml). It is mutually
+exclusive with `identity_ansi` in the same pack. Keep `identity_ascii` for smaller
+terminals and declare actual `creator`/`source`/`permission`. Both base and seasonal
+packs accept the long field; an override replaces the selected ANSI asset without
+moving menu entries or changing actions. Existing short `identity_ansi` stays
+80x16 / 16 KiB, including its stricter metadata dimensions.
+
+The long profile allows **80x256 cells** and **64 KiB total file**, including SAUCE
+and comments. Width remains 0/80 in SAUCE; declared height must fit the selected
+profile. The asset's actual/declared extent determines 1–16 pages. Every page
+validates before activation, including later controls and output amplification.
+Each page emits at most **16 KiB of canonical art**, using only 16-color SGR, local
+cursor coordinates and CP437 glyphs. Raw controls/metadata never pass through.
+There is no animation, automatic scrolling, arbitrary width or network fetch.
+
+After approval, at ANSI 80x24 or larger, art appears **16 rows at a time**:
+Enter advances; **S then Enter** skips the remaining art to the ASCII welcome.
+The final page leads to the normal welcome and Enter-to-menu pause. Other typed
+letters stay pager input and cannot activate a menu action. Input is bounded;
+coalesced typeahead is flushed at transitions. Compact/plain sessions get the
+fitting ASCII card or board name, without paging. Classic ANSI requires no modern
+graphics negotiation. A shared session resizing during paging falls back after
+its current output drains; local/worker sessions do so at the next input boundary.
+Approval/epoch checks apply before each new page and menu entry; revocation does
+not permit another page.
+
+All art lives in the startup theme catalog. A shared member retains a page index;
+only the requested page is rendered/queued, with existing 32 KiB output and
+five-second drain rules. The importer temporarily allocates a bounded canvas and
+trims unused extent. Short assets keep short storage; large art never becomes a
+whole-art per-member cache. Calendar/manual pinning and restart/preflight recovery
+remain unchanged. To roll back, select the base/short pack and restart after
+preflight. The installer does not enable this example automatically.
+
+```sh
+./target/release/examples/preview_theme --theme themes/longform --login --page 1
+./target/release/examples/preview_theme --theme themes/longform --login --page 2
+./target/release/examples/preview_theme --theme themes/longform --login --page 3
+python3 tools/render_theme_preview.py target/release/examples/preview_theme --theme themes/longform --login --page 2 --output /tmp/faction-login-page.svg
+```
+
+The authoring preview allows 17 KiB including framing/prompt overhead.
+Preview page numbers are 1-based and require `--login`; unavailable pages fail,
+including page 2 in compact/plain mode. The product never accepts a member-supplied
+asset path or date through this authoring interface.
+
+![Original long-form login page 1](images/login-longform-1.svg)
+![Original long-form login page 2](images/login-longform-2.svg)
+![Original long-form login page 3](images/login-longform-3.svg)
+
+These are original Codex-assisted BSD template pages and reference-palette cell
+renders, not final accepted scene identity or terminal/font screenshots. Historical
+art still needs actual permission; importing SAUCE provides none. Larger/animated
+art and final original/licensed artistic acceptance remain #13/#25/#29 work.

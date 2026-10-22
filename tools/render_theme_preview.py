@@ -59,7 +59,7 @@ def cells(frame, columns, rows=18, allow_newlines=False):
             col += 1; pos += 1
     return grid
 
-def svg(grid, login=False):
+def svg(grid, login=False, paged=False):
     width, height = len(grid[0]) * 10 + 24, len(grid) * 22 + 24
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title description">',
            ('<title id="title">Faction BBS seasonal login preview</title>' if login else '<title id="title">Faction BBS main-menu authoring preview</title>'),
@@ -75,7 +75,10 @@ def svg(grid, login=False):
                 out.append(f'<rect x="{12 + start * 10}" y="{12 + y * 22}" width="{(x-start)*10}" height="22" fill="{PALETTE[bg]}"/>')
             if text.strip():
                 out.append(f'<text x="{12+start*10}" y="{29+y*22}" fill="{PALETTE[fg]}" font-family="monospace" font-size="16" font-weight="{700 if bold else 400}" xml:space="preserve" textLength="{(x-start)*10}" lengthAdjust="spacingAndGlyphs">{escape(text)}</text>')
-    return '\n'.join([*out, '</svg>', ''])
+    document = '\n'.join([*out, '</svg>', ''])
+    if paged:
+        document = document.replace('seasonal login preview','paged login preview').replace('Original seasonal login template','Original long-form login template')
+    return document
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
@@ -85,6 +88,7 @@ def main():
     p.add_argument('--theme-schedule', type=Path)
     p.add_argument('--date')
     p.add_argument('--login', action='store_true')
+    p.add_argument('--page',type=int,choices=range(1,17))
     p.add_argument('--columns', type=int, choices=range(40, 241), default=80, metavar='40..240')
     p.add_argument('--output', required=True, type=Path)
     a = p.parse_args()
@@ -93,9 +97,10 @@ def main():
     if a.theme_schedule: cmd += ['--theme-schedule', str(a.theme_schedule)]
     if a.date: cmd += ['--date', a.date]
     if a.login: cmd += ['--login']
+    if a.page: cmd += ['--page',str(a.page)]
     result = subprocess.run(cmd, check=True, capture_output=True, timeout=10)
-    if len(result.stdout) > (16384 if a.login else 4096): raise ValueError('preview exceeds output budget')
-    a.output.write_text(svg(cells(result.stdout.decode('utf-8'), a.columns, rows=24 if a.login and a.columns>=80 else 18, allow_newlines=a.login), login=a.login))
+    if len(result.stdout) > (17408 if a.login else 4096): raise ValueError('preview exceeds output budget')
+    a.output.write_text(svg(cells(result.stdout.decode('utf-8'), a.columns, rows=24 if a.login and a.columns>=80 else 18, allow_newlines=a.login), login=a.login,paged=a.page is not None))
     print('Wrote reference-palette SVG; not a GUI or artwork approval.')
 
 if __name__ == '__main__': main()

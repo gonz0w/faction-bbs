@@ -116,7 +116,7 @@ Manual autumn/winter overrides stay independent of command mappings. The new
 local preview example and stdlib SVG renderer let sysops validate layout without
 opening a live board. These are original interface elements, not final approved
 identity art. Commissioned/authorized art, visual font review and
-broader long-art support remain open; don't infer those from the previews.
+broader formats remain open; don't infer those from the previews.
 
 The [calendar and login guide](theme-packs.md#seasonal-calendar-and-login-screens)
 now implements UTC/system-local annual windows, explicit overlap priority,
@@ -128,4 +128,10 @@ explicit two-column/five-row positions and spatial arrows while keeping ordered
 Tab/hotkeys and compact/plain recovery. The importer accepts bounded SAUCE00
 Character/ANSi metadata and non-blink iCE backgrounds, never raw escape streams.
 An original CP437 sample demonstrates the path. Final scene identity-art
-acceptance and long-art import remain #25 work.
+acceptance, animation and larger formats remain #25 work. Optional long-form
+login paging is now implemented in the bounded profile below.
+
+The [long-form login guide](theme-packs.md#long-form-login-art-and-paging) now
+supports explicit 80x256 / 64 KiB assets, sixteen-row pages, Enter/skip and
+classic/compact recovery. This retains the short-art importer contract and does
+not imply unlimited scrolling, animation or compatibility with every scene pack.
