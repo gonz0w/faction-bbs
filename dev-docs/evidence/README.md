@@ -156,3 +156,9 @@ stay immutable. See [operator evidence](operator-netbsd/README.md) for new resul
 SSH/native controls, with operator/backup/serial/art regressions. Snapshot 22
 `sources/pre27-directory` freezes all 173 prior recovery inputs and its complete
 record; 22 snapshots/35 historical identities remain unchanged.
+
+[Native board-launcher evidence](board-launcher-netbsd/README.md) records 191 Rust
+tests per OS, seven launcher PTY checks per OS and ten real two-board controls
+with independent member approval and host keys. Snapshot 23 freezes 174 prior
+directory inputs and its complete record. All 23 snapshots/36 historical record
+identities remain immutable; no new server/250-capacity/hardening claim.

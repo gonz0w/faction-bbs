@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an optional native board launcher with private member-owned profile catalogs,
+  arrow/hotkey pages, explicit connection/disconnect confirmation and return after
+  logout/failure. Retain single-profile behavior and classic-door escape passthrough.
+- Revalidate each selected profile, keep strict SSH host keys and fresh per-visit
+  filters/Files state; no server-supplied endpoint or credential/agent forwarding.
+- Preserve 174 prior directory inputs and its whole result before client edits.
+  Server/schema/defaults remain unchanged; native identity/mail and hardening stay later.
+
 - Add opt-in sysop-curated Other BBSes packs and approved-member connection cards
   in local, inherited-worker and shared sessions. Arrows/hotkeys, paging, compact/
   plain and main-menu return share one bounded presenter. No automatic connection,

@@ -3,7 +3,8 @@
 Status: optional working Unix preview, validated on macOS and NetBSD 11 ARM64
 software VM. See [ADR 0033](../dev-docs/decisions/0033-native-terminal-files.md)
 and [validation](../dev-docs/evidence/native-client-netbsd/README.md).
-The client provides integrated file transfers and recent room/chat file links.
+The client provides integrated file transfers, recent room/chat file links and an
+optional [local board launcher](board-launcher.md) for independent configured communities.
 Home identity, XMPP and encrypted mail are **not implemented** in this increment.
 
 ## Connect

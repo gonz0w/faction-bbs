@@ -1,5 +1,6 @@
 //! Local terminal companion. Remote output never selects local paths or endpoints.
 #![forbid(unsafe_code)]
+mod launcher;
 mod profile;
 mod sftp;
 mod stream;
@@ -422,29 +423,89 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile) -> io::Result<()> {
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if !matches!(args.len(), 2 | 3)
-        || args[0] != "--profile"
+        || !matches!(args[0].as_str(), "--profile" | "--boards")
         || (args.len() == 3 && args[2] != "--kitty")
     {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML [--kitty]",
+            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty]",
         ));
     }
-    let p = Profile::load(Path::new(&args[1]))?;
+    let catalog = if args[0] == "--boards" {
+        Some(launcher::Catalog::load(Path::new(&args[1]))?)
+    } else {
+        None
+    };
+    let profile = if catalog.is_none() {
+        Some(Profile::load(Path::new(&args[1]))?)
+    } else {
+        None
+    };
     let mut t = Terminal::start()?;
-    let mut size = termios::tcgetwinsize(&t.input)?;
+    let size = termios::tcgetwinsize(&t.input)?;
     if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
         return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
     }
     let graphics = args.len() == 3 && t.probe_graphics()?;
-    let mut r = Remote::start(&p, size.ws_row, size.ws_col)?;
+    if let Some(p) = profile {
+        return session(&mut t, &p, graphics, false).map(|_| ());
+    }
+    let catalog = catalog.ok_or_else(invalid)?;
+    let mut last = 0;
+    while let Some(i) = launcher::choose(&mut t, &catalog, last)? {
+        last = i;
+        let b = &catalog.boards[i];
+        let result: io::Result<()> = (|| {
+            // Reload only after local selection, retaining all existing SSH/key checks.
+            let p = Profile::load(&b.profile)?;
+            t.print(&format!("\x1b[2J\x1b[HLOCAL CONNECTION / {}\r\nSSH: {} port {}\r\nFiles: {} port {}\r\nVerified local profile; independent login/approval.\r\nNo account, agent or device keys forwarded.\r\n", b.label, safe(&p.host), p.port, safe(&p.file_host), p.file_port))?;
+            termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+            if !t
+                .line("Connect using this local profile? [y/N]: ", 1)?
+                .eq_ignore_ascii_case("y")
+            {
+                return Ok(());
+            }
+            t.print("Ctrl-] then B: local boards. Ctrl-] twice: send Ctrl-].\r\n")?;
+            let result = session(&mut t, &p, graphics, true);
+            if graphics {
+                faction_terminal::graphics::cleanup(&mut t.output);
+            }
+            result?;
+            t.print("\r\nBoard disconnected. Local profiles and keys stay on your device.\r\n")?;
+            Ok(())
+        })();
+        if let Err(e) = result {
+            if e.kind() == io::ErrorKind::Interrupted {
+                continue;
+            }
+            t.print(&format!(
+                "\r\nConnection stopped: {}\r\n",
+                safe(&e.to_string())
+            ))?;
+        }
+        termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+        t.line("Enter to return to local Boards: ", 0)?;
+    }
+    Ok(())
+}
+fn session(t: &mut Terminal, p: &Profile, graphics: bool, boards: bool) -> io::Result<()> {
+    let mut size = termios::tcgetwinsize(&t.input)?;
+    if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
+        return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
+    }
+    let mut local_keys = launcher::Keys::default();
+    let mut r = Remote::start(p, size.ws_row, size.ws_col)?;
     r.filter.graphics.enabled = graphics;
     let mut handshake = None;
     loop {
+        if boards && let Some(byte) = local_keys.expired(Instant::now()) {
+            r.send(&[byte])?;
+        }
         if r.filter.graphics.expired(Instant::now()) {
             return Err(io::Error::other("graphics transfer timeout"));
         }
         if r.native {
-            file_menu(&mut t, &mut r, &p)?;
+            file_menu(t, &mut r, p)?;
         }
         if !r.output.is_empty() {
             faction_terminal::graphics::write_tty(
@@ -517,7 +578,30 @@ fn run() -> io::Result<()> {
             if n == 0 {
                 break;
             }
-            r.send(&b[..n])?;
+            if boards {
+                let (forward, requested) = local_keys.feed(&b[..n], Instant::now());
+                if !forward.is_empty() {
+                    r.send(&forward)?;
+                }
+                if requested {
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    let answer = t.line(
+                        "\r\nLOCAL: disconnect board (drafts lost), return to Boards? [y/N]: ",
+                        1,
+                    );
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    match answer {
+                        Ok(value) if value.eq_ignore_ascii_case("y") => break,
+                        Ok(_) => t.print("Staying on this board.\r\n")?,
+                        Err(e) if e.kind() == io::ErrorKind::Interrupted => {
+                            t.print("Staying on this board.\r\n")?
+                        }
+                        Err(e) => return Err(e),
+                    }
+                }
+            } else {
+                r.send(&b[..n])?;
+            }
         }
         let next = termios::tcgetwinsize(&t.input)?;
         if (next.ws_row, next.ws_col) != (size.ws_row, size.ws_col) {

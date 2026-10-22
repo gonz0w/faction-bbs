@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #130, build useful
-#27/#21 curated Other BBSes discovery and connection cards; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #131, build useful
+#27/#21/#14 member-owned native board visits and local return; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -911,3 +911,37 @@ incremental-memory or new capacity claims. Preserve this source/result set befor
 later edits; keep all 36 saved-evidence guards. Disposable clone/cache removed,
 saved playground off. Next product increments: member submissions and explicit
 native handoff; keep independent destination approval and member-held keys.
+
+
+## Native board launcher batch
+
+Read plan 0056, ADR 0051 and docs/board-launcher.md. Snapshot 23
+`sources/pre27-launcher` / `directory-baseline-manifest.json` freeze all 174 prior
+source/harness inputs and whole directory result. Keep 23 snapshots/36 historical
+identities immutable. New client measurements require their own input/result pins.
+
+`--boards` is an opt-in member-owned <=16-KiB/sixteen-profile-path catalog. Local
+keyboard alone chooses and confirms; no remote text/frame/graphics can import or
+select an endpoint, host key or device key. Reuse profile/SSH validation on each
+selection. Keep independent destination registration/approval and one active SSH
+child; fresh filter/Files nonce/sequence/recent links per visit. Close/reap before
+connecting elsewhere. Ctrl-] B asks before dropping drafts; doubled Ctrl-] forwards
+one, single times out after one second. `--profile` stays byte-transparent. Files
+foreground flow and optional local Kitty gate/cleanup remain separate.
+
+No owner/schema/listener/helper/default/dependency changes. Use two owned marked
+VMs for independent-board proof: production socket remains fixed. Keep private
+profiles/argv/keys outside Git, saved playground off and hardening later. Member
+submission/moderation UI and directory-to-profile import remain future increments.
+
+
+`board-launcher-netbsd` pins 168 matched selected native inputs and eight host
+harness inputs; 110 checked server/workspace bytes stay unchanged. 191 Rust tests
+per OS, 118 Python, seven launcher PTY checks per OS and ten real two-board controls
+pass, plus directory/graphics/operator/art regressions. Native process inspection
+must use NetBSD `ps -U ... -o pid,ppid,comm` with a skipped header, not Linux-style
+combined empty headers. The actual rapid cancel/retry oracle guards the corrected
+flush-before-acknowledgement order. One client SSH child per OS / four LWPs per
+board; no new RSS/capacity claim. Preserve these sources and whole result before
+later edits and keep all 37 saved-evidence guards. Both clones/cache removed,
+saved playground off; member submissions and deliberate profile import remain later.
