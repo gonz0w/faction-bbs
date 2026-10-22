@@ -2,8 +2,9 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-21): native-device encrypted mail and scoped
-home identity (#84/#90/#91), after merged file areas/native transfers.** See docs/file-areas.md,
+**Current priority (owner, 2026-10-21): continue #103 room articles and authored
+subjects after merging #112; keep hardening #106–#111 for later.** Native-device
+encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
 The owner selected independent invited home servers and a native local terminal
@@ -447,3 +448,23 @@ cryptosystem, automatic public endpoint or independent audit/capacity claim.
 Device-encrypted attachments remain #88, separate from sysop-readable file areas.
 All previous evidence/source identities remain unchanged; preserve current record
 bytes before future source edits rather than refreshing historical measurements.
+
+## Authored subjects and local article projection (#103)
+
+Read docs/room-articles.md, ADR 0038 and plan 0040. Keep schema 6, borrowed PostDraft,
+subject-aware retry comparison, optional authored ASCII subjects and previewed Re:
+defaults. Do not overwrite generated/legacy provenance or invent dates. Local
+projection rechecks current approval and file permissions; it returns exact bodies
+or fails, never per-viewer rewrites under one ID. Per-article reserved author,
+local numeric group and not-for-mail aliases are not public/home/peering identities.
+At most sixteen same-room descending ancestors; reject deeper/cyclic chains rather
+than traverse unbounded history. No remote insertion, authority from headers,
+automatic export or network adapter. Strict normalized duplicate/conflict matching
+includes Path; future relay semantics need explicit validation. All existing owner,
+credential/session/helper/default limits stay. No new capacity or full-wire claim.
+
+Ninth source snapshot sources/pre103-authored and post-metadata-baseline-manifest.json
+freeze #112's exact 90 execution inputs and original record before these changes.
+Preserve all nine snapshots and twenty-one historical result identities unchanged.
+Requested OpenPGP/VM/storage hardening remains later phase; do not activate host,
+firewall or signing operations while continuing normal product work.

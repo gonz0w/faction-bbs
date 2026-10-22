@@ -64,3 +64,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0036: Room article foundation and paged reading](0036-room-articles-and-reading.md) — bounded local text profile and shared safe screens; no schema/feed adoption.
 
 - [0037: Persistent local post metadata](0037-persistent-post-metadata.md) — atomic metadata, honest legacy dates and old/new snapshot validation.
+
+- [0038: Authored subjects and local article projection](0038-authored-subjects-and-local-article-projection.md)

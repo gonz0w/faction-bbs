@@ -180,7 +180,25 @@ impl Headers {
         Ok(())
     }
 }
+/// Strict comparison of validated supported-profile articles. A conflicting ID
+/// is quarantined/rejected by future adapters, never silently overwritten.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IdentityMatch {
+    Different,
+    Duplicate,
+    Conflict,
+}
 impl Article {
+    pub fn compare_identity(&self, other: &Self) -> IdentityMatch {
+        if self.headers.message_id != other.headers.message_id {
+            IdentityMatch::Different
+        } else if self == other {
+            IdentityMatch::Duplicate
+        } else {
+            IdentityMatch::Conflict
+        }
+    }
+
     pub fn new(headers: Headers, body: String) -> Result<Self> {
         headers.validate()?;
         if body.len() > BODY_BYTES {

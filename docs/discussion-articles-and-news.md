@@ -36,14 +36,18 @@ This is a deliberately limited profile, not a general-purpose provider parser.
 Limits: 24 KiB wire, 4 KiB headers, 16 KiB body, 998 bytes per physical line,
 four groups and sixteen references. Header injection, duplicates, invalid IDs,
 invalid calendar/time values and self/duplicate reply references fail validation.
-Future import/dedup/ID-conflict policy belongs to the adapter/storage work.
+Strict local duplicate/conflict comparison is implemented; persistent remote
+deduplication, relay Path equivalence and conflict quarantine belong to adapters.
 
 [ADR 0036](../dev-docs/decisions/0036-room-articles-and-reading.md) records this
 increment. [Post metadata](post-metadata.md) now stores stable local article IDs,
-generated subject labels and new-post UTC times in schema 6. The live reader shows
-these fields while bodies still use the existing Post API. It does not publish
-codec output. #103 remains open for author-entered subjects, real From/Path/group
-mapping, wider headers/MIME and independent wire interoperability.
+authored/default subject labels and new-post UTC times in schema 6. The live reader
+shows these fields; [local article projection](room-articles.md) now supplies
+reserved author/group/Path aliases and bounded reply references through the codec.
+Strict normalized ID comparison distinguishes duplicates from conflicts without
+inserting remote posts. It does not publish codec output. #103 remains open for
+internationalized subjects, broader MIME/date/reference policy and independent
+news-software interoperability; real peering mapping is gated by #101.
 
 ## Article formatting before network transport
 
@@ -63,8 +67,8 @@ never proof of local membership or an imported sysop role.
 
 Legacy schema-5 posts have bodies, authors and reply links, but no original
 posting timestamp or subject. Schema 6 preserves their contents, order and read cursors, labels derived
-metadata and retains unknown historical posting dates. Specify how new posts collect minimal article metadata without
-making the BBS awkward to use. Validate old exports, restored boards, stable IDs
+metadata and retains unknown historical posting dates. New posts collect an optional
+subject; blank replies inherit one Re: prefix with a visible default. Validate old exports, restored boards, stable IDs
 and interrupted migration/rollback before adoption. Do not use private rotating
 session identity, real email addresses or network addresses as article identity.
 

@@ -250,11 +250,24 @@ fn post(board: &mut Board, s: &Session) -> Result<()> {
     } else {
         Some(parent.parse()?)
     };
+    if let Some(parent) = reply {
+        println!("Reply subject: {}", board.reply_subject(s, room, parent)?);
+    }
+    let subject = line("Subject (blank for generated/reply default): ", 160)?;
     let body = line("Message (one line, up to 1024 bytes): ", POST_BYTES)?;
     let key = request_id()?;
     println!("Submission ID: {key}");
     loop {
-        match board.post(s, room, &key, &body, reply) {
+        match board.post_article(
+            s,
+            room,
+            &key,
+            faction_core::PostDraft {
+                subject: &subject,
+                body: &body,
+                reply_to: reply,
+            },
+        ) {
             Ok(p) => {
                 println!("Posted #{}.", p.id);
                 return Ok(());

@@ -42,3 +42,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Modern sysop console and communications stories](modern-sysop-and-communications.md) — planned local dashboard, capability-aware UI, host operations and protocol integration.
 
 - [Persistent post metadata](post-metadata.md) — schema-6 subject/date/ID semantics and stopped-service upgrade/rollback.
+
+- [Authored subjects and local room articles](room-articles.md)

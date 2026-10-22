@@ -152,3 +152,10 @@ threads change. See [room reading](../docs/room-reading.md).
 post metadata, generated legacy labels/unknown dates, local proto-article IDs
 and exact old/new snapshot validation. No live/mixed-version upgrade is supported;
 operators stop/drain and verify complete backups before the first new owner open.
+
+[ADR 0038](decisions/0038-authored-subjects-and-local-article-projection.md) adds
+subject-aware PostDraft posting, reply previews/defaults and approved local
+proto-article projection. Core depends on the existing dependency-free article
+crate; no new registry package, thread/helper/listener or schema version. Current
+local file permissions apply before returning an exact canonical body. Broader
+interchange and peer/provider runtime remain gated.

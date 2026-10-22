@@ -55,3 +55,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0038: Room articles and reading](0038-room-articles-and-reading.md) — codec foundation, shared room screens and native software checks.
 
 - [0039: Post metadata and hardening stories](0039-post-metadata-and-hardening-stories.md) — local persistence/UI increment and later-phase backlog.
+
+- [0040: Authored subjects and room articles](0040-authored-subjects-and-room-articles.md)

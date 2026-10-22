@@ -69,7 +69,7 @@ def active_interval(clients, admin, metric, remote, login, drop, alive, output):
                 c.expect('Press Enter to return to menu: '); c.send('')
                 c.expect('Ctrl-C exits; Esc: Enter to recover.')
                 c.raw(b'p'); c.expect('Room ID: '); c.send('1')
-                c.expect('Reply to post ID'); c.send(''); c.expect('Message (one line')
+                c.expect('Reply to post ID'); c.send(''); c.expect('Subject (blank for generated/reply default): ');c.send('');c.expect('Message (one line')
                 c.send('sustained synthetic '+secrets.token_hex(8)); c.expect('Submission ID: ')
                 c.expect('Posted #'); c.expect('Press Enter to return to menu: '); c.send('')
                 c.expect('Ctrl-C exits; Esc: Enter to recover.')

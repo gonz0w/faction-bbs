@@ -162,6 +162,7 @@ for count in [1,2,80]:
         alice, bob = approved('alice'), approved('bobby')
         alice.raw(b'p'); alice.expect('Room ID: '); alice.send('1')
         alice.expect('Reply to post ID (blank for new message): '); alice.send('')
+        alice.expect('Subject (blank for generated/reply default): '); alice.send('')
         alice.expect('Message (one line, up to 1024 bytes): '); alice.send('SSH fixture durable room post')
         alice.expect('Posted #1.'); alice.expect('Press Enter to return to menu: '); alice.send('')
         alice.expect('Ctrl-C exits; Esc: Enter to recover.')

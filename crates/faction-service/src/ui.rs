@@ -254,10 +254,20 @@ impl Client {
         board: &mut Board,
         room: i64,
         reply: Option<i64>,
+        subject: String,
         body: String,
         key: String,
     ) -> faction_core::Result<()> {
-        match board.post(self.session()?, room, &key, &body, reply) {
+        match board.post_article(
+            self.session()?,
+            room,
+            &key,
+            faction_core::PostDraft {
+                subject: &subject,
+                body: &body,
+                reply_to: reply,
+            },
+        ) {
             Ok(post) => {
                 self.queue(&format!("Posted #{}.\n", post.id));
                 self.pause();
@@ -266,6 +276,7 @@ impl Client {
                 State::PostRetry {
                     room,
                     reply,
+                    subject,
                     body,
                     key,
                 },
@@ -388,30 +399,39 @@ impl Client {
                 State::PostReply(Self::positive(text)?),
                 "Reply to post ID (blank for new message): ",
             ),
-            State::PostReply(room) => self.prompt(
-                State::PostBody(
-                    room,
-                    if text.is_empty() {
-                        None
-                    } else {
-                        Some(Self::positive(text)?)
-                    },
-                ),
+            State::PostReply(room) => {
+                let reply = if text.is_empty() {
+                    None
+                } else {
+                    Some(Self::positive(text)?)
+                };
+                if let Some(parent) = reply {
+                    let default = board.reply_subject(self.session()?, room, parent)?;
+                    self.queue(&format!("Reply subject: {default}\n"));
+                }
+                self.prompt(
+                    State::PostSubject(room, reply),
+                    "Subject (blank for generated/reply default): ",
+                );
+            }
+            State::PostSubject(room, reply) => self.prompt(
+                State::PostBody(room, reply, text.into()),
                 "Message (one line, up to 1024 bytes): ",
             ),
-            State::PostBody(room, reply) => {
+            State::PostBody(room, reply, subject) => {
                 let key = faction_core::request_id()?;
                 self.queue(&format!("Submission ID: {key}\n"));
-                self.submit(board, room, reply, text.into(), key)?;
+                self.submit(board, room, reply, subject, text.into(), key)?;
             }
             State::PostRetry {
                 room,
                 reply,
+                subject,
                 body,
                 key,
             } => {
                 if text.eq_ignore_ascii_case("y") {
-                    self.submit(board, room, reply, body, key)?;
+                    self.submit(board, room, reply, subject, body, key)?;
                 } else {
                     self.pause();
                 }
@@ -825,6 +845,7 @@ impl Client {
             } else if byte >= 32 && byte != 127 {
                 let cap = match self.state {
                     State::Password(..) | State::Confirm(..) => 128,
+                    State::PostSubject(..) => 160,
                     State::PostBody(..) | State::Files | State::NativeFiles => 1024,
                     State::FileUploadKey { .. } | State::FileDownloadKey(_) => 256,
                     _ => 128,

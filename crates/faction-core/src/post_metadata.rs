@@ -5,13 +5,13 @@ use super::*;
 pub struct PostMetadata {
     /// Local proto-article identifier. The reserved domain is not a mail endpoint.
     pub article_id: String,
-    /// Generated label; the initial composer does not collect authored subjects.
+    /// Authored subject or generated default; legacy labels are derived.
     pub subject: String,
     pub created_at: Option<i64>,
     pub created_utc: Option<String>,
     pub legacy: bool,
 }
-fn valid(id: &str, subject: &str, time: Option<i64>, origin: &str) -> bool {
+pub(crate) fn valid(id: &str, subject: &str, time: Option<i64>, origin: &str) -> bool {
     id.len() == 32
         && id
             .bytes()
@@ -25,6 +25,12 @@ fn valid(id: &str, subject: &str, time: Option<i64>, origin: &str) -> bool {
         }
 }
 impl Board {
+    /// Preview the same bounded reply default used by the posting transaction.
+    pub fn reply_subject(&mut self, session: &Session, room: i64, parent: i64) -> Result<String> {
+        let tx = self.db.transaction()?;
+        current(&tx, &self.identity, session, true, false)?;
+        resolve_subject(&tx, room, Some(parent), "", 0)
+    }
     pub fn post_metadata(&mut self, session: &Session, post: i64) -> Result<PostMetadata> {
         let tx = self.db.transaction()?;
         current(&tx, &self.identity, session, true, false)?;
@@ -61,4 +67,43 @@ pub(crate) fn validate(db: &Connection, deadline: std::time::Instant) -> Result<
         }
     }
     Ok(())
+}
+
+pub(crate) fn subject(value: &str) -> Result<()> {
+    if value.len() > 160
+        || value.trim() != value
+        || value.contains("=?")
+        || !value.bytes().all(|b| (32..=126).contains(&b))
+    {
+        return Err(Error::Invalid(
+            "subject needs up to 160 printable ASCII bytes, no surrounding spaces or encoded words",
+        ));
+    }
+    Ok(())
+}
+pub(crate) fn resolve_subject(
+    db: &Connection,
+    room: i64,
+    reply: Option<i64>,
+    value: &str,
+    id: i64,
+) -> Result<String> {
+    if !value.is_empty() {
+        return Ok(value.into());
+    }
+    if let Some(parent) = reply {
+        let original: String = db.query_row("SELECT m.subject FROM post_metadata m JOIN posts p ON p.id=m.post_id WHERE p.id=?1 AND p.room_id=?2", params![parent,room], |r| r.get(0)).optional()?.ok_or(Error::Invalid("reply must reference a post in this room"))?;
+        subject(&original)?;
+        let mut result = if original
+            .get(..4)
+            .is_some_and(|s| s.eq_ignore_ascii_case("Re: "))
+        {
+            original
+        } else {
+            format!("Re: {original}")
+        };
+        result.truncate(160);
+        return Ok(result.trim_end().into());
+    }
+    Ok(format!("Message #{id}"))
 }

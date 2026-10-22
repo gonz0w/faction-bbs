@@ -87,7 +87,7 @@ def run(args):
         a.raw(b'r');a.expect('More rooms? [y/N]: ')
         for _ in range(4):a.send('y');a.expect('More rooms? [y/N]: ')
         a.send('y');pause(a);passed('room list pages beyond first ten without truncating output')
-        a.raw(b'p');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send('');a.expect('Message (one line');a.send(body);a.expect('Submission ID: ');a.expect('Posted #');pause(a)
+        a.raw(b'p');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send('');a.expect('Subject (blank for generated/reply default): ');a.send('');a.expect('Message (one line');a.send(body);a.expect('Submission ID: ');a.expect('Posted #');pause(a)
         a.raw(b't');a.expect('Room ID: ');a.send(room);a.expect(body.replace('\u00e9',r'\u{e9}'));a.expect('More? [y/N]: ');a.send('n');pause(a)
         passed('selected non-lobby room durable post submission ID and read page')
         a.raw(b'n');a.expect('Room ID: ');a.send(room);a.expect('No more messages.');pause(a)
@@ -95,13 +95,13 @@ def run(args):
         # Fetch only synthetic post metadata; never save actual message contents.
         code="import sqlite3; c=sqlite3.connect('/var/db/faction-profile/faction.sqlite3'); print(c.execute('select max(id) from posts where room_id="+room+"').fetchone()[0])"
         parent=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout.decode().strip();assert parent.isdecimal()
-        a.raw(b'p');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send(parent);a.expect('Message (one line');a.send('reply parity');a.expect('Posted #');pause(a)
+        a.raw(b'p');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send(parent);a.expect('Subject (blank for generated/reply default): ');a.send('');a.expect('Message (one line');a.send('reply parity');a.expect('Posted #');pause(a)
         a.raw(b't');a.expect('Room ID: ');a.send(room);a.expect('(reply to #'+parent+')');a.expect('reply parity');a.expect('More? [y/N]: ');a.send('n');pause(a)
         passed('same-room reply presentation and history')
         a.raw(b'\x1b[9;p\n');a.raw(b'r');a.expect('More rooms? [y/N]: ');a.send('n');pause(a)
-        a.raw(b'pINJECTED\n');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send('');a.expect('Message (one line');a.send('context boundary');a.expect('Posted #');pause(a)
+        a.raw(b'pINJECTED\n');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send('');a.expect('Subject (blank for generated/reply default): ');a.send('');a.expect('Message (one line');a.send('context boundary');a.expect('Posted #');pause(a)
         passed('unknown escape quarantine and menu typeahead cannot become editor input')
-        a.raw(b'p');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send('');a.expect('Message (one line')
+        a.raw(b'p');a.expect('Room ID: ');a.send(room);a.expect('Reply to post ID');a.send('');a.expect('Subject (blank for generated/reply default): ');a.send('');a.expect('Message (one line')
         lock="import sqlite3,time; from pathlib import Path; c=sqlite3.connect('/var/db/faction-profile/faction.sqlite3'); c.execute('begin immediate'); Path('/home/factiond/ui-lock-ready').touch(); time.sleep(3); c.rollback()"
         lock_command='nohup /usr/pkg/bin/python3.13 -c '+shlex.quote(lock)+' >/home/factiond/ui-lock.log 2>&1 </dev/null &'
         remote('test ! -e /home/factiond/ui-lock-ready; su - factiond -c '+shlex.quote(lock_command))

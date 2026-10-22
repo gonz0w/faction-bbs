@@ -215,3 +215,37 @@ fn handwritten_article_fixture_and_unsupported_header_encodings() {
         Err(Error::Limit)
     );
 }
+
+#[test]
+fn duplicate_identity_compares_normalized_headers_and_all_content_strictly() {
+    use faction_articles::IdentityMatch;
+    let a = Article::parse(wire().as_bytes()).unwrap();
+    let folded = wire()
+        .replace("Message-ID:", "message-id:")
+        .replace("References: <parent", "References: \r\n <parent");
+    let duplicate = Article::parse(folded.as_bytes()).unwrap();
+    assert_eq!(a.compare_identity(&duplicate), IdentityMatch::Duplicate);
+    for field in 0..7 {
+        let mut h = a.headers().clone();
+        let mut body = a.body().to_owned();
+        match field {
+            0 => h.subject = "changed".into(),
+            1 => h.from = "other@peer.example".into(),
+            2 => h.date = "22 Oct 2026 18:00:00 +0000".into(),
+            3 => h.newsgroups = vec!["other.group".into()],
+            4 => h.path = "other.example!not-for-mail".into(),
+            5 => h.references.clear(),
+            _ => body.push('x'),
+        }
+        assert_eq!(
+            a.compare_identity(&Article::new(h, body).unwrap()),
+            IdentityMatch::Conflict
+        );
+    }
+    let mut h = a.headers().clone();
+    h.message_id = "<other@peer.example>".into();
+    assert_eq!(
+        a.compare_identity(&Article::new(h, a.body().into()).unwrap()),
+        IdentityMatch::Different
+    );
+}

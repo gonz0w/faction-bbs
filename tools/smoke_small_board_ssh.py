@@ -110,6 +110,7 @@ def smoke(args):
         passed('custom_identity_and_arrow_enter_navigation')
         alice.raw(b'p'); alice.expect('Room ID: '); alice.send('1')
         alice.expect('Reply to post ID (blank for new message): '); alice.send('')
+        alice.expect('Subject (blank for generated/reply default): '); alice.send('')
         alice.expect('Message (one line, up to 1024 bytes): '); alice.send('Our first board message.')
         alice.expect('Posted #1.'); pause(alice)
         passed('hotkey_room_post')

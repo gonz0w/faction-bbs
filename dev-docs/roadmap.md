@@ -213,3 +213,8 @@ work or weaken existing safeguards. Software fixtures now, physical claims later
 The next #103 increment implements schema-6 local metadata and headers; see
 [upgrade requirements](../docs/post-metadata.md). Actual From/Path/group injection,
 authored subjects, broader MIME and peer/provider interoperability remain open.
+
+The next #103 increment implements authored subjects, reply defaults, local article
+projection and strict duplicate/conflict comparison. Broader header/MIME/date/
+reference policy and independent news software remain open; #101/#104 own actual
+peering/provider delivery. Keep #106–#111 hardening queued for its later phase.

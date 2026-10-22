@@ -7,6 +7,7 @@ mod credentials;
 mod file_links;
 mod files;
 mod post_metadata;
+mod room_article;
 mod scores;
 pub use files::{
     AreaFile, FILE_BOARD_BYTES, FILE_BYTES, FILE_CHUNK, FILE_ROWS, FileArea, TransferGrant,
@@ -27,6 +28,12 @@ use std::{
 };
 
 const APP_ID: i64 = 0x46414354;
+/// Bounded posting input; empty subject selects the local default.
+pub struct PostDraft<'a> {
+    pub subject: &'a str,
+    pub body: &'a str,
+    pub reply_to: Option<i64>,
+}
 pub const POST_BYTES: usize = 1024;
 pub const PAGE_BYTES: usize = 2048;
 pub const PAGE_ROWS: usize = 20;
@@ -603,6 +610,31 @@ impl Board {
         body: &str,
         reply: Option<i64>,
     ) -> Result<Post> {
+        self.post_article(
+            session,
+            room,
+            request,
+            PostDraft {
+                subject: "",
+                body,
+                reply_to: reply,
+            },
+        )
+    }
+    /// Empty subject selects a generated label or the parent's reply subject.
+    pub fn post_article(
+        &mut self,
+        session: &Session,
+        room: i64,
+        request: &str,
+        draft: PostDraft<'_>,
+    ) -> Result<Post> {
+        let PostDraft {
+            subject,
+            body,
+            reply_to: reply,
+        } = draft;
+        post_metadata::subject(subject)?;
         text(body, POST_BYTES, true)?;
         if !(16..=64).contains(&request.len())
             || !request
@@ -620,6 +652,15 @@ impl Board {
         let existing:Option<Post>=tx.query_row("SELECT p.id,p.room_id,m.handle,p.body,p.reply_to FROM posts p JOIN members m ON m.id=p.author_id WHERE p.author_id=?1 AND p.request_id=?2",params![session.member,request],post_row).optional()?;
         if let Some(p) = existing {
             if p.room_id != room || p.body != body || p.reply_to != reply {
+                return Err(Error::RequestConflict);
+            }
+            let wanted = post_metadata::resolve_subject(&tx, room, reply, subject, p.id)?;
+            let stored: String = tx.query_row(
+                "SELECT subject FROM post_metadata WHERE post_id=?1",
+                [p.id],
+                |r| r.get(0),
+            )?;
+            if stored != wanted {
                 return Err(Error::RequestConflict);
             }
             tx.commit()?;
@@ -658,7 +699,8 @@ impl Board {
             body: body.to_owned(),
             reply_to: reply,
         };
-        tx.execute("INSERT INTO post_metadata(post_id,article_id,subject,created_at,origin) VALUES(?1,lower(hex(randomblob(16))),?2,unixepoch(),'local')",params![post.id,format!("Message #{}",post.id)])?;
+        let subject = post_metadata::resolve_subject(&tx, room, reply, subject, post.id)?;
+        tx.execute("INSERT INTO post_metadata(post_id,article_id,subject,created_at,origin) VALUES(?1,lower(hex(randomblob(16))),?2,unixepoch(),'local')",params![post.id,subject])?;
         tx.commit()?;
         Ok(post)
     }

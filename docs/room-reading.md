@@ -32,3 +32,8 @@ unread and file namespaces. New exports include persistent metadata; old exports
 remain readable. Follow the [stopped-service migration](post-metadata.md) procedure. The separate
 [article codec](discussion-articles-and-news.md) is a foundation for future
 Netnews integration, not an automatic conversion or news feed.
+
+Posting now offers an [authored subject](room-articles.md) after the optional
+parent ID. Blank replies inherit a previewed subject with one Re: prefix; the
+reader shows the stored subject on every page. Chronological order and unread
+acknowledgment are unchanged.
