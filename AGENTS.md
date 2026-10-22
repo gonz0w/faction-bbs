@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #129, continue useful
-#95/#18/#98 recovery visibility with real bundle checks and local console support; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #130, build useful
+#27/#21 curated Other BBSes discovery and connection cards; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -870,3 +870,44 @@ owner/file accounts; single-UID developer APIs do not prove that role boundary.
 Dashboard sampled 2,436 KiB RSS/one LWP, owner 5,156 KiB/four LWPs, minimum VM free
 333.37 MiB. Preserve measured bytes/whole result before later edits; keep all 35
 saved-evidence guards. No new capacity, public endpoint or host/hardening claim.
+
+
+## Other-BBS directory batch
+
+Read plan 0055, ADR 0050 and docs/other-boards.md. Snapshot 22
+`sources/pre27-directory` / `operator-recovery-baseline-manifest.json` preserve
+all 173 prior runtime/harness/build inputs and whole recovery result. Keep all
+22 snapshots/35 historical identities unchanged; no old hash refresh.
+
+`faction-terminal::directory` holds only bounded inert local presentation metadata,
+not authority or a connector. A <=32-KiB/32-listing host pack loads once per service;
+shared owner retains one Arc catalog and each client a pointer/cursor. `directory`
+service config and local/worker `--directory` are opt-in. Current approval/epoch
+must be checked before every frame/action; pending and revoked members see no cards.
+No automatic DNS/network/SSH/browser/profile/key/credential handoff. A fingerprint
+is a local editorial hint, never destination trust. Remote approval stays separate.
+
+O:Other BBSes is inserted only when enabled; custom contacts actions can choose a
+free key. Full 5x2 grids with eleven optional services use the ordered fallback,
+keeping 40x18 support and every action. Source templates/artwork remain unchanged
+by default. Cards paginate; a non-fitting SSH command is omitted rather than
+truncated. DATE?/OLD refer to editorial review windows, not online health. A
+stopped restart applies removals; keep packs outside DB/bundle exports.
+
+The unmeasured standalone shared-UI compatibility shim treats Contacts like the
+existing unavailable Terminal action; never claim the old experiment implements
+this feature or rewrite its frozen executed-source snapshots. No new registry
+dependency, owner thread/helper, listener, credential/session limit or capacity
+claim. In-BBS submissions/native handoff and protocol adapters remain follow-on;
+hardening stays later. Use only owned software clones; saved playground stays off.
+
+
+`directory-netbsd` pins 165 selected native source matches and seventeen host
+harness/compile-compatibility inputs. 188 Rust tests per OS / 118 Python, eleven
+directory PTY controls per OS and twelve real SSH/native controls pass, plus
+operator/backup/serial/art regressions. Maximum 32-listing catalog/one member:
+5,312 KiB owner RSS / four LWPs, minimum sampled VM free 352.36 MiB. These are not
+incremental-memory or new capacity claims. Preserve this source/result set before
+later edits; keep all 36 saved-evidence guards. Disposable clone/cache removed,
+saved playground off. Next product increments: member submissions and explicit
+native handoff; keep independent destination approval and member-held keys.

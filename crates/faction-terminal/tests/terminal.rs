@@ -706,3 +706,25 @@ fn unsupported_or_truncated_sauce_never_changes_the_canvas_or_output_budget() {
     assert!(Art::parse(&sauce(b"\x1b[17;1Hbad", 1, None)).is_err());
     assert!(Art::parse(&sauce(&vec![b'X'; 16384], 1, None)).is_err());
 }
+
+#[test]
+fn optional_directory_and_files_keep_full_grid_usable_in_both_enable_orders() {
+    for directory_first in [false, true] {
+        let p = grid_pack();
+        let mut theme = Theme::load(&p.0).unwrap();
+        if directory_first {
+            theme.set_directory_enabled(true).unwrap();
+        }
+        theme.set_files_enabled(true).unwrap();
+        theme.set_directory_enabled(true).unwrap();
+        assert_eq!(theme.entries().len(), 11);
+        assert_eq!(theme.hotkey(b'o', false), Some(Action::Contacts));
+        for width in [40, 80] {
+            let mut menu = Menu::with_columns(&theme, false, width);
+            assert_eq!(menu.feed(Key::Hotkey(b'O')), Some(Action::Contacts));
+            let frame = menu.render();
+            assert!(frame.len() < 8192);
+            assert!(frame.contains("Other BBSes"));
+        }
+    }
+}

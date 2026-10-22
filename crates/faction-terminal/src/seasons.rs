@@ -260,6 +260,12 @@ impl Themes {
             .and_then(|s| self.date_at(s));
         self.select(date)
     }
+    pub fn set_directory_enabled(&mut self, enabled: bool) -> Result<()> {
+        for theme in &mut self.themes {
+            theme.set_directory_enabled(enabled)?;
+        }
+        Ok(())
+    }
     /// Startup-only host capabilities, never a member-controlled selection.
     pub fn set_services(&mut self, files: bool, doors: bool) -> Result<()> {
         for theme in &mut self.themes {

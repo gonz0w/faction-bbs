@@ -197,9 +197,14 @@ impl Client {
             Action::Doors => "Doors",
             Action::Quit => "Disconnect",
             Action::Terminal => "Terminal settings",
+            Action::Contacts => "Other BBSes",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Contacts => {
+                self.state = State::Directory(Default::default());
+                self.directory_show(board, theme)?;
+            }
             Action::Terminal => self.terminal_screen(board)?,
             Action::Quit => {
                 self.queue(&format!("{}\nLogged out.\n", theme.logout()));
@@ -468,6 +473,17 @@ impl Client {
                 }
             }
             State::Identity | State::Pause => self.menu(theme, board)?,
+            State::Directory(view) => {
+                self.state = State::Directory(view);
+                let key = if text.is_empty() {
+                    Key::Enter
+                } else if text.len() == 1 {
+                    Key::Hotkey(text.as_bytes()[0].to_ascii_uppercase())
+                } else {
+                    return Err(Error::Invalid("directory command"));
+                };
+                self.directory_key(key, board, theme)?;
+            }
             State::Terminal => {
                 self.approved(board)?;
                 if text.eq_ignore_ascii_case("d") {
@@ -789,6 +805,15 @@ impl Client {
         }
     }
     pub(super) fn resize(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
+        if matches!(self.state, State::Directory(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.queue("Terminal resized; returning to main menu.\n");
+            self.input.clear();
+            self.decoder = Decoder::new();
+            return self.menu(theme, board);
+        }
         if matches!(self.state, State::IdentityArt(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -955,6 +980,24 @@ impl Client {
             if matches!(self.state, State::DoorMenu) && self.ansi {
                 if let Some(key) = self.decoder.feed(byte, Instant::now()) {
                     match self.door_key(key, theme, board) {
+                        Ok(true) => {
+                            self.input.clear();
+                            self.decoder = Decoder::new();
+                            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                            break;
+                        }
+                        Ok(false) => (),
+                        Err(e) => {
+                            self.recover(e, board, theme);
+                            break;
+                        }
+                    }
+                }
+                continue;
+            }
+            if matches!(self.state, State::Directory(_)) && self.ansi {
+                if let Some(key) = self.decoder.feed(byte, Instant::now()) {
+                    match self.directory_key(key, board, theme) {
                         Ok(true) => {
                             self.input.clear();
                             self.decoder = Decoder::new();

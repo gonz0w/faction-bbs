@@ -6,6 +6,7 @@ use faction_terminal::{Action, Decoder, Key, LineEditor, LineEvent, Menu, Theme}
 mod classic;
 mod classic_ui;
 mod config;
+mod directory_ui;
 mod door_ui;
 mod doors;
 mod file_ui;
@@ -50,6 +51,7 @@ enum State {
     IdentityArt(usize),
     Menu,
     Terminal,
+    Directory(faction_terminal::directory::View),
     GraphicsProbe(faction_terminal::graphics::Probe),
     Graphics(usize, Instant),
     Probe(faction_terminal::capabilities::Probe),
@@ -192,6 +194,7 @@ struct Client {
     classic: Option<classic::Connection>,
     files_enabled: bool,
     native: Option<native_files::Native>,
+    directory: Option<Arc<faction_terminal::directory::Directory>>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -277,6 +280,7 @@ impl Client {
             classic: None,
             files_enabled: false,
             native: None,
+            directory: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -423,6 +427,15 @@ fn run() -> Result<()> {
             config.doors_uid.is_some() || !config.classic_games.is_empty(),
         )
         .map_err(|_| denied())?;
+    let directory = config
+        .directory
+        .as_ref()
+        .map(|p| faction_terminal::directory::Directory::load(p).map(Arc::new))
+        .transpose()
+        .map_err(|_| denied())?;
+    themes
+        .set_directory_enabled(directory.is_some())
+        .map_err(|_| denied())?;
     let classic_games = Arc::new(config.classic_games.clone());
     if args[0] == "--check-config" {
         return Ok(());
@@ -557,6 +570,7 @@ fn run() -> Result<()> {
             generation = generation.checked_add(1).ok_or_else(denied)?;
             if let Ok(mut client) = Client::new(generation, control, tty, &term, ansi) {
                 client.files_enabled = config.files_uid.is_some();
+                client.directory = directory.as_ref().map(Arc::clone);
                 client.doors_uid = config.doors_uid;
                 client.classic_games = Some(Arc::clone(&classic_games));
                 clients.push(client);

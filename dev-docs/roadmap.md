@@ -1,8 +1,15 @@
 # Roadmap and stage
 
+## Useful community directory
+
+After checked #130, #27/#21 adds the optional local [Other BBSes directory](../docs/other-boards.md):
+reviewed pack, themed arrow/hotkey paging and SSH connection cards. No automatic
+connection, credentials, host-key trust, remote approval or federation. Submission
+UI/native handoff remain follow-on work. Hardening stays later.
+
 ## Local operator batch
 
-After merged #129, related #95/#18/#98 work adds the first optional
+After merged #130, related #95/#18/#98 work adds the first optional
 [local sysop console](../docs/sysop-console.md): private aggregate snapshots,
 live CPU/RAM/network counters, bounded recent graphs, themed panels and classic fallback. No member SSH
 authority or host settings change. #95 now adds explicit [backup checks](../docs/backup-checks.md) and a Recovery

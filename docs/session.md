@@ -36,7 +36,8 @@ This is a research inventory, not a fixed key map or a first-release feature com
 
 ## Between systems
 
-An operator may submit their BBS to another board's local directory. Review policy and listing lifecycle remain open. A visit must honor the destination's own login and approval; no automatic account transfer is assumed. Local content remains on its originating BBS. Future explicit shared chat, addressed encrypted mail and scoped home-identity proofs may cross systems. Native-client mail remains direct to home, with device-side decryption; visited boards retain approval authority.
+An operator may submit their BBS to another board's local directory. The [curated directory](other-boards.md) now defines out-of-band submissions,
+local review/removal and editorial expiry. In-BBS pending submissions remain open. A visit must honor the destination's own login and approval; no automatic account transfer is assumed. Local content remains on its originating BBS. Future explicit shared chat, addressed encrypted mail and scoped home-identity proofs may cross systems. Native-client mail remains direct to home, with device-side decryption; visited boards retain approval authority.
 
 ## Validation targets
 

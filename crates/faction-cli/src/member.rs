@@ -50,7 +50,7 @@ fn run() -> Result<()> {
     if !path.join("faction.sqlite3").is_file() {
         return Err(invalid("initialized board required"));
     }
-    let (mut base, mut season, mut schedule) = (None, None, None);
+    let (mut base, mut season, mut schedule, mut directory) = (None, None, None, None);
     let mut index = 2;
     while index < args.len() {
         let value = args
@@ -60,6 +60,7 @@ fn run() -> Result<()> {
             Some("--theme") => &mut base,
             Some("--season") => &mut season,
             Some("--theme-schedule") => &mut schedule,
+            Some("--directory") => &mut directory,
             _ => return Err(invalid("unknown member worker option")),
         };
         if target.is_some() {
@@ -73,9 +74,16 @@ fn run() -> Result<()> {
         .transpose()
         .map_err(invalid)?
         .unwrap_or_default();
-    let themes =
+    let mut themes =
         faction_terminal::seasons::Themes::load(theme, season.as_deref(), schedule.as_deref())
             .map_err(invalid)?;
+    let directory = directory
+        .map(|p| faction_terminal::directory::Directory::load(&p))
+        .transpose()
+        .map_err(invalid)?;
+    themes
+        .set_directory_enabled(directory.is_some())
+        .map_err(invalid)?;
     let mut board = Board::open(&path)?;
     println!("Faction BBS access. SSH admission does not grant BBS membership.");
     match line("[L]ogin [R]egister [Q]uit: ", 1)?
@@ -87,7 +95,13 @@ fn run() -> Result<()> {
             let password = secret("Password (hidden): ")?;
             let s = board.authenticate(&name, &password)?;
             drop(password);
-            faction_cli::scheduled_menu(&mut board, &s, &themes, true)?;
+            if let Some(directory) = &directory {
+                faction_cli::scheduled_menu_with_directory(
+                    &mut board, &s, &themes, directory, true,
+                )?;
+            } else {
+                faction_cli::scheduled_menu(&mut board, &s, &themes, true)?;
+            }
         }
         "r" => {
             let name = line("Handle: ", 24)?;

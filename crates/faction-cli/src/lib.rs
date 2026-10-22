@@ -1,6 +1,7 @@
 //! Shared terminal session presentation. Owner command parsing lives only in faction.
 #![forbid(unsafe_code)]
 mod chat;
+mod directory;
 pub mod operator;
 mod terminal;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
@@ -454,7 +455,36 @@ pub fn scheduled_menu(
     };
     menu(board, s, themes.get(index), ansi)
 }
+pub fn scheduled_menu_with_directory(
+    board: &mut Board,
+    s: &Session,
+    themes: &faction_terminal::seasons::Themes,
+    directory: &faction_terminal::directory::Directory,
+    ansi: bool,
+) -> Result<()> {
+    let index = if board.whoami(s)?.status == Status::Approved {
+        themes.select_now()
+    } else {
+        0
+    };
+    menu_with_directory(board, s, themes.get(index), directory, ansi)
+}
 pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
+    menu_with_directory(
+        board,
+        s,
+        theme,
+        &faction_terminal::directory::Directory::default(),
+        ansi,
+    )
+}
+fn menu_with_directory(
+    board: &mut Board,
+    s: &Session,
+    theme: &Theme,
+    directory: &faction_terminal::directory::Directory,
+    ansi: bool,
+) -> Result<()> {
     let member = board.whoami(s)?;
     if member.status != Status::Approved {
         println!(
@@ -505,6 +535,7 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
                 Action::Files => "File areas",
                 Action::Quit => "Disconnect",
                 Action::Terminal => "Terminal settings",
+                Action::Contacts => "Other BBSes",
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
@@ -513,6 +544,7 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
                 println!("{}\nLogged out.", theme.logout());
                 return Ok(());
             }
+            Some(Action::Contacts) => directory::run(board, s, theme, directory, used_ansi),
             Some(Action::Rooms) => show_rooms(board, s),
             Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
             Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
@@ -543,7 +575,7 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
                 return Err(e);
             }
         }
-        if used_ansi {
+        if used_ansi && !matches!(action, Some(Action::Contacts)) {
             line("Press Enter to return to menu: ", 1)?;
         }
     }

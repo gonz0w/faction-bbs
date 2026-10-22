@@ -20,6 +20,7 @@ pub enum Action {
     Files,
     Quit,
     Terminal,
+    Contacts,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -34,11 +35,15 @@ impl Action {
             "files" => Ok(Self::Files),
             "quit" => Ok(Self::Quit),
             "terminal" => Ok(Self::Terminal),
+            "contacts" => Ok(Self::Contacts),
             _ => Err("unknown menu action"),
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Doors && self != Self::Files && (self != Self::Sysop || sysop)
+        self != Self::Contacts
+            && self != Self::Doors
+            && self != Self::Files
+            && (self != Self::Sysop || sysop)
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -112,6 +117,7 @@ pub struct Theme {
     disabled: Style,
     doors_enabled: bool,
     files_enabled: bool,
+    directory_enabled: bool,
     entries: Vec<Entry>,
     grid: bool,
     identity_ascii: Option<String>,
@@ -131,6 +137,7 @@ impl Default for Theme {
             disabled: Style::new(8, 0, false),
             doors_enabled: false,
             files_enabled: false,
+            directory_enabled: false,
             grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
@@ -309,6 +316,39 @@ impl Theme {
                 },
             );
         }
+        if self.grid && self.entries.iter().any(|e| e.position.is_none()) {
+            self.grid = false;
+        }
+        Ok(())
+    }
+    pub fn set_directory_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.directory_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Contacts) {
+            if self.entries.iter().any(|e| e.key == b'O') {
+                return Err("O is reserved; add a contacts action with another key");
+            }
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Contacts,
+                    key: b'O',
+                    label: "Other BBSes".into(),
+                    description: "Find another private community".into(),
+                    position,
+                },
+            );
+        }
         Ok(())
     }
     /// Runtime capability, set only by the host; a theme cannot enable a door.
@@ -316,7 +356,8 @@ impl Theme {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Files && self.files_enabled)
+        (action == Action::Contacts && self.directory_enabled)
+            || (action == Action::Files && self.files_enabled)
             || (action == Action::Doors && self.doors_enabled)
             || action.enabled(sysop)
     }
@@ -420,8 +461,8 @@ impl Theme {
         let mut positions = BTreeSet::new();
         if let Some(value) = t.get("menu") {
             let values = value.as_array().ok_or("menu must be an array")?;
-            if !(6..=10).contains(&values.len()) {
-                return Err("menu needs 6-10 entries");
+            if !(6..=11).contains(&values.len()) {
+                return Err("menu needs 6-11 entries");
             }
             let (mut keys, mut actions, mut entries) =
                 (BTreeSet::new(), BTreeSet::new(), Vec::new());
