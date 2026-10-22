@@ -2,6 +2,22 @@
 
 Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
 
+## New owner stories from the running playground
+
+[Modern sysop/communications stories](../docs/modern-sysop-and-communications.md)
+#95–#101 capture the OS-console dashboard, modern terminal detection/graphics,
+NAT-aware abuse rules, NetBSD setup assistant, native XMPP unread/private UX,
+actual IRC reuse/server linking and optional room-federation protocol comparison.
+These are planned, not implemented. Improve #21/#25 screen/message presentation
+and bounded operator visibility while keeping the existing local board useful and
+continuing #90/#91/#88. Privileged host applies and protocol adoption follow their
+own design/validation gates; no live playground setting is changed by this update.
+
+Researching explicit shared rooms is now allowed beyond older local-only wording;
+this does not enable automatic export, account replication or public syndication.
+Read [research 0047](research/0047-modern-terminal-and-federation-options.md) before
+assuming Ghostty graphics, guest IP bans, IRC federation or a forum protocol works.
+
 ## Product-first sequencing
 
 Latest owner steering: **local SFTP file areas (#83) first**. The optional shared

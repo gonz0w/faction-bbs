@@ -8,7 +8,7 @@ Separate community semantics from transport-specific addressing, discovery, rout
 
 - The server enforces approved membership for every community action on each access surface.
 - A node operates independently with no public HTTP service, shared-channel federation, central discovery, or alternative transport requirement.
-- Owner direction now permits explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs. Local-only chat, rooms, files and approval stores remain local; home mailbox access stays between the member device and home. No replicated passwords or automatic visited-board membership.
+- Owner direction now permits explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs. Local-only chat, local rooms/community files and approval stores remain local; #101 separately researches explicitly shared discussion rooms without adopting an export path. Home mailbox access stays between the member device and home. No replicated passwords or automatic visited-board membership.
 - Directory listings are local discovery records, not membership grants or federation subscriptions.
 - Doors are optional and isolated from the core, with explicit resources, privileges, lifecycle, and return/recovery behavior.
 - Text/ASCII remains useful; ANSI capabilities and legacy encodings need a compatibility contract.
@@ -122,3 +122,13 @@ visiting-board auth protocols. No current login/database migration is introduced
 by these design records. Never move member-side plaintext/decryption into a BBS
 helper to preserve the old thin-SSH UI. #83 builds local files; #84 proves the
 separate home/client/mail model. Native games remain optional host adapters.
+
+## New operator, terminal and communication seams
+
+The [modern stories](../docs/modern-sysop-and-communications.md) introduce a local
+operator status surface, capability-negotiated presentation, narrowly authorized
+host/firewall plans and distinct IRC/XMPP/room adapter research. Keep read-only
+snapshots separate from privileged applies, UI features separate from authority,
+and public/shared channels separate from private device-side conversations.
+No new implementation ABI/runtime/protocol is selected. Compare reusable room
+protocols before inventing one; see [research 0047](research/0047-modern-terminal-and-federation-options.md).

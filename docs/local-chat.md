@@ -76,7 +76,7 @@ its selected channel/draft and requires an explicit join before sending again.
 It never redirects a private draft to `#lobby`.
 
 Every channel is local. No shared-channel toggle, network subscription or outbound
-adapter exists. Automatic future BBS federation stays explicit, chat-only and
+adapter exists. The original local-chat increment keeps shared-channel federation explicit and
 separate from local accounts, room data and private channels. Private chat grants
 do not add private-room ACLs to the message boards.
 
@@ -148,3 +148,9 @@ it checks draft preservation, private grants/history floors, deny/regrant/kick,
 revocation, control-tail isolation, resize/plain fallback and presence cleanup.
 It prints neither credentials nor transcripts. See [ADR 0010](../dev-docs/decisions/0010-bounded-local-chat.md)
 for tradeoffs, sources and unperformed native NetBSD/server validation.
+
+The [modern communications stories](modern-sysop-and-communications.md) now make
+actual IRC/IRCv3/server linking a specific comparison (#100), with native XMPP
+private chat/mail/attachments UX (#99/#90/#88). Current slash commands still do
+not provide an IRC wire server. #101 separately researches explicitly shared
+persistent rooms; local-only channels and existing rooms are never auto-relayed.

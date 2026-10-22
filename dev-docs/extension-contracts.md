@@ -15,6 +15,10 @@ requirements guide additions without widening those existing privileges.
 | Shared chat | Explicit channel subscription and checked author/delivery context | Local-only channels and local roles/content |
 | Door/game host | Declared terminal capability, bounded input/output and lifecycle | BBS credentials/state, resource ceilings and local return |
 | Theme/Lua menu | Validated presentation/action proposals | Allowed actions and authorization; no general shell/DB/keys |
+| Local operator status | Bounded counters/health snapshots with freshness | OS/operator authorization, no member secret content or per-member collectors |
+| Host/firewall plans | Typed allowlisted desired changes, preview and apply outcome | Host administrator authorization, unrelated config, validation/rollback and admin access |
+| Terminal capability | Bounded verified hints/query responses and rendered assets | UI/feature bounds only; no identity, file/network/clipboard or command authority |
+| Optional shared discussion | Explicit room/author/peer publication and bounded delivery | Default locality, current scope/ACLs, no account/approval replication; research #101 |
 
 First add only contracts needed for SFTP and the selected mail proof. Do not build
 an all-purpose plugin framework or native shared-library loader before useful
@@ -64,3 +68,12 @@ must never solicit home secrets, unlock a mail keystore or compose private mail.
 Native mail needs an explicitly local trusted interaction (#90); verified home
 identity needs a trusted connection-bound membership path (#91), with no role
 or approval import. Keep attachments under #88's ciphertext/key boundary.
+
+[Modern operator/communications stories](../docs/modern-sysop-and-communications.md)
+#95–#101 add research/UX requirements to these seams without enabling a generic
+plugin ABI or privileged dashboard. The local operator view is first read-only;
+#97/#98 own typed host operations and NAT-aware enforcement. #96 must not widen
+raw terminal control pass-through. #100 compares real IRC reuse, #99 integrates
+member-side XMPP UX over #90/#91 and #88's attachment boundary, and #101 evaluates
+room federation with explicit consent. No private mail key/body crosses an IRC
+bridge or visited board, and no room export follows from these requirements.

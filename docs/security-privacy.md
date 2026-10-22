@@ -42,7 +42,7 @@ to a remote member entry point or treat an export as authority to publish data.
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.
 - Prevent terminal escape injection, path traversal, resource exhaustion, unauthorized file access, and approval bypasses.
 - Keep legacy doors and extensions optional and isolated, with bounded filesystem/network/process privileges, resource limits, and reliable session cleanup.
-- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, rooms, files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards.
+- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, local rooms/community files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards. #101 separately researches explicit opt-in shared rooms, with no implicit publication or protocol adoption.
 - No JavaScript/TypeScript code or dependencies, including browser-terminal assets and project tooling. Track dependency provenance, licenses, updates, and supply-chain risk for the eventual stack.
 
 The [restricted SSH development gateway](restricted-ssh.md) separates the terminal
@@ -212,3 +212,24 @@ remain #90/#91. The native signer failure under #92 blocks native issuance adopt
 No terminal file frame or remote ANSI prompt may unlock mail secrets or import a
 home identity/role. Device-encrypted attachments remain #88; current file areas
 remain readable by the sysop.
+
+## New operator/modern-terminal story boundaries
+
+The [operator and communications stories](modern-sysop-and-communications.md)
+are requirements, not new deployed authority. Local OS login/operator privileges,
+in-BBS sysop permissions and member SSH admission are distinct. Read-only status
+uses bounded metadata/health; host/firewall writes require a separate narrow
+host-authorized path with exact plans, validation, backups and recovery. Never
+run the BBS owner as root or silently alter host policy. Show the actual observed
+peer and NAT/shared-source limitations; do not trust supplied original-IP claims.
+
+Capability negotiation grants rendering/input options only. Untrusted probe
+replies or graphics data cannot become commands, credentials, terminal file/
+network reads or clipboard operations. Existing terminal filtering remains until
+a reviewed bounded feature path is implemented. Native XMPP unread/private views
+retain local decryption/trust; a remote frame or theme cannot imitate key unlock.
+
+IRC bridges must keep private XMPP/local-only content out of shared channels.
+Optional forum federation research needs separate room/author/peer consent and
+history/retained-copy policies; a remote peer never imports local account roles
+or approval. Public conversations do not force anonymous/public-web deployment.

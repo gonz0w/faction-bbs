@@ -14,12 +14,12 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | --- | --- |
 | Membership | Login/registration and local sysop approval before community access. |
 | Session | WWIV-inspired flow: approved login, BBS-specific ANSI identity art, sysop-defined welcome/broadcast/quote, main menu. |
-| Boards | Citadel-style rooms: discover/enter a room, read new messages, post, reply. Exact reply presentation remains open. |
-| Chat | IRC-style commands and channels. The local console and restricted SSH worker now have board/private channels and bounded history ([guide](local-chat.md)); future shared-channel participation remains separate. |
+| Boards | Citadel-style chronological rooms: discover/enter, read new messages, post and reply, with formatted headers/wrapping/pagination and clean section transitions. Local by default; optional room-federation protocol research is #101, not implemented export. |
+| Chat | Local IRC-style commands/channels and bounded history exist ([guide](local-chat.md)). #100 now compares actual IRC/IRCv3 and invited server links for public/shared chat; private XMPP conversations/unread UX are #99. No IRC wire support is claimed. |
 | Files/mail | [Local file areas](file-areas.md) with separate restricted SFTP first; later classic transfer adapters. [Private mail](private-mail.md) requires member-side encryption and a native local terminal client; no BBS/home server reads plaintext. File areas/SFTP and the [native transfer client](native-client.md) are optional working previews, including permission-checked room/chat file links; encrypted mail/attachments and roaming identity remain outside the product, with a [two-home protocol proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md) and native integration tracked in #90/#91. |
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
-| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local membership/approval, rooms, files, directories and local-only chat remain local. See [home identities/mail](private-mail.md); not implemented. |
+| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 separately researches opt-in federated discussion rooms. See [home identities/mail](private-mail.md); protocols remain gated. |
 | Terminal | Ordinary SSH terminal clients are the initial secure-access direction, with optional invitation-only private-network operation (owner acceptance 2026-10-19). Overlay admission, SSH identity and local BBS approval remain distinct; no member host shell is implied. Physical serial terminals are not a current target. A [restricted development gateway](restricted-ssh.md) now passes native NetBSD application/member oracles; complete production enforcement/capacity remains unvalidated. |
 | Menus/themes | Oblivion/2-inspired arrow-key highlight + Enter and direct displayed hotkeys (D/d for `[D]oors`). Sysop-defined palettes/layouts/art are foundational; seasonal colors/login screens are an optional direction. ACiD/iCE and Razor/scene typography are visual references; see [menu/theme direction](menus-and-themes.md). |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
@@ -56,7 +56,7 @@ Current sequencing is [software-first local core, then Lua](../dev-docs/decision
 
 - Full account lifecycle, registration fields and remote-safe recovery; local bootstrap, pending/approved/revoked status and owner-only recovery exist in the [development console](local-development.md).
 - Room reading order, unread state, quoting/reply behavior, and retention/moderation.
-- Whether existing IRC clients must interoperate; the implemented console slash commands do not provide an IRC wire server.
+- Which real IRC service/adapter/client interoperability and invited linking profile to adopt (#100); implemented slash commands still provide no IRC wire server.
 - SSH backend, identity/bootstrap mapping, confinement and private-only binding validation; any legacy Telnet compatibility remains separate from the accepted secure-access direction. Disabled/private portal operation remains required.
 - Whether a useful browser console is achievable with no JavaScript dependencies; permitted alternatives and explicit tradeoffs need research.
 - Character encodings, ANSI capabilities, safe parsing, plain-text fallback, and link budgets.
@@ -80,3 +80,20 @@ XMPP/OMEMO and cross-BBS auth are under research #84, not working integrations.
 This supersedes earlier blanket chat-only/local-mail constraints only for these
 explicit capabilities. See ADRs [0030](../dev-docs/decisions/0030-file-areas-and-transfer-adapters.md)
 and [0031](../dev-docs/decisions/0031-home-identities-and-client-encrypted-mail.md).
+
+## Latest direction: local sysop console and modern communications
+
+After using the live SSH playground, the owner requested a local OS-console
+sysop dashboard (#95), progressive terminal capability/graphics support (#96),
+NAT-aware abuse rules (#97), NetBSD maintenance/setup assistance (#98), tightly
+integrated native XMPP unread/private chat/mail/attachments (#99), a real IRC
+reuse comparison (#100) and optional discussion-room federation research (#101).
+The [current stories](modern-sysop-and-communications.md) define acceptance and
+trust boundaries. The operator console follows OS authentication rather than the
+member SSH path; an in-BBS sysop role grants no host privileges. Capability probes
+and guest firewall rules must reflect actual terminal/network topology.
+
+The new room item supersedes an absolute ban on **researching** shared rooms;
+local-by-default storage and consent remain. No automatic room replication,
+shared approvals, public listener, graphics protocol, host change or new wire
+runtime is adopted. Keep ordinary board operation useful with every adapter off.

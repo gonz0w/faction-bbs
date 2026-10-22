@@ -86,3 +86,14 @@ Historical archive access is a study reference, not a redistribution license.
 Themes/assets need creator, source, permissions, modifications and encoding/dimension
 records before distribution. The reference catalog links examples without bundling
 their files, screenshots, group logos or incidental historical text.
+
+## Live-playground follow-up stories
+
+The owner confirmed that the current functional screens need a dedicated polish
+pass: clear/replace distinct views, consistent contextual headers/help/back paths,
+formatted chronological room messages, width-aware wrapping, reply/quote context
+and bounded pagination (#21/#25). Preserve drafts and deliberate live-chat scrolling.
+[Modern terminal story #96](modern-sysop-and-communications.md) adds capability-based
+colors/text graphs/graphics research with safe fallback. The local sysop dashboard
+#95 uses the same board identity where appropriate; richer rendering never gives
+an in-BBS role host authority or lets a sysop theme replace trusted local mail UI.

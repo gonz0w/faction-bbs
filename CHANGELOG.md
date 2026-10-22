@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Capture owner stories #95–#101: local VM-console sysop dashboard, modern terminal
+  capability/graphics research, NAT-aware firewall controls, NetBSD host assistance,
+  integrated native XMPP unread/private UX, real IRC comparison and opt-in shared
+  discussion-room protocol research. Update current product/agent trust boundaries,
+  UI-polish expectations and primary-source inputs. No runtime/protocol adoption,
+  live host/firewall change or automatic room publication is implemented.
+
 - Add a separate two-home encrypted-mail and scoped roaming research proof (#84):
   12 real OMEMO-2/SCE mail controls against independently owned Prosody 13.0.7
   processes on NetBSD, plus 11 native SSH certificate-verifier controls. Retain

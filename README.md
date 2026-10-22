@@ -83,6 +83,14 @@ core from future features. Rust/primary NetBSD is selected in
 [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md); local storage and
 identity use SQLite WAL under [ADR 0008](dev-docs/decisions/0008-local-core-and-credentials.md).
 
+The next [modern sysop and communications stories](docs/modern-sysop-and-communications.md)
+add a local VM-console dashboard, capability-aware Ghostty-style enhancements,
+NetBSD setup/abuse-management workflows and integrated native XMPP notifications.
+Real IRC/IRCv3 integration and optional room federation are now specific research
+items. The goal keeps the underground BBS character with a modern terminal
+experience. These stories are planned; no dashboard, advanced graphics, firewall
+manager or new IRC/forum federation protocol is implemented by this update.
+
 ## Enter the board
 
 ```text
@@ -100,7 +108,7 @@ connect -> log in / register -> local sysop approval required
 
 ## The boundaries matter
 
-Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Future cross-board capabilities are participating shared chat, explicitly addressed encrypted mail and scoped home-identity proofs.** Local-only channels, room/file data and local approval stores remain local; visited boards do not receive home mailboxes or decryption keys. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
+Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Future cross-board capabilities are participating shared chat, explicitly addressed encrypted mail and scoped home-identity proofs.** Local-only channels, local rooms/community files and local approval stores remain local; visited boards do not receive home mailboxes or decryption keys. [#101](https://github.com/gonz0w/faction-bbs/issues/101) separately researches explicit opt-in shared discussion rooms; no room export or new protocol is enabled. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
 
 Privacy, security, lightweight operation, and efficient text interaction are core requirements. Telemetry must be minimal and opt-in. Constrained, intermittent, private, and future mesh networks are research targets; no alternative-network support is claimed today. Public discovery, an HTTP portal, and shared chat must not become prerequisites for operating an independent BBS.
 

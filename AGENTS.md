@@ -10,8 +10,52 @@ The owner selected independent invited home servers and a native local terminal
 client. All new private mail must be device-encrypted: no server-readable fallback
 or server-side SSH decrypt/render. This explicitly supersedes the older chat-only
 federation rule for addressed mail and scoped home-identity proofs. It does not
-replicate rooms/files/local-only chat/account approval. Existing local auth stays
+automatically replicate rooms/files/local-only chat/account approval. Existing local auth stays
 until a verified adapter exists; XMPP/OMEMO is a candidate, not adopted SSO.
+
+## Modern operator and communication stories
+
+Latest owner feedback after the SSH playground, 2026-10-21: read
+[modern sysop/communications stories](docs/modern-sysop-and-communications.md)
+and [research 0047](dev-docs/research/0047-modern-terminal-and-federation-options.md).
+Track #95 local OS/VM-console sysop dashboard; #96 capability-based modern
+terminal graphics; #97 NAT-aware NPF abuse controls; #98 NetBSD setup/maintenance;
+#99 integrated native XMPP unread/private UI; #100 real IRC/IRCv3 reuse/server
+links; #101 explicitly opt-in federated discussion-room protocol comparison.
+These are requested stories/research, not implemented or adopted protocols.
+
+Preserve the modern underground ANSI/BBS identity, sysop themes, improved screen
+transitions and formatted chronological room reading (#21/#25). Use actual
+capabilities and bounded negotiation/overrides, never brand/TERM alone. A VM
+console may lack Ghostty graphics; text-cell graphs/fallback still work. Do not
+weaken current OSC/DCS/APC filtering for an unreviewed graphics path or let query
+replies become commands/authority. No member content or raw remote art becomes
+trusted graphics. Keep no-JS and measured output/memory limits.
+
+The local operator console follows OS login and is separate from member SSH and
+the in-BBS sysop role. Start with bounded read-only metadata/health, not secret
+content or a root BBS owner. Host/firewall actions need narrow host-authorized
+operations and explicit change plans/recovery; no ambient privileged shell,
+automatic NPF activation, base source-penalty changes or silent OS tuning. NAT
+controls must reflect observed peer/enforcement topology and shared-source effects;
+never infer an original IP from user-writable environment/headers/files.
+
+XMPP unread/private chat/mail/files belong in trusted member-side UI with local
+keys; no sysop/server decrypt fallback, even for a badge. Keep #90/#91/#88 gates.
+Real IRC integration is now a specific reuse research direction; existing local
+slash commands are not wire support and IRC server links are not universal
+cross-network federation. Public/shared channels do not imply anonymous Internet
+exposure, and private/local channels must not leak through bridges.
+
+#101 expands permission to research explicitly shared rooms beyond older blanket
+local-only-room wording. No protocol selection, room export or public syndication
+is authorized: local remains default and room/author/peer consent/history/ACLs
+must be proven. Keep local approval/password/role stores local, invited independent
+homes, optional networks/private HTTP and separation from #42 public/permanent
+publishing. Do not introduce a new federation wire protocol before comparing
+NNTP, XMPP PubSub, Matrix and ActivityPub against named interoperability/privacy/
+NetBSD/no-JS/cost gates. Leave the running playground and historical evidence alone
+when capturing these stories; physical hardware remains unnecessary for software work.
 
 Ordinary running product first. Follow
 [the NetBSD quickstart](docs/quickstart-netbsd.md), issue #71 and ADR 0026. Further
@@ -167,7 +211,7 @@ network policy/tuning is automatically changed for remote games.
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.
 - Use Citadel-style message rooms, IRC-style command-driven chat, BBS menus, local file areas/mail, and optional isolated game doors. Existing games are reuse candidates, not implemented support claims.
-- Keep each sysop's identity, accounts/approval, content, files, games, directory, and local-only chat local. Only explicit shared chat, addressed device-encrypted private mail and scoped home-identity proofs may cross boards in the selected future design; no automatic local-data/account replication.
+- Keep each sysop's identity, accounts/approval, content, files, games, directory, and local-only chat local. Explicit shared chat, addressed device-encrypted private mail and scoped home-identity proofs are future directions; #101 separately researches opted-in shared rooms. No automatic local-data/account replication or room export follows from that research.
 - Ordinary SSH client access with optional invitation-only private-network mode is accepted product direction; network admission/SSH identity never implies local BBS approval or host shell access. A separate terminal UID/frontend, trusted broker and member worker rollback now pass real NetBSD application SSH oracles. SSH keys grant admission only; local BBS identity/password/approval remain separate. Use the opt-in NetBSD rc.d scripts and bounded broker lifecycle (ADR 0013); never unlink a live pidfile lock. Keep the eight-session default and owner tools out of the frontend; higher worker/launch limits are explicit owner-only profiling experiments (ADR 0014), never an implicit production capacity claim. Credential work has two cross-process slots per board; never unlink live credential lock files; complete production security/resource/deployment gates remain.
 - Direct network-terminal access is central. A browser portal/console is a goal that must be optional and may be private or disabled. Do not assume public HTTP exposure.
 - Privacy, security, exportability, low bandwidth, and lightweight operation are requirements. Use minimal opt-in telemetry; never log message bodies, credentials, or private content by default.

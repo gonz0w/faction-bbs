@@ -35,3 +35,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Original LORD on NetBSD](original-lord.md) — unchanged original DOS game, private software proof and limits.
 
 - [File areas and restricted SFTP](file-areas.md) and [native-client encrypted mail/home identities](private-mail.md).
+
+- [Modern sysop console and communications stories](modern-sysop-and-communications.md) — planned local dashboard, capability-aware UI, host operations and protocol integration.

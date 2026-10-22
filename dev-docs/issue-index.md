@@ -93,3 +93,19 @@ verified-device/recovery integration and [#91](https://github.com/gonz0w/faction
 scoped identity-to-local-membership binding. [#92](https://github.com/gonz0w/faction-bbs/issues/92)
 records the native signer crash gate. [#88](https://github.com/gonz0w/faction-bbs/issues/88)
 retains device-encrypted attachments; parent #84 remains open.
+
+## Modern operator and communication stories, 2026-10-21
+
+Owner follow-up after trying the live playground; current requirements are in
+[modern stories](../docs/modern-sysop-and-communications.md). These links preserve
+scope/provenance; GitHub state is authoritative.
+
+| Issue | Outcome | Existing parent |
+| --- | --- | --- |
+| [#95](https://github.com/gonz0w/faction-bbs/issues/95) | Local OS-console sysop dashboard | #18/#21 |
+| [#96](https://github.com/gonz0w/faction-bbs/issues/96) | Verified terminal capabilities and progressive graphics | #13/#25/#29 |
+| [#97](https://github.com/gonz0w/faction-bbs/issues/97) | NAT-aware NPF abuse workflow | #18/#19/#23 |
+| [#98](https://github.com/gonz0w/faction-bbs/issues/98) | NetBSD setup/maintenance assistant | #18 |
+| [#99](https://github.com/gonz0w/faction-bbs/issues/99) | Native XMPP notifications/private conversations | #84/#90/#91/#88 |
+| [#100](https://github.com/gonz0w/faction-bbs/issues/100) | Real IRC/IRCv3 and invited links comparison | #26/#17/#5 |
+| [#101](https://github.com/gonz0w/faction-bbs/issues/101) | Optional federated discussion-room protocol comparison | #17/#12/#9/#42 |
