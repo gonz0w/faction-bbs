@@ -149,3 +149,7 @@ The optional [Recovery panel](backup-checks.md) reports explicit checks of compl
 file-area bundles. A standalone catalog export is not a complete file backup and
 does not generate such a receipt. `backup.status` is disposable local telemetry,
 not authoritative board data and not part of export/fresh restore.
+
+The optional [other-BBS directory](other-boards.md) is external reviewed host
+configuration. Preserve its pack separately; it is not part of the DB export or
+complete file-area bundle and never imports remote membership.

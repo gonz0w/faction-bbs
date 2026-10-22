@@ -150,3 +150,9 @@ native/capacity, pixel/font certification or product runtime change is implied.
 preserve 176 measured inputs and both complete Nightwire records before the local
 operator runtime change. Nineteen snapshots / thirty-two historical identities
 stay immutable. See [operator evidence](operator-netbsd/README.md) for new results.
+
+[Other BBSes directory software evidence](directory-netbsd/README.md) records
+188 Rust tests per OS, eleven directory PTY controls per OS and twelve actual
+SSH/native controls, with operator/backup/serial/art regressions. Snapshot 22
+`sources/pre27-directory` freezes all 173 prior recovery inputs and its complete
+record; 22 snapshots/35 historical identities remain unchanged.

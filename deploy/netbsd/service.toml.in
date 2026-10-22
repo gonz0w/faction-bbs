@@ -11,6 +11,7 @@ experimental_capacity = false
 # Optional owner-owned validated packs; load once at service start.
 # theme = "/var/db/faction/themes/base"
 # season = "/var/db/faction/themes/seasons/winter" # manual wins over schedule
+# directory = "/var/db/faction/boards" # optional curated Other BBSes pack
 # theme_schedule = "/var/db/faction/themes/seasons" # reads schedule.toml
 
 # Optional read-only local OS-operator dashboard snapshot, private to state owner.

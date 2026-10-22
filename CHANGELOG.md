@@ -4,6 +4,17 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add opt-in sysop-curated Other BBSes packs and approved-member connection cards
+  in local, inherited-worker and shared sessions. Arrows/hotkeys, paging, compact/
+  plain and main-menu return share one bounded presenter. No automatic connection,
+  credential/host-key import or remote membership/federation.
+- Add offline directory validation, startup config and deliberate review/expiry/
+  removal documentation. A full custom grid falls back to an ordered eleven-action
+  menu when Files plus Contacts need more cells. Defaults/artwork stay unchanged.
+- Preserve all 173 prior source/harness/build inputs and the entire recovery result
+  before edits. The old standalone UI only gains a disabled-action compatibility
+  arm; its frozen measured sources and historical claims remain unchanged.
+
 - Add complete-bundle verify-only checks and optional private backup/check receipts.
   Restore shares the same catalog/blob verification before creating fresh paths.
 - Add D:Data/Recovery operator panel with latest-attempt/last-success ages/totals,

@@ -79,8 +79,11 @@ now passes encrypted subject/body/reply, offline/archive and verified-device ref
 controls, plus scoped native SSH certificate admission. Native mail UI/keystore/
 recovery and trusted local identity binding remain #90/#91; native certificate
 signing has a recorded failure under #92. Encrypted attachments stay planned in #88.
-The other-BBS directory, federation, payments, mesh and browser access remain
-backlog work.
+The optional **[Other BBSes directory](docs/other-boards.md)** now provides themed
+pages and connection cards for sysop-reviewed boards, with independent destination
+login/approval. It stays local and never auto-connects or shares keys. Member
+submissions, native visit handoff, federation, payments, mesh and browser access
+remain backlog work.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
 including optional seasonal colors and identity screens.
 

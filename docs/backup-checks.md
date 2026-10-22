@@ -65,7 +65,7 @@ health line describes service snapshots, while the Data panel gives check ages.
 The operator explicitly associates the chosen bundle with `--board`. This is not
 an automatic comparison with the live board's identity or latest transactions.
 A receipt does not prove the artifact still exists or is unchanged, was copied
-off-host, includes all installation data, or has restored successfully. Themes,
+off-host, includes all installation data, or has restored successfully. Themes, the optional other-BBS directory pack,
 OS/SSH configuration, remote door saves and member-device mail keys stay outside
 this bundle. Repeat verify and rehearse a fresh restore when needed; maintain
 separate protected copies and retention policy. Device mail recovery stays local.

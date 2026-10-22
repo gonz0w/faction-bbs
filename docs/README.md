@@ -54,3 +54,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Local sysop console](sysop-console.md): OS-authorized read-only BBS status, live CPU/RAM/network graphs, serial-login validation and classic/ANSI operator panels.
 
 - [Backup checks and Recovery panel](backup-checks.md): explicit complete-bundle verification and historical private check receipts.
+
+- [Contacts / Other BBSes](other-boards.md): curated local listings and safe SSH connection cards for approved members.
