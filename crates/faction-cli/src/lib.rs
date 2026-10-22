@@ -4,7 +4,7 @@ mod chat;
 mod terminal;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
 use faction_terminal::{Action, Theme};
-use rustix::termios::{self, LocalModes, OptionalActions, SpecialCodeIndex, Termios};
+use rustix::termios::{self, InputModes, LocalModes, OptionalActions, SpecialCodeIndex, Termios};
 use std::time::{Duration, Instant};
 use std::{
     fs::File,
@@ -26,6 +26,54 @@ pub fn line(prompt: &str, max: usize) -> Result<String> {
         },
         max,
     )
+}
+fn subject_line() -> Result<String> {
+    use faction_terminal::subject::{self, Edit};
+    let tty = tty()?;
+    let saved = termios::tcgetattr(&tty)?;
+    let mut mode = saved.clone();
+    mode.local_modes.remove(
+        LocalModes::ECHO
+            | LocalModes::ECHONL
+            | LocalModes::ICANON
+            | LocalModes::ISIG
+            | LocalModes::IEXTEN,
+    );
+    mode.input_modes.remove(
+        InputModes::ISTRIP
+            | InputModes::ICRNL
+            | InputModes::INLCR
+            | InputModes::IGNCR
+            | InputModes::IXON
+            | InputModes::IXOFF,
+    );
+    mode.special_codes[SpecialCodeIndex::VMIN] = 1;
+    mode.special_codes[SpecialCodeIndex::VTIME] = 0;
+    termios::tcsetattr(&tty, OptionalActions::Flush, &mode)?;
+    let _restore = Hidden { tty: &tty, saved };
+    print!("Subject (blank for generated/reply default): ");
+    io::stdout().flush()?;
+    let mut source = TimedInput {
+        file: tty.try_clone()?,
+        deadline: Instant::now() + Duration::from_secs(120),
+    };
+    let mut input = Vec::with_capacity(subject::BYTES);
+    loop {
+        let mut byte = [0];
+        source.read_exact(&mut byte)?;
+        match subject::feed(&mut input, byte[0])
+            .map_err(|reason| io::Error::new(io::ErrorKind::InvalidData, reason))?
+        {
+            Edit::Echo(text) => {
+                print!("{text}");
+                io::stdout().flush()?;
+            }
+            Edit::Submit(text) => {
+                println!();
+                return Ok(text);
+            }
+        }
+    }
 }
 /// Duplicate the already-open terminal. Broker workers deliberately have no
 /// controlling /dev/tty; stdin is the descriptor admitted by the broker.
@@ -251,9 +299,16 @@ fn post(board: &mut Board, s: &Session) -> Result<()> {
         Some(parent.parse()?)
     };
     if let Some(parent) = reply {
-        println!("Reply subject: {}", board.reply_subject(s, room, parent)?);
+        let preview = format!("Reply subject: {}", board.reply_subject(s, room, parent)?);
+        println!(
+            "{}",
+            faction_terminal::subject::preview(
+                &preview,
+                usize::from(terminal::size().unwrap_or((80, 24)).0).saturating_sub(1)
+            )
+        );
     }
-    let subject = line("Subject (blank for generated/reply default): ", 160)?;
+    let subject = subject_line()?;
     let body = line("Message (one line, up to 1024 bytes): ", POST_BYTES)?;
     let key = request_id()?;
     println!("Submission ID: {key}");

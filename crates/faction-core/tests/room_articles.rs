@@ -125,7 +125,7 @@ fn subjects_are_bounded_inert_and_current_approval_is_required() {
         "bad\nApproved: root",
         "bad\x1b[2J",
         "=?utf-8?b?x?=",
-        "café",
+        "bad\u{85}",
         &"x".repeat(161),
     ] {
         assert!(

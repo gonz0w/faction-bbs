@@ -1,0 +1,75 @@
+//! UTF-8 subject input with deterministic, inert classic-terminal echo.
+//! The byte budget is independent of display cells: non-ASCII scalars echo as
+//! whole ASCII escapes. No locale, TERM value or terminal brand grants authority.
+use crate::Result;
+pub const BYTES: usize = 160;
+#[derive(Debug, PartialEq, Eq)]
+pub enum Edit {
+    Echo(String),
+    Submit(String),
+}
+pub fn feed(input: &mut Vec<u8>, byte: u8) -> Result<Edit> {
+    if byte == b'\r' || byte == b'\n' {
+        let text = std::str::from_utf8(input)
+            .map_err(|_| "invalid UTF-8 subject")?
+            .to_owned();
+        input.clear();
+        return Ok(Edit::Submit(text));
+    }
+    if byte == 8 || byte == 127 {
+        let (start, cells) = match std::str::from_utf8(input) {
+            Ok(text) => text
+                .char_indices()
+                .next_back()
+                .map_or((0, 0), |(n, c)| (n, escaped(c).len())),
+            Err(e) if e.error_len().is_none() => (e.valid_up_to(), 0),
+            Err(_) => return Err("invalid UTF-8 subject"),
+        };
+        input.truncate(start);
+        return Ok(Edit::Echo("\x08 \x08".repeat(cells)));
+    }
+    if byte < 32 || input.len() >= BYTES {
+        return Err("invalid or oversized subject input");
+    }
+    input.push(byte);
+    match std::str::from_utf8(input) {
+        Ok(text) => {
+            let c = text.chars().next_back().ok_or("invalid subject")?;
+            if c.is_control() {
+                return Err("subject controls are forbidden");
+            }
+            Ok(Edit::Echo(escaped(c)))
+        }
+        Err(e) if e.error_len().is_none() => Ok(Edit::Echo(String::new())),
+        Err(_) => Err("invalid UTF-8 subject"),
+    }
+}
+fn escaped(c: char) -> String {
+    if c == '\n' {
+        "\\n".into()
+    } else if c.is_ascii_graphic() || c == ' ' {
+        c.to_string()
+    } else {
+        c.escape_unicode().collect()
+    }
+}
+/// A bounded single-line label. Whole escapes fit or are replaced by ellipsis;
+/// even bidi, combining marks, newlines and terminal controls remain inert ASCII.
+pub fn preview(text: &str, columns: usize) -> String {
+    let columns = columns.min(119);
+    let mut out = String::new();
+    let mut boundaries = Vec::new();
+    for c in text.chars() {
+        let part = escaped(c);
+        if out.len() + part.len() > columns {
+            while out.len() > columns.saturating_sub(3) {
+                out.truncate(boundaries.pop().unwrap_or(0));
+            }
+            out.push_str(&".".repeat(columns.min(3)));
+            return out;
+        }
+        boundaries.push(out.len());
+        out.push_str(&part);
+    }
+    out
+}

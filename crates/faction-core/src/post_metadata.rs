@@ -12,12 +12,19 @@ pub struct PostMetadata {
     pub legacy: bool,
 }
 pub(crate) fn valid(id: &str, subject: &str, time: Option<i64>, origin: &str) -> bool {
+    valid_version(id, subject, time, origin, 7)
+}
+fn valid_version(id: &str, subject: &str, time: Option<i64>, origin: &str, version: i64) -> bool {
     id.len() == 32
         && id
             .bytes()
             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
         && (1..=160).contains(&subject.len())
-        && subject.bytes().all(|b| (32..=126).contains(&b))
+        && if version == 6 {
+            subject.bytes().all(|b| (32..=126).contains(&b))
+        } else {
+            subject.chars().all(|c| !c.is_control())
+        }
         && match origin {
             "legacy" => time.is_none(),
             "local" => time.is_some_and(|n| (0..=253402300799).contains(&n)),
@@ -47,7 +54,7 @@ impl Board {
         })
     }
 }
-pub(crate) fn validate(db: &Connection, deadline: std::time::Instant) -> Result<()> {
+pub(crate) fn validate(db: &Connection, deadline: std::time::Instant, version: i64) -> Result<()> {
     if db.prepare("SELECT 1 FROM posts p LEFT JOIN post_metadata m ON m.post_id=p.id WHERE m.post_id IS NULL LIMIT 1")?.exists([])? {
         return Err(Error::Invalid("snapshot post metadata missing"));
     }
@@ -57,11 +64,12 @@ pub(crate) fn validate(db: &Connection, deadline: std::time::Instant) -> Result<
         if std::time::Instant::now() >= deadline {
             return Err(Error::Invalid("snapshot metadata work budget exceeded"));
         }
-        if !valid(
+        if !valid_version(
             &row.get::<_, String>(0)?,
             &row.get::<_, String>(1)?,
             row.get(2)?,
             &row.get::<_, String>(3)?,
+            version,
         ) {
             return Err(Error::Invalid("invalid snapshot post metadata"));
         }
@@ -73,10 +81,10 @@ pub(crate) fn subject(value: &str) -> Result<()> {
     if value.len() > 160
         || value.trim() != value
         || value.contains("=?")
-        || !value.bytes().all(|b| (32..=126).contains(&b))
+        || value.chars().any(char::is_control)
     {
         return Err(Error::Invalid(
-            "subject needs up to 160 printable ASCII bytes, no surrounding spaces or encoded words",
+            "subject needs up to 160 UTF-8 bytes without controls, no surrounding spaces or encoded words",
         ));
     }
     Ok(())
@@ -102,7 +110,11 @@ pub(crate) fn resolve_subject(
         } else {
             format!("Re: {original}")
         };
-        result.truncate(160);
+        let mut end = result.len().min(160);
+        while !result.is_char_boundary(end) {
+            end -= 1;
+        }
+        result.truncate(end);
         return Ok(result.trim_end().into());
     }
     Ok(format!("Message #{id}"))

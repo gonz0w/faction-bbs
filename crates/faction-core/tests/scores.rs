@@ -231,7 +231,7 @@ fn scores_export_restore_and_schema_two_exports_stay_readable() {
     assert_eq!(
         db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        6
+        7
     );
 }
 #[test]

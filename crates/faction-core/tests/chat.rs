@@ -411,7 +411,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
     assert_eq!(
         db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        6
+        7
     );
 }
 #[test]
