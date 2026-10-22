@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #124, implement #25
-long-form ANSI art and login screen paging; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #125, implement #25
+original ANSI artwork and polished login screens; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -723,3 +723,28 @@ nine host harnesses and three SVGs. Preserve all those actual bytes before futur
 edits. Validation passes 171 Rust per OS / 112 host Python, eight paging PTY
 controls per OS, eight actual shared SSH/native paging controls, old menu/seasonal
 controls and 22 shared regressions. No new capacity/font/final-art acceptance.
+
+## Original Nightwire artwork (#25)
+
+Read plan 0050 and docs/artwork-nightwire.md. New opt-in Nightwire long/short and
+seasonal packs use original Codex-assisted CP437 cells and bespoke letter polygons.
+The builder/checker are offline authoring tools, never runtime scripts. Default
+packs/installer/runtime and all previously measured input bytes stay unchanged;
+verify all saved evidence guards. No new snapshot is needed for new assets alone.
+If editing any pinned input, preserve it before the edit under the existing rules.
+
+Long set is three 16-row pages; short set is the same complete cover. Autumn/
+winter preserve glyph geometry and menu action/key/position maps while changing
+palette/welcome/compact card. Compact/plain stay printable ASCII. Record rights
+and actual provenance, regenerate/check the declared output set and inspect the
+canonical product previews; parsing tests cannot grant artistic acceptance or
+font/emulator certification. Do not borrow archival art or use generic logo fonts.
+No runtime/dependency/host-policy changes or new capacity claim. Hardening later;
+keep the preserved playground off and use owned disposable software fixtures.
+
+The nightwire-netbsd result pins 157 final native input matches, five harnesses,
+twelve new art files and seven SVGs. Preserve their actual bytes before future
+edits. Eighteen render profiles/seven local routes per OS and seven actual SSH/
+native routes pass; 171 Rust per OS / 112 host Python pass. All 144 prior paging
+inputs remain unchanged, with no new snapshot/runtime/default/dependency change.
+Owner art acceptance, actual font/emulator review and new capacity remain unclaimed.

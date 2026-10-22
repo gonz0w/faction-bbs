@@ -135,3 +135,13 @@ The [long-form login guide](theme-packs.md#long-form-login-art-and-paging) now
 supports explicit 80x256 / 64 KiB assets, sixteen-row pages, Enter/skip and
 classic/compact recovery. This retains the short-art importer contract and does
 not imply unlimited scrolling, animation or compatibility with every scene pack.
+
+## Original artwork candidate
+
+The [Nightwire set](artwork-nightwire.md) is original CP437 artwork with a custom
+slanted/beveled FACTION wordmark, radio-city skyline and illustrated receiver.
+Short cover, three-page identity, seasonal colors and compact ASCII cards now
+form one coordinated set. It is opt-in with exact source/rights and reproducible
+canonical previews; the default installer and all existing packs stay unchanged.
+Owner visual acceptance and actual terminal/font review remain distinct from
+software checks. No archival artwork or generic font logo is bundled.
