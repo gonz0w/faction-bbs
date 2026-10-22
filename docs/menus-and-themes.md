@@ -1,7 +1,7 @@
 # Menus, sysop themes and seasonal identity
 
-Status: owner direction with menu polish implemented, 2026-10-22. A local vertical-menu/theme baseline
-is implemented; [the pack guide](theme-packs.md) states exact supported behavior.
+Status: owner direction with menu polish implemented, 2026-10-22. List/grid menus and bounded identity import
+are implemented; [the pack guide](theme-packs.md) states exact supported behavior.
 The broader design below includes future requirements. Annual next-login scheduling is now available; historical
 art packs and a supported network BBS release remain separate.
 Issues: #13/#21/#25/#29/#31. [Visual references](../dev-docs/research/0025-menu-and-art-direction.md).
@@ -49,8 +49,9 @@ need Lua; later Lua menus/doors use the bounded extension contract.
 
 ANSI is a primary product surface. Preserve CP437/text-cell composition, palette,
 shade/half-block detail, intended aspect/font and safe control semantics where
-supported. Research SAUCE metadata and iCE bright-background versus blink behavior;
-do not reinterpret an artist's file as arbitrary Unicode or raw trusted escape bytes.
+supported. The bounded SAUCE/iCE profile is documented in the pack guide; broader
+format/font compatibility remains research.
+Do not reinterpret an artist's file as arbitrary Unicode or raw trusted escape bytes.
 Plain text is an alternative mode, not the visual quality target for capable sessions.
 Long scrolling identity art and a compact interactive menu can be different assets.
 
@@ -101,20 +102,20 @@ an in-BBS role host authority or lets a sysop theme replace trusted local mail U
 The [shared room reader](room-reading.md) now implements the first presentation
 polish: themed ANSI section clears, room/author/reply headers, separators and
 wrapped message pages. Plain text follows the same journey. File-reference tokens
-remain intact for native shortcuts. More composition, seasonal scheduling and
-modern Unicode/graphics remain separate #21/#25/#96 work.
+remain intact for native shortcuts. Optional native Unicode/graphics and seasonal calendars now extend this
+foundation; further composition and final artwork remain #21/#25/#96 work.
 
 ## Current lightbar presentation (#25)
 
 The local/worker and shared-service main menu now uses the same compact/wide
 framed lightbar with sysop title and optional wide action descriptions. See the
 [pack guide and actual-renderer previews](theme-packs.md). Themes retain 16-color
-ASCII menu chrome, clear section changes, explicit unavailable markers and two-row
+ASCII menu chrome, clear section changes, explicit unavailable markers and bounded
 focus updates; classic/plain recovery needs no graphics or Unicode negotiation.
 Manual autumn/winter overrides stay independent of command mappings. The new
 local preview example and stdlib SVG renderer let sysops validate layout without
 opening a live board. These are original interface elements, not final approved
-identity art. Commissioned/authorized art, visual font review, grid layouts and
+identity art. Commissioned/authorized art, visual font review and
 broader long-art support remain open; don't infer those from the previews.
 
 The [calendar and login guide](theme-packs.md#seasonal-calendar-and-login-screens)
@@ -122,4 +123,9 @@ now implements UTC/system-local annual windows, explicit overlap priority,
 manual/disabled recovery and next-login selection. A shared preloaded catalog
 keeps each approved session coherent. Original seasonal ANSI/compact ASCII
 examples exercise the common bounded presenter; the shipped calendar is disabled.
-Final scene identity-art acceptance, grids and long-art import remain #25 work.
+Opt-in [custom grids](theme-packs.md#custom-grid-layouts-and-cp437-art) now add
+explicit two-column/five-row positions and spatial arrows while keeping ordered
+Tab/hotkeys and compact/plain recovery. The importer accepts bounded SAUCE00
+Character/ANSi metadata and non-blink iCE backgrounds, never raw escape streams.
+An original CP437 sample demonstrates the path. Final scene identity-art
+acceptance and long-art import remain #25 work.

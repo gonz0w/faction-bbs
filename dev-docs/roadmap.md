@@ -8,11 +8,14 @@ After merged #121's software compatibility work, #25 now improves the ordinary
 lightbar main menu and sysop authoring workflow. Compact/wide ASCII panels,
 base titles/descriptions and manual seasonal palettes preserve classic fallback,
 action checks and output limits. [Preview/customization](../docs/theme-packs.md)
-needs no live board. Original/authorized identity art, native visual review,
-custom grids remain separate work. Optional annual UTC/system-local calendars,
+needs no live board. Final original/authorized identity art, native visual review
+and long art remain separate work. Optional annual UTC/system-local calendars,
 priorities, manual/disabled recovery and original seasonal login templates now
 extend this foundation. Each approved login pins its shared catalog selection;
 examples default disabled. See the [calendar guide](../docs/theme-packs.md#seasonal-calendar-and-login-screens).
+Opt-in custom grids now define explicit positions, spatial arrows and ordered
+Tab with classic fallback. Bounded SAUCE/iCE import enables original/licensed
+80-column login cards; longer/animated art and final scene identity stay open.
 Hardening stays later.
 
 ## Modern terminal foundation

@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #122, implement #25
-seasonal scheduling and login screens; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #123, implement #25
+custom menu layouts and richer bounded ANSI art; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -659,3 +659,34 @@ eight actual shared SSH/native calendar controls and 22 shared regressions.
 Compact ANSI identity cards wait for Enter before a menu clear; plain CLI and
 board-name-only compact flow stay conservative. No clock/TZ/host activation,
 new capacity or final artwork/emulator certification is claimed.
+
+## Custom menu layouts and SAUCE/iCE (#25)
+
+Read plan 0048, ADR 0045 and docs/theme-packs.md. Optional base-only layout=grid
+requires unique explicit row 1–5 / column 1–2 coordinates for every entry. At 80+
+columns arrows are spatial; Up/Down wrap within a column, Left/Right prefer the
+same/nearest enabled row in the other column (upper row breaks ties). Tab keeps
+array order; compact/plain keep ordered fallback. Shared focus must restore its
+entry index directly, never replay Down. Core approval/actions and host Files/
+Doors enablement stay unchanged; seasons cannot move/remap entries. All art/theme
+memory remains in the shared startup catalog; no per-member grid/art allocation.
+
+SAUCE00 Character/ANSi only, width 0/80, height at most 16, total input/output still
+16 KiB / 80x16 cells. Metadata/EOF/comments never render; optional stale FileSize
+is ignored. Non-blink flag alone permits SGR5/25 as bright-background changes,
+never terminal blinking. Font/spacing/aspect hints confer no capability or rights.
+Raw blink, oversized/animated/other formats and unknown controls reject. The new
+grid template is original Codex-assisted BSD sample art, not accepted final scene
+identity. Previews accept only ASCII plus the known CP437 glyph set.
+
+Seventeenth snapshot sources/pre25-layouts and seasonal-themes-baseline-manifest.json
+freeze 133 executed #123 inputs and its whole original result record. Keep all
+seventeen snapshots / twenty-nine historical record identities unchanged.
+No new capacity/hardware/emulator/pixel certification; hardening remains later.
+
+The custom-menus-netbsd record pins 130 final selected native input matches,
+seven harnesses and two SVGs. Preserve their actual bytes before future edits.
+Validation passes 167 Rust per OS / 111 host Python, four local/worker custom
+controls per OS, four actual shared SSH/native custom controls, nine seasonal
+controls per OS, eight actual shared calendars and 22 shared regressions. Full
+menus remain <4 KiB, focus <=512 bytes; no new capacity or final artwork claim.

@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add opt-in sysop grid menus with explicit positions, spatial lightbars, ordered
+  Tab/hotkeys and shared focus restoration; compact/plain ordered recovery stays.
+- Add bounded SAUCE00 Character/ANSi and non-blink iCE background import, an
+  original CP437 grid/login template and inert Unicode-cell authoring previews.
+  Existing 80x16/16 KiB limits and provenance requirements remain.
+- Preserve all executed #123 seasonal sources and its original result before edits.
+
 - Add opt-in annual #25 theme calendars with UTC/system-local dates, bounded
   priorities/year-wrapping windows, manual/disabled recovery and coherent
   next-login selection across local/worker/shared sessions.

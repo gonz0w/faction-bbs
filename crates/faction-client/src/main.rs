@@ -170,11 +170,11 @@ impl Terminal {
                         {
                             return Ok(b.to_ascii_uppercase());
                         }
-                        Key::Up => {
+                        Key::Up | Key::Left => {
                             focus = (focus + ENTRIES.len() - 1) % ENTRIES.len();
                             break;
                         }
-                        Key::Down => {
+                        Key::Down | Key::Right | Key::Next => {
                             focus = (focus + 1) % ENTRIES.len();
                             break;
                         }

@@ -250,11 +250,11 @@ impl Client {
             return Err(Error::Denied);
         }
         let target = match key {
-            Key::Up => {
+            Key::Up | Key::Left => {
                 d.focus = (d.focus + n - 1) % n;
                 None
             }
-            Key::Down => {
+            Key::Down | Key::Right | Key::Next => {
                 d.focus = (d.focus + 1) % n;
                 None
             }

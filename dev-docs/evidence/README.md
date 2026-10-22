@@ -112,3 +112,14 @@ and three generated previews used by the original menu record (#122); those
 previews are included within the 122 total. `menu-themes-baseline-manifest.json`
 pins both the source tree and unchanged result. Keep sixteen snapshots and
 twenty-eight historical result identities fixed when extending calendars/art.
+
+The seventeenth source snapshot, `sources/pre25-layouts`, preserves 133 distinct
+executed #123 application/harness/SVG inputs. The pinned
+[seasonal manifest](seasonal-themes-baseline-manifest.json) also fixes the whole
+original seasonal result record. Seventeen snapshots and twenty-nine historical
+record identities remain unchanged; do not refresh their hashes to later code.
+
+[Custom-menu NetBSD software validation](custom-menus-netbsd/README.md) records
+130 final guest input matches, 167 Rust per OS / 111 host Python, four custom
+PTY controls per OS and four actual shared SSH/native controls, with seasonal/
+reader regressions. No fresh capacity, terminal/font or final artwork claim.
