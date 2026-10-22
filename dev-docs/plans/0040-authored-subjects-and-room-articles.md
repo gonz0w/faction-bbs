@@ -49,3 +49,12 @@ capacity or hardening adoption. Core now depends on the existing article crate.
 reference pruning and independent news software. The implemented core API is local
 projection, not a member export action, network feed or remote insertion. #101/#104
 keep consent/injection/peer/provider gates. Hardening remains later #106–#111.
+
+## CI lockfile repair before merge
+
+The first #113 CI run stopped at the standalone shared-UI dependency check: its
+lockfile did not yet contain core's new local faction-articles edge. Refresh all
+four standalone experiment lockfiles offline; only the existing local package and
+edge are added, with no registry/version/feature changes. All four dependency
+guards and historical evidence checks pass. Merge only after the updated head's
+full CI passes. Maintained runtime sources and recorded native results are unchanged.
