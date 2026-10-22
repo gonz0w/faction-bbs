@@ -32,7 +32,7 @@ accepted scene identity art or redistribution of historical work.
 - [x] Validate date/priority/leap/disable/manual/error behavior and real host/native
   login/session coherence/approval/classic fallback using software fixtures.
 - [x] Record exact results and update README/AGENTS/changelog.
-- [ ] Publish a focused PR and record its link/progress on #25.
+- [x] Publish [PR #123](https://github.com/gonz0w/faction-bbs/pull/123) and record its link/progress on #25.
 
 ## Constraints and validation
 
