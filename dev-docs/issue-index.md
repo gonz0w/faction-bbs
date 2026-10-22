@@ -114,3 +114,8 @@ scope/provenance; GitHub state is authoritative.
 
 Owner clarification: article formatting applies to discussion-room posts only;
 IRC and XMPP retain live/private formats. See [article/news requirements](../docs/discussion-articles-and-news.md).
+
+The first #103/#21/#25 build batch adds the local text-article codec and shared
+room pages; see [plan 0038](plans/0038-room-articles-and-reading.md). These issues
+remain open for post migration/integration and the broader UI journey; codec
+formatting enables no room publication or provider connection.

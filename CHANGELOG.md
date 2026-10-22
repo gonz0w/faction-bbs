@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a dependency-free Rust Netnews text-article codec and offline validator
+  (#103 foundation), plus shared wrapped/paged room screens for local/worker and
+  shared-service sessions (#21/#25). Preserve contiguous file-reference tokens,
+  current approval checks and drain-before-complete-message unread acknowledgment;
+  use sysop theme colors for ANSI section changes. No schema migration, listener,
+  provider connection or automatic publication. Preserve the original native-client
+  sources in the exact pre90 snapshot before shared UI/workspace changes.
+
 - Capture owner stories #95–#101: local VM-console sysop dashboard, modern terminal
   capability/graphics research, NAT-aware firewall controls, NetBSD host assistance,
   integrated native XMPP unread/private UX, real IRC comparison and opt-in shared

@@ -143,6 +143,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-articles"
+version = "0.1.0-alpha.1"
+
+[[package]]
 name = "faction-cli"
 version = "0.1.0-alpha.1"
 dependencies = [

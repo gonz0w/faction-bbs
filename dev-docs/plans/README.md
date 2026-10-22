@@ -51,3 +51,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 
 
 - [0037: Capture modern sysop and communication stories](0037-modern-sysop-stories.md) — documentation/backlog only; no running-host changes.
+
+- [0038: Room articles and reading](0038-room-articles-and-reading.md) — codec foundation, shared room screens and native software checks.

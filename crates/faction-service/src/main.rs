@@ -50,7 +50,7 @@ enum State {
     Pause,
     RoomsMore(usize),
     RoomId(bool),
-    ReadMore(i64, i64),
+    ReadMore(i64, i64, usize),
     PostRoom,
     PostReply(i64),
     PostBody(i64, Option<i64>),
@@ -305,7 +305,9 @@ impl Client {
         if self.written == self.output.len() {
             self.output.clear();
             self.written = 0;
-            if let Some((room, through)) = self.mark_after_flush.take() {
+            if !self.close
+                && let Some((room, through)) = self.mark_after_flush.take()
+            {
                 board.mark_read(self.session.as_ref().ok_or_else(denied)?, room, through)?;
             }
             if matches!(self.state, State::Closing) {

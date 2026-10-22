@@ -21,10 +21,10 @@ from smoke_local_console import Console
 
 
 class SSHConsole(Console):
-    def __init__(self, argv):
+    def __init__(self, argv, columns=80, rows=24):
         self.pid, self.fd = pty.fork()
         if self.pid == 0:
-            fcntl.ioctl(0, termios.TIOCSWINSZ, struct.pack('HHHH', 24, 80, 0, 0))
+            fcntl.ioctl(0, termios.TIOCSWINSZ, struct.pack('HHHH', rows, columns, 0, 0))
             os.environ['TERM'] = 'xterm-256color'
             os.closerange(3, os.sysconf('SC_OPEN_MAX'))
             os.execv('/usr/bin/ssh', argv)

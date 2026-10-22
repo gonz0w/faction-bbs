@@ -233,3 +233,9 @@ IRC bridges must keep private XMPP/local-only content out of shared channels.
 Optional forum federation research needs separate room/author/peer consent and
 history/retained-copy policies; a remote peer never imports local account roles
 or approval. Public conversations do not force anonymous/public-web deployment.
+
+The [paged room reader](room-reading.md) re-fetches current approval/file visibility
+for each screen and does not mark incomplete messages read. Shared read positions
+advance only after successful output drain, not a failed close. The article codec
+rejects unsupported/control headers and imports no authority; it is independent
+of storage/publication and does not convert IRC or encrypted XMPP traffic.

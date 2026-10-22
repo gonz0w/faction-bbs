@@ -60,3 +60,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0033: Native terminal transfers and local file references](0033-native-terminal-files.md).
 
 - [0034: Encrypted-mail reuse and roaming-admission proof](0034-encrypted-mail-reuse-proof.md) — accepted experiment boundary; complete native adoption remains open.
+
+- [0036: Room article foundation and paged reading](0036-room-articles-and-reading.md) — bounded local text profile and shared safe screens; no schema/feed adoption.

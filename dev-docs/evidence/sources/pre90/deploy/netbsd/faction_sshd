@@ -1,0 +1,40 @@
+#!/bin/sh
+# PROVIDE: faction_sshd
+# REQUIRE: faction_broker LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+name="faction_sshd"
+rcvar=$name
+command="/usr/sbin/sshd"
+pidfile="/var/run/faction-sshd.pid"
+command_args="-E /var/log/faction-broker.log -f /etc/ssh/faction/sshd_config"
+required_files="/etc/ssh/faction/sshd_config /etc/ssh/faction/authorized_keys"
+start_cmd="faction_sshd_start"
+faction_sshd_check()
+{
+    [ -S /var/run/faction/terminal.sock ] || return 1
+    /usr/sbin/sshd -t -f /etc/ssh/faction/sshd_config
+}
+faction_sshd_start()
+{
+    [ -z "$rc_pid" ] || { warn "BBS SSH is already running"; return 1; }
+    for f in $required_files; do [ -r "$f" ] || return 1; done
+    faction_sshd_check || return 1
+    # DHCP/private interfaces can appear after rc starts. Retry the exact
+    # configured listener for a bounded interval; never bind a fallback address.
+    n=0
+    while [ "$n" -lt 30 ]; do
+        "$command" $command_args 2>>/var/log/faction-broker.log
+        # sshd's parent can succeed before its daemon child binds. Check the
+        # real listener pidfile, not just the launcher's exit status.
+        sleep 1
+        [ -z "$(check_pidfile "$pidfile" "$command")" ] || return 0
+        n=$((n+1))
+    done
+    warn "BBS SSH did not bind; check the configured interface/port and private log"
+    return 1
+}
+load_rc_config "$name"
+: ${faction_sshd:=NO}
+run_rc_command "$1"

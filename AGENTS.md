@@ -150,6 +150,30 @@ snapshots remain authoritative. Preserve bytes before edits, never refresh old
 hashes. Independent authority review, preauth/lookup CPU floods, NAT fairness,
 complete budgets/soak and maintained host policy remain gates; #55 stays open.
 
+## Room article foundation and paged reading
+
+Owner batch #103/#21/#25: read docs/room-reading.md and ADR 0036. The dependency-free
+faction-articles codec is a bounded text-only profile, independent of board storage,
+authority and transport. Reject unsupported headers/MIME/control fields; no invented
+legacy subjects/dates, automatic NNTP feed, schema migration or IRC/XMPP conversion.
+The ASCII-header/date/body profile is explicit in docs/discussion-articles-and-news.md.
+
+Local/worker and shared-service sessions use the same inert wrapped presenter.
+Retain only room/post/body-offset cursors. Re-fetch each screen under current local
+approval and file permissions. Never mark a partial message read; the shared owner
+marks a completed message only after output drains successfully and not after a
+failed close. Keep file-reference tokens contiguous, charging soft-wrap rows, so
+native recent-file discovery remains usable. Section clears/colors come only from
+trusted theme presentation. No new per-client history cache, owner thread, listener
+or relaxed credential/default/session limits. No fresh 250-member claim.
+
+Seventh source snapshot sources/pre90 and mail-client-baseline-manifest.json freeze
+the exact 89 original native-client execution inputs and unchanged result before
+these edits. This is the same preserved baseline prepared in separate PR #94; it
+does not import the native vault implementation. Keep all historical hashes fixed.
+The room-reader-netbsd result separately pins 95 executed inputs: preserve those
+bytes before future edits rather than refreshing its recorded hashes or counts.
+
 ## Ordinary small-board startup
 
 Issue #71 / ADR 0026 prioritize docs/quickstart-netbsd.md. Build/install the

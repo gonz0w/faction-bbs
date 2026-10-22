@@ -181,33 +181,49 @@ fn show_rooms(board: &mut Board, s: &Session) -> Result<()> {
     println!("Room listing is limited to the first 100 rooms in this increment.");
     Ok(())
 }
-fn read_room(board: &mut Board, s: &Session, new_only: bool) -> Result<()> {
+fn read_room(
+    board: &mut Board,
+    s: &Session,
+    new_only: bool,
+    theme: &Theme,
+    ansi: bool,
+) -> Result<()> {
     let room = number("Room ID: ")?;
     let mut after = if new_only {
         board.unread_cursor(s, room)?
     } else {
         0
     };
+    let mut offset = 0;
     loop {
         let rows = board.posts(s, room, after)?;
-        if rows.is_empty() {
+        let Some(post) = rows.first() else {
             println!("No more messages.");
             break;
+        };
+        let (columns, height) = terminal::size().unwrap_or((80, 24));
+        let page = faction_terminal::Message {
+            room,
+            id: post.id,
+            author: &post.author,
+            reply_to: post.reply_to,
+            body: &post.body,
         }
-        for p in &rows {
-            println!(
-                "\n#{} by {}{}\n{}",
-                p.id,
-                safe(&p.author),
-                p.reply_to
-                    .map(|n| format!(" (reply to #{n})"))
-                    .unwrap_or_default(),
-                safe(&p.body)
-            );
-        }
+        .page(columns, height, offset)
+        .map_err(invalid)?;
+        print!(
+            "{}{}",
+            faction_terminal::section(theme, "Read messages", ansi && terminal::capable()),
+            page.text
+        );
         io::stdout().flush()?;
-        after = rows.last().expect("nonempty page").id;
-        board.mark_read(s, room, after)?;
+        if let Some(next) = page.next {
+            offset = next;
+        } else {
+            after = post.id;
+            offset = 0;
+            board.mark_read(s, room, after)?;
+        }
         if !line("More? [y/N]: ", 8)?.eq_ignore_ascii_case("y") {
             break;
         }
@@ -308,14 +324,27 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
                 None
             }
         };
+        if let Some(action) = action {
+            let title = match action {
+                Action::Rooms => "Rooms",
+                Action::New | Action::History => "Read messages",
+                Action::Post => "Post a message",
+                Action::Sysop => "Sysop controls",
+                Action::Chat => "Local chat",
+                Action::Doors => "Doors",
+                Action::Files => "File areas",
+                Action::Quit => "Disconnect",
+            };
+            print!("{}", faction_terminal::section(theme, title, used_ansi));
+        }
         let result = match action {
             Some(Action::Quit) => {
                 println!("{}\nLogged out.", theme.logout());
                 return Ok(());
             }
             Some(Action::Rooms) => show_rooms(board, s),
-            Some(Action::New) => read_room(board, s, true),
-            Some(Action::History) => read_room(board, s, false),
+            Some(Action::New) => read_room(board, s, true, theme, used_ansi),
+            Some(Action::History) => read_room(board, s, false, theme, used_ansi),
             Some(Action::Post) => post(board, s),
             Some(Action::Sysop) => sysop(board, s),
             Some(Action::Chat) => chat::run(board, s, ansi),

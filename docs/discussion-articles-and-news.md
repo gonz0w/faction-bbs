@@ -1,6 +1,7 @@
 # Discussion articles and optional news connections
 
-Status: owner direction, 2026-10-21; **planned, not implemented**. Discussion-room
+Status: codec foundation implemented, 2026-10-21; board migration and all network
+adapters remain planned. Discussion-room
 posts should use a Netnews-compatible article representation. Live IRC channels
 and encrypted XMPP private chat/mail keep their respective formats. Keep the
 Citadel experience: enter a room, read new posts in order, post and reply.
@@ -10,6 +11,37 @@ Citadel experience: enter a room, read new posts in order, post and reply.
 | Local article model, codec and old-post migration | [#103](https://github.com/gonz0w/faction-bbs/issues/103) |
 | NNTP-first policy and independent peer interoperability | [#101](https://github.com/gonz0w/faction-bbs/issues/101) |
 | Optional provider subscriptions, read-only first | [#104](https://github.com/gonz0w/faction-bbs/issues/104) |
+
+## Available offline foundation
+
+`faction-articles` is a dependency-free Rust library with validated construction,
+parse and deterministic serialization for a bounded text-only profile. It accepts
+explicit identity/date/group/path metadata; it does not generate missing historical
+facts, read a database or open a connection. There is a hand-authored article
+fixture and an offline validation example:
+
+```sh
+cargo run -p faction-articles --example check_article -- \
+  < crates/faction-articles/tests/fixtures/plain.article
+```
+
+The initial profile allows one each of the six mandatory article fields, optional
+References, and explicit MIME-Version 1.0 / text/plain charset=utf-8 / 8bit headers.
+Headers are ASCII; From is a bare mailbox. Date uses `DD Mon YYYY HH:MM:SS +HHMM`
+without a weekday. UTF-8 bodies normalize to LF internally; the wire uses CRLF.
+Encoded-word subjects, other date/header/MIME variants, unknown/control headers,
+HTML, attachments and raw terminal controls are rejected rather than discarded.
+This is a deliberately limited profile, not a general-purpose provider parser.
+
+Limits: 24 KiB wire, 4 KiB headers, 16 KiB body, 998 bytes per physical line,
+four groups and sixteen references. Header injection, duplicates, invalid IDs,
+invalid calendar/time values and self/duplicate reply references fail validation.
+Future import/dedup/ID-conflict policy belongs to the adapter/storage work.
+
+[ADR 0036](../dev-docs/decisions/0036-room-articles-and-reading.md) records this
+increment. The core still stores its existing posts; the live
+[room reader](room-reading.md) does not pass them through the codec. #103 remains
+open for metadata/schema/migration, post integration and broader interoperability.
 
 ## Article formatting before network transport
 

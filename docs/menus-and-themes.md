@@ -97,3 +97,9 @@ and bounded pagination (#21/#25). Preserve drafts and deliberate live-chat scrol
 colors/text graphs/graphics research with safe fallback. The local sysop dashboard
 #95 uses the same board identity where appropriate; richer rendering never gives
 an in-BBS role host authority or lets a sysop theme replace trusted local mail UI.
+
+The [shared room reader](room-reading.md) now implements the first presentation
+polish: themed ANSI section clears, room/author/reply headers, separators and
+wrapped message pages. Plain text follows the same journey. File-reference tokens
+remain intact for native shortcuts. More composition, seasonal scheduling and
+modern Unicode/graphics remain separate #21/#25/#96 work.

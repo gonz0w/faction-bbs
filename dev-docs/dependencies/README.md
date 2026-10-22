@@ -31,3 +31,8 @@ ADR 0013 extends the same in-tree native helper with a small C11 lock-free signa
 flag on all build hosts. It uses the existing C compiler/`cc` build dependency;
 selected registry graph/versions are unchanged. Native descriptor ownership and
 signal/process lifecycle require independent positive tests, not just compilation.
+
+The optional faction-articles workspace crate uses only Rust std and introduces
+no external packages/features. Its bounded text profile and offline validator
+are separate from any future provider/news-library adoption (ADR 0036). The
+reviewed selected NetBSD/Linux inventories remain unchanged in this batch.

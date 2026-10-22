@@ -92,6 +92,14 @@ subscriptions planned. IRC and encrypted XMPP keep their own formats. The goal k
 experience. These stories are planned; no dashboard, advanced graphics, firewall
 manager or new IRC/forum federation protocol is implemented by this update.
 
+The [room reader](docs/room-reading.md) now shares wrapped, paged message screens
+across local/worker and shared-service sessions, with theme-aware ANSI transitions
+and complete-message unread acknowledgment. A dependency-free
+[Netnews text codec](docs/discussion-articles-and-news.md) is available offline;
+existing posts and SQLite exports are unchanged. Live NNTP/provider integration,
+post metadata migration, native Unicode graphics and encrypted network mail remain
+future work.
+
 ## Enter the board
 
 ```text

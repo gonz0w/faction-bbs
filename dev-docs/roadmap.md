@@ -23,6 +23,13 @@ this does not enable automatic export, account replication or public syndication
 Read [research 0047](research/0047-modern-terminal-and-federation-options.md) before
 assuming Ghostty graphics, guest IP bans, IRC federation or a forum protocol works.
 
+The current build batch delivers a dependency-free text-article codec (#103
+foundation) and shared wrapped/paged room presentation (#21/#25); see
+[ADR 0036](decisions/0036-room-articles-and-reading.md) and
+[room reading](../docs/room-reading.md). #103 stays open for metadata/schema/migration
+and post integration; #101/#104 still gate actual peer/provider interoperability.
+No room export or mandatory external service follows from this increment.
+
 ## Product-first sequencing
 
 Latest owner steering: **local SFTP file areas (#83) first**. The optional shared

@@ -42,6 +42,7 @@ jobs:
           python3 tools/check_original_games_evidence.py
           python3 tools/check_file_area_evidence.py
           python3 tools/check_native_client_evidence.py
+          python3 tools/check_room_reader_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
@@ -97,6 +98,7 @@ jobs:
           cargo test --workspace --locked --release
           cargo build --workspace --locked --release
           python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_room_reader.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_local_chat.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_export_restore.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_member_worker.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"

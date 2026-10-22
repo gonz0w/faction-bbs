@@ -105,9 +105,17 @@ impl Client {
         theme: &Theme,
     ) -> faction_core::Result<()> {
         self.approved(board)?;
-        if self.ansi {
-            self.queue("\x1b[0m\x1b[?25h\n");
-        }
+        let title = match action {
+            Action::Rooms => "Rooms",
+            Action::New | Action::History => "Read messages",
+            Action::Post => "Post a message",
+            Action::Sysop => "Sysop controls",
+            Action::Chat => "Local chat",
+            Action::Files => "File areas",
+            Action::Doors => "Doors",
+            Action::Quit => "Disconnect",
+        };
+        self.queue(&faction_terminal::section(theme, title, self.ansi));
         match action {
             Action::Quit => {
                 self.queue(&format!("{}\nLogged out.\n", theme.logout()));
@@ -184,28 +192,49 @@ impl Client {
         }
         Ok(())
     }
-    fn posts(&mut self, board: &mut Board, room: i64, after: i64) -> faction_core::Result<()> {
+    fn posts(
+        &mut self,
+        board: &mut Board,
+        room: i64,
+        after: i64,
+        offset: usize,
+        theme: &Theme,
+    ) -> faction_core::Result<()> {
+        // Re-fetch under current approval and per-viewer file permissions on
+        // every screen. Retain only cursors, never a per-client history cache.
         let rows = board.posts(self.session()?, room, after)?;
-        let Some(last) = rows.last() else {
+        let Some(post) = rows.first() else {
             self.queue("No more messages.\n");
             self.pause();
             return Ok(());
         };
-        let through = last.id;
-        for p in rows {
-            self.queue(&format!(
-                "\n#{} by {}{}\n{}\n",
-                p.id,
-                Self::safe(&p.author),
-                p.reply_to
-                    .map(|id| format!(" (reply to #{id})"))
-                    .unwrap_or_default(),
-                Self::safe(&p.body)
-            ));
-        }
-        // Never advance a durable read cursor until the complete page drains.
-        self.mark_after_flush = Some((room, through));
-        self.prompt(State::ReadMore(room, through), "More? [y/N]: ");
+        let (columns, height) = self.size();
+        let message = faction_terminal::Message {
+            room,
+            id: post.id,
+            author: &post.author,
+            reply_to: post.reply_to,
+            body: &post.body,
+        };
+        let page = message
+            .page(columns, height, offset)
+            .map_err(Error::Invalid)?;
+        self.queue(&faction_terminal::section(
+            theme,
+            "Read messages",
+            self.ansi,
+        ));
+        self.queue(&page.text);
+        let (through, next) = match page.next {
+            Some(next) => (after, next),
+            None => {
+                // Only a complete message may advance durable unread state,
+                // and only after all its output has drained successfully.
+                self.mark_after_flush = Some((room, post.id));
+                (post.id, 0)
+            }
+        };
+        self.prompt(State::ReadMore(room, through, next), "More? [y/N]: ");
         Ok(())
     }
     fn submit(
@@ -334,11 +363,11 @@ impl Client {
                 } else {
                     0
                 };
-                self.posts(board, room, after)?;
+                self.posts(board, room, after, 0, theme)?;
             }
-            State::ReadMore(room, after) => {
+            State::ReadMore(room, after, offset) => {
                 if text.eq_ignore_ascii_case("y") {
-                    self.posts(board, room, after)?;
+                    self.posts(board, room, after, offset, theme)?;
                 } else {
                     self.pause();
                 }
