@@ -490,3 +490,9 @@ consent/history and resource budgets remain #101/#104; hardening stays later.
 Tenth snapshot sources/pre103-broader and authored-articles-baseline-manifest.json
 preserve the exact 95 #113 inputs and original result. Keep all ten snapshots and
 twenty-two historical result identities fixed; never refresh old measurements.
+
+Eleventh snapshot sources/pre114 and broader-articles-baseline-manifest.json freeze
+#115's exact 100 executed inputs and original result before Unicode composing.
+All eleven snapshots and twenty-three historical result identities stay fixed.
+The optional INN build explicitly uses /usr/bin/false for sendmail; no mail service
+is installed or contacted. Linux CI needs the explicit path even in offline mode.

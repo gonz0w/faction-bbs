@@ -28,7 +28,7 @@ def build(archive, work):
             assert path.suffix.lower() not in FORBIDDEN and path.name not in {'package.json','yarn.lock','package-lock.json','pnpm-lock.yaml'}
         source.extractall(work,filter='data')
     root=work/('inn-'+VERSION)
-    options=['--prefix='+str(work/'install'),'--without-perl','--without-python','--without-openssl','--without-canlock','--without-sasl']
+    options=['--prefix='+str(work/'install'),'--without-perl','--without-python','--without-openssl','--without-canlock','--without-sasl','--with-sendmail=/usr/bin/false']
     with (work/'build.log').open('wb') as log:
         for command in [['./configure',*options],['make','-C','include','-j2'],['make','-C','lib','-j2'],['make','-C','frontends','inews','-j2']]:
             result=subprocess.run(command,cwd=root,stdout=log,stderr=subprocess.STDOUT,timeout=300)
