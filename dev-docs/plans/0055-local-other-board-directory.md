@@ -1,6 +1,6 @@
 # 0055: Curated other-BBS directory and connection cards
 
-Issues #27/#21. Status: implemented; validated; PR handoff pending.
+Issues #27/#21. Status: implemented and software validated; [PR #131](https://github.com/gonz0w/faction-bbs/pull/131) open for review.
 
 ## Useful member-facing slice
 
