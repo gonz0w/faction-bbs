@@ -25,3 +25,6 @@ dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
 dev-docs/evidence/sources/** linguist-generated=true
 # A unified diff's required context prefix may precede upstream indentation tabs.
 dev-docs/evidence/sources/*/dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Article fixtures retain protocol-mandated CRLF bytes.
+crates/faction-articles/tests/fixtures/*.article -text whitespace=cr-at-eol

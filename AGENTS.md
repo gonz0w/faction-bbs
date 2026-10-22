@@ -171,7 +171,7 @@ Seventh source snapshot sources/pre90 and mail-client-baseline-manifest.json fre
 the exact 89 original native-client execution inputs and unchanged result before
 these edits. This is the same preserved baseline prepared in separate PR #94; it
 does not import the native vault implementation. Keep all historical hashes fixed.
-The room-reader-netbsd result separately pins 95 executed inputs: preserve those
+The room-reader-netbsd result separately pins 87 executed inputs: preserve those
 bytes before future edits rather than refreshing its recorded hashes or counts.
 
 ## Ordinary small-board startup

@@ -61,7 +61,7 @@ measurements of this new presenter.
   ignored local/ playground artifacts and mock the new source manifest.
 - The private VM clone was shut down and removed with all test credentials/data;
   the owner's original stopped playground and standalone checkpoint remain intact.
-  The current record pins 95 executed-source inputs; seven historical snapshots
+  The current record pins 87 executed-source inputs; seven historical snapshots
   and nineteen old result identities remain unchanged.
 
 New evidence: dev-docs/evidence/room-reader-netbsd/results.json and its guard.

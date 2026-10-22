@@ -18,7 +18,7 @@ def check():
     assert not shared['dedicated_ssh_admission_tested'] and not shared['capacity_claim']
     assert all(value is False for value in d['claims'].values())
     assert d['teardown'] == {'vm_stopped': True, 'private_clone_removed': True}
-    assert len(d['execution_sources']) == 95
+    assert len(d['execution_sources']) == 87
     assert {'Cargo.toml', 'crates/faction-articles/src/lib.rs',
             'crates/faction-terminal/src/reader.rs', 'crates/faction-service/src/ui.rs',
             'tools/smoke_shared_room_reader.py'} <= d['execution_sources'].keys()

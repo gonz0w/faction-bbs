@@ -43,3 +43,10 @@ failures preceded the final passing runs and do not establish product regression
 The renderer's wrap regression split public file-reference tokens; a focused test
 caught it. Final rendering keeps those tokens contiguous while charging soft-wrap
 rows, preserving native recent-file discovery without granting download authority.
+
+Packaging corrections before review: preserve the hand-authored article's exact
+CRLF bytes with a path-specific Git attribute. The initial source ledger also
+listed eight ignored Finder .DS_Store files copied with the fixture; remove those
+non-source entries. The final ledger has 87 real source inputs, all with their
+original tested hashes. No runtime source/test result or historical record was
+rewritten.
