@@ -1,5 +1,12 @@
 # Roadmap and stage
 
+## Useful room navigation
+
+After checked #132, the [named room browser](../docs/room-browser.md) adds themed
+ANSI room selection, current unread counts and selected-room reading/posting.
+Plain and manual N/H/P remain, with unchanged chronological/unread semantics.
+This #21/#12/#25 batch adds no schema, federation or hardening work.
+
 ## Native community visits
 
 After checked #131, the optional [native board launcher](../docs/board-launcher.md)

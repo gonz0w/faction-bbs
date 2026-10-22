@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #131, build useful
-#27/#21/#14 member-owned native board visits and local return; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #132, build useful
+#21/#12/#25 named room navigation and selected-room reading/posting; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -945,3 +945,38 @@ flush-before-acknowledgement order. One client SSH child per OS / four LWPs per
 board; no new RSS/capacity claim. Preserve these sources and whole result before
 later edits and keep all 37 saved-evidence guards. Both clones/cache removed,
 saved playground off; member submissions and deliberate profile import remain later.
+
+
+## Named room browser batch
+
+Read plan 0057, ADR 0052 and docs/room-browser.md. Snapshot 24
+`sources/pre21-room-browser` / `board-launcher-baseline-manifest.json` preserve
+178 previous measured/room-list fixture inputs and whole launcher record. Keep
+24 snapshots/37 old result identities fixed, including every affected old R-list
+fixture expectation; new UI tests require their own actual input/result pins.
+
+ANSI R now uses shared inert four-room pages, stable selected IDs, cards and U
+next-unread. Main N/H/P numeric commands and plain R stay compatible. Fetch fresh
+current rows/approval for every action/frame, keep no row/post cache per connection.
+Card N/H/P reuses the existing reader/composer, skip only Room ID, clear stale
+compose controls and label destination. Finished actions pause/return to main;
+Q/resize returns directly. Selection never marks read; keep complete-message and
+shared drained-output acknowledgement, current file visibility/retry/Unicode gates.
+
+Do not widen the first-100 listing, schema, dependency, helper/session/credential
+or output/drain limits. Browser frames <=8 KiB, existing shared queue <=32 KiB.
+No new memory/capacity/federation or hardening adoption follows from this UX.
+Use owned software clones only, keep saved playground off and hardening later.
+
+
+`room-browser-netbsd` pins 169 actual selected native inputs and nine host harness
+inputs; 32 core/build/frontend inputs remain unchanged. 194 Rust tests per OS /
+118 Python, ten browser PTYs per OS, eleven actual 100-room SSH/native controls,
+22 shared-reader controls and menu/directory/art regressions pass. One-member
+100-room observation: owner 5,248 KiB RSS / four LWPs; minimum VM free 363.62 MiB,
+not a new memory delta/capacity claim. Preserve new input bytes/whole result before
+future edits; keep all 38 saved-evidence guards. Clean copied native workspace
+artifacts before final validation: copied source hashes do not prove an old
+incremental executable rebuilt. Final installed binaries matched the clean build
+and destination label. Owned clone/cache removed; saved playground off. Hardening,
+search/favorites/persistent current-room state and moderation remain later.

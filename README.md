@@ -39,6 +39,9 @@ Faction already runs an approved-membership board with hidden-password login,
 ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
 controls and private export/restore. Arrows/Enter and displayed hotkeys both work.
 No JavaScript/TypeScript or public HTTP service is required.
+The **[room browser](docs/room-browser.md)** now adds named arrow/hotkey selection,
+unread counts, next-unread navigation and room cards for reading/posting without
+entering room IDs. Plain terminals and the existing numeric commands remain available.
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
 run the first-install preflight/helper, initialize your sysop and explicitly start

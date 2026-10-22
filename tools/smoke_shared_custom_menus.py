@@ -57,7 +57,7 @@ def smoke(a):
         checks.append('restricted_ssh_grid_spatial_focus_across_reads_and_enter')
         c=connect(columns=40);approved(c,'[ rooms | files | chat | doors ]')
         assert '╓'.encode() not in c.transcript
-        c.raw(b'r');c.expect('Lobby');c.expect('Press Enter to return to menu: ');c.send('');c.expect(FOOTER);quit(c)
+        c.raw(b'r');c.expect('Lobby');c.expect('N/P:page U:next unread Q:main');c.raw(b'q');c.expect(FOOTER);quit(c)
         checks.append('compact_ssh_ordered_menu_and_ascii_login')
         c=connect('native');approved(c,'PRIVATE FREQUENCIES')
         c.raw(b'\x1b[C');c.expect('Membership and local controls');c.raw(b'\r');c.expect('Sysop: [L]ist');c.expect('[C]reate room: ')

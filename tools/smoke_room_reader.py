@@ -48,8 +48,11 @@ def smoke(binary):
 
         def unread(c, count, ansi):
             choice(c, 'r', ansi)
-            c.expect(f'Lobby ({count} unread)')
-            back(c, ansi)
+            c.expect(f'#1 ({count} unread)' if ansi else f'Lobby ({count} unread)')
+            if ansi:
+                c.expect('N/P:page U:next unread Q:main'); c.raw(b'q')
+                c.expect('Ctrl-C exits; Esc: Enter to recover.')
+            else: back(c, ansi)
 
         try:
             c = start('init', 'sysop')

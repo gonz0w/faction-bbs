@@ -1,7 +1,8 @@
 # Reading discussion rooms
 
 The local console, member worker and shared service use the same bounded message
-presenter. Select **New** for unread posts or **History** to start at the beginning,
+presenter. The ANSI [room browser](room-browser.md) lets you choose a named room
+and read/post from its card. Select main-menu **New** for unread posts or **History** to start at the beginning,
 then enter the room ID. Messages stay chronological.
 
 Each screen shows the room number, message number, author and reply-to context,
@@ -17,10 +18,10 @@ screen's output to drain. This is an output acknowledgment, not proof a person
 has read it. Approval and per-viewer file visibility are checked again for each
 screen. Account revocation ends access before another page is rendered.
 
-Rendering escapes member-supplied controls and non-ASCII characters into inert
-text, preserving the current conservative character policy. Quote markers and
-paragraph breaks remain visible. Native Unicode glyph-width/graphics support is
-still #96, and richer reply composition remains #21/#25.
+Classic rendering escapes member-supplied controls and non-ASCII characters into
+inert text. Optional native Unicode uses the existing scalar/width rules; control
+and formatting characters remain inert. Quote markers and paragraph breaks stay
+visible. Richer reply composition remains #21/#25.
 
 Valid local file references stay contiguous in the byte stream so native-client
 recent-file shortcuts and SSH copy/paste still work. A narrow terminal soft-wraps

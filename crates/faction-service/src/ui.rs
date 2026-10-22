@@ -211,6 +211,7 @@ impl Client {
                 self.success = true;
                 self.state = State::Closing;
             }
+            Action::Rooms if self.ansi => self.rooms_open(board, theme)?,
             Action::Rooms => self.rooms(board, 0)?,
             Action::New | Action::History => {
                 self.prompt(State::RoomId(action == Action::New), "Room ID: ")
@@ -281,7 +282,7 @@ impl Client {
         }
         Ok(())
     }
-    fn posts(
+    pub(super) fn posts(
         &mut self,
         board: &mut Board,
         room: i64,
@@ -526,6 +527,7 @@ impl Client {
                     self.menu(theme, board)?;
                 }
             }
+            State::RoomBrowse(_) => self.menu(theme, board)?,
             State::RoomsMore(offset) => {
                 if text.eq_ignore_ascii_case("y") {
                     self.rooms(board, offset)?;
@@ -805,7 +807,7 @@ impl Client {
         }
     }
     pub(super) fn resize(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
-        if matches!(self.state, State::Directory(_))
+        if matches!(self.state, State::Directory(_) | State::RoomBrowse(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
         {
@@ -980,6 +982,24 @@ impl Client {
             if matches!(self.state, State::DoorMenu) && self.ansi {
                 if let Some(key) = self.decoder.feed(byte, Instant::now()) {
                     match self.door_key(key, theme, board) {
+                        Ok(true) => {
+                            self.input.clear();
+                            self.decoder = Decoder::new();
+                            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                            break;
+                        }
+                        Ok(false) => (),
+                        Err(e) => {
+                            self.recover(e, board, theme);
+                            break;
+                        }
+                    }
+                }
+                continue;
+            }
+            if matches!(self.state, State::RoomBrowse(_)) && self.ansi {
+                if let Some(key) = self.decoder.feed(byte, Instant::now()) {
+                    match self.rooms_key(key, board, theme) {
                         Ok(true) => {
                             self.input.clear();
                             self.decoder = Decoder::new();

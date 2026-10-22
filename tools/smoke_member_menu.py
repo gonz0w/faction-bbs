@@ -34,8 +34,8 @@ def smoke(a):
             c.raw(b'\x1b'); c.raw(b'[B'); c.expect(f'\x1b[6;{3 if columns == 80 else 2}H')
             assert b'Room ID: ' not in c.transcript[start:]
             c.raw(b'\x1b[A'); c.expect(f'\x1b[5;{3 if columns == 80 else 2}H'); c.raw(b'\r')
-            c.expect('Lobby (0 unread)'); c.expect('Press Enter to return to menu: '); c.send(''); c.expect(FOOTER)
-            c.raw(b'R'); c.expect('Lobby (0 unread)'); c.expect('Press Enter to return to menu: '); c.send(''); c.expect(FOOTER)
+            c.expect('#1 (0 unread)'); c.expect('N/P:page U:next unread Q:main'); c.raw(b'q'); c.expect(FOOTER)
+            c.raw(b'R'); c.expect('#1 (0 unread)'); c.expect('N/P:page U:next unread Q:main'); c.raw(b'q'); c.expect(FOOTER)
             c.raw(b'q'); c.expect('Logged out.'); c.finish()
             assert password.encode() not in c.transcript
             checks.append({'route': route, 'columns': columns, 'rows': 24 if columns == 80 else 18,

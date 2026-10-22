@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a shared themed ANSI room browser: four-entry pages, arrow/hotkey cards,
+  next-unread selection and New/History/Post into the selected room. Composer
+  clears stale controls and labels the destination. Plain/numeric paths remain.
+- Reuse chronological reader, subject/retry and complete-message unread/output-
+  drain rules; current approval/room/file visibility checks remain authoritative.
+- Preserve 178 prior launcher/fixture inputs and its whole result before changes.
+  No schema, dependency, extra owner helper or normal-limit change; hardening later.
+
 - Add an optional native board launcher with private member-owned profile catalogs,
   arrow/hotkey pages, explicit connection/disconnect confirmation and return after
   logout/failure. Retain single-profile behavior and classic-door escape passthrough.

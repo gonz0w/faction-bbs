@@ -13,6 +13,7 @@ mod file_ui;
 mod native_files;
 mod operator;
 mod policy;
+mod rooms_ui;
 mod ui;
 use config::Config;
 use rustix::{
@@ -52,6 +53,7 @@ enum State {
     Menu,
     Terminal,
     Directory(faction_terminal::directory::View),
+    RoomBrowse(faction_terminal::rooms::View),
     GraphicsProbe(faction_terminal::graphics::Probe),
     Graphics(usize, Instant),
     Probe(faction_terminal::capabilities::Probe),

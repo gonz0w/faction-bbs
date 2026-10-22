@@ -73,7 +73,7 @@ def smoke(args):
         c.expect('Ctrl-C exits; Esc: Enter to recover.')
 
     def unread(c, n):
-        c.raw(b'r'); c.expect(f'Lobby ({n} unread)'); back(c)
+        c.raw(b'r'); c.expect(f'#1 ({n} unread)'); c.expect('N/P:page U:next unread Q:main'); c.raw(b'q'); c.expect('Ctrl-C exits; Esc: Enter to recover.')
 
     try:
         remote('test -f /etc/faction-disposable-test; test ! -e ' + state + '; '
@@ -110,7 +110,7 @@ def smoke(args):
             wide.raw(b'\x1b'); wide.raw(b'[B'); wide.expect('\x1b[6;3H')
             assert b'Room ID: ' not in wide.transcript[start:]
             wide.raw(b'\x1b[A'); wide.expect('\x1b[5;3H'); wide.raw(b'\r')
-            wide.expect('Lobby (1 unread)'); back(wide)
+            wide.expect('#1 (1 unread)'); wide.expect('N/P:page U:next unread Q:main'); wide.raw(b'q'); wide.expect('Ctrl-C exits; Esc: Enter to recover.')
             checks.append('shared_wide_descriptions_lightbar_and_arrow_enter')
             wide.resize(40, 18); wide.expect('Command (then Enter): ')
             wide.send('q'); wide.expect('Logged out.'); wide.finish()
