@@ -1,6 +1,6 @@
 # 0054: Verified backup checks and the local Recovery panel
 
-Issues #95/#18/#98. Status: implemented and software-validated; PR handoff pending.
+Issues #95/#18/#98. Status: implemented and software-validated; PR #130 open.
 
 ## Goal and boundaries
 
@@ -27,7 +27,7 @@ owner thread/session/credential limit or host policy change. Hardening stays lat
   retaining compact/plain and current host graphs.
 - [x] Exercise actual CLI bundle/check/restore and UI on host and owned NetBSD
   software clone; record measured sources/resources, preserve old identities.
-- [ ] Update docs/README/issues, clean owned clone, focused PR; no future PR merge.
+- [x] Update docs/README/issues, clean owned clone, focused PR; no future PR merge.
 
 ## Validation and decisions
 
@@ -72,4 +72,7 @@ Docs are updated; owned VM shut down and clone/vendor cache removed after PID/
 disk/closed-handle checks. Saved original has no open handle. All fifty offline
 policy/evidence/dependency checks pass, including thirty-five saved-evidence guards
 and twenty-one snapshots/thirty-four unchanged historical identities. Formatting
-and clean diff checks pass. PR/issue handoff remains the final step.
+and clean diff checks pass. PR #130 is attached against the existing article branch and #95/#18/#98 have
+status updates. Clean committed archive passes policy/source preservation/all
+thirty-five evidence guards and 118 Python tests. GitHub owns the current CI/review
+status; this batch does not authorize merging #130.
