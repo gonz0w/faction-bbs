@@ -36,6 +36,9 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 
 - [File areas and restricted SFTP](file-areas.md) and [native-client encrypted mail/home identities](private-mail.md).
 
+- [Later-phase hardening](later-phase-hardening.md) — signing, hardened VM, containment, storage and independent verification backlog.
 - [Room reading](room-reading.md) — wrapped chronological messages, reply context, ANSI transitions and complete-message unread behavior.
 - [Discussion articles and news connections](discussion-articles-and-news.md) — planned Netnews room articles and optional NNTP peers/providers; IRC/XMPP remain separate.
 - [Modern sysop console and communications stories](modern-sysop-and-communications.md) — planned local dashboard, capability-aware UI, host operations and protocol integration.
+
+- [Persistent post metadata](post-metadata.md) — schema-6 subject/date/ID semantics and stopped-service upgrade/rollback.

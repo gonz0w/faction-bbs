@@ -208,6 +208,7 @@ impl Client {
             self.pause();
             return Ok(());
         };
+        let metadata = board.post_metadata(self.session()?, post.id)?;
         let (columns, height) = self.size();
         let message = faction_terminal::Message {
             room,
@@ -217,7 +218,18 @@ impl Client {
             body: &post.body,
         };
         let page = message
-            .page(columns, height, offset)
+            .page_with_metadata(
+                columns,
+                height,
+                offset,
+                faction_terminal::MessageDetails {
+                    subject: &metadata.subject,
+                    posted: metadata
+                        .created_utc
+                        .as_deref()
+                        .unwrap_or("Unknown (legacy)"),
+                },
+            )
             .map_err(Error::Invalid)?;
         self.queue(&faction_terminal::section(
             theme,

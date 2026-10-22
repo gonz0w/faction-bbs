@@ -68,6 +68,9 @@ def smoke(binary):
                 unread(c, 1, ansi)
                 choice(c, 'n', ansi); c.expect('Room ID: '); c.send('1')
                 c.expect('Room #1 | chronological messages')
+                c.expect('Subject: Message #')
+                c.expect('Posted: ')
+                c.expect(' UTC')
                 c.expect('More? [y/N]: ')
                 c.send('n'); back(c, ansi)
                 # Declining a partial message must not consume its unread state.

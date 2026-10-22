@@ -171,8 +171,39 @@ Seventh source snapshot sources/pre90 and mail-client-baseline-manifest.json fre
 the exact 89 original native-client execution inputs and unchanged result before
 these edits. This is the same preserved baseline prepared in separate PR #94; it
 does not import the native vault implementation. Keep all historical hashes fixed.
-The room-reader-netbsd result separately pins 87 executed inputs: preserve those
-bytes before future edits rather than refreshing its recorded hashes or counts.
+The room-reader-netbsd result's 87 executed inputs and original result are now
+frozen in eighth snapshot sources/pre103-metadata. Keep all eight snapshots and
+twenty old result identities unchanged; never refresh hashes to current code.
+
+## Persistent post metadata (#103)
+
+Read docs/post-metadata.md and ADR 0037. Schema 6 atomically adds a keyed metadata
+table and legacy backfill. New-post metadata commits with the post; retries retain
+ID/time. Generated subjects are labels, not authored titles. Legacy dates remain
+unknown. Public proto-article IDs use a reserved .invalid domain and grant no
+membership, encryption, signature, mail delivery or publication authority. Current
+approval is rechecked for metadata; headers stay inert/bounded. No new dependency,
+owner helpers or credential/default-session changes.
+
+Coordinate a stopped/drained upgrade with verified complete DB/blob/config/key
+backup before first owner open. Keep the existing owner-open migration model;
+no online/mixed-version promise or in-place downgrade. Exact schema-2..6 snapshot
+validation rejects malformed/missing metadata and rotates only private restore
+authority. Rollback restores the older complete backup using matching old binaries
+in fresh paths; never relabel user_version or unlink live lock files.
+
+## Later hardening backlog (owner, 2026-10-21)
+
+Read docs/later-phase-hardening.md and #106–#111. Keep release/image OpenPGP signing
+separate from optional member-held content signatures; no real key publication or
+server-side member keys. Compare NetBSD mechanisms, separate VMs and optional
+FreeBSD jail hosts; chroot alone is not complete containment. Explicitly threat-model
+frontend/worker/door, shared owner, guest root and hypervisor compromises. Local
+plaintext readable by an authorized owner remains exposed if that owner is compromised;
+offline disk encryption is not live-process confidentiality. Preserve E2EE private
+mail, current approval/SSH/credential/helper/session boundaries and emergency
+operator recovery. Stories are later phase; no hardening/NPF/host activation or
+absolute security claims. Continue normal product development now.
 
 ## Ordinary small-board startup
 

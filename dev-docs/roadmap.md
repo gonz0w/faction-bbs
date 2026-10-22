@@ -202,3 +202,14 @@ research direction selected by the owner. Keep #55 adoption/independent loader
 review, #23/#18 broader source/admission policy, #20 maintained host/timekeeping
 and CPU interpretation, and implementation of #28's overlap/long-soak/budget
 contract under #55 open. #28 itself is the closed budget-definition deliverable.
+
+## Later-phase hardening
+
+[#106–#111](../docs/later-phase-hardening.md) capture release/member signing,
+minimal VM, post-compromise isolation, storage/backups and independent validation.
+These extend #19/#18/#55/#29/#30/#31 and #97/#98; they do not block ordinary product
+work or weaken existing safeguards. Software fixtures now, physical claims later.
+
+The next #103 increment implements schema-6 local metadata and headers; see
+[upgrade requirements](../docs/post-metadata.md). Actual From/Path/group injection,
+authored subjects, broader MIME and peer/provider interoperability remain open.

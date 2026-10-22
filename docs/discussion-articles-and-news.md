@@ -1,6 +1,6 @@
 # Discussion articles and optional news connections
 
-Status: codec foundation implemented, 2026-10-21; board migration and all network
+Status: codec and local metadata migration implemented, 2026-10-21; network
 adapters remain planned. Discussion-room
 posts should use a Netnews-compatible article representation. Live IRC channels
 and encrypted XMPP private chat/mail keep their respective formats. Keep the
@@ -39,9 +39,11 @@ invalid calendar/time values and self/duplicate reply references fail validation
 Future import/dedup/ID-conflict policy belongs to the adapter/storage work.
 
 [ADR 0036](../dev-docs/decisions/0036-room-articles-and-reading.md) records this
-increment. The core still stores its existing posts; the live
-[room reader](room-reading.md) does not pass them through the codec. #103 remains
-open for metadata/schema/migration, post integration and broader interoperability.
+increment. [Post metadata](post-metadata.md) now stores stable local article IDs,
+generated subject labels and new-post UTC times in schema 6. The live reader shows
+these fields while bodies still use the existing Post API. It does not publish
+codec output. #103 remains open for author-entered subjects, real From/Path/group
+mapping, wider headers/MIME and independent wire interoperability.
 
 ## Article formatting before network transport
 
@@ -59,10 +61,9 @@ article numbers, room membership and member unread positions. Preserve chronolog
 reading and scoped local file links. A remote From or Approved header is data,
 never proof of local membership or an imported sysop role.
 
-Current schema-5 posts have bodies, authors and reply links, but no original
-posting timestamp or subject. Migration must preserve their contents, order and
-read cursors, explicitly label derived metadata and never invent a historical
-posting date. Specify how new posts collect minimal article metadata without
+Legacy schema-5 posts have bodies, authors and reply links, but no original
+posting timestamp or subject. Schema 6 preserves their contents, order and read cursors, labels derived
+metadata and retains unknown historical posting dates. Specify how new posts collect minimal article metadata without
 making the BBS awkward to use. Validate old exports, restored boards, stable IDs
 and interrupted migration/rollback before adoption. Do not use private rotating
 session identity, real email addresses or network addresses as article identity.

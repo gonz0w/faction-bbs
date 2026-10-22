@@ -119,3 +119,14 @@ The first #103/#21/#25 build batch adds the local text-article codec and shared
 room pages; see [plan 0038](plans/0038-room-articles-and-reading.md). These issues
 remain open for post migration/integration and the broader UI journey; codec
 formatting enables no room publication or provider connection.
+
+## Later-phase hardening, 2026-10-21
+
+- [#106](https://github.com/gonz0w/faction-bbs/issues/106): Design OpenPGP signing and offline verification for releases and appliance images.
+- [#107](https://github.com/gonz0w/faction-bbs/issues/107): Research optional member-held OpenPGP signatures for discussion articles and files.
+- [#108](https://github.com/gonz0w/faction-bbs/issues/108): Design and validate a hardened NetBSD VM appliance profile.
+- [#109](https://github.com/gonz0w/faction-bbs/issues/109): Prove post-compromise process containment and shell-escape resistance.
+- [#110](https://github.com/gonz0w/faction-bbs/issues/110): Protect databases, file storage, backups and secrets across component compromises.
+- [#111](https://github.com/gonz0w/faction-bbs/issues/111): Run independent hardening validation, fuzzing and compromise-recovery exercises.
+
+See [phase requirements](../docs/later-phase-hardening.md). All are future work.

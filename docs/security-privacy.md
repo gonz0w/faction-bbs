@@ -239,3 +239,8 @@ for each screen and does not mark incomplete messages read. Shared read position
 advance only after successful output drain, not a failed close. The article codec
 rejects unsupported/control headers and imports no authority; it is independent
 of storage/publication and does not convert IRC or encrypted XMPP traffic.
+
+The owner requested a substantial [later-phase hardening backlog](later-phase-hardening.md)
+(#106–#111): signing, VM isolation, containment after component compromise, storage
+and independent validation/recovery. No VM/chroot/jail/disk-encryption label alone
+is an adopted end-to-end guarantee. Keep authority and residual risks explicit.

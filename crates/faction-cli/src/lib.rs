@@ -201,6 +201,7 @@ fn read_room(
             println!("No more messages.");
             break;
         };
+        let metadata = board.post_metadata(s, post.id)?;
         let (columns, height) = terminal::size().unwrap_or((80, 24));
         let page = faction_terminal::Message {
             room,
@@ -209,7 +210,18 @@ fn read_room(
             reply_to: post.reply_to,
             body: &post.body,
         }
-        .page(columns, height, offset)
+        .page_with_metadata(
+            columns,
+            height,
+            offset,
+            faction_terminal::MessageDetails {
+                subject: &metadata.subject,
+                posted: metadata
+                    .created_utc
+                    .as_deref()
+                    .unwrap_or("Unknown (legacy)"),
+            },
+        )
         .map_err(invalid)?;
         print!(
             "{}{}",
