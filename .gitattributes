@@ -42,3 +42,6 @@ dev-docs/evidence/sources/pre25-layouts/** -text
 
 # Original CP437/SAUCE asset: binary byte encoding and CRLF are intentional.
 themes/grid/login.ans -text
+
+# Exact executed custom-menu inputs before long-form art.
+dev-docs/evidence/sources/pre25-paging/** -text
