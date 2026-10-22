@@ -33,17 +33,27 @@ def run(a):
         checks.append('unsafe_snapshot_permission_denied')
         assert once('--refresh','0').returncode!=0
         checks.append('refresh_bounds')
+        r=once('--plain','--unicode','--view','host');assert r.returncode==0 and r.stdout.isascii() and b'\x1b' not in r.stdout
+        assert b'CPU ' in r.stdout and b'RAM used:' in r.stdout and b'Net RX/TX:' in r.stdout
+        checks.append('plain_unicode_override_stays_ascii')
         try:
             c=Operator([*args,'--ansi','--refresh','2']);children.append(c)
             c.expect('LOCAL SYSOP');c.expect('Connected: 1 / 8')
-            c.raw(b'h');c.expect('Host CPUs:');c.expect('Board disk free:')
+            c.raw(b'h');c.expect('CPU ');c.expect('Disk free:')
             c.raw(b'\x1b[C');c.expect('OS owner/root access; not a BBS role.')
             c.raw(b'b');c.expect('Connected: 1 / 8')
             c.raw(b'p');c.expect('PAUSED');status(path,connected=2);time.sleep(2.2)
             c.raw(b'p');c.expect('READ ONLY');c.expect('Connected: 2 / 8')
-            c.buffer=b'';c.resize(40,18);c.expect('40x18');c.expect('Q:quit P:pause R:redraw B/H/I:views');c.raw(b'q');c.finish()
+            c.buffer=b'';c.resize(40,18);c.expect('40x18');c.expect('Q:quit P:pause R:redraw B/H/I:views');c.raw(b'q');c.finish();assert b'\x1b[18;1H\x1b[0m' in c.transcript
             flags=termios.tcgetattr(c.fd)[3];assert flags & termios.ECHO and flags & termios.ICANON
             checks.append('themed_panels_arrows_pause_resize_and_tty_restore')
+            c=Operator([*args,'--ansi','--unicode','--view','host','--refresh','2']);children.append(c)
+            c.expect('CPU ');c.expect('Net RX/TX:');c.expect('CPU hist:');c.buffer=b'';time.sleep(2.3);c.raw(b'r');c.expect('CPU hist:')
+            if os.uname().sysname in ('Darwin','NetBSD'):
+                assert '█'.encode() in c.transcript or '▁'.encode() in c.transcript or '▇'.encode() in c.transcript
+                assert b'%' in c.transcript
+                assert b'KiB/s' in c.transcript or b'Net RX/TX: unavailable' in c.transcript
+            c.raw(b'q');c.finish();checks.append('interval_rates_and_optional_unicode_graphs')
             c=Operator([*args,'--plain']);children.append(c);c.expect('LOCAL SYSOP');c.raw(b'\x03');c.finish()
             assert b'\x1b' not in c.transcript;checks.append('plain_interactive_ctrl_c_exit')
         finally:

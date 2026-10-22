@@ -1,5 +1,6 @@
 //! Narrow native descriptor/signal bridge. Application crates forbid unsafe.
 #![deny(unsafe_op_in_unsafe_fn)]
+pub mod operator;
 #[cfg(target_os = "netbsd")]
 mod netbsd {
     use std::{

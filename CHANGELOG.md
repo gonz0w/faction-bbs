@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Complete the CPU/RAM/network host-stat slice with a fixed native read-only
+  bridge, interval/reset/warming semantics, bounded recent graphs and optional
+  Unicode blocks. Remove the refresh subprocess; preserve plain/classic fallback.
+- Polish compact history and shell return; validate real disposable NetBSD
+  OS-console login/launch/exit without a login-profile or getty change.
+- Preserve 162 original operator/build inputs and the whole initial result before
+  runtime edits. Host applies, peer/backup adapters and hardening remain later.
+
 - Add an explicitly enabled owner-only aggregate status feed and separate local
   `faction-sysop` console: themed ANSI/plain panels, read-only host summaries,
   pause/navigation/resize and stale/unavailable/stopped/clock labels. No new
