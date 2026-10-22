@@ -1,4 +1,12 @@
 fn main() {
+    println!("cargo:rerun-if-changed=src/calendar.c");
+    cc::Build::new()
+        .file("src/calendar.c")
+        .std("c11")
+        .warnings(true)
+        .extra_warnings(true)
+        .warnings_into_errors(true)
+        .compile("faction_calendar");
     println!("cargo:rerun-if-changed=src/process_security.c");
     cc::Build::new()
         .file("src/process_security.c")

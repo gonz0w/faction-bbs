@@ -438,6 +438,21 @@ fn sysop(board: &mut Board, s: &Session) -> Result<()> {
     }
     Ok(())
 }
+/// Choose only after current local approval; keep this borrowed theme throughout
+/// the complete local/worker menu, editor, room and chat session.
+pub fn scheduled_menu(
+    board: &mut Board,
+    s: &Session,
+    themes: &faction_terminal::seasons::Themes,
+    ansi: bool,
+) -> Result<()> {
+    let index = if board.whoami(s)?.status == Status::Approved {
+        themes.select_now()
+    } else {
+        0
+    };
+    menu(board, s, themes.get(index), ansi)
+}
 pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
     let member = board.whoami(s)?;
     if member.status != Status::Approved {

@@ -11,10 +11,13 @@ The goal is private, human-scale communities whose operators own their systems a
 ## Status
 
 The [BBS menus and sysop themes](docs/theme-packs.md) now have a centered
-lightbar, compact/wide layouts, action descriptions and coordinated manual
+lightbar, compact/wide layouts, action descriptions and coordinated
 seasonal palettes. Arrow/Enter and direct hotkeys share the same authorized
 actions; plain/classic recovery stays available. A local theme preview tool needs
-no running board. Original identity-art acceptance and seasonal scheduling remain open.
+no running board. Optional annual scheduling now selects original ANSI/compact
+ASCII login templates after approval, with UTC/server-local dates, overlap
+priorities and manual overrides. Themes stay pinned through each session. The
+example calendar ships disabled; final identity-art acceptance remains open.
 
 
 **Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**

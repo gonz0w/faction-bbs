@@ -222,6 +222,7 @@ dependencies = [
 name = "faction-terminal"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "faction-unix",
  "rustix",
  "toml",
  "unicode-width",

@@ -6,3 +6,8 @@ normal = { fg = 6, bg = 0 }
 focus = { fg = 15, bg = 4, bold = true }
 hotkey = { fg = 14, bg = 0, bold = true }
 disabled = { fg = 7, bg = 0 }
+identity_ascii = "login.txt"
+identity_ansi = "login.ans"
+creator = "Faction BBS contributors; Codex-assisted original layout"
+source = "Original seasonal login template; not historical scene artwork"
+permission = "BSD-3-Clause; repository LICENSE"

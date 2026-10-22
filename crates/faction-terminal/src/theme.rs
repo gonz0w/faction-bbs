@@ -198,7 +198,7 @@ fn text(value: &Value, max: usize) -> Result<&str> {
     }
     Ok(s)
 }
-fn read_file(root: &Path, name: &str, cap: usize) -> Result<Vec<u8>> {
+pub(crate) fn read_file(root: &Path, name: &str, cap: usize) -> Result<Vec<u8>> {
     if name.is_empty()
         || name.len() > 64
         || !name.as_bytes()[0].is_ascii_alphanumeric()

@@ -9,7 +9,11 @@ lightbar main menu and sysop authoring workflow. Compact/wide ASCII panels,
 base titles/descriptions and manual seasonal palettes preserve classic fallback,
 action checks and output limits. [Preview/customization](../docs/theme-packs.md)
 needs no live board. Original/authorized identity art, native visual review,
-custom grids and calendar automation remain separate work. Hardening stays later.
+custom grids remain separate work. Optional annual UTC/system-local calendars,
+priorities, manual/disabled recovery and original seasonal login templates now
+extend this foundation. Each approved login pins its shared catalog selection;
+examples default disabled. See the [calendar guide](../docs/theme-packs.md#seasonal-calendar-and-login-screens).
+Hardening stays later.
 
 ## Modern terminal foundation
 

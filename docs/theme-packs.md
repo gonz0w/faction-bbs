@@ -60,7 +60,8 @@ Copy [the base example](../themes/base/theme.toml) to a directory you own. Packs
 are loaded once per login invocation, fully validated in memory, and stay coherent
 for that session. Invalid base packs fall back to the built-in text identity/menu;
 invalid seasonal overrides retain the entire valid base. No partial activation,
-runtime scripts, file writes, shell commands, outbound calls or hot reload.
+runtime scripts, file writes, shell commands, outbound calls or hot reload. Scheduled
+variants are preloaded as one validated catalog; each approved login pins its choice.
 
 `theme.toml` is UTF-8 TOML, at most 8 KiB; this narrow schema also limits opening
 brackets to 64 before parsing. Unknown fields/types and unsupported versions fail.
@@ -109,7 +110,7 @@ and [winter](../themes/seasons/winter/theme.toml) are examples, not a default ca
 or hemisphere assumption. Overrides may set version/ID, welcome, styles, identity
 files and their provenance. They cannot change board name, menu labels, keys,
 actions or order. Missing fields retain the base; any invalid field/file rejects
-the entire override. No scheduling/timezone/overlap or mid-session switching yet.
+the entire override. Optional annual scheduling is now available below; existing sessions keep their chosen theme.
 
 The menu uses the actual TTY width: 40–79 columns selects a centered 38-cell
 compact panel; 80–240 selects a centered 76-cell panel with action descriptions.
@@ -182,5 +183,115 @@ colors and order, then validate the copy. Retain the required core actions, uniq
 keys and fixed action names. Restart the shared owner after checking a stopped
 configuration; don't edit an active session's action mapping. A season changes
 only its allowed palette/welcome/identity fields; base descriptions and title stay
-coherent. Calendar scheduling, custom grids, long art/SAUCE/iCE support and native
-visual acceptance of original/authorized scene identity art remain #25 follow-ups.
+coherent. Calendar scheduling is described below. Custom grids, long art/SAUCE/iCE support
+and native visual acceptance of original/authorized scene identity art remain #25 follow-ups.
+
+## Seasonal calendar and login screens
+
+The [example calendar](../themes/seasons/schedule.toml) ships **disabled**. Copy the
+base, seasonal directories and calendar as BBS-owner files; the first-install
+helper currently installs only the base pack. The supplied date ranges are
+illustrative, and you should choose your own calendar and timezone.
+
+```sh
+./target/release/faction --state-dir "$HOME/.faction-dev" login --ansi --theme themes/base --theme-schedule themes/seasons
+```
+
+For the normal shared service, set the optional root-owned `service.toml` field:
+
+```toml
+theme = "/var/db/faction/themes/base"
+theme_schedule = "/var/db/faction/themes/seasons"
+# season = "/var/db/faction/themes/seasons/winter" # manual override wins
+```
+
+For an existing board, stop admission and drain/stop the backend before installing
+packs or changing configuration. From your reviewed source checkout, install the
+new examples explicitly (operator privileges, service left stopped):
+
+```sh
+install -d -o factiond -g factionipc -m 700 /var/db/faction/themes/seasons
+install -o factiond -g factionipc -m 600 themes/seasons/schedule.toml /var/db/faction/themes/seasons/schedule.toml
+for season in autumn winter; do
+  install -d -o factiond -g factionipc -m 700 "/var/db/faction/themes/seasons/$season"
+  install -o factiond -g factionipc -m 600 "themes/seasons/$season/"* "/var/db/faction/themes/seasons/$season/"
+done
+```
+
+Review `enabled`, dates and timezone as factiond, then run the normal config
+preflight as factiond using `/usr/local/libexec/faction-service --check-config /etc/faction/service.toml`. Restart the backend, then admission, only
+after success. See [normal setup/restart](quickstart-netbsd.md). The member worker
+also accepts `--theme-schedule`; the rollback rc path retains its existing manual
+arguments unless the operator explicitly supplies the fixed calendar option.
+No command or calendar date comes from a member's terminal. System mode trusts the
+server's OS/zone data; libc may use UTC if those rules are unavailable. Confirm the
+intended zone with the authoring timestamp preview before enabling the calendar.
+
+The separate `schedule.toml` is UTF-8, <=8 KiB, with the same owned regular-file,
+non-symlink and write-permission rules as a theme. It contains only:
+
+| Field | Meaning |
+| --- | --- |
+| `version = 1` | Required supported calendar format. |
+| `enabled` | Required boolean. False uses the base and skips loading seasonal assets; metadata still validates. |
+| `timezone` | Required `"UTC"` or `"system"`. System uses the trusted server's local rules, including DST. Ordinary service startup uses the OS timezone; per-board named-zone strings are not accepted. |
+| `[[season]]` | Zero to eight entries. Each `pack` is a unique 1–32 character lowercase letter/digit/hyphen directory name immediately under the calendar directory. |
+| `start`, `end` | Required `MM-DD`; start inclusive, end exclusive. `12-01` to `03-01` wraps across New Year. Equal boundaries are rejected. Feb 29 is valid and matches only actual leap dates. |
+| `priority` | Required integer 0–255; highest matching priority wins. Same-priority overlapping windows reject the whole calendar, independent of file order. |
+
+For example, a short high-priority holiday window can override a longer winter
+window without changing any menu commands. There is no hemisphere or holiday
+built into the scheduler. No match or unavailable/out-of-range clock uses the
+base theme. `season`/`--season` selects one manual override and bypasses the entire
+calendar, including a missing/broken file. To return to the base, remove the manual
+setting and disable the calendar or remove its configuration field.
+
+The shared owner loads and validates every enabled pack **before binding**. A bad
+calendar/asset makes explicit shared/worker configuration fail; fix it, disable it
+or select a valid manual override. Local-console errors warn and retain the whole
+valid base. Nothing partially changes. Each approved login chooses one immutable
+theme for identity, welcome, menus, posts, chat and doors; active sessions and drafts
+never switch at midnight. New logins see the current date from the same preloaded
+catalog. Editing files requires a restart, even for later logins.
+
+The shared catalog holds at most nine themes once. Each shared member stores only an
+index; there is no per-member art copy, calendar timer, file polling, new helper
+or new external dependency. The existing native bridge supplies presentation-only
+UTC/system dates; it never changes TZ, the host clock, account approval or mail keys.
+The worker rollback has a separate catalog per process. Credential, queue/drain
+and admission limits remain the same. This is not a new
+250-user memory/capacity measurement.
+
+### Original login templates and classic recovery
+
+Autumn and winter now include original ANSI and compact ASCII login templates
+with explicit BSD-3-Clause provenance. They are editable functional examples,
+not accepted final scene identity art or historical ACiD/iCE/Razor reproductions.
+They use the existing CP437/basic-SGR importer; raw source escapes are never sent.
+
+![Autumn login reference palette](images/login-autumn.svg)
+
+[Winter](images/login-winter.svg) and [compact ASCII](images/login-compact.svg)
+use the same trusted identity presenter. At ANSI 80x24 or larger it renders the
+validated 80x16 art. Smaller supported terminals get a fitting ASCII identity;
+plain mode never emits escapes. Too-wide/tall ASCII or unknown geometry uses the
+board name. The welcome/pause follows the identity only after local approval. Full and
+fitting compact ANSI cards wait for Enter; plain CLI output keeps line mode.
+The calendar never adds a pre-auth community screen or a graphics passthrough.
+
+Preview without changing the clock or running a board:
+
+```sh
+./target/release/examples/preview_theme --theme themes/base --theme-schedule themes/seasons --date 2026-12-20 --login
+./target/release/examples/preview_theme --theme themes/base --season themes/seasons/winter --columns 40 --login --plain
+python3 tools/render_theme_preview.py target/release/examples/preview_theme --theme themes/base --season themes/seasons/autumn --login --output /tmp/faction-login.svg
+```
+
+Enable your copied calendar to exercise dates; the shipped disabled example stays
+on base. `--date`/`--timestamp` are authoring-example controls only, never member
+or daemon arguments. SVG rendering covers ASCII template glyphs with a fixed
+reference palette; use the terminal preview for other supported CP437 glyphs.
+The examples/previews do not certify a particular emulator/font or final art.
+Keep matching older service configuration/CLI flags when rolling back to a binary
+that predates `theme_schedule`; no database migration is involved. Back up calendar,
+packs and configuration with your complete board backup.

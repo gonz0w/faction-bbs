@@ -98,23 +98,15 @@ pub(super) fn capable() -> bool {
 }
 pub fn identity(theme: &Theme, ansi: bool) -> Result<()> {
     let mut output = io::stdout();
-    if ansi && capable() && matches!(size(), Some((80..=240, 24..=100))) {
-        output.write_all(b"\x1b[0;37;40m\x1b[2J\x1b[H")?;
-        if let Some(art) = theme.identity_ansi() {
-            output.write_all(art.render().as_bytes())?;
-        } else {
-            output.write_all(theme.identity_ascii().unwrap_or(theme.board()).as_bytes())?;
-        }
-        write!(output, "\x1b[18;1H{}\r\n", theme.welcome())?;
+    let (columns, rows) = size().unwrap_or((0, 0));
+    let ansi = ansi && capable();
+    output.write_all(theme.identity_screen(columns, rows, ansi).as_bytes())?;
+    if theme.identity_needs_pause(columns, rows, ansi) {
+        write!(output, "{}\r\n", theme.welcome())?;
         output.flush()?;
         line("Press Enter to continue: ", 1)?;
     } else {
-        writeln!(
-            output,
-            "\n{}\n{}",
-            theme.identity_ascii().unwrap_or(theme.board()),
-            theme.welcome()
-        )?;
+        writeln!(output, "\n{}", theme.welcome())?;
         output.flush()?;
     }
     Ok(())
