@@ -1,7 +1,7 @@
 # 0053: Remaining host statistics and sysop-console polish
 
 Issue: [#95](https://github.com/gonz0w/faction-bbs/issues/95); related #18/#98.
-Status: implemented and validated; PR handoff pending
+Status: implemented and validated; PR #129 open
 
 ## Goal and constraints
 
@@ -21,7 +21,7 @@ be fabricated for adapters/receipts that do not exist.
 - [x] Polish themed console panels/history/exit and compact/plain behavior.
 - [x] Validate on host and fresh software NetBSD VM, including real console if available.
 - [x] Measure dashboard separately, retain immutable evidence and clean owned clone.
-- [ ] Update docs, related issue status and focused PR.
+- [x] Update docs, related issue status and focused PR.
 
 ## Design and execution
 
@@ -62,4 +62,12 @@ or refresh old hashes after recording a candidate; preserve bytes first.
 Owned VM stopped and temporary clone/cache removed; saved image has no open handle.
 All 34 saved-evidence guards, twenty-snapshot/thirty-three-historical-identity
 checks and repository policy pass. Four locked experiment target checks and
-selected-target no-JS inventories pass. Final PR/issue handoff pending.
+selected-target no-JS inventories pass. PR #129 is attached against the existing article branch; #95/#18/#98 status
+updated. #95 stays open for peer/backup adapter telemetry and broader visual
+acceptance. Clean committed archive passes source/policy/all 34 evidence guards.
+
+The first GitHub check caught Python 3.12's twenty-static-block limit in the
+historical-source test's growing mock list (the newer host Python accepted it).
+Refactor only that unmeasured test setup to ExitStack, retaining all assertions
+and old result/source identities. Native runtime/results stay unchanged. Updated
+head checks pending; saved playground remains off.
