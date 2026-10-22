@@ -3,7 +3,7 @@
 Issues: [#95](https://github.com/gonz0w/faction-bbs/issues/95),
 [#18](https://github.com/gonz0w/faction-bbs/issues/18),
 [#98](https://github.com/gonz0w/faction-bbs/issues/98)
-Status: implemented; focused PR handoff pending
+Status: implemented; [PR #128](https://github.com/gonz0w/faction-bbs/pull/128) open, GitHub checks pending
 
 ## Goal and constraints
 
@@ -21,7 +21,7 @@ capacity/default-session change or automatic operator login. Hardening stays lat
   records in nineteenth snapshot `sources/pre95-operator` before runtime changes.
 - [x] Add opt-in owner-produced bounded status and local read-only console.
 - [x] Validate actual service/console/software NetBSD behavior and costs.
-- [ ] Update operator docs, README, issues and focused PR.
+- [x] Update operator docs, README, #95/#18/#98 and focused PR #128; attached to task.
 
 ## Design and sequence
 
@@ -72,4 +72,6 @@ All 33 saved-evidence guards, repository policy and nineteen-snapshot /
 thirty-two-historical-record guards pass. The exact 152 selected native inputs
 match the copied execution tree; eight host harnesses are pinned separately.
 Owned clone/cache cleanup is complete and the saved image is not open. Focused
-PR/issue handoff follows; GitHub checks remain separate.
+PR #128 is attached and all three grouped issues have status comments; GitHub
+checks remain pending. Clean committed archive also passes all source/policy/
+evidence guards. Remaining direct-console visual/exit polish stays in #95.
