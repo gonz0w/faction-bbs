@@ -89,8 +89,12 @@ NetBSD setup/abuse-management workflows and integrated native XMPP notifications
 Real IRC/IRCv3 integration remains research. [Discussion-room posts](docs/discussion-articles-and-news.md)
 will use Netnews-style articles, with NNTP-first optional peering and news-provider
 subscriptions planned. IRC and encrypted XMPP keep their own formats. The goal keeps the underground BBS character with a modern terminal
-experience. These stories are planned; no dashboard, advanced graphics, firewall
-manager or new IRC/forum federation protocol is implemented by this update.
+experience. The dashboard, firewall manager and new IRC/forum federation protocols remain planned.
+An optional [bounded Kitty image preview](docs/kitty-graphics.md) now complements
+the terminal settings: T/G probes then streams one original RGB calibration image;
+the native client requires local `--kitty` and its own positive probe. Classic
+ANSI remains default. This is a software-tested renderer, not a rich-art importer
+or certified Ghostty/Kitty GUI experience.
 
 The [room reader](docs/room-reading.md) now shares wrapped, paged message screens
 across local/worker and shared-service sessions, with theme-aware ANSI transitions
@@ -111,8 +115,9 @@ shared terminals with schema-7 metadata, UTF-8-safe reply clipping and inert
 classic-terminal echo/previews. [Terminal settings](docs/terminal-capabilities.md)
 now opt into native Unicode subjects/room text, cell-aware paging, color depth,
 block/braille samples and bounded synchronized redraw with an isolated sync probe.
-Classic mode remains the default and immediate fallback. Bitmap graphics, extended
-input, live NNTP/provider integration and encrypted network mail remain future work.
+Classic mode remains the default and immediate fallback. The optional Kitty preview
+is separately gated; general bitmap assets, extended input, live NNTP/provider
+integration and encrypted network mail remain future work.
 
 A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
 OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise

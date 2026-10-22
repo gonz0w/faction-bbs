@@ -51,6 +51,7 @@ impl Client {
         self.dimensions = self.size();
         self.decoder = Decoder::new();
         self.input.clear();
+        self.clear_graphics();
         self.state = State::Menu;
         if self.ansi {
             let menu = self.focused(theme, sysop);
@@ -69,11 +70,15 @@ impl Client {
         self.prompt_started = Instant::now();
         self.input.clear();
         let (cols, rows) = self.size();
-        self.queue(
-            &self
-                .capabilities
-                .frame(&self.capabilities.screen(cols, rows, self.ansi), self.ansi),
-        );
+        let screen = if self.graphics_active {
+            format!(
+                "Graphics preview. C clears; D returns.\n{}",
+                faction_terminal::capabilities::PROMPT
+            )
+        } else {
+            self.capabilities.screen(cols, rows, self.ansi)
+        };
+        self.queue(&self.capabilities.frame(&screen, self.ansi));
         Ok(())
     }
     pub(super) fn probe_finish(&mut self, board: &mut Board) -> faction_core::Result<()> {
@@ -83,6 +88,51 @@ impl Client {
         termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
             .map_err(|_| Error::Invalid("terminal flush"))?;
         self.terminal_screen(board)
+    }
+    fn clear_graphics(&mut self) {
+        if self.graphics_active {
+            self.queue(faction_terminal::graphics::DELETE);
+            self.graphics_active = false;
+        }
+    }
+    pub(super) fn graphics_poll(&mut self, board: &mut Board) -> faction_core::Result<()> {
+        use faction_terminal::graphics;
+        self.approved(board)?;
+        match &self.state {
+            State::GraphicsProbe(probe) => {
+                let supported = probe.result().map_err(Error::Invalid)?;
+                termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                    .map_err(|_| Error::Invalid("terminal flush"))?;
+                if supported
+                    && self
+                        .last_graphics_frame
+                        .is_none_or(|t| t.elapsed() >= graphics::INTERVAL)
+                {
+                    self.last_graphics_frame = Some(Instant::now());
+                    self.graphics_active = true;
+                    self.state = State::Graphics(0, Instant::now());
+                    self.queue(graphics::DELETE);
+                    self.queue("\x1b[2J\x1b[H");
+                } else {
+                    self.queue("Kitty unavailable; classic fallback.\n");
+                    self.terminal_screen(board)?;
+                }
+            }
+            State::Graphics(index, start) => {
+                if start.elapsed() >= graphics::TRANSFER_TIMEOUT {
+                    return Err(Error::Invalid("graphics drain timeout"));
+                }
+                if let Some(chunk) = graphics::chunk(*index) {
+                    self.state = State::Graphics(index + 1, *start);
+                    self.queue(&chunk);
+                } else {
+                    self.queue("\nKitty preview (original calibration artwork).\n");
+                    self.terminal_screen(board)?;
+                }
+            }
+            _ => return Err(Error::Invalid("graphics state")),
+        }
+        Ok(())
     }
     fn focused<'a>(&self, theme: &'a Theme, sysop: bool) -> Menu<'a> {
         let mut menu = Menu::new(theme, sysop);
@@ -385,15 +435,34 @@ impl Client {
                 self.approved(board)?;
                 if text.eq_ignore_ascii_case("d") {
                     self.menu(theme, board)?;
+                } else if text.eq_ignore_ascii_case("g") && self.ansi {
+                    let now = Instant::now();
+                    if self.last_graphics.is_none_or(|t| {
+                        now.duration_since(t) >= faction_terminal::graphics::INTERVAL
+                    }) {
+                        self.last_graphics = Some(now);
+                        self.clear_graphics();
+                        self.state = State::GraphicsProbe(Default::default());
+                        self.dimensions = self.size();
+                        self.queue(faction_terminal::graphics::QUERY);
+                    } else {
+                        self.queue("Graphics limited to one frame per second.\n");
+                        self.terminal_screen(board)?;
+                    }
                 } else if text.eq_ignore_ascii_case("p") && self.ansi {
                     self.state = State::Probe(Default::default());
                     self.queue(faction_terminal::capabilities::SYNC_QUERY);
                 } else {
+                    if text.eq_ignore_ascii_case("c") {
+                        self.clear_graphics();
+                    }
                     self.capabilities.choose(text);
                     self.terminal_screen(board)?;
                 }
             }
-            State::Probe(_) => return Err(Error::Invalid("probe input state")),
+            State::GraphicsProbe(_) | State::Graphics(..) | State::Probe(_) => {
+                return Err(Error::Invalid("probe input state"));
+            }
             State::Menu => {
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
@@ -696,6 +765,14 @@ impl Client {
             self.menu(theme, board)?;
             return Ok(());
         }
+        if self.size() != self.dimensions
+            && (self.graphics_active || matches!(self.state, State::GraphicsProbe(_)))
+        {
+            // Do not interleave a delete with a partial command: close and let Drop
+            // attempt cleanup, rather than resuming uncertain terminal state.
+            self.close = true;
+            return Ok(());
+        }
         if !matches!(self.state, State::Menu | State::Chat) || self.size() == self.dimensions {
             return Ok(());
         }
@@ -752,8 +829,35 @@ impl Client {
             }
             return Ok(());
         }
+        if let State::GraphicsProbe(probe) = &mut self.state {
+            if probe.expired(Instant::now()) {
+                return Err(Error::Invalid("late graphics reply").into());
+            }
+            for &byte in &bytes[..n] {
+                if self.skip_lf {
+                    self.skip_lf = false;
+                    if byte == b'\n' {
+                        continue;
+                    }
+                }
+                probe.feed(byte).map_err(Error::Invalid)?;
+            }
+            return Ok(());
+        }
+        if matches!(self.state, State::Graphics(..)) {
+            if bytes[..n].iter().any(|b| matches!(b, 3 | 4)) {
+                self.close = true;
+            }
+            return Ok(());
+        }
         if let State::Probe(probe) = &mut self.state {
             for &byte in &bytes[..n] {
+                if self.skip_lf {
+                    self.skip_lf = false;
+                    if byte == b'\n' {
+                        continue;
+                    }
+                }
                 probe.feed(byte).map_err(Error::Invalid)?;
             }
             return Ok(());

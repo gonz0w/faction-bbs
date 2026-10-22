@@ -70,11 +70,19 @@ pub(super) fn ready() -> Result<bool> {
 impl Drop for Raw {
     fn drop(&mut self) {
         let _ = termios::tcsetattr(&self.tty, OptionalActions::Flush, &self.saved);
-        if self.sync {
-            let _ = io::stdout().write_all(b"\x1b[?2026l");
+        if let Ok(fd) = rustix::io::fcntl_dupfd_cloexec(io::stdout(), 3) {
+            let mut output = File::from(fd);
+            let reset = if self.sync {
+                b"\x1b[?2026l\x1b[0m\x1b[?25h\r\n".as_slice()
+            } else {
+                b"\x1b[0m\x1b[?25h\r\n".as_slice()
+            };
+            let _ = faction_terminal::graphics::write_tty(
+                &mut output,
+                reset,
+                Instant::now() + std::time::Duration::from_millis(20),
+            );
         }
-        let _ = io::stdout().write_all(b"\x1b[0m\x1b[?25h\r\n");
-        let _ = io::stdout().flush();
     }
 }
 pub(super) fn size() -> Option<(u16, u16)> {
@@ -190,4 +198,66 @@ pub(super) fn probe_sync() -> Result<bool> {
     probe
         .result()
         .map_err(|s| io::Error::new(io::ErrorKind::InvalidData, s).into())
+}
+
+/// Explicit preview owns the raw TTY through negotiation and bounded streaming.
+pub(super) fn graphics() -> Result<Option<Graphics>> {
+    use faction_terminal::graphics::{self, Probe};
+    let raw = Raw::open()?;
+    let mut output = File::from(rustix::io::fcntl_dupfd_cloexec(io::stdout(), 3)?);
+    graphics::write_tty(
+        &mut output,
+        graphics::QUERY.as_bytes(),
+        Instant::now() + graphics::TRANSFER_TIMEOUT,
+    )?;
+    let mut probe = Probe::default();
+    probe.begin(Instant::now());
+    while !probe.expired(Instant::now()) {
+        let readable = ready()?;
+        if probe.expired(Instant::now()) {
+            break;
+        }
+        if readable {
+            probe.feed(raw.read_byte()?).map_err(io::Error::other)?;
+        }
+    }
+    termios::tcflush(&raw.tty, termios::QueueSelector::IFlush)?;
+    if !probe.result().map_err(io::Error::other)? {
+        return Ok(None);
+    }
+    let guard = Graphics;
+    graphics::write_tty(
+        &mut output,
+        graphics::DELETE.as_bytes(),
+        Instant::now() + graphics::TRANSFER_TIMEOUT,
+    )?;
+    graphics::write_tty(
+        &mut output,
+        b"\x1b[2J\x1b[H",
+        Instant::now() + graphics::TRANSFER_TIMEOUT,
+    )?;
+    let deadline = Instant::now() + graphics::TRANSFER_TIMEOUT;
+    for index in 0..graphics::CHUNKS {
+        graphics::write_tty(
+            &mut output,
+            graphics::chunk(index)
+                .ok_or_else(|| io::Error::other("graphics chunk"))?
+                .as_bytes(),
+            deadline,
+        )?;
+    }
+    graphics::write_tty(
+        &mut output,
+        b"\r\nKitty preview (original calibration artwork).\r\n",
+        deadline,
+    )?;
+    Ok(Some(guard))
+}
+pub(super) struct Graphics;
+impl Drop for Graphics {
+    fn drop(&mut self) {
+        if let Ok(fd) = rustix::io::fcntl_dupfd_cloexec(io::stdout(), 3) {
+            faction_terminal::graphics::cleanup(&mut File::from(fd));
+        }
+    }
 }

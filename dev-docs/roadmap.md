@@ -244,3 +244,8 @@ composer/storage compatibility is #114. Hardening #106–#111 remains later.
 
 Follow-ups: [bounded inline bitmap renderer #117](https://github.com/gonz0w/faction-bbs/issues/117)
 and [real emulator/font/multiplexer validation #118](https://github.com/gonz0w/faction-bbs/issues/118).
+
+#117 now adds a narrow opt-in trusted inline RGB preview and a separate native
+member gate under [ADR 0042](decisions/0042-kitty-graphics.md). Classic remains
+default; rich licensed asset import, real GUI/font/tmux validation (#118), sysop
+dashboard and later hardening remain separate.

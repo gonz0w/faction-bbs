@@ -15,6 +15,7 @@ action with a free hotkey; existing custom layouts are not silently rewritten.
   These are font samples, not live system statistics or bitmap graphics.
 - **S** explicitly toggles synchronized redraw; **P** optionally probes that one
   feature. Probing requires an ANSI path and discards no data into a command flow.
+- **G** optionally probes and shows the [trusted Kitty image preview](kitty-graphics.md).
 - **C** immediately resets modern preferences to classic. **D** leaves settings.
   Reconnecting also resets preferences. No account/database migration is needed.
 
@@ -46,28 +47,27 @@ extra or incomplete responses close the session; late CSI cannot become menu
 keys or posting input. Stay in settings during the short probe. It never runs in
 login/password input and never changes access, roles, host configuration or data.
 
-The native transfer client's existing output filter passes native text/RGB but
-filters terminal queries and synchronized-output controls. Select U/color manually
-there; sync probing times out safely. No native-client bitmap or sync pass-through
-is enabled. Ordinary SSH can carry a supported emulator's own response; proxies
-and multiplexers may suppress or change it. A private actual GNU screen 4.00.03
-fixture returned no sync reply; tmux and real Ghostty/Kitty GUI/font combinations
-are not certified by these software fixtures.
+The native client's default filter passes text/RGB and filters terminal queries,
+sync and graphics. Optional local `--kitty` enables only the separately bounded
+[graphics gate](kitty-graphics.md); sync remains filtered. Ordinary SSH may carry
+emulator replies; proxies/multiplexers can suppress them. Actual GNU screen
+4.00.03 fixtures returned no sync or Kitty reply. Real Ghostty/Kitty GUI/font
+and tmux certification stays #118.
 
 ## Scope and budgets
 
-Current mouse, extended keyboard, Kitty/Sixel bitmaps, file/shared-memory image
-loading, network image fetching and clipboard paths stay disabled. Block/braille
-are text cells. There is no new GPU, JavaScript, telemetry, image cache or owner
-helper. Current image pixel/byte/cache budgets are zero. The fixed settings panel
-is below 2 KiB; sync adds 16 bytes to a frame. Output is action-driven under the
-existing 32-KiB shared output cap and five-second drain deadline. Defaults remain
-eight sessions with the same credential and helper limits.
+Mouse, extended keyboard, Sixel, terminal-side image files/shared memory, network
+fetching and clipboard remain disabled. Block/braille are text cells. The optional
+[Kitty preview](kitty-graphics.md) has separate explicit gates and bounded image
+budgets; general theme/member/remote graphics remain filtered. There is no new
+JavaScript, GPU dependency or owner helper. The settings panel is below 2 KiB;
+sync adds 16 bytes per bounded frame. Existing output/helper/credential/default
+limits remain unchanged.
 
 See [research and comparison](../dev-docs/research/0049-modern-terminal-capabilities.md),
 [ADR 0041](../dev-docs/decisions/0041-modern-terminals.md) and
 [software evidence](../dev-docs/evidence/modern-terminals-netbsd/README.md).
-Later graphics need a separately bounded renderer/client gate. Hardening #106–#111
+The optional graphics renderer/client gate is documented separately. Hardening #106–#111
 stays later; this work changes presentation, not host/firewall policy.
 
 Follow-ups: [bounded inline bitmap renderer #117](https://github.com/gonz0w/faction-bbs/issues/117)

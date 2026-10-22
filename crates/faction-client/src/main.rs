@@ -22,11 +22,19 @@ struct Terminal {
     input: File,
     output: File,
     saved: Termios,
+    graphics: bool,
 }
 impl Drop for Terminal {
     fn drop(&mut self) {
+        if self.graphics {
+            faction_terminal::graphics::cleanup(&mut self.output);
+        }
         let _ = termios::tcsetattr(&self.input, OptionalActions::Now, &self.saved);
-        let _ = self.output.write_all(b"\x1b[0m\x1b[?25h\r\n");
+        let _ = faction_terminal::graphics::write_tty(
+            &mut self.output,
+            b"\x1b[0m\x1b[?25h\r\n",
+            Instant::now() + Duration::from_millis(20),
+        );
     }
 }
 fn safe(s: &str) -> String {
@@ -53,7 +61,34 @@ impl Terminal {
             input,
             output,
             saved,
+            graphics: false,
         })
+    }
+    fn probe_graphics(&mut self) -> io::Result<bool> {
+        use faction_terminal::graphics::{Probe, QUERY};
+        self.print("Opt-in Kitty graphics: checking this local terminal. Stay idle briefly.\r\n")?;
+        self.print(QUERY)?;
+        self.output.flush()?;
+        let mut probe = Probe::default();
+        probe.begin(Instant::now());
+        while !probe.expired(Instant::now()) {
+            let ready = self.ready(20)?;
+            if probe.expired(Instant::now()) {
+                break;
+            }
+            if ready {
+                probe.feed(self.byte()?).map_err(io::Error::other)?;
+            }
+        }
+        termios::tcflush(&self.input, termios::QueueSelector::IFlush)?;
+        let supported = probe.result().map_err(io::Error::other)?;
+        self.print(if supported {
+            "Kitty gate ready; choose T then G on the board.\r\n"
+        } else {
+            "Kitty unavailable; classic fallback.\r\n"
+        })?;
+        self.graphics = supported;
+        Ok(supported)
     }
     fn print(&mut self, s: &str) -> io::Result<()> {
         self.output.write_all(s.as_bytes())
@@ -386,9 +421,12 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile) -> io::Result<()> {
 }
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
-    if args.len() != 2 || args[0] != "--profile" {
+    if !matches!(args.len(), 2 | 3)
+        || args[0] != "--profile"
+        || (args.len() == 3 && args[2] != "--kitty")
+    {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML",
+            "Usage: faction-client --profile PRIVATE_TOML [--kitty]",
         ));
     }
     let p = Profile::load(Path::new(&args[1]))?;
@@ -397,14 +435,23 @@ fn run() -> io::Result<()> {
     if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
         return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
     }
+    let graphics = args.len() == 3 && t.probe_graphics()?;
     let mut r = Remote::start(&p, size.ws_row, size.ws_col)?;
+    r.filter.graphics.enabled = graphics;
     let mut handshake = None;
     loop {
+        if r.filter.graphics.expired(Instant::now()) {
+            return Err(io::Error::other("graphics transfer timeout"));
+        }
         if r.native {
             file_menu(&mut t, &mut r, &p)?;
         }
         if !r.output.is_empty() {
-            t.output.write_all(&std::mem::take(&mut r.output))?;
+            faction_terminal::graphics::write_tty(
+                &mut t.output,
+                &std::mem::take(&mut r.output),
+                Instant::now() + Duration::from_secs(5),
+            )?;
         }
         let mut fds = [
             PollFd::new(&r.pty, PollFlags::IN),

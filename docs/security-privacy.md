@@ -244,3 +244,8 @@ The owner requested a substantial [later-phase hardening backlog](later-phase-ha
 (#106–#111): signing, VM isolation, containment after component compromise, storage
 and independent validation/recovery. No VM/chroot/jail/disk-encryption label alone
 is an adopted end-to-end guarantee. Keep authority and residual risks explicit.
+
+The [optional Kitty preview](kitty-graphics.md) uses only a fixed original asset.
+Probes own their input and confer presentation capability only; native opt-in and
+exact-command regeneration never permit arbitrary APC, local paths, clipboard or
+file/mail/member authority. Image-specific cleanup is best effort on broken TTYs.

@@ -348,34 +348,59 @@ fn post(board: &mut Board, s: &Session, unicode: bool) -> Result<()> {
     }
 }
 fn terminal_settings(
+    last: &mut Option<std::time::Instant>,
     caps: &mut faction_terminal::capabilities::Capabilities,
     ansi: bool,
     board: &mut Board,
     session: &Session,
 ) -> Result<()> {
+    let mut image: Option<terminal::Graphics> = None;
     loop {
         if board.whoami(session)?.status != Status::Approved {
             return Err(Error::Denied.into());
         }
         let (columns, rows) = terminal::size().unwrap_or((0, 0));
-        print!(
-            "{}",
-            caps.frame(
-                &caps.screen(columns, rows, ansi && terminal::capable()),
-                ansi && terminal::capable()
+        let screen = if image.is_some() {
+            format!(
+                "Graphics preview. C clears; D returns.\n{}",
+                faction_terminal::capabilities::PROMPT
             )
-        );
+        } else {
+            caps.screen(columns, rows, ansi && terminal::capable())
+        };
+        print!("{}", caps.frame(&screen, ansi && terminal::capable()));
         let choice = line("", 1)?;
         if choice.eq_ignore_ascii_case("d") {
             return Ok(());
         }
-        if choice.eq_ignore_ascii_case("p") {
+        if choice.eq_ignore_ascii_case("g") {
+            if ansi && terminal::capable() {
+                let now = std::time::Instant::now();
+                if last
+                    .is_none_or(|t| now.duration_since(t) >= faction_terminal::graphics::INTERVAL)
+                {
+                    drop(image.take());
+                    image = terminal::graphics()?;
+                    *last = Some(std::time::Instant::now());
+                    if image.is_none() {
+                        println!("Kitty unavailable; classic fallback.");
+                    }
+                } else {
+                    println!("Graphics limited to one frame per second.");
+                }
+            } else {
+                println!("ANSI disabled; probe refused.");
+            }
+        } else if choice.eq_ignore_ascii_case("p") {
             if ansi && terminal::capable() {
                 caps.synchronized = terminal::probe_sync()?;
             } else {
                 println!("ANSI disabled; probe refused.");
             }
         } else {
+            if choice.eq_ignore_ascii_case("c") {
+                drop(image.take());
+            }
             caps.choose(&choice);
         }
     }
@@ -423,6 +448,7 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
         return Ok(());
     }
     let mut caps = faction_terminal::capabilities::Capabilities::default();
+    let mut last_graphics = None;
     terminal::identity(theme, ansi)?;
     println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
     loop {
@@ -470,7 +496,9 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
             Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
             Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
             Some(Action::Post) => post(board, s, caps.unicode),
-            Some(Action::Terminal) => terminal_settings(&mut caps, ansi, board, s),
+            Some(Action::Terminal) => {
+                terminal_settings(&mut last_graphics, &mut caps, ansi, board, s)
+            }
             Some(Action::Sysop) => sysop(board, s),
             Some(Action::Chat) => chat::run(board, s, ansi),
             _ => {

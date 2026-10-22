@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): build #96 native Unicode and terminal
-capabilities after merging #116; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): build #117 bounded Kitty graphics
+after merging #119; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -533,13 +533,41 @@ releases during cleanup. Keep fixed helpers, credential/default/session bounds
 and 32-KiB/five-second output rules. Do not relax admission for test fixtures;
 respect normal eight-launch burst and five-second refill.
 
-Native client still filters queries/sync/APC/DCS/clipboard; Unicode/color use
-explicit preference there. Mouse, extended keyboard and bitmaps stay disabled;
-current pixel/byte/cache limits are zero. Future inline bitmap work needs its own
-renderer/member-side gate; no arbitrary art or file/shared-memory/network paths.
+Native client defaults to filtering queries/sync/APC/DCS/clipboard; Unicode/color use
+explicit preference there. Mouse, extended keyboard and general bitmap passthrough stay disabled.
+#117 separately adds the explicit fixed-asset inline preview below; no arbitrary
+art or file/shared-memory/network paths.
 Native chat/grapheme editing, Unicode theme text and rich asset formats remain
 separate. No host/firewall/hardening change or fresh capacity claim.
 
 Twelfth snapshot sources/pre96 and unicode-subjects-baseline-manifest.json freeze
 all 101 original #116 build/run inputs and unchanged result before this work.
 Preserve twelve snapshots and twenty-four historical result identities unchanged.
+
+## Optional Kitty preview (#117)
+
+Read docs/kitty-graphics.md, research 0050, ADR 0042 and plan 0044. Classic stays
+default. T/G has dedicated positive 300-ms/128-byte probes; no report becomes a
+command/authority. The native gate needs local `--kitty` plus a local positive
+probe before SSH and regenerates only exact original-asset chunks/query/delete.
+Never allow arbitrary APC, paths, PNG, compression, shared memory, network fetch,
+clipboard, Sixel or remote/member/game art. Sync remains filtered natively.
+
+One static read-only 38,400-byte RGB asset, 51,410 wire bytes, thirteen <=4-KiB
+commands and one frame/second. No per-member image cache or new helper/dependency.
+Shared chunks advance only after drain under rotating work and current approval;
+32-KiB/five-second queue plus total upload deadlines remain. Native gate checks
+order/rate/unfinished timeout. Cleanup terminates partial APC and deletes only the
+Faction image ID; broken transports may need reset. Keep original theme import
+rules, admission eight/5000 ms, fixed helpers/crypto/schema and hardening later.
+
+Thirteenth snapshot sources/pre117 and modern-terminals-baseline-manifest.json
+freeze all 106 exact #119 inputs and the unchanged original record. Preserve
+thirteen snapshots and twenty-five historical identities. No actual GUI/font,
+tmux, hardware or fresh capacity claim. #118 owns real emulator certification.
+
+The kitty-graphics-netbsd record now pins 112 final executed inputs directly.
+Preserve those actual bytes/result before future runtime changes, never refresh
+its hashes. 151 Rust tests/host, seven graphics plus three native-gate PTY controls
+per host and nineteen shared native controls pass; the original private saved
+playground remains off and only the disposable clone was removed.

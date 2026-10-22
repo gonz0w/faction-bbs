@@ -100,5 +100,10 @@ formats. See [article/news requirements](discussion-articles-and-news.md) and
 
 The new room item supersedes an absolute ban on **researching** shared rooms;
 local-by-default storage and consent remain. No automatic room replication,
-shared approvals, public listener, graphics protocol, host change or new wire
+shared approvals, public listener, host change or new wire
 runtime is adopted. Keep ordinary board operation useful with every adapter off.
+
+The optional [Kitty preview](kitty-graphics.md) adds one bounded trusted RGB image
+and a separate native local opt-in gate, preserving classic ANSI and sysop themes.
+Real emulator/font/multiplexer certification and richer licensed assets stay future
+work; no new host/hardening or capacity claim follows.
