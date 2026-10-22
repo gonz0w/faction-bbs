@@ -1,6 +1,6 @@
 //! Filesystem-owner console. Never install as an SSH forced command.
 #![forbid(unsafe_code)]
-use faction_cli::{Result, invalid, line, menu, new_secret, secret};
+use faction_cli::{Result, invalid, line, new_secret, secret};
 use faction_core::Board;
 use faction_terminal::Theme;
 use std::path::PathBuf;
@@ -8,7 +8,7 @@ fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
         );
         return Ok(());
     }
@@ -62,7 +62,7 @@ fn run() -> Result<()> {
     if !["init", "register", "login", "recover"].contains(&command) {
         return Err(invalid("unknown command"));
     }
-    let (mut ansi, mut base_path, mut season_path) = (false, None, None);
+    let (mut ansi, mut base_path, mut season_path, mut schedule_path) = (false, None, None, None);
     if command != "login" && args.len() > 3 {
         return Err(invalid("theme options apply only to login"));
     }
@@ -71,14 +71,16 @@ fn run() -> Result<()> {
         match args[index].to_str() {
             Some("--ansi") => ansi = true,
             Some("--plain") => ansi = false,
-            Some("--theme") | Some("--season") => {
+            Some("--theme") | Some("--season") | Some("--theme-schedule") => {
                 let value = args
                     .get(index + 1)
                     .ok_or_else(|| invalid("theme option needs a directory"))?;
                 if args[index] == "--theme" {
                     base_path = Some(PathBuf::from(value));
-                } else {
+                } else if args[index] == "--season" {
                     season_path = Some(PathBuf::from(value));
+                } else {
+                    schedule_path = Some(PathBuf::from(value));
                 }
                 index += 1;
             }
@@ -93,12 +95,17 @@ fn run() -> Result<()> {
             Err(reason) => eprintln!("Theme rejected: {reason}; using built-in text fallback."),
         }
     }
-    if let Some(directory) = season_path {
-        match theme.with_season(&directory) {
-            Ok(t) => theme = t,
-            Err(reason) => eprintln!("Season rejected: {reason}; using the unchanged base theme."),
+    let themes = match faction_terminal::seasons::Themes::load(
+        theme.clone(),
+        season_path.as_deref(),
+        schedule_path.as_deref(),
+    ) {
+        Ok(themes) => themes,
+        Err(reason) => {
+            eprintln!("Season/schedule rejected: {reason}; using the unchanged base theme.");
+            faction_terminal::seasons::Themes::fixed(theme)
         }
-    }
+    };
     let mut board = Board::open(&path)?;
     let name = line("Handle: ", 24)?;
     match command {
@@ -116,7 +123,7 @@ fn run() -> Result<()> {
             let value = secret("Password (hidden): ")?;
             let s = board.authenticate(&name, &value)?;
             drop(value);
-            menu(&mut board, &s, &theme, ansi)?;
+            faction_cli::scheduled_menu(&mut board, &s, &themes, ansi)?;
         }
         "recover" => {
             if line("Local filesystem-owner recovery. Type RECOVER: ", 8)? != "RECOVER" {

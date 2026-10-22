@@ -165,3 +165,62 @@ mod peer_tests {
         std::fs::remove_file(path).unwrap();
     }
 }
+
+unsafe extern "C" {
+    fn faction_calendar_init();
+    fn faction_calendar_date(
+        seconds: i64,
+        local: i32,
+        year: *mut i32,
+        month: *mut i32,
+        day: *mut i32,
+    ) -> i32;
+}
+static CALENDAR_READY: std::sync::Once = std::sync::Once::new();
+/// Initialize trusted process/OS timezone rules once, before shared helper threads.
+/// Does not change the environment, clock, host configuration or retain Rust data.
+pub fn init_calendar() {
+    CALENDAR_READY.call_once(|| {
+        // SAFETY: scalar/no-pointer call; libc owns its process-lifetime timezone
+        // state. The application never mutates TZ while reading calendar dates.
+        unsafe { faction_calendar_init() };
+    });
+}
+/// Presentation-only date. Local conversion requires startup initialization;
+/// failure/out-of-range time returns None and cannot affect account authority.
+pub fn calendar_date(seconds: i64, local: bool) -> Option<(u16, u8, u8)> {
+    if local && !CALENDAR_READY.is_completed() {
+        return None;
+    }
+    let (mut year, mut month, mut day) = (0, 0, 0);
+    // SAFETY: three distinct writable i32 locals remain live for this call; C
+    // writes only on success and retains no pointer. Timestamp/local are scalars.
+    let status = unsafe {
+        faction_calendar_date(seconds, i32::from(local), &mut year, &mut month, &mut day)
+    };
+    if status != 0 {
+        return None;
+    }
+    Some((
+        year.try_into().ok()?,
+        month.try_into().ok()?,
+        day.try_into().ok()?,
+    ))
+}
+#[cfg(test)]
+mod calendar_tests {
+    #[test]
+    fn utc_calendar_boundaries_and_invalid_times() {
+        assert_eq!(super::calendar_date(0, false), Some((1970, 1, 1)));
+        assert_eq!(super::calendar_date(1709164800, false), Some((2024, 2, 29)));
+        assert_eq!(
+            super::calendar_date(1798761599, false),
+            Some((2026, 12, 31))
+        );
+        assert_eq!(super::calendar_date(1798761600, false), Some((2027, 1, 1)));
+        assert!(super::calendar_date(-1, false).is_none());
+        assert!(super::calendar_date(i64::MAX, false).is_none());
+        super::init_calendar();
+        assert!(super::calendar_date(1709164800, true).is_some());
+    }
+}

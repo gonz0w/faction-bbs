@@ -26,17 +26,7 @@ impl Client {
     pub(super) fn identity(&mut self, theme: &Theme, handle: &str) {
         self.ansi = self.capable();
         self.dimensions = self.size();
-        if self.ansi && matches!(self.dimensions, (80..=240, 24..=100)) {
-            self.queue("\x1b[0;37;40m\x1b[2J\x1b[H");
-            if let Some(art) = theme.identity_ansi() {
-                self.queue(&art.render());
-            } else {
-                self.queue(theme.identity_ascii().unwrap_or(theme.board()));
-            }
-            self.queue("\x1b[18;1H");
-        } else {
-            self.queue(theme.identity_ascii().unwrap_or(theme.board()));
-        }
+        self.queue(&theme.identity_screen(self.dimensions.0, self.dimensions.1, self.ansi));
         self.queue(&format!(
             "\n{}\nWelcome, {}.\nPress Enter to continue: ",
             theme.welcome(),

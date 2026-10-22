@@ -18,6 +18,7 @@ pub struct Config {
     pub state_dir: PathBuf,
     pub theme: Option<PathBuf>,
     pub season: Option<PathBuf>,
+    pub theme_schedule: Option<PathBuf>,
     pub max_sessions: usize,
     pub launch_ms: u64,
     pub session_seconds: u64,
@@ -66,6 +67,7 @@ impl Config {
         let state_dir = path(&mut t, "state_dir", Some("/var/db/faction"))?.ok_or_else(denied)?;
         let theme = path(&mut t, "theme", None)?;
         let season = path(&mut t, "season", None)?;
+        let theme_schedule = path(&mut t, "theme_schedule", None)?;
         let max_sessions = integer(&mut t, "max_sessions", Some(8), 1, 250)? as usize;
         let launch_ms = integer(&mut t, "launch_ms", Some(5000), 100, 60000)?;
         let session_seconds = integer(&mut t, "session_seconds", Some(1800), 1, 1800)?;
@@ -144,6 +146,7 @@ impl Config {
             state_dir,
             theme,
             season,
+            theme_schedule,
             max_sessions,
             launch_ms,
             session_seconds,

@@ -75,7 +75,7 @@ su - factiond -c '/usr/local/libexec/faction --state-dir /var/db/faction init'
 As factiond, edit `themes/base/theme.toml` inside `/var/db/faction` to set your
 board name and welcome. Add your own licensed/original login art using the
 [theme guide](theme-packs.md). Arrows/Enter and displayed hotkeys work together;
-manual [seasonal packs](menus-and-themes.md) are optional. No archived scene art
+manual packs or [annual seasonal calendars and login screens](theme-packs.md#seasonal-calendar-and-login-screens) are optional. No archived scene art
 is bundled. Restart the backend after editing its loaded theme.
 
 As root, start the backend and then the dedicated member SSH service:

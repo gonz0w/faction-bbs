@@ -70,3 +70,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0039: Broader articles and INN validation](0039-broader-articles-and-inn-validation.md)
 
 - [0043: Bounded BBS main-menu composition](0043-bounded-menu-composition.md).
+
+- [0044: Preloaded next-login seasonal themes](0044-next-login-seasonal-themes.md).

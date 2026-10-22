@@ -168,6 +168,7 @@ struct Client {
     heartbeat: Instant,
     next_poll: Instant,
     focus: usize,
+    theme_index: usize,
     sysop_display: bool,
     mark_after_flush: Option<(i64, i64)>,
     close: bool,
@@ -252,6 +253,7 @@ impl Client {
             heartbeat: now,
             next_poll: now,
             focus: 0,
+            theme_index: 0,
             sysop_display: false,
             mark_after_flush: None,
             close: false,
@@ -402,18 +404,23 @@ fn run() -> Result<()> {
         return Err(denied());
     }
     let config = Config::load(Path::new(&args[1]))?;
-    let mut theme = if let Some(path) = &config.theme {
+    let base = if let Some(path) = &config.theme {
         Theme::load(path).map_err(|_| denied())?
     } else {
         Theme::default()
     };
-    if let Some(path) = &config.season {
-        theme = theme.with_season(path).map_err(|_| denied())?;
-    }
-    theme
-        .set_files_enabled(config.files_uid.is_some())
+    let mut themes = faction_terminal::seasons::Themes::load(
+        base,
+        config.season.as_deref(),
+        config.theme_schedule.as_deref(),
+    )
+    .map_err(|_| denied())?;
+    themes
+        .set_services(
+            config.files_uid.is_some(),
+            config.doors_uid.is_some() || !config.classic_games.is_empty(),
+        )
         .map_err(|_| denied())?;
-    theme.set_doors_enabled(config.doors_uid.is_some() || !config.classic_games.is_empty());
     let classic_games = Arc::new(config.classic_games.clone());
     if args[0] == "--check-config" {
         return Ok(());
@@ -562,7 +569,8 @@ fn run() -> Result<()> {
                         Ok(m) if m.status == Status::Approved => {
                             c.session = Some(s);
                             c.sysop_display = m.role == faction_core::Role::Sysop;
-                            c.identity(&theme, &m.handle);
+                            c.theme_index = themes.select_now();
+                            c.identity(themes.get(c.theme_index), &m.handle);
                             c.state = State::Identity;
                         }
                         Ok(_) => {
@@ -618,6 +626,7 @@ fn run() -> Result<()> {
         for offset in 0..count {
             let i = (turn + offset) % count;
             let c = &mut clients[i];
+            let theme = themes.get(c.theme_index);
             let now = Instant::now();
             if !ready[i * 2 + 1].is_empty()
                 || ready[i * 2].intersects(PollFlags::ERR | PollFlags::HUP | PollFlags::NVAL)
@@ -628,16 +637,16 @@ fn run() -> Result<()> {
             if work > 0 && matches!(c.state, State::DoorPending) && c.output.is_empty() && !c.close
             {
                 work -= 1;
-                if let Err(e) = c.door_poll(&theme, &mut board) {
-                    c.recover(e, &mut board, &theme);
+                if let Err(e) = c.door_poll(theme, &mut board) {
+                    c.recover(e, &mut board, theme);
                     c.door = None;
                 }
             }
             if work > 0 && matches!(c.state, State::Classic) && c.output.is_empty() && !c.close {
                 work -= 1;
-                if let Err(e) = c.classic_poll(&theme, &mut board) {
+                if let Err(e) = c.classic_poll(theme, &mut board) {
                     c.classic = None;
-                    c.recover(e, &mut board, &theme);
+                    c.recover(e, &mut board, theme);
                 }
             }
             if work > 0 && !c.close && matches!(&c.state,State::Probe(p) if p.expired(now)) {
@@ -660,14 +669,14 @@ fn run() -> Result<()> {
             if work > 0 && c.geometry_check.elapsed() >= Duration::from_millis(100) {
                 work -= 1;
                 c.geometry_check = now;
-                if c.resize(&theme, &mut board).is_err() {
+                if c.resize(theme, &mut board).is_err() {
                     c.close = true;
                 }
             }
             if work > 0 && !c.close && ready[i * 2].contains(PollFlags::IN) {
                 work -= 1;
                 c.next_input = now + Duration::from_millis(20);
-                if c.input(&mut board, &jobs, &theme).is_err() {
+                if c.input(&mut board, &jobs, theme).is_err() {
                     c.close = true;
                 }
             }
@@ -676,7 +685,7 @@ fn run() -> Result<()> {
             }
             if matches!(c.state, State::Classic)
                 && c.prompt_started.elapsed() > Duration::from_secs(120)
-                && c.classic_return("Classic game input timed out.", &theme, &mut board)
+                && c.classic_return("Classic game input timed out.", theme, &mut board)
                     .is_err()
             {
                 c.close = true;
@@ -711,7 +720,7 @@ fn run() -> Result<()> {
                     }
                 })();
                 if let Err(e) = result {
-                    c.recover(e, &mut board, &theme);
+                    c.recover(e, &mut board, theme);
                 }
             }
             if ready[i * 2].contains(PollFlags::OUT) && c.flush(&mut board).is_err() {

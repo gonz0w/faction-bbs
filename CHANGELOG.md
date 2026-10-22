@@ -4,6 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add opt-in annual #25 theme calendars with UTC/system-local dates, bounded
+  priorities/year-wrapping windows, manual/disabled recovery and coherent
+  next-login selection across local/worker/shared sessions.
+- Add original autumn/winter ANSI and compact ASCII login templates, a shared
+  bounded identity presenter and deterministic date/login authoring previews.
+  Calendar defaults disabled; classic/plain recovery and approval stay intact.
+- Extend the existing native bridge for OS calendar conversion; no external
+  dependency/helper, clock/host policy or schema change. Preserve original #122
+  inputs/results before edits; final scene-art acceptance and hardening remain later.
+
 - Polish #25 main menus in both terminal adapters: centered compact/wide panels,
   continuous lightbar focus, explicit unavailable markers, safe sysop titles and
   optional wide action descriptions. Keep arrow/hotkey authority and classic/plain fallback.

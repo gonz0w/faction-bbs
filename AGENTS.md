@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #121, improve #25
-BBS menus and ANSI themes; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #122, implement #25
+seasonal scheduling and login screens; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -605,8 +605,8 @@ seasonal packs never remap them. Older packs default, older binaries reject new
 fields atomically. Local authoring previews show services enabled only for layout;
 never treat their output as actual availability or native visual certification.
 No new authority, dependencies, schema, owner helper, per-member history cache or
-changed queue/drain/admission defaults. Original/licensed scene identity art and
-calendar scheduling remain later #25 work; a framed menu is not accepted identity art.
+changed queue/drain/admission defaults. Original/licensed scene identity art remains later #25 work; calendar scheduling
+is now described below. A framed menu is not accepted identity art.
 
 Fifteenth snapshot sources/pre25 and terminal-compatibility-baseline-manifest.json
 preserve all 124 distinct #121 application/harness/reproduction inputs and its
@@ -619,3 +619,43 @@ actual bytes and the unchanged record before future edits. Software checks pass
 154 host/native Rust, 109 host Python, 22 shared native controls and three actual
 restricted SSH/native menu routes. These are not a fresh emulator/font, resident
 memory, 250-user or physical-hardware certification. Keep the saved playground off.
+
+## Seasonal login calendars (#25)
+
+Read plan 0047, ADR 0044 and docs/theme-packs.md. Themes preloads base plus at most
+8 annual overrides; each approved shared client pins only theme_index. Pass that
+borrowed theme through all UI/background paths. Local/worker pin the selected
+borrow for the complete session. No midnight/draft/door mutation, filesystem
+reload, extra calendar thread/helper or member-selected dates. Manual season
+bypasses schedule; disabled/no-match/unknown clock uses base. Explicit bad shared/
+worker calendars fail before binding/access; local errors preserve the valid base.
+
+Schedule uses version 1, explicit UTC/system timezone, start-inclusive/end-exclusive
+MM-DD, higher priority wins, and overlapping equal-priority windows reject. Pack
+IDs are unique simple children; validate all enabled assets before binding, with
+existing ownership/encoding/size/control gates. Date is presentation only. The
+existing native bridge now has a scalar/output-pointer calendar API; initialize
+system-local timezone before shared credential helpers, never mutate TZ/clock or
+spawn date processes. No new external registry package; active experiment locks
+need the new internal faction-terminal -> faction-unix edge only.
+
+Common identity presentation uses full imported art at ANSI 80x24, fitting ASCII
+at smaller/plain geometry, or board-name fallback. Preserve approval before all
+screens, termios/input boundaries and fixed 32-KiB/five-second output rules. New
+seasonal templates are original Codex-assisted BSD examples, not final approved
+scene identity art. Shipped calendar stays disabled; installation is explicit.
+Hardening remains later and saved playground stays off.
+
+Sixteenth snapshot sources/pre25-calendar and menu-themes-baseline-manifest.json
+freeze all 122 distinct #122 build/harness/SVG inputs and its unchanged record.
+Keep sixteen snapshots and twenty-eight historical identities fixed; never refresh
+old measurements to these new runtime/calendar/asset bytes.
+
+The seasonal-themes-netbsd result pins 125 selected candidate build/run inputs,
+five host harness sources, the actual native seasonal driver and three new SVGs.
+Preserve those actual bytes and its unchanged record before future edits. Final
+checks pass 162 Rust per OS, 110 host Python, nine seasonal controls per OS,
+eight actual shared SSH/native calendar controls and 22 shared regressions.
+Compact ANSI identity cards wait for Enter before a menu clear; plain CLI and
+board-name-only compact flow stay conservative. No clock/TZ/host activation,
+new capacity or final artwork/emulator certification is claimed.

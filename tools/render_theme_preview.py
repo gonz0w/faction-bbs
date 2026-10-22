@@ -15,7 +15,7 @@ PALETTE = ('#101018', '#c45b6e', '#7dbe8b', '#d8b46b', '#415b94', '#b482ce',
            '#70b6ba', '#c5c5d0', '#707080', '#ff8194', '#a4e4af', '#ffe0a0',
            '#829fe0', '#dfa5ff', '#a0e5eb', '#f3edf9')
 
-def cells(frame, columns, rows=18):
+def cells(frame, columns, rows=18, allow_newlines=False):
     grid = [[(' ', 7, 0, False) for _ in range(columns)] for _ in range(rows)]
     row = col = 0
     fg, bg, bold = 7, 0, False
@@ -45,6 +45,10 @@ def cells(frame, columns, rows=18):
                     elif 100 <= p <= 107: bg = p - 100 + 8
                     else: raise ValueError('unsupported preview style')
             pos += len(m[0])
+        elif allow_newlines and frame[pos] in '\r\n':
+            if frame[pos] == '\n': row += 1
+            col = 0; pos += 1
+            if row >= rows: raise ValueError('scrolling login preview')
         else:
             c = frame[pos]
             if not (' ' <= c <= '~') or not (row < rows and col < columns):
@@ -53,11 +57,11 @@ def cells(frame, columns, rows=18):
             col += 1; pos += 1
     return grid
 
-def svg(grid):
+def svg(grid, login=False):
     width, height = len(grid[0]) * 10 + 24, len(grid) * 22 + 24
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title description">',
-           '<title id="title">Faction BBS main-menu authoring preview</title>',
-           '<desc id="description">Reference palette, not an emulator screenshot. Arrow lightbar, hotkeys, action descriptions and classic recovery instructions.</desc>',
+           ('<title id="title">Faction BBS seasonal login preview</title>' if login else '<title id="title">Faction BBS main-menu authoring preview</title>'),
+           ('<desc id="description">Original seasonal login template, reference palette. Not an emulator screenshot or final identity-art acceptance.</desc>' if login else '<desc id="description">Reference palette, not an emulator screenshot. Arrow lightbar, hotkeys, action descriptions and classic recovery instructions.</desc>'),
            f'<rect width="{width}" height="{height}" fill="{PALETTE[0]}"/>']
     for y, line in enumerate(grid):
         x = 0
@@ -76,14 +80,20 @@ def main():
     p.add_argument('binary', type=Path)
     p.add_argument('--theme', required=True, type=Path)
     p.add_argument('--season', type=Path)
+    p.add_argument('--theme-schedule', type=Path)
+    p.add_argument('--date')
+    p.add_argument('--login', action='store_true')
     p.add_argument('--columns', type=int, choices=range(40, 241), default=80, metavar='40..240')
     p.add_argument('--output', required=True, type=Path)
     a = p.parse_args()
     cmd = [str(a.binary.resolve(strict=True)), '--theme', str(a.theme), '--columns', str(a.columns)]
     if a.season: cmd += ['--season', str(a.season)]
+    if a.theme_schedule: cmd += ['--theme-schedule', str(a.theme_schedule)]
+    if a.date: cmd += ['--date', a.date]
+    if a.login: cmd += ['--login']
     result = subprocess.run(cmd, check=True, capture_output=True, timeout=10)
-    if len(result.stdout) > 4096: raise ValueError('preview exceeds menu budget')
-    a.output.write_text(svg(cells(result.stdout.decode('ascii'), a.columns)))
+    if len(result.stdout) > (16384 if a.login else 4096): raise ValueError('preview exceeds output budget')
+    a.output.write_text(svg(cells(result.stdout.decode('ascii'), a.columns, rows=24 if a.login and a.columns>=80 else 18, allow_newlines=a.login), login=a.login))
     print('Wrote reference-palette SVG; not a GUI or artwork approval.')
 
 if __name__ == '__main__': main()

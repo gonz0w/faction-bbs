@@ -2,8 +2,8 @@
 
 Status: owner direction with menu polish implemented, 2026-10-22. A local vertical-menu/theme baseline
 is implemented; [the pack guide](theme-packs.md) states exact supported behavior.
-The broader design below includes future requirements. No scheduler, historical
-art pack or network BBS release is available.
+The broader design below includes future requirements. Annual next-login scheduling is now available; historical
+art packs and a supported network BBS release remain separate.
 Issues: #13/#21/#25/#29/#31. [Visual references](../dev-docs/research/0025-menu-and-art-direction.md).
 
 ## Interaction that belongs on a BBS
@@ -57,9 +57,9 @@ Long scrolling identity art and a compact interactive menu can be different asse
 ## Seasonal themes
 
 Support the direction of sysop-defined seasonal colors and login/identity screens.
-The initial step may be manual pack/override selection; calendar automation remains
-an optional #25 design item. Proposed scheduling supports named date windows,
-the sysop's timezone/calendar, explicit priority for overlaps and a manual override.
+Manual pack/override selection and annual next-login calendars are implemented.
+The calendar supports named date windows, explicit UTC/system-local rules,
+overlap priorities and a manual override; see the [pack guide](theme-packs.md).
 Do not hardcode Northern Hemisphere seasons or a particular holiday calendar.
 
 Use a base theme with optional seasonal palette/art overrides. Missing overrides
@@ -115,4 +115,11 @@ Manual autumn/winter overrides stay independent of command mappings. The new
 local preview example and stdlib SVG renderer let sysops validate layout without
 opening a live board. These are original interface elements, not final approved
 identity art. Commissioned/authorized art, visual font review, grid layouts and
-calendar/timezone scheduling remain open; don't infer those from the previews.
+broader long-art support remain open; don't infer those from the previews.
+
+The [calendar and login guide](theme-packs.md#seasonal-calendar-and-login-screens)
+now implements UTC/system-local annual windows, explicit overlap priority,
+manual/disabled recovery and next-login selection. A shared preloaded catalog
+keeps each approved session coherent. Original seasonal ANSI/compact ASCII
+examples exercise the common bounded presenter; the shipped calendar is disabled.
+Final scene identity-art acceptance, grids and long-art import remain #25 work.

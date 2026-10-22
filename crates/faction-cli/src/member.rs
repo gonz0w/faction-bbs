@@ -1,6 +1,6 @@
 //! Broker-launched member worker. No bootstrap, recovery, export or host commands.
 #![forbid(unsafe_code)]
-use faction_cli::{Result, invalid, line, menu, new_secret, secret};
+use faction_cli::{Result, invalid, line, new_secret, secret};
 use faction_core::Board;
 use faction_terminal::Theme;
 use std::{
@@ -50,19 +50,32 @@ fn run() -> Result<()> {
     if !path.join("faction.sqlite3").is_file() {
         return Err(invalid("initialized board required"));
     }
-    let mut theme = Theme::default();
+    let (mut base, mut season, mut schedule) = (None, None, None);
     let mut index = 2;
     while index < args.len() {
         let value = args
             .get(index + 1)
             .ok_or_else(|| invalid("theme path required"))?;
-        theme = match args[index].to_str() {
-            Some("--theme") => Theme::load(&PathBuf::from(value)).map_err(invalid)?,
-            Some("--season") => theme.with_season(&PathBuf::from(value)).map_err(invalid)?,
+        let target = match args[index].to_str() {
+            Some("--theme") => &mut base,
+            Some("--season") => &mut season,
+            Some("--theme-schedule") => &mut schedule,
             _ => return Err(invalid("unknown member worker option")),
         };
+        if target.is_some() {
+            return Err(invalid("duplicate member theme option"));
+        }
+        *target = Some(PathBuf::from(value));
         index += 2;
     }
+    let theme = base
+        .map(|p| Theme::load(&p))
+        .transpose()
+        .map_err(invalid)?
+        .unwrap_or_default();
+    let themes =
+        faction_terminal::seasons::Themes::load(theme, season.as_deref(), schedule.as_deref())
+            .map_err(invalid)?;
     let mut board = Board::open(&path)?;
     println!("Faction BBS access. SSH admission does not grant BBS membership.");
     match line("[L]ogin [R]egister [Q]uit: ", 1)?
@@ -74,7 +87,7 @@ fn run() -> Result<()> {
             let password = secret("Password (hidden): ")?;
             let s = board.authenticate(&name, &password)?;
             drop(password);
-            menu(&mut board, &s, &theme, true)?;
+            faction_cli::scheduled_menu(&mut board, &s, &themes, true)?;
         }
         "r" => {
             let name = line("Handle: ", 24)?;
