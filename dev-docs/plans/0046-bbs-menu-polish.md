@@ -24,7 +24,7 @@ listener, session cache, helper, schema change or changed defaults.
 - [x] Verify cell layout, navigation/delta output, invalid-pack rollback and plain
   fallback; run host and native NetBSD software checks as available.
 - [x] Update README/AGENTS/changelog and prepare a focused issue-linked PR.
-- [ ] Publish the PR and record its link on #25.
+- [x] Publish [PR #122](https://github.com/gonz0w/faction-bbs/pull/122) and record its link on #25.
 
 ## Validation and limits
 
