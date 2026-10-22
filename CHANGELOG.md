@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Polish #25 main menus in both terminal adapters: centered compact/wide panels,
+  continuous lightbar focus, explicit unavailable markers, safe sysop titles and
+  optional wide action descriptions. Keep arrow/hotkey authority and classic/plain fallback.
+- Coordinate base/manual seasonal palettes and add local theme authoring plus
+  original reference-palette previews; no archived art, runtime dependency or graphics-filter change.
+- Freeze all 124 actual #121 source inputs and its unchanged compatibility record
+  before changing presentation. Hardening stays later; no fresh capacity claim.
+
 - Validate twelve real terminal/font/tmux/screen profiles (#118), 48 local/SSH/
   native BBS sessions, image retention/deletion and live SSH resize recovery.
   Qualify old GNU screen as classic-only; retain default filtering and fallback.

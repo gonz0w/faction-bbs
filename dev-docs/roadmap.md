@@ -2,6 +2,15 @@
 
 Updated 2026-10-22. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
 
+## BBS menu and theme polish
+
+After merged #121's software compatibility work, #25 now improves the ordinary
+lightbar main menu and sysop authoring workflow. Compact/wide ASCII panels,
+base titles/descriptions and manual seasonal palettes preserve classic fallback,
+action checks and output limits. [Preview/customization](../docs/theme-packs.md)
+needs no live board. Original/authorized identity art, native visual review,
+custom grids and calendar automation remain separate work. Hardening stays later.
+
 ## Modern terminal foundation
 
 Merged #116 completes schema-7 Unicode composing. #96 now supplies optional

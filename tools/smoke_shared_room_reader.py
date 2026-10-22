@@ -51,7 +51,7 @@ def smoke(args):
 
     member_calls = 0
 
-    def member():
+    def member(columns=40, rows=18):
         nonlocal member_calls
         # Exercise the normal eight-launch burst/5-second refill; never tune it.
         if member_calls >= 7: time.sleep(5.1)
@@ -60,7 +60,7 @@ def smoke(args):
         assert uid.isdecimal()
         command = 'set -e; PATH=/usr/sbin:/sbin:/usr/bin:/bin; export PATH; chown factionterm "$(tty)"; exec su -m factionterm -c ' + shlex.quote(
             '/usr/local/libexec/faction-tty --socket /var/run/faction/terminal.sock --owner-uid ' + uid)
-        c = SSHConsole(admin[:-1] + ['-tt', admin[-1], command], columns=40, rows=18)
+        c = SSHConsole(admin[:-1] + ['-tt', admin[-1], command], columns=columns, rows=rows)
         children.append(c)
         c.expect('[L]ogin [R]egister [Q]uit: '); c.send('l')
         c.expect('Handle: '); c.send('reader'); c.password(password)
@@ -84,6 +84,11 @@ def smoke(args):
         uid = remote('id -u factionterm').strip(); assert uid.isdecimal()
         config = f'version=1\nstate_dir="{state}"\nsocket="/var/run/faction/terminal.sock"\nterminal_uid={uid}\nansi=true\n'
         remote('cat > /etc/faction/service.toml; chown root:factionipc /etc/faction/service.toml; chmod 640 /etc/faction/service.toml',config.encode())
+        if args.themes_dir:
+            theme_root = '/var/db/faction-reader-themes'
+            remote('test ! -e ' + theme_root + '; cp -R ' + shlex.quote(str(args.themes_dir)) + ' ' + theme_root + '; chown -R factiond:factionipc ' + theme_root + '; chmod -R go-rwx ' + theme_root)
+            config += f'theme="{theme_root}/base"\nseason="{theme_root}/seasons/autumn"\n'
+            remote('cat > /etc/faction/service.toml; chown root:factionipc /etc/faction/service.toml; chmod 640 /etc/faction/service.toml', config.encode())
         owner('init'); owner('register', 'reader'); status('a')
         body = ' '.join(f'word{i:03d}' for i in range(100)) + ' FINAL-MARKER'
         c = owner('login'); c.send('p'); c.expect('Room ID: '); c.send('1')
@@ -94,6 +99,23 @@ def smoke(args):
         remote('/etc/rc.d/faction_broker onestart')
         c = member(); unread(c, 1)
         checks.append('approved_member_over_native_uid_checked_shared_frontend')
+        if args.themes_dir:
+            assert b'LOCAL / MAIN' in c.transcript and b'Autumn frequencies.' in c.transcript
+            assert b'Find a room; follow the talk' not in c.transcript and b' --' in c.transcript
+            checks.append('shared_compact_sysop_theme_and_season_at_40x18')
+            wide = member(columns=80, rows=24)
+            assert b'Find a room; follow the talk' in wide.transcript
+            assert b'(unavailable)' in wide.transcript
+            start = len(wide.transcript)
+            wide.raw(b'\x1b'); wide.raw(b'[B'); wide.expect('\x1b[6;3H')
+            assert b'Room ID: ' not in wide.transcript[start:]
+            wide.raw(b'\x1b[A'); wide.expect('\x1b[5;3H'); wide.raw(b'\r')
+            wide.expect('Lobby (1 unread)'); back(wide)
+            checks.append('shared_wide_descriptions_lightbar_and_arrow_enter')
+            wide.resize(40, 18); wide.expect('Command (then Enter): ')
+            wide.send('q'); wide.expect('Logged out.'); wide.finish()
+            checks.append('shared_resized_theme_uses_plain_recovery')
+
         c.raw(b'n'); c.expect('Room ID: '); c.send('1'); c.expect('Subject: Midnight signal'); c.expect('Posted: '); c.expect(' UTC'); c.expect('More? [y/N]: ')
         c.send('n'); back(c); unread(c, 1)
         checks.append('partial_message_does_not_advance_unread')
@@ -213,4 +235,5 @@ if __name__ == '__main__':
     p.add_argument('--bin-dir', type=Path, required=True)
     p.add_argument('--disposable-fixture', action='store_true')
     p.add_argument('--output', type=Path)
+    p.add_argument('--themes-dir', type=Path, help='trusted theme directory already copied into the disposable guest')
     smoke(p.parse_args())

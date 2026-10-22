@@ -10,6 +10,13 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
+The [BBS menus and sysop themes](docs/theme-packs.md) now have a centered
+lightbar, compact/wide layouts, action descriptions and coordinated manual
+seasonal palettes. Arrow/Enter and direct hotkeys share the same authorized
+actions; plain/classic recovery stays available. A local theme preview tool needs
+no running board. Original identity-art acceptance and seasonal scheduling remain open.
+
+
 **Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**
 
 Faction already runs an approved-membership board with hidden-password login,

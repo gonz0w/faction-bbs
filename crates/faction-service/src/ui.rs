@@ -135,7 +135,7 @@ impl Client {
         Ok(())
     }
     fn focused<'a>(&self, theme: &'a Theme, sysop: bool) -> Menu<'a> {
-        let mut menu = Menu::new(theme, sysop);
+        let mut menu = Menu::with_columns(theme, sysop, self.dimensions.0);
         for _ in 0..theme.entries().len() {
             if menu.focus() == self.focus {
                 break;

@@ -129,17 +129,22 @@ pub fn select(
     if !capable() {
         return Ok(None);
     }
-    let dimensions = size();
+    let Some(dimensions @ (40..=240, 18..=100)) = size() else {
+        return Ok(None);
+    };
     let mut raw = Raw::open()?;
     raw.sync = caps.synchronized;
-    let (mut decoder, mut menu) = (Decoder::new(), Menu::new(theme, sysop));
+    let (mut decoder, mut menu) = (
+        Decoder::new(),
+        Menu::with_columns(theme, sysop, dimensions.0),
+    );
     let mut output = io::stdout();
     output.write_all(b"\x1b[?25l")?;
     output.write_all(caps.frame(&menu.render(), true).as_bytes())?;
     output.flush()?;
     let stdin = io::stdin();
     loop {
-        if size() != dimensions {
+        if size() != Some(dimensions) {
             return Ok(None);
         }
         // Poll the actual stdin TTY, not /dev/tty (Darwin cannot poll that alias).

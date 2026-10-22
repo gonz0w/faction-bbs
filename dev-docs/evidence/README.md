@@ -99,3 +99,10 @@ workflow tests separately; historical file-area tests were not relabeled as new 
 - [Authored subjects and local article NetBSD software evidence](authored-articles-netbsd/README.md)
 
 - [Broader article profile and original INN software evidence](broader-articles-netbsd/README.md)
+
+The fifteenth snapshot `sources/pre25` freezes all 124 distinct source inputs
+from the original [real terminal record](terminal-compatibility/results.json):
+115 application/build, seven harness and two reproduction files. Its pinned
+`terminal-compatibility-baseline-manifest.json` also locks the whole record.
+Fifteen snapshots and twenty-seven historical result identities remain unchanged;
+menu changes do not inherit #118's emulator/image results as fresh measurements.

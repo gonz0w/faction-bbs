@@ -5,3 +5,4 @@ welcome = "Autumn frequencies."
 normal = { fg = 3, bg = 0 }
 focus = { fg = 15, bg = 1, bold = true }
 hotkey = { fg = 14, bg = 0, bold = true }
+disabled = { fg = 7, bg = 0 }
