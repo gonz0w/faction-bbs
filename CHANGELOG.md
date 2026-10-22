@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add authored room subjects, previewed inherited reply defaults and subject-aware
+  retry checks in local/worker and shared terminal sessions (#103). Keep schema 6.
+- Connect approved stored posts to bounded local proto-articles with safe aliases,
+  UTC, group/Path mapping, ordered references and strict duplicate/conflict
+  comparison. Preserve canonical bodies, unknown legacy dates and current file
+  permissions; no publication/import/NNTP runtime. Add independent MIME parsing
+  and separate synthetic codec allocation measurements.
+
 - Add schema-6 persistent post metadata (#103): stable local article IDs, generated
   subject labels and actual new-post UTC timestamps; preserve unknown legacy dates,
   body/reply/unread data and old exports. Show bounded metadata headers in both

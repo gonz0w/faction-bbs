@@ -183,6 +183,7 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "argon2",
  "base64",
+ "faction-articles",
  "getrandom",
  "rusqlite",
  "rustix",

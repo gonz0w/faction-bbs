@@ -95,3 +95,5 @@ workflow tests separately; historical file-area tests were not relabeled as new 
 - [Room reader and article batch](room-reader-netbsd/README.md) — native codec tests and UID/PTY shared-reader controls; no new capacity claim.
 
 - [Post metadata evidence](post-metadata-netbsd/README.md) — schema-6 migration/restore tests and real native metadata headers; no hardened deployment claim.
+
+- [Authored subjects and local article NetBSD software evidence](authored-articles-netbsd/README.md)

@@ -53,10 +53,12 @@ enum State {
     ReadMore(i64, i64, usize),
     PostRoom,
     PostReply(i64),
-    PostBody(i64, Option<i64>),
+    PostSubject(i64, Option<i64>),
+    PostBody(i64, Option<i64>, String),
     PostRetry {
         room: i64,
         reply: Option<i64>,
+        subject: String,
         body: String,
         key: String,
     },

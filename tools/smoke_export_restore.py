@@ -63,6 +63,7 @@ def smoke(binary):
             alice.expect('Command (then Enter): ')
             alice.send('p'); alice.expect('Room ID: '); alice.send('1')
             alice.expect('Reply to post ID (blank for new message): '); alice.send('')
+            alice.expect('Subject (blank for generated/reply default): '); alice.send('')
             alice.expect('Message (one line, up to 1024 bytes): ')
             alice.send('recovery fixture post'); alice.expect('Posted #1.')
             alice.expect('Command (then Enter): ')

@@ -1,15 +1,17 @@
 # Persistent discussion metadata and schema-6 upgrade
 
 Each room post now has a persistent public article identifier and a generated
-subject label. Newly created posts record the host's current UTC Unix time.
+subject label. Members can now [author subjects or accept reply defaults](room-articles.md).
+Newly created posts record the host's current UTC Unix time.
 The reader shows the subject and UTC time alongside the existing author/reply
 context. Post order continues to follow local IDs, including when the host clock
 moves backward; timestamps are not trusted time attestations.
 
 Existing posts migrate with generated `Legacy message #ID` labels and **unknown
 original dates**. Their bodies, local IDs, replies and unread positions stay intact.
-These labels are derived metadata, not recovered authored subjects. Entering an
-original subject in the composer and wider article/header interop remain #103.
+These legacy labels are derived metadata, not recovered authored subjects.
+New subjects are authored or defaulted during posting; wider header/MIME and
+independent news-software interoperability remain #103.
 
 IDs use `<opaque-local-id@faction.invalid>` for this local proto-article stage.
 The reserved domain is not a deliverable mailbox or a home authority. IDs are
@@ -17,7 +19,9 @@ public references, never credentials, signatures, membership or posting permissi
 They carry no username, host address, private rotating board identity or file
 namespace. They remain stable on retries/reopen and schema-6 export/restore.
 Migrating an older export that never contained these IDs assigns new ones.
-Publication, real From/Path/group mapping and duplicate-ID policy remain gated.
+Publication and real peering identities/routes remain gated. The
+[local projection](room-articles.md) uses reserved aliases and strict ID-conflict
+comparison without a remote import or publication path.
 
 ## Upgrade procedure
 

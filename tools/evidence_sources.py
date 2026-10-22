@@ -42,11 +42,17 @@ def room_reader_baseline_manifest(root=ROOT):
     return json.loads(raw)
 
 
+def post_metadata_baseline_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/post-metadata-baseline-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='ed55e477c95b313004aebe7f7ab00aa16d9640bdc20f60a1490b6b011182cd57','frozen post metadata baseline changed'
+    return json.loads(raw)
+
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root)]
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name
