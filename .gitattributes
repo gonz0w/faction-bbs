@@ -31,3 +31,8 @@ crates/faction-articles/tests/fixtures/*.article -text whitespace=cr-at-eol
 
 # Preserve the exact executed terminal compatibility baseline.
 dev-docs/evidence/sources/pre25/** -text
+
+dev-docs/evidence/sources/pre25-calendar/** -text
+
+# ANSI templates preserve authored CRLF and canonical import bytes.
+themes/seasons/**/*.ans -text whitespace=cr-at-eol

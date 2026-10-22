@@ -106,3 +106,9 @@ from the original [real terminal record](terminal-compatibility/results.json):
 `terminal-compatibility-baseline-manifest.json` also locks the whole record.
 Fifteen snapshots and twenty-seven historical result identities remain unchanged;
 menu changes do not inherit #118's emulator/image results as fresh measurements.
+
+The sixteenth snapshot `sources/pre25-calendar` freezes all 122 distinct inputs
+and three generated previews used by the original menu record (#122); those
+previews are included within the 122 total. `menu-themes-baseline-manifest.json`
+pins both the source tree and unchanged result. Keep sixteen snapshots and
+twenty-eight historical result identities fixed when extending calendars/art.
