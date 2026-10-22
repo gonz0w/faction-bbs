@@ -90,7 +90,7 @@
     "crates/faction-terminal/examples/graphics_budget.rs": "d4561e8baeffb8a4f1fe41665113aab53b4b6687e9826f2423e9f7d840bec898",
     "crates/faction-terminal/examples/preview_theme.rs": "a5cb96b97139fc6b3bbe7501099dfeb4add83dfd997f9f94883596f0ae43dc79",
     "crates/faction-terminal/examples/profile_text.rs": "7072356b5bd4810996daa47983de04fa213ae5808451fb0537459eac9c84cc46",
-    "crates/faction-terminal/src/art.rs": "02a07c3d37ab79a423fbee9360f8eb7ced7542e4d3b0406c852f4079b811fe42",
+    "crates/faction-terminal/src/art.rs": "4818766ad14ea4dacc9b136eed790c30caaadad8cc32fd90e1d689f6271bcc19",
     "crates/faction-terminal/src/capabilities.rs": "6cc8a7dfbd0be694024304aae21a22683d7b703c7b77d7bd57c4f8a7367b0409",
     "crates/faction-terminal/src/editor.rs": "110c935ac2cb7915da060b82b8d1cae94790cb4032259e8bcd744aaf7f8004fb",
     "crates/faction-terminal/src/graphics.rs": "d8ef6ce36de6f32c970a4dc10dab8c50db374908fbaead362562722be427233a",
@@ -107,7 +107,7 @@
     "crates/faction-terminal/tests/reader.rs": "bd06999396acee7421734c25a6f4f4b988b05e011de09164e270ef12fa538a5c",
     "crates/faction-terminal/tests/seasons.rs": "e413e499dd487a919440674412eaea35b420f74ae01ccfb57324293fa72985e2",
     "crates/faction-terminal/tests/subjects.rs": "b51dc44a70a4b97e04a71ace02a477f50897a243dce3a7c09dc9e87e5b6476ae",
-    "crates/faction-terminal/tests/terminal.rs": "f233f37457ff6609a6912a0e2b97c7a4edca4f627dfd58cff617c6babaed8679",
+    "crates/faction-terminal/tests/terminal.rs": "c344eb1b50a7c1d9f7dd57f660ffac8a01d93a0058a9a266980979d0c4fd69a5",
     "crates/faction-unix/Cargo.toml": "2e0eaea46081f07c3fc76b81de83ac2d972db0c59b1e8d98d4643584dbc8210b",
     "crates/faction-unix/build.rs": "b04a4c19a39511f99d8cd1cf5b85bc8008baffeca53fc393f0568c13c6bd2e32",
     "crates/faction-unix/src/calendar.c": "60bba0a6772b86324892e3abbffe509af1b1ddb42eca082d7fdcf8c610e91747",
@@ -193,8 +193,8 @@
     "result": "pass"
   },
   "installed_native_binaries_sha256": {
-    "/usr/local/libexec/faction": "6cfb57cffa6fcc0b91f3e392bdd6e0ab85621bb6a2888d51e8827228f3415961",
-    "/usr/local/libexec/faction-service": "a714f9b09d944aa301a2e31239ef644c7bc9a81926d46a990e38e38255786213",
+    "/usr/local/libexec/faction": "4d98f85ae2da1c8ac315ee266faaa7b009e1448150f37c018ca1c8ea9648e121",
+    "/usr/local/libexec/faction-service": "404d91a201dfe76e1f7d13a05d3aa314304d51985d42e23c1fb13e1be68afc12",
     "/usr/local/libexec/faction-tty": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c"
   },
   "limits": {
