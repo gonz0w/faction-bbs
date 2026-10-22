@@ -91,7 +91,9 @@ authoring/validation; an installed BBS reads only the prebuilt assets.
 These are reference-palette renders of the actual canonical output, not Ghostty/
 other-emulator screenshots or font certification. Terminal palettes and CP437
 Unicode glyph metrics can differ; the short/compact/plain paths remain available.
+See the [real-terminal compatibility guide](artwork-terminal-compatibility.md) for
+measured cell placement, multiplexer viewport requirements and classic recovery.
 Review letter readability, silhouette, palette, margins and transition into the
-welcome/menu before accepting a board identity. Final owner acceptance, real
-terminal/font review, animation and larger art formats remain #13/#25/#29.
+welcome/menu before accepting a board identity. Final owner acceptance, visual
+font/palette review, animation and larger art formats remain #13/#25/#29.
 Hardening stays later; the preserved playground remains off.

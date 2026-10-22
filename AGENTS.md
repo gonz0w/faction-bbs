@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #125, implement #25
-original ANSI artwork and polished login screens; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #126, validate #25
+Nightwire artwork across real terminals and address demonstrated rendering issues; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -748,3 +748,31 @@ edits. Eighteen render profiles/seven local routes per OS and seven actual SSH/
 native routes pass; 171 Rust per OS / 112 host Python pass. All 144 prior paging
 inputs remain unchanged, with no new snapshot/runtime/default/dependency change.
 Owner art acceptance, actual font/emulator review and new capacity remain unclaimed.
+
+## Nightwire real-terminal validation (#25)
+
+Read plan 0051 and docs/artwork-terminal-compatibility.md. New offline fixture
+tools measure canonical compiled output with actual emulator cursor reports.
+Keep product/runtime/theme bytes unchanged unless a defect is demonstrated;
+preserve pinned bytes before any edit. At least 80x24 usable content is required
+for full art, including inside a multiplexer; compact/plain remain recovery.
+The private tmux fixture disables only its own status bar. Real 40x18 windows
+exercise compact cards/menus separately. Raw response TTYs must explicitly model
+the normal output newline processing preserved by the product adapters.
+
+Use only distinct private reference bundle IDs, owned windows/processes and
+checked reference artifacts. Never modify installed apps, personal terminal or
+multiplexer settings, or request desktop capture/automation permission for this
+fixture. Cursor widths and canonical SGR checks are not pixels, glyph seams, actual
+font-face/palette certification or owner artwork acceptance. No new native VM,
+capacity, production support or hardening claim; saved playground remains off.
+
+The nightwire-terminals record pins 167 unchanged original Nightwire inputs and
+ten actual probe/reference harness sources. Fifteen profiles pass 240 frames /
+2,476 cursor checkpoints / 187 repeated-glyph observations. Actual missing-font
+Alacritty was 80x20 and ran only compact authoring controls; do not claim automatic
+BBS menu-layout selection or full-art/font coverage for that profile. All product
+inputs and old result records remain unchanged, so no new snapshot or native run.
+Keep eighteen snapshots/thirty historical identities and all thirty-two saved
+evidence guards. Preserve these new measured harness bytes and the whole result
+before future edits; never refresh historical hashes.

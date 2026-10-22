@@ -139,3 +139,9 @@ render profiles and seven local/worker routes per OS, seven actual SSH/native
 routes and 157 native input matches. All 144 prior paging inputs remain unchanged;
 new assets require no new frozen snapshot. Owner artwork acceptance and real
 emulator/font certification remain open, with no new capacity claim.
+
+[Nightwire real-terminal measurements](nightwire-terminals/README.md) record
+canonical artwork/menu placement and CP437 widths through private real macOS
+emulators, including actual compact windows. The original native Nightwire
+record and its 167 distinct inputs remain unchanged. No new source snapshot,
+native/capacity, pixel/font certification or product runtime change is implied.

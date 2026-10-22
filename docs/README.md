@@ -48,3 +48,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Article profile v2 and original INN validation](article-profile.md)
 
 - [Original Nightwire ANSI artwork and login screens](artwork-nightwire.md).
+
+- [Nightwire terminal compatibility](artwork-terminal-compatibility.md): real-emulator cell placement, viewport requirements and classic recovery.
