@@ -28,3 +28,6 @@ dev-docs/evidence/sources/*/dev-docs/compatibility/*.patch whitespace=-blank-at-
 
 # Article fixtures retain protocol-mandated CRLF bytes.
 crates/faction-articles/tests/fixtures/*.article -text whitespace=cr-at-eol
+
+# Preserve the exact executed terminal compatibility baseline.
+dev-docs/evidence/sources/pre25/** -text
