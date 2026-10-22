@@ -14,7 +14,7 @@ classic fallback remains, hardening later. #123 merged as fbfe245.
 - [x] Validate host and native NetBSD software, including actual shared SSH UI;
   retain normal admission and output limits; no hardware/250-user/new RSS claim.
 - [x] Update README, customization/decision/evidence documentation and CI.
-- [ ] Update issue, open and attach a focused PR against the existing feature base.
+- [x] Update issue, open and attach a focused PR against the existing feature base.
 
 Design: sysop entry array remains hotkey/plain/Tab order. A grid declares all entry
 coordinates; narrow terminals render that array vertically. Shared focus is an
@@ -56,3 +56,11 @@ Final review found that empty SGR reset cleared the current style but retained t
 iCE intensity flag for subsequent background changes. Reset both states and add a
 known-output assertion; rerun final host/native tests and the whole actual shared
 matrix before collecting exact-source evidence. No old measured record changes.
+
+## Handoff
+
+[PR #124](https://github.com/gonz0w/faction-bbs/pull/124) is open and attached against
+feat/103-articles-and-room-reader. #25 remains open for the stated art/long-form
+follow-ups. Final code and regenerated native evidence pass clean Git-archive
+repository/source/menu/seasonal/custom-menu checks. Current-head GitHub checks
+remain the merge gate; no authorization to merge this new PR is assumed.
