@@ -144,3 +144,8 @@ Credential-budget lock files coordinate running local processes and contain no
 passwords. They are not part of the snapshot artifact; a fresh restored board
 creates new locks on credential work. Never unlink them from a live source board
 or interpret their presence as approval/authentication state.
+
+The optional [Recovery panel](backup-checks.md) reports explicit checks of complete
+file-area bundles. A standalone catalog export is not a complete file backup and
+does not generate such a receipt. `backup.status` is disposable local telemetry,
+not authoritative board data and not part of export/fresh restore.

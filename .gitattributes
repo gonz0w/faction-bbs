@@ -55,3 +55,4 @@ themes/nightwire*/**/*.ans -text whitespace=cr-at-eol
 dev-docs/evidence/sources/pre95-operator/** -text
 
 dev-docs/evidence/sources/pre95-hoststats/** -text
+dev-docs/evidence/sources/pre95-recovery/** -text

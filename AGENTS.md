@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #128, batch remaining
-#95/#18/#98 host counters, recent graphs and local console polish; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #129, continue useful
+#95/#18/#98 recovery visibility with real bundle checks and local console support; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -834,3 +834,39 @@ controls per OS, ten shared controls, four actual serial/getty controls and seve
 shared artwork regressions pass. Dashboard 2,440 KiB RSS / one LWP; owner 5,144 KiB /
 four LWPs; minimum sampled whole-VM free 332.66 MiB. This one-member observation
 has no per-refresh helper; keep all source/result hashes fixed before later edits.
+
+
+## Recovery visibility batch
+
+Read plan 0054, ADR 0049 and docs/backup-checks.md. Twenty-first snapshot
+`sources/pre95-recovery` and `operator-host-baseline-manifest.json` freeze all 162
+distinct prior source/harness inputs and the whole host-stat result. Keep twenty-one
+snapshots and thirty-four historical identities unchanged; preserve new measured
+bytes before future edits. Never refresh old hashes to fit new runtime sources.
+
+`file_area_backup.py verify` checks a complete selected bundle without creating
+restore destinations or reading/changing live DB/locks. Existing backup still
+requires stopped/drained PID/transfer locks; restore still needs fresh paths and
+checks the whole bundle first. Existing authorized root helper runs Rust catalog
+validation as owner; no privilege or host operation enters the dashboard.
+`--record-status --board PATH` is opt-in for backup/verify, refused for restore.
+Only a versioned <=512-byte owner-private numeric receipt is published. Last attempt
+and last verified data stay distinct; a failed recheck retains the earlier success
+without making it current. No filenames, hashes, contents, credentials or keys.
+
+D:Data is the fourth read-only panel; B/H/D/I and arrows/Tab retain compact/plain
+fallback. **Board:** age refers to the service snapshot; backup ages are historical
+and independent. A receipt does not prove artifact identity against live state,
+continued availability, off-host copies, included themes/OS/device keys or restore
+success. Peer telemetry requires actual future adapters. Host applies, hardening,
+physical SBC and further 250-member experiments remain outside this batch.
+
+
+`operator-recovery-netbsd` pins 159 selected native source matches and fourteen
+relevant host harness/test inputs. Rust 184 per OS/Python 118, eleven bundle/check/
+restore controls per OS, eight themed UI per OS, ten shared, four serial and seven
+shared art checks pass. Native proof uses actual root CLI with distinct non-root
+owner/file accounts; single-UID developer APIs do not prove that role boundary.
+Dashboard sampled 2,436 KiB RSS/one LWP, owner 5,156 KiB/four LWPs, minimum VM free
+333.37 MiB. Preserve measured bytes/whole result before later edits; keep all 35
+saved-evidence guards. No new capacity, public endpoint or host/hardening claim.

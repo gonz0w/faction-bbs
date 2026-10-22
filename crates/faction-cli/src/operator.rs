@@ -14,6 +14,67 @@ mod host;
 use host::{Host, Reading, Sampler};
 
 #[derive(Default)]
+enum Backup {
+    #[default]
+    Missing,
+    Unavailable,
+    Recorded(operator::backup::Receipt),
+}
+impl Backup {
+    fn read(directory: &std::path::Path) -> Self {
+        match operator::backup::read(directory) {
+            Ok(value) => Self::Recorded(value),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Self::Missing,
+            Err(_) => Self::Unavailable,
+        }
+    }
+    fn lines(&self, clock: u64) -> Vec<String> {
+        let age = |stamp| {
+            if stamp == 0 {
+                "never".to_owned()
+            } else {
+                clock
+                    .checked_sub(stamp)
+                    .map_or_else(|| "CLOCK UNKNOWN".to_owned(), |v| format!("{v}s ago"))
+            }
+        };
+        let mut out = vec!["RECOVERY / historical bundle check".to_owned()];
+        match self {
+            Self::Missing => out.push("Backup check: UNRECORDED".into()),
+            Self::Unavailable => out.push("Backup check: UNAVAILABLE".into()),
+            Self::Recorded(r) => {
+                out.push(format!(
+                    "Last attempt: {}",
+                    if r.successful { "VERIFIED" } else { "FAILED" }
+                ));
+                out.push(format!("Attempt: {}", age(r.attempted)));
+                out.push(format!("Last verified: {}", age(r.verified)));
+                out.push(format!(
+                    "Catalog: {}",
+                    mib((r.verified != 0).then_some(r.catalog_bytes))
+                ));
+                out.push(format!(
+                    "Objects: {} / {}",
+                    r.objects,
+                    mib((r.verified != 0).then_some(r.object_bytes))
+                ));
+            }
+        }
+        out.extend(
+            [
+                "Operator-selected local bundle.",
+                "As of check; no live revalidation.",
+                "No off-host or restore guarantee.",
+                "Themes/OS/device keys excluded.",
+                "Peer adapters: uninstrumented.",
+            ]
+            .map(str::to_owned),
+        );
+        out
+    }
+}
+
+#[derive(Default)]
 struct History {
     connected: VecDeque<Option<u8>>,
     cpu: VecDeque<Option<u8>>,
@@ -163,15 +224,16 @@ fn lines(
     available: bool,
     state: (usize, bool, usize, bool),
     history: &History,
+    backup: &Backup,
 ) -> Vec<String> {
     let (view, paused, columns, unicode) = state;
     let mut out = vec![
         format!("{} / LOCAL SYSOP", theme.board()),
         format!(
-            "[B]oard [H]ost [I]nfo | {}",
+            "[B]oard [H]ost [D]ata [I]nfo | {}",
             if paused { "PAUSED" } else { "READ ONLY" }
         ),
-        freshness(snapshot, available, now()),
+        format!("Board: {}", freshness(snapshot, available, now())),
         String::new(),
     ];
     if view == 0 {
@@ -276,12 +338,14 @@ fn lines(
             })
             .collect();
         out.push(trace("Net hist*: ", &net, columns, unicode));
-        out.push("*window peak; peers/backup uninstrumented".into());
+        out.push("*window peak; D:backup check".into());
+    } else if view == 2 {
+        out.extend(backup.lines(now()));
     } else {
         out.extend(
             [
                 "OS owner/root access; not a BBS role.",
-                "Arrows/Tab or B/H/I: change panel.",
+                "Arrows/Tab or B/H/D/I: change panel.",
                 "P: pause/resume local sampling.",
                 "R: redraw; sampling stays rate-limited.",
                 "Q or Ctrl-C/D: return to OS shell.",
@@ -294,7 +358,7 @@ fn lines(
         );
     }
     out.push(String::new());
-    out.push("Q:quit P:pause R:redraw B/H/I:views".into());
+    out.push("Q:quit P:pause R:redraw B/H/D/I:views".into());
     out
 }
 
@@ -302,7 +366,7 @@ pub fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local sysop console (read-only, after OS login)\nUsage: faction-sysop --state-dir PATH [--theme PACK] [--ansi|--plain] [--unicode] [--once] [--view board|host|help] [--refresh 2..60]\nUnix state-owner/root access required. Never use as a member SSH forced command."
+            "Faction local sysop console (read-only, after OS login)\nUsage: faction-sysop --state-dir PATH [--theme PACK] [--ansi|--plain] [--unicode] [--once] [--view board|host|data|help] [--refresh 2..60]\nUnix state-owner/root access required. Never use as a member SSH forced command."
         );
         return Ok(());
     }
@@ -333,8 +397,9 @@ pub fn run() -> Result<()> {
                     view = match v.to_str() {
                         Some("board") => 0,
                         Some("host") => 1,
-                        Some("help") => 2,
-                        _ => return Err(invalid("view must be board, host or help")),
+                        Some("data") => 2,
+                        Some("help") => 3,
+                        _ => return Err(invalid("view must be board, host, data or help")),
                     };
                 } else {
                     refresh = v
@@ -379,6 +444,7 @@ pub fn run() -> Result<()> {
         (interactive || (ansi && io::stdout().is_terminal())).then_some(ExitScreen { ansi });
     let mut sampler = Sampler::default();
     let mut host = sampler.sample(&directory);
+    let mut backup = Backup::read(&directory);
     let mut history = History::default();
     history.push(snapshot.as_ref(), available, &host);
     let mut decoder = Decoder::new();
@@ -398,6 +464,7 @@ pub fn run() -> Result<()> {
                 Err(_) => available = false,
             }
             host = sampler.sample(&directory);
+            backup = Backup::read(&directory);
             history.push(snapshot.as_ref(), available, &host);
             redraw = true;
         }
@@ -417,6 +484,7 @@ pub fn run() -> Result<()> {
                 available,
                 (view, paused, usize::from(columns), unicode && use_ansi),
                 &history,
+                &backup,
             );
             content[2].push_str(&format!(" | {columns}x{rows}"));
             let rendered: Vec<_> = content
@@ -463,11 +531,12 @@ pub fn run() -> Result<()> {
             if let Some(key) = decoder.feed(byte, Instant::now()) {
                 match key {
                     Key::Cancel | Key::Hotkey(b'Q') => break,
-                    Key::Left | Key::Up => view = (view + 2) % 3,
-                    Key::Right | Key::Down | Key::Next => view = (view + 1) % 3,
+                    Key::Left | Key::Up => view = (view + 3) % 4,
+                    Key::Right | Key::Down | Key::Next => view = (view + 1) % 4,
                     Key::Hotkey(b'B') => view = 0,
                     Key::Hotkey(b'H') => view = 1,
-                    Key::Hotkey(b'I') => view = 2,
+                    Key::Hotkey(b'D') => view = 2,
+                    Key::Hotkey(b'I') => view = 3,
                     Key::Hotkey(b'P') => {
                         paused = !paused;
                         sampler.reset();
@@ -522,7 +591,17 @@ mod tests {
     #[test]
     fn compact_lines_are_inert_and_leave_right_margin() {
         assert_eq!(safe_line("ab\x1bcd", 5), "ab?c");
-        for view in 0..3 {
+        let receipt = Backup::Recorded(operator::backup::Receipt {
+            attempted: 10,
+            verified: 10,
+            successful: true,
+            catalog_bytes: 4096,
+            object_bytes: 100,
+            objects: 1,
+        });
+        assert!(receipt.lines(20).len() <= 11);
+        assert!(receipt.lines(5).iter().any(|s| s.contains("CLOCK UNKNOWN")));
+        for view in 0..4 {
             let rows = lines(
                 &Theme::default(),
                 None,
@@ -530,6 +609,7 @@ mod tests {
                 false,
                 (view, false, 40, false),
                 &History::default(),
+                &receipt,
             );
             assert!(rows.len() <= 17);
             assert!(rows.iter().all(|s| safe_line(s, 40).len() < 40));

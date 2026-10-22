@@ -47,7 +47,7 @@ def run(a):
         command="su - factiond -c 'echo $$ > "+state+"/operator.fixture.pid; exec /usr/local/libexec/faction-sysop --state-dir "+state+" --ansi --refresh 2'"
         op=Operator(admin[:-1]+['-tt',admin[-1],command]);children.append(op)
         op.expect('LOCAL SYSOP');op.expect('Connected: 1 / 8');op.raw(b'h');op.expect('RAM used:');op.expect('Net RX/TX:');time.sleep(2.2);op.raw(b'r');op.expect('KiB/s');op.expect('CPU hist:');op.raw(b'i');op.expect('OS owner/root access; not a BBS role.')
-        op.buffer=b'';op.resize(40,18);op.expect('40x18');op.expect('Q:quit P:pause R:redraw B/H/I:views');op.raw(b'b');op.expect('Connected: 1 / 8')
+        op.buffer=b'';op.resize(40,18);op.expect('40x18');op.expect('Q:quit P:pause R:redraw B/H/D/I:views');op.raw(b'b');op.expect('Connected: 1 / 8')
         checks.append('native_owner_pty_panels_and_actual_ssh_resize')
         samples=[]
         for _ in range(12):

@@ -32,7 +32,7 @@ def run(a):
     # Establish an authenticated shell, then run exactly the read-only command.
     send(b"printf '\\nFACTION_SHELL_READY\\n'\n");expect(b'\r\nFACTION_SHELL_READY\r\n')
     send(("test -f /etc/faction-disposable-test || exit 1; stty columns 80 rows 24; before=$(stty -g); export TERM=vt100; "+a.binary+' --state-dir '+a.state_dir+" --ansi --refresh 2; after=$(stty -g); if [ \"$before\" = \"$after\" ]; then printf '\\nTTY_RESTORED\\n'; fi\n").encode())
-    expect(b'LOCAL SYSOP');send(b'h');expect(b'RAM used:');expect(b'Net RX/TX:');send(b'i');expect(b'OS owner/root access; not a BBS role.')
+    expect(b'LOCAL SYSOP');send(b'h');expect(b'RAM used:');expect(b'Net RX/TX:');send(b'd');expect(b'RECOVERY / historical bundle check');send(b'i');expect(b'OS owner/root access; not a BBS role.')
     send(b'q');expect(b'\x1b[24;1H\x1b[0m');expect(b'\r\nTTY_RESTORED\r\n');send(b'exit\n');expect(b'login:')
     result=dict(result='pass',checks=['normal_os_password_login','owner_console_launch_and_panels','reserved_row_exit_and_termios_restore','logout_returns_to_getty'],count=4,login_profile_changed=False,autologin=False,physical_console_claim=False)
     a.output.write_text(json.dumps(result,indent=2)+'\n');a.output.chmod(0o600)

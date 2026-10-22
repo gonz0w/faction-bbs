@@ -11,7 +11,7 @@ def isolated_history(digest):
     # ExitStack avoids Python 3.12's static block limit as snapshots accumulate.
     with ExitStack() as mocks:
         mocks.enter_context(patch.object(evidence,'MANIFEST_SHA256',digest))
-        for name in ('key_manifest', 'global_manifest', 'file_baseline_manifest', 'native_client_baseline_manifest', 'mail_client_baseline_manifest', 'room_reader_baseline_manifest', 'post_metadata_baseline_manifest', 'authored_articles_baseline_manifest', 'broader_articles_baseline_manifest', 'unicode_subjects_baseline_manifest', 'modern_terminals_baseline_manifest', 'kitty_graphics_baseline_manifest', 'terminal_compatibility_baseline_manifest', 'menu_themes_baseline_manifest', 'seasonal_themes_baseline_manifest', 'custom_menus_baseline_manifest', 'nightwire_baseline_manifest', 'operator_baseline_manifest'):
+        for name in ('key_manifest', 'global_manifest', 'file_baseline_manifest', 'native_client_baseline_manifest', 'mail_client_baseline_manifest', 'room_reader_baseline_manifest', 'post_metadata_baseline_manifest', 'authored_articles_baseline_manifest', 'broader_articles_baseline_manifest', 'unicode_subjects_baseline_manifest', 'modern_terminals_baseline_manifest', 'kitty_graphics_baseline_manifest', 'terminal_compatibility_baseline_manifest', 'menu_themes_baseline_manifest', 'seasonal_themes_baseline_manifest', 'custom_menus_baseline_manifest', 'nightwire_baseline_manifest', 'operator_baseline_manifest', 'operator_host_baseline_manifest'):
             mocks.enter_context(patch.object(evidence,name,return_value={'files':{}}))
         yield
 
