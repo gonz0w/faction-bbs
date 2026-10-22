@@ -44,8 +44,8 @@ fn split_coalesced_and_crlf_keys() {
         vec![
             Key::Up,
             Key::Down,
-            Key::Down,
-            Key::Up,
+            Key::Right,
+            Key::Left,
             Key::Hotkey(b'P'),
             Key::Hotkey(b'P'),
             Key::Enter
@@ -515,4 +515,194 @@ fn focused_hotkey_keeps_full_lightbar_background_and_unavailable_is_explicit() {
     assert!(frame.contains("(unavailable)"));
     let compact = Menu::new(&theme, false).render();
     assert!(compact.contains("Sysop controls             --"));
+}
+
+fn grid_pack() -> Pack {
+    let p = Pack::new(include_str!("../../../themes/grid/theme.toml"));
+    fs::write(
+        p.0.join("login.txt"),
+        include_bytes!("../../../themes/grid/login.txt"),
+    )
+    .unwrap();
+    fs::write(
+        p.0.join("login.ans"),
+        include_bytes!("../../../themes/grid/login.ans"),
+    )
+    .unwrap();
+    p
+}
+#[test]
+fn grid_arrows_are_spatial_tab_and_hotkeys_keep_declared_order() {
+    let p = grid_pack();
+    let t = Theme::load(&p.0).unwrap();
+    let mut m = Menu::with_columns(&t, false, 80);
+    assert_eq!(m.feed(Key::Right), None); // Sysop at row 1 unavailable: Terminal is nearest.
+    assert_eq!(m.feed(Key::Enter), Some(Action::Terminal));
+    m.feed(Key::Left);
+    assert_eq!(m.feed(Key::Enter), Some(Action::History)); // same row in left column
+    m.feed(Key::Next);
+    assert_eq!(m.feed(Key::Enter), Some(Action::Post)); // array order, not spatial order
+    assert_eq!(m.feed(Key::Hotkey(b's')), None);
+    assert_eq!(m.feed(Key::Hotkey(b'f')), None);
+    assert_eq!(m.feed(Key::Hotkey(b'd')), None);
+    assert_eq!(m.feed(Key::Hotkey(b'r')), Some(Action::Rooms));
+    m.restore_focus(0);
+    m.feed(Key::Up);
+    assert_eq!(m.feed(Key::Enter), Some(Action::Chat)); // wraps in its column
+    let mut admin = Menu::with_columns(&t, true, 80);
+    admin.feed(Key::Right);
+    assert_eq!(admin.feed(Key::Enter), Some(Action::Sysop));
+    assert_eq!(
+        decode(b"\x1b[C\x1bOD\t"),
+        vec![Key::Right, Key::Left, Key::Next]
+    );
+}
+#[test]
+fn grid_focus_restores_by_index_and_classic_layout_keeps_every_action() {
+    let p = grid_pack();
+    let mut t = Theme::load(&p.0).unwrap();
+    t.set_files_enabled(true).unwrap();
+    t.set_doors_enabled(true);
+    for columns in [40, 79, 80, 132, 240] {
+        let mut m = Menu::with_columns(&t, true, columns);
+        for i in 0..t.entries().len() {
+            m.restore_focus(i);
+            assert_eq!(m.focus(), i);
+            assert_eq!(m.feed(Key::Enter), Some(t.entries()[i].action()));
+            let full = m.render();
+            assert!(full.len() < 4096);
+            let mut screen = vec![vec![b' '; usize::from(columns)]; 18];
+            paint_menu(&full, &mut screen);
+            assert_eq!(screen.iter().flatten().filter(|c| **c == b'>').count(), 1);
+            let before = m.focus();
+            m.feed(Key::Next);
+            assert_eq!(m.focus(), (i + 1) % t.entries().len());
+            let delta = m.redraw(before);
+            assert!(delta.len() <= 512, "{columns}: {}", delta.len());
+            assert!(!delta.contains("\x1b[2J"));
+            paint_menu(&delta, &mut screen);
+            let mut expected = vec![vec![b' '; usize::from(columns)]; 18];
+            paint_menu(&m.render(), &mut expected);
+            assert_eq!(screen, expected, "incremental grid must match full paint");
+        }
+    }
+    let plain = t.plain_menu(false);
+    assert!(!plain.contains('\x1b'));
+    for e in t.entries() {
+        assert!(plain.contains(e.label()));
+    }
+    let mut compact = Menu::with_columns(&t, false, 40);
+    compact.feed(Key::Right);
+    assert_eq!(compact.feed(Key::Enter), Some(Action::New));
+    compact.feed(Key::Left);
+    assert_eq!(compact.feed(Key::Enter), Some(Action::Rooms));
+}
+#[test]
+fn grid_validation_is_atomic_and_seasons_cannot_move_actions() {
+    let p = grid_pack();
+    let source = fs::read_to_string(p.0.join("theme.toml")).unwrap();
+    for bad in [
+        source.replacen("row=1", "row=0", 1),
+        source.replacen("column=1", "column=3", 1),
+        source.replacen("row=2", "row=1", 1),
+        source.replacen("row=1\n", "", 1),
+        source.replace("layout='grid'", "layout='list'"),
+    ] {
+        p.source(&bad);
+        assert!(Theme::load(&p.0).is_err());
+    }
+    p.source(&source);
+    let t = Theme::load(&p.0).unwrap();
+    let season = Pack::new("version=1\nid='bad'\nlayout='list'\n");
+    assert!(t.with_season(&season.0).is_err());
+    let mut m = Menu::with_columns(&t, false, 80);
+    m.restore_focus(5); // unavailable Sysop cannot be restored
+    assert_eq!(m.focus(), 0);
+    m.restore_focus(usize::MAX);
+    assert_eq!(m.focus(), 0);
+    // An omitted Files action is assigned the first vacant cell when enabled.
+    let without_files = source.replace("\n[[menu]]\naction='files'\nkey='F'\nlabel='File areas'\ndescription='Browse local uploads and files'\nrow=4\ncolumn=2\n", "");
+    assert_ne!(without_files, source);
+    p.source(&without_files);
+    let mut t = Theme::load(&p.0).unwrap();
+    t.set_files_enabled(true).unwrap();
+    let mut m = Menu::with_columns(&t, true, 80);
+    m.restore_focus(
+        t.entries()
+            .iter()
+            .position(|e| e.action() == Action::Files)
+            .unwrap(),
+    );
+    assert_eq!(m.feed(Key::Enter), Some(Action::Files));
+}
+fn sauce(body: &[u8], flags: u8, comments: Option<&[u8]>) -> Vec<u8> {
+    let mut out = body.to_vec();
+    out.push(26);
+    if let Some(text) = comments {
+        out.extend(b"COMNT");
+        out.extend(text.iter().copied().chain(std::iter::repeat(b' ')).take(64));
+    }
+    let mut record = [0; 128];
+    record[..7].copy_from_slice(b"SAUCE00");
+    record[94] = 1;
+    record[95] = 1;
+    record[96] = 80;
+    record[98] = 16;
+    record[104] = u8::from(comments.is_some());
+    record[105] = flags;
+    out.extend(record);
+    out
+}
+#[test]
+fn sauce_ice_bright_backgrounds_are_canonical_and_metadata_is_inert() {
+    let bytes = sauce(
+        b"\x1b[5;44mA\x1b[41mB\x1b[25mC\x1b[0m\xdb",
+        1,
+        Some(b"\x1b]52;c;not-rendered\x07"),
+    );
+    let rendered = Art::parse(&bytes).unwrap().render();
+    assert!(rendered.contains(";104mA"));
+    assert!(rendered.contains(";101mB"));
+    assert!(rendered.contains(";41mC"));
+    assert!(rendered.contains('█'));
+    assert!(!rendered.contains("not-rendered"));
+    assert!(!rendered.contains("SAUCE"));
+    assert!(!rendered.contains("[5m"));
+    assert!(Art::parse(&sauce(b"\x1b[5mX", 0, None)).is_err());
+    assert!(Art::parse(&sauce(b"\x1b]52;c;bad\x07", 1, None)).is_err());
+    // Empty SGR is a full reset, including the imported iCE intensity state.
+    let reset = Art::parse(&sauce(b"\x1b[5;44mA\x1b[m\x1b[41mB", 1, None))
+        .unwrap()
+        .render();
+    assert!(reset.contains(";41mB"));
+    assert!(!reset.contains(";101mB"));
+    let p = grid_pack();
+    let t = Theme::load(&p.0).unwrap();
+    assert!(t.identity_screen(80, 24, true).contains('╓'));
+    assert!(!t.identity_screen(40, 18, true).contains('╓'));
+    assert!(!t.identity_screen(80, 24, false).contains('\x1b'));
+}
+#[test]
+fn unsupported_or_truncated_sauce_never_changes_the_canvas_or_output_budget() {
+    let valid = sauce(b"OK", 1, None);
+    for (offset, value) in [
+        (5, b'1'),
+        (94, 5),
+        (95, 2),
+        (96, 132),
+        (98, 17),
+        (104, 1),
+        (105, 128),
+    ] {
+        let mut bad = valid.clone();
+        let at = bad.len() - 128;
+        bad[at + offset] = value;
+        assert!(Art::parse(&bad).is_err(), "offset {offset}");
+    }
+    let mut bad = valid.clone();
+    bad.remove(2);
+    assert!(Art::parse(&bad).is_err());
+    assert!(Art::parse(&valid[..valid.len() - 1]).is_err());
+    assert!(Art::parse(&sauce(b"\x1b[17;1Hbad", 1, None)).is_err());
+    assert!(Art::parse(&sauce(&vec![b'X'; 16384], 1, None)).is_err());
 }

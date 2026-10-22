@@ -126,12 +126,7 @@ impl Client {
     }
     fn focused<'a>(&self, theme: &'a Theme, sysop: bool) -> Menu<'a> {
         let mut menu = Menu::with_columns(theme, sysop, self.dimensions.0);
-        for _ in 0..theme.entries().len() {
-            if menu.focus() == self.focus {
-                break;
-            }
-            menu.feed(Key::Down);
-        }
+        menu.restore_focus(self.focus);
         menu
     }
     pub(super) fn pause(&mut self) {

@@ -16,6 +16,13 @@ class PreviewSafety(unittest.TestCase):
         self.assertIn('seasonal login preview', svg(grid, login=True))
         with self.assertRaises(ValueError): cells('\n'*18, 40, allow_newlines=True)
 
+    def test_only_known_cp437_glyphs_extend_the_ascii_preview(self):
+        grid = cells('╓─╖ ░▒▓█ ⌂',80)
+        self.assertEqual(''.join(c[0] for c in grid[0][:10]),'╓─╖ ░▒▓█ ⌂')
+        self.assertIn('╓─╖',svg(grid))
+        for unknown in ['😀','界','\u202e','\u0301']:
+            with self.assertRaises(ValueError):cells(unknown,80)
+
     def test_text_is_escaped_and_focus_background_is_retained(self):
         grid = cells('\x1b[2J\x1b[1;1H\x1b[0;1;97;44m<script>&', 40)
         self.assertEqual(grid[0][0], ('<', 15, 4, True))

@@ -83,6 +83,7 @@ pub struct Entry {
     key: u8,
     label: String,
     description: String,
+    position: Option<(usize, usize)>,
 }
 impl Entry {
     pub fn action(&self) -> Action {
@@ -112,6 +113,7 @@ pub struct Theme {
     doors_enabled: bool,
     files_enabled: bool,
     entries: Vec<Entry>,
+    grid: bool,
     identity_ascii: Option<String>,
     identity_ansi: Option<Art>,
 }
@@ -129,6 +131,7 @@ impl Default for Theme {
             disabled: Style::new(8, 0, false),
             doors_enabled: false,
             files_enabled: false,
+            grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
                 (Action::New, b'N', "New messages"),
@@ -146,6 +149,7 @@ impl Default for Theme {
                 key,
                 label: label.into(),
                 description: String::new(),
+                position: None,
             })
             .collect(),
             identity_ascii: None,
@@ -165,6 +169,7 @@ const BASE_KEYS: &[&str] = &[
     "hotkey",
     "disabled",
     "menu",
+    "layout",
     "identity_ascii",
     "identity_ansi",
     "creator",
@@ -292,6 +297,13 @@ impl Theme {
                     key: b'F',
                     label: "File areas".into(),
                     description: "Browse and transfer local files".into(),
+                    position: if self.grid {
+                        (0..5)
+                            .flat_map(|row| (0..2).map(move |col| (row, col)))
+                            .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+                    } else {
+                        None
+                    },
                 },
             );
         }
@@ -385,6 +397,16 @@ impl Theme {
         let t = load_table(root, BASE_KEYS)?;
         let mut theme = Self::default();
         theme.apply(root, &t)?;
+        theme.grid = match t.get("layout").and_then(Value::as_str) {
+            None if !t.contains_key("layout") => false,
+            Some("list") => false,
+            Some("grid") => true,
+            _ => return Err("layout must be list or grid"),
+        };
+        if theme.grid && !t.contains_key("menu") {
+            return Err("grid requires explicit menu entries and coordinates");
+        }
+        let mut positions = BTreeSet::new();
         if let Some(value) = t.get("menu") {
             let values = value.as_array().ok_or("menu must be an array")?;
             if !(6..=10).contains(&values.len()) {
@@ -394,7 +416,33 @@ impl Theme {
                 (BTreeSet::new(), BTreeSet::new(), Vec::new());
             for value in values {
                 let item = value.as_table().ok_or("menu entry must be a table")?;
-                unknown(item, &["action", "key", "label", "description"])?;
+                unknown(
+                    item,
+                    &["action", "key", "label", "description", "row", "column"],
+                )?;
+                let position = if theme.grid {
+                    let row = item
+                        .get("row")
+                        .and_then(Value::as_integer)
+                        .filter(|n| (1..=5).contains(n))
+                        .ok_or("grid row must be 1-5")? as usize
+                        - 1;
+                    let col = item
+                        .get("column")
+                        .and_then(Value::as_integer)
+                        .filter(|n| (1..=2).contains(n))
+                        .ok_or("grid column must be 1-2")? as usize
+                        - 1;
+                    if !positions.insert((row, col)) {
+                        return Err("duplicate grid position");
+                    }
+                    Some((row, col))
+                } else {
+                    if item.contains_key("row") || item.contains_key("column") {
+                        return Err("entry coordinates require grid layout");
+                    }
+                    None
+                };
                 let name = text(item.get("action").ok_or("action required")?, 16)?;
                 let action = Action::parse(name)?;
                 let key = text(item.get("key").ok_or("hotkey required")?, 1)?.as_bytes()[0]
@@ -413,6 +461,7 @@ impl Theme {
                     key,
                     label,
                     description,
+                    position,
                 });
             }
             if ["rooms", "new", "history", "post", "sysop", "quit"]
@@ -488,10 +537,14 @@ impl<'a> Menu<'a> {
             Key::Cancel => Some(Action::Quit),
             Key::Enter => Some(self.theme.entries[self.focus].action),
             Key::Hotkey(k) => self.theme.hotkey(k, self.sysop),
-            Key::Up | Key::Down => {
+            Key::Up | Key::Down | Key::Left | Key::Right if self.grid() => {
+                self.move_grid(key);
+                None
+            }
+            Key::Up | Key::Down | Key::Left | Key::Right | Key::Next => {
                 let n = self.theme.entries.len();
                 loop {
-                    self.focus = if key == Key::Up {
+                    self.focus = if matches!(key, Key::Up | Key::Left) {
                         (self.focus + n - 1) % n
                     } else {
                         (self.focus + 1) % n
@@ -505,6 +558,48 @@ impl<'a> Menu<'a> {
                 }
                 None
             }
+        }
+    }
+    /// Restore an entry index after reconstructing the borrowed menu. Grid
+    /// arrows are spatial, so replaying Down would not restore array order.
+    pub fn restore_focus(&mut self, index: usize) {
+        if self
+            .theme
+            .entries
+            .get(index)
+            .is_some_and(|e| self.theme.enabled(e.action, self.sysop))
+        {
+            self.focus = index;
+        }
+    }
+    fn grid(&self) -> bool {
+        self.theme.grid && self.columns >= 80
+    }
+    fn move_grid(&mut self, key: Key) {
+        let (row, col) = self.theme.entries[self.focus]
+            .position
+            .expect("validated grid");
+        let candidate = self
+            .theme
+            .entries
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| self.theme.enabled(e.action, self.sysop))
+            .filter_map(|(i, e)| {
+                let (r, c) = e.position.expect("validated grid");
+                let rank = match key {
+                    Key::Up if c == col && r != row => ((row + 5 - r) % 5, 0),
+                    Key::Down if c == col && r != row => ((r + 5 - row) % 5, 0),
+                    // Across columns, prefer the same row, then nearest row;
+                    // ties choose the upper row. No disabled cell gets focus.
+                    Key::Left | Key::Right if c != col => (row.abs_diff(r), r),
+                    _ => return None,
+                };
+                Some((rank, i))
+            })
+            .min();
+        if let Some((_, i)) = candidate {
+            self.focus = i;
         }
     }
     fn width(&self) -> usize {
@@ -540,6 +635,22 @@ impl<'a> Menu<'a> {
         } else {
             self.theme.hotkey
         };
+        if self.grid() {
+            let (row, col) = e.position.expect("validated grid");
+            let left = (self.columns - self.width()) / 2 + 2 + col * 37;
+            return format!(
+                "\x1b[{};{}H{}{} {}[{}]{} {:<26}{}\x1b[0m",
+                row + 5,
+                left,
+                style.sgr(),
+                if focused { ">" } else { " " },
+                key_style.sgr(),
+                e.key as char,
+                style.sgr(),
+                e.label,
+                if enabled { "    " } else { " -- " }
+            );
+        }
         let tail = if self.width() >= 76 {
             format!(
                 " | {:<30}",
@@ -587,10 +698,23 @@ impl<'a> Menu<'a> {
             ),
             self.theme.normal,
         ));
+        if self.grid() {
+            for row in 5..10 {
+                out.push_str(&self.line(
+                    row,
+                    &format!("|{}|", " ".repeat(self.width() - 2)),
+                    self.theme.normal,
+                ));
+            }
+        }
         for i in 0..self.theme.entries.len() {
             out.push_str(&self.row(i));
         }
-        let bottom = self.theme.entries.len() + 5;
+        let bottom = if self.grid() {
+            10
+        } else {
+            self.theme.entries.len() + 5
+        };
         out.push_str(&self.line(
             bottom,
             &format!("+{}+", "-".repeat(self.width() - 2)),
@@ -607,13 +731,32 @@ impl<'a> Menu<'a> {
             "Ctrl-C exits; Esc: Enter to recover.",
             self.theme.normal,
         ));
+        if self.grid() {
+            out.push_str(&self.detail());
+        }
         out
+    }
+    fn detail(&self) -> String {
+        self.line(
+            13,
+            &self.theme.entries[self.focus].description,
+            self.theme.normal,
+        )
     }
     pub fn redraw(&self, previous: usize) -> String {
         if previous == self.focus {
             String::new()
         } else {
-            format!("{}{}", self.row(previous), self.row(self.focus))
+            format!(
+                "{}{}{}",
+                self.row(previous),
+                self.row(self.focus),
+                if self.grid() {
+                    self.detail()
+                } else {
+                    String::new()
+                }
+            )
         }
     }
 }

@@ -3,6 +3,9 @@ use std::time::{Duration, Instant};
 pub enum Key {
     Up,
     Down,
+    Left,
+    Right,
+    Next,
     Enter,
     Hotkey(u8),
     Cancel,
@@ -104,7 +107,7 @@ impl Decoder {
                     self.skip_lf = byte == b'\r';
                     Some(Key::Enter)
                 }
-                b'\t' => Some(Key::Down),
+                b'\t' => Some(Key::Next),
                 b if b.is_ascii_alphabetic() => Some(Key::Hotkey(b.to_ascii_uppercase())),
                 _ => None,
             },
@@ -133,8 +136,10 @@ impl Decoder {
                 self.started = None;
                 let key = if simple {
                     match byte {
-                        b'A' | b'D' => Some(Key::Up),
-                        b'B' | b'C' => Some(Key::Down),
+                        b'A' => Some(Key::Up),
+                        b'B' => Some(Key::Down),
+                        b'C' => Some(Key::Right),
+                        b'D' => Some(Key::Left),
                         _ => None,
                     }
                 } else {

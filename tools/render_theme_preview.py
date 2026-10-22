@@ -11,6 +11,8 @@ import subprocess
 from pathlib import Path
 from xml.sax.saxutils import escape
 
+ART_GLYPHS = frozenset(bytes(range(128, 256)).decode('cp437') + '⌂')
+
 PALETTE = ('#101018', '#c45b6e', '#7dbe8b', '#d8b46b', '#415b94', '#b482ce',
            '#70b6ba', '#c5c5d0', '#707080', '#ff8194', '#a4e4af', '#ffe0a0',
            '#829fe0', '#dfa5ff', '#a0e5eb', '#f3edf9')
@@ -51,8 +53,8 @@ def cells(frame, columns, rows=18, allow_newlines=False):
             if row >= rows: raise ValueError('scrolling login preview')
         else:
             c = frame[pos]
-            if not (' ' <= c <= '~') or not (row < rows and col < columns):
-                raise ValueError('non-ASCII, wrapped or scrolling preview')
+            if not (' ' <= c <= '~' or c in ART_GLYPHS) or not (row < rows and col < columns):
+                raise ValueError('unsupported glyph, wrapped or scrolling preview')
             grid[row][col] = c, fg, bg, bold
             col += 1; pos += 1
     return grid
@@ -93,7 +95,7 @@ def main():
     if a.login: cmd += ['--login']
     result = subprocess.run(cmd, check=True, capture_output=True, timeout=10)
     if len(result.stdout) > (16384 if a.login else 4096): raise ValueError('preview exceeds output budget')
-    a.output.write_text(svg(cells(result.stdout.decode('ascii'), a.columns, rows=24 if a.login and a.columns>=80 else 18, allow_newlines=a.login), login=a.login))
+    a.output.write_text(svg(cells(result.stdout.decode('utf-8'), a.columns, rows=24 if a.login and a.columns>=80 else 18, allow_newlines=a.login), login=a.login))
     print('Wrote reference-palette SVG; not a GUI or artwork approval.')
 
 if __name__ == '__main__': main()

@@ -1,7 +1,7 @@
 # Local ANSI menus and sysop theme packs
 
 Updated 2026-10-22. Implemented in the local console and trusted SSH member worker; a supported
-network release remains work. This is a vertical menu/identity baseline, not a complete art editor or
+network release remains work. List/grid menus and bounded identity import are not a complete art editor or
 historical terminal emulator. See [build/setup](local-development.md).
 
 ```sh
@@ -75,7 +75,8 @@ same-UID operator processes are trusted; this is not a hostile-filesystem sandbo
 | `board`, `welcome`, `logout` | Optional printable ASCII, maximum 36 / 36 / 60 bytes. Built-in defaults fill omissions. |
 | `menu_title` | Optional printable ASCII section title, 1–24 bytes; defaults to `Main menu`. Base-only, never a seasonal command-map change. |
 | `normal`, `focus`, `hotkey`, `disabled` | Optional inline/style tables: required `fg`/`bg` integers 0–15, optional `bold` boolean. Foreground and background must differ. Numbers use ANSI ordering, including bright 8–15. No raw escape strings. |
-| `[[menu]]` | Optional 6–10 entries, in display order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes, optional printable ASCII `description` up to 30 bytes. |
+| `layout` | Optional base-only `list` (default) or `grid`; grid requires explicit menu entries and coordinates. |
+| `[[menu]]` | Optional 6–10 entries, in array/Tab/plain order. Each has `action`, one ASCII alphabetic `key` (unique ignoring case), printable ASCII `label` up to 26 bytes, optional printable ASCII `description` up to 30 bytes. |
 | Core actions | Exactly one each of `rooms`, `new`, `history`, `post`, `sysop`, `quit`; optional one `chat` entry enables local chat; optional `doors`, `files` and `terminal` entries expose host capabilities/preferences. Doors/Files availability is decided by the host, never the theme. Unknown/duplicate actions fail. Permissions remain compiled/core-checked. |
 | `identity_ascii`, `identity_ansi` | Optional simple local filenames, at most 64 bytes, starting with an alphanumeric and containing only letters/digits/dot/underscore/hyphen. No directories or traversal. |
 | `creator`, `source`, `permission` | Required printable provenance text (at most 160 bytes each) when an identity file is selected. Record real authorship/rights; text declarations do not prove licensing. |
@@ -93,13 +94,23 @@ line starts; this is not a byte-perfect ANSI terminal emulator.
 The ANSI subset allows SGR reset/bold/normal intensity, basic/bright foreground and
 background colors; bounded CSI cursor H/f/A/B/C/D; save/restore s/u; clear J=2 and
 erase-to-end K=0. Out-of-canvas movement, other controls, OSC/DCS/device/clipboard/
-window operations, blink and extended/RGB colors fail the whole pack. Original
+window operations, raw blink and extended/RGB colors fail the whole pack. Only the
+SAUCE non-blink flag enables SGR 5/25 as canonical bright-background changes. Original
 escape bytes never reach the terminal. Rendering uses only canonical local SGR,
 bounded cursor positioning and known glyphs, capped at 16 KiB output.
 
-Long scrolling art, SAUCE metadata, iCE blink-versus-bright-background interpretation,
-custom screen grids, per-room styling and automatic terminal/font detection remain
-under #13/#25/#29. Do not call the importer compatible with every archived art pack.
+SAUCE00 Character/ANSi trailers are accepted within the same total 16 KiB file
+limit. Width must be unspecified (0) or 80; height must be 0–16. EOF must immediately
+precede the optional correctly sized `COMNT` block and final 128-byte record.
+Other versions/types, malformed blocks, reserved flags or oversized dimensions
+reject the pack. FileSize is advisory and ignored; all metadata is stripped, never
+printed or treated as licensing. Non-blink flag bit 0 permits SGR 5/25 as bright
+background on/off, including subsequent basic background changes. Output uses
+100–107 backgrounds, never terminal blink. Font/spacing/aspect hints are ignored;
+terminal font metrics are outside this import profile. SAUCE is not permission.
+
+Long scrolling/animated art, arbitrary grids and per-room styling remain under
+#13/#25/#29. Do not call the importer compatible with every archived art pack.
 The rights/provenance and [art direction](menus-and-themes.md) requirements still
 apply to every actual identity screen.
 
@@ -112,7 +123,7 @@ files and their provenance. They cannot change board name, menu labels, keys,
 actions or order. Missing fields retain the base; any invalid field/file rejects
 the entire override. Optional annual scheduling is now available below; existing sessions keep their chosen theme.
 
-The menu uses the actual TTY width: 40–79 columns selects a centered 38-cell
+The default list menu uses the actual TTY width: 40–79 columns selects a centered 38-cell
 compact panel; 80–240 selects a centered 76-cell panel with action descriptions.
 Both use the same vertical action order, Up/Down/Left/Right/Tab navigation,
 Enter/direct hotkeys and current authorization. A 10-entry menu fits in 18 rows.
@@ -125,7 +136,7 @@ The built-in nine-entry compact menu emits 1,224 UTF-8 bytes; its first focus
 move emits 170 bytes. The maximal-text ten-entry fixture measures 1,311–1,974
 bytes for a full screen and 170–248 for a two-row focus update across 40, 79, 80,
 132 and 240 columns. Focus movement never replays login art or clears the screen.
-Regression ceilings are 4 KiB per full menu and 512 bytes per two-row update;
+Regression ceilings are 4 KiB per full menu and 512 bytes per focus update;
 these are renderer output budgets, not latency, resident-memory or capacity claims.
 The shared queue/drain and normal eight-member admission defaults stay unchanged.
 
@@ -183,8 +194,51 @@ colors and order, then validate the copy. Retain the required core actions, uniq
 keys and fixed action names. Restart the shared owner after checking a stopped
 configuration; don't edit an active session's action mapping. A season changes
 only its allowed palette/welcome/identity fields; base descriptions and title stay
-coherent. Calendar scheduling is described below. Custom grids, long art/SAUCE/iCE support
-and native visual acceptance of original/authorized scene identity art remain #25 follow-ups.
+coherent. Calendar scheduling is described below. Long art and native visual
+acceptance of original/authorized scene identity art remain #25 follow-ups.
+
+## Custom grid layouts and CP437 art
+
+Copy the opt-in [grid example](../themes/grid/theme.toml); the first-install helper
+still installs the base list. Set `layout="grid"` and give **every** `[[menu]]` entry
+an integer `row` (1–5) and `column` (1–2), with no duplicate cell. Entry array order
+remains the plain/compact reading and Tab order; coordinates only place wide ANSI
+cells. Empty cells are allowed. Coordinates without grid, missing/invalid positions
+and seasonal layout overrides reject the whole candidate. Host-enabled Files can
+fill the first unused row-major cell if omitted; an explicit Files entry gives
+complete control. Files/Doors/Sysop remain unavailable without host/role approval.
+
+At 80–240 columns the 76-cell panel contains two columns. Up/Down wrap through
+enabled entries **in the current column**. Left/Right move to the other column,
+preferring the same row, then nearest row, with the upper row breaking ties. If
+there is no enabled destination, focus stays. Tab visits all enabled entries in
+array order; Enter and printed hotkeys activate the same core-checked actions.
+A visible `>` identifies focus; disabled entries have `--`. The selected action's
+optional description appears below the panel. Every grid fits the existing
+18-row minimum. At 40–79 columns it becomes the classic ordered 38-cell list;
+plain mode retains text/hotkeys. No new capability probe is required.
+
+Only the old/new cells and description redraw on movement, within the existing
+512-byte update budget; full menu stays below 4 KiB. Shared sessions keep an
+entry index, not a theme/art copy. Seasons preserve grid coordinates and action
+maps. Restart the owner after validating a stopped config to activate changes.
+
+```sh
+./target/release/examples/preview_theme --theme themes/grid
+./target/release/examples/preview_theme --theme themes/grid --columns 40
+./target/release/examples/preview_theme --theme themes/grid --login
+python3 tools/render_theme_preview.py target/release/examples/preview_theme --theme themes/grid --login --output /tmp/faction-grid-login.svg
+```
+
+![Grid menu authoring preview](images/menu-grid.svg)
+![Original CP437/iCE login template](images/login-grid.svg)
+
+The template is original, Codex-assisted BSD-3-Clause sample linework, not a final
+identity or redistributed artscene work. Previews use a reference palette and
+known CP437-to-Unicode glyphs; they are not terminal/font screenshots. The
+[SAUCE specification](https://www.acid.org/info/sauce/sauce.htm) defines the record
+and non-blink flag; our narrower import profile above still applies. Rendered
+CP437 glyph widths can depend on the terminal/font; use ASCII/plain recovery.
 
 ## Seasonal calendar and login screens
 

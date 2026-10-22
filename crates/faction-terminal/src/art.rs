@@ -17,6 +17,8 @@ impl Art {
         if bytes.len() > 16384 {
             return Err("art exceeds 16 KiB");
         }
+        let (bytes, ice) = sauce_payload(bytes)?;
+        let mut bright_background = false;
         let blank = Cell {
             glyph: ' ',
             style: Style::default(),
@@ -67,22 +69,37 @@ impl Art {
                     match command {
                         b'm' => {
                             if values.is_empty() {
-                                style = Style::default()
+                                style = Style::default();
+                                bright_background = false;
                             } else {
                                 for value in values {
                                     match value {
-                                        0 => style = Style::default(),
+                                        0 => {
+                                            style = Style::default();
+                                            bright_background = false;
+                                        }
                                         1 => style.bold = true,
                                         22 => style.bold = false,
                                         30..=37 => style.fg = (value - 30) as u8,
                                         39 => style.fg = 7,
-                                        40..=47 => style.bg = (value - 40) as u8,
-                                        49 => style.bg = 0,
+                                        5 if ice => {
+                                            bright_background = true;
+                                            style.bg |= 8;
+                                        }
+                                        25 if ice => {
+                                            bright_background = false;
+                                            style.bg &= 7;
+                                        }
+                                        40..=47 => {
+                                            style.bg = (value - 40) as u8
+                                                | if bright_background { 8 } else { 0 }
+                                        }
+                                        49 => style.bg = if bright_background { 8 } else { 0 },
                                         90..=97 => style.fg = (value - 90 + 8) as u8,
                                         100..=107 => style.bg = (value - 100 + 8) as u8,
                                         _ => {
                                             return Err(
-                                                "unsupported art SGR (blink/iCE metadata not enabled)",
+                                                "unsupported art SGR (blink requires SAUCE non-blink mode)",
                                             );
                                         }
                                     }
@@ -186,4 +203,40 @@ impl Art {
         out
     }
 }
+/// A deliberately small SAUCE00 Character/ANSi import profile. All metadata
+/// stays off the terminal; record dimensions never enlarge the fixed canvas.
+/// FileSize is advisory in revision 00.5, so locate EOF/comments from the tail.
+fn sauce_payload(bytes: &[u8]) -> Result<(&[u8], bool)> {
+    if bytes.len() < 128 || &bytes[bytes.len() - 128..bytes.len() - 123] != b"SAUCE" {
+        return Ok((bytes, false));
+    }
+    let at = bytes.len() - 128;
+    let record = &bytes[at..];
+    if &record[5..7] != b"00" || record[94..96] != [1, 1] {
+        return Err("only SAUCE00 Character/ANSi is supported");
+    }
+    let width = usize::from(u16::from_le_bytes([record[96], record[97]]));
+    let height = usize::from(u16::from_le_bytes([record[98], record[99]]));
+    if !matches!(width, 0 | WIDTH) || height > HEIGHT || record[105] & !0x1f != 0 {
+        return Err("unsupported SAUCE dimensions or flags");
+    }
+    let comments = usize::from(record[104]);
+    let end = if comments == 0 {
+        at
+    } else {
+        let start = at
+            .checked_sub(5 + comments * 64)
+            .ok_or("truncated SAUCE comments")?;
+        if &bytes[start..start + 5] != b"COMNT" {
+            return Err("invalid SAUCE comments");
+        }
+        start
+    };
+    let eof = end.checked_sub(1).ok_or("missing SAUCE EOF")?;
+    if bytes[eof] != 0x1a {
+        return Err("SAUCE import requires EOF before metadata");
+    }
+    Ok((&bytes[..eof], record[105] & 1 != 0))
+}
+
 const CP437: &str = "ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ";
