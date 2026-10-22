@@ -1,0 +1,616 @@
+//! Local file policy. Adapters get scoped grants, never a member session or DB.
+use crate::{Board, Error, Result, Session, current, handle, request_id, text};
+use base64::{Engine, engine::general_purpose::STANDARD};
+use rusqlite::{OptionalExtension, Transaction, TransactionBehavior, params};
+use std::time::{SystemTime, UNIX_EPOCH};
+pub const FILE_BYTES: u32 = 16 * 1024 * 1024;
+pub const FILE_BOARD_BYTES: u32 = 256 * 1024 * 1024;
+pub const FILE_ROWS: usize = 20;
+pub const FILE_CHUNK: u32 = 32768;
+#[derive(Debug)]
+pub struct FileArea {
+    pub id: i64,
+    pub slug: String,
+    pub title: String,
+    pub private: bool,
+    pub quota: u32,
+}
+#[derive(Debug)]
+pub struct AreaFile {
+    pub id: String,
+    pub filename: String,
+    pub description: String,
+    pub bytes: u32,
+    pub sha256: String,
+    pub state: String,
+    pub uploader: String,
+}
+#[derive(Debug)]
+pub struct TransferGrant {
+    pub id: String,
+    pub object: String,
+    pub filename: String,
+    pub direction: String,
+    pub bytes: u32,
+    pub sha256: String,
+    pub lease: String,
+}
+fn now() -> Result<i64> {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs() as i64)
+        .map_err(|_| Error::Denied)
+}
+pub fn file_id(s: &str) -> Result<()> {
+    if s.len() != 32
+        || !s
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+    {
+        return Err(Error::Invalid("invalid file ID"));
+    }
+    Ok(())
+}
+pub fn file_name(s: &str) -> Result<()> {
+    if s.is_empty()
+        || s.len() > 64
+        || s.starts_with('.')
+        || s.contains("..")
+        || !s
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))
+    {
+        return Err(Error::Invalid(
+            "filename needs 1-64 ASCII letters, digits, dots, underscores or hyphens",
+        ));
+    }
+    Ok(())
+}
+pub fn file_key(s: &str) -> Result<String> {
+    let mut p = s.split_whitespace();
+    if p.next() != Some("ssh-ed25519") {
+        return Err(Error::Invalid("transfer key must be an Ed25519 public key"));
+    }
+    let v = p.next().ok_or(Error::Invalid("missing public key"))?;
+    if s.len() > 256 {
+        return Err(Error::Invalid("public key too long"));
+    }
+    let b = STANDARD
+        .decode(v)
+        .map_err(|_| Error::Invalid("invalid public key"))?;
+    if b.len() != 51 || &b[..19] != b"\0\0\0\x0bssh-ed25519\0\0\0\x20" || STANDARD.encode(&b) != v {
+        return Err(Error::Invalid("invalid Ed25519 key"));
+    }
+    Ok(v.into())
+}
+pub(crate) fn scope(tx: &Transaction<'_>, member: i64, area: i64) -> Result<()> {
+    let ok=tx.prepare("SELECT 1 FROM file_areas a,members m WHERE a.id=?1 AND m.id=?2 AND m.status='approved' AND (m.role='sysop' OR a.private=0 OR EXISTS(SELECT 1 FROM file_area_grants g WHERE g.area_id=a.id AND g.member_id=m.id))")?.exists(params![area,member])?;
+    if !ok {
+        return Err(Error::Denied);
+    }
+    Ok(())
+}
+fn grant(
+    tx: &Transaction<'_>,
+    id: &str,
+    lease: Option<&str>,
+    ready: bool,
+) -> Result<TransferGrant> {
+    file_id(id)?;
+    let row=tx.query_row("SELECT t.id,t.object_id,o.filename,t.direction,o.bytes,o.sha256,t.lease,t.member_id,t.epoch,m.epoch,m.status,t.created,t.expires,t.state,o.area_id,o.state,m.role FROM file_transfers t JOIN members m ON m.id=t.member_id JOIN file_objects o ON o.id=t.object_id WHERE t.id=?1",[id],|r|Ok((TransferGrant{id:r.get(0)?,object:r.get(1)?,filename:r.get(2)?,direction:r.get(3)?,bytes:r.get(4)?,sha256:r.get(5)?,lease:r.get(6)?},r.get::<_,i64>(7)?,r.get::<_,i64>(8)?,r.get::<_,i64>(9)?,r.get::<_,String>(10)?,r.get::<_,i64>(11)?,r.get::<_,i64>(12)?,r.get::<_,String>(13)?,r.get::<_,i64>(14)?,r.get::<_,String>(15)?,r.get::<_,String>(16)?))).optional()?.ok_or(Error::Denied)?;
+    let (g, member, epoch, actual, status, created, expires, state, area, object_state, role) = row;
+    let n = now()?;
+    if epoch != actual
+        || status != "approved"
+        || n < created
+        || n >= expires
+        || state != if ready { "ready" } else { "active" }
+        || lease.is_some_and(|v| v != g.lease)
+        || if g.direction == "upload" {
+            object_state != "reserved"
+        } else {
+            object_state != "published" && !(object_state == "pending" && role == "sysop")
+        }
+    {
+        return Err(Error::Denied);
+    }
+    scope(tx, member, area)?;
+    Ok(g)
+}
+impl Board {
+    pub fn file_create_area(
+        &mut self,
+        s: &Session,
+        slug: &str,
+        title: &str,
+        private: bool,
+        quota: u32,
+    ) -> Result<i64> {
+        crate::scores::game_slug(slug)?;
+        text(title, 64, false)?;
+        if !(1..=FILE_BOARD_BYTES).contains(&quota) {
+            return Err(Error::Invalid("area quota out of range"));
+        }
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, true)?;
+        let count: i64 = tx.query_row("SELECT count(*) FROM file_areas", [], |r| r.get(0))?;
+        if count >= 32 {
+            return Err(Error::Invalid("file area limit reached"));
+        }
+        tx.execute(
+            "INSERT INTO file_areas(slug,title,private,quota) VALUES(?1,?2,?3,?4)",
+            params![slug, title, private, quota],
+        )?;
+        let id = tx.last_insert_rowid();
+        tx.commit()?;
+        Ok(id)
+    }
+    pub fn file_allow(&mut self, s: &Session, area: i64, name: &str, allow: bool) -> Result<()> {
+        let name = handle(name)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, true)?;
+        let member: i64 = tx
+            .query_row(
+                "SELECT id FROM members WHERE handle=?1 AND status='approved'",
+                [name],
+                |r| r.get(0),
+            )
+            .optional()?
+            .ok_or(Error::NotFound)?;
+        if allow {
+            let count: i64 =
+                tx.query_row("SELECT count(*) FROM file_area_grants", [], |r| r.get(0))?;
+            if count >= 4096 {
+                return Err(Error::Invalid("file area grant limit reached"));
+            }
+            tx.execute(
+                "INSERT OR IGNORE INTO file_area_grants VALUES(?1,?2)",
+                params![area, member],
+            )?;
+        } else {
+            tx.execute(
+                "DELETE FROM file_area_grants WHERE area_id=?1 AND member_id=?2",
+                params![area, member],
+            )?;
+        }
+        tx.execute("UPDATE file_transfers SET state='failed' WHERE member_id=?1 AND state IN ('ready','active') AND object_id IN (SELECT id FROM file_objects WHERE area_id=?2)",params![member,area])?;
+        tx.commit()?;
+        Ok(())
+    }
+    pub fn file_areas(&mut self, s: &Session, after: i64) -> Result<Vec<FileArea>> {
+        if after < 0 {
+            return Err(Error::Invalid("invalid cursor"));
+        }
+        let tx = self.db.transaction()?;
+        let m = current(&tx, &self.identity, s, true, false)?;
+        let mut st=tx.prepare("SELECT id,slug,title,private,quota FROM file_areas a WHERE id>?1 AND (?2='sysop' OR private=0 OR EXISTS(SELECT 1 FROM file_area_grants g WHERE g.area_id=a.id AND g.member_id=?3)) ORDER BY id LIMIT 20")?;
+        Ok(st
+            .query_map(
+                params![
+                    after,
+                    if m.role == crate::Role::Sysop {
+                        "sysop"
+                    } else {
+                        "member"
+                    },
+                    s.member
+                ],
+                |r| {
+                    Ok(FileArea {
+                        id: r.get(0)?,
+                        slug: r.get(1)?,
+                        title: r.get(2)?,
+                        private: r.get(3)?,
+                        quota: r.get(4)?,
+                    })
+                },
+            )?
+            .collect::<std::result::Result<_, _>>()?)
+    }
+    pub fn file_list(
+        &mut self,
+        s: &Session,
+        area: i64,
+        after: &str,
+        search: &str,
+        review: bool,
+    ) -> Result<Vec<AreaFile>> {
+        if !after.is_empty() {
+            file_id(after)?
+        }
+        if search.len() > 64 || search.chars().any(char::is_control) {
+            return Err(Error::Invalid("invalid search"));
+        }
+        let tx = self.db.transaction()?;
+        current(&tx, &self.identity, s, true, review)?;
+        scope(&tx, s.member, area)?;
+        let mut st=tx.prepare("SELECT o.id,o.filename,o.description,o.bytes,o.sha256,o.state,m.handle FROM file_objects o JOIN members m ON m.id=o.uploader_id WHERE o.area_id=?1 AND o.id>?2 AND (?3 OR o.state='published') AND (instr(lower(o.filename),lower(?4))>0 OR instr(lower(o.description),lower(?4))>0) ORDER BY o.id LIMIT 20")?;
+        Ok(st
+            .query_map(params![area, after, review, search], |r| {
+                Ok(AreaFile {
+                    id: r.get(0)?,
+                    filename: r.get(1)?,
+                    description: r.get(2)?,
+                    bytes: r.get(3)?,
+                    sha256: r.get(4)?,
+                    state: r.get(5)?,
+                    uploader: r.get(6)?,
+                })
+            })?
+            .collect::<std::result::Result<_, _>>()?)
+    }
+    pub fn file_info(&mut self, s: &Session, id: &str) -> Result<AreaFile> {
+        file_id(id)?;
+        let tx = self.db.transaction()?;
+        current(&tx, &self.identity, s, true, false)?;
+        let area: i64 = tx
+            .query_row(
+                "SELECT area_id FROM file_objects WHERE id=?1 AND (state='published' OR (state='pending' AND EXISTS(SELECT 1 FROM members WHERE id=?2 AND role='sysop')))",
+                params![id, s.member],
+                |r| r.get(0),
+            )
+            .optional()?
+            .ok_or(Error::Denied)?;
+        scope(&tx, s.member, area)?;
+        Ok(tx.query_row("SELECT o.id,o.filename,o.description,o.bytes,o.sha256,o.state,m.handle FROM file_objects o JOIN members m ON m.id=o.uploader_id WHERE o.id=?1",[id],|r|Ok(AreaFile{id:r.get(0)?,filename:r.get(1)?,description:r.get(2)?,bytes:r.get(3)?,sha256:r.get(4)?,state:r.get(5)?,uploader:r.get(6)?}))?)
+    }
+    pub fn file_upload(
+        &mut self,
+        s: &Session,
+        area: i64,
+        name: &str,
+        description: &str,
+        bytes: u32,
+        key: &str,
+    ) -> Result<String> {
+        file_name(name)?;
+        text(description, 512, false)?;
+        if bytes > FILE_BYTES {
+            return Err(Error::Invalid("file exceeds 16 MiB limit"));
+        }
+        let key = file_key(key)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        scope(&tx, s.member, area)?;
+        let (used, count): (u32, i64) = tx.query_row(
+            "SELECT coalesce(sum(bytes),0),count(*) FROM file_objects",
+            [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )?;
+        let (area_used,quota):(u32,u32)=tx.query_row("SELECT (SELECT coalesce(sum(bytes),0) FROM file_objects WHERE area_id=?1),quota FROM file_areas WHERE id=?1",[area],|r|Ok((r.get(0)?,r.get(1)?)))?;
+        let pending:i64=tx.query_row("SELECT count(*) FROM file_objects WHERE uploader_id=?1 AND state IN ('reserved','pending')",[s.member],|r|r.get(0))?;
+        if used + bytes > FILE_BOARD_BYTES
+            || area_used + bytes > quota
+            || count >= 1000
+            || pending >= 2
+        {
+            return Err(Error::Invalid("file quota reached"));
+        }
+        let object = request_id()?;
+        tx.execute("INSERT INTO file_objects(id,area_id,uploader_id,filename,description,bytes,state) VALUES(?1,?2,?3,?4,?5,?6,'reserved')",params![object,area,s.member,name,description,bytes])?;
+        let id = insert_transfer(&tx, s, &object, "upload", &key)?;
+        tx.commit()?;
+        Ok(id)
+    }
+    pub fn file_download(&mut self, s: &Session, object: &str, key: &str) -> Result<String> {
+        file_id(object)?;
+        let key = file_key(key)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        let area: i64 = tx
+            .query_row(
+                "SELECT area_id FROM file_objects WHERE id=?1 AND (state='published' OR (state='pending' AND EXISTS(SELECT 1 FROM members WHERE id=?2 AND role='sysop')))",
+                params![object, s.member],
+                |r| r.get(0),
+            )
+            .optional()?
+            .ok_or(Error::Denied)?;
+        scope(&tx, s.member, area)?;
+        let id = insert_transfer(&tx, s, object, "download", &key)?;
+        tx.commit()?;
+        Ok(id)
+    }
+    pub fn file_review(&mut self, s: &Session, object: &str, publish: bool) -> Result<()> {
+        file_id(object)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, true)?;
+        let changed = if publish {
+            tx.execute("UPDATE file_objects SET state='published' WHERE id=?1 AND state='pending' AND length(sha256)=64",[object])?
+        } else {
+            tx.execute(
+                "UPDATE file_objects SET state='removed' WHERE id=?1",
+                [object],
+            )?
+        };
+        if changed != 1 {
+            return Err(Error::Denied);
+        }
+        tx.commit()?;
+        Ok(())
+    }
+    /// Trusted file-adapter entrypoints. No member RPC may select this authority.
+    pub fn file_lookup_key(&mut self, key: &str) -> Result<Option<String>> {
+        let key = file_key(&format!("ssh-ed25519 {key}"))?;
+        let tx = self.db.transaction()?;
+        let ids = tx
+            .prepare("SELECT id FROM file_transfers WHERE ssh_key=?1 AND state='ready' LIMIT 1")?
+            .query_map([key], |r| r.get::<_, String>(0))?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
+        Ok(ids
+            .into_iter()
+            .find(|id| grant(&tx, id, None, true).is_ok()))
+    }
+    pub fn file_claim(&mut self, id: &str) -> Result<TransferGrant> {
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let mut g = grant(&tx, id, None, true)?;
+        let active: i64 = tx.query_row(
+            "SELECT count(*) FROM file_transfers WHERE state='active' AND expires>?1",
+            [now()?],
+            |r| r.get(0),
+        )?;
+        if active >= 2 {
+            return Err(Error::Busy);
+        }
+        g.lease = request_id()?;
+        tx.execute(
+            "UPDATE file_transfers SET state='active',lease=?2 WHERE id=?1",
+            params![id, g.lease],
+        )?;
+        tx.commit()?;
+        Ok(g)
+    }
+    pub fn file_check(&mut self, id: &str, lease: &str) -> Result<TransferGrant> {
+        let tx = self.db.transaction()?;
+        file_id(lease)?;
+        grant(&tx, id, Some(lease), false)
+    }
+    pub fn file_chunk(&mut self, id: &str, lease: &str, offset: u32, bytes: u32) -> Result<()> {
+        if bytes > FILE_CHUNK {
+            return Err(Error::Denied);
+        }
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let g = grant(&tx, id, Some(lease), false)?;
+        let progress: u32 = tx.query_row(
+            "SELECT progress FROM file_transfers WHERE id=?1",
+            [id],
+            |r| r.get(0),
+        )?;
+        if progress != offset || offset.checked_add(bytes).is_none_or(|n| n > g.bytes) {
+            return Err(Error::Denied);
+        }
+        tx.execute(
+            "UPDATE file_transfers SET progress=progress+?2 WHERE id=?1",
+            params![id, bytes],
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
+    pub fn file_complete(&mut self, id: &str, lease: &str, sha: &str) -> Result<()> {
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let g = grant(&tx, id, Some(lease), false)?;
+        let progress: u32 = tx.query_row(
+            "SELECT progress FROM file_transfers WHERE id=?1",
+            [id],
+            |r| r.get(0),
+        )?;
+        if progress != g.bytes {
+            return Err(Error::Denied);
+        }
+        if g.direction == "upload" {
+            if sha.len() != 64
+                || !sha
+                    .bytes()
+                    .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+            {
+                return Err(Error::Denied);
+            }
+            tx.execute(
+                "UPDATE file_objects SET state='pending',sha256=?2 WHERE id=?1",
+                params![g.object, sha],
+            )?;
+        }
+        tx.execute("UPDATE file_transfers SET state='done' WHERE id=?1", [id])?;
+        tx.commit()?;
+        Ok(())
+    }
+    pub fn file_cancel(&mut self, id: &str, lease: &str) -> Result<()> {
+        file_id(id)?;
+        file_id(lease)?;
+        self.db.execute(
+            "UPDATE file_transfers SET state='failed' WHERE id=?1 AND lease=?2 AND state='active'",
+            params![id, lease],
+        )?;
+        Ok(())
+    }
+    pub fn file_removed(&mut self, after: &str) -> Result<Vec<String>> {
+        if !after.is_empty() {
+            file_id(after)?
+        }
+        Ok(self
+            .db
+            .prepare(
+                "SELECT id FROM file_objects WHERE state='removed' AND id>?1 ORDER BY id LIMIT 20",
+            )?
+            .query_map([after], |r| r.get(0))?
+            .collect::<std::result::Result<_, _>>()?)
+    }
+    pub fn file_reclaimed(&mut self, id: &str) -> Result<()> {
+        file_id(id)?;
+        self.db.execute(
+            "DELETE FROM file_objects WHERE id=?1 AND state='removed'",
+            [id],
+        )?;
+        Ok(())
+    }
+}
+fn insert_transfer(
+    tx: &Transaction<'_>,
+    s: &Session,
+    object: &str,
+    direction: &str,
+    key: &str,
+) -> Result<String> {
+    let n = now()?;
+    tx.execute("UPDATE file_transfers SET state='failed' WHERE state IN ('ready','active') AND (expires<=?1 OR created>?1 OR NOT EXISTS(SELECT 1 FROM members m WHERE m.id=file_transfers.member_id AND m.epoch=file_transfers.epoch AND m.status='approved'))",[n])?;
+    let count: i64 = tx.query_row(
+        "SELECT count(*) FROM file_transfers WHERE member_id=?1 AND state IN ('ready','active')",
+        [s.member],
+        |r| r.get(0),
+    )?;
+    if count >= 2 {
+        return Err(Error::Invalid("two outstanding transfer grants per member"));
+    }
+    let total: i64 = tx.query_row(
+        "SELECT count(*) FROM file_transfers WHERE state IN ('ready','active')",
+        [],
+        |r| r.get(0),
+    )?;
+    if total >= 64 {
+        return Err(Error::Busy);
+    }
+    // Finished grants have no authority; bound retained bookkeeping.
+    tx.execute(
+        "DELETE FROM file_transfers WHERE state IN ('done','failed')",
+        [],
+    )?;
+    if tx
+        .prepare("SELECT 1 FROM file_transfers WHERE ssh_key=?1 AND state IN ('ready','active')")?
+        .exists([key])?
+    {
+        return Err(Error::Invalid("transfer key already has a live grant"));
+    }
+    let id = request_id()?;
+    tx.execute("INSERT INTO file_transfers(id,object_id,member_id,epoch,ssh_key,direction,created,expires,state) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,'ready')",params![id,object,s.member,s.epoch,key,direction,n,n+300])?;
+    Ok(id)
+}
+
+pub(crate) fn validate_catalog(db: &rusqlite::Connection) -> Result<()> {
+    let mut stmt = db.prepare("SELECT id,slug,title,private,quota FROM file_areas")?;
+    let mut rows = stmt.query([])?;
+    let mut count = 0;
+    while let Some(r) = rows.next()? {
+        let id: i64 = r.get(0)?;
+        let slug: String = r.get(1)?;
+        crate::scores::game_slug(&slug)?;
+        text(&r.get::<_, String>(2)?, 64, false)?;
+        let mode: i64 = r.get(3)?;
+        let quota: u32 = r.get(4)?;
+        if id < 1 || ![0, 1].contains(&mode) || !(1..=FILE_BOARD_BYTES).contains(&quota) {
+            return Err(Error::Invalid("invalid file area"));
+        }
+        count += 1;
+    }
+    if count > 32 {
+        return Err(Error::Invalid("too many file areas"));
+    }
+    let mut stmt =
+        db.prepare("SELECT id,filename,description,bytes,sha256,state FROM file_objects")?;
+    let mut rows = stmt.query([])?;
+    let mut total = 0u64;
+    let mut count = 0;
+    while let Some(r) = rows.next()? {
+        file_id(&r.get::<_, String>(0)?)?;
+        file_name(&r.get::<_, String>(1)?)?;
+        text(&r.get::<_, String>(2)?, 512, false)?;
+        let bytes: u32 = r.get(3)?;
+        let sha: String = r.get(4)?;
+        let state: String = r.get(5)?;
+        if bytes > FILE_BYTES
+            || !["reserved", "pending", "published", "removed"].contains(&state.as_str())
+            || (!sha.is_empty()
+                && (sha.len() != 64
+                    || !sha
+                        .bytes()
+                        .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())))
+            || (["pending", "published"].contains(&state.as_str()) && sha.len() != 64)
+        {
+            return Err(Error::Invalid("invalid file object"));
+        }
+        total += u64::from(bytes);
+        count += 1;
+    }
+    if total > u64::from(FILE_BOARD_BYTES) || count > 1000 {
+        return Err(Error::Invalid("file snapshot quota exceeded"));
+    }
+    if db.prepare("SELECT 1 FROM file_areas a WHERE (SELECT coalesce(sum(bytes),0) FROM file_objects WHERE area_id=a.id)>a.quota LIMIT 1")?.exists([])?{return Err(Error::Invalid("file area quota exceeded"))}
+    let grants: i64 = db.query_row("SELECT count(*) FROM file_area_grants", [], |r| r.get(0))?;
+    if grants > 4096 {
+        return Err(Error::Invalid("file grant limit exceeded"));
+    }
+    let mut stmt=db.prepare("SELECT t.id,t.ssh_key,t.epoch,t.direction,t.created,t.expires,t.state,t.lease,t.progress,o.bytes FROM file_transfers t JOIN file_objects o ON o.id=t.object_id")?;
+    let mut rows = stmt.query([])?;
+    let mut count = 0;
+    while let Some(r) = rows.next()? {
+        file_id(&r.get::<_, String>(0)?)?;
+        let key: String = r.get(1)?;
+        file_key(&format!("ssh-ed25519 {key}"))?;
+        let epoch: i64 = r.get(2)?;
+        let direction: String = r.get(3)?;
+        let created: i64 = r.get(4)?;
+        let expires: i64 = r.get(5)?;
+        let state: String = r.get(6)?;
+        let lease: String = r.get(7)?;
+        let progress: u32 = r.get(8)?;
+        let bytes: u32 = r.get(9)?;
+        if epoch < 1
+            || !["upload", "download"].contains(&direction.as_str())
+            || created <= 0
+            || created.checked_add(300) != Some(expires)
+            || !["ready", "active", "done", "failed"].contains(&state.as_str())
+            || progress > bytes
+        {
+            return Err(Error::Invalid("invalid file transfer"));
+        }
+        if !lease.is_empty() {
+            file_id(&lease)?
+        }
+        if ["active", "done"].contains(&state.as_str()) && lease.is_empty() {
+            return Err(Error::Invalid("missing file lease"));
+        }
+        count += 1;
+    }
+    if count > 64 {
+        return Err(Error::Invalid("file transfer limit exceeded"));
+    }
+    Ok(())
+}
+
+impl Board {
+    /// Member cancellation affects only this session epoch's own file grant.
+    /// Upload reservations remain private and charged until explicit removal/GC.
+    pub fn file_abandon(&mut self, s: &Session, id: &str) -> Result<()> {
+        file_id(id)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        let own = tx
+            .prepare("SELECT 1 FROM file_transfers WHERE id=?1 AND member_id=?2 AND epoch=?3")?
+            .exists(params![id, s.member, s.epoch])?;
+        if !own {
+            return Err(Error::Denied);
+        }
+        tx.execute(
+            "UPDATE file_transfers SET state='failed' WHERE id=?1 AND state IN ('ready','active')",
+            [id],
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
+}

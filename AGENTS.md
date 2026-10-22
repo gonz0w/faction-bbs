@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): build #117 bounded Kitty graphics
-after merging #119; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): validate #118 real terminal compatibility
+after merging #120; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -571,3 +571,25 @@ Preserve those actual bytes/result before future runtime changes, never refresh
 its hashes. 151 Rust tests/host, seven graphics plus three native-gate PTY controls
 per host and nineteen shared native controls pass; the original private saved
 playground remains off and only the disposable clone was removed.
+
+## Real terminal compatibility (#118)
+
+Read plan 0045. Research uses privately isolated, pinned native emulator/reference
+fixtures, not a new product graph. No screenshots/desktop capture permission is
+available; distinguish real report/cell/image-retention observations from visual
+pixel or font-glyph certification. Never reuse/control existing user terminals,
+load personal configs or replay unexpected human input into BBS commands.
+
+Fourteenth snapshot sources/pre118 and kitty-graphics-baseline-manifest.json
+freeze all 112 actual #120 inputs plus its unchanged result before compatibility
+work. Keep fourteen snapshots and twenty-six historical identities fixed.
+Normal service eight/5000-ms admission, crypto/helper/output/probe limits and
+classic defaults stay. Software VM/member SSH/native client tests use only a
+new synthetic board and new loopback forwarding; saved playground stays off.
+
+The terminal-compatibility result now pins 115 application inputs and seven host
+harness sources, with two separate reproduction sources. Preserve those bytes
+and results before future changes. Twelve actual profiles/48 BBS routes pass
+with three old-screen profiles explicitly classic-only; native default filters
+and no-DCS-passthrough stay. Do not turn this into pixel/glyph/GPU certification.
+No product runtime/dependency/filter/schema/default/limit changes were needed.

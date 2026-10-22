@@ -79,3 +79,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0048: Original INN offline article validation](0048-offline-inn-article-validation.md)
 
 - [0050: Bounded inline Kitty graphics](0050-kitty-graphics.md)
+
+- [0051: Real terminal compatibility](0051-real-terminal-compatibility.md)

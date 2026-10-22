@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Validate twelve real terminal/font/tmux/screen profiles (#118), 48 local/SSH/
+  native BBS sessions, image retention/deletion and live SSH resize recovery.
+  Qualify old GNU screen as classic-only; retain default filtering and fallback.
+- Add reproducible isolated native reference/measurement tools and exact evidence;
+  no runtime dependency, protocol/filter, schema, capacity or hardening change.
+
 - Add optional T/G inline Kitty graphics (#117): positive isolated probes, one
   original 160x80 RGB calibration image, <=4-KiB chunks after output drain,
   rate/deadline limits and partial-stream cleanup with classic ANSI fallback.
