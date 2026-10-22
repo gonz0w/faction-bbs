@@ -101,8 +101,10 @@ host key independently. A directory hint is supplied by this sysop and grants no
 trust. Your local client may have its own identity/configuration; Faction does not
 copy or forward credentials, device keys, agent access or membership to a listed
 board. The destination handles SSH admission, registration and local BBS approval.
-Native profile handoff remains future work; it must retain member-held keys and
-independent local approval. No remote login or federation is implemented here.
+The optional [native board launcher](board-launcher.md) can visit profiles you
+configure and verify on your own device, with a local confirmation and fresh BBS
+login. Directory-to-profile import remains future work. The directory itself
+performs no remote login and implements no federation.
 
 ## Submissions, review and listing lifecycle
 

@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Native community visits
+
+After checked #131, the optional [native board launcher](../docs/board-launcher.md)
+adds member-owned profiles and deliberate visits/return without restarting the
+client. Directory cards never import profile/host-key authority; every destination
+requires its own account/approval. Member submissions and automatic profile handoff
+remain follow-on #27 work; hardening remains later.
+
 ## Useful community directory
 
 After checked #130, #27/#21 adds the optional local [Other BBSes directory](../docs/other-boards.md):

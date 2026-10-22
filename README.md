@@ -82,8 +82,10 @@ signing has a recorded failure under #92. Encrypted attachments stay planned in 
 The optional **[Other BBSes directory](docs/other-boards.md)** now provides themed
 pages and connection cards for sysop-reviewed boards, with independent destination
 login/approval. It stays local and never auto-connects or shares keys. Member
-submissions, native visit handoff, federation, payments, mesh and browser access
-remain backlog work.
+submissions, automatic profile import, federation, payments, mesh and browser access
+remain backlog work. The **[native board launcher](docs/board-launcher.md)** now lets
+members pick their own verified profiles, visit independent boards and return to
+the local picker after disconnecting. Every destination still requires local login/approval.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
 including optional seasonal colors and identity screens.
 

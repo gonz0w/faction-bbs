@@ -56,3 +56,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Backup checks and Recovery panel](backup-checks.md): explicit complete-bundle verification and historical private check receipts.
 
 - [Contacts / Other BBSes](other-boards.md): curated local listings and safe SSH connection cards for approved members.
+
+- [Native board launcher](board-launcher.md): member-owned profiles, deliberate visits, independent login and local return.

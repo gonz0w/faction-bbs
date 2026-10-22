@@ -18,7 +18,7 @@ pub struct Profile {
     pub public_key: String,
     pub known_hosts: PathBuf,
 }
-fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
+pub(super) fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
     let f = OpenOptions::new()
         .read(true)
         .custom_flags((OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC).bits() as i32)
@@ -35,7 +35,7 @@ fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
     }
     Ok(f)
 }
-fn path(s: String) -> io::Result<PathBuf> {
+pub(super) fn path(s: String) -> io::Result<PathBuf> {
     let p = PathBuf::from(&s);
     if !p.is_absolute()
         || s.len() > 512
