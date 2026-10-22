@@ -201,14 +201,15 @@ reader's copy. Public reference namespaces survive restore; private session iden
 rotates and transfer grants are discarded. No link automatically fetches from a
 remote BBS or publishes local files. Current file areas are readable by the sysop;
 future device-encrypted mail attachments require a separate ciphertext/key boundary
-under #88. The current client implements no mail encryption or roaming authentication.
+under #88. The client has an optional [encrypted local vault](local-mail-vault.md), but
+no network mail encryption/delivery or roaming authentication.
 
 
 The [encrypted-mail research proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 is separate from product security claims. Its reference devices keep keys in local
-memory and pin peer keys, while two homes route/archive ciphertext. Native client
-keystore/recovery/interoperability and verified home-principal-to-membership binding
-remain #90/#91. The native signer failure under #92 blocks native issuance adoption.
+memory and pin peer keys, while two homes route/archive ciphertext. Local vault unlock/backup/recovery now runs on the member device with explicit
+device pins; network OMEMO keys/interop/history recovery and verified
+home-principal-to-membership binding remain #90/#91. The native signer failure under #92 blocks native issuance adoption.
 No terminal file frame or remote ANSI prompt may unlock mail secrets or import a
 home identity/role. Device-encrypted attachments remain #88; current file areas
 remain readable by the sysop.

@@ -1,5 +1,8 @@
 //! Local terminal companion. Remote output never selects local paths or endpoints.
 #![forbid(unsafe_code)]
+mod mail_data;
+mod mail_ui;
+mod mail_vault;
 mod profile;
 mod sftp;
 mod stream;
@@ -386,9 +389,12 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile) -> io::Result<()> {
 }
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if args.len() == 3 && args[0] == "--mail-store" {
+        return mail_ui::run(Path::new(&args[1]), &args[2]);
+    }
     if args.len() != 2 || args[0] != "--profile" {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML",
+            "Usage: faction-client --profile PRIVATE_TOML | --mail-store NEW_OR_EXISTING_PRIVATE_DIR init|open|recover",
         ));
     }
     let p = Profile::load(Path::new(&args[1]))?;

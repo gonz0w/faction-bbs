@@ -91,3 +91,10 @@ The earlier five snapshots/eighteen historical record identities remain fixed.
 workflow tests separately; historical file-area tests were not relabeled as new runs.
 
 [Encrypted-mail/identity evidence](encrypted-mail-netbsd/README.md) adds a separate two-home protocol/native verifier record and retains native signing failure. No maintained executed input or older record was changed, so no historical snapshot is replaced or relabeled.
+
+`mail-client-baseline-manifest.json` preserves all 89 actual #89 native-client
+execution inputs in `sources/pre90` and pins its unchanged result before native
+mail edits. The seventh snapshot brings historical identities to nineteen.
+[Local mail vault evidence](local-mail-vault-netbsd/README.md) records the new
+current-source host/NetBSD checks separately. The earlier two-home reference
+experiment remains unmodified; no network mail or roaming adoption is implied.

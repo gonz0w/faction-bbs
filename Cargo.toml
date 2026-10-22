@@ -19,6 +19,7 @@ toml = { version = "=1.1.8", default-features = false, features = ["std", "parse
 zeroize = "=1.9.1"
 base64 = "=0.23.1"
 sha2 = "=0.11.1"
+chacha20poly1305 = { version = "=0.11.0", default-features = false, features = ["alloc", "zeroize"] }
 
 [profile.release]
 opt-level = 2

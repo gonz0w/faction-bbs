@@ -1,10 +1,10 @@
 # Local application dependencies
 
-Reviewed 2026-10-20. [ADR 0008](../decisions/0008-local-core-and-credentials.md)
+Reviewed 2026-10-21. [ADR 0008](../decisions/0008-local-core-and-credentials.md)
 adopts the initial core dependencies; [ADR 0009](../decisions/0009-safe-terminal-menus-and-themes.md) adds a pinned TOML parser for declarative themes. [ADR 0011](../decisions/0011-private-export-restore.md) enables rusqlite backup/hooks/limits for private snapshot tools without adding registry packages. [ADR 0012](../decisions/0012-restricted-ssh-and-terminal-handoff.md) enables rustix fs/net and uses existing cc 1.9.0 to build a small NetBSD-only native CMSG bridge; no new registry package or runtime SSH library is added. `Cargo.lock` pins
 versions/checksums. [The inventory](local-core.json) records selected dependency
 versions, declared license expressions and features for NetBSD ARM64 and Linux
-x86-64, including build dependencies. Current selected graphs contain 39 / 41 registry packages respectively; all added declarations offer MIT/Apache-2.0 choices except winnow (MIT). This source inventory alone is not runtime evidence; [native application execution](../research/0024-restricted-ssh-netbsd.md) is recorded separately. The lock may also contain unselected platform packages.
+x86-64, including build dependencies. Current selected graphs contain 46 / 48 registry packages respectively; all added declarations offer MIT/Apache-2.0 choices except winnow (MIT). This source inventory alone is not runtime evidence; [native application execution](../research/0024-restricted-ssh-netbsd.md) is recorded separately. The lock may also contain unselected platform packages.
 
 Run `python3 tools/check_rust_dependencies.py` after fetching/building. It asks
 Cargo for each named selected graph, scans the fetched package trees for prohibited
@@ -31,3 +31,8 @@ ADR 0013 extends the same in-tree native helper with a small C11 lock-free signa
 flag on all build hosts. It uses the existing C compiler/`cc` build dependency;
 selected registry graph/versions are unchanged. Native descriptor ownership and
 signal/process lifecycle require independent positive tests, not just compilation.
+
+[ADR 0035](../decisions/0035-native-local-mail-vault.md) adds chacha20poly1305
+0.11.0 with alloc/zeroize only for member-device local storage. Seven additional
+MIT/Apache-2.0 packages pass both selected source graphs; Argon2/zeroize reuse
+existing pinned dependencies. No new BBS owner runtime dependency or helper.

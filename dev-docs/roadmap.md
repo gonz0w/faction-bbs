@@ -17,7 +17,9 @@ Pause game expansion under #81 while preserving DOS/Amiga/other-host adapters.
 The [two-home reference proof](research/0045-encrypted-mail-and-roaming-proof.md)
 passes encrypted mail/offline/archive/device-refusal controls and native scoped
 SSH certificate verification. No complete native crypto/SSO runtime is adopted.
-#90 builds native mail/keystore/recovery; #91 binds home identity to local membership;
+#90 now has a [local encrypted vault](../docs/local-mail-vault.md), private drafts,
+explicit pins and member backup/recovery. Native inbox/send/ratchet/history and
+independent interop remain; #91 binds proven home identity to local membership;
 #92 investigates native signing failure. Attachments remain #88.
 These explicit mail/identity capabilities supersede older chat-only wording below.
 

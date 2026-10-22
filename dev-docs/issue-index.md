@@ -93,3 +93,8 @@ verified-device/recovery integration and [#91](https://github.com/gonz0w/faction
 scoped identity-to-local-membership binding. [#92](https://github.com/gonz0w/faction-bbs/issues/92)
 records the native signer crash gate. [#88](https://github.com/gonz0w/faction-bbs/issues/88)
 retains device-encrypted attachments; parent #84 remains open.
+
+#90 now includes the [native local vault](../docs/local-mail-vault.md) for offline
+drafts, verified pins and member backup/recovery; actual OMEMO inbox/send/history
+and independent-client interop remain open. #91 still requires trusted live
+home-proof/local-approval binding; #88 retains encrypted attachments.

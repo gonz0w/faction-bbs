@@ -163,6 +163,23 @@ stay remote. No JS/TS dependency, mandatory helper or auto-enabled public servic
 Keep the Lua installer root keys before any TOML array tables. No experimental
 network policy/tuning is automatically changed for remote games.
 
+## Native local mail vault
+
+Issue #90 / ADR 0035 adds docs/local-mail-vault.md. Explicit local command only,
+before any SSH profile/child; no terminal-control unlock or remote compose/pin
+requests. Keep owner-only descriptor-relative no-link storage, exclusive live lock
+inode, authenticated bounded format, atomic writes/create-only backup, hidden
+input, five-minute inactivity/cancel/error relock and core-dump denial. Random
+local data/recovery keys and Argon2id64MiB/t3/p1 run on the member device; server
+passwords/credential limits are unchanged. Old backups keep old secrets and pin
+state; no rollback/revocation/memory-erasure guarantee. Local address claims/pins
+are not authenticated home identity, remote device enrollment or implemented
+OMEMO state. Inbox/send/reply/interop/history remain #90, trusted live membership
+binding #91, native signer failure #92 and encrypted attachments #88. Do not
+adopt research Python or an unreviewed ratchet to label this complete. Preserve
+#89's 89 measured inputs via mail-client-baseline-manifest.json; old results
+never become measurements of this revision. See plan 0036 and research 0046.
+
 ## Product constraints
 
 - Preserve the WWIV-inspired approved-login -> BBS-specific ANSI art -> sysop-defined welcome/menu session. No community access before authentication and local sysop approval.

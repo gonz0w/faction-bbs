@@ -64,3 +64,9 @@ must never solicit home secrets, unlock a mail keystore or compose private mail.
 Native mail needs an explicitly local trusted interaction (#90); verified home
 identity needs a trusted connection-bound membership path (#91), with no role
 or approval import. Keep attachments under #88's ciphertext/key boundary.
+
+The [native mail-vault boundary](native-mail-vault.md) now has a working offline
+local command and authenticated persistence. Its address label and device pins
+are local records; no server plugin can assert verified plaintext or authenticated
+home identity. Native OMEMO adapter/state+message commit is still #90, trusted live
+issuer-to-local-membership binding #91, member-encrypted attachments #88.

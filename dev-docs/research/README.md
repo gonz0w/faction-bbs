@@ -72,3 +72,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [Native file-area implementation evidence](../evidence/file-areas-netbsd/README.md) — #83 scoped SFTP, quarantine and complete file-data recovery.
 
 - [0045: Two-home encrypted mail and scoped roaming proof](0045-encrypted-mail-and-roaming-proof.md) — actual reference mail/native verifier controls, dependency gates and native signing failure; #84 remains open.
+
+- [0046: Native local mail vault](0046-native-local-mail-vault.md) — actual host/NetBSD encrypted persistence and trusted UI; native OMEMO/roaming gates remain.

@@ -94,7 +94,9 @@ Ordinary SSH remains supported. Its Files screen retains manual key/grant/SFTP
 commands, including `link OBJECT_ID` and `cancel TRANSFER_ID`. It does not acquire
 local filesystem access from the native protocol.
 
-The local client is also the future place for member-held mail/device keys, but
-this version creates no mail keystore and implements no XMPP/OMEMO or roaming login.
+The optional [local mail vault](local-mail-vault.md) now adds a separate trusted
+local screen, encrypted drafts/device pins, hidden unlock and encrypted
+backup/recovery. It opens no SSH connection. Native inbox/send, OMEMO device
+keys/ratchets and roaming login remain unimplemented under #90/#91.
 [Encrypted attachments](private-mail.md#encrypted-attachments) are separately scoped:
 current sysop-readable file areas are not a substitute for client-encrypted blobs.

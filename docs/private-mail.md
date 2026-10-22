@@ -1,12 +1,14 @@
 # Home identities and encrypted private mail
 
-Status: mail/identity remain owner-selected direction, **not implemented**.
+Status: network mail/identity remain owner-selected direction, **not implemented**.
 The [native terminal client](native-client.md) now provides SSH/Files integration;
-it does not yet hold mail keys, route XMPP or perform roaming authentication.
+its optional [local encrypted vault](local-mail-vault.md) now stores private drafts
+and explicit device pins with member-controlled backup/recovery. It does not yet
+hold OMEMO device keys, route XMPP, receive/send mail or perform roaming authentication.
 A separate [two-home reference proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 passes 12 actual OMEMO-2/SCE controls and 11 native scoped SSH verifier controls.
 It is research tooling, not the shipped client or an adopted complete protocol.
-Native UI/keystore/recovery is [#90](https://github.com/gonz0w/faction-bbs/issues/90),
+Native protocol/inbox integration and history recovery remain [#90](https://github.com/gonz0w/faction-bbs/issues/90),
 trusted membership binding [#91](https://github.com/gonz0w/faction-bbs/issues/91),
 and a native signer failure [#92](https://github.com/gonz0w/faction-bbs/issues/92). Native client/identity/mail
 proof [#84](https://github.com/gonz0w/faction-bbs/issues/84); local mail #33 and
@@ -61,7 +63,10 @@ keys locally; do not use the server's password hash as a mail key or decrypt mai
 inside an SSH process on a BBS. Password changes can rewrap a local keystore;
 server-side password reset must not decrypt history or silently authorize a new
 device. Recovery needs a member-controlled recovery secret or trusted device.
-Exact format/cryptographic libraries and key-backup policy remain unselected.
+The [local vault](local-mail-vault.md) selects a bounded encrypted persistence format
+and member-held backup/recovery secret. OMEMO device/state/history recovery and
+new-device enrollment remain unimplemented; a local vault backup is not yet an
+OMEMO history export.
 
 XMPP with OMEMO is the leading reuse candidate, not an implemented/validated
 protocol profile. Device-key verification/enrollment is essential: a compromised
