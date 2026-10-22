@@ -1,7 +1,7 @@
 # 0051: Nightwire across real terminals
 
 Issue: [#25](https://github.com/gonz0w/faction-bbs/issues/25)
-Status: implemented; focused PR handoff pending
+Status: implemented; [PR #127](https://github.com/gonz0w/faction-bbs/pull/127) open, GitHub checks pending
 
 ## Goal and constraints
 
@@ -19,7 +19,7 @@ terminal config, installed application or saved playground changes.
 - [x] Build a bounded artwork-specific real-emulator cursor probe.
 - [x] Run the matrix; correct probe newline/viewport defects, no product defect reproduced.
 - [x] Check unchanged prior inputs and classic fallback; record limitations.
-- [ ] Update docs, issue and focused PR.
+- [x] Update docs, issue #25 and focused PR #127; attached to this task.
 
 ## Steps and commands
 
@@ -61,4 +61,6 @@ authoring controls; no automatic layout-selection/font-face claim follows.
 
 Remaining: owner visual/font/palette acceptance and broader platform coverage.
 No product defect reproduced, so no speculative runtime/art alteration. Hardening
-stays later; #25 stays open. Focused PR and issue handoff follow local validation.
+stays later; #25 stays open. PR #127 and its #25 status comment capture the
+reviewable handoff; GitHub checks remain pending. The clean Git archive also
+passes policy/source identity and all 32 evidence guards.
