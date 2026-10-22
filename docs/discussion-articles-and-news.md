@@ -1,6 +1,6 @@
 # Discussion articles and optional news connections
 
-Status: codec and local metadata migration implemented, 2026-10-21; network
+Status: bounded profile v2, metadata migration and independent offline INN checks implemented, 2026-10-21; network
 adapters remain planned. Discussion-room
 posts should use a Netnews-compatible article representation. Live IRC channels
 and encrypted XMPP private chat/mail keep their respective formats. Keep the
@@ -14,7 +14,7 @@ Citadel experience: enter a room, read new posts in order, post and reply.
 
 ## Available offline foundation
 
-`faction-articles` is a dependency-free Rust library with validated construction,
+`faction-articles` is a small Rust library using the existing reviewed base64 crate with validated construction,
 parse and deterministic serialization for a bounded text-only profile. It accepts
 explicit identity/date/group/path metadata; it does not generate missing historical
 facts, read a database or open a connection. There is a hand-authored article
@@ -25,29 +25,29 @@ cargo run -p faction-articles --example check_article -- \
   < crates/faction-articles/tests/fixtures/plain.article
 ```
 
-The initial profile allows one each of the six mandatory article fields, optional
-References, and explicit MIME-Version 1.0 / text/plain charset=utf-8 / 8bit headers.
-Headers are ASCII; From is a bare mailbox. Date uses `DD Mon YYYY HH:MM:SS +HHMM`
-without a weekday. UTF-8 bodies normalize to LF internally; the wire uses CRLF.
-Encoded-word subjects, other date/header/MIME variants, unknown/control headers,
-HTML, attachments and raw terminal controls are rejected rather than discarded.
-This is a deliberately limited profile, not a general-purpose provider parser.
+[Profile v2](article-profile.md) supports ASCII wire headers with decoded UTF-8
+subjects (B/Q encoded words), common numeric-zone dates and single text/plain MIME
+7bit/8bit/quoted-printable/base64. Canonical output uses UTF-8 encoded subjects and
+quoted-printable bodies with exact trailing whitespace/newline preservation.
+Unsupported headers/parts/charsets, HTML, binary attachments and decoded terminal
+controls fail explicitly. This is a bounded text profile, not a universal provider
+parser. No file/URL is opened by parsing an article.
 
-Limits: 24 KiB wire, 4 KiB headers, 16 KiB body, 998 bytes per physical line,
-four groups and sixteen references. Header injection, duplicates, invalid IDs,
-invalid calendar/time values and self/duplicate reply references fail validation.
-Strict local duplicate/conflict comparison is implemented; persistent remote
-deduplication, relay Path equivalence and conflict quarantine belong to adapters.
+Limits remain 24 KiB wire, 4 KiB headers, 16 KiB decoded body, 998 physical input
+bytes per line, four groups and sixteen emitted references. Local projection scans
+at most 128 ancestors, keeping root plus nearest fifteen. Header injection,
+duplicates, invalid IDs/calendar/weekday/time values and self/duplicate references
+fail. Strict normalized comparison distinguishes duplicate from conflicting IDs;
+persistent remote import/dedup and relay Path equivalence remain #101/#104.
 
-[ADR 0036](../dev-docs/decisions/0036-room-articles-and-reading.md) records this
-increment. [Post metadata](post-metadata.md) now stores stable local article IDs,
-authored/default subject labels and new-post UTC times in schema 6. The live reader
-shows these fields; [local article projection](room-articles.md) now supplies
-reserved author/group/Path aliases and bounded reply references through the codec.
-Strict normalized ID comparison distinguishes duplicates from conflicts without
-inserting remote posts. It does not publish codec output. #103 remains open for
-internationalized subjects, broader MIME/date/reference policy and independent
-news-software interoperability; real peering mapping is gated by #101.
+[Post metadata](post-metadata.md) stores stable local IDs, authored/default subjects
+and new-post UTC times in schema 6. The reader shows them. [Local article
+projection](room-articles.md) supplies reserved author/group/Path aliases and bounded
+References without publishing codec output. Legacy dates remain unknown. The
+current composer remains ASCII; #114 owns versioned internationalized composing.
+[Original INN software checks](../dev-docs/research/0048-offline-inn-article-validation.md)
+now pass on macOS and native NetBSD; real peer/provider policy and runtime remain
+#101/#104. ADRs 0036–0039 record the successive bounded increments.
 
 ## Article formatting before network transport
 

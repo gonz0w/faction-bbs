@@ -140,9 +140,9 @@ and [research 0047](research/0047-modern-terminal-and-federation-options.md).
 ## Room article and reader increment
 
 [ADR 0036](decisions/0036-room-articles-and-reading.md) adds faction-articles,
-a dependency-free, bounded text-only codec with no database/transport authority.
+a bounded, bounded text-only codec with no database/transport authority.
 Schema 6 now adds local metadata without changing post bodies/replies/unread;
-NNTP adapters and authored subjects remain open.
+Authored subjects and local projection now exist; live NNTP adapters remain open.
 The shared faction-terminal message presenter is used by local/worker and service
 readers, retaining only cursors, re-fetching current permissions and acknowledging
 only complete output. No IRC/XMPP formats, session/credential limits or owner
@@ -155,7 +155,14 @@ operators stop/drain and verify complete backups before the first new owner open
 
 [ADR 0038](decisions/0038-authored-subjects-and-local-article-projection.md) adds
 subject-aware PostDraft posting, reply previews/defaults and approved local
-proto-article projection. Core depends on the existing dependency-free article
+proto-article projection. Core depends on the existing bounded article
 crate; no new registry package, thread/helper/listener or schema version. Current
 local file permissions apply before returning an exact canonical body. Broader
 interchange and peer/provider runtime remain gated.
+
+[ADR 0039](decisions/0039-broader-articles-and-inn-validation.md) promotes text profile
+v2 with existing reviewed base64 support, exact MIME body semantics, bounded UTF-8
+wire subjects/common dates and root/recent reference pruning. Original INN inews
+passes twelve offline controls on both hosts; temporary refusal fixtures are test
+infrastructure, not a BBS listener or runtime adoption. #101/#104 keep actual
+transport/consent gates and #114 keeps versioned Unicode composing separate.

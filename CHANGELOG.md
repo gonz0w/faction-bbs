@@ -4,6 +4,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Broaden #103's text codec to profile v2: UTF-8 encoded wire subjects, common
+  numeric-zone dates, bounded plain-text MIME 7bit/8bit/QP/base64 input and exact
+  QP output. Preserve long lines, trailing whitespace and final-newline semantics;
+  keep DB schema 6/composer ASCII and track Unicode composing separately in #114.
+- Prune bounded local reply ancestry to root plus fifteen recent References with
+  a fixed 128-ancestor work cap. Add original INN 2.7.4 offline roundtrip/rejection
+  validation on macOS/NetBSD and CI; no news runtime, publication or hardening
+  activation. Preserve all earlier measured source/result identities.
+
 - Add authored room subjects, previewed inherited reply defaults and subject-aware
   retry checks in local/worker and shared terminal sessions (#103). Keep schema 6.
 - Connect approved stored posts to bounded local proto-articles with safe aliases,

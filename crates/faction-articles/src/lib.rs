@@ -1,7 +1,11 @@
 //! Bounded Netnews text articles, independent of storage, transport and authority.
 //! This intentionally narrow profile rejects unknown headers and unsupported MIME.
 #![forbid(unsafe_code)]
+mod encoding;
 use std::{collections::BTreeMap, fmt};
+
+/// Version 2 uses standard MIME body semantics (no invented trailing newline).
+pub const PROFILE_VERSION: u8 = 2;
 
 pub const WIRE_BYTES: usize = 24 * 1024;
 pub const HEADER_BYTES: usize = 4096;
@@ -32,8 +36,8 @@ impl std::error::Error for Error {}
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Inputs are explicit: this codec does not mint identities, timestamps or paths.
-/// From is a bare ASCII mailbox; Subject is printable ASCII. UTF-8 is supported
-/// in text bodies, not raw internationalized headers or encoded-word subjects.
+/// From is a bare ASCII mailbox. Subject/body are decoded UTF-8 text; the codec
+/// encodes non-ASCII subjects with bounded RFC 2047 UTF-8 encoded words.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Headers {
     pub message_id: String,
@@ -133,6 +137,54 @@ fn date(value: &str) -> bool {
         && number(22, 24).is_some_and(|n| n < 24)
         && number(24, 26).is_some_and(|n| n < 60)
 }
+fn normalize_date(value: &str) -> Result<String> {
+    let (weekday, value) = if let Some((day, tail)) = value.split_once(", ") {
+        (Some(day), tail)
+    } else {
+        (None, value)
+    };
+    let fields: Vec<_> = value.split_ascii_whitespace().collect();
+    if fields.len() != 5 {
+        return Err(Error::Syntax);
+    }
+    let time = if fields[3].len() == 5 {
+        format!("{}:00", fields[3])
+    } else {
+        fields[3].into()
+    };
+    let day = if fields[0].len() == 1 {
+        format!("0{}", fields[0])
+    } else {
+        fields[0].into()
+    };
+    let normalized = format!("{day} {} {} {time} {}", fields[1], fields[2], fields[4]);
+    if !date(&normalized) {
+        return Err(Error::Syntax);
+    }
+    if let Some(weekday) = weekday {
+        let month = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+        ]
+        .iter()
+        .position(|m| *m == fields[1])
+        .ok_or(Error::Syntax)?
+            + 1;
+        let mut year = fields[2].parse::<i32>().map_err(|_| Error::Syntax)?;
+        let d = day.parse::<i32>().map_err(|_| Error::Syntax)?;
+        if month < 3 {
+            year -= 1;
+        }
+        let n = (year + year / 4 - year / 100
+            + year / 400
+            + [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4][month - 1]
+            + d)
+            % 7;
+        if ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][n as usize] != weekday {
+            return Err(Error::Syntax);
+        }
+    }
+    Ok(normalized)
+}
 impl Headers {
     fn validate(&self) -> Result<()> {
         if !message_id(&self.message_id)
@@ -141,8 +193,7 @@ impl Headers {
             || self.subject.is_empty()
             || self.subject.len() > 160
             || self.subject.trim() != self.subject
-            || self.subject.contains("=?")
-            || !self.subject.bytes().all(|b| (32..=126).contains(&b))
+            || self.subject.chars().any(char::is_control)
             || self.newsgroups.is_empty()
             || self.newsgroups.len() > 4
             || self.path.len() > 256
@@ -199,7 +250,8 @@ impl Article {
         }
     }
 
-    pub fn new(headers: Headers, body: String) -> Result<Self> {
+    pub fn new(mut headers: Headers, body: String) -> Result<Self> {
+        headers.date = normalize_date(&headers.date)?;
         headers.validate()?;
         if body.len() > BODY_BYTES {
             return Err(Error::Limit);
@@ -209,9 +261,6 @@ impl Article {
             .any(|c| c.is_control() && c != '\n' && c != '\t')
         {
             return Err(Error::Syntax);
-        }
-        if body.split('\n').any(|line| line.len() > LINE_BYTES) {
-            return Err(Error::Limit);
         }
         let article = Self { headers, body };
         article.to_wire()?; // Also bound the complete folded header/wire encoding.
@@ -233,7 +282,7 @@ impl Article {
             h.message_id,
             h.newsgroups.join(","),
             h.path,
-            h.subject
+            encoding::subject_wire(&h.subject)
         );
         if !h.references.is_empty() {
             wire.push_str("References: ");
@@ -246,19 +295,12 @@ impl Article {
             }
             wire.push_str("\r\n");
         }
-        wire.push_str("MIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: 8bit\r\n");
+        wire.push_str("MIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\n");
         if wire.len() > HEADER_BYTES {
             return Err(Error::Limit);
         }
         wire.push_str("\r\n");
-        for c in self.body.chars() {
-            if c == '\n' {
-                wire.push('\r');
-            }
-            wire.push(c);
-        }
-        // One wire terminator is removed on parse; preserve body trailing LF.
-        wire.push_str("\r\n");
+        encoding::qp_append(&mut wire, &self.body);
         if wire.len() > WIRE_BYTES {
             return Err(Error::Limit);
         }
@@ -322,19 +364,24 @@ impl Article {
             }
             previous = name;
         }
-        for (name, value) in [
-            ("mime-version", "1.0"),
-            ("content-type", "text/plain; charset=utf-8"),
-            ("content-transfer-encoding", "8bit"),
-        ] {
-            if !fields
-                .remove(name)
-                .ok_or(Error::Missing)?
-                .eq_ignore_ascii_case(value)
-            {
-                return Err(Error::Unsupported);
-            }
+        let has_mime = ["content-type", "content-transfer-encoding"]
+            .iter()
+            .any(|name| fields.contains_key(*name));
+        match fields.remove("mime-version") {
+            Some(value) if value == "1.0" => (),
+            Some(_) => return Err(Error::Unsupported),
+            None if has_mime => return Err(Error::Missing),
+            None => (),
         }
+        let ascii = encoding::content_type(
+            fields
+                .remove("content-type")
+                .as_deref()
+                .unwrap_or("text/plain; charset=us-ascii"),
+        )?;
+        let transfer = fields
+            .remove("content-transfer-encoding")
+            .unwrap_or_else(|| "7bit".into());
         if fields
             .get("references")
             .is_some_and(|s| s.trim().is_empty())
@@ -346,7 +393,7 @@ impl Article {
             message_id: get("message-id")?,
             from: get("from")?,
             date: get("date")?,
-            subject: get("subject")?,
+            subject: encoding::subject_parse(&get("subject")?)?,
             newsgroups: get("newsgroups")?.split(',').map(str::to_owned).collect(),
             path: get("path")?,
             references: fields
@@ -356,10 +403,7 @@ impl Article {
                 .map(str::to_owned)
                 .collect(),
         };
-        let body = body
-            .strip_suffix("\r\n")
-            .unwrap_or(body)
-            .replace("\r\n", "\n");
+        let body = encoding::decode_body(body, &transfer, ascii)?;
         Self::new(headers, body)
     }
 }

@@ -1,0 +1,202 @@
+//! Bounded remote terminal filter. File controls are data, never local actions.
+use faction_files::{invalid, native};
+use std::io;
+#[derive(Debug)]
+pub enum Event {
+    Text(Vec<u8>),
+    Frame(Vec<String>),
+}
+#[derive(Default)]
+enum State {
+    #[default]
+    Ground,
+    Escape,
+    Csi(Vec<u8>),
+    Osc(Vec<u8>, bool),
+    Discard(bool, usize),
+}
+#[derive(Default)]
+pub struct Filter {
+    state: State,
+    utf8: Vec<u8>,
+}
+impl Filter {
+    fn printable(&mut self, b: u8, text: &mut Vec<u8>) {
+        if self.utf8.is_empty() && b < 128 {
+            if b >= 32 || b"\r\n\t\x08\x07".contains(&b) {
+                text.push(b);
+            }
+            return;
+        }
+        self.utf8.push(b);
+        match std::str::from_utf8(&self.utf8) {
+            Ok(s) => {
+                for c in s.chars() {
+                    if !c.is_control() {
+                        let mut bytes = [0; 4];
+                        text.extend_from_slice(c.encode_utf8(&mut bytes).as_bytes());
+                    }
+                }
+                self.utf8.clear();
+            }
+            Err(e) if e.error_len().is_some() || self.utf8.len() >= 4 => {
+                text.push(b'?');
+                self.utf8.clear();
+            }
+            Err(_) => (),
+        }
+    }
+    pub fn feed(&mut self, bytes: &[u8]) -> io::Result<Vec<Event>> {
+        let mut out = Vec::new();
+        let mut text = Vec::new();
+        for &b in bytes {
+            match std::mem::take(&mut self.state) {
+                State::Ground => {
+                    if b == 27 {
+                        self.utf8.clear();
+                        self.state = State::Escape;
+                    } else {
+                        self.printable(b, &mut text);
+                    }
+                }
+                State::Escape => match b {
+                    b'[' => self.state = State::Csi(Vec::new()),
+                    b']' => self.state = State::Osc(Vec::new(), false),
+                    b'P' | b'_' | b'^' => self.state = State::Discard(false, 0),
+                    _ => (),
+                },
+                State::Csi(mut v) => {
+                    if (0x40..=0x7e).contains(&b) {
+                        let valid = v.iter().all(|b| b.is_ascii_digit() || b";?".contains(b))
+                            && (b"mHfABCDGdJKsu".contains(&b)
+                                || (b"hl".contains(&b) && v == b"?25"));
+                        if valid {
+                            text.extend_from_slice(b"\x1b[");
+                            text.extend(v);
+                            text.push(b);
+                        }
+                    } else if v.len() < 64 {
+                        v.push(b);
+                        self.state = State::Csi(v);
+                    } else {
+                        return Err(invalid());
+                    }
+                }
+                State::Osc(mut v, esc) => {
+                    if b == 7 || (esc && b == b'\\') {
+                        if let Some(payload) = v.strip_prefix(b"7770;FACTION1;") {
+                            let frame = native::unframe(payload)?;
+                            if !text.is_empty() {
+                                out.push(Event::Text(std::mem::take(&mut text)));
+                            }
+                            out.push(Event::Frame(frame));
+                        }
+                    } else if v.len() < 5520 {
+                        if esc {
+                            v.push(27);
+                        }
+                        if b != 27 {
+                            v.push(b);
+                        }
+                        self.state = State::Osc(v, b == 27);
+                    } else {
+                        return Err(invalid());
+                    }
+                }
+                State::Discard(esc, n) => {
+                    if !(esc && b == b'\\') {
+                        if n >= 8192 {
+                            return Err(invalid());
+                        }
+                        self.state = State::Discard(b == 27, n + 1);
+                    }
+                }
+            }
+        }
+        if !text.is_empty() {
+            out.push(Event::Text(text));
+        }
+        Ok(out)
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn fragmented_frames_and_terminal_queries_cannot_become_local_actions() {
+        let frame = native::frame(&["ready"]).unwrap();
+        let input = format!("hi\x1b]52;c;clipboard\x07\x1b[6n\x1bPbad\x1b\\{frame}世界\x1b[31mred");
+        let mut filter = Filter::default();
+        let mut text = Vec::new();
+        let mut frames = Vec::new();
+        for b in input.bytes() {
+            for e in filter.feed(&[b]).unwrap() {
+                match e {
+                    Event::Text(t) => text.extend(t),
+                    Event::Frame(f) => frames.push(f),
+                }
+            }
+        }
+        assert_eq!(frames, vec![vec!["ready"]]);
+        assert_eq!(String::from_utf8(text).unwrap(), "hi世界\x1b[31mred");
+        assert!(
+            Filter::default()
+                .feed(&[b"\x1b]".as_slice(), &vec![b'x'; 6000]].concat())
+                .is_err()
+        );
+    }
+}
+
+/// Bounded convenience history only. Remembering a reference grants no authority.
+#[derive(Default)]
+pub struct Recent {
+    tail: Vec<u8>,
+    pub items: Vec<String>,
+}
+impl Recent {
+    pub fn feed(&mut self, bytes: &[u8]) {
+        const PREFIX: &[u8] = b"faction-file:";
+        const LENGTH: usize = 78;
+        for chunk in bytes.chunks(4096) {
+            let mut b = std::mem::take(&mut self.tail);
+            b.extend_from_slice(chunk);
+            for start in 0..b.len().saturating_sub(LENGTH - 1) {
+                let token = &b[start..start + LENGTH];
+                if token.starts_with(PREFIX) && token[PREFIX.len() + 32] == b'/' {
+                    let ns = std::str::from_utf8(&token[PREFIX.len()..PREFIX.len() + 32]);
+                    let id = std::str::from_utf8(&token[PREFIX.len() + 33..]);
+                    if ns.is_ok_and(faction_files::id) && id.is_ok_and(faction_files::id) {
+                        let text = String::from_utf8_lossy(token).into_owned();
+                        self.items.retain(|s| s != &text);
+                        self.items.insert(0, text);
+                        self.items.truncate(8);
+                    }
+                }
+            }
+            self.tail = b[b.len().saturating_sub(LENGTH - 1)..].to_vec();
+        }
+    }
+}
+
+#[cfg(test)]
+mod recent_tests {
+    use super::*;
+    #[test]
+    fn recent_links_are_bounded_deduplicated_and_survive_fragmented_output() {
+        let mut r = Recent::default();
+        for i in 0..20 {
+            let link = format!("faction-file:{}/{i:032x}", "a".repeat(32));
+            for b in link.bytes() {
+                r.feed(&[b]);
+            }
+            r.feed(b" ");
+        }
+        assert_eq!(r.items.len(), 8);
+        let newest = r.items[0].clone();
+        r.feed(newest.as_bytes());
+        assert_eq!(r.items.len(), 8);
+        assert_eq!(r.items[0], newest);
+        r.feed(b"faction-file:bad/path");
+        assert_eq!(r.items.len(), 8);
+    }
+}

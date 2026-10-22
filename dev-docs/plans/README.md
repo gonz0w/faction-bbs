@@ -57,3 +57,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0039: Post metadata and hardening stories](0039-post-metadata-and-hardening-stories.md) — local persistence/UI increment and later-phase backlog.
 
 - [0040: Authored subjects and room articles](0040-authored-subjects-and-room-articles.md)
+
+- [0041: Broader articles and original INN validation](0041-broader-articles-and-inn-validation.md)

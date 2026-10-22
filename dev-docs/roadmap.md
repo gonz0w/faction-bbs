@@ -218,3 +218,8 @@ The next #103 increment implements authored subjects, reply defaults, local arti
 projection and strict duplicate/conflict comparison. Broader header/MIME/date/
 reference policy and independent news software remain open; #101/#104 own actual
 peering/provider delivery. Keep #106–#111 hardening queued for its later phase.
+
+#103's bounded local article foundation now includes profile-v2 MIME/UTF-8 wire
+support, common dates, root/recent References and original INN offline controls on
+macOS/NetBSD. Live news/peer/provider gates remain #101/#104. Internationalized
+composer/storage compatibility is #114. Hardening #106–#111 remains later.

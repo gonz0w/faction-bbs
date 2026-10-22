@@ -44,3 +44,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Persistent post metadata](post-metadata.md) — schema-6 subject/date/ID semantics and stopped-service upgrade/rollback.
 
 - [Authored subjects and local room articles](room-articles.md)
+
+- [Article profile v2 and original INN validation](article-profile.md)

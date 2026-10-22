@@ -17,7 +17,7 @@ subject travels with the body through busy/retry state. A request ID with change
 subject, body, parent or room conflicts rather than overwriting content. Approval
 and the current session epoch are checked in the posting transaction. Subject
 controls, surrounding spaces, encoded-word syntax and non-ASCII subjects are
-rejected explicitly; full internationalized subject entry remains #103. UTF-8
+rejected explicitly; full internationalized subject entry is tracked in #114. UTF-8
 bodies retain the current text limits and inert terminal presentation.
 
 Schema remains 6; no second migration relabels old generated subjects as authored.
@@ -40,16 +40,15 @@ proto-article, not a grant to export or publish its room.
 | Subject | Authored text or the stored generated/reply default. |
 | Newsgroups | `faction.local.rROOM_ID`, a local alias; no automatic subscription or real room-title disclosure. |
 | Path | `not-for-mail`, no host route or injection assertion. |
-| References | Same-room ancestor IDs, oldest first, at most sixteen. |
+| References | At most sixteen ordered IDs: root plus the nearest fifteen, traversing no more than 128 same-room ancestors. |
 | Body | Exact stored supported text; no viewer-dependent rewrite under one ID. |
 
 Projection refuses an unknown legacy date, inaccessible file link, invalid/cyclic
-parent chain, more than sixteen ancestors, or text outside the codec profile.
-Ordinary reading remains available; projection never alters unread cursors,
-legacy records or bodies. The initial codec's 998-byte physical-line limit means
-a valid 1024-byte local single-line post may be unrepresentable in this profile;
-it is rejected rather than silently wrapped or assigned a different body. Broader
-transfer encoding and safe reference pruning remain #103.
+parent chain or more than 128 ancestors. Ordinary reading remains available;
+projection never alters unread cursors, legacy records or bodies. The
+[v2 text profile](article-profile.md) now encodes long logical lines with soft MIME
+breaks, retaining exact content while bounding physical lines. Reply pruning keeps
+the root and recent context without unbounded work.
 
 Reserved `.invalid` aliases grant no identity, membership, mail delivery or
 signature authority. Public IDs remain separate from private rotating session
@@ -60,7 +59,8 @@ identity and file namespace. Header data must never become approval or sysop rol
 ## Codec and duplicate handling
 
 The [bounded codec profile](discussion-articles-and-news.md) keeps ASCII headers,
-LF-normalized UTF-8 text bodies, CRLF wire output and bounded folded References.
+LF-normalized UTF-8 text bodies, encoded UTF-8 subjects, plain-text MIME decoding,
+CRLF/quoted-printable canonical output and bounded folded References.
 Unsupported MIME, HTML, binary attachments, raw controls and unknown authority/
 control headers fail closed. `compare_identity` compares validated normalized
 articles: different IDs are distinct, identical fields/body are duplicates, and
@@ -76,6 +76,7 @@ for a 16-KiB synthetic body separately from encoded size. It excludes allocator
 metadata, stacks, RSS, SQLite, SSH, board state and concurrent-member capacity.
 See [recorded software evidence](../dev-docs/evidence/authored-articles-netbsd/README.md).
 
-#103 stays open for internationalized headers, wider MIME/date interoperability,
-reference-pruning policy and independent news-software validation before peering.
+[Profile v2 and original INN checks](article-profile.md) complete the bounded local
+article-format deliverable under #103. #101/#104 own live independent peers/providers
+and consent/injection policy; #114 owns Unicode composer/storage compatibility.
 The later [hardening phase](later-phase-hardening.md) remains queued separately.

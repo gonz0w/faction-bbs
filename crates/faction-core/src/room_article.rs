@@ -24,9 +24,9 @@ impl Board {
         let mut references = Vec::new();
         let mut previous = post;
         while let Some(next) = parent {
-            if references.len() == REFERENCES || next >= previous {
+            if references.len() == 128 || next >= previous {
                 return Err(Error::Invalid(
-                    "reply chain exceeds the local article profile or is cyclic",
+                    "reply chain exceeds 128 ancestors or is cyclic",
                 ));
             }
             let (r, reply, token, title, stamp, provenance): (i64, Option<i64>, String, String, Option<i64>, String) = tx.query_row(
@@ -40,6 +40,9 @@ impl Board {
             parent = reply;
         }
         references.reverse();
+        if references.len() > REFERENCES {
+            references.drain(1..references.len() - (REFERENCES - 1));
+        }
         let raw: String = tx.query_row(
             "SELECT strftime('%d %m %Y %H:%M:%S +0000',?1,'unixepoch')",
             [time],
