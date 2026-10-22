@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #126, validate #25
-Nightwire artwork across real terminals and address demonstrated rendering issues; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #127, group related
+#95/#18/#98 local operator visibility and read-only diagnostics into a useful batch; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -776,3 +776,30 @@ inputs and old result records remain unchanged, so no new snapshot or native run
 Keep eighteen snapshots/thirty historical identities and all thirty-two saved
 evidence guards. Preserve these new measured harness bytes and the whole result
 before future edits; never refresh historical hashes.
+
+## Local operator console batch (#95/#18/#98)
+
+Read plan 0052, ADR 0047 and docs/sysop-console.md. `operator_status` is explicitly
+disabled by default; enabled shared owners publish only bounded numeric telemetry
+in their existing private state directory every five seconds. No new listener,
+owner helper or session/credential limit. SQL counts must retain progress/zero-busy
+budgets and restore prior hooks/timeouts; unavailable is not zero. The separate
+`faction-sysop` command reads only owner/root-private snapshots, never opens SQLite
+or grants OS access through a BBS role. Do not setuid, force-command it for members,
+replace getty, autologin root or edit personal login profiles. Fixed host diagnostics
+are read-only, bounded and separate from the owner. Keep ASCII/plain/delta ANSI,
+60-sample history, minimum refresh and actual geometry/stale/unknown labels.
+
+Nineteenth snapshot sources/pre95-operator with nightwire-baseline-manifest.json
+freezes all 176 distinct original artwork/terminal inputs and both whole records.
+Keep nineteen snapshots/thirty-two historical identities unchanged. No new
+250-user/physical/privileged-confinement claim. Hardening and host applies stay
+later. Use only the owned disposable NetBSD clone; saved playground stays off.
+
+The operator-netbsd result pins 152 actual selected native source matches and
+eight harness sources. Final Rust suites: 179 per OS, host Python 115; six themed
+operator UI controls per OS, ten actual shared operator controls and seven actual
+SSH/native art regressions. Resource samples use the default palette and one
+member: dashboard 2,396 KiB RSS / one LWP, owner 5,144 KiB / four LWPs. Keep the
+transient-host-helper/whole-VM sampling caveats; never call this new 250 capacity.
+Preserve these actual source/harness bytes and whole result before later edits.

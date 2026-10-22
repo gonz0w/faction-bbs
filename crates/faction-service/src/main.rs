@@ -10,6 +10,7 @@ mod door_ui;
 mod doors;
 mod file_ui;
 mod native_files;
+mod operator;
 mod policy;
 mod ui;
 use config::Config;
@@ -534,8 +535,10 @@ fn run() -> Result<()> {
     eprintln!(
         "Faction shared service ready; session limit {max_sessions}, admission refill {launch_ms} ms."
     );
+    let mut operator = operator::Publisher::new(config.operator_status, state);
     let mut turn = 0usize;
     while !faction_unix::shutdown_requested() {
+        operator.tick(&board, &clients, &jobs, max_sessions);
         if let Some(p) = &mut file_policy {
             p.pump(&mut board);
         }
@@ -754,6 +757,7 @@ fn run() -> Result<()> {
         }
     }
     drop(clients);
+    operator.stopped(&board, max_sessions);
     pid.set_len(0)?;
     Ok(())
 }
