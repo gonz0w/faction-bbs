@@ -48,9 +48,9 @@ authority, auto-detect its writer's intended final newline or mix codec versions
 as an unreviewed feed; use the recorded v1 tool when reproducing its old semantics.
 
 The codec now uses the already reviewed base64 crate; no new registry package or
-feature is selected. The terminal composer/storage validator stays ASCII under
-schema 6. [#114](https://github.com/gonz0w/faction-bbs/issues/114) owns UTF-8 composing
-with versioned metadata compatibility; decoded wire-subject support is already here.
+feature is selected. Schema 6 retains its original ASCII validation. The separate
+[schema-7 Unicode composer](unicode-subjects.md) now accepts UTF-8 through an explicit
+migration; this does not change wire profile v2 or enable a feed.
 A strict normalized duplicate matches all fields/body; changed content under one
 ID, including Path, conflicts. Relay-specific equivalence and persistent remote
 import/dedup remain #101/#104, alongside room/author/peer/history consent.

@@ -1,6 +1,6 @@
 # Private local export and restore
 
-Updated 2026-10-21. These are filesystem-owner tools for the local development
+Updated 2026-10-22. These are filesystem-owner tools for the local development
 core, not member commands or a network backup service. Build with
 [the local development instructions](local-development.md). Keep the owner-capable
 executable and state out of member SSH shells/forced commands.
@@ -29,15 +29,18 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2, 3, 4, 5 and 6 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2, 3, 4, 5, 6 and 7 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
 when files are installed. Schema 5 additionally preserves the stable **public**
 file namespace and room/chat references; this does not preserve session authority.
 Schema 6 additionally preserves article IDs, generated subjects, timestamp/origin
-metadata and unknown legacy dates. Verification is read-only; restored schema-2/3/4/5
-boards upgrade to schema 6 when opened by the new build. Follow the
+metadata and unknown legacy dates. Schema 7 preserves these fields and adds
+[byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
+requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
+Verification is read-only; restored schema-2/3/4/5/6 boards upgrade to schema 7 when
+opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
 before the existing transactional upgrade; this exporter cannot replace that copy.

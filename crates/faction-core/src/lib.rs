@@ -671,7 +671,7 @@ impl Board {
         } = draft;
         post_metadata::subject(subject)?;
         text(body, POST_BYTES, true)?;
-        if !(16..=74).contains(&request.len())
+        if !(16..=64).contains(&request.len())
             || !request
                 .bytes()
                 .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')

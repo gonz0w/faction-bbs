@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add schema-7 UTF-8 room subjects (#114) with one shared local/worker/service
+  input editor, split-character/backspace validation, UTF-8-safe reply clipping,
+  bounded inert ASCII echo/previews and subject-aware retry preservation.
+  Validate old schema-6 ASCII before migration; retain public IDs, provenance and
+  read-only old exports. Document stopped backup/upgrade/restore/rollback.
+  Native glyph rendering stays separate; no new dependency, helper or hardening.
+
 - Broaden #103's text codec to profile v2: UTF-8 encoded wire subjects, common
   numeric-zone dates, bounded plain-text MIME 7bit/8bit/QP/base64 input and exact
   QP output. Preserve long lines, trailing whitespace and final-newline semantics;

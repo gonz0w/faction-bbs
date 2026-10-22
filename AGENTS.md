@@ -496,3 +496,22 @@ Eleventh snapshot sources/pre114 and broader-articles-baseline-manifest.json fre
 All eleven snapshots and twenty-three historical result identities stay fixed.
 The optional INN build explicitly uses /usr/bin/false for sendmail; no mail service
 is installed or contacted. Linux CI needs the explicit path even in offline mode.
+
+## Unicode composing (#114)
+
+Read docs/unicode-subjects.md, ADR 0040 and plan 0042. Current writers use schema 7;
+never widen schema-6 ASCII validation or manually relabel a store. The 6-to-7
+transaction checks the exact metadata catalog and original rows, then preserves
+all IDs/subjects/timestamps/origin while enforcing UTF-8 byte length. Old exports
+remain read-only and require their original contracts; rollback uses a complete
+matching older backup/binary in fresh paths. No mixed versions or online upgrade.
+
+Both local/worker and shared subject input use faction-terminal::subject, at most
+160 bytes with incremental UTF-8 validation, scalar/pending-tail backspace and
+terminal restoration/failure closure. Reply clipping is at a UTF-8 boundary and
+keeps a single inherited Re: prefix. Non-ASCII/control previews remain inert
+ASCII escapes with an independent cell bound; this is a compatibility display,
+not native Unicode glyph/graphics detection (#96). Do not trust TERM/brand as
+permission for richer rendering. Keep original bodies, retry keys, approval/epoch,
+owner helpers, credential/default limits and all eleven frozen snapshots/results.
+Hardening #106–#111 remains deferred. No INN/provider, firewall or host changes.

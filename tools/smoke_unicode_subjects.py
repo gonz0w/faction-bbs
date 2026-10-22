@@ -4,6 +4,7 @@ import argparse
 import secrets
 import sqlite3
 import tempfile
+import termios
 from pathlib import Path
 from smoke_local_console import Console
 from smoke_member_worker import Worker
@@ -54,6 +55,9 @@ def smoke(binary, member):
             c.expect('Lobby created.'); c.finish()
             for mode in ['plain', 'ansi', 'worker']:
                 c = start(mode); first = len(stored())+1
+                if mode == 'plain':
+                    settings = termios.tcgetattr(c.fd); settings[0] |= termios.ISTRIP
+                    termios.tcsetattr(c.fd, termios.TCSANOW, settings)
                 draft(c, mode)
                 # Split one scalar, erase it, retype it and erase an incomplete
                 # scalar. Bytes are UTF-8; the actual echo is bounded inert ASCII.

@@ -224,6 +224,21 @@ fn unicode_subjects_preserve_bytes_retries_replies_authority_and_restore() {
     let mut b = f.board();
     let s = b.authenticate("sysop", SECRET).unwrap();
     let subject = "a".to_owned() + &"界".repeat(53); // exactly 160 bytes
+    for length in [65, 74] {
+        assert!(matches!(
+            b.post_article(
+                &s,
+                1,
+                &"r".repeat(length),
+                PostDraft {
+                    subject: &subject,
+                    body: "body",
+                    reply_to: None
+                }
+            ),
+            Err(Error::Invalid(_))
+        ));
+    }
     let key = request_id().unwrap();
     let d = || PostDraft {
         subject: &subject,

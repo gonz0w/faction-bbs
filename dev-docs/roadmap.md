@@ -1,6 +1,15 @@
 # Roadmap and stage
 
-Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+Updated 2026-10-22. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+
+## Unicode subject composing
+
+#115 is merged (a5c0465), completing the bounded local #103 text profile and
+original INN validation. #114 now implements [schema-7 UTF-8 composing](../docs/unicode-subjects.md)
+in local/worker and shared terminals, with a stopped upgrade, versioned snapshot
+validation and bounded classic display. Modern native glyph rendering stays #96;
+actual news peers/providers stay #101/#104. Keep hardening #106–#111 later.
+Software-only native NetBSD validation suffices; no new 250-user capacity claim.
 
 ## New owner stories from the running playground
 
@@ -23,12 +32,12 @@ this does not enable automatic export, account replication or public syndication
 Read [research 0047](research/0047-modern-terminal-and-federation-options.md) before
 assuming Ghostty graphics, guest IP bans, IRC federation or a forum protocol works.
 
-The current build batch delivers a dependency-free text-article codec (#103
-foundation) and shared wrapped/paged room presentation (#21/#25); see
-[ADR 0036](decisions/0036-room-articles-and-reading.md) and
-[room reading](../docs/room-reading.md). #103 stays open for metadata/schema/migration
-and post integration; #101/#104 still gate actual peer/provider interoperability.
-No room export or mandatory external service follows from this increment.
+The room-article batch supplies a dependency-free text-article codec, paged room
+presentation (#21/#25), persistent metadata, authored subjects and local article
+projection. Merged #115 completes the bounded #103 profile and original INN offline
+controls; schema-7 Unicode composing follows in #114. #101/#104 still gate live
+peer/provider interoperability. No automatic room export or external service is
+introduced. See [room articles](../docs/room-articles.md).
 
 ## Product-first sequencing
 

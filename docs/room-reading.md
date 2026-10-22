@@ -27,7 +27,7 @@ recent-file shortcuts and SSH copy/paste still work. A narrow terminal soft-wrap
 these 78-byte references; their physical rows count toward the page budget. A
 reference does not grant file access; current permissions are checked on download.
 
-The current schema-6 metadata increment preserves local room IDs, post/reply data,
+The original schema-6 metadata increment preserves local room IDs, post/reply data,
 unread and file namespaces. New exports include persistent metadata; old exports
 remain readable. Follow the [stopped-service migration](post-metadata.md) procedure. The separate
 [article codec](discussion-articles-and-news.md) is a foundation for future

@@ -1,28 +1,31 @@
 # Authored subjects and local room articles
 
-Status: bounded local implementation, 2026-10-21. Discussion rooms remain
+Status: bounded local implementation, 2026-10-22. Discussion rooms remain
 chronological, local and useful with every network adapter disabled. No news
 listener, feed, peer import or publication is enabled.
 
 ## Posting and replying
 
 After choosing the room and optional parent post, enter a subject of up to 160
-printable ASCII bytes. A blank new-post subject uses `Message #ID`. A blank reply
+UTF-8 bytes without controls. A blank new-post subject uses `Message #ID`. A blank reply
 inherits the parent's subject with one `Re: ` prefix; the default is shown before
-entry. Long inherited subjects are clipped to 160 bytes, removing trailing spaces.
+entry. Long inherited subjects are clipped at a complete UTF-8 character within
+160 bytes, removing trailing spaces.
 You can enter a different reply subject. Existing post subjects are immutable.
 
 The shared service and local/worker console use the same core operation. The
 subject travels with the body through busy/retry state. A request ID with changed
 subject, body, parent or room conflicts rather than overwriting content. Approval
 and the current session epoch are checked in the posting transaction. Subject
-controls, surrounding spaces, encoded-word syntax and non-ASCII subjects are
-rejected explicitly; full internationalized subject entry is tracked in #114. UTF-8
+controls, surrounding spaces and encoded-word syntax are rejected explicitly.
+[Unicode composing](unicode-subjects.md) preserves valid text bytes and uses ASCII
+escapes in the compatibility display. UTF-8
 bodies retain the current text limits and inert terminal presentation.
 
-Schema remains 6; no second migration relabels old generated subjects as authored.
+Schema 7 adds UTF-8 validation and a byte-counted subject constraint. Its migration
+preserves schema-6 generated/authored labels and all public IDs and provenance.
 Use the [stopped upgrade/backup procedure](post-metadata.md) and update binaries
-together. Schema-6 export/restore retains authored subjects, dates, IDs and reply
+together. Schema-6/7 export/restore retains authored subjects, dates, IDs and reply
 links. Unknown legacy dates stay unknown and legacy bodies remain readable.
 
 ## Core projection, without publication
@@ -78,5 +81,6 @@ See [recorded software evidence](../dev-docs/evidence/authored-articles-netbsd/R
 
 [Profile v2 and original INN checks](article-profile.md) complete the bounded local
 article-format deliverable under #103. #101/#104 own live independent peers/providers
-and consent/injection policy; #114 owns Unicode composer/storage compatibility.
+and consent/injection policy. [Unicode composing](unicode-subjects.md) implements
+#114 with an explicit schema-7 compatibility boundary.
 The later [hardening phase](later-phase-hardening.md) remains queued separately.

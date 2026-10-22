@@ -40,7 +40,8 @@ fn subject_line() -> Result<String> {
             | LocalModes::IEXTEN,
     );
     mode.input_modes.remove(
-        InputModes::ICRNL
+        InputModes::ISTRIP
+            | InputModes::ICRNL
             | InputModes::INLCR
             | InputModes::IGNCR
             | InputModes::IXON

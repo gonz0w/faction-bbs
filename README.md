@@ -10,7 +10,7 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
-**Working hobby preview · updated 2026-10-21 · Rust on NetBSD; no supported release yet.**
+**Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**
 
 Faction already runs an approved-membership board with hidden-password login,
 ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
@@ -106,8 +106,10 @@ Follow the stopped-service backup/upgrade procedure before opening an older boar
 The [v2 article profile](docs/article-profile.md) adds UTF-8 encoded wire subjects,
 common dates, plain-text MIME encodings and root/recent reply references. Original
 INN passes twelve offline controls on macOS and NetBSD; no news service is enabled.
-Live NNTP/provider integration, Unicode composing (#114), native Unicode graphics
-and encrypted network mail remain future work.
+[Unicode subject composing](docs/unicode-subjects.md) now works in local/worker and
+shared terminals with schema-7 metadata, UTF-8-safe reply clipping and inert
+classic-terminal echo/previews. Native Unicode rendering/graphics, live NNTP/provider
+integration and encrypted network mail remain future work.
 
 A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
 OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise
