@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 mod art;
 mod editor;
+pub mod graphics;
 mod keys;
 pub use editor::{LINE_BYTES, LineEditor, LineEvent};
 mod theme;

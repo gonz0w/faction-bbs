@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional T/G inline Kitty graphics (#117): positive isolated probes, one
+  original 160x80 RGB calibration image, <=4-KiB chunks after output drain,
+  rate/deadline limits and partial-stream cleanup with classic ANSI fallback.
+- Add explicit native `--kitty` local probe and exact trusted-command regeneration
+  gate; preserve default APC refusal, schema/helper/admission limits and all old
+  measured evidence. No arbitrary art/image-file/PNG/Sixel support or GUI claim.
+
 - Add optional session Terminal settings (#96): native UTF-8 room/subject text,
   cell-aware paging/clipping/backspace, 16/256/RGB choices, block/braille samples
   and bounded synchronized redraw with an isolated explicit sync probe. Keep

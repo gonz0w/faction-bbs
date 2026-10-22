@@ -165,6 +165,28 @@ def smoke(args):
         for reply in [b'\x1b[?2026;2$yP\n',b'\x1b',b'\x1b]52;c;bad\x07']:
             other=member();other.raw(b't');other.expect('[D]one: ');other.send('p');other.expect('\x1b[?2026$p');other.raw(reply);other.finish(code=1)
         checks.append('shared_unknown_malformed_incomplete_late_probe_isolation')
+        from smoke_kitty_graphics import QUERY, REPLY, DELETE, validate
+        other=member();other.raw(b't');other.expect('[D]one: ');start=len(other.transcript)
+        other.send('g');other.expect(QUERY);other.raw(REPLY[:7]);other.raw(REPLY[7:]);other.expect('Kitty preview (original calibration artwork).');other.expect('[D]one: ')
+        validate(other.transcript[start:]);other.send('c');other.expect('[D]one: ')
+        assert other.transcript[start:].count(DELETE)>=2
+        other.send('d');other.expect('Ctrl-C exits; Esc: Enter to recover.');other.raw(b'q');other.expect('Logged out.');other.finish()
+        checks.append('shared_kitty_bounded_rgb_stream_classic_cleanup')
+        for reply in [b'',b'\x1b_Gi=17392;ENOTSUP:unsupported\x1b\\']:
+            other=member();other.raw(b't');other.expect('[D]one: ');other.send('g');other.expect(QUERY)
+            if reply:other.raw(reply)
+            other.expect('Kitty unavailable; classic fallback.');other.expect('[D]one: ')
+            assert b'a=T,' not in other.transcript
+            other.send('d');other.expect('Ctrl-C exits; Esc: Enter to recover.');other.raw(b'q');other.expect('Logged out.');other.finish()
+        checks.append('shared_kitty_unknown_and_refused_classic_fallback')
+        for reply in [b'\x1b_Gi=17392;OK\x1b\\P\n', b'\x1b_Gi=17392;OK', b'\x1b]52;c;bad\x07']:
+            other=member();other.raw(b't');other.expect('[D]one: ');other.send('g');other.expect(QUERY);other.raw(reply);other.finish(code=1)
+            assert b'a=T,' not in other.transcript and b'Room ID: ' not in other.transcript
+        other=member();other.raw(b't');other.expect('[D]one: ');other.send('g');other.expect(QUERY);other.expect('[D]one: ');other.raw(REPLY+b'P\n');other.finish(code=1)
+        checks.append('shared_kitty_malformed_incomplete_late_probe_isolation')
+        other=member();other.raw(b't');other.expect('[D]one: ');other.send('g');other.expect(QUERY);other.raw(REPLY);other.expect('a=T,t=d,f=24');other.raw(b'\x03');other.finish(code=1)
+        assert DELETE in other.transcript
+        checks.append('shared_kitty_interrupted_transfer_cleanup')
         # Keep a Unicode draft open while the other connection is paging.
         draft = member(); draft.raw(b'p'); draft.expect('Room ID: '); draft.send('1')
         draft.expect('Reply to post ID (blank for new message): '); draft.send('')

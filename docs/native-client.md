@@ -82,8 +82,8 @@ paths; remote names are bounded ASCII basenames. Limits remain two server stream
 32 KiB chunks, 16 MiB/file and five-minute grants. No extra server session/thread
 ceiling, supported-capacity or physical SBC claim follows from this preview.
 
-Remote text is filtered for terminal controls. Only bounded negotiated file frames
-are decoded; terminal output cannot choose local paths, hosts, commands or start a
+Remote text is filtered for terminal controls. Bounded file frames are decoded separately from the optional exact-command
+graphics gate; terminal output cannot choose local paths, hosts, commands or start a
 transfer. Normal keyboard actions and local confirmation choose those operations.
 The native Files screen is local and currently has a fixed palette; the board's
 sysop themes/art continue outside it. Client theming can evolve independently.
@@ -98,3 +98,12 @@ The local client is also the future place for member-held mail/device keys, but
 this version creates no mail keystore and implements no XMPP/OMEMO or roaming login.
 [Encrypted attachments](private-mail.md#encrypted-attachments) are separately scoped:
 current sysop-readable file areas are not a substitute for client-encrypted blobs.
+
+## Optional modern image preview
+
+Append `--kitty` after the profile to opt in locally. Before SSH, a dedicated
+bounded query checks the member terminal. Only a positive response enables the
+exact fixed-asset [Kitty graphics gate](kitty-graphics.md); ordinary native
+filtering stays enabled by default, and sync remains filtered. After BBS approval
+choose T/G. This does not permit arbitrary remote APC, local image-file loading,
+member art or file/mail authority. C/D/reconnect and teardown preserve fallback.

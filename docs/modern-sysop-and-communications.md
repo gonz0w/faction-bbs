@@ -1,7 +1,9 @@
 # Modern terminal communities and the local sysop console
 
 Status: confirmed product stories and research direction, 2026-10-21. These are
-**planned capabilities**, not features enabled by the current SSH playground.
+**requested capabilities**. The optional [terminal settings](terminal-capabilities.md)
+and [bounded Kitty preview](kitty-graphics.md) now have software implementations;
+the broader dashboard, network and rich-art stories remain planned.
 The owner wants a modern underground communications platform, shared with invited
 independent sysops, whose interface keeps its ANSI/BBS identity while taking
 advantage of terminals such as Ghostty. GitHub holds implementation status.

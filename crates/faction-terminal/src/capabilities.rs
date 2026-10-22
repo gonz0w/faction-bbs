@@ -15,8 +15,7 @@ pub struct Capabilities {
     pub braille: bool,
     pub synchronized: bool,
 }
-pub const PROMPT: &str =
-    "Terminal: [C]lassic [U]TF8 [1/2/3]color [B]locks [A]braille [S]ync [P]robe [D]one: ";
+pub const PROMPT: &str = "Terminal: [C]lassic [U]TF8 [1/2/3]color [B]locks [A]braille [S]ync [P]robe [G]raphics [D]one: ";
 impl Capabilities {
     pub fn choose(&mut self, command: &str) -> bool {
         match command.to_ascii_lowercase().as_str() {
@@ -34,7 +33,7 @@ impl Capabilities {
     }
     pub fn screen(self, columns: u16, rows: u16, ansi: bool) -> String {
         let mut out = format!(
-            "Terminal preferences (session only)\nGeometry: {columns}x{rows}; ANSI: {ansi}\nUTF-8: {}; cells: Unicode-width 0.2.2, ambiguous=1\nColor: {:?}; blocks: {}; braille: {}; sync: {}\nMouse/extended keys/bitmap: disabled\nC restores classic text. Choose UTF8 only if your font agrees.\n",
+            "Terminal preferences (session only)\nGeometry: {columns}x{rows}; ANSI: {ansi}\nUTF-8: {}; cells: Unicode-width 0.2.2, ambiguous=1\nColor: {:?}; blocks: {}; braille: {}; sync: {}\nMouse/extended keys/bitmap: disabled by default; G: opt-in Kitty preview; Sixel disabled\nC restores classic text. Choose UTF8 only if your font agrees.\n",
             self.unicode, self.color, self.blocks, self.braille, self.synchronized
         );
         if self.unicode && self.blocks {

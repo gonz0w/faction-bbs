@@ -48,6 +48,8 @@ enum State {
     Identity,
     Menu,
     Terminal,
+    GraphicsProbe(faction_terminal::graphics::Probe),
+    Graphics(usize, Instant),
     Probe(faction_terminal::capabilities::Probe),
     Pause,
     RoomsMore(usize),
@@ -174,6 +176,9 @@ struct Client {
     ansi: bool,
     dimensions: (u16, u16),
     geometry_check: Instant,
+    graphics_active: bool,
+    last_graphics: Option<Instant>,
+    last_graphics_frame: Option<Instant>,
     capabilities: faction_terminal::capabilities::Capabilities,
     editor: LineEditor,
     skip_lf: bool,
@@ -188,6 +193,11 @@ struct Client {
 impl Drop for Client {
     fn drop(&mut self) {
         // Best effort while still nonblocking: never hang cleanup behind a peer.
+        if self.graphics_active {
+            let _ = self
+                .tty
+                .write(faction_terminal::graphics::CLEANUP.as_bytes());
+        }
         if self.ansi {
             if self.capabilities.synchronized {
                 let _ = self.tty.write(b"\x1b[?2026l");
@@ -250,6 +260,9 @@ impl Client {
             ansi: false,
             dimensions: (0, 0),
             geometry_check: now,
+            graphics_active: false,
+            last_graphics: None,
+            last_graphics_frame: None,
             capabilities: Default::default(),
             editor: LineEditor::default(),
             skip_lf: false,
@@ -314,6 +327,9 @@ impl Client {
         if self.written == self.output.len() {
             self.output.clear();
             self.written = 0;
+            if let State::GraphicsProbe(probe) = &mut self.state {
+                probe.begin(Instant::now());
+            }
             if let State::Probe(probe) = &mut self.state {
                 probe.begin(Instant::now());
             }
@@ -627,6 +643,17 @@ fn run() -> Result<()> {
             if work > 0 && !c.close && matches!(&c.state,State::Probe(p) if p.expired(now)) {
                 work -= 1;
                 if c.probe_finish(&mut board).is_err() {
+                    c.close = true;
+                }
+            }
+            if work > 0
+                && !c.close
+                && c.output.is_empty()
+                && (matches!(&c.state, State::GraphicsProbe(p) if p.expired(now))
+                    || matches!(&c.state, State::Graphics(..)))
+            {
+                work -= 1;
+                if c.graphics_poll(&mut board).is_err() {
                     c.close = true;
                 }
             }
