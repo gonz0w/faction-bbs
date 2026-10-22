@@ -150,3 +150,43 @@ fn file_references_survive_wrapping_as_one_native_client_token() {
         assert!(rendered.contains("demo.txt"));
     }
 }
+
+#[test]
+fn metadata_headers_are_bounded_inert_and_leave_room_for_body() {
+    let msg = Message {
+        room: 1,
+        id: 1,
+        author: "alice",
+        reply_to: Some(1),
+        body: "body stays visible",
+    };
+    let page = msg
+        .page_with_metadata(
+            40,
+            18,
+            0,
+            faction_terminal::MessageDetails {
+                subject: &"a".repeat(160),
+                posted: "Unknown (legacy)",
+            },
+        )
+        .unwrap();
+    assert!(page.text.contains("Subject: "));
+    assert!(page.text.contains("Posted: Unknown (legacy)"));
+    assert!(page.text.contains("body stays visible"));
+    assert!(page.text.lines().all(|line| line.len() <= 39));
+    assert!(page.text.lines().count() + 4 <= 18);
+    let page = msg
+        .page_with_metadata(
+            80,
+            24,
+            0,
+            faction_terminal::MessageDetails {
+                subject: "bad\x1b[2J",
+                posted: "bad\nline",
+            },
+        )
+        .unwrap();
+    assert!(!page.text.contains('\x1b'));
+    assert!(page.text.contains("Posted: bad\\nline"));
+}

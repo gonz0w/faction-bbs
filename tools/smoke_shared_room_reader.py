@@ -86,7 +86,7 @@ def smoke(args):
         remote('/etc/rc.d/faction_broker onestart')
         c = member(); unread(c, 1)
         checks.append('approved_member_over_native_uid_checked_shared_frontend')
-        c.raw(b'n'); c.expect('Room ID: '); c.send('1'); c.expect('More? [y/N]: ')
+        c.raw(b'n'); c.expect('Room ID: '); c.send('1'); c.expect('Subject: Message #1'); c.expect('Posted: '); c.expect(' UTC'); c.expect('More? [y/N]: ')
         c.send('n'); back(c); unread(c, 1)
         checks.append('partial_message_does_not_advance_unread')
         c.raw(b'n'); c.expect('Room ID: '); c.send('1'); start = len(c.transcript)

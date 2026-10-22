@@ -11,6 +11,10 @@ pub struct Message<'a> {
     pub reply_to: Option<i64>,
     pub body: &'a str,
 }
+pub struct MessageDetails<'a> {
+    pub subject: &'a str,
+    pub posted: &'a str,
+}
 pub struct MessagePage {
     pub text: String,
     /// Offset in the ASCII-escaped body. Re-render with the same source text.
@@ -85,6 +89,27 @@ fn heading(out: &mut String, text: &str, width: usize) -> usize {
 }
 impl Message<'_> {
     pub fn page(&self, columns: u16, rows: u16, offset: usize) -> Result<MessagePage> {
+        self.page_inner(columns, rows, offset, None)
+    }
+    pub fn page_with_metadata(
+        &self,
+        columns: u16,
+        rows: u16,
+        offset: usize,
+        details: MessageDetails<'_>,
+    ) -> Result<MessagePage> {
+        if details.subject.len() > 160 || details.posted.len() > 64 {
+            return Err("message metadata limit");
+        }
+        self.page_inner(columns, rows, offset, Some(details))
+    }
+    fn page_inner(
+        &self,
+        columns: u16,
+        rows: u16,
+        offset: usize,
+        details: Option<MessageDetails<'_>>,
+    ) -> Result<MessagePage> {
         if self.body.len() > MESSAGE_BYTES || self.author.len() > 64 {
             return Err("message presentation limit");
         }
@@ -110,6 +135,18 @@ impl Message<'_> {
         );
         if let Some(parent) = self.reply_to {
             used += heading(&mut text, &format!("Reply to #{parent}"), width);
+        }
+        if let Some(details) = details {
+            for (name, value) in [("Subject", details.subject), ("Posted", details.posted)] {
+                let mut label = format!("{name}: {}", inert(value).replace('\n', "\\n"));
+                if label.len() > width {
+                    label.truncate(width - 3);
+                    label.push_str("...");
+                }
+                text.push_str(&label);
+                text.push('\n');
+                used += 1;
+            }
         }
         if offset > 0 {
             text.push_str("(message continued)\n");

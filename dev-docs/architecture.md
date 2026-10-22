@@ -141,8 +141,14 @@ and [research 0047](research/0047-modern-terminal-and-federation-options.md).
 
 [ADR 0036](decisions/0036-room-articles-and-reading.md) adds faction-articles,
 a dependency-free, bounded text-only codec with no database/transport authority.
-Existing posts remain schema 5; metadata migration and NNTP adapters remain open.
+Schema 6 now adds local metadata without changing post bodies/replies/unread;
+NNTP adapters and authored subjects remain open.
 The shared faction-terminal message presenter is used by local/worker and service
 readers, retaining only cursors, re-fetching current permissions and acknowledging
 only complete output. No IRC/XMPP formats, session/credential limits or owner
 threads change. See [room reading](../docs/room-reading.md).
+
+[ADR 0037](decisions/0037-persistent-post-metadata.md) specifies transactional
+post metadata, generated legacy labels/unknown dates, local proto-article IDs
+and exact old/new snapshot validation. No live/mixed-version upgrade is supported;
+operators stop/drain and verify complete backups before the first new owner open.

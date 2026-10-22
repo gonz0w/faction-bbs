@@ -4,6 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add schema-6 persistent post metadata (#103): stable local article IDs, generated
+  subject labels and actual new-post UTC timestamps; preserve unknown legacy dates,
+  body/reply/unread data and old exports. Show bounded metadata headers in both
+  room readers. Document stopped-service backup/upgrade/rollback; no news feed,
+  new authority or authored-subject composer is enabled.
+
+- Capture later-phase hardening stories #106–#111: release/member signing, minimal
+  VM, post-compromise containment, storage/backups and independent validation.
+  No host/firewall/key changes or adopted hardened profile.
+
 - Add a dependency-free Rust Netnews text-article codec and offline validator
   (#103 foundation), plus shared wrapped/paged room screens for local/worker and
   shared-service sessions (#21/#25). Preserve contiguous file-reference tokens,

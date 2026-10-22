@@ -8,8 +8,8 @@ Each screen shows the room number, message number, author and reply-to context,
 with separators and text wrapping. `y` at **More? [y/N]** continues the current
 long message or opens the next message; `n` or Enter leaves the reader. ANSI
 sessions clear the old screen and use the sysop theme's normal palette. Plain
-sessions show the same text without ANSI controls. Headers do not invent subjects
-or timestamps missing from older posts.
+sessions show the same text without ANSI controls. [Persistent metadata](post-metadata.md) shows generated subject labels and new-post
+UTC times; older posts have explicit unknown dates.
 
 Leaving midway through a long message keeps it unread. Only finishing its final
 screen advances the read position; the shared service additionally waits for that
@@ -27,7 +27,8 @@ recent-file shortcuts and SSH copy/paste still work. A narrow terminal soft-wrap
 these 78-byte references; their physical rows count toward the page budget. A
 reference does not grant file access; current permissions are checked on download.
 
-This changes presentation only. SQLite schema 5, local room IDs, post/reply data,
-file namespaces and export/restore formats are unchanged. The separate
+The current schema-6 metadata increment preserves local room IDs, post/reply data,
+unread and file namespaces. New exports include persistent metadata; old exports
+remain readable. Follow the [stopped-service migration](post-metadata.md) procedure. The separate
 [article codec](discussion-articles-and-news.md) is a foundation for future
 Netnews integration, not an automatic conversion or news feed.

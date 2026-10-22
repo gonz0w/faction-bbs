@@ -36,11 +36,17 @@ def mail_client_baseline_manifest(root=ROOT):
     return json.loads(raw)
 
 
+def room_reader_baseline_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/room-reader-baseline-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='ba5a596d9b5527ad171d6ea2f3d70f0ecda6d3490de9e04c902ef39489a80d65','frozen room reader baseline changed'
+    return json.loads(raw)
+
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root)]
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name

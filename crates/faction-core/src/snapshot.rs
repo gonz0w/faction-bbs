@@ -100,7 +100,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=5).contains(&version) {
+    if app != APP_ID || !(2..=6).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -114,8 +114,11 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     if version >= 4 {
         reference.execute_batch(include_str!("files.sql"))?;
     }
-    if version == 5 {
+    if version >= 5 {
         reference.execute_batch(include_str!("file_links.sql"))?;
+    }
+    if version >= 6 {
+        reference.execute_batch(include_str!("post_metadata.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -282,7 +285,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 4 {
         crate::files::validate_catalog(db)?;
-        if version == 5 {
+        if version >= 5 {
             crate::file_links::validate_namespace(db)?;
         }
         if exported
@@ -292,6 +295,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
         {
             return Err(Error::Invalid("file grants must not survive export"));
         }
+    }
+    if version >= 6 {
+        crate::post_metadata::validate(db, deadline)?;
     }
     fn count(db: &Connection, sql: &str) -> Result<i64> {
         Ok(db.query_row(sql, [], |r| r.get(0))?)

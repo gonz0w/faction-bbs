@@ -96,9 +96,17 @@ The [room reader](docs/room-reading.md) now shares wrapped, paged message screen
 across local/worker and shared-service sessions, with theme-aware ANSI transitions
 and complete-message unread acknowledgment. A dependency-free
 [Netnews text codec](docs/discussion-articles-and-news.md) is available offline;
-existing posts and SQLite exports are unchanged. Live NNTP/provider integration,
-post metadata migration, native Unicode graphics and encrypted network mail remain
-future work.
+[schema-6 post metadata](docs/post-metadata.md) now gives new messages stable
+article IDs, generated subjects and recorded UTC times, while legacy dates remain
+unknown. Existing bodies/replies/unread stay intact and old exports remain readable.
+Follow the stopped-service backup/upgrade procedure before opening an older board.
+Live NNTP/provider integration, author-entered subjects, native Unicode graphics
+and encrypted network mail remain future work.
+
+A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
+OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise
+containment, protected storage/backups and independent validation. These stories
+preserve current safeguards and do not activate a new isolation profile.
 
 ## Enter the board
 

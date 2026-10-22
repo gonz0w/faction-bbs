@@ -6,11 +6,13 @@ mod chat;
 mod credentials;
 mod file_links;
 mod files;
+mod post_metadata;
 mod scores;
 pub use files::{
     AreaFile, FILE_BOARD_BYTES, FILE_BYTES, FILE_CHUNK, FILE_ROWS, FileArea, TransferGrant,
     file_id, file_key, file_name,
 };
+pub use post_metadata::PostMetadata;
 mod snapshot;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
 pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
@@ -303,12 +305,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=5).contains(&version) {
+        } else if app != APP_ID || !(1..=6).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=5).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=6).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -318,7 +320,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=5).contains(&v) {
+            } else if !(2..=6).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -329,7 +331,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=5).contains(&v) {
+            } else if !(3..=6).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -339,7 +341,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=5).contains(&v) {
+        } else if !(4..=6).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -349,7 +351,16 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if v != 5 {
+        } else if !(5..=6).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 5 {
+            tx.execute_batch(include_str!("post_metadata.sql"))?;
+            tx.pragma_update(None, "user_version", 6)?;
+        } else if v != 6 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -647,6 +658,7 @@ impl Board {
             body: body.to_owned(),
             reply_to: reply,
         };
+        tx.execute("INSERT INTO post_metadata(post_id,article_id,subject,created_at,origin) VALUES(?1,lower(hex(randomblob(16))),?2,unixepoch(),'local')",params![post.id,format!("Message #{}",post.id)])?;
         tx.commit()?;
         Ok(post)
     }

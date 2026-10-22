@@ -10,8 +10,8 @@ This is an early hobby preview; read the validation limitations below.
 
 First complete [normal setup](quickstart-netbsd.md), initialize your sysop and
 build the current workspace. Before upgrading an existing board, export a private
-pre-upgrade database backup: schema 5 cannot be opened by an older binary. Existing
-schema-2/3/4 exports remain readable. Stop member SSH, wait for members to leave,
+pre-upgrade complete backup: current schema 6 adds [post metadata](post-metadata.md)
+and cannot be opened by an older binary. Schema-2/3/4/5 exports remain readable. Stop member SSH, wait for members to leave,
 and stop the backend before replacing binaries or changing configuration.
 
 As root, from your source checkout:

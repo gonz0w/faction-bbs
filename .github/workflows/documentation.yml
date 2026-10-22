@@ -43,6 +43,7 @@ jobs:
           python3 tools/check_file_area_evidence.py
           python3 tools/check_native_client_evidence.py
           python3 tools/check_room_reader_evidence.py
+          python3 tools/check_post_metadata_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
