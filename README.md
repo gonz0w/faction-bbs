@@ -93,8 +93,10 @@ experience. The dashboard, firewall manager and new IRC/forum federation protoco
 An optional [bounded Kitty image preview](docs/kitty-graphics.md) now complements
 the terminal settings: T/G probes then streams one original RGB calibration image;
 the native client requires local `--kitty` and its own positive probe. Classic
-ANSI remains default. This is a software-tested renderer, not a rich-art importer
-or certified Ghostty/Kitty GUI experience.
+ANSI remains default. [Real terminal profiles](docs/terminal-compatibility.md)
+now validate Ghostty, Kitty and Alacritty through local/NetBSD SSH/native routes,
+tmux and old screen. Old screen needs classic text; image probes fall back through
+both multiplexers. Pixel/glyph certification and rich-art imports remain separate.
 
 The [room reader](docs/room-reading.md) now shares wrapped, paged message screens
 across local/worker and shared-service sessions, with theme-aware ANSI transitions

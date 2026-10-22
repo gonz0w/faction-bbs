@@ -249,3 +249,8 @@ and [real emulator/font/multiplexer validation #118](https://github.com/gonz0w/f
 member gate under [ADR 0042](decisions/0042-kitty-graphics.md). Classic remains
 default; rich licensed asset import, real GUI/font/tmux validation (#118), sysop
 dashboard and later hardening remain separate.
+
+#118's [real software matrix](../docs/terminal-compatibility.md) now qualifies
+twelve pinned profiles and actual native/member-SSH paths. Old screen is
+classic-only; tmux keeps image fallback. Physical keys, pixel/artwork quality and
+GPU FPS remain unclaimed; richer licensed art continues under #25.

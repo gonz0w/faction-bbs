@@ -107,3 +107,8 @@ exact fixed-asset [Kitty graphics gate](kitty-graphics.md); ordinary native
 filtering stays enabled by default, and sync remains filtered. After BBS approval
 choose T/G. This does not permit arbitrary remote APC, local image-file loading,
 member art or file/mail authority. C/D/reconnect and teardown preserve fallback.
+
+The [real terminal matrix](terminal-compatibility.md) now tests the full macOS
+native-client/restricted-NetBSD-member-SSH path in named emulator/multiplexer
+profiles. Default filtering and opt-in image retention/deletion pass; sync remains
+filtered. This adds no mail, image-import or universal visual certification.

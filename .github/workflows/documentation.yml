@@ -49,6 +49,7 @@ jobs:
           python3 tools/check_unicode_subjects_evidence.py
           python3 tools/check_modern_terminals_evidence.py
           python3 tools/check_kitty_graphics_evidence.py
+          python3 tools/check_terminal_compatibility_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py

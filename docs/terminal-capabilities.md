@@ -51,8 +51,9 @@ The native client's default filter passes text/RGB and filters terminal queries,
 sync and graphics. Optional local `--kitty` enables only the separately bounded
 [graphics gate](kitty-graphics.md); sync remains filtered. Ordinary SSH may carry
 emulator replies; proxies/multiplexers can suppress them. Actual GNU screen
-4.00.03 fixtures returned no sync or Kitty reply. Real Ghostty/Kitty GUI/font
-and tmux certification stays #118.
+4.00.03 fixtures returned no sync or Kitty reply. The [real profile matrix](terminal-compatibility.md) now qualifies actual
+Ghostty/Kitty/Alacritty routes and missing-font behavior, with old screen limited
+to classic text; visual pixel/glyph certification remains separate.
 
 ## Scope and budgets
 

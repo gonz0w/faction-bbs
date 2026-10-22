@@ -107,3 +107,7 @@ The optional [Kitty preview](kitty-graphics.md) adds one bounded trusted RGB ima
 and a separate native local opt-in gate, preserving classic ANSI and sysop themes.
 Real emulator/font/multiplexer certification and richer licensed assets stay future
 work; no new host/hardening or capacity claim follows.
+
+[Named terminal compatibility profiles](terminal-compatibility.md) now have real
+software evidence, including native client/member SSH and conservative old-screen
+fallback. This does not certify pixel/glyph quality or add a terminal runtime.

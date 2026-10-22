@@ -55,7 +55,10 @@ behavior and terminal implementations can differ. Resize during shared graphics
 closes conservatively and attempts cleanup. SSH carries inline bytes without a
 shared filesystem. Multiplexers may suppress the query; no tmux passthrough
 wrapper or brand-based override is sent. Actual GNU screen 4.00.03 returned no
-reply in the owned fixture. Ghostty/Kitty GUI and tmux combinations remain #118.
+reply in the owned fixture. The [real profile matrix](terminal-compatibility.md)
+now validates Ghostty/Kitty direct and native opt-in image retention/deletion.
+Tmux 3.8/screen suppress image queries; Alacritty declines them. Pixel/glyph
+appearance remains outside those protocol measurements.
 
 See [ADR 0042](../dev-docs/decisions/0042-kitty-graphics.md),
 [research 0050](../dev-docs/research/0050-kitty-graphics.md) and
