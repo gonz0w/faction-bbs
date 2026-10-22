@@ -7,11 +7,16 @@ Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [
 [Modern sysop/communications stories](../docs/modern-sysop-and-communications.md)
 #95–#101 capture the OS-console dashboard, modern terminal detection/graphics,
 NAT-aware abuse rules, NetBSD setup assistant, native XMPP unread/private UX,
-actual IRC reuse/server linking and optional room-federation protocol comparison.
+actual IRC reuse/server linking and NNTP-first optional room federation. The
+owner selected Netnews article formatting for discussion posts only (#103); IRC
+and XMPP keep live/private formats. #104 captures optional news-provider access,
+read-only first; [article/news requirements](../docs/discussion-articles-and-news.md)
+separate local codec/migration from publication and peering.
 These are planned, not implemented. Improve #21/#25 screen/message presentation
 and bounded operator visibility while keeping the existing local board useful and
 continuing #90/#91/#88. Privileged host applies and protocol adoption follow their
-own design/validation gates; no live playground setting is changed by this update.
+own design/validation gates. The local playground was already cleanly powered
+off; a private standalone image checkpoint and restart helpers are preserved.
 
 Researching explicit shared rooms is now allowed beyond older local-only wording;
 this does not enable automatic export, account replication or public syndication.

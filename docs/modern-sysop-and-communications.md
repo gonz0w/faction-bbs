@@ -14,7 +14,9 @@ advantage of terminals such as Ghostty. GitHub holds implementation status.
 | NetBSD setup and maintenance assistant | [#98](https://github.com/gonz0w/faction-bbs/issues/98) |
 | Integrated native XMPP notifications/private conversations | [#99](https://github.com/gonz0w/faction-bbs/issues/99) |
 | Real IRC/IRCv3 and invited server-link comparison | [#100](https://github.com/gonz0w/faction-bbs/issues/100) |
-| Opt-in federated discussion-room protocol comparison | [#101](https://github.com/gonz0w/faction-bbs/issues/101) |
+| NNTP-first opt-in room federation | [#101](https://github.com/gonz0w/faction-bbs/issues/101) |
+| Netnews-format discussion articles | [#103](https://github.com/gonz0w/faction-bbs/issues/103) |
+| Optional news-provider subscriptions | [#104](https://github.com/gonz0w/faction-bbs/issues/104) |
 
 These stories refine #18's operations, #13/#25's terminal/themes, #21's screen
 journey, #26's chat and #17's federation. #90/#91 still own native mail/verified
@@ -117,7 +119,7 @@ host changes and weakens no OpenSSH penalty.
 | --- | --- | --- |
 | Public/shared live channels | Evaluate real IRC/IRCv3 integration and invited compatible server links | “Public” describes conversation scope; it does not automatically open anonymous Internet access. Local-only channels stay local. |
 | Private live conversations, mail and private attachments | Tight native XMPP integration with verified member-side encryption | Home inbox access stays on the member device. Visited sysops receive neither keys nor private content. Actual OMEMO profile/runtime remains gated. |
-| Persistent discussions | Citadel-style chronological rooms; compare an optional federation adapter | Local by default. Shared rooms need explicit sysop/author/peer publication policy and no automatic account/approval replication. |
+| Persistent discussions | Citadel-style chronological rooms; Netnews article direction with optional NNTP adapters | Local by default. Shared rooms need explicit sysop/author/peer publication policy and no automatic account/approval replication. |
 | Community file areas | Existing local reviewed SFTP files | Readable by the sysop; they do not substitute for encrypted private attachments. |
 
 The native client should indicate unread/private activity and let members open,
@@ -136,7 +138,7 @@ channels, reconnect/history and loop prevention. No IRC bridge handles private
 XMPP plaintext/keys or imports home roles. Every adapter can be disabled while
 the local board remains useful.
 
-## Optional room federation is research, with explicit consent
+## Netnews room articles and optional NNTP connections
 
 The owner now wants to investigate federated discussion boards using an existing
 protocol. This authorizes **research into explicitly shared rooms** beyond the
@@ -144,12 +146,18 @@ earlier local-only-room direction; it does not authorize exporting an existing
 room, enabling public discovery or mirroring all board data. Local rooms, accounts,
 roles, approval stores and community files retain their current locality.
 
-#101 compares private NNTP/news peers, XMPP PubSub/forum semantics, Matrix rooms
-and ActivityPub-style forum federation. NNTP is a concrete first candidate to
-examine because it already models persistent grouped articles and feeds; no
-implementation is selected. Protocol names alone establish neither lightweight
-NetBSD operation, E2EE, private peering nor equivalent membership/deletion policy.
-See the [comparison](../dev-docs/research/0047-modern-terminal-and-federation-options.md).
+The owner subsequently selected Netnews-style formatting for discussion-room
+posts only. IRC live chat and XMPP private messages retain their own formats.
+[Article/news stories](discussion-articles-and-news.md) separate #103 local article
+model/codec/migration, #101 NNTP-first policy/interop and #104 optional provider
+subscriptions, read-only first. Formatting never implies publication or replacing
+SQLite. Current posts have no original subject/date; migration must be honest.
+
+XMPP PubSub, Matrix and ActivityPub remain sourced alternatives if NNTP fails a
+named requirement. No production wire implementation is selected or enabled.
+Protocol names alone establish neither lightweight NetBSD operation, E2EE, private
+peering nor equivalent membership/deletion policy. See the
+[research](../dev-docs/research/0047-modern-terminal-and-federation-options.md).
 
 Any future adapter needs room/author/peer publication rules, history/backfill and
 new-subscriber policy, stable identities/references, local unread cursors,
@@ -163,5 +171,7 @@ Keep near-term improvements useful: screen/message polish, a bounded read-only
 local operator view and the ongoing native encrypted-mail work. Research terminal
 capabilities and wire protocol reuse before enabling extensions. Host/firewall
 writes follow a reviewed privilege/apply/recovery design, not a dashboard shortcut.
-All seven stories have concrete acceptance criteria and software validation gates;
-none requires physical SBC access or changes the running local playground.
+The stories have concrete acceptance criteria and software validation gates; none
+requires physical SBC access. At the owner's request, the local playground is now
+stopped and privately preserved for later testing; its image checks are separate
+from these unimplemented communication stories.

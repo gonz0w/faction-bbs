@@ -42,7 +42,7 @@ to a remote member entry point or treat an export as authority to publish data.
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.
 - Prevent terminal escape injection, path traversal, resource exhaustion, unauthorized file access, and approval bypasses.
 - Keep legacy doors and extensions optional and isolated, with bounded filesystem/network/process privileges, resource limits, and reliable session cleanup.
-- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, local rooms/community files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards. #101 separately researches explicit opt-in shared rooms, with no implicit publication or protocol adoption.
+- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, local rooms/community files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards. #101 validates NNTP-first explicitly shared rooms; #103 plans Netnews article representation and #104 optional providers. Formatting grants no export authority; IRC/XMPP keep their formats. No production wire runtime or automatic publication is adopted.
 - No JavaScript/TypeScript code or dependencies, including browser-terminal assets and project tooling. Track dependency provenance, licenses, updates, and supply-chain risk for the eventual stack.
 
 The [restricted SSH development gateway](restricted-ssh.md) separates the terminal

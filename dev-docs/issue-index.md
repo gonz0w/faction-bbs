@@ -108,4 +108,9 @@ scope/provenance; GitHub state is authoritative.
 | [#98](https://github.com/gonz0w/faction-bbs/issues/98) | NetBSD setup/maintenance assistant | #18 |
 | [#99](https://github.com/gonz0w/faction-bbs/issues/99) | Native XMPP notifications/private conversations | #84/#90/#91/#88 |
 | [#100](https://github.com/gonz0w/faction-bbs/issues/100) | Real IRC/IRCv3 and invited links comparison | #26/#17/#5 |
-| [#101](https://github.com/gonz0w/faction-bbs/issues/101) | Optional federated discussion-room protocol comparison | #17/#12/#9/#42 |
+| [#101](https://github.com/gonz0w/faction-bbs/issues/101) | NNTP-first opt-in discussion-room federation | #17/#12/#9/#42 |
+| [#103](https://github.com/gonz0w/faction-bbs/issues/103) | Netnews article model/codec and old-post migration | #12/#9/#101 |
+| [#104](https://github.com/gonz0w/faction-bbs/issues/104) | Optional news-provider subscriptions, read-only first | #101/#103/#17/#5 |
+
+Owner clarification: article formatting applies to discussion-room posts only;
+IRC and XMPP retain live/private formats. See [article/news requirements](../docs/discussion-articles-and-news.md).

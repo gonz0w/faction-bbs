@@ -11,6 +11,11 @@ This file records meaningful project changes. Product releases will use versione
   UI-polish expectations and primary-source inputs. No runtime/protocol adoption,
   live host/firewall change or automatic room publication is implemented.
 
+- Record the owner's Netnews article direction for discussion-room posts only
+  (#103), NNTP-first optional peering (#101) and read-only-first news-provider
+  subscriptions (#104). Keep IRC/XMPP formats, chronological rooms, local storage
+  and explicit publication boundaries; no codec, migration or adapter is enabled.
+
 - Add a separate two-home encrypted-mail and scoped roaming research proof (#84):
   12 real OMEMO-2/SCE mail controls against independently owned Prosody 13.0.7
   processes on NetBSD, plus 11 native SSH certificate-verifier controls. Retain

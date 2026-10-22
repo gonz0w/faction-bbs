@@ -14,12 +14,12 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | --- | --- |
 | Membership | Login/registration and local sysop approval before community access. |
 | Session | WWIV-inspired flow: approved login, BBS-specific ANSI identity art, sysop-defined welcome/broadcast/quote, main menu. |
-| Boards | Citadel-style chronological rooms: discover/enter, read new messages, post and reply, with formatted headers/wrapping/pagination and clean section transitions. Local by default; optional room-federation protocol research is #101, not implemented export. |
+| Boards | Citadel-style chronological rooms: discover/enter, read new messages, post and reply, with formatted headers/wrapping/pagination and clean section transitions. Local by default; Netnews-format articles (#103) and NNTP-first optional peering/provider work (#101/#104) are planned, not implemented export. |
 | Chat | Local IRC-style commands/channels and bounded history exist ([guide](local-chat.md)). #100 now compares actual IRC/IRCv3 and invited server links for public/shared chat; private XMPP conversations/unread UX are #99. No IRC wire support is claimed. |
 | Files/mail | [Local file areas](file-areas.md) with separate restricted SFTP first; later classic transfer adapters. [Private mail](private-mail.md) requires member-side encryption and a native local terminal client; no BBS/home server reads plaintext. File areas/SFTP and the [native transfer client](native-client.md) are optional working previews, including permission-checked room/chat file links; encrypted mail/attachments and roaming identity remain outside the product, with a [two-home protocol proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md) and native integration tracked in #90/#91. |
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
-| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 separately researches opt-in federated discussion rooms. See [home identities/mail](private-mail.md); protocols remain gated. |
+| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 prioritizes NNTP-first opt-in discussion rooms; article format #103 and optional providers #104 remain planned. See [home identities/mail](private-mail.md); protocols remain gated. |
 | Terminal | Ordinary SSH terminal clients are the initial secure-access direction, with optional invitation-only private-network operation (owner acceptance 2026-10-19). Overlay admission, SSH identity and local BBS approval remain distinct; no member host shell is implied. Physical serial terminals are not a current target. A [restricted development gateway](restricted-ssh.md) now passes native NetBSD application/member oracles; complete production enforcement/capacity remains unvalidated. |
 | Menus/themes | Oblivion/2-inspired arrow-key highlight + Enter and direct displayed hotkeys (D/d for `[D]oors`). Sysop-defined palettes/layouts/art are foundational; seasonal colors/login screens are an optional direction. ACiD/iCE and Razor/scene typography are visual references; see [menu/theme direction](menus-and-themes.md). |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
@@ -92,6 +92,11 @@ The [current stories](modern-sysop-and-communications.md) define acceptance and
 trust boundaries. The operator console follows OS authentication rather than the
 member SSH path; an in-BBS sysop role grants no host privileges. Capability probes
 and guest firewall rules must reflect actual terminal/network topology.
+
+The owner clarified that discussion posts should use Netnews-format articles,
+with optional NNTP/news-provider connections; IRC and XMPP retain live/private
+formats. See [article/news requirements](discussion-articles-and-news.md) and
+#103/#104. Formatting does not publish content or replace SQLite.
 
 The new room item supersedes an absolute ban on **researching** shared rooms;
 local-by-default storage and consent remain. No automatic room replication,

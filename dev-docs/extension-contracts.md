@@ -18,7 +18,7 @@ requirements guide additions without widening those existing privileges.
 | Local operator status | Bounded counters/health snapshots with freshness | OS/operator authorization, no member secret content or per-member collectors |
 | Host/firewall plans | Typed allowlisted desired changes, preview and apply outcome | Host administrator authorization, unrelated config, validation/rollback and admin access |
 | Terminal capability | Bounded verified hints/query responses and rendered assets | UI/feature bounds only; no identity, file/network/clipboard or command authority |
-| Optional shared discussion | Explicit room/author/peer publication and bounded delivery | Default locality, current scope/ACLs, no account/approval replication; research #101 |
+| Optional shared discussion | Explicit room/author/peer publication and bounded delivery | Default locality, current scope/ACLs, no account/approval replication; NNTP-first #101, article #103, provider #104 |
 
 First add only contracts needed for SFTP and the selected mail proof. Do not build
 an all-purpose plugin framework or native shared-library loader before useful
@@ -74,6 +74,9 @@ or approval import. Keep attachments under #88's ciphertext/key boundary.
 plugin ABI or privileged dashboard. The local operator view is first read-only;
 #97/#98 own typed host operations and NAT-aware enforcement. #96 must not widen
 raw terminal control pass-through. #100 compares real IRC reuse, #99 integrates
-member-side XMPP UX over #90/#91 and #88's attachment boundary, and #101 evaluates
-room federation with explicit consent. No private mail key/body crosses an IRC
+member-side XMPP UX over #90/#91 and #88's attachment boundary, and #101 validates
+NNTP-first room federation with explicit consent. #103 separates the Netnews
+article model/codec from #104's optional provider adapter. Formatting never
+confers publication authority; provider traffic stays bounded outside local
+room operations. IRC and XMPP retain their live/private formats. No private mail key/body crosses an IRC
 bridge or visited board, and no room export follows from these requirements.

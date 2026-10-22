@@ -39,4 +39,5 @@ SSH admission continuation: [plan 0022](plans/0022-ssh-admission.md),
 The optional [native client](../docs/native-client.md) integrates Files transfers and local room/chat references; [ADR 0033](decisions/0033-native-terminal-files.md) records its boundary. Mail/identity/attachments remain #84/#88 research.
 
 
-[Modern owner stories](../docs/modern-sysop-and-communications.md) and [research 0047](research/0047-modern-terminal-and-federation-options.md) define #95–#101 without claiming implementation.
+[Modern owner stories](../docs/modern-sysop-and-communications.md) and [research 0047](research/0047-modern-terminal-and-federation-options.md) define #95–#101; [article/news stories](../docs/discussion-articles-and-news.md)
+extend them with #103/#104 without claiming implementation.

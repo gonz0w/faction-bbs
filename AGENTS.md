@@ -21,7 +21,8 @@ and [research 0047](dev-docs/research/0047-modern-terminal-and-federation-option
 Track #95 local OS/VM-console sysop dashboard; #96 capability-based modern
 terminal graphics; #97 NAT-aware NPF abuse controls; #98 NetBSD setup/maintenance;
 #99 integrated native XMPP unread/private UI; #100 real IRC/IRCv3 reuse/server
-links; #101 explicitly opt-in federated discussion-room protocol comparison.
+links; #101 NNTP-first opt-in room federation, #103 Netnews article model/codec
+and #104 optional news-provider subscriptions (read-only first).
 These are requested stories/research, not implemented or adopted protocols.
 
 Preserve the modern underground ANSI/BBS identity, sysop themes, improved screen
@@ -48,14 +49,21 @@ cross-network federation. Public/shared channels do not imply anonymous Internet
 exposure, and private/local channels must not leak through bridges.
 
 #101 expands permission to research explicitly shared rooms beyond older blanket
-local-only-room wording. No protocol selection, room export or public syndication
-is authorized: local remains default and room/author/peer consent/history/ACLs
-must be proven. Keep local approval/password/role stores local, invited independent
+local-only-room wording. The owner selected Netnews-style formatting for
+discussion-room posts only;
+see [article/news stories](docs/discussion-articles-and-news.md). Keep IRC and XMPP
+formats for live/private messages. This selects a representation direction, not a
+production wire runtime, room export or public syndication. Local remains default
+and room/author/peer consent/history/ACLs must be proven. Keep local
+approval/password/role stores local, invited independent
 homes, optional networks/private HTTP and separation from #42 public/permanent
-publishing. Do not introduce a new federation wire protocol before comparing
-NNTP, XMPP PubSub, Matrix and ActivityPub against named interoperability/privacy/
-NetBSD/no-JS/cost gates. Leave the running playground and historical evidence alone
-when capturing these stories; physical hardware remains unnecessary for software work.
+publishing. Prioritize the bounded #103 article codec/migration and NNTP
+validation against
+named interoperability/privacy/NetBSD/no-JS/cost gates; keep XMPP PubSub, Matrix and
+ActivityPub as alternatives if those gates fail. Format is not publication. Do not
+rewrite historical evidence. The owner requested the local playground stopped
+and privately preserved; retain its images, credentials and restart helpers outside
+Git. Physical hardware remains unnecessary for software work.
 
 Ordinary running product first. Follow
 [the NetBSD quickstart](docs/quickstart-netbsd.md), issue #71 and ADR 0026. Further
