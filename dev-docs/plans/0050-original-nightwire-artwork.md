@@ -10,7 +10,7 @@ classic fallback; hardening later. #125 exact head passed with no review threads
   previews at wide/compact dimensions and document operator activation/recovery.
 - [x] Run asset/PTY host and native NetBSD software checks, including actual SSH/
   native login, skip and compact fallback; keep normal limits/playground off.
-- [ ] Update README/docs/AGENTS/CI and #25; publish/attach a focused PR.
+- [x] Update README/docs/AGENTS/CI and #25; publish/attach a focused PR.
 
 Asset-only direction: new opt-in packs and authoring/check tools; keep runtime,
 installer/default packs and all measured source inputs unchanged. No new frozen
@@ -43,3 +43,13 @@ prior saved-evidence guards pass. No new snapshot is needed for these new assets
 The new Nightwire record pins 157 native input matches, five harnesses, twelve
 art files and seven SVGs; no new capacity/RSS/CPU/hardware/font/owner-art acceptance.
 Final human visual acceptance remains open under #25; hardening stays later.
+
+## Handoff
+
+[PR #126](https://github.com/gonz0w/faction-bbs/pull/126) is open and attached against
+feat/103-articles-and-room-reader, with #25 progress logged. The original-art guide
+links all seven canonical previews and activation/reproduction steps. Final clean
+Git archive/source/evidence/regeneration checks pass. Current-head GitHub checks
+remain the merge gate. Owner visual acceptance remains open, with hardening later.
+The disposable clone/cache are removed; saved playground stays off. No authority
+to merge this new PR is assumed.
