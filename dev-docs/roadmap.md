@@ -276,3 +276,8 @@ dashboard and later hardening remain separate.
 twelve pinned profiles and actual native/member-SSH paths. Old screen is
 classic-only; tmux keeps image fallback. Physical keys, pixel/artwork quality and
 GPU FPS remain unclaimed; richer licensed art continues under #25.
+
+Nightwire #25 follow-through now measures canonical page/menu placement and CP437
+widths in real terminal fixtures. See the [compatibility guide](../docs/artwork-terminal-compatibility.md).
+Visual font/palette quality and owner artwork acceptance stay separate; no new
+capacity/native deployment or hardening claim.

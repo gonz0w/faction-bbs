@@ -4,6 +4,10 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add isolated real-terminal Nightwire probes for page/menu cursor placement,
+  CP437 cell widths and actual compact windows, with explicit fallback and
+  multiplexer viewport guidance. No runtime, theme asset or default change.
+
 - Add original Nightwire CP437 artwork with bespoke slanted lettering, radio-city/
   receiver scenes, matching short cover and autumn/winter/compact ASCII variants.
 - Add reproducible offline authoring source, product-based geometry/contrast/menu

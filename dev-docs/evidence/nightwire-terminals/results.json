@@ -1,0 +1,6383 @@
+{
+  "authoring_binary_sha256": "3b1d943d1ec5e1448c829aebb5f4748cec2af9f907a62e5d9b5b786938fb1c39",
+  "base_commit": "946819e",
+  "claims": {
+    "actual_font_face_certification": false,
+    "actual_rgb_palette_certification": false,
+    "capacity_250": false,
+    "host_hardening_change": false,
+    "new_native_vm_validation": false,
+    "new_ssh_validation": false,
+    "physical_sbc": false,
+    "product_runtime_or_asset_change": false,
+    "public_listener": false,
+    "visual_pixels_or_glyph_certification": false
+  },
+  "date": "2026-10-22",
+  "focus_controller_sha256": "8754d52ee19c27aa6b6db53c6fd381ffa6ec53d3ac52595691fc6955361e19cd",
+  "harness_sources": {
+    "tools/build_terminal_multiplexer.py": "9a18e6692cd662e5e396dda3864ca311d1a8de89cbb2f0753fe873bbbe193988",
+    "tools/native_terminal_window.m": "0522014b5ac51ac713b2ff271ba3d2400441fd5b1c975ad68fa500259cf34657",
+    "tools/prepare_terminal_reference.py": "9325f5403159e1fb079c37b4b14b3ff209bbbddd73a97ce051e1f50662daa1c6",
+    "tools/probe_artwork_terminal.py": "f8962c9896040358e93beb15bc5b8b502fe655bc5defa6c96ae447c85ce25541",
+    "tools/probe_terminal_profile.py": "54445191d0be5609407c995ee7e1e69fa4fe0b920c728d5f01e65481dd2c6e11",
+    "tools/render_theme_preview.py": "71e45cdf121ca5bc3f187ef08c93e3cc8e17e10f82c59159a25760baf1f77f3d",
+    "tools/run_artwork_terminals.py": "292ce900165fc10bacb9566cdb0f7019ee175b41a25f1115c502324d419347f8",
+    "tools/run_real_terminal_profiles.py": "ec0fcc02be3a466cbd50ec5f52ba34045133f7dc69f5d791ec04bdd568e4b18b",
+    "tools/terminal_reference_identity.py": "afe7afea3b160a1e2fa21593b6134487f36f625b8467ebd25262c55eb3d123cb",
+    "tools/test_artwork_terminal.py": "e66832605d91e0685922054716aae8d46357d94d848cbc685cc54acf7ee8c02c"
+  },
+  "host": "27.0 macOS ARM64",
+  "host_python_tests": 115,
+  "host_rust": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "initial_fixture_findings": {
+    "compact_newline_mismatch_profiles": 2,
+    "corrected_only_fixture": true,
+    "probe_newline_mismatches": [
+      {
+        "geometry": [24, 80, 1288, 728],
+        "mismatches": [
+          {
+            "actual": [6, 35],
+            "expected": [5, 1],
+            "frame": "long-compact-1"
+          },
+          {
+            "actual": [6, 35],
+            "expected": [5, 1],
+            "frame": "short-compact-1"
+          },
+          {
+            "actual": [7, 57],
+            "expected": [6, 1],
+            "frame": "autumn-compact-1"
+          },
+          {
+            "actual": [7, 57],
+            "expected": [6, 1],
+            "frame": "winter-compact-1"
+          }
+        ],
+        "profile": "ghostty-direct"
+      },
+      {
+        "geometry": [24, 80, 1288, 824],
+        "mismatches": [
+          {
+            "actual": [6, 35],
+            "expected": [5, 1],
+            "frame": "long-compact-1"
+          },
+          {
+            "actual": [6, 35],
+            "expected": [5, 1],
+            "frame": "short-compact-1"
+          },
+          {
+            "actual": [7, 57],
+            "expected": [6, 1],
+            "frame": "autumn-compact-1"
+          },
+          {
+            "actual": [7, 57],
+            "expected": [6, 1],
+            "frame": "winter-compact-1"
+          }
+        ],
+        "profile": "ghostty-direct-missing-font"
+      }
+    ],
+    "tmux_23_row_no_result": true
+  },
+  "limits": {
+    "drain_seconds": 5,
+    "frame_bytes": 17408,
+    "menu_bytes": 4096,
+    "new_owner_helpers": 0,
+    "new_product_dependencies": 0,
+    "normal_sessions": 8,
+    "per_profile_deadline_seconds": 120,
+    "per_reply_bytes": 128,
+    "reply_window_ms": 80,
+    "shared_output_bytes": 32768
+  },
+  "prior_nightwire_inputs_unchanged": {
+    "Cargo.lock": "f63997a51c7d689f281e5e3782d3ee2250fd22ca6bf62005aa8cd7c7f13f165c",
+    "Cargo.toml": "081639c71987071d255fe5796f6be7ba27f3afe4ca918bcbf1fa141273bacbc5",
+    "crates/faction-access/Cargo.toml": "2107f6882091e533febb311f0b526f17676642bd4f4082af62940be1aaa08716",
+    "crates/faction-access/src/broker.rs": "87bef109ea3cc0793d721abe74fcfec4f4f893b0cebd70fd05a7fa4d65d7c921",
+    "crates/faction-access/src/frontend.rs": "c09b3605294baf89bda2ad65fa866ca1a579c3df3a17d619660aa8157e083273",
+    "crates/faction-access/src/lib.rs": "96e69ba58363ba3da17765de2c255e20da929b82320379d5ac1d2827e2cfcca5",
+    "crates/faction-articles/Cargo.toml": "e8a309cfc972b68c2e022f74e2c1e03d843cd6e35c765181fcfeabb49f321aa2",
+    "crates/faction-articles/examples/canonicalize.rs": "c9d03d81eb14da974d936f449620df9a630a40533190d2196f1461b3cd90614f",
+    "crates/faction-articles/examples/check_article.rs": "3da38285bbce72c17a888a41d6ca49d1ecf36cd5a8de220b88b28639f9551a18",
+    "crates/faction-articles/examples/emit_fixture.rs": "0581ca5dbf121eff5105f3045397040a92f17eda400d94dd11393af37ada2c87",
+    "crates/faction-articles/examples/profile_articles.rs": "e04cd668b4c7b32b6266b9926d68be422b8171a9be08d05b2e2ff15efc93b82b",
+    "crates/faction-articles/src/encoding.rs": "82f5ea630472328489bf6ec3d37687421007cdbc98f533fd6739f6713b956108",
+    "crates/faction-articles/src/lib.rs": "cc26f4fbcb96e1e634e6ae376e0d9cd63e5d92f8ddb87fd43543fc729bd6ecac",
+    "crates/faction-articles/tests/articles.rs": "01dd81b4f9e2c15981ac35e03703df1823028ac351751f874628bc799ebcb9ee",
+    "crates/faction-articles/tests/broader.rs": "30189d05a7473cad19dc15579fc6c1f9d9c06a0fe6b508172d8658a50aa71b02",
+    "crates/faction-articles/tests/fixtures/plain.article": "0b7b6186eb16959642743f44d3be1592f8ec9b1bb13662c7245935d9d4c8a953",
+    "crates/faction-cli/Cargo.toml": "386b4e42d30c1bfaceeaf2cc9399e25d761b4062c9796b71ef3a778325e031e6",
+    "crates/faction-cli/src/chat.rs": "61332f672c91e67585a0c9efa4f3a311accb544ea7ad5c4909ccbcb4b9f5195e",
+    "crates/faction-cli/src/lib.rs": "52fb2836e8f62f3a05cc04e94526bc8d6ec1524e385075d6bd3f565293dfb968",
+    "crates/faction-cli/src/main.rs": "e159ec261c6398a40dd597744a90a9cb9f202aa7241b33586a114c46118d8005",
+    "crates/faction-cli/src/member.rs": "1e2ffb3e6f7000612414de55a4ef8d0a2d1d37edccda61718c09cbc169a0bc7e",
+    "crates/faction-cli/src/terminal.rs": "4f466fc2fa80fc581f10769d49c729ec6ab646b0821b6fcfb73dc28ed039ab8b",
+    "crates/faction-client-pty/Cargo.toml": "912a7fb24168d2f246d8f297716ce028a2c88b27e76c47dec88dc30cf8ba688a",
+    "crates/faction-client-pty/build.rs": "63002ec1f86f3888b220d37c26e07e6fd57a5ae0b98f7ac1c8036c6513af3c89",
+    "crates/faction-client-pty/src/lib.rs": "9511a300e87d9f1c21c23d8770ae8e581190f50b8483f6ab3aec88dd7a4c9327",
+    "crates/faction-client-pty/src/pty.c": "adb6bedc014346c6e7499a9d6482de77321c163a46e78a0ceae05f259179a4df",
+    "crates/faction-client/Cargo.toml": "8c2f81e7c8d2bc20178b769dd144e3cc80569c15474ed362dadf2003809fde75",
+    "crates/faction-client/src/main.rs": "738d031b175a7c9a6bf91635c8c354eabcfb1f902c541e0e2a86b70cbc6dc741",
+    "crates/faction-client/src/profile.rs": "b419ef3d17f86539ba0afc63394f0aa952ab14b7f0404724dc6de7229f9c72e9",
+    "crates/faction-client/src/sftp.rs": "4205d403415258f57909b85f5ecd4b9e8394a593f55f6484c1715a3577bbd3a9",
+    "crates/faction-client/src/stream.rs": "f9c03f9d71fb7038d1a74d5a9ff4333cd81dac7600e7586134a1116c95da0057",
+    "crates/faction-client/src/transport.rs": "8fa83269dfb88470d1f5b00d57300106e16b239827609e91ca37581b8c526c46",
+    "crates/faction-core/Cargo.toml": "4f13ddef69015fcd73473b6c9bbcafb659d1e017f3aeb469ab22d3a2b2de0186",
+    "crates/faction-core/examples/profile_seed.rs": "0ccf4c4f32af84c0740d4ba5b1f8625a250ed34a72abec644c600e851b889e30",
+    "crates/faction-core/src/chat.rs": "059416ec4eb4c4bcdfa9915ba7298b638b3293a30b62e814187b8959e0f497e5",
+    "crates/faction-core/src/chat.sql": "70f1117b3c333755984c2fdc7379963769edbf27607a5849cc6e187b6e403d26",
+    "crates/faction-core/src/credentials.rs": "6220efbbcc2a60d566b22f1efd0e3112d2a4852e5dd1f268364970cab4312d2d",
+    "crates/faction-core/src/file_links.rs": "07bcd2e7268a817c51e0b114a607068c3577ac9d7451d5e312bfbadada359583",
+    "crates/faction-core/src/file_links.sql": "6b09a460f4d1f8fff53bdcf1028fae2f24828d3cd88ea968a5851902415801b3",
+    "crates/faction-core/src/files.rs": "57031193a6d66c771f4513f0e117851adb635f6e689adf756c0523c305b07c11",
+    "crates/faction-core/src/files.sql": "09c1dac3e5721d48f12826f290e444d8c4624b529e2a6cd423ae110354d4163a",
+    "crates/faction-core/src/lib.rs": "58a52c41a09c371686085e668d8ec48e532bb557fce21a001c00658f141fbbb3",
+    "crates/faction-core/src/post_metadata.rs": "45931e223178c096ee6e509c976d541d1ec2a19089b724c84c4365bbbe74be2e",
+    "crates/faction-core/src/post_metadata.sql": "e39e4b81228eb14f80abddd42926c771ca5af76897d117f9a2ad43299e24ac7a",
+    "crates/faction-core/src/post_metadata_v7.sql": "19a035780dd50c2fef0ebf8e051e0ca24e7626960e5819dc1e1a1e9fd1a0329b",
+    "crates/faction-core/src/room_article.rs": "c27b3badb21d1a13b41816ed45da1be1e39989c04dfa864ec49fafa7e6aa2bb4",
+    "crates/faction-core/src/schema.sql": "f09c52ee1958eb25a0be57c60ed92688b768fa5f25e9d0b3b443418bcb8a5d62",
+    "crates/faction-core/src/scores.rs": "79e3377454b8ed828ee4e2c7ca7adc8e14b2da20e992e4429d20b9ee10b9d455",
+    "crates/faction-core/src/scores.sql": "181a0fbd43538f0a5932da8079452fcb8f8d1ba40530fc00e71582b3c5817766",
+    "crates/faction-core/src/snapshot.rs": "3c89c896bc99104ecfc1f98f4f9f377c569911f92b0466ca2cc61191aa60288c",
+    "crates/faction-core/tests/chat.rs": "a395cb6caa2a30fae79bb97d8ac7c6f2ab29e228837131c9f3eb0954612b0e12",
+    "crates/faction-core/tests/core.rs": "91328989cb0106b58e916f7a0453e13a55e72cb3822a3ca9dc80a8df83b8f9d2",
+    "crates/faction-core/tests/credential_budget.rs": "edfda7feab89fdfa034e76e72613633058dfca299c2a4f1f2e4c69608109230e",
+    "crates/faction-core/tests/files.rs": "cb0a770de49833a30263433b9b9c517e715082d5d9be18cfe4f6e43998ebdf03",
+    "crates/faction-core/tests/post_metadata.rs": "2642f607a9f01089b5901584e66c488c396ba02d09f9ff546fdd277b06242583",
+    "crates/faction-core/tests/room_articles.rs": "8aa693d20d66852f778f64f271c732892a14151e73f8c0146b970b9c07ad346a",
+    "crates/faction-core/tests/scores.rs": "bf48c3fdff7b64ad1465c7857c54101139899ab47680b13bf76adb0b0f7649db",
+    "crates/faction-core/tests/snapshot.rs": "74ee5b55b88ebdf0451505813efa8ad0e1bac0aa7c6f1b8b4e382d4a5d9c0de4",
+    "crates/faction-files/Cargo.toml": "488da609ac00fae0320795b3ff83711266a3b6d4e197409340a5b01324b8d14e",
+    "crates/faction-files/src/lib.rs": "87b2750d99aca42f4aaf41274bd5d90c8588689ce00a8e38932f5aaa47d49317",
+    "crates/faction-files/src/main.rs": "786a232ca1f59feb9fe8d8a1cdad9d9a2a760abe59dc581060fe226fb2aaddbb",
+    "crates/faction-files/src/native.rs": "993999ed7a8aa6920c9baac1b9470b52a815b0eae16de09fa791409b127a9720",
+    "crates/faction-files/src/transfer.rs": "f6f0f0e8820d6caeb8f9524ab403e105515201f6feb7cea70c835023a9464666",
+    "crates/faction-service/Cargo.toml": "8f6fc0a6589cae36b00348fe0670cd621add62e90d178760bff0b293aed020c6",
+    "crates/faction-service/src/classic.rs": "b4b36c3c2bb3fecf1e934de7155be8b89dfa181ac9d518b322f0780791fa74be",
+    "crates/faction-service/src/classic_ui.rs": "53ad151d85905ca8941e0a3c439326efd3b23a6d718b253c1e3bf655301938de",
+    "crates/faction-service/src/config.rs": "f5d77fcf576f10ede5930e93cb2885983e33081dbad8558a7e0b3f5cef396316",
+    "crates/faction-service/src/door_ui.rs": "00eb1d3de32f73a447594a3c06be5d4d26960b739d561c3da2c34374f87833b4",
+    "crates/faction-service/src/doors.rs": "3f8d67a38c5d1d45d9bcb1a8a2ab5092dfb8c6ab4716c71e33ebda2cf67f3e1d",
+    "crates/faction-service/src/file_ui.rs": "01eda29486c284c408a1228b378fd27bfadbd7780adb68e3b25dc828c11c38d6",
+    "crates/faction-service/src/main.rs": "ee431e5727db27fe5c0970741fc7cfcd8cf06b7a57c3337a18826df2704036c1",
+    "crates/faction-service/src/native_files.rs": "5aed741457136e6ade1047ce8c7ff400e28e59ee628acb6c3ca7107d95a287a0",
+    "crates/faction-service/src/policy.rs": "b55c2aa3f6a97afce5a5235c13fc467bc30f89b376858030a4e0aabffca3564a",
+    "crates/faction-service/src/ui.rs": "ee9e9d8d1bec17a18964abd3f64f57367a5127c821e826e774a3794068c7c555",
+    "crates/faction-terminal/Cargo.toml": "6d35d401eedfe40ed43a59a20595c81914c3ed32446e95f08772ab3cf8ade5fd",
+    "crates/faction-terminal/examples/graphics_budget.rs": "d4561e8baeffb8a4f1fe41665113aab53b4b6687e9826f2423e9f7d840bec898",
+    "crates/faction-terminal/examples/preview_theme.rs": "b81119632c48d74917756850d9ea25ea33102621901c7f332b30523b5c455190",
+    "crates/faction-terminal/examples/profile_text.rs": "7072356b5bd4810996daa47983de04fa213ae5808451fb0537459eac9c84cc46",
+    "crates/faction-terminal/src/art.rs": "c4304c15bfe29d9a88b3453fc650185cc8163c73d2d34c10f369670a04514fdc",
+    "crates/faction-terminal/src/capabilities.rs": "6cc8a7dfbd0be694024304aae21a22683d7b703c7b77d7bd57c4f8a7367b0409",
+    "crates/faction-terminal/src/editor.rs": "110c935ac2cb7915da060b82b8d1cae94790cb4032259e8bcd744aaf7f8004fb",
+    "crates/faction-terminal/src/graphics.rs": "d8ef6ce36de6f32c970a4dc10dab8c50db374908fbaead362562722be427233a",
+    "crates/faction-terminal/src/keys.rs": "965826a543cd2721725aecec2e872a95dab967f7463c108a1988d2f893936564",
+    "crates/faction-terminal/src/lib.rs": "f27ddec255d614115c1cfc6e952eb6b21d14e3db1f2162ca5d65bdf5a1986137",
+    "crates/faction-terminal/src/login.rs": "23d5047c7f76b2ca554b4567026b5c2435a23a13966e4dacb43cf9e5975cbdf3",
+    "crates/faction-terminal/src/reader.rs": "d3c5904c9aec131ca07b0f242584dfa5d6767188d0856d9ec7ffcdca13d9f127",
+    "crates/faction-terminal/src/seasons.rs": "95040b3cb6e774602167105f3b7383f71f02a4f00f0174b8c6765a8d1d69587c",
+    "crates/faction-terminal/src/subject.rs": "3279eeee363f81207e71d18fd1aaa15062d90a1db78573e29c0a54530f207446",
+    "crates/faction-terminal/src/text.rs": "8bf3ec8170917418759690e665cedbd97306cc8fa917445759ee0605d7accd61",
+    "crates/faction-terminal/src/theme.rs": "575b7d55bb29fedc7263f53614be4f47cf1382e035270ec197d902f5d30653e5",
+    "crates/faction-terminal/tests/capabilities.rs": "ef23c6a2f10839fff5b76a5d1bdf753eb8a25eafac2b0617026b80ff9409fe7f",
+    "crates/faction-terminal/tests/graphics.rs": "e21e45f87d07732b42f623001fea521a686219e064e528bcfa28ca4f6cdb58c0",
+    "crates/faction-terminal/tests/long_art.rs": "8cbee96ef4e099c35752abf69e304d578e76f78724ab64a7e12c29962b482f87",
+    "crates/faction-terminal/tests/reader.rs": "bd06999396acee7421734c25a6f4f4b988b05e011de09164e270ef12fa538a5c",
+    "crates/faction-terminal/tests/seasons.rs": "e413e499dd487a919440674412eaea35b420f74ae01ccfb57324293fa72985e2",
+    "crates/faction-terminal/tests/subjects.rs": "b51dc44a70a4b97e04a71ace02a477f50897a243dce3a7c09dc9e87e5b6476ae",
+    "crates/faction-terminal/tests/terminal.rs": "c344eb1b50a7c1d9f7dd57f660ffac8a01d93a0058a9a266980979d0c4fd69a5",
+    "crates/faction-unix/Cargo.toml": "2e0eaea46081f07c3fc76b81de83ac2d972db0c59b1e8d98d4643584dbc8210b",
+    "crates/faction-unix/build.rs": "b04a4c19a39511f99d8cd1cf5b85bc8008baffeca53fc393f0568c13c6bd2e32",
+    "crates/faction-unix/src/calendar.c": "60bba0a6772b86324892e3abbffe509af1b1ddb42eca082d7fdcf8c610e91747",
+    "crates/faction-unix/src/lib.rs": "cd2a4c06b31912ac9c0bcff725a18d1b13b7d968d010b23ddb7152745df5b413",
+    "crates/faction-unix/src/process_security.c": "56accefcf703a4dc0ed00c61005883a131b6c1b4b3f0ca64520d61e85c9b4407",
+    "crates/faction-unix/src/shutdown.c": "e263bcd624fd4b67a3b7648e480a88d71faee644390f08e46e1ed9ae0dee11db",
+    "crates/faction-unix/src/terminal_fd.c": "a97160e8499877395e574116289afb0b7fc4c9563733e378b8439a799520bf8c",
+    "docs/images/login-longform-1.svg": "2292955b1aa2a590fb4cff9cfad5af8c55ac07e63dcbce50e189c0d2d7bc8107",
+    "docs/images/login-longform-2.svg": "4349596f069f5571bd4f67729b3dfb10b3dbc916320b965a416f91b8962305b9",
+    "docs/images/login-longform-3.svg": "2cc65488b70735282e55f8681abccc80e24163437ababd2738a23b669e0c7678",
+    "docs/images/nightwire-autumn.svg": "b747f46793a9ea9b747f6129946e8aeccd5b1727c6d202c683d4c1e6e7b1a5d2",
+    "docs/images/nightwire-city.svg": "52a4f3d2916b7536dd8bf4541e2095ac28409b00a7b83a16be4d0f5f6b5bfd0a",
+    "docs/images/nightwire-compact.svg": "8dd79bb6b6835ffa7166022f31334314a291b74a8302d8208b06bc40e9db77d1",
+    "docs/images/nightwire-cover.svg": "c6dfeb10739aad41f038357bfc88e6e6de2dc667bc01cc52ece3cd94330343b1",
+    "docs/images/nightwire-menu.svg": "7c565370460e2715add932a3a7b3b9f7652d38b1e949b23c9fbf2aff7ce05be5",
+    "docs/images/nightwire-receiver.svg": "da955fba084a189b839674da612a7b30d199471fbdc4191ec197f7f4a3d50ab1",
+    "docs/images/nightwire-winter.svg": "6518d6514aececab44e0bfa0ff244deaa1158ada00617ca7cbcec8ae126de3f9",
+    "native/faction-tty/main.c": "01e6712bd2be797d2f3c4fc46f447cef5d5596fdf767345cce9730690ad997d5",
+    "themes/base/theme.toml": "cec74ed78c386cd56aa7e3809a45d3bc2dfadf37f45a1bf0b164221fe4a61ae8",
+    "themes/grid/login.ans": "93101ed8e4def81715b0e915006b91d8c8ed80c71dab9268fbc9d26c590945e2",
+    "themes/grid/login.txt": "8227bf8d6bed5b4f4418e559c1117b73a4eb31858606238bb144e838e92d99b6",
+    "themes/grid/theme.toml": "becc623571c65baaa2fa98980ee92df881ef88e3489b6229bab13412b3563bde",
+    "themes/longform/login.ans": "dc16a73a91d52d2674f5c4241eabac995e4c827436e40c0309c5bee1085d31b3",
+    "themes/longform/login.txt": "8227bf8d6bed5b4f4418e559c1117b73a4eb31858606238bb144e838e92d99b6",
+    "themes/longform/theme.toml": "cfd42e5d533383690d48294c0c3ccb3bc7060a287a470ef55bb1f268e70b8f6e",
+    "themes/nightwire-seasons/autumn/login.ans": "b6dbd69d81639369d885e23fcf7fbac04c2adfd194f3b134df71832d036a233f",
+    "themes/nightwire-seasons/autumn/login.txt": "26532b053e37b1c970a25da46115110d428ebbe479f3309468ae2c3272cc65a1",
+    "themes/nightwire-seasons/autumn/theme.toml": "e86489af474ad1099f5a67ddda7886fd021a677d1484e39d89ce684d45be4c68",
+    "themes/nightwire-seasons/winter/login.ans": "b58cb362cad483d3b03da102989af88b2f907489747927c8682838328e552213",
+    "themes/nightwire-seasons/winter/login.txt": "d6eebd5b4394026e46694e7288d73644040d0d89580d91cfec1faad5e3d29b76",
+    "themes/nightwire-seasons/winter/theme.toml": "8fc45485dc7faf536b655bede51bbcccdbf2d5c914ca1ac4cfcbda24c58d9a2e",
+    "themes/nightwire-short/login.ans": "8af1b66f83936a214385e9b2452b37e344f836f0b32efd56f6275af2f32c0954",
+    "themes/nightwire-short/login.txt": "feb06d0fbdf32126e370e442c9b70d8238ff14bc39d101a37b15b7bd042e4f0c",
+    "themes/nightwire-short/theme.toml": "a659bcc986d1612963b1154521866d11347f79008c486b25529d420354c21ab2",
+    "themes/nightwire/login.ans": "ec39b0d25d31dbfbc261e9a077a56a067b2dfe999c79be7ec45a6e3d3272a432",
+    "themes/nightwire/login.txt": "feb06d0fbdf32126e370e442c9b70d8238ff14bc39d101a37b15b7bd042e4f0c",
+    "themes/nightwire/theme.toml": "e84c5b94be6b6489b5d9230a5684bd0dd52e7779af970f69418aa722865e8989",
+    "themes/seasons/autumn/login.ans": "5c7e14fdfbf73c877d851e5b06387d7fb899f160b24ad7e2881731bf2ac9afc3",
+    "themes/seasons/autumn/login.txt": "ae38ef50a2a7f31ff765a8ee4f303ed62fccd7c0c03aaeadf2a0917fca560af9",
+    "themes/seasons/autumn/theme.toml": "712ca18d7dc2a195137ce2b0e7d472b86a0be6b91474a35bc533b6c544511c22",
+    "themes/seasons/schedule.toml": "59d3fe29edc59e75a449b21f0f7dcd840ddfec957c00d0f5404ae053480653e8",
+    "themes/seasons/winter/login.ans": "42b86a04e105b3122309bc59b08d227745a92e7196efe93a54b52b74f4f298f4",
+    "themes/seasons/winter/login.txt": "52a0189869e0d9fef7d80e02a51a4f8bb46642ff3fb2582b480c259004a984bf",
+    "themes/seasons/winter/theme.toml": "3544ddd4eb9ab31f3f17c9520dd1a096db36ab3049f596d7088ae18d6fbaf018",
+    "tools/build_nightwire.py": "2831e0d2bdbf2c52db4c07efe58b897c924362f01f782d48e4228bc30730c85f",
+    "tools/build_terminal_frontend.py": "3aaa2038e2f78fe39db9719b3549532e460310c483ed7fd5f6d113991383a6b1",
+    "tools/check_article_interop.py": "adcba1806e3116f1bc088ee56f61a1d596266d9cdf1c3495b3c88587a7eb413a",
+    "tools/check_nightwire.py": "1e7e3c381c8bca6dddc5ea855d56a7d2eed461bbd91a37d9081051f1a5eb0cd0",
+    "tools/check_restricted_ssh.py": "dd2d28d58865162d1b6c06967b6884a8dbf913968f942b8c365a1e07a0896404",
+    "tools/probe_screen_kitty.py": "9109e5c4c434a61996bc00457bd738d4e90283c4e33da73a134ccdf3b580a9ec",
+    "tools/probe_screen_sync.py": "382a11e1e5ebe9628f9f9d0f5afb85ddc979dacfc23c98b864548b563f17f5f5",
+    "tools/render_theme_preview.py": "71e45cdf121ca5bc3f187ef08c93e3cc8e17e10f82c59159a25760baf1f77f3d",
+    "tools/smoke_custom_menus.py": "5a5d907c6206f7caa72c36106d180150b80aa3996ae52616a9d7e6aabf93d788",
+    "tools/smoke_kitty_graphics.py": "e3032c48cf0f6c9778c2ea32fa28c0c02a3f63df5f4a82d91dbcb4cebda26849",
+    "tools/smoke_local_console.py": "4cd6132668ec0fe2922dafa61e49e8eba7ee8672236a7f3fb7fcc086b2bec6e8",
+    "tools/smoke_login_paging.py": "a62670b8dcaeaf671166ab9ac60f46dc36e84e270eee7e5c95cc17f238728816",
+    "tools/smoke_member_worker.py": "df2c2667a521ad5304880cd0db27aefb579e68c48ef2ffaf90363fcbe8cdbf25",
+    "tools/smoke_modern_terminals.py": "332dcbad9bebd25b7137b3b90e5498d9b428afdd5792a6efc30de8cff3b0e2fd",
+    "tools/smoke_native_client_ssh.py": "9c497245465273b89558f08910dfbadff3c618d67e3e1f56d20ee85e0f9322b4",
+    "tools/smoke_native_graphics.py": "b5053ebc82afd290528ebcf3c6b5c4ec0c62a727efde8062a350def9d84c88a2",
+    "tools/smoke_nightwire.py": "7f3e10fca6b26fb47c28912921347baec82b399e3978714656d69011a4c83733",
+    "tools/smoke_room_reader.py": "06d47cd5900eda79b9389ebefac16c9b743aebc6b901f6ad090c760edfee863c",
+    "tools/smoke_shared_custom_menus.py": "aebb66c00420395f1cedc919cb251b08b70b6add4411aedb4423d0614b32f065",
+    "tools/smoke_shared_login_paging.py": "8da683087e3cd4d7552e90ec4a1fcc4daa5dea2f4d6563596405f164f49afe62",
+    "tools/smoke_shared_nightwire.py": "0dd54e4b28f4099036ee182c9699ed48d7cb15382641770e481e7c141b500732",
+    "tools/smoke_shared_room_reader.py": "6be8cffb7729f0f67f022d37118cd847c2285e781e34b23077bd57798cc2a4d3",
+    "tools/smoke_shared_seasons.py": "34ae1ddd7c6d6891a388d4d7ec2d0f46018ce2274e6f9e26d9a36da8304c8b88",
+    "tools/smoke_theme_schedule.py": "765f3b3b917ee03b3157317f57b53272ae4492a6ed3fbfcafee3a8fe9219c11d",
+    "tools/smoke_unicode_subjects.py": "ca95bfec40e3c26eddc154f89fa5a57e21dc0a057e59f6f4e8ae4caf846308ad",
+    "tools/test_theme_preview.py": "757c4dac08000ea84d3bb80dcf98d95b929e4f63dd8587109253b07e2f12e30e"
+  },
+  "prior_nightwire_record_sha256": "444f6785109e1f8d7711dc5e9388c810aa8e81ae851642bd2036933ced5e00b5",
+  "profiles": [
+    {
+      "emulator": "ghostty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1288, 728],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "ghostty-direct",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "ghostty",
+      "font_requested": "FactionDeliberatelyMissingFont25",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1288, 824],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "ghostty-direct-missing-font",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "ghostty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1280, 720],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "ghostty-tmux",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "tmux",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": true,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "ghostty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1288, 728],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "ghostty-screen",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "screen",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "ghostty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [18, 40, 648, 548],
+      "glyphs": [],
+      "profile": "ghostty-direct-compact",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [18, 40],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "kitty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1120, 600],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "kitty-direct",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "kitty",
+      "font_requested": "FactionDeliberatelyMissingFont25",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1120, 600],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "kitty-direct-missing-font",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "kitty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1120, 600],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "kitty-tmux",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "tmux",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": true,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "kitty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1120, 600],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "kitty-screen",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "screen",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "kitty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [18, 40, 560, 450],
+      "glyphs": [],
+      "profile": "kitty-direct-compact",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [18, 40],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "alacritty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1040, 624],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "alacritty-direct",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "alacritty",
+      "font_requested": "FactionDeliberatelyMissingFont25",
+      "frames": [
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [20, 80, 1040, 520],
+      "glyphs": [],
+      "profile": "alacritty-direct-missing-font",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "alacritty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1040, 624],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "alacritty-tmux",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "tmux",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": true,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "alacritty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-1",
+          "sha256": "85cadbdc3c267872ff5e223da7b1e9acd717b1cfe3d5fdf24fc543c0b3733128"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-2",
+          "sha256": "0484d3a0936f529c5600ceee08f64c441a09c5c75dbf3be394126bc4ef58a309"
+        },
+        {
+          "bytes": 2560,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "long-ansi-3",
+          "sha256": "72273e7bfd2b4168169916694ac5b031a693e621ea9e956508881b12e4d44887"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "long-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6298,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 36, 18, 36]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "short-ansi-1",
+          "sha256": "014b0af0c8a8f2943f710263b4ebd8b7eb0ddcc4fa2dc3f7b936dc57d3d3ebc6"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 154,
+          "checkpoints": [
+            [6, 36, 6, 36]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "short-plain-1",
+          "sha256": "5283ad764bf741fb3c278edecb064401fe509fd7f2f91e8a53fe79ae8f157820"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-1",
+          "sha256": "53ba1a49751f4de611e66ed9b8eda5a262f12258acbcaae5c1eb84748f3ee7ac"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-2",
+          "sha256": "391d0212441bcc1c05c7d9e0590bbcedf413a91ef811e4e175d13cb03cfb7702"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "autumn-ansi-3",
+          "sha256": "cab00a5cacddf2239aefe4f3c333160a2060e9b8b67becb5cfeb0a55f41035f3"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "autumn-plain-1",
+          "sha256": "03c4cb55c51902efa6f257120f03d1f57faa23f41c5b39c0f8ee17a222ef48ba"
+        },
+        {
+          "bytes": 6305,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 70, 2, 70],
+            [3, 77, 3, 77],
+            [4, 70, 4, 70],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 79, 7, 79],
+            [8, 78, 8, 78],
+            [9, 79, 9, 79],
+            [10, 79, 10, 79],
+            [11, 77, 11, 77],
+            [12, 77, 12, 77],
+            [13, 76, 13, 76],
+            [14, 75, 14, 75],
+            [15, 61, 15, 61],
+            [16, 73, 16, 73],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-1",
+          "sha256": "9a1010baf778ad61e834c10aaa90c6b0c2c4e068c8df2faf52fffa87d007eca8"
+        },
+        {
+          "bytes": 5841,
+          "checkpoints": [
+            [1, 69, 1, 69],
+            [2, 44, 2, 44],
+            [3, 73, 3, 73],
+            [4, 77, 4, 77],
+            [5, 69, 5, 69],
+            [6, 66, 6, 66],
+            [7, 78, 7, 78],
+            [8, 78, 8, 78],
+            [9, 78, 9, 78],
+            [10, 78, 10, 78],
+            [11, 80, 11, 80],
+            [12, 47, 12, 47],
+            [13, 52, 13, 52],
+            [14, 57, 14, 57],
+            [15, 60, 15, 60],
+            [16, 46, 16, 46],
+            [18, 43, 18, 43]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-2",
+          "sha256": "3730ec5b6a92cfbaa11749645adc6163e5e2e9388a526edbdba1ac651a69800c"
+        },
+        {
+          "bytes": 2558,
+          "checkpoints": [
+            [1, 63, 1, 63],
+            [2, 72, 2, 72],
+            [3, 70, 3, 70],
+            [4, 72, 4, 72],
+            [5, 73, 5, 73],
+            [6, 73, 6, 73],
+            [7, 73, 7, 73],
+            [8, 73, 8, 73],
+            [9, 73, 9, 73],
+            [10, 73, 10, 73],
+            [11, 73, 11, 73],
+            [12, 73, 12, 73],
+            [14, 49, 14, 49],
+            [16, 74, 16, 74],
+            [18, 34, 18, 34]
+          ],
+          "columns": 80,
+          "mode": "ansi",
+          "name": "winter-ansi-3",
+          "sha256": "5d2af1cde21b6fc968c47b776528cd87da442cb2ee5290dea8195979de461d5a"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 175,
+          "checkpoints": [
+            [7, 34, 7, 34]
+          ],
+          "columns": 80,
+          "mode": "plain",
+          "name": "winter-plain-1",
+          "sha256": "e083ed301d5728446f8b09bce150b6b0dbe9ba6d157aaeb7ba7d89542d728b04"
+        },
+        {
+          "bytes": 2151,
+          "checkpoints": [
+            [1, 79, 1, 79],
+            [2, 79, 2, 79],
+            [3, 79, 3, 79],
+            [4, 79, 4, 79],
+            [5, 79, 5, 79],
+            [6, 79, 6, 79],
+            [7, 79, 7, 79],
+            [8, 79, 8, 79],
+            [9, 79, 9, 79],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [5, 77, 5, 77],
+            [6, 77, 6, 77],
+            [7, 77, 7, 77],
+            [8, 77, 8, 77],
+            [9, 77, 9, 77],
+            [10, 79, 10, 79],
+            [11, 79, 11, 79],
+            [12, 79, 12, 79],
+            [13, 79, 13, 79]
+          ],
+          "columns": 80,
+          "mode": "menu",
+          "name": "menu-80",
+          "sha256": "71ed707b6123495bc80a3091957762d32cfe1a4b91ba80696fb08d8d2807b760"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [24, 80, 1040, 624],
+      "glyphs": [
+        {
+          "actual": [1, 33],
+          "codepoint": "U+00B7",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2500",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2502",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+250C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2510",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2514",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2518",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2534",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+253C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2580",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2584",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2588",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+258C",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2590",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2591",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+2592",
+          "expected": [1, 33],
+          "pass_": true
+        },
+        {
+          "actual": [1, 33],
+          "codepoint": "U+25A0",
+          "expected": [1, 33],
+          "pass_": true
+        }
+      ],
+      "profile": "alacritty-screen",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "screen",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [24, 80],
+      "visual_pixels_captured": false
+    },
+    {
+      "emulator": "alacritty",
+      "font_requested": "Menlo",
+      "frames": [
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "long-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 193,
+          "checkpoints": [
+            [5, 1, 5, 1],
+            [13, 36, 13, 36]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "short-compact-1",
+          "sha256": "b8e59be333dd61082c708e6c961f6138c87bdf48adcdc27811a7d3d409d97b55"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "autumn-compact-1",
+          "sha256": "35d0bffb0e2af1f9bb9d434f37fca7d427035cf1ad45a2ed21a9c0eed12d4c3d"
+        },
+        {
+          "bytes": 214,
+          "checkpoints": [
+            [6, 1, 6, 1],
+            [13, 34, 13, 34]
+          ],
+          "columns": 40,
+          "mode": "compact",
+          "name": "winter-compact-1",
+          "sha256": "3ce67bb88a3fcb2a92375b384aaf2ad2e105e34e85e11dd0a902bdab916a0243"
+        },
+        {
+          "bytes": 1310,
+          "checkpoints": [
+            [1, 40, 1, 40],
+            [2, 40, 2, 40],
+            [3, 40, 3, 40],
+            [4, 40, 4, 40],
+            [5, 40, 5, 40],
+            [6, 40, 6, 40],
+            [7, 40, 7, 40],
+            [8, 40, 8, 40],
+            [9, 40, 9, 40],
+            [10, 40, 10, 40],
+            [11, 40, 11, 40],
+            [12, 40, 12, 40],
+            [13, 40, 13, 40],
+            [14, 40, 14, 40],
+            [15, 40, 15, 40],
+            [16, 40, 16, 40],
+            [17, 40, 17, 40]
+          ],
+          "columns": 40,
+          "mode": "menu",
+          "name": "menu-40",
+          "sha256": "05e3d2fc0bb00ed546b7e222bd9b1f9dea2fbecf919e00cc6a548a83203db85d"
+        }
+      ],
+      "geometry": [18, 40, 520, 468],
+      "glyphs": [],
+      "profile": "alacritty-direct-compact",
+      "raw_tty_onlcr_emulation": true,
+      "result": "pass",
+      "route": "direct",
+      "sgr_palette_and_glyph_shape_certified": false,
+      "tmux_status_disabled": false,
+      "unclassified_input_bytes": 0,
+      "viewport_requested": [18, 40],
+      "visual_pixels_captured": false
+    }
+  ],
+  "references": {
+    "alacritty": {
+      "archive_sha256": "ad8d7de35fb38e43184776cac6dfee05ca325caa0b6639a06a55e54e4b026620",
+      "arm64_text_sha256": "99c79fe5c8a510a70ee2348491f1fc5085ce92aff460fe241e7af20e5116685b",
+      "bundle_version": "0.17.0",
+      "documentation_excluded": false,
+      "fixture_app": "alacrittyFixture.app",
+      "fixture_file_sha256": "bd69cc572fc456a115d9ca513540adad9d7ae426454b25b87bc6d93145f1d453",
+      "kind": "alacritty",
+      "no_js_selected_files": true,
+      "original_file_sha256": "444055799f1211d6adbe9f18ab2660c57155de4f0e88d42458d6ae4fb539dcda",
+      "packaging_modified": true,
+      "product_runtime_dependency": false,
+      "text_identical": true,
+      "url": "https://github.com/alacritty/alacritty/releases/download/v0.17.0/Alacritty-v0.17.0.dmg",
+      "version": "0.17.0"
+    },
+    "ghostty": {
+      "arm64_text_sha256": "07518f9b66e405bb72cb109169c30e295f7b3e4cf4a084e09b2de615384e9874",
+      "bundle_version": "1.3.1",
+      "documentation_excluded": false,
+      "fixture_app": "ghosttyFixture.app",
+      "fixture_file_sha256": "ac21ff56f7123e67e79aea469d0c94f47e1b240860478eace8fd54d2f41edf5f",
+      "kind": "ghostty",
+      "no_js_selected_files": true,
+      "original_file_sha256": "3460be6d0c80504ffafe0dbb06f60cb1e8fb680a564a97a1aa5b95b48b8e30ac",
+      "packaging_modified": true,
+      "product_runtime_dependency": false,
+      "source": "explicit local installed application",
+      "text_identical": true
+    },
+    "kitty": {
+      "archive_sha256": "e524b894145d89cb76b584e3a9691196ae56bfa31d51384a44aa774252b7cef7",
+      "arm64_text_sha256": "d366dba7d0e3f0fb019ca0e74fc4506c603fbb0e7eaa10a6dcd62ebc2cd4983c",
+      "bundle_version": "0.49.2",
+      "documentation_excluded": true,
+      "fixture_app": "kittyFixture.app",
+      "fixture_file_sha256": "555bdaecf3a0d20f7b9c2a25cb999819ca9dfd580adc972aae776b1d923d05c0",
+      "kind": "kitty",
+      "no_js_selected_files": true,
+      "original_file_sha256": "0c06e98053133d29dcf32731e86bc0e72089bef8ae47877d475060db4f37d0cd",
+      "packaging_modified": true,
+      "product_runtime_dependency": false,
+      "text_identical": true,
+      "url": "https://github.com/kovidgoyal/kitty/releases/download/v0.49.2/kitty-0.49.2.dmg",
+      "version": "0.49.2"
+    },
+    "screen": {
+      "binary_sha256": "2b1adaa79f200a309d1f73e156b3b7c7e2b7292af1751d5248448b250b94118d",
+      "version": "Screen version 4.00.03 (FAU) 23-Oct-06"
+    },
+    "tmux": {
+      "binary_sha256": "809f019f49f6227771837a34eb4667c731c6acf490b011aa0944271fa7599b6b",
+      "jemalloc": false,
+      "libevent": {
+        "archive_sha256": "f7e9383b8c0baa81b687e5b5eecc01beefaf1b19b64151d95ed61647fe7a315c",
+        "url": "https://github.com/libevent/libevent/releases/download/release-2.1.13-stable/libevent-2.1.13-stable.tar.gz",
+        "version": "2.1.13-stable"
+      },
+      "no_js_source_scan": true,
+      "tmux": {
+        "archive_sha256": "e79c699c7e949dccd0a4a125e17b8d1261e311b16979dbc8eb34542f3966d82e",
+        "url": "https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz",
+        "version": "3.8"
+      },
+      "utf8proc": false
+    }
+  },
+  "result": "pass",
+  "schema": 1,
+  "summary": {
+    "cursor_checkpoints": 2476,
+    "frames": 240,
+    "product_rendering_defects_reproduced": 0,
+    "profiles": 15,
+    "repeated_glyph_observations": 187
+  },
+  "teardown": {
+    "fixture_preferences_removed": true,
+    "owned_gui_stopped": true,
+    "private_references_removed": true,
+    "saved_playground_off": true
+  }
+}
