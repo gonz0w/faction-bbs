@@ -8,6 +8,8 @@ use std::{
     time::{Duration, Instant},
 };
 
+pub mod backup;
+
 pub const STATUS_BYTES: usize = 2048;
 pub const STATUS_FILE: &str = "operator.status";
 /// Totals: members, pending, rooms, posts, channels, retained chat, published
@@ -193,6 +195,11 @@ pub fn publish(directory: &Path, snapshot: &Snapshot) -> io::Result<()> {
 /// Unix owner/root access only. No login, sysop-role, environment or TERM bypass.
 /// Does not open SQLite, create files or acquire the board's writer lock.
 pub fn read(directory: &Path) -> io::Result<Snapshot> {
+    Snapshot::parse(&read_text(directory, STATUS_FILE, STATUS_BYTES)?)
+        .ok_or_else(|| io::ErrorKind::InvalidData.into())
+}
+
+fn read_text(directory: &Path, name: &str, cap: usize) -> io::Result<String> {
     let parent = fs::symlink_metadata(directory)?;
     let uid = rustix::process::geteuid().as_raw();
     if !parent.is_dir() || parent.mode() & 0o077 != 0 || (uid != 0 && parent.uid() != uid) {
@@ -206,20 +213,22 @@ pub fn read(directory: &Path) -> io::Result<Snapshot> {
                 | rustix::fs::OFlags::CLOEXEC)
                 .bits() as i32,
         )
-        .open(directory.join(STATUS_FILE))?;
+        .open(directory.join(name))?;
     let m = file.metadata()?;
     if !m.is_file()
         || m.nlink() != 1
         || m.mode() & 0o077 != 0
         || m.uid() != parent.uid()
-        || m.len() > STATUS_BYTES as u64
+        || m.len() > cap as u64
     {
         return Err(io::ErrorKind::PermissionDenied.into());
     }
     let mut text = String::new();
-    file.take(STATUS_BYTES as u64 + 1)
-        .read_to_string(&mut text)?;
-    Snapshot::parse(&text).ok_or_else(|| io::ErrorKind::InvalidData.into())
+    file.take(cap as u64 + 1).read_to_string(&mut text)?;
+    if text.len() > cap {
+        return Err(io::ErrorKind::InvalidData.into());
+    }
+    Ok(text)
 }
 
 #[cfg(test)]

@@ -40,11 +40,11 @@ def run(a):
             c=Operator([*args,'--ansi','--refresh','2']);children.append(c)
             c.expect('LOCAL SYSOP');c.expect('Connected: 1 / 8')
             c.raw(b'h');c.expect('CPU ');c.expect('Disk free:')
-            c.raw(b'\x1b[C');c.expect('OS owner/root access; not a BBS role.')
+            c.raw(b'\x1b[C');c.expect('Backup check: UNRECORDED');c.raw(b'\x1b[C');c.expect('OS owner/root access; not a BBS role.')
             c.raw(b'b');c.expect('Connected: 1 / 8')
             c.raw(b'p');c.expect('PAUSED');status(path,connected=2);time.sleep(2.2)
             c.raw(b'p');c.expect('READ ONLY');c.expect('Connected: 2 / 8')
-            c.buffer=b'';c.resize(40,18);c.expect('40x18');c.expect('Q:quit P:pause R:redraw B/H/I:views');c.raw(b'q');c.finish();assert b'\x1b[18;1H\x1b[0m' in c.transcript
+            c.buffer=b'';c.resize(40,18);c.expect('40x18');c.expect('Q:quit P:pause R:redraw B/H/D/I:views');c.raw(b'q');c.finish();assert b'\x1b[18;1H\x1b[0m' in c.transcript
             flags=termios.tcgetattr(c.fd)[3];assert flags & termios.ECHO and flags & termios.ICANON
             checks.append('themed_panels_arrows_pause_resize_and_tty_restore')
             c=Operator([*args,'--ansi','--unicode','--view','host','--refresh','2']);children.append(c)

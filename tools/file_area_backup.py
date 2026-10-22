@@ -17,6 +17,7 @@ import re
 import sqlite3
 import stat
 import subprocess
+import backup_status
 
 MAX = 16 * 1024 * 1024
 BOARD = 256 * 1024 * 1024
@@ -157,16 +158,19 @@ def backup(a):
         sync_dir(a.bundle)
 
 
-def restore(a):
-    if a.board.exists() or a.board.is_symlink() or a.store.exists() or a.store.is_symlink():
-        raise ValueError('restore requires fresh board AND store paths')
+def verify(a):
+    """Check every byte without restoring, reserving destinations or starting services."""
     private(a.bundle, a.owner_uid)
     private(a.bundle/'objects', a.owner_uid)
     with regular(a.bundle/'manifest.json', a.owner_uid, 512*1024) as f:
         m = json.load(f)
-    if set(m) != {'version', 'catalog', 'objects'} or m['version'] != 1 or not isinstance(m['objects'], dict):
+    if not isinstance(m,dict) or set(m) != {'version', 'catalog', 'objects'} or type(m['version']) is not int or m['version'] != 1 or not isinstance(m['objects'], dict):
         raise ValueError('invalid bundle manifest')
     objects = m['objects']
+    def valid_digest(data,cap):
+        return isinstance(data,dict) and set(data)=={'bytes','sha256'} and type(data['bytes']) is int and 0<=data['bytes']<=cap and isinstance(data['sha256'],str) and re.fullmatch('[a-f0-9]{64}',data['sha256'])
+    if not valid_digest(m['catalog'],512*1024*1024) or any(not valid_digest(v,MAX) for v in objects.values()):
+        raise ValueError('invalid bundle digest metadata')
     if len(objects) > 2000 or any(not NAME.fullmatch(n) for n in objects):
         raise ValueError('invalid object names/count')
     if set(x.name for x in (a.bundle/'objects').iterdir()) != set(objects):
@@ -191,6 +195,13 @@ def restore(a):
             raise ValueError('catalog/file mismatch')
     if total > BOARD or any(state in ('pending', 'published') and object_id not in objects for object_id, (_, _, state) in catalog.items()):
         raise ValueError('incomplete or oversized file data')
+    return m
+
+
+def restore(a):
+    if a.board.exists() or a.board.is_symlink() or a.store.exists() or a.store.is_symlink():
+        raise ValueError('restore requires fresh board AND store paths')
+    objects=verify(a)['objects']
     mkdir(a.store, a.files_uid)
     # Rust restore creates a fresh board identity and invalidates old session authority.
     cli(a.faction, a.owner_uid, ['--state-dir', a.board, 'restore', a.bundle/'catalog.sqlite3'])
@@ -202,26 +213,39 @@ def restore(a):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('operation', choices=('backup', 'restore'))
+    p.add_argument('operation', choices=('backup', 'verify', 'restore'))
     p.add_argument('--board', type=Path, default=Path('/var/db/faction'))
     p.add_argument('--store', type=Path, default=Path('/var/db/faction-files'))
     p.add_argument('--pidfile', type=Path, default=Path('/var/run/faction/terminal.pid'))
     p.add_argument('--bundle', type=Path, required=True)
     p.add_argument('--owner-uid', type=int, required=True)
-    p.add_argument('--files-uid', type=int, required=True)
+    p.add_argument('--files-uid', type=int)
+    p.add_argument('--record-status', action='store_true', help='record backup/check attempt in the private --board directory (not for restore)')
     p.add_argument('--faction', type=Path, default=Path('/usr/local/libexec/faction'))
     a = p.parse_args()
+    record_enabled=False
     try:
-        if os.geteuid() != 0 or min(a.owner_uid, a.files_uid) <= 0 or a.owner_uid == a.files_uid:
+        if os.geteuid() != 0 or a.owner_uid<=0 or (a.operation!='verify' and (a.files_uid is None or a.files_uid<=0 or a.owner_uid==a.files_uid)):
             raise ValueError('use root and distinct non-root owner/file UIDs')
         os.umask(0o077)
         for field in ('board', 'store', 'pidfile', 'bundle', 'faction'):
             path = getattr(a, field)
             if not path.is_absolute() or '..' in path.parts:
                 raise ValueError('use absolute paths without parent traversal')
-        (backup if a.operation == 'backup' else restore)(a)
+        if a.record_status:
+            if a.operation=='restore':raise ValueError('record-status is for backup/verify, not restore')
+            backup_status.read(a.board,a.owner_uid)
+            record_enabled=True
+        if a.operation=='restore':restore(a)
+        else:
+            if a.operation=='backup':backup(a)
+            m=verify(a)
+            if record_enabled:backup_status.record(a.board,a.owner_uid,dict(catalog_bytes=m['catalog']['bytes'],object_bytes=sum(v['bytes'] for v in m['objects'].values()),objects=len(m['objects'])))
         print('Complete private file-area '+a.operation+'. No services started.')
     except (OSError, ValueError, KeyError, sqlite3.Error, subprocess.CalledProcessError) as exc:
+        if record_enabled:
+            try:backup_status.record(a.board,a.owner_uid,None)
+            except (OSError,ValueError):print('Backup check status unavailable; earlier receipt may remain.',file=__import__('sys').stderr)
         p.exit(1, f'File-area {a.operation} failed: {exc}. Inspect partial fresh paths before retrying.\n')
 
 

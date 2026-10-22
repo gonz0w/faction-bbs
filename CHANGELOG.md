@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add complete-bundle verify-only checks and optional private backup/check receipts.
+  Restore shares the same catalog/blob verification before creating fresh paths.
+- Add D:Data/Recovery operator panel with latest-attempt/last-success ages/totals,
+  explicit failure/clock/unavailable labels and the existing themed classic fallback.
+  No live artifact or successful-restore promise, schema, host action or hardening change.
+- Preserve 162 actual host-stat execution/harness inputs and its complete result
+  before this batch; historical measurements remain unchanged.
+
 - Complete the CPU/RAM/network host-stat slice with a fixed native read-only
   bridge, interval/reset/warming semantics, bounded recent graphs and optional
   Unicode blocks. Remove the refresh subprocess; preserve plain/classic fallback.

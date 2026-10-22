@@ -175,6 +175,11 @@ It refuses unknown entries, aliases, missing or corrupt published/pending data.
 A bundle is private **plaintext**, including account hashes and private board data;
 store it securely. It excludes themes, SSH host/private keys and system configuration.
 
+A new `verify` operation reuses these complete checks without creating restore
+paths or changing live locks. Add `--record-status --board PATH` to backup/verify
+for the optional [historical Recovery panel](backup-checks.md); default publication
+is off. File/board bytes and secrets stay out of telemetry.
+
 Restore verifies the entire bundle before creating fresh destinations, validates
 the DB with the Rust owner tool, creates a fresh board identity, restores exact
 bytes with the correct file UID and carries no transfer grants. The new board's

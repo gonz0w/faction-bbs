@@ -47,9 +47,10 @@ console uses text panels rather than replaying login art or running theme code.
 | --- | --- |
 | B: Board | Connected/capacity, credential permits, queued output, member/pending totals, room/post/channel/retained-chat totals, published/pending files, active transfers, completed games, active doors, service PID/uptime and connected history. |
 | H: Host | CPU count/busy percentage, 1/5/15-minute load, RAM used/free/physical capacity, board-filesystem available/total space, non-loopback network RX/TX rates and bounded CPU/RAM/network traces. Peer/backup collectors remain uninstrumented. |
+| D: Data | Historical selected-bundle check, latest attempt and last successful check age/totals; see [backup checks](backup-checks.md). |
 | I: Info | Local authority, controls and read-only scope. |
 
-Arrows/Tab and B/H/I switch panels. P pauses/resumes local sampling. R redraws
+Arrows/Tab and B/H/D/I switch panels. P pauses/resumes local sampling. R redraws
 without bypassing the sampling limit. Q or Ctrl-C/D exits back to the OS shell;
 terminal settings are restored and ANSI exits place the shell below the dashboard. Unknown terminal sequences use the existing
 bounded decoder; after Escape, Enter recovers input. No shell-command field or
@@ -146,7 +147,9 @@ are exercised through its real virtual serial/getty console. Actual shared-owner
 restricted member SSH, owner PTY resize and stop/restart checks remain separate.
 No getty replacement, profile change, autologin or physical hardware claim.
 
-#95 retains peer/backup adapter telemetry and any broader visual acceptance.
-Collectors cannot invent a peer protocol or a successful backup receipt. #98 host
+#95 retains peer adapter telemetry and any broader visual acceptance.
+The [Recovery panel](backup-checks.md) now reads explicitly recorded complete-bundle
+checks; their historical timestamps are separate from the **Board:** service age.
+Collectors cannot invent a peer protocol or a successful restore receipt. #98 host
 configuration applies/rollback, #97 firewall and hardening remain separate.
 No new capacity claim; the saved playground stays off.
