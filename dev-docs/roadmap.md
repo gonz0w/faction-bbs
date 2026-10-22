@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Local operator batch
+
+After merged #127, related #95/#18/#98 work adds the first optional
+[local sysop console](../docs/sysop-console.md): private aggregate snapshots,
+read-only host summaries, themed panels and classic fallback. No member SSH
+authority or host settings change. #95 retains remaining collectors/full console
+coverage; #98 applies/rollback, #97 firewall and hardening stay separate.
+
 Updated 2026-10-22. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
 
 ## BBS menu and theme polish

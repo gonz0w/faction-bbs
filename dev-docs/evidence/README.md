@@ -145,3 +145,8 @@ canonical artwork/menu placement and CP437 widths through private real macOS
 emulators, including actual compact windows. The original native Nightwire
 record and its 167 distinct inputs remain unchanged. No new source snapshot,
 native/capacity, pixel/font certification or product runtime change is implied.
+
+`nightwire-baseline-manifest.json` and nineteenth snapshot `sources/pre95-operator`
+preserve 176 measured inputs and both complete Nightwire records before the local
+operator runtime change. Nineteen snapshots / thirty-two historical identities
+stay immutable. See [operator evidence](operator-netbsd/README.md) for new results.

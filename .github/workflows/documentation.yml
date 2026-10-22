@@ -56,6 +56,7 @@ jobs:
           python3 tools/check_login_paging_evidence.py
           python3 tools/check_nightwire_evidence.py
           python3 tools/check_artwork_terminal_evidence.py
+          python3 tools/check_operator_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
@@ -117,6 +118,7 @@ jobs:
           cmp docs/images/menu-autumn.svg "$RUNNER_TEMP/menu-autumn.svg"
           python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --columns 40 --output "$RUNNER_TEMP/menu-compact.svg"
           cmp docs/images/menu-compact.svg "$RUNNER_TEMP/menu-compact.svg"
+          python3 tools/smoke_operator.py "$CARGO_TARGET_DIR/release/faction-sysop"
           python3 tools/build_nightwire.py --check
           python3 tools/check_nightwire.py "$CARGO_TARGET_DIR/release/examples/preview_theme"
           python3 tools/smoke_nightwire.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"

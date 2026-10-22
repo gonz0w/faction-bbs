@@ -14,6 +14,7 @@ pub(super) struct Raw {
     tty: File,
     saved: Termios,
     sync: bool,
+    reset_output: bool,
 }
 impl Raw {
     pub(super) fn open() -> Result<Self> {
@@ -41,7 +42,15 @@ impl Raw {
             tty,
             saved,
             sync: false,
+            reset_output: true,
         })
+    }
+    /// Operator panels never hide the cursor and reset each ANSI frame themselves.
+    /// Plain operator exit must not emit ANSI sequences into a classic terminal.
+    pub(super) fn input_only() -> Result<Self> {
+        let mut raw = Self::open()?;
+        raw.reset_output = false;
+        Ok(raw)
     }
     pub(super) fn read_byte(&self) -> io::Result<u8> {
         let mut byte = [0];
@@ -70,7 +79,9 @@ pub(super) fn ready() -> Result<bool> {
 impl Drop for Raw {
     fn drop(&mut self) {
         let _ = termios::tcsetattr(&self.tty, OptionalActions::Flush, &self.saved);
-        if let Ok(fd) = rustix::io::fcntl_dupfd_cloexec(io::stdout(), 3) {
+        if self.reset_output
+            && let Ok(fd) = rustix::io::fcntl_dupfd_cloexec(io::stdout(), 3)
+        {
             let mut output = File::from(fd);
             let reset = if self.sync {
                 b"\x1b[?2026l\x1b[0m\x1b[?25h\r\n".as_slice()

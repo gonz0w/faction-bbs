@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an explicitly enabled owner-only aggregate status feed and separate local
+  `faction-sysop` console: themed ANSI/plain panels, read-only host summaries,
+  pause/navigation/resize and stale/unavailable/stopped/clock labels. No new
+  listener/helper/schema or member privilege; publication defaults disabled.
+- Preserve both complete Nightwire records and 176 executed inputs before runtime
+  changes; add aggregate privacy/SQL-budget/export and native operator validation.
+
 - Add isolated real-terminal Nightwire probes for page/menu cursor placement,
   CP437 cell widths and actual compact windows, with explicit fallback and
   multiplexer viewport guidance. No runtime, theme asset or default change.

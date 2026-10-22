@@ -12,3 +12,6 @@ experimental_capacity = false
 # theme = "/var/db/faction/themes/base"
 # season = "/var/db/faction/themes/seasons/winter" # manual wins over schedule
 # theme_schedule = "/var/db/faction/themes/seasons" # reads schedule.toml
+
+# Optional read-only local OS-operator dashboard snapshot, private to state owner.
+# operator_status = true

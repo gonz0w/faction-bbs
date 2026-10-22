@@ -50,3 +50,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Original Nightwire ANSI artwork and login screens](artwork-nightwire.md).
 
 - [Nightwire terminal compatibility](artwork-terminal-compatibility.md): real-emulator cell placement, viewport requirements and classic recovery.
+
+- [Local sysop console](sysop-console.md): OS-authorized read-only BBS status, host summaries and classic/ANSI operator panels.

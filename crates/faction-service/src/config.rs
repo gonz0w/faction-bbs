@@ -23,6 +23,7 @@ pub struct Config {
     pub launch_ms: u64,
     pub session_seconds: u64,
     pub ansi: bool,
+    pub operator_status: bool,
     pub files_uid: Option<u32>,
     pub files_auth_uid: Option<u32>,
     pub doors_uid: Option<u32>,
@@ -72,6 +73,7 @@ impl Config {
         let launch_ms = integer(&mut t, "launch_ms", Some(5000), 100, 60000)?;
         let session_seconds = integer(&mut t, "session_seconds", Some(1800), 1, 1800)?;
         let ansi = boolean(&mut t, "ansi", true)?;
+        let operator_status = boolean(&mut t, "operator_status", false)?;
         let doors_uid = if t.contains_key("doors_uid") {
             Some(integer(&mut t, "doors_uid", None, 1, u32::MAX as u64)? as u32)
         } else {
@@ -151,6 +153,7 @@ impl Config {
             launch_ms,
             session_seconds,
             ansi,
+            operator_status,
             doors_uid,
             classic_games,
         })
@@ -202,6 +205,19 @@ mod tests {
         os::unix::fs::{PermissionsExt, symlink},
     };
     const BASE: &str = "version=1\nterminal_uid=123\n";
+    #[test]
+    fn operator_status_is_strict_and_disabled_by_default() {
+        assert!(!Config::parse(BASE).unwrap().operator_status);
+        assert!(
+            Config::parse(&format!("{BASE}operator_status=true\n"))
+                .unwrap()
+                .operator_status
+        );
+        for v in ["1", "'true'", "[]"] {
+            assert!(Config::parse(&format!("{BASE}operator_status={v}\n")).is_err());
+        }
+    }
+
     #[test]
     fn classic_destinations_are_fixed_bounded_and_disabled_by_default() {
         assert!(Config::parse(BASE).unwrap().classic_games.is_empty());

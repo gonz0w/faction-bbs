@@ -1,6 +1,7 @@
 //! Shared terminal session presentation. Owner command parsing lives only in faction.
 #![forbid(unsafe_code)]
 mod chat;
+pub mod operator;
 mod terminal;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
 use faction_terminal::{Action, Theme};

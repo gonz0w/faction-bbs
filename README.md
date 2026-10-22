@@ -10,6 +10,10 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
+The optional [local sysop console](docs/sysop-console.md) now provides themed
+read-only BBS status, basic host summaries and explicit stale/unavailable health
+after OS login. Private aggregate publication is opt-in; member SSH stays separate.
+
 The [BBS menus and sysop themes](docs/theme-packs.md) now support centered
 lightbars and opt-in two-column layouts with sysop-defined entry positions,
 directional arrows, ordered Tab and direct hotkeys. Narrow/plain terminals keep
@@ -106,7 +110,10 @@ NetBSD setup/abuse-management workflows and integrated native XMPP notifications
 Real IRC/IRCv3 integration remains research. [Discussion-room posts](docs/discussion-articles-and-news.md)
 will use Netnews-style articles, with NNTP-first optional peering and news-provider
 subscriptions planned. IRC and encrypted XMPP keep their own formats. The goal keeps the underground BBS character with a modern terminal
-experience. The dashboard, firewall manager and new IRC/forum federation protocols remain planned.
+experience. The first optional [local sysop console](docs/sysop-console.md) now reads private
+aggregate service snapshots and local CPU/load/RAM-capacity/disk summaries, with
+ANSI/plain panels and stale/unavailable labels. Host actions, fuller collectors,
+firewall management and new IRC/forum federation protocols remain planned.
 An optional [bounded Kitty image preview](docs/kitty-graphics.md) now complements
 the terminal settings: T/G probes then streams one original RGB calibration image;
 the native client requires local `--kitty` and its own positive probe. Classic

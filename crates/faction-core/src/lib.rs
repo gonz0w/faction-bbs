@@ -6,6 +6,7 @@ mod chat;
 mod credentials;
 mod file_links;
 mod files;
+pub mod operator;
 mod post_metadata;
 mod room_article;
 mod scores;

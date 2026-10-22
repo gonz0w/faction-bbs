@@ -76,3 +76,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0045: Custom grids and bounded SAUCE/iCE import](0045-custom-grid-and-sauce-import.md).
 
 - [0046: Bounded long-form login art](0046-paged-long-form-login-art.md).
+
+- [0047: Opt-in private operator snapshots](0047-private-operator-snapshots.md).
