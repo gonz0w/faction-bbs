@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): validate #118 real terminal compatibility
-after merging #120; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #121, improve #25
+BBS menus and ANSI themes; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -593,3 +593,29 @@ and results before future changes. Twelve actual profiles/48 BBS routes pass
 with three old-screen profiles explicitly classic-only; native default filters
 and no-DCS-passthrough stay. Do not turn this into pixel/glyph/GPU certification.
 No product runtime/dependency/filter/schema/default/limit changes were needed.
+
+## BBS menu polish (#25)
+
+Read docs/theme-packs.md and plan 0046. Both UIs pass actual TTY columns into the
+same pure menu: 38-cell panel at 40–79 columns, 76 cells at 80–240; at most ten
+entries fit 18 rows. Keep fixed recovery instructions, visible `>`/unavailable
+markers, full lightbar background and bounded two-row focus redraw. New version-1
+base-only menu_title (24 ASCII bytes) and entry description (30 bytes) are inert;
+seasonal packs never remap them. Older packs default, older binaries reject new
+fields atomically. Local authoring previews show services enabled only for layout;
+never treat their output as actual availability or native visual certification.
+No new authority, dependencies, schema, owner helper, per-member history cache or
+changed queue/drain/admission defaults. Original/licensed scene identity art and
+calendar scheduling remain later #25 work; a framed menu is not accepted identity art.
+
+Fifteenth snapshot sources/pre25 and terminal-compatibility-baseline-manifest.json
+preserve all 124 distinct #121 application/harness/reproduction inputs and its
+original record. Keep fifteen snapshots and twenty-seven historical identities
+fixed. New presentation measurements must not relabel the old twelve profiles.
+
+The menu-themes-netbsd record pins 116 selected candidate build/run inputs,
+three new host harness sources and three generated SVGs. Preserve all of those
+actual bytes and the unchanged record before future edits. Software checks pass
+154 host/native Rust, 109 host Python, 22 shared native controls and three actual
+restricted SSH/native menu routes. These are not a fresh emulator/font, resident
+memory, 250-user or physical-hardware certification. Keep the saved playground off.

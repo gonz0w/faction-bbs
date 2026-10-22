@@ -1,6 +1,6 @@
 # Menus, sysop themes and seasonal identity
 
-Status: confirmed owner direction, 2026-10-19. A local vertical-menu/theme baseline
+Status: owner direction with menu polish implemented, 2026-10-22. A local vertical-menu/theme baseline
 is implemented; [the pack guide](theme-packs.md) states exact supported behavior.
 The broader design below includes future requirements. No scheduler, historical
 art pack or network BBS release is available.
@@ -103,3 +103,16 @@ polish: themed ANSI section clears, room/author/reply headers, separators and
 wrapped message pages. Plain text follows the same journey. File-reference tokens
 remain intact for native shortcuts. More composition, seasonal scheduling and
 modern Unicode/graphics remain separate #21/#25/#96 work.
+
+## Current lightbar presentation (#25)
+
+The local/worker and shared-service main menu now uses the same compact/wide
+framed lightbar with sysop title and optional wide action descriptions. See the
+[pack guide and actual-renderer previews](theme-packs.md). Themes retain 16-color
+ASCII menu chrome, clear section changes, explicit unavailable markers and two-row
+focus updates; classic/plain recovery needs no graphics or Unicode negotiation.
+Manual autumn/winter overrides stay independent of command mappings. The new
+local preview example and stdlib SVG renderer let sysops validate layout without
+opening a live board. These are original interface elements, not final approved
+identity art. Commissioned/authorized art, visual font review, grid layouts and
+calendar/timezone scheduling remain open; don't infer those from the previews.

@@ -68,3 +68,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0038: Authored subjects and local article projection](0038-authored-subjects-and-local-article-projection.md)
 
 - [0039: Broader articles and INN validation](0039-broader-articles-and-inn-validation.md)
+
+- [0043: Bounded BBS main-menu composition](0043-bounded-menu-composition.md).

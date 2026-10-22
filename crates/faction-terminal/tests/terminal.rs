@@ -357,3 +357,162 @@ fn optional_files_preserve_default_theme_and_use_arrows_or_hotkeys() {
     menu.feed(Key::Up); // Skip unavailable Doors and Sysop.
     assert_eq!(menu.feed(Key::Enter), Some(Action::Chat));
 }
+
+// Small independent cell oracle for this renderer's declared output grammar.
+// Reject wrap, scrolling and any terminal controls beyond positioning/SGR/clear.
+fn paint_menu(frame: &str, screen: &mut [Vec<u8>]) {
+    let (mut row, mut col, mut i) = (0usize, 0usize, 0usize);
+    let bytes = frame.as_bytes();
+    while i < bytes.len() {
+        if bytes[i] == 27 {
+            assert_eq!(bytes[i + 1], b'[');
+            let start = i + 2;
+            i = start;
+            while bytes[i].is_ascii_digit() || bytes[i] == b';' {
+                i += 1;
+            }
+            let params = &frame[start..i];
+            match bytes[i] {
+                b'H' => {
+                    let values = if params.is_empty() {
+                        vec![1, 1]
+                    } else {
+                        params
+                            .split(';')
+                            .map(|n| n.parse::<usize>().unwrap())
+                            .collect()
+                    };
+                    assert_eq!(values.len(), 2);
+                    (row, col) = (values[0] - 1, values[1] - 1);
+                    assert!(row < screen.len() && col < screen[0].len());
+                }
+                b'J' => {
+                    assert_eq!(params, "2");
+                    for line in screen.iter_mut() {
+                        line.fill(b' ');
+                    }
+                }
+                b'm' => {
+                    assert!(!params.is_empty());
+                }
+                _ => panic!("unexpected menu terminal control"),
+            }
+        } else {
+            assert!(bytes[i].is_ascii_graphic() || bytes[i] == b' ');
+            assert!(
+                row < screen.len() && col < screen[0].len(),
+                "menu wrapped or scrolled"
+            );
+            screen[row][col] = bytes[i];
+            col += 1;
+        }
+        i += 1;
+    }
+}
+#[test]
+fn compact_wide_and_maximal_menus_fit_and_delta_matches_full_cells() {
+    let mut source = format!(
+        "{BASE}menu_title='{}'\nwelcome='{}'\n",
+        "M".repeat(24),
+        "W".repeat(36)
+    );
+    for (action, key) in [
+        ("rooms", "R"),
+        ("new", "N"),
+        ("history", "H"),
+        ("post", "P"),
+        ("chat", "C"),
+        ("sysop", "S"),
+        ("doors", "D"),
+        ("files", "F"),
+        ("terminal", "T"),
+        ("quit", "Q"),
+    ] {
+        source += &format!(
+            "[[menu]]\naction='{action}'\nkey='{key}'\nlabel='{}'\ndescription='{}'\n",
+            "L".repeat(26),
+            "d".repeat(30)
+        );
+    }
+    let pack = Pack::new(&source);
+    let mut theme = Theme::load(&pack.0).unwrap();
+    theme.set_files_enabled(true).unwrap();
+    theme.set_doors_enabled(true);
+    for columns in [40, 79, 80, 132, 240] {
+        let mut menu = Menu::with_columns(&theme, false, columns);
+        let frame = menu.render();
+        assert!(frame.len() < 4096);
+        assert_eq!(frame.contains(&"d".repeat(30)), columns >= 80);
+        let mut actual = vec![vec![b' '; usize::from(columns)]; 18];
+        paint_menu(&frame, &mut actual);
+        for _ in 0..theme.entries().len() * 2 {
+            let previous = menu.focus();
+            assert_eq!(menu.feed(Key::Down), None);
+            let delta = menu.redraw(previous);
+            assert!(delta.len() <= 512 && !delta.contains("\x1b[2J"));
+            paint_menu(&delta, &mut actual);
+            let mut expected = vec![vec![b' '; usize::from(columns)]; 18];
+            paint_menu(&menu.render(), &mut expected);
+            assert_eq!(actual, expected, "stale focus at {columns} columns");
+        }
+        assert_eq!(menu.feed(Key::Hotkey(b's')), None);
+        println!(
+            "columns={columns}: full={} bytes, focus={} bytes",
+            frame.len(),
+            menu.redraw(0).len()
+        );
+    }
+}
+#[test]
+fn descriptions_and_menu_titles_are_inert_atomic_and_not_seasonal() {
+    let good = format!("{BASE}menu_title='NIGHT / MAIN'\n");
+    let p = Pack::new(&good);
+    let base = Theme::load(&p.0).unwrap();
+    assert_eq!(base.menu_title(), "NIGHT / MAIN");
+    assert!(!base.plain_menu(false).contains('\x1b'));
+    let season = Pack::new("version=1\nid='season'\nmenu_title='REMAPPED'\n");
+    assert!(base.with_season(&season.0).is_err());
+    for value in ["'ABCDEFGHIJKLMNOPQRSTUVWXYZ'", "\"\\u001b[2J\"", "''", "17"] {
+        p.source(&format!("{BASE}menu_title={value}\n"));
+        assert!(Theme::load(&p.0).is_err());
+        assert_eq!(base.menu_title(), "NIGHT / MAIN");
+    }
+    let shipped =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../themes/base/theme.toml");
+    let source = fs::read_to_string(shipped).unwrap();
+    for value in [
+        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ12345'",
+        "\"\\u001b]52;c;bad\"",
+        "''",
+        "false",
+    ] {
+        let bad = source.replace(
+            "description = \"Find a room; follow the talk\"",
+            &format!("description = {value}"),
+        );
+        assert_ne!(bad, source);
+        p.source(&bad);
+        assert!(Theme::load(&p.0).is_err());
+    }
+}
+#[test]
+fn focused_hotkey_keeps_full_lightbar_background_and_unavailable_is_explicit() {
+    let p = Pack::new(&format!(
+        "{BASE}focus={{fg=15,bg=5,bold=true}}\nhotkey={{fg=14,bg=0}}\n"
+    ));
+    let theme = Theme::load(&p.0).unwrap();
+    let menu = Menu::with_columns(&theme, false, 80);
+    let frame = menu.render();
+    let row = frame
+        .split("\x1b[5;3H")
+        .nth(1)
+        .unwrap()
+        .split("\x1b[0m")
+        .next()
+        .unwrap();
+    assert!(row.contains(";45m"));
+    assert!(!row.contains(";40m"), "hotkey split the focus background");
+    assert!(frame.contains("(unavailable)"));
+    let compact = Menu::new(&theme, false).render();
+    assert!(compact.contains("Sysop controls             --"));
+}

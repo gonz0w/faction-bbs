@@ -82,6 +82,7 @@ pub struct Entry {
     action: Action,
     key: u8,
     label: String,
+    description: String,
 }
 impl Entry {
     pub fn action(&self) -> Action {
@@ -93,11 +94,15 @@ impl Entry {
     pub fn label(&self) -> &str {
         &self.label
     }
+    pub fn description(&self) -> &str {
+        &self.description
+    }
 }
 #[derive(Clone)]
 pub struct Theme {
     id: String,
     board: String,
+    menu_title: String,
     welcome: String,
     logout: String,
     normal: Style,
@@ -115,6 +120,7 @@ impl Default for Theme {
         Self {
             id: "builtin-text".into(),
             board: "Faction BBS".into(),
+            menu_title: "Main menu".into(),
             welcome: "Independent boards. Private rooms.".into(),
             logout: "Until next time.".into(),
             normal: Style::new(7, 0, false),
@@ -139,6 +145,7 @@ impl Default for Theme {
                 action,
                 key,
                 label: label.into(),
+                description: String::new(),
             })
             .collect(),
             identity_ascii: None,
@@ -150,6 +157,7 @@ const BASE_KEYS: &[&str] = &[
     "version",
     "id",
     "board",
+    "menu_title",
     "welcome",
     "logout",
     "normal",
@@ -283,6 +291,7 @@ impl Theme {
                     action: Action::Files,
                     key: b'F',
                     label: "File areas".into(),
+                    description: "Browse and transfer local files".into(),
                 },
             );
         }
@@ -302,6 +311,9 @@ impl Theme {
     }
     pub fn board(&self) -> &str {
         &self.board
+    }
+    pub fn menu_title(&self) -> &str {
+        &self.menu_title
     }
     pub fn welcome(&self) -> &str {
         &self.welcome
@@ -325,6 +337,7 @@ impl Theme {
         self.id = text(&t["id"], 32)?.into();
         for (name, dest, max) in [
             ("board", &mut self.board, 36),
+            ("menu_title", &mut self.menu_title, 24),
             ("welcome", &mut self.welcome, 36),
             ("logout", &mut self.logout, 60),
         ] {
@@ -374,14 +387,14 @@ impl Theme {
         theme.apply(root, &t)?;
         if let Some(value) = t.get("menu") {
             let values = value.as_array().ok_or("menu must be an array")?;
-            if !(6..=9).contains(&values.len()) {
-                return Err("menu needs 6-9 entries");
+            if !(6..=10).contains(&values.len()) {
+                return Err("menu needs 6-10 entries");
             }
             let (mut keys, mut actions, mut entries) =
                 (BTreeSet::new(), BTreeSet::new(), Vec::new());
             for value in values {
                 let item = value.as_table().ok_or("menu entry must be a table")?;
-                unknown(item, &["action", "key", "label"])?;
+                unknown(item, &["action", "key", "label", "description"])?;
                 let name = text(item.get("action").ok_or("action required")?, 16)?;
                 let action = Action::parse(name)?;
                 let key = text(item.get("key").ok_or("hotkey required")?, 1)?.as_bytes()[0]
@@ -390,7 +403,17 @@ impl Theme {
                     return Err("duplicate/invalid action or hotkey");
                 }
                 let label = text(item.get("label").ok_or("label required")?, 26)?.into();
-                entries.push(Entry { action, key, label });
+                let description = item
+                    .get("description")
+                    .map(|v| text(v, 30).map(str::to_owned))
+                    .transpose()?
+                    .unwrap_or_default();
+                entries.push(Entry {
+                    action,
+                    key,
+                    label,
+                    description,
+                });
             }
             if ["rooms", "new", "history", "post", "sysop", "quit"]
                 .iter()
@@ -410,7 +433,7 @@ impl Theme {
         Ok(candidate)
     }
     pub fn plain_menu(&self, sysop: bool) -> String {
-        let mut out = format!("\n{}\n{}\n", self.board, self.welcome);
+        let mut out = format!("\n{}\n{}\n{}\n", self.board, self.welcome, self.menu_title);
         for e in &self.entries {
             writeln!(
                 out,
@@ -438,10 +461,16 @@ pub struct Menu<'a> {
     theme: &'a Theme,
     sysop: bool,
     focus: usize,
+    columns: usize,
 }
 impl<'a> Menu<'a> {
     pub fn new(theme: &'a Theme, sysop: bool) -> Self {
+        Self::with_columns(theme, sysop, 40)
+    }
+    /// The caller still owns geometry validation and plain-mode fallback.
+    pub fn with_columns(theme: &'a Theme, sysop: bool, columns: u16) -> Self {
         Self {
+            columns: usize::from(columns.clamp(40, 240)),
             theme,
             sysop,
             focus: theme
@@ -478,6 +507,21 @@ impl<'a> Menu<'a> {
             }
         }
     }
+    fn width(&self) -> usize {
+        if self.columns >= 80 { 76 } else { 38 }
+    }
+    fn position(&self, row: usize) -> String {
+        format!("\x1b[{};{}H", row, (self.columns - self.width()) / 2 + 1)
+    }
+    fn line(&self, row: usize, text: &str, style: Style) -> String {
+        format!(
+            "{}{}{:<width$}\x1b[0m",
+            self.position(row),
+            style.sgr(),
+            text,
+            width = self.width()
+        )
+    }
     fn row(&self, index: usize) -> String {
         let e = &self.theme.entries[index];
         let enabled = self.theme.enabled(e.action, self.sysop);
@@ -489,38 +533,80 @@ impl<'a> Menu<'a> {
         } else {
             self.theme.normal
         };
+        // Keep the hotkey on the lightbar's background instead of punching a
+        // different-colored hole into the selected row.
+        let key_style = if !enabled || focused {
+            style
+        } else {
+            self.theme.hotkey
+        };
+        let tail = if self.width() >= 76 {
+            format!(
+                " | {:<30}",
+                if enabled {
+                    &e.description
+                } else {
+                    "(unavailable)"
+                }
+            )
+        } else if !enabled {
+            " --".into()
+        } else {
+            String::new()
+        };
+        let used = 32 + tail.len(); // ASCII marker, hotkey, label and optional detail.
         format!(
-            "\x1b[{};1H{}{} {}[{}]{} {}\x1b[K\x1b[0m",
-            index + 5,
+            "{}{}|{} {}[{}]{} {:<26}{}{}|\x1b[0m",
+            self.position(index + 5),
             style.sgr(),
             if focused { ">" } else { " " },
-            if enabled {
-                self.theme.hotkey.sgr()
-            } else {
-                self.theme.disabled.sgr()
-            },
+            key_style.sgr(),
             e.key as char,
             style.sgr(),
-            e.label
+            e.label,
+            tail,
+            " ".repeat(self.width() - 2 - used)
         )
     }
     pub fn render(&self) -> String {
-        let mut out = format!(
-            "{}\x1b[2J\x1b[H{}\r\n{}\r\n\r\nArrows select; Enter or hotkey opens.\x1b[0m",
-            self.theme.normal.sgr(),
-            self.theme.board,
-            self.theme.welcome
+        let mut out = format!("{}\x1b[2J\x1b[H", self.theme.normal.sgr());
+        out.push_str(&self.line(1, &self.theme.board, self.theme.hotkey));
+        out.push_str(&self.line(2, &self.theme.welcome, self.theme.normal));
+        let rule = format!(
+            "+-- {} {}+",
+            self.theme.menu_title,
+            "-".repeat(self.width() - self.theme.menu_title.len() - 6)
         );
+        out.push_str(&self.line(3, &rule, self.theme.hotkey));
+        out.push_str(&self.line(
+            4,
+            &format!(
+                "|{:<inner$}|",
+                "Arrows select; Enter/hotkey opens.",
+                inner = self.width() - 2
+            ),
+            self.theme.normal,
+        ));
         for i in 0..self.theme.entries.len() {
             out.push_str(&self.row(i));
         }
-        write!(
-            out,
-            "{}\x1b[{};1HCtrl-C exits; Esc: Enter to recover.\x1b[K\x1b[0m",
-            self.theme.normal.sgr(),
-            self.theme.entries.len() + 7
-        )
-        .expect("string output");
+        let bottom = self.theme.entries.len() + 5;
+        out.push_str(&self.line(
+            bottom,
+            &format!("+{}+", "-".repeat(self.width() - 2)),
+            self.theme.hotkey,
+        ));
+        out.push_str(&self.line(
+            bottom + 1,
+            "Tab advances; -- unavailable.",
+            self.theme.normal,
+        ));
+        // Stable recovery instruction in every theme; never operator-overridden.
+        out.push_str(&self.line(
+            bottom + 2,
+            "Ctrl-C exits; Esc: Enter to recover.",
+            self.theme.normal,
+        ));
         out
     }
     pub fn redraw(&self, previous: usize) -> String {
