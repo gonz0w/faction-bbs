@@ -46,6 +46,7 @@ enum State {
     Confirm(String, Zeroizing<String>),
     Authenticating,
     Identity,
+    IdentityArt(usize),
     Menu,
     Terminal,
     GraphicsProbe(faction_terminal::graphics::Probe),
@@ -571,7 +572,6 @@ fn run() -> Result<()> {
                             c.sysop_display = m.role == faction_core::Role::Sysop;
                             c.theme_index = themes.select_now();
                             c.identity(themes.get(c.theme_index), &m.handle);
-                            c.state = State::Identity;
                         }
                         Ok(_) => {
                             c.success = true;

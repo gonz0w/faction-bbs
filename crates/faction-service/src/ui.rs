@@ -24,14 +24,40 @@ impl Client {
         Ok(())
     }
     pub(super) fn identity(&mut self, theme: &Theme, handle: &str) {
-        self.ansi = self.capable();
-        self.dimensions = self.size();
-        self.queue(&theme.identity_screen(self.dimensions.0, self.dimensions.1, self.ansi));
+        self.identity_page(theme, handle, 0);
+    }
+    fn identity_welcome(&mut self, theme: &Theme, handle: &str) {
+        self.prompt_started = Instant::now();
+        self.state = State::Identity;
         self.queue(&format!(
             "\n{}\nWelcome, {}.\nPress Enter to continue: ",
             theme.welcome(),
             Self::safe(handle)
         ));
+    }
+    fn identity_page(&mut self, theme: &Theme, handle: &str, page: usize) {
+        self.prompt_started = Instant::now();
+        self.ansi = self.capable();
+        self.dimensions = self.size();
+        if let Some(screen) =
+            theme.identity_page_screen(self.dimensions.0, self.dimensions.1, self.ansi, page)
+        {
+            self.queue(&screen);
+            if let Some(prompt) =
+                theme.identity_page_prompt(page, self.dimensions.0, self.dimensions.1, self.ansi)
+            {
+                self.state = State::IdentityArt(page);
+                self.queue(&prompt);
+                return;
+            }
+        } else {
+            self.queue(&theme.identity_fallback_screen(
+                self.dimensions.0,
+                self.dimensions.1,
+                self.ansi,
+            ));
+        }
+        self.identity_welcome(theme, handle);
     }
     pub(super) fn menu(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
         self.approved(board)?;
@@ -415,6 +441,32 @@ impl Client {
                 }
                 self.credential(true, name, secret, jobs)?;
             }
+            State::IdentityArt(page) => {
+                self.approved(board)?;
+                let member = board.whoami(self.session()?)?;
+                if text.is_empty() {
+                    self.identity_page(theme, &member.handle, page + 1);
+                } else if text.eq_ignore_ascii_case("s") {
+                    self.ansi = self.capable();
+                    self.dimensions = self.size();
+                    self.queue(&theme.identity_fallback_screen(
+                        self.dimensions.0,
+                        self.dimensions.1,
+                        self.ansi,
+                    ));
+                    self.identity_welcome(theme, &member.handle);
+                } else {
+                    self.state = State::IdentityArt(page);
+                    if let Some(prompt) = theme.identity_page_prompt(
+                        page,
+                        self.dimensions.0,
+                        self.dimensions.1,
+                        self.ansi,
+                    ) {
+                        self.queue(&prompt);
+                    }
+                }
+            }
             State::Identity | State::Pause => self.menu(theme, board)?,
             State::Terminal => {
                 self.approved(board)?;
@@ -737,6 +789,25 @@ impl Client {
         }
     }
     pub(super) fn resize(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
+        if matches!(self.state, State::IdentityArt(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.approved(board)?;
+            let member = board.whoami(self.session()?)?;
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.zeroize();
+            self.input.clear();
+            let _ = termios::tcflush(&self.tty, termios::QueueSelector::IFlush);
+            self.queue(&theme.identity_fallback_screen(
+                self.dimensions.0,
+                self.dimensions.1,
+                self.ansi,
+            ));
+            self.identity_welcome(theme, &member.handle);
+            return Ok(());
+        }
         if matches!(
             self.state,
             State::DoorMenu | State::DoorInput | State::DoorPending | State::Classic

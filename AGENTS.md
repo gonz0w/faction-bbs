@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #123, implement #25
-custom menu layouts and richer bounded ANSI art; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #124, implement #25
+long-form ANSI art and login screen paging; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -690,3 +690,36 @@ Validation passes 167 Rust per OS / 111 host Python, four local/worker custom
 controls per OS, four actual shared SSH/native custom controls, nine seasonal
 controls per OS, eight actual shared calendars and 22 shared regressions. Full
 menus remain <4 KiB, focus <=512 bytes; no new capacity or final artwork claim.
+
+## Long-form login art (#25)
+
+Read plan 0049, ADR 0046 and docs/theme-packs.md. identity_ansi remains the existing
+80x16 / 16 KiB importer. Optional mutually exclusive identity_ansi_long explicitly
+selects <=80x256 cells / 64 KiB total file; all pages validate at startup and each
+16-row canonical page remains <=16 KiB. No concatenated whole-art member output.
+SAUCE dimensions use the selected profile; metadata/body controls/rights remain
+bounded and separate. The shared catalog owns the complete cell assets; sessions
+retain only an identity-page index in the existing state enum. Startup may use a
+bounded full canvas temporarily, then trims it to actual/declared extent.
+
+Only approved wide ANSI sessions page. Enter advances, S+Enter skips to a fitting
+ASCII welcome; final art leads to the existing welcome/Enter/main-menu journey.
+Plain/compact keep their existing ASCII path. Shared page commands and resize
+recheck approval; shared redraw waits for pending output to drain and clears
+input. Local/worker recheck approval at page boundaries and fall back on resize
+at the next boundary. Output backpressure, five-second drain, one command frame,
+typeahead flushing, normal eight sessions and role/host gates remain. No new
+external packages, owner helper, clock operation, schema or game/hardening change.
+The long template is original Codex-assisted BSD sample material, not final scene
+identity or an archived-art permission grant. Saved playground stays off.
+
+Eighteenth snapshot sources/pre25-paging and custom-menus-baseline-manifest.json
+freeze 137 executed #124 inputs and its whole result. Keep eighteen snapshots and
+thirty historical record identities unchanged. New paging validation must pin its
+own executed inputs, never rewrite old measurements.
+
+The login-paging-netbsd record pins 135 selected final native source matches,
+nine host harnesses and three SVGs. Preserve all those actual bytes before future
+edits. Validation passes 171 Rust per OS / 112 host Python, eight paging PTY
+controls per OS, eight actual shared SSH/native paging controls, old menu/seasonal
+controls and 22 shared regressions. No new capacity/font/final-art acceptance.

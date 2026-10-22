@@ -16,8 +16,9 @@ directional arrows, ordered Tab and direct hotkeys. Narrow/plain terminals keep
 the classic ordered menu. Original CP437 login templates demonstrate bounded
 SAUCE/iCE import; the importer emits canonical cells, never raw art controls.
 Optional seasonal calendars pin colors/login screens for each approved session.
-A local authoring preview needs no running board. The example calendar stays
-disabled; final scene-art acceptance remains open.
+Opt-in long-form ANSI login art now pages with Enter/skip controls, keeping
+classic ASCII recovery. A local authoring preview needs no running board. The
+example calendar stays disabled; final scene-art acceptance remains open.
 
 
 **Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**

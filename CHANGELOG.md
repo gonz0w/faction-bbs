@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add opt-in long ANSI login identities with bounded 16-row paging, Enter/skip,
+  approval checks and compact/plain/resize recovery in local/worker/shared flows.
+- Add original three-page CP437 sample and deterministic page previews. Long
+  imports cap at 80x256 / 64 KiB, each output page <=16 KiB; short imports unchanged.
+- Preserve executed #124 inputs/results before changes; no new dependency/schema.
+
 - Add opt-in sysop grid menus with explicit positions, spatial lightbars, ordered
   Tab/hotkeys and shared focus restoration; compact/plain ordered recovery stays.
 - Add bounded SAUCE00 Character/ANSi and non-blink iCE background import, an

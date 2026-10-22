@@ -19,6 +19,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         mut date,
         mut timestamp,
     ) = (None, None, None, 80u16, false, false, None, None);
+    let mut page = None;
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--theme" => root = Some(PathBuf::from(args.next().ok_or("missing theme path")?)),
@@ -29,11 +30,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "--columns" => columns = args.next().ok_or("missing columns")?.parse()?,
             "--plain" => plain = true,
             "--login" => login = true,
-            _ => return Err("use --theme PATH [--season PATH|--theme-schedule PATH] [--date YYYY-MM-DD|--timestamp SECONDS] [--columns 40..240] [--plain] [--login]".into()),
+            "--page" => page = Some(args.next().ok_or("missing page")?.parse::<usize>()?),
+            _ => return Err("use --theme PATH [--season PATH|--theme-schedule PATH] [--date YYYY-MM-DD|--timestamp SECONDS] [--columns 40..240] [--plain] [--login [--page 1..16]]".into()),
         }
     }
     if !(40..=240).contains(&columns) || (date.is_some() && timestamp.is_some()) {
         return Err("invalid columns or conflicting preview dates".into());
+    }
+    if page.is_some_and(|p| !(1..=16).contains(&p)) || (page.is_some() && !login) {
+        return Err("--page 1..16 requires --login".into());
     }
     let base = Theme::load(&root.ok_or("--theme required")?)?;
     let mut themes = Themes::load(base, season.as_deref(), schedule.as_deref())?;
@@ -47,7 +52,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let theme = themes.get(index);
     let frame = if login {
-        let mut text = theme.identity_screen(columns, if columns >= 80 { 24 } else { 18 }, !plain);
+        let row_count = if columns >= 80 { 24 } else { 18 };
+        let index = page.unwrap_or(1) - 1;
+        let mut text = theme
+            .identity_page_screen(columns, row_count, !plain, index)
+            .ok_or("page unavailable at this geometry/mode")?;
         // Canonical positioning keeps the authoring SVG grammar bounded; the
         // product supplies its own approved handle/welcome/input pause.
         if !plain {
@@ -59,7 +68,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else {
             text.push('\n');
         }
-        text.push_str(theme.welcome());
+        if let Some(prompt) = theme.identity_page_prompt(index, columns, row_count, !plain) {
+            text.push_str(&prompt);
+        } else {
+            text.push_str(theme.welcome());
+        }
         text
     } else if plain {
         theme.plain_menu(true)

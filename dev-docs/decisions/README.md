@@ -74,3 +74,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0044: Preloaded next-login seasonal themes](0044-next-login-seasonal-themes.md).
 
 - [0045: Custom grids and bounded SAUCE/iCE import](0045-custom-grid-and-sauce-import.md).
+
+- [0046: Bounded long-form login art](0046-paged-long-form-login-art.md).

@@ -172,6 +172,7 @@ const BASE_KEYS: &[&str] = &[
     "layout",
     "identity_ascii",
     "identity_ansi",
+    "identity_ansi_long",
     "creator",
     "source",
     "permission",
@@ -186,6 +187,7 @@ const SEASON_KEYS: &[&str] = &[
     "disabled",
     "identity_ascii",
     "identity_ansi",
+    "identity_ansi_long",
     "creator",
     "source",
     "permission",
@@ -367,7 +369,13 @@ impl Theme {
                 *dest = style(value)?
             }
         }
-        if t.contains_key("identity_ascii") || t.contains_key("identity_ansi") {
+        if t.contains_key("identity_ansi") && t.contains_key("identity_ansi_long") {
+            return Err("choose short or long ANSI identity, not both");
+        }
+        if t.contains_key("identity_ascii")
+            || t.contains_key("identity_ansi")
+            || t.contains_key("identity_ansi_long")
+        {
             for key in ["creator", "source", "permission"] {
                 text(t.get(key).ok_or("art provenance required")?, 160)?;
             }
@@ -390,6 +398,9 @@ impl Theme {
         }
         if let Some(value) = t.get("identity_ansi") {
             self.identity_ansi = Some(Art::parse(&read_file(root, text(value, 64)?, 16384)?)?);
+        }
+        if let Some(value) = t.get("identity_ansi_long") {
+            self.identity_ansi = Some(Art::parse_long(&read_file(root, text(value, 64)?, 65536)?)?);
         }
         Ok(())
     }

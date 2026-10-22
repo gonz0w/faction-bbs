@@ -123,3 +123,13 @@ record identities remain unchanged; do not refresh their hashes to later code.
 130 final guest input matches, 167 Rust per OS / 111 host Python, four custom
 PTY controls per OS and four actual shared SSH/native controls, with seasonal/
 reader regressions. No fresh capacity, terminal/font or final artwork claim.
+
+Eighteenth snapshot `sources/pre25-paging` and the pinned
+[custom-menu baseline](custom-menus-baseline-manifest.json) preserve 137 executed
+#124 inputs and its original result. Keep eighteen snapshots / thirty historical
+record identities unchanged when adding long-form login art.
+
+[Login paging NetBSD software validation](login-paging-netbsd/README.md) records
+135 final guest input matches, 171 Rust per OS / 112 host Python, eight paging
+PTY controls per OS and eight actual shared SSH/native paging controls, plus
+calendar/reader regressions. No fresh capacity/font/final artwork claim.

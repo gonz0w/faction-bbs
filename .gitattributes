@@ -45,3 +45,6 @@ themes/grid/login.ans -text
 
 # Exact executed custom-menu inputs before long-form art.
 dev-docs/evidence/sources/pre25-paging/** -text
+
+# Intentional original CP437/SAUCE bytes.
+themes/longform/login.ans -text whitespace=cr-at-eol

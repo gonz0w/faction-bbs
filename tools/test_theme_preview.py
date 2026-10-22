@@ -23,6 +23,12 @@ class PreviewSafety(unittest.TestCase):
         for unknown in ['😀','界','\u202e','\u0301']:
             with self.assertRaises(ValueError):cells(unknown,80)
 
+    def test_paged_login_caption_is_explicit_and_optional(self):
+        grid=cells('PAGE 2',80)
+        self.assertIn('paged login preview',svg(grid,login=True,paged=True))
+        self.assertIn('long-form login template',svg(grid,login=True,paged=True))
+        self.assertIn('seasonal login preview',svg(grid,login=True))
+
     def test_text_is_escaped_and_focus_background_is_retained(self):
         grid = cells('\x1b[2J\x1b[1;1H\x1b[0;1;97;44m<script>&', 40)
         self.assertEqual(grid[0][0], ('<', 15, 4, True))

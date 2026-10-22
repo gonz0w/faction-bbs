@@ -2,29 +2,39 @@ use crate::{Result, Style};
 use std::fmt::Write;
 const WIDTH: usize = 80;
 const HEIGHT: usize = 16;
+const LONG_HEIGHT: usize = 256;
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 struct Cell {
     glyph: char,
     style: Style,
 }
-/// A fixed 80x16 cell image. The original bytes never reach the terminal.
+/// Bounded 80-column cells, shared by all sessions. Raw bytes never reach the terminal.
 #[derive(Clone)]
 pub struct Art {
     cells: Vec<Cell>,
 }
 impl Art {
     pub fn parse(bytes: &[u8]) -> Result<Self> {
-        if bytes.len() > 16384 {
-            return Err("art exceeds 16 KiB");
+        Self::parse_bounded(bytes, HEIGHT, 16384)
+    }
+    /// Explicit long identity import. Output is always requested one 16-row page
+    /// at a time; no API concatenates a long asset for a member.
+    pub fn parse_long(bytes: &[u8]) -> Result<Self> {
+        Self::parse_bounded(bytes, LONG_HEIGHT, 65536)
+    }
+    fn parse_bounded(bytes: &[u8], height_cap: usize, input_cap: usize) -> Result<Self> {
+        if bytes.len() > input_cap {
+            return Err("art exceeds input budget");
         }
-        let (bytes, ice) = sauce_payload(bytes)?;
+        let (bytes, ice, declared_height) = sauce_payload(bytes, height_cap)?;
+        let mut used_height = declared_height.max(HEIGHT);
         let mut bright_background = false;
         let blank = Cell {
             glyph: ' ',
             style: Style::default(),
         };
         let mut art = Self {
-            cells: vec![blank; WIDTH * HEIGHT],
+            cells: vec![blank; WIDTH * height_cap],
         };
         let (mut x, mut y, mut style, mut saved, mut at) =
             (0usize, 0usize, Style::default(), (0, 0), 0usize);
@@ -130,7 +140,7 @@ impl Art {
                             art.cells.fill(Cell { glyph: ' ', style });
                         }
                         b'K' if values.is_empty() || values == [0] => {
-                            if x >= WIDTH || y >= HEIGHT {
+                            if x >= WIDTH || y >= height_cap {
                                 return Err("art cursor outside canvas");
                             }
                             art.cells[y * WIDTH + x..(y + 1) * WIDTH]
@@ -138,15 +148,18 @@ impl Art {
                         }
                         _ => return Err("unsupported art control"),
                     }
-                    if command != b'm' && (x >= WIDTH || y >= HEIGHT) {
-                        return Err("art cursor outside canvas");
+                    if command != b'm' {
+                        if x >= WIDTH || y >= height_cap {
+                            return Err("art cursor outside canvas");
+                        }
+                        used_height = used_height.max(y + 1);
                     }
                 }
                 b'\r' => x = 0,
                 b'\n' => {
                     x = 0;
                     y += 1;
-                    if y > HEIGHT {
+                    if y > height_cap {
                         return Err("art too tall");
                     }
                 }
@@ -156,7 +169,7 @@ impl Art {
                         x = 0;
                         y += 1
                     }
-                    if x >= WIDTH || y >= HEIGHT {
+                    if x >= WIDTH || y >= height_cap {
                         return Err("art exceeds canvas");
                     }
                     let glyph = if b == 127 {
@@ -171,18 +184,35 @@ impl Art {
                     };
                     art.cells[y * WIDTH + x] = Cell { glyph, style };
                     x += 1;
+                    used_height = used_height.max(y + 1);
                 }
             }
         }
-        if art.render().len() > 16384 {
-            return Err("rendered art exceeds 16 KiB");
+        art.cells.truncate(WIDTH * used_height);
+        art.cells.shrink_to_fit();
+        for page in 0..art.page_count() {
+            if art.render_page(page).expect("valid page").len() > 16384 {
+                return Err("rendered art page exceeds 16 KiB");
+            }
         }
         Ok(art)
     }
+    pub fn page_count(&self) -> usize {
+        self.cells.len().div_ceil(WIDTH * HEIGHT)
+    }
+    /// Historical single-screen API; long assets deliberately return only page 1.
     pub fn render(&self) -> String {
+        self.render_page(0).expect("nonempty art canvas")
+    }
+    pub fn render_page(&self, page: usize) -> Option<String> {
+        if page >= self.page_count() {
+            return None;
+        }
+        let first = page * WIDTH * HEIGHT;
+        let last = (first + WIDTH * HEIGHT).min(self.cells.len());
         let mut out = String::new();
         let mut current = None;
-        for (row, cells) in self.cells.chunks(WIDTH).enumerate() {
+        for (row, cells) in self.cells[first..last].chunks(WIDTH).enumerate() {
             let end = cells
                 .iter()
                 .rposition(|c| c.glyph != ' ' || c.style != Style::default())
@@ -200,15 +230,15 @@ impl Art {
             }
         }
         out.push_str("\x1b[0m");
-        out
+        Some(out)
     }
 }
 /// A deliberately small SAUCE00 Character/ANSi import profile. All metadata
 /// stays off the terminal; record dimensions never enlarge the fixed canvas.
 /// FileSize is advisory in revision 00.5, so locate EOF/comments from the tail.
-fn sauce_payload(bytes: &[u8]) -> Result<(&[u8], bool)> {
+fn sauce_payload(bytes: &[u8], height_cap: usize) -> Result<(&[u8], bool, usize)> {
     if bytes.len() < 128 || &bytes[bytes.len() - 128..bytes.len() - 123] != b"SAUCE" {
-        return Ok((bytes, false));
+        return Ok((bytes, false, 0));
     }
     let at = bytes.len() - 128;
     let record = &bytes[at..];
@@ -217,7 +247,7 @@ fn sauce_payload(bytes: &[u8]) -> Result<(&[u8], bool)> {
     }
     let width = usize::from(u16::from_le_bytes([record[96], record[97]]));
     let height = usize::from(u16::from_le_bytes([record[98], record[99]]));
-    if !matches!(width, 0 | WIDTH) || height > HEIGHT || record[105] & !0x1f != 0 {
+    if !matches!(width, 0 | WIDTH) || height > height_cap || record[105] & !0x1f != 0 {
         return Err("unsupported SAUCE dimensions or flags");
     }
     let comments = usize::from(record[104]);
@@ -236,7 +266,7 @@ fn sauce_payload(bytes: &[u8]) -> Result<(&[u8], bool)> {
     if bytes[eof] != 0x1a {
         return Err("SAUCE import requires EOF before metadata");
     }
-    Ok((&bytes[..eof], record[105] & 1 != 0))
+    Ok((&bytes[..eof], record[105] & 1 != 0, height))
 }
 
 const CP437: &str = "ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ ";
