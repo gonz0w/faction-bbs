@@ -3,6 +3,7 @@
 mod chat;
 mod directory;
 pub mod operator;
+mod rooms;
 mod terminal;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
 use faction_terminal::{Action, Theme};
@@ -218,6 +219,16 @@ fn number(prompt: &str) -> Result<i64> {
     }
     Ok(n)
 }
+fn board_room_rows(rows: &[faction_core::Room]) -> Vec<faction_terminal::rooms::Room<'_>> {
+    rows.iter()
+        .map(|r| faction_terminal::rooms::Room {
+            id: r.id,
+            slug: &r.slug,
+            title: &r.title,
+            unread: r.unread,
+        })
+        .collect()
+}
 fn show_rooms(board: &mut Board, s: &Session) -> Result<()> {
     for r in board.rooms(s)? {
         println!(
@@ -240,6 +251,17 @@ fn read_room(
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
     let room = number("Room ID: ")?;
+    read_room_at(board, s, room, new_only, theme, ansi, caps)
+}
+fn read_room_at(
+    board: &mut Board,
+    s: &Session,
+    room: i64,
+    new_only: bool,
+    theme: &Theme,
+    ansi: bool,
+    caps: faction_terminal::capabilities::Capabilities,
+) -> Result<()> {
     let mut after = if new_only {
         board.unread_cursor(s, room)?
     } else {
@@ -302,6 +324,11 @@ fn read_room(
 }
 fn post(board: &mut Board, s: &Session, unicode: bool) -> Result<()> {
     let room = number("Room ID: ")?;
+    post_in_room(board, s, room, unicode)
+}
+fn post_in_room(board: &mut Board, s: &Session, room: i64, unicode: bool) -> Result<()> {
+    // Recheck the selected ID before showing the composer too.
+    board.unread_cursor(s, room)?;
     let parent = line("Reply to post ID (blank for new message): ", 20)?;
     let reply = if parent.is_empty() {
         None
@@ -539,12 +566,29 @@ fn menu_with_directory(
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
+        let mut skip_pause = matches!(action, Some(Action::Contacts));
         let result = match action {
             Some(Action::Quit) => {
                 println!("{}\nLogged out.", theme.logout());
                 return Ok(());
             }
             Some(Action::Contacts) => directory::run(board, s, theme, directory, used_ansi),
+            Some(Action::Rooms) if used_ansi => match rooms::choose(board, s, theme, caps)? {
+                faction_terminal::rooms::Choice::Read { room, new_only } => {
+                    read_room_at(board, s, room, new_only, theme, used_ansi, caps)
+                }
+                faction_terminal::rooms::Choice::Post(room) => {
+                    print!(
+                        "{}",
+                        caps.section(theme, &format!("Post in room #{room}"), used_ansi)
+                    );
+                    post_in_room(board, s, room, caps.unicode)
+                }
+                _ => {
+                    skip_pause = true;
+                    Ok(())
+                }
+            },
             Some(Action::Rooms) => show_rooms(board, s),
             Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
             Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
@@ -575,7 +619,7 @@ fn menu_with_directory(
                 return Err(e);
             }
         }
-        if used_ansi && !matches!(action, Some(Action::Contacts)) {
+        if used_ansi && !skip_pause {
             line("Press Enter to return to menu: ", 1)?;
         }
     }

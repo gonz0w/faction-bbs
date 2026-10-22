@@ -162,3 +162,9 @@ tests per OS, seven launcher PTY checks per OS and ten real two-board controls
 with independent member approval and host keys. Snapshot 23 freezes 174 prior
 directory inputs and its complete record. All 23 snapshots/36 historical record
 identities remain immutable; no new server/250-capacity/hardening claim.
+
+[Named-room browser software evidence](room-browser-netbsd/README.md) records
+194 Rust tests per OS, ten local/worker controls per OS, eleven real SSH/native
+controls with 100 rooms and 22 shared-reader regressions. Snapshot 24 preserves
+178 prior sources/room-list fixtures and the whole launcher result; 24 snapshots/
+37 historical record identities remain unchanged. No new capacity/hardening claim.

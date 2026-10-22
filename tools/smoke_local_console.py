@@ -254,9 +254,9 @@ def smoke(binary):
             c.send('')
             c.expect(footer)
             c.raw(b'R')
-            c.expect('Lobby (1 unread)')
-            c.expect('Press Enter to return to menu: ')
-            c.send('')
+            c.expect('#1 (1 unread)')
+            c.expect('N/P:page U:next unread Q:main')
+            c.raw(b'q')
             c.expect(footer)
             c.raw(b'\x1bPpayload\x07P\nDP\x1b\\q')
             c.expect('Logged out.')
@@ -277,8 +277,8 @@ def smoke(binary):
             assert b'LOCAL / MAIN' in c.transcript
             assert b'Find a room; follow the talk' not in c.transcript
             assert b' --' in c.transcript
-            c.raw(b'r'); c.expect('Lobby (1 unread)')
-            c.expect('Press Enter to return to menu: '); c.send(''); c.expect(footer)
+            c.raw(b'r'); c.expect('#1 (1 unread)')
+            c.expect('N/P:page U:next unread Q:main'); c.raw(b'q'); c.expect(footer)
             c.raw(b'q'); c.expect('Logged out.'); c.finish()
             # Escape timeout quarantines following hotkey-like bytes through CRLF.
             c = ansi_login()

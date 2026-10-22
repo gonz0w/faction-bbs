@@ -1,0 +1,43 @@
+fn main() {
+    println!("cargo:rerun-if-changed=src/operator_stats.c");
+    cc::Build::new()
+        .file("src/operator_stats.c")
+        .std("c11")
+        .warnings(true)
+        .extra_warnings(true)
+        .warnings_into_errors(true)
+        .compile("faction_operator_stats");
+    println!("cargo:rerun-if-changed=src/calendar.c");
+    cc::Build::new()
+        .file("src/calendar.c")
+        .std("c11")
+        .warnings(true)
+        .extra_warnings(true)
+        .warnings_into_errors(true)
+        .compile("faction_calendar");
+    println!("cargo:rerun-if-changed=src/process_security.c");
+    cc::Build::new()
+        .file("src/process_security.c")
+        .std("c11")
+        .warnings(true)
+        .extra_warnings(true)
+        .warnings_into_errors(true)
+        .compile("faction_process_security");
+    println!("cargo:rerun-if-changed=src/shutdown.c");
+    cc::Build::new()
+        .file("src/shutdown.c")
+        .std("c11")
+        .warnings(true)
+        .extra_warnings(true)
+        .warnings_into_errors(true)
+        .compile("faction_shutdown");
+    println!("cargo:rerun-if-changed=src/terminal_fd.c");
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("netbsd") {
+        cc::Build::new()
+            .file("src/terminal_fd.c")
+            .warnings(true)
+            .extra_warnings(true)
+            .warnings_into_errors(true)
+            .compile("faction_terminal_fd");
+    }
+}

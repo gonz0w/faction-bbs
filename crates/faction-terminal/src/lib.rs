@@ -22,3 +22,5 @@ mod login;
 pub mod seasons;
 
 pub mod directory;
+
+pub mod rooms;

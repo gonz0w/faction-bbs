@@ -132,11 +132,17 @@ def directory_baseline_manifest(root=ROOT):
     return json.loads(raw)
 
 
+def board_launcher_baseline_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/board-launcher-baseline-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='3696efece3b953d6abfee7bb3a41ce88574297f289512fe68801949beb32579f','frozen board launcher baseline changed'
+    return json.loads(raw)
+
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root),authored_articles_baseline_manifest(root),broader_articles_baseline_manifest(root),unicode_subjects_baseline_manifest(root),modern_terminals_baseline_manifest(root),kitty_graphics_baseline_manifest(root),terminal_compatibility_baseline_manifest(root),menu_themes_baseline_manifest(root),seasonal_themes_baseline_manifest(root),custom_menus_baseline_manifest(root),nightwire_baseline_manifest(root),operator_baseline_manifest(root),operator_host_baseline_manifest(root),operator_recovery_baseline_manifest(root),directory_baseline_manifest(root)]
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root),authored_articles_baseline_manifest(root),broader_articles_baseline_manifest(root),unicode_subjects_baseline_manifest(root),modern_terminals_baseline_manifest(root),kitty_graphics_baseline_manifest(root),terminal_compatibility_baseline_manifest(root),menu_themes_baseline_manifest(root),seasonal_themes_baseline_manifest(root),custom_menus_baseline_manifest(root),nightwire_baseline_manifest(root),operator_baseline_manifest(root),operator_host_baseline_manifest(root),operator_recovery_baseline_manifest(root),directory_baseline_manifest(root),board_launcher_baseline_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name

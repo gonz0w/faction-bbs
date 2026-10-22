@@ -106,7 +106,7 @@ def smoke(args):
         # The initial menu focus is Rooms: down to New, then back to Rooms.
         alice.raw(b'\x1b[B'); alice.expect('New messages')
         alice.raw(b'\x1b[A'); alice.expect('Message rooms')
-        alice.raw(b'\r'); alice.expect('lobby - Lobby'); pause(alice)
+        alice.raw(b'\r'); alice.expect('lobby - Lobby'); alice.expect('N/P:page U:next unread Q:main'); alice.raw(b'q'); menu(alice)
         passed('custom_identity_and_arrow_enter_navigation')
         alice.raw(b'p'); alice.expect('Room ID: '); alice.send('1')
         alice.expect('Reply to post ID (blank for new message): '); alice.send('')
