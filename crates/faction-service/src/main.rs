@@ -47,6 +47,8 @@ enum State {
     Authenticating,
     Identity,
     Menu,
+    Terminal,
+    Probe(faction_terminal::capabilities::Probe),
     Pause,
     RoomsMore(usize),
     RoomId(bool),
@@ -172,6 +174,7 @@ struct Client {
     ansi: bool,
     dimensions: (u16, u16),
     geometry_check: Instant,
+    capabilities: faction_terminal::capabilities::Capabilities,
     editor: LineEditor,
     skip_lf: bool,
     next_input: Instant,
@@ -186,6 +189,9 @@ impl Drop for Client {
     fn drop(&mut self) {
         // Best effort while still nonblocking: never hang cleanup behind a peer.
         if self.ansi {
+            if self.capabilities.synchronized {
+                let _ = self.tty.write(b"\x1b[?2026l");
+            }
             let _ = self.tty.write(b"\x1b[0m\x1b[?25h\r\n");
         }
         let _ = termios::tcsetattr(&self.tty, OptionalActions::Now, &self.saved);
@@ -244,6 +250,7 @@ impl Client {
             ansi: false,
             dimensions: (0, 0),
             geometry_check: now,
+            capabilities: Default::default(),
             editor: LineEditor::default(),
             skip_lf: false,
             next_input: now,
@@ -307,6 +314,9 @@ impl Client {
         if self.written == self.output.len() {
             self.output.clear();
             self.written = 0;
+            if let State::Probe(probe) = &mut self.state {
+                probe.begin(Instant::now());
+            }
             if !self.close
                 && let Some((room, through)) = self.mark_after_flush.take()
             {
@@ -612,6 +622,12 @@ fn run() -> Result<()> {
                 if let Err(e) = c.classic_poll(&theme, &mut board) {
                     c.classic = None;
                     c.recover(e, &mut board, &theme);
+                }
+            }
+            if work > 0 && !c.close && matches!(&c.state,State::Probe(p) if p.expired(now)) {
+                work -= 1;
+                if c.probe_finish(&mut board).is_err() {
+                    c.close = true;
                 }
             }
             if work > 0 && c.geometry_check.elapsed() >= Duration::from_millis(100) {

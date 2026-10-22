@@ -56,12 +56,33 @@ impl Client {
             let menu = self.focused(theme, sysop);
             self.focus = menu.focus();
             self.queue("\x1b[?25l");
-            self.queue(&menu.render());
+            self.queue(&self.capabilities.frame(&menu.render(), self.ansi));
         } else {
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
         }
         Ok(())
+    }
+    fn terminal_screen(&mut self, board: &mut Board) -> faction_core::Result<()> {
+        self.approved(board)?;
+        self.state = State::Terminal;
+        self.prompt_started = Instant::now();
+        self.input.clear();
+        let (cols, rows) = self.size();
+        self.queue(
+            &self
+                .capabilities
+                .frame(&self.capabilities.screen(cols, rows, self.ansi), self.ansi),
+        );
+        Ok(())
+    }
+    pub(super) fn probe_finish(&mut self, board: &mut Board) -> faction_core::Result<()> {
+        if let State::Probe(p) = &self.state {
+            self.capabilities.synchronized = p.result().map_err(Error::Invalid)?;
+        }
+        termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+            .map_err(|_| Error::Invalid("terminal flush"))?;
+        self.terminal_screen(board)
     }
     fn focused<'a>(&self, theme: &'a Theme, sysop: bool) -> Menu<'a> {
         let mut menu = Menu::new(theme, sysop);
@@ -94,7 +115,7 @@ impl Client {
             return Ok(true);
         }
         if self.focus != previous {
-            self.queue(&menu.redraw(previous));
+            self.queue(&self.capabilities.frame(&menu.redraw(previous), self.ansi));
         }
         Ok(false)
     }
@@ -114,9 +135,11 @@ impl Client {
             Action::Files => "File areas",
             Action::Doors => "Doors",
             Action::Quit => "Disconnect",
+            Action::Terminal => "Terminal settings",
         };
-        self.queue(&faction_terminal::section(theme, title, self.ansi));
+        self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Terminal => self.terminal_screen(board)?,
             Action::Quit => {
                 self.queue(&format!("{}\nLogged out.\n", theme.logout()));
                 self.success = true;
@@ -218,7 +241,7 @@ impl Client {
             body: &post.body,
         };
         let page = message
-            .page_with_metadata(
+            .page_with_capabilities(
                 columns,
                 height,
                 offset,
@@ -229,14 +252,17 @@ impl Client {
                         .as_deref()
                         .unwrap_or("Unknown (legacy)"),
                 },
+                self.capabilities.unicode,
             )
             .map_err(Error::Invalid)?;
-        self.queue(&faction_terminal::section(
-            theme,
-            "Read messages",
+        self.queue(&self.capabilities.frame(
+            &format!(
+                "{}{}",
+                self.capabilities.section(theme, "Read messages", self.ansi),
+                page.text
+            ),
             self.ansi,
         ));
-        self.queue(&page.text);
         let (through, next) = match page.next {
             Some(next) => (after, next),
             None => {
@@ -355,6 +381,19 @@ impl Client {
                 self.credential(true, name, secret, jobs)?;
             }
             State::Identity | State::Pause => self.menu(theme, board)?,
+            State::Terminal => {
+                self.approved(board)?;
+                if text.eq_ignore_ascii_case("d") {
+                    self.menu(theme, board)?;
+                } else if text.eq_ignore_ascii_case("p") && self.ansi {
+                    self.state = State::Probe(Default::default());
+                    self.queue(faction_terminal::capabilities::SYNC_QUERY);
+                } else {
+                    self.capabilities.choose(text);
+                    self.terminal_screen(board)?;
+                }
+            }
+            State::Probe(_) => return Err(Error::Invalid("probe input state")),
             State::Menu => {
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
@@ -407,9 +446,10 @@ impl Client {
                 };
                 if let Some(parent) = reply {
                     let default = board.reply_subject(self.session()?, room, parent)?;
-                    let preview = faction_terminal::subject::preview(
+                    let preview = faction_terminal::subject::preview_with(
                         &format!("Reply subject: {default}"),
                         usize::from(self.size().0).saturating_sub(1),
+                        self.capabilities.unicode,
                     );
                     self.queue(&format!("{preview}\n"));
                 }
@@ -712,6 +752,12 @@ impl Client {
             }
             return Ok(());
         }
+        if let State::Probe(probe) = &mut self.state {
+            for &byte in &bytes[..n] {
+                probe.feed(byte).map_err(Error::Invalid)?;
+            }
+            return Ok(());
+        }
         let mut redraw = false;
         for &byte in &bytes[..n] {
             if matches!(self.state, State::Closing | State::Authenticating) {
@@ -819,7 +865,9 @@ impl Client {
             }
             if matches!(self.state, State::PostSubject(..)) {
                 use faction_terminal::subject::{self, Edit};
-                match subject::feed(&mut self.input, byte).map_err(Error::Invalid)? {
+                match subject::feed_with(&mut self.input, byte, self.capabilities.unicode)
+                    .map_err(Error::Invalid)?
+                {
                     Edit::Echo(text) => self.queue(&text),
                     Edit::Submit(text) => {
                         self.skip_lf = byte == b'\r';
@@ -833,6 +881,8 @@ impl Client {
                 }
                 continue;
             }
+            let input_unicode =
+                self.capabilities.unicode && matches!(self.state, State::PostBody(..));
             let hidden = matches!(
                 self.state,
                 State::Password(..) | State::Confirm(..) | State::NativeFiles
@@ -854,7 +904,13 @@ impl Client {
                 let erased = std::str::from_utf8(&self.input)
                     .ok()
                     .and_then(|s| s.chars().last())
-                    .map_or(0, |c| Self::safe(&c.to_string()).len());
+                    .map_or(0, |c| {
+                        if input_unicode {
+                            faction_terminal::text::width(&faction_terminal::text::scalar(c, true))
+                        } else {
+                            Self::safe(&c.to_string()).len()
+                        }
+                    });
                 self.input.pop();
                 while !self.input.is_empty() && std::str::from_utf8(&self.input).is_err() {
                     self.input.pop();
@@ -881,7 +937,11 @@ impl Client {
                     } else if let Ok(text) = std::str::from_utf8(&self.input)
                         && let Some(c) = text.chars().last()
                     {
-                        self.queue(&Self::safe(&c.to_string()));
+                        self.queue(&if input_unicode {
+                            faction_terminal::text::scalar(c, true)
+                        } else {
+                            Self::safe(&c.to_string())
+                        });
                     }
                 }
             } else {

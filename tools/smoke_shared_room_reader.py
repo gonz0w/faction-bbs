@@ -10,6 +10,7 @@ import json
 import secrets
 import shlex
 import subprocess
+import time
 from pathlib import Path
 from check_restricted_ssh import SSHConsole
 
@@ -48,7 +49,13 @@ def smoke(args):
         c.expect('Status updated; previous sessions expired.')
         c.expect('Command (then Enter): '); c.send('q'); c.expect('Logged out.'); c.finish()
 
+    member_calls = 0
+
     def member():
+        nonlocal member_calls
+        # Exercise the normal eight-launch burst/5-second refill; never tune it.
+        if member_calls >= 7: time.sleep(5.1)
+        member_calls += 1
         uid = remote('id -u factiond').strip()
         assert uid.isdecimal()
         command = 'set -e; PATH=/usr/sbin:/sbin:/usr/bin:/bin; export PATH; chown factionterm "$(tty)"; exec su -m factionterm -c ' + shlex.quote(
@@ -130,6 +137,34 @@ def smoke(args):
             other.expect('Reply to post ID (blank for new message): '); other.send('')
             other.expect('Subject (blank for generated/reply default): '); other.raw(bad); other.finish(code=1)
         checks.append('shared_malformed_incomplete_control_and_overflow_close')
+        c.raw(b't'); c.expect('[D]one: ')
+        for option in ['u','2','3','b','a']:
+            c.send(option); c.expect('[D]one: ')
+        c.send('p'); c.expect('\x1b[?2026$p'); c.raw(b'\x1b[?20'); c.raw(b'26;2$y')
+        c.expect('sync: true'); c.expect('[D]one: '); c.send('d')
+        c.expect('Ctrl-C exits; Esc: Enter to recover.')
+        c.raw(b'p'); c.expect('Room ID: '); c.send('1')
+        c.expect('Reply to post ID (blank for new message): '); c.send('')
+        c.expect('Subject (blank for generated/reply default): '); c.send('Café 界 🦀')
+        c.expect('Message (one line, up to 1024 bytes): '); c.send('界🦀é '*70+'FINAL-MODERN')
+        c.expect('Posted #7.'); back(c)
+        c.raw(b'n'); c.expect('Room ID: '); c.send('1'); start=len(c.transcript)
+        for _ in range(40):
+            c.expect('Subject: Café 界 🦀'); c.expect('More? [y/N]: ')
+            if b'FINAL-MODERN' in c.transcript[start:]:break
+            c.send('y')
+        else:raise AssertionError('shared modern page did not complete')
+        output=c.transcript[start:]
+        assert output.count('界🦀é'.encode())==70
+        assert b'38;2;' in output and b'\x1b[?2026h' in output and b'\x1b[?2026l' in output
+        c.send('n');back(c);checks.append('shared_modern_unicode_cells_rgb_and_synchronized_pages')
+        c.raw(b't');c.expect('[D]one: ');c.send('c');c.expect('UTF-8: false');c.expect('[D]one: ');c.send('d');c.expect('Ctrl-C exits; Esc: Enter to recover.')
+        checks.append('shared_classic_override_recovers_unknown_width_profile')
+        other=member();other.raw(b't');other.expect('[D]one: ');other.send('p');other.expect('\x1b[?2026$p');other.expect('sync: false');other.expect('[D]one: ')
+        other.raw(b'\x1b[?2026;2$yP\n');other.finish(code=1)
+        for reply in [b'\x1b[?2026;2$yP\n',b'\x1b',b'\x1b]52;c;bad\x07']:
+            other=member();other.raw(b't');other.expect('[D]one: ');other.send('p');other.expect('\x1b[?2026$p');other.raw(reply);other.finish(code=1)
+        checks.append('shared_unknown_malformed_incomplete_late_probe_isolation')
         # Keep a Unicode draft open while the other connection is paging.
         draft = member(); draft.raw(b'p'); draft.expect('Room ID: '); draft.send('1')
         draft.expect('Reply to post ID (blank for new message): '); draft.send('')

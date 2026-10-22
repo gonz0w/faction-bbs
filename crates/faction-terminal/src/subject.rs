@@ -9,6 +9,9 @@ pub enum Edit {
     Submit(String),
 }
 pub fn feed(input: &mut Vec<u8>, byte: u8) -> Result<Edit> {
+    feed_with(input, byte, false)
+}
+pub fn feed_with(input: &mut Vec<u8>, byte: u8, unicode: bool) -> Result<Edit> {
     if byte == b'\r' || byte == b'\n' {
         let text = std::str::from_utf8(input)
             .map_err(|_| "invalid UTF-8 subject")?
@@ -18,10 +21,9 @@ pub fn feed(input: &mut Vec<u8>, byte: u8) -> Result<Edit> {
     }
     if byte == 8 || byte == 127 {
         let (start, cells) = match std::str::from_utf8(input) {
-            Ok(text) => text
-                .char_indices()
-                .next_back()
-                .map_or((0, 0), |(n, c)| (n, escaped(c).len())),
+            Ok(text) => text.char_indices().next_back().map_or((0, 0), |(n, c)| {
+                (n, crate::text::width(&crate::text::scalar(c, unicode)))
+            }),
             Err(e) if e.error_len().is_none() => (e.valid_up_to(), 0),
             Err(_) => return Err("invalid UTF-8 subject"),
         };
@@ -38,37 +40,36 @@ pub fn feed(input: &mut Vec<u8>, byte: u8) -> Result<Edit> {
             if c.is_control() {
                 return Err("subject controls are forbidden");
             }
-            Ok(Edit::Echo(escaped(c)))
+            Ok(Edit::Echo(crate::text::scalar(c, unicode)))
         }
         Err(e) if e.error_len().is_none() => Ok(Edit::Echo(String::new())),
         Err(_) => Err("invalid UTF-8 subject"),
     }
 }
-fn escaped(c: char) -> String {
-    if c == '\n' {
-        "\\n".into()
-    } else if c.is_ascii_graphic() || c == ' ' {
-        c.to_string()
-    } else {
-        c.escape_unicode().collect()
-    }
-}
 /// A bounded single-line label. Whole escapes fit or are replaced by ellipsis;
 /// even bidi, combining marks, newlines and terminal controls remain inert ASCII.
 pub fn preview(text: &str, columns: usize) -> String {
+    preview_with(text, columns, false)
+}
+pub fn preview_with(text: &str, columns: usize, unicode: bool) -> String {
     let columns = columns.min(119);
     let mut out = String::new();
     let mut boundaries = Vec::new();
+    let mut cells = 0;
     for c in text.chars() {
-        let part = escaped(c);
-        if out.len() + part.len() > columns {
-            while out.len() > columns.saturating_sub(3) {
-                out.truncate(boundaries.pop().unwrap_or(0));
+        let part = crate::text::scalar(c, unicode);
+        let size = crate::text::width(&part);
+        if cells + size > columns {
+            while cells > columns.saturating_sub(3) {
+                let (bytes, previous) = boundaries.pop().unwrap_or((0, 0));
+                out.truncate(bytes);
+                cells = previous;
             }
             out.push_str(&".".repeat(columns.min(3)));
             return out;
         }
-        boundaries.push(out.len());
+        boundaries.push((out.len(), cells));
+        cells += size;
         out.push_str(&part);
     }
     out

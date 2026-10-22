@@ -2,8 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-21): finish #103's broader local article profile
-and original news-software validation after merging #113; keep hardening #106–#111 for later.** Native-device
+**Current priority (owner, 2026-10-22): build #96 native Unicode and terminal
+capabilities after merging #116; keep classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -515,3 +515,31 @@ not native Unicode glyph/graphics detection (#96). Do not trust TERM/brand as
 permission for richer rendering. Keep original bodies, retry keys, approval/epoch,
 owner helpers, credential/default limits and all eleven frozen snapshots/results.
 Hardening #106–#111 remains deferred. No INN/provider, firewall or host changes.
+
+## Native text and capability preferences (#96)
+
+Read docs/terminal-capabilities.md, research 0049, ADR 0041 and plan 0043. Classic
+is default. T opens session-only independent preferences; never trust TERM/brand
+for rich features. The common native scalar renderer uses pinned unicode-width
+without default features; ambiguous=1, invisible/formatting/cluster-dependent
+forms escaped. Body offsets are bytes in one unchanged rendering mode. Preserve
+cell clipping, UTF-8 boundaries, contiguous file tokens and output-drain unread.
+
+DECRQM sync probing is explicit and isolated after approval: nine query bytes,
+32-byte response ceiling, 300 ms after output drains, one exact reply. Extra/
+malformed/incomplete/late control input never becomes menu/posting commands.
+Unknown/no reply stays conservative. Sync brackets complete bounded frames and
+releases during cleanup. Keep fixed helpers, credential/default/session bounds
+and 32-KiB/five-second output rules. Do not relax admission for test fixtures;
+respect normal eight-launch burst and five-second refill.
+
+Native client still filters queries/sync/APC/DCS/clipboard; Unicode/color use
+explicit preference there. Mouse, extended keyboard and bitmaps stay disabled;
+current pixel/byte/cache limits are zero. Future inline bitmap work needs its own
+renderer/member-side gate; no arbitrary art or file/shared-memory/network paths.
+Native chat/grapheme editing, Unicode theme text and rich asset formats remain
+separate. No host/firewall/hardening change or fresh capacity claim.
+
+Twelfth snapshot sources/pre96 and unicode-subjects-baseline-manifest.json freeze
+all 101 original #116 build/run inputs and unchanged result before this work.
+Preserve twelve snapshots and twenty-four historical result identities unchanged.

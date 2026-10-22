@@ -4,6 +4,15 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional session Terminal settings (#96): native UTF-8 room/subject text,
+  cell-aware paging/clipping/backspace, 16/256/RGB choices, block/braille samples
+  and bounded synchronized redraw with an isolated explicit sync probe. Keep
+  classic defaults/recovery and native-client graphics/control filtering.
+- Review/pin unicode-width 0.2.2 without default features; preserve schema 7,
+  prior evidence and existing credential/helper/admission/output limits. Record
+  modern terminal research/budgets and software fixtures; bitmap/extended input
+  and later hardening remain separately scoped.
+
 - Add schema-7 UTF-8 room subjects (#114) with one shared local/worker/service
   input editor, split-character/backspace validation, UTF-8-safe reply clipping,
   bounded inert ASCII echo/previews and subject-aware retry preservation.

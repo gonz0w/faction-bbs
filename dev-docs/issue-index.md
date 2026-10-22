@@ -131,4 +131,14 @@ formatting enables no room publication or provider connection.
 
 See [phase requirements](../docs/later-phase-hardening.md). All are future work.
 
-- [#114: Internationalized subject composing and versioned metadata compatibility](https://github.com/gonz0w/faction-bbs/issues/114) — future terminal/storage follow-up; v2 wire support is #103.
+- [#114: Internationalized subject composing and versioned metadata compatibility](https://github.com/gonz0w/faction-bbs/issues/114) — schema-7 terminal/storage implementation merged through #116; v2 wire support is #103.
+
+## Modern-terminal continuation, 2026-10-22
+
+#96 supplies the bounded [native-text/capability foundation](../docs/terminal-capabilities.md).
+[#117](https://github.com/gonz0w/faction-bbs/issues/117) separately scopes trusted
+inline Kitty images and a member-side native-client gate.
+[#118](https://github.com/gonz0w/faction-bbs/issues/118) covers actual emulator/font/
+multiplexer validation beyond the current PTY/control fixtures. These follow-ups
+preserve classic fallback and current resource/approval rules; no bitmap adoption
+or physical-hardware gate follows from a feature-list comparison.

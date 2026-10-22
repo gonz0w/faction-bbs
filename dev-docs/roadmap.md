@@ -2,12 +2,21 @@
 
 Updated 2026-10-22. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
 
+## Modern terminal foundation
+
+Merged #116 completes schema-7 Unicode composing. #96 now supplies optional
+[native room/subject text and terminal settings](../docs/terminal-capabilities.md),
+cell-aware wrapping/clipping, color/graph samples and isolated sync probing.
+Default classic mode, native-client control filtering and existing resource/
+approval rules remain. Bitmap rendering, extended input and full emulator/font
+interop remain separate work; hardening #106–#111 stays later.
+
 ## Unicode subject composing
 
 #115 is merged (a5c0465), completing the bounded local #103 text profile and
 original INN validation. #114 now implements [schema-7 UTF-8 composing](../docs/unicode-subjects.md)
 in local/worker and shared terminals, with a stopped upgrade, versioned snapshot
-validation and bounded classic display. Modern native glyph rendering stays #96;
+validation and bounded classic display. Optional native scalar rendering follows under #96;
 actual news peers/providers stay #101/#104. Keep hardening #106–#111 later.
 Software-only native NetBSD validation suffices; no new 250-user capacity claim.
 
@@ -232,3 +241,6 @@ peering/provider delivery. Keep #106–#111 hardening queued for its later phase
 support, common dates, root/recent References and original INN offline controls on
 macOS/NetBSD. Live news/peer/provider gates remain #101/#104. Internationalized
 composer/storage compatibility is #114. Hardening #106–#111 remains later.
+
+Follow-ups: [bounded inline bitmap renderer #117](https://github.com/gonz0w/faction-bbs/issues/117)
+and [real emulator/font/multiplexer validation #118](https://github.com/gonz0w/faction-bbs/issues/118).

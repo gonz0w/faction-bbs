@@ -27,7 +27,7 @@ pub fn line(prompt: &str, max: usize) -> Result<String> {
         max,
     )
 }
-fn subject_line() -> Result<String> {
+fn subject_line(unicode: bool) -> Result<String> {
     use faction_terminal::subject::{self, Edit};
     let tty = tty()?;
     let saved = termios::tcgetattr(&tty)?;
@@ -61,7 +61,7 @@ fn subject_line() -> Result<String> {
     loop {
         let mut byte = [0];
         source.read_exact(&mut byte)?;
-        match subject::feed(&mut input, byte[0])
+        match subject::feed_with(&mut input, byte[0], unicode)
             .map_err(|reason| io::Error::new(io::ErrorKind::InvalidData, reason))?
         {
             Edit::Echo(text) => {
@@ -235,6 +235,7 @@ fn read_room(
     new_only: bool,
     theme: &Theme,
     ansi: bool,
+    caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
     let room = number("Room ID: ")?;
     let mut after = if new_only {
@@ -258,7 +259,7 @@ fn read_room(
             reply_to: post.reply_to,
             body: &post.body,
         }
-        .page_with_metadata(
+        .page_with_capabilities(
             columns,
             height,
             offset,
@@ -269,12 +270,19 @@ fn read_room(
                     .as_deref()
                     .unwrap_or("Unknown (legacy)"),
             },
+            caps.unicode,
         )
         .map_err(invalid)?;
         print!(
-            "{}{}",
-            faction_terminal::section(theme, "Read messages", ansi && terminal::capable()),
-            page.text
+            "{}",
+            caps.frame(
+                &format!(
+                    "{}{}",
+                    caps.section(theme, "Read messages", ansi && terminal::capable()),
+                    page.text
+                ),
+                ansi && terminal::capable()
+            )
         );
         io::stdout().flush()?;
         if let Some(next) = page.next {
@@ -290,7 +298,7 @@ fn read_room(
     }
     Ok(())
 }
-fn post(board: &mut Board, s: &Session) -> Result<()> {
+fn post(board: &mut Board, s: &Session, unicode: bool) -> Result<()> {
     let room = number("Room ID: ")?;
     let parent = line("Reply to post ID (blank for new message): ", 20)?;
     let reply = if parent.is_empty() {
@@ -302,13 +310,14 @@ fn post(board: &mut Board, s: &Session) -> Result<()> {
         let preview = format!("Reply subject: {}", board.reply_subject(s, room, parent)?);
         println!(
             "{}",
-            faction_terminal::subject::preview(
+            faction_terminal::subject::preview_with(
                 &preview,
-                usize::from(terminal::size().unwrap_or((80, 24)).0).saturating_sub(1)
+                usize::from(terminal::size().unwrap_or((80, 24)).0).saturating_sub(1),
+                unicode
             )
         );
     }
-    let subject = subject_line()?;
+    let subject = subject_line(unicode)?;
     let body = line("Message (one line, up to 1024 bytes): ", POST_BYTES)?;
     let key = request_id()?;
     println!("Submission ID: {key}");
@@ -335,6 +344,39 @@ fn post(board: &mut Board, s: &Session) -> Result<()> {
                 }
             }
             Err(e) => return Err(e.into()),
+        }
+    }
+}
+fn terminal_settings(
+    caps: &mut faction_terminal::capabilities::Capabilities,
+    ansi: bool,
+    board: &mut Board,
+    session: &Session,
+) -> Result<()> {
+    loop {
+        if board.whoami(session)?.status != Status::Approved {
+            return Err(Error::Denied.into());
+        }
+        let (columns, rows) = terminal::size().unwrap_or((0, 0));
+        print!(
+            "{}",
+            caps.frame(
+                &caps.screen(columns, rows, ansi && terminal::capable()),
+                ansi && terminal::capable()
+            )
+        );
+        let choice = line("", 1)?;
+        if choice.eq_ignore_ascii_case("d") {
+            return Ok(());
+        }
+        if choice.eq_ignore_ascii_case("p") {
+            if ansi && terminal::capable() {
+                caps.synchronized = terminal::probe_sync()?;
+            } else {
+                println!("ANSI disabled; probe refused.");
+            }
+        } else {
+            caps.choose(&choice);
         }
     }
 }
@@ -380,6 +422,7 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
         );
         return Ok(());
     }
+    let mut caps = faction_terminal::capabilities::Capabilities::default();
     terminal::identity(theme, ansi)?;
     println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
     loop {
@@ -388,7 +431,7 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
             return Err(Error::Denied.into());
         }
         let selected = if ansi {
-            terminal::select(theme, member.role == Role::Sysop)?
+            terminal::select(theme, member.role == Role::Sysop, caps)?
         } else {
             None
         };
@@ -414,8 +457,9 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
                 Action::Doors => "Doors",
                 Action::Files => "File areas",
                 Action::Quit => "Disconnect",
+                Action::Terminal => "Terminal settings",
             };
-            print!("{}", faction_terminal::section(theme, title, used_ansi));
+            print!("{}", caps.section(theme, title, used_ansi));
         }
         let result = match action {
             Some(Action::Quit) => {
@@ -423,9 +467,10 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
                 return Ok(());
             }
             Some(Action::Rooms) => show_rooms(board, s),
-            Some(Action::New) => read_room(board, s, true, theme, used_ansi),
-            Some(Action::History) => read_room(board, s, false, theme, used_ansi),
-            Some(Action::Post) => post(board, s),
+            Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
+            Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
+            Some(Action::Post) => post(board, s, caps.unicode),
+            Some(Action::Terminal) => terminal_settings(&mut caps, ansi, board, s),
             Some(Action::Sysop) => sysop(board, s),
             Some(Action::Chat) => chat::run(board, s, ansi),
             _ => {

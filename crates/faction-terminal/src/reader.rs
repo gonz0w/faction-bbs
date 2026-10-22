@@ -17,7 +17,7 @@ pub struct MessageDetails<'a> {
 }
 pub struct MessagePage {
     pub text: String,
-    /// Offset in the ASCII-escaped body. Re-render with the same source text.
+    /// Byte offset in the rendered body. Keep the same source and rendering mode.
     pub next: Option<usize>,
 }
 fn inert(text: &str) -> String {
@@ -44,11 +44,19 @@ pub fn section(theme: &Theme, title: &str, ansi: bool) -> String {
     }
 }
 fn line(text: &str, width: usize) -> (&str, usize) {
-    let mut end = text.find('\n').unwrap_or(text.len()).min(width);
+    let mut end = 0;
+    let mut cells = 0;
+    for (i, c) in text.char_indices() {
+        if c == '\n' || cells + crate::text::cells(c) > width {
+            break;
+        }
+        cells += crate::text::cells(c);
+        end = i + c.len_utf8();
+    }
     // Keep a complete public file reference in the byte stream for native
     // recent-link discovery and plain SSH copy/paste. A narrow terminal may
     // soft-wrap this one 78-byte token; account for its physical rows below.
-    if let Some(start) = text[..(end + 13).min(text.len())].rfind("faction-file:")
+    if let Some(start) = text.find("faction-file:")
         && start < end
     {
         let finish = start + 78;
@@ -89,7 +97,7 @@ fn heading(out: &mut String, text: &str, width: usize) -> usize {
 }
 impl Message<'_> {
     pub fn page(&self, columns: u16, rows: u16, offset: usize) -> Result<MessagePage> {
-        self.page_inner(columns, rows, offset, None)
+        self.page_inner(columns, rows, offset, None, false)
     }
     pub fn page_with_metadata(
         &self,
@@ -101,7 +109,20 @@ impl Message<'_> {
         if details.subject.len() > 160 || details.posted.len() > 64 {
             return Err("message metadata limit");
         }
-        self.page_inner(columns, rows, offset, Some(details))
+        self.page_inner(columns, rows, offset, Some(details), false)
+    }
+    pub fn page_with_capabilities(
+        &self,
+        columns: u16,
+        rows: u16,
+        offset: usize,
+        details: MessageDetails<'_>,
+        unicode: bool,
+    ) -> Result<MessagePage> {
+        if details.subject.len() > 160 || details.posted.len() > 64 {
+            return Err("message metadata limit");
+        }
+        self.page_inner(columns, rows, offset, Some(details), unicode)
     }
     fn page_inner(
         &self,
@@ -109,14 +130,15 @@ impl Message<'_> {
         rows: u16,
         offset: usize,
         details: Option<MessageDetails<'_>>,
+        unicode: bool,
     ) -> Result<MessagePage> {
         if self.body.len() > MESSAGE_BYTES || self.author.len() > 64 {
             return Err("message presentation limit");
         }
         let width = usize::from(columns).saturating_sub(1).clamp(39, 119);
         let height = usize::from(rows).clamp(18, 100);
-        let body = inert(self.body);
-        if offset > body.len() {
+        let body = crate::text::render(self.body, unicode);
+        if offset > body.len() || !body.is_char_boundary(offset) {
             return Err("message page offset");
         }
         let mut text = String::new();
@@ -138,7 +160,8 @@ impl Message<'_> {
         }
         if let Some(details) = details {
             for (name, value) in [("Subject", details.subject), ("Posted", details.posted)] {
-                let label = crate::subject::preview(&format!("{name}: {value}"), width);
+                let label =
+                    crate::subject::preview_with(&format!("{name}: {value}"), width, unicode);
                 text.push_str(&label);
                 text.push('\n');
                 used += 1;
@@ -156,7 +179,7 @@ impl Message<'_> {
         let mut remaining = budget;
         while remaining > 0 && position < body.len() {
             let (part, consumed) = line(&body[position..], width);
-            let cost = part.len().div_ceil(width).max(1);
+            let cost = crate::text::width(part).div_ceil(width).max(1);
             if cost > remaining {
                 break;
             }

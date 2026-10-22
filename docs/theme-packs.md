@@ -124,3 +124,8 @@ snapshot. Invalid explicit packs fail startup before binding. Normal local-conso
 fallback behavior above is unchanged. Native theme/plain/resize/editor checks and
 three short 250-member VM workloads pass; automatic scheduling, hot reload and
 commissioned scene artwork remain separate work.
+
+The optional `terminal` menu action opens session-only [terminal settings](terminal-capabilities.md).
+Add it with a free hotkey (the current base example uses T). Existing custom
+layouts are not remapped automatically. Rich color headers use the sysop's
+existing 16-color palette; this does not widen trusted art or theme-text formats.

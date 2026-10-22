@@ -330,6 +330,7 @@ fn only_runtime_capability_enables_door_arrows_and_hotkeys() {
     assert_eq!(theme.hotkey(b'd', false), Some(Action::Doors));
     let mut menu = Menu::new(&theme, false);
     menu.feed(Key::Up); // Quit
+    menu.feed(Key::Up); // Terminal settings
     menu.feed(Key::Up); // Doors, enabled by host
     assert_eq!(menu.feed(Key::Enter), Some(Action::Doors));
     theme.set_doors_enabled(false);
@@ -339,10 +340,10 @@ fn only_runtime_capability_enables_door_arrows_and_hotkeys() {
 #[test]
 fn optional_files_preserve_default_theme_and_use_arrows_or_hotkeys() {
     let mut theme = Theme::default();
-    assert_eq!(theme.entries().len(), 8);
+    assert_eq!(theme.entries().len(), 9);
     assert_eq!(theme.hotkey(b'f', false), None);
     theme.set_files_enabled(true).unwrap();
-    assert_eq!(theme.entries().len(), 9);
+    assert_eq!(theme.entries().len(), 10);
     assert_eq!(theme.hotkey(b'f', false), Some(Action::Files));
     let mut menu = Menu::new(&theme, false);
     menu.feed(Key::Up); // Quit
@@ -352,6 +353,7 @@ fn optional_files_preserve_default_theme_and_use_arrows_or_hotkeys() {
     assert_eq!(theme.hotkey(b'f', false), None);
     let mut menu = Menu::new(&theme, false);
     menu.feed(Key::Up);
-    menu.feed(Key::Up); // Skip unavailable Files, Doors and Sysop.
+    menu.feed(Key::Up); // Terminal settings, skipping unavailable Files
+    menu.feed(Key::Up); // Skip unavailable Doors and Sysop.
     assert_eq!(menu.feed(Key::Enter), Some(Action::Chat));
 }
