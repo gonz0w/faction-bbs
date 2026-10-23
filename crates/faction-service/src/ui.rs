@@ -559,10 +559,25 @@ impl Client {
                     self.pause();
                 }
             }
-            State::PostRoom => self.prompt(
-                State::PostReply(Self::positive(text)?),
-                "Reply to post ID (blank for new message): ",
-            ),
+            State::PostRoom => self.post_open(board, Self::positive(text)?)?,
+            State::DraftChoice(room, saved) => match text.to_ascii_lowercase().as_str() {
+                "r" => self.writing_begin(
+                    board,
+                    theme,
+                    room,
+                    saved.reply_to,
+                    saved.subject.clone(),
+                    Some(saved),
+                )?,
+                "d" => {
+                    board.delete_room_draft(self.session()?, room, &saved.request_id)?;
+                    self.prompt(
+                        State::PostReply(room),
+                        "Reply to post ID (blank for new message): ",
+                    );
+                }
+                _ => self.pause(),
+            },
             State::PostReply(room) => {
                 let reply = if text.is_empty() {
                     None
@@ -822,18 +837,43 @@ impl Client {
             && self.output.is_empty()
         {
             self.approved(board)?;
+            let full = matches!(
+                self.state,
+                State::Writing {
+                    screen: Some(_),
+                    preview: None,
+                    confirm: false,
+                    ..
+                }
+            );
             self.dimensions = self.size();
             self.ansi = self.capable();
             self.input.clear();
-            let _ = termios::tcflush(&self.tty, termios::QueueSelector::IFlush);
-            if let State::Writing { preview, .. } = &mut self.state {
+            if !full || !self.ansi {
+                let _ = termios::tcflush(&self.tty, termios::QueueSelector::IFlush);
+            }
+            if let State::Writing {
+                screen,
+                preview,
+                confirm,
+                ..
+            } = &mut self.state
+            {
                 *preview = None;
+                *confirm = false;
+                if !self.ansi {
+                    *screen = None;
+                    *confirm = full;
+                }
             }
             self.queue(
                 "\nTerminal resized; completed draft lines kept; unfinished input cleared.\n",
             );
-            self.queue(faction_terminal::composer::PROMPT);
-            return Ok(());
+            if full && !self.ansi {
+                self.queue("Press Enter to resume line editing: ");
+                return Ok(());
+            }
+            return self.writing_show(board, theme, "resized; draft kept");
         }
         if matches!(self.state, State::Directory(_) | State::RoomBrowse(_))
             && self.size() != self.dimensions
@@ -924,6 +964,36 @@ impl Client {
             Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => return Ok(()),
             Err(e) => return Err(e.into()),
         };
+        if matches!(
+            self.state,
+            State::Writing {
+                screen: None,
+                confirm: true,
+                ..
+            }
+        ) {
+            self.approved(board)?;
+            if bytes[..n].iter().any(|b| matches!(b, b'\n' | b'\r')) {
+                let state = std::mem::replace(&mut self.state, State::Closing);
+                self.writing_line(state, "", board, theme)?;
+                let _ = termios::tcflush(&self.tty, termios::QueueSelector::IFlush);
+            }
+            return Ok(());
+        }
+        if matches!(
+            self.state,
+            State::Writing {
+                screen: Some(_),
+                preview: None,
+                confirm: false,
+                ..
+            }
+        ) {
+            if let Err(e) = self.writing_input(&bytes[..n], board, theme) {
+                self.recover(e, board, theme);
+            }
+            return Ok(());
+        }
         if matches!(self.state, State::Classic) {
             self.approved(board)?;
             for &byte in &bytes[..n] {

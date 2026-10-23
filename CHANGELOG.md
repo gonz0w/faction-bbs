@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Full-screen caret/paragraph room editing, themed desk names, explicit confirmed
+  send, and classic fallback with resize/input recovery. Schema 8 adds explicit
+  sysop-readable room checkpoints, resume/delete, four-room quotas, 30-day
+  recovery and atomic send cleanup; old exports remain readable. Stop/drain and
+  verify a complete backup before upgrade. Private-mail drafts remain device-side.
+
+
 - Optional `/edit` room writing desk: multiline paragraphs, undo/clear, fresh reply
   quoting, paged inert preview and explicit send/cancel in local/worker/shared
   sessions. Existing one-line posts and retry/unread semantics remain. Drafts

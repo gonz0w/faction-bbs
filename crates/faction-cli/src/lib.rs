@@ -348,6 +348,49 @@ fn post_in_room(
     ansi: bool,
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
+    if let Some(saved) = board.room_draft(s, room)? {
+        match line(
+            "Saved room draft: [R]esume [D]elete and start new [Q]uit: ",
+            1,
+        )?
+        .to_ascii_lowercase()
+        .as_str()
+        {
+            "r" => {
+                let subject = saved.subject.clone();
+                let reply = saved.reply_to;
+                if let Some((body, key)) = writing::run(
+                    board,
+                    s,
+                    faction_terminal::composer::Target {
+                        room,
+                        reply,
+                        subject: &subject,
+                    },
+                    theme,
+                    ansi,
+                    caps,
+                    Some(saved),
+                )? {
+                    return send_post(
+                        board,
+                        s,
+                        room,
+                        reply,
+                        subject,
+                        body,
+                        match key {
+                            Some(k) => k,
+                            None => request_id()?,
+                        },
+                    );
+                }
+                return Ok(());
+            }
+            "d" => board.delete_room_draft(s, room, &saved.request_id)?,
+            _ => return Ok(()),
+        }
+    }
     let unicode = caps.unicode;
     // Recheck the selected ID before showing the composer too.
     board.unread_cursor(s, room)?;
@@ -383,14 +426,36 @@ fn post_in_room(
             theme,
             ansi,
             caps,
+            None,
         )? {
-            Some(body) => body,
+            Some(result) => result,
             None => return Ok(()),
         }
     } else {
-        body
+        (body, None)
     };
-    let key = request_id()?;
+    send_post(
+        board,
+        s,
+        room,
+        reply,
+        subject,
+        body.0,
+        match body.1 {
+            Some(k) => k,
+            None => request_id()?,
+        },
+    )
+}
+fn send_post(
+    board: &mut Board,
+    s: &Session,
+    room: i64,
+    reply: Option<i64>,
+    subject: String,
+    body: String,
+    key: String,
+) -> Result<()> {
     println!("Submission ID: {key}");
     loop {
         match board.post_article(

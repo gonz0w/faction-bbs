@@ -58,4 +58,4 @@ browser frame is at most 8 KiB. The existing queue/drain/default limits remain.
 
 At the body prompt, `/edit` opens the optional [room writing desk](writing-desk.md)
 for multiline paragraphs, quotes, preview and explicit send/cancel. Unsent drafts
-remain in the current connection only.
+need explicit Save for reconnect recovery; `.screen` enables the optional full editor.

@@ -1,12 +1,13 @@
 # Roadmap and stage
 
-## Comfortable room writing
+## Full-screen writing and room recovery
 
-After checked #147, the [room writing desk](../docs/writing-desk.md) adds opt-in
-multiline room posts with quotes, undo/clear, preview and explicit send/cancel.
-This first #141/#21 slice supports #133's social hangout direction. Full-screen
-caret editing and recoverable drafts remain open; the wall/member pages and
-other leading #133 stories follow coherent room/visit work. Hardening stays later.
+After checked #148, #141 adds the [full-screen room editor](../docs/writing-desk.md),
+classic fallback and explicit recoverable board checkpoints. Native device mail
+remains separate. Schema-8 stopped upgrades/backups, inert themed titles, current
+approval and original resource defaults stay explicit. Social wall/member pages/
+gatherings and the other #133 stories can build on the room/visit foundation;
+advanced editor/autosave/member-export increments remain separate. Hardening later.
 
 ## Useful room navigation
 

@@ -63,6 +63,7 @@ enum State {
     RoomId(bool),
     ReadMore(i64, i64, usize),
     PostRoom,
+    DraftChoice(i64, faction_core::SavedRoomDraft),
     PostReply(i64),
     PostSubject(i64, Option<i64>),
     PostBody(i64, Option<i64>, String),
@@ -72,6 +73,9 @@ enum State {
         subject: String,
         draft: faction_terminal::composer::Draft,
         preview: Option<usize>,
+        key: Option<String>,
+        screen: Option<faction_terminal::composer::Screen>,
+        confirm: bool,
     },
     PostRetry {
         room: i64,

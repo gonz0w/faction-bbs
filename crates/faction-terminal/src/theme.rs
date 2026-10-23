@@ -109,6 +109,7 @@ pub struct Theme {
     id: String,
     board: String,
     menu_title: String,
+    writing_title: String,
     welcome: String,
     logout: String,
     normal: Style,
@@ -129,6 +130,7 @@ impl Default for Theme {
             id: "builtin-text".into(),
             board: "Faction BBS".into(),
             menu_title: "Main menu".into(),
+            writing_title: "Writing desk".into(),
             welcome: "Independent boards. Private rooms.".into(),
             logout: "Until next time.".into(),
             normal: Style::new(7, 0, false),
@@ -169,6 +171,7 @@ const BASE_KEYS: &[&str] = &[
     "id",
     "board",
     "menu_title",
+    "writing_title",
     "welcome",
     "logout",
     "normal",
@@ -185,6 +188,7 @@ const BASE_KEYS: &[&str] = &[
     "permission",
 ];
 const SEASON_KEYS: &[&str] = &[
+    "writing_title",
     "version",
     "id",
     "welcome",
@@ -367,6 +371,9 @@ impl Theme {
     pub fn board(&self) -> &str {
         &self.board
     }
+    pub fn writing_title(&self) -> &str {
+        &self.writing_title
+    }
     pub fn menu_title(&self) -> &str {
         &self.menu_title
     }
@@ -393,6 +400,7 @@ impl Theme {
         for (name, dest, max) in [
             ("board", &mut self.board, 36),
             ("menu_title", &mut self.menu_title, 24),
+            ("writing_title", &mut self.writing_title, 24),
             ("welcome", &mut self.welcome, 36),
             ("logout", &mut self.logout, 60),
         ] {
