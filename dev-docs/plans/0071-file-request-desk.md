@@ -1,7 +1,7 @@
 # 0071: File request desk and fulfillment
 
 Issue: [#140](https://github.com/gonz0w/faction-bbs/issues/140)
-Status: implemented and validated; focused PR ready
+Status: implemented and validated; [PR #169](https://github.com/gonz0w/faction-bbs/pull/169) open
 
 ## Goal and constraints
 
@@ -20,7 +20,8 @@ playground off/intact. Defer hardening, external retrieval and federation.
 - [x] Complete host/native terminal, SSH/native transfer and complete-recovery checks.
 - [x] Update evidence/CI/docs and run all 62 maintained offline policy/evidence
   commands, full Rust/terminal workflow and source preservation checks.
-- [ ] Verify the committed source archive and open the focused PR closing #140.
+- [x] Verify the committed source archive with all 62 offline commands and open
+  PR #169 closing #140; GitHub CI is running.
 
 ## Validation and decisions
 
