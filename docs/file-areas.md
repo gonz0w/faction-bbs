@@ -204,3 +204,11 @@ Area policy is independent of SFTP. Future ZMODEM/native-client/other transports
 can use bounded reservation/claim/check/chunk/complete semantics behind a distinct
 adapter boundary. Never expose trusted adapter completion methods as member RPCs.
 Files, mail and game storage/authority stay separate. No JS/TS dependency was added.
+
+
+## Deliberate travel preferences
+
+See [travel settings](travel-modes.md) for the local Boards T panel, compact text
+and per-file payload ceilings chosen before connecting. Limits concern file bytes,
+not total encrypted wire costs. Existing grants/review/confirmations remain.
+Preferences are memory-only; no route, account, vault or profile changes.

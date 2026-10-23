@@ -1,5 +1,12 @@
 # Roadmap and stage
 
+## Deliberate interactive travel
+
+After merged #166, the first #159 increment adds native local travel preferences:
+compact text visits and explicit per-file payload ceilings. Offline exchange/reply
+sync (#145), measured named slow-link profiles and other transports remain open.
+Keep classic presentation, existing transfer authority and ordinary defaults.
+
 ## Discussion discovery
 
 After merged #164, #142 adds useful access to older conversations: bounded literal

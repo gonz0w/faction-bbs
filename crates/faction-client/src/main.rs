@@ -8,6 +8,7 @@ mod profile;
 mod sftp;
 mod stream;
 mod transport;
+mod travel;
 use faction_files::invalid;
 use faction_terminal::{Decoder, Key};
 use profile::Profile;
@@ -22,6 +23,7 @@ use std::{
     time::{Duration, Instant},
 };
 use transport::Remote;
+use travel::Travel;
 struct Terminal {
     input: File,
     output: File,
@@ -202,11 +204,18 @@ fn reference(remote: &Remote, s: &str) -> io::Result<String> {
     }
     Err(invalid())
 }
-fn transfer(t: &mut Terminal, r: &mut Remote, p: &Profile, sending: bool) -> io::Result<()> {
+fn transfer(
+    t: &mut Terminal,
+    r: &mut Remote,
+    p: &Profile,
+    sending: bool,
+    travel: &Travel,
+) -> io::Result<()> {
     let (row, path, source) = if sending {
         let local = PathBuf::from(t.line("Local file to upload: ", 512)?);
         let file = sftp::source(&local)?;
         let size = file.metadata()?.len().to_string();
+        travel.check_file(&size)?;
         let area = t.line("Area ID: ", 10)?;
         let default = local
             .file_name()
@@ -275,6 +284,7 @@ fn transfer(t: &mut Terminal, r: &mut Remote, p: &Profile, sending: bool) -> io:
             safe(&metadata[0][3]),
             safe(&metadata[0][4])
         ))?;
+        travel.check_file(&metadata[0][3])?;
         let path = PathBuf::from(t.line("Save as (new local filename): ", 512)?);
         if !t
             .line("Download to this local path? [y/N]: ", 1)?
@@ -326,7 +336,7 @@ fn transfer(t: &mut Terminal, r: &mut Remote, p: &Profile, sending: bool) -> io:
     }
     Ok(())
 }
-fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile) -> io::Result<()> {
+fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile, travel: &Travel) -> io::Result<()> {
     let mut after = String::new();
     let mut last_area = String::new();
     while r.native {
@@ -395,8 +405,8 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile) -> io::Result<()> {
                         after = f[1].clone();
                     }
                 }
-                b'U' => transfer(t, r, p, true)?,
-                b'D' => transfer(t, r, p, false)?,
+                b'U' => transfer(t, r, p, true, travel)?,
+                b'D' => transfer(t, r, p, false, travel)?,
                 b'I' => {
                     let item = t.line("File ID or faction-file link: ", 128)?;
                     for f in r.rpc(&["info", &reference(r, &item)?])? {
@@ -428,12 +438,33 @@ fn run() -> io::Result<()> {
     if args.len() == 3 && args[0] == "--mail-store" {
         return mail_ui::run(Path::new(&args[1]), &args[2]);
     }
-    if !matches!(args.len(), 2 | 3)
-        || !matches!(args[0].as_str(), "--profile" | "--boards")
-        || (args.len() == 3 && args[2] != "--kitty")
-    {
+    if args.len() < 2 || !matches!(args[0].as_str(), "--profile" | "--boards") {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty] | --mail-store PRIVATE_DIR init|open|recover",
+            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty | --compact] [--file-budget BYTES] | --mail-store PRIVATE_DIR init|open|recover",
+        ));
+    }
+    let mut travel = Travel::default();
+    let (mut kitty, mut compact_seen, mut budget_seen) = (false, false, false);
+    let mut i = 2;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--kitty" if !kitty => kitty = true,
+            "--compact" if !compact_seen => {
+                travel.compact = true;
+                compact_seen = true;
+            }
+            "--file-budget" if !budget_seen => {
+                i += 1;
+                travel.budget(args.get(i).ok_or_else(invalid)?)?;
+                budget_seen = true;
+            }
+            _ => return Err(invalid()),
+        }
+        i += 1;
+    }
+    if kitty && travel.compact {
+        return Err(io::Error::other(
+            "choose --kitty or --compact for this visit",
         ));
     }
     let catalog = if args[0] == "--boards" {
@@ -451,9 +482,9 @@ fn run() -> io::Result<()> {
     if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
         return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
     }
-    let graphics = args.len() == 3 && t.probe_graphics()?;
+    let graphics = kitty && t.probe_graphics()?;
     if let Some(p) = profile {
-        return session(&mut t, &p, graphics, false).map(|_| ());
+        return session(&mut t, &p, graphics, false, &travel).map(|_| ());
     }
     let catalog = catalog.ok_or_else(invalid)?;
     let mut last = 0;
@@ -461,6 +492,15 @@ fn run() -> io::Result<()> {
         let i = match launcher::choose(&mut t, &catalog, last)? {
             launcher::Destination::Quit => break,
             launcher::Destination::Board(i) => i,
+            launcher::Destination::Travel(selected) => {
+                last = selected;
+                if let Err(e) = travel.panel(&mut t)
+                    && e.kind() != io::ErrorKind::Interrupted
+                {
+                    return Err(e);
+                }
+                continue;
+            }
             launcher::Destination::Mail(selected) => {
                 last = selected;
                 // This branch exists only in the local picker, with no Remote/SSH child.
@@ -483,6 +523,10 @@ fn run() -> io::Result<()> {
             // Reload only after local selection, retaining all existing SSH/key checks.
             let p = Profile::load(&b.profile)?;
             t.print(&format!("\x1b[2J\x1b[HLOCAL CONNECTION / {}\r\nSSH: {} port {}\r\nFiles: {} port {}\r\nVerified local profile; independent login/approval.\r\nNo account, agent or device keys forwarded.\r\n", b.label, safe(&p.host), p.port, safe(&p.file_host), p.file_port))?;
+            t.print(&format!(
+                "Travel: {}\r\nPayload bytes only; SSH overhead/retries extra.\r\n",
+                travel.summary()
+            ))?;
             termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
             if !t
                 .line("Connect using this local profile? [y/N]: ", 1)?
@@ -491,7 +535,7 @@ fn run() -> io::Result<()> {
                 return Ok(());
             }
             t.print("Ctrl-] then B: local boards. Ctrl-] twice: send Ctrl-].\r\n")?;
-            let result = session(&mut t, &p, graphics, true);
+            let result = session(&mut t, &p, graphics && !travel.compact, true, &travel);
             if graphics {
                 faction_terminal::graphics::cleanup(&mut t.output);
             }
@@ -513,13 +557,20 @@ fn run() -> io::Result<()> {
     }
     Ok(())
 }
-fn session(t: &mut Terminal, p: &Profile, graphics: bool, boards: bool) -> io::Result<()> {
+fn session(
+    t: &mut Terminal,
+    p: &Profile,
+    graphics: bool,
+    boards: bool,
+    travel: &Travel,
+) -> io::Result<()> {
     let mut size = termios::tcgetwinsize(&t.input)?;
     if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
         return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
     }
     let mut local_keys = launcher::Keys::default();
-    let mut r = Remote::start(p, size.ws_row, size.ws_col)?;
+    t.print(&format!("LOCAL TRAVEL: {}\r\n", travel.summary()))?;
+    let mut r = Remote::start(p, size.ws_row, size.ws_col, travel.compact)?;
     r.filter.graphics.enabled = graphics;
     let mut handshake = None;
     loop {
@@ -530,7 +581,7 @@ fn session(t: &mut Terminal, p: &Profile, graphics: bool, boards: bool) -> io::R
             return Err(io::Error::other("graphics transfer timeout"));
         }
         if r.native {
-            file_menu(t, &mut r, p)?;
+            file_menu(t, &mut r, p, travel)?;
         }
         if !r.output.is_empty() {
             faction_terminal::graphics::write_tty(

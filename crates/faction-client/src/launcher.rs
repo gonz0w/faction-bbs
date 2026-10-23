@@ -90,10 +90,12 @@ enum Choice {
     Open(usize),
     Quit,
     Mail,
+    Travel,
 }
 pub(super) enum Destination {
     Board(usize),
     Mail(usize),
+    Travel(usize),
     Quit,
 }
 impl View {
@@ -102,6 +104,7 @@ impl View {
             Key::Cancel | Key::Hotkey(b'Q') => Choice::Quit,
             Key::Enter => Choice::Open(self.selected),
             Key::Hotkey(b'M') if mail => Choice::Mail,
+            Key::Hotkey(b'T') => Choice::Travel,
             Key::Hotkey(k @ b'A'..=b'D') => {
                 let i = self.selected / PAGE * PAGE + usize::from(k - b'A');
                 if i < count {
@@ -154,6 +157,7 @@ impl View {
             ));
         }
         out.push_str("\r\nArrows/Tab: select  N/P: page\r\nA-D/Enter: choose  Q: quit\r\n");
+        out.push_str("T: travel mode / file ceiling\r\n");
         out.push_str(if catalog.mail_store.is_some() {
             "M: local offline vault (no SSH)\r\n"
         } else {
@@ -183,6 +187,7 @@ pub(super) fn choose(t: &mut Terminal, catalog: &Catalog, last: usize) -> io::Re
                 Choice::Quit => return Ok(Destination::Quit),
                 Choice::Open(i) => return Ok(Destination::Board(i)),
                 Choice::Mail => return Ok(Destination::Mail(view.selected)),
+                Choice::Travel => return Ok(Destination::Travel(view.selected)),
                 Choice::Stay => break,
             }
         }
@@ -273,6 +278,11 @@ mod tests {
             v.feed(Key::Hotkey(b'D'), 16, false),
             Choice::Open(7)
         ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'T'), 16, false),
+            Choice::Travel
+        ));
+        assert_eq!(v.selected, 4);
         assert!(v.render(&c).lines().count() <= 18);
         assert!(Catalog::parse(&(source + "[[boards]]" + body)).is_err());
     }

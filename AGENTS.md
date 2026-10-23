@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 adds curated terminal exhibits, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 adds deliberate native travel preferences, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1362,3 +1362,33 @@ are deliberately excluded from the unchanged group. Validation: 302 Rust per OS,
 recovery controls per OS (native distinct UID CLI), plus prior terminal/social/
 writer/vault regressions. Keep guard 49 and preserve this actual input/result set
 before later edits. Owned clone/cache removed; saved owner preview stays off.
+
+
+## Deliberate native travel preferences
+
+Read docs/travel-modes.md, ADR 0064 and plan 0069. #159 stays open: this increment
+adds ordinary/compact text and per-file payload ceilings, not offline exchange,
+rate shaping or named-link validation. One in-memory Travel value, local picker T
+with draft/apply/cancel/highlight preserved, fixed --compact/--file-budget flags.
+No remote setters/history/profile/vault writes. Zero defers all files; ordinary
+and 16-MiB defaults remain. Compact sets only TERM=faction-compact on the existing pinned SSH
+command; no route/auth/host-verification downgrade. Disable optional board graphics.
+
+Check known upload size before reservation; inspect authorized download metadata
+then check ceiling before destination/grant/SFTP. Existing confirmation, exact size/
+checksum binding, pending review, grants/quotas/cleanup remain. Payload ceiling is
+not wire/session budget; SSH overhead/retries extra. Keep schema 14, native buffers/
+deadlines and server session/credential/helper/output limits. Snapshot 36/gallery-
+baseline-manifest freezes 277 prior inputs/whole gallery result; keep all 49 old
+identities/guards. Owned software validation only, owner playground off, hardening
+later. No new registry dependency, helper/listener or capacity claim.
+
+
+`travel-netbsd` pins 272 matched native inputs/29 harness/review inputs/thirteen
+unchanged dependency/access/credential inputs. 304 Rust per OS, 130 Python, six
+local travel PTYs per OS, nine actual SSH/native/SFTP and seventeen recovery per
+OS (native distinct UID CLI) pass, plus prior terminal/social/art/editor/vault
+regressions. The actual test caught missing native advertisement under dumb TERM:
+reserved faction-compact enables only the existing Files advertisement while using
+plain rendering; ordinary dumb SSH remains escape-free. Keep guard 50 and preserve
+this actual source/result set before later edits. Owner preview off and intact.

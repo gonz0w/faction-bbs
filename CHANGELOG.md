@@ -4,6 +4,10 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add device-local native travel preferences: ordinary/compact visits, explicit
+  apply/cancel and per-file payload ceilings before transfer grants. Preserve
+  classic presentation, default limits and existing file review/checksum paths.
+
 - Add optional owner-curated ANSI/ASCII art galleries, named exhibits, required
   artist/provenance/permission notes, bounded canonical paging and explicit text
   editions. Original Nightwire pack and current-grant file offers work through

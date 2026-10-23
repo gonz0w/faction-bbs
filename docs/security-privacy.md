@@ -316,3 +316,11 @@ See [the gallery guide](scene-gallery.md) for the optional owner-managed startup
 pack, current-approval file links, canonical ANSI/text editions and rights review.
 Gallery packs are external host configuration, preserved separately from database
 exports/bundles. No new schema, public service or raw uploaded graphics authority.
+
+
+## Device-local travel choices
+
+[Travel settings](travel-modes.md) stay in the native process, never central history
+or remote authority. Compact uses the same pinned SSH and local approval path;
+per-file size deferral precedes upload reservation/download grant/SFTP. No route
+fallback, server mail decryption, new schema or changed resource defaults.

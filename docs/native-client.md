@@ -121,3 +121,11 @@ The member-owned [board launcher](board-launcher.md) optionally opens the existi
 [local offline vault](local-mail-vault.md) with M between board visits. Its store
 path is an explicit private catalog setting. No SSH child exists during unlock;
 network private mail and roaming authentication remain follow-on work.
+
+
+## Deliberate travel preferences
+
+See [travel settings](travel-modes.md) for the local Boards T panel, compact text
+and per-file payload ceilings chosen before connecting. Limits concern file bytes,
+not total encrypted wire costs. Existing grants/review/confirmations remain.
+Preferences are memory-only; no route, account, vault or profile changes.

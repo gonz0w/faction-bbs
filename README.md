@@ -126,6 +126,11 @@ the BBS flow: select Files, upload/download with local confirmation and progress
 and return to the connected board. Room/chat file links recheck current permissions;
 the client can download recently seen links by number. This preview runs on macOS
 and native NetBSD; ordinary SSH/manual SFTP remain available.
+Optional **[native travel settings](docs/travel-modes.md)** add a local T panel
+before connecting: ordinary/compact text and a per-file payload ceiling. Explicit
+apply/cancel, direct CLI flags and size deferral keep low-cost visits deliberate;
+classic board content and existing transfer approvals remain. Offline exchange
+and measured slow-link profiles are follow-on work.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
 visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)

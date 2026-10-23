@@ -28,6 +28,14 @@ class RepositoryChecks(unittest.TestCase):
         path.write_text(path.read_text() + '\n[Missing](docs/does-not-exist.md)\n')
         self.assertIn('broken local link', self.errors())
 
+    def test_snapshot_links_are_historical_data_but_no_js_policy_still_applies(self):
+        folder = self.root / 'dev-docs/evidence/sources/synthetic'
+        folder.mkdir()
+        (folder / 'README.md').write_text('[Original](missing-original-tree.md)\n')
+        self.assertNotIn('broken local link', self.errors())
+        (folder / 'bad.js').write_text('// prohibited even in a snapshot\n')
+        self.assertIn('JavaScript/TypeScript', self.errors())
+
     def test_changed_historical_source_is_rejected(self):
         path = self.root / 'dev-docs/archive/seed/initial-seed-prd.md'
         path.write_text(path.read_text() + '\nUnexpected historical edit.\n')

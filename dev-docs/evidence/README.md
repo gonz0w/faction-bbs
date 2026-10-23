@@ -225,3 +225,12 @@ controls and seventeen existing recovery controls per OS. Snapshot 35 freezes
 The new record pins 269 matched native inputs/25 host harnesses/thirteen unchanged
 inputs. Guard 49 checks it offline. Owned clone/cache removed, saved preview off;
 no capacity, raw-art, public-publication or hardening claim.
+
+
+[Native travel evidence](travel-netbsd/README.md), the first #159 increment, records
+304 Rust tests per OS, 130 Python, six local travel PTYs per OS, nine actual
+SSH/native/restricted-SFTP controls and seventeen existing recovery controls per OS.
+Snapshot 36 preserves 277 prior inputs and the whole gallery record. New evidence
+pins 272 matched native inputs/29 host harnesses/thirteen unchanged inputs; guard
+50 checks it offline. Owned clone/cache removed, saved playground stopped/preserved.
+No wire-budget/offline/route/throughput/physical-radio/capacity claim.
