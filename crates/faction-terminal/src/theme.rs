@@ -24,6 +24,7 @@ pub enum Action {
     Wall,
     MemberPages,
     Gatherings,
+    Polls,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -41,12 +42,14 @@ impl Action {
             "contacts" => Ok(Self::Contacts),
             "wall" => Ok(Self::Wall),
             "member_pages" => Ok(Self::MemberPages),
+            "polls" => Ok(Self::Polls),
             "gatherings" => Ok(Self::Gatherings),
             _ => Err("unknown menu action"),
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Gatherings
+        self != Self::Polls
+            && self != Self::Gatherings
             && self != Self::MemberPages
             && self != Self::Wall
             && self != Self::Contacts
@@ -131,6 +134,7 @@ pub struct Theme {
     wall_enabled: bool,
     pages_enabled: bool,
     gatherings_enabled: bool,
+    polls_enabled: bool,
     entries: Vec<Entry>,
     grid: bool,
     identity_ascii: Option<String>,
@@ -155,6 +159,7 @@ impl Default for Theme {
             wall_enabled: false,
             pages_enabled: false,
             gatherings_enabled: false,
+            polls_enabled: false,
             grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
@@ -340,6 +345,36 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_polls_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.polls_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Polls) {
+            let key = std::iter::once(b'V')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free poll hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            self.entries.insert(
+                self.entries.len() - 1,
+                Entry {
+                    action: Action::Polls,
+                    key,
+                    label: "Polls".into(),
+                    description: "Local questions and votes".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
     pub fn set_gatherings_enabled(&mut self, enabled: bool) -> Result<()> {
         self.gatherings_enabled = enabled;
         if enabled && !self.entries.iter().any(|e| e.action == Action::Gatherings) {
@@ -466,6 +501,7 @@ impl Theme {
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
         (action == Action::Gatherings && self.gatherings_enabled)
+            || (action == Action::Polls && self.polls_enabled)
             || (action == Action::MemberPages && self.pages_enabled)
             || (action == Action::Wall && self.wall_enabled)
             || (action == Action::Contacts && self.directory_enabled)

@@ -273,3 +273,14 @@ list. Revisions reject stale edits/responses; time/place changes clear attendanc
 Current event/approval/private-channel checks apply on deliberate jumps. A title/
 UTC-only optional login notice grants no destination access or notification export.
 Schema-11 upgrades require stopped complete backup and fresh-path rollback.
+
+
+## Local community polls
+
+[Poll ballots](polls.md) are ordinary plaintext owner data in complete backups,
+with no secret-ballot/election-grade claim. Only own selections and permitted totals
+are exposed; no voter-name list or author/sysop display-policy bypass. First ballot
+permanently locks wording; current revisions protect reviewed votes and close races.
+Hidden/inactive polls cannot accept votes; revoked voters are excluded from totals.
+No message publication, unread mutation, private-mail decrypt or federation path.
+Schema-12 upgrades require stopped complete backup and fresh-path rollback.

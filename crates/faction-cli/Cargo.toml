@@ -11,6 +11,7 @@ name = "faction"
 path = "src/main.rs"
 
 [dependencies]
+faction-polls = { path = "../faction-polls" }
 faction-gatherings = { path = "../faction-gatherings" }
 faction-pages = { path = "../faction-pages" }
 faction-wall = { path = "../faction-wall" }

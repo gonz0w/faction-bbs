@@ -2,10 +2,10 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): stop/preserve the tested playground, merge
+**Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
-The local vault integration is complete. The #136 gatherings batch is implemented
-and validated with classic fallback. Keep hardening #106–#111 later.** Native-device
+The local vault integration and #136 gatherings are merged. The #139 local
+poll batch is implemented and validated, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1223,3 +1223,39 @@ WAL writer holds the DB, with age predicates still hiding expired rows. Explicit
 writes remain Busy/retry and unsaved text survives. Keep all 45 saved guards and
 freeze the new actual inputs/whole result before later edits. Owned clone/cache
 removed; saved playground stays off. No new capacity/hardening/federation claim.
+
+
+## Local community polls
+
+Read docs/polls.md, plan 0065 and ADR 0060. Schema 12 adds optional local policy,
+one-question polls, numbered choices and one plaintext ballot/member. Keep 32
+retained polls, four open per ordinary creator, 250 retained ballots/poll and bounded
+inert ASCII. First ballot permanently locks wording/choices/result policy, even
+if withdrawn. Only creator edits/closes/cancels; close/cancel final. Sysop hide/show/
+remove never rewrites authorship; author edit cannot clear hide. Result visibility
+applies to creator/sysop too, but owner/backups can read ballot identities. No
+voter-name API, secret-ballot/election/federation claim or private-mail fallback.
+
+Use faction-polls shared workflow for local/worker/shared terminals. Only explicit
+Save persists; Busy retains preview/key. Read transactions remain available during
+another WAL writer. Reject stale reviewed choice before indexing changed options.
+No unread mutation, checkpoint, external service or scheduler. Host-only V stays
+disabled even if a theme declares polls; preserve crowded/classic menu navigation.
+Current approval/revision/visibility checks apply on each frame/action.
+
+Old schema-2..11 exports stay read-only valid; stopped/drained verified complete
+pre-upgrade backup and fresh-path rollback apply. Snapshot 32/gatherings-baseline-
+manifest freezes 228 prior actual inputs and the whole gathering result before
+edits. Keep all 45 historical guards/identities and use separate current evidence.
+No new registry dependency/helper/listener or relaxed resource defaults. Validate
+only owned software clones; saved playground stays off and hardening later.
+
+
+`polls-netbsd` pins 230 matched selected native inputs and nineteen host harness/
+review inputs. 268 Rust per OS /129 Python; eight poll PTYs per OS; twelve actual
+SSH/native/plain and fifteen complete-recovery controls per OS pass (native actual
+distinct UID CLI), plus existing social/editor/menu/art/vault/picker regressions.
+A test caught a declared poll action bypassing disable; Action::Polls stays host-
+optional. Choice pages clamp to real bounds and resize widths. Keep all 46 guards;
+freeze the new actual inputs/whole result before later edits. Owned VM/cache/
+credentials removed; owner playground stays off. No new capacity or hardening claim.

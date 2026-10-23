@@ -147,7 +147,8 @@ impl Client {
             | Action::Contacts
             | Action::Wall
             | Action::MemberPages
-            | Action::Gatherings => {
+            | Action::Gatherings
+            | Action::Polls => {
                 self.queue("Optional section unavailable.\n");
                 self.pause();
             }

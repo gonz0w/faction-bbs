@@ -175,3 +175,10 @@ plaintext owner data; a counts-only member view does not redact owner backups.
 Old schema-2..10 snapshots remain read-only verifiable/restorable. Make and verify
 a complete stopped pre-upgrade backup; first new-owner open migrates to schema 11.
 Use matching older binaries plus the old complete bundle in fresh paths for rollback.
+
+
+Schema 12 adds [poll policy/questions/choices/ballots](polls.md), including hidden/
+finished polls and permanent wording locks, to private owner recovery. Result
+visibility does not redact owner backups. Old schema-2..11 exports remain read-only
+valid; new-owner open migrates restored data. Stop/drain and verify a complete
+pre-upgrade backup; roll back only with its matching older binaries in fresh paths.

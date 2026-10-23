@@ -7,6 +7,8 @@ mod credentials;
 mod file_links;
 mod files;
 mod gatherings;
+mod polls;
+pub use polls::{Poll, PollConfig, PollDraft, PollResults, PollState};
 mod member_pages;
 pub use gatherings::{Gathering, GatheringConfig, GatheringDraft, GatheringPlace};
 pub mod operator;
@@ -323,12 +325,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=11).contains(&version) {
+        } else if app != APP_ID || !(1..=12).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=11).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=12).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -338,7 +340,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=11).contains(&v) {
+            } else if !(2..=12).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -349,7 +351,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=11).contains(&v) {
+            } else if !(3..=12).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -359,7 +361,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=11).contains(&v) {
+        } else if !(4..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -369,7 +371,7 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if !(5..=11).contains(&v) {
+        } else if !(5..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -378,7 +380,7 @@ impl Board {
         if v == 5 {
             tx.execute_batch(include_str!("post_metadata.sql"))?;
             tx.pragma_update(None, "user_version", 6)?;
-        } else if !(6..=11).contains(&v) {
+        } else if !(6..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -413,7 +415,7 @@ impl Board {
             )?;
             tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
             tx.pragma_update(None, "user_version", 7)?;
-        } else if !(7..=11).contains(&v) {
+        } else if !(7..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -422,7 +424,7 @@ impl Board {
         if v == 7 {
             tx.execute_batch(include_str!("room_drafts.sql"))?;
             tx.pragma_update(None, "user_version", 8)?;
-        } else if !(8..=11).contains(&v) {
+        } else if !(8..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -431,7 +433,7 @@ impl Board {
         if v == 8 {
             tx.execute_batch(include_str!("wall.sql"))?;
             tx.pragma_update(None, "user_version", 9)?;
-        } else if !(9..=11).contains(&v) {
+        } else if !(9..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -440,7 +442,7 @@ impl Board {
         if v == 9 {
             tx.execute_batch(include_str!("member_pages.sql"))?;
             tx.pragma_update(None, "user_version", 10)?;
-        } else if !(10..=11).contains(&v) {
+        } else if !(10..=12).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -449,7 +451,16 @@ impl Board {
         if v == 10 {
             tx.execute_batch(include_str!("gatherings.sql"))?;
             tx.pragma_update(None, "user_version", 11)?;
-        } else if v != 11 {
+        } else if !(11..=12).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 11 {
+            tx.execute_batch(include_str!("polls.sql"))?;
+            tx.pragma_update(None, "user_version", 12)?;
+        } else if v != 12 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;

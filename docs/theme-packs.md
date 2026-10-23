@@ -436,3 +436,9 @@ Optional [gatherings](gatherings.md) declare `action = "gatherings"` with a free
 letter, label and description. The host enables it only when the sysop policy is
 on; the default action is G. Crowded/narrow menus retain the ordered scrolling
 fallback, main arrows/Enter and direct hotkeys. Agenda commands use Enter.
+
+
+Optional [polls](polls.md) declare `action = "polls"` with a free key, label and
+inert description. The host inserts V when enabled and prevents a declared action
+from enabling disabled policy. Results use bounded ASCII `#` bars/numeric counts,
+so a modern graphics terminal is optional. Crowded menus keep classic scrolling.

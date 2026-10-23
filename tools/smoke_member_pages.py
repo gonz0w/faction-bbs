@@ -53,10 +53,10 @@ def run(a):
             c=start(True);enter(c,True);c.send('e');c.expect(EDIT);c.send('d');c.expect('Type DELETE: ');c.send('no');c.expect(EDIT);assert query('select count(*) from member_pages')==[(1,)];c.send('d');c.expect('Type DELETE: ');c.send('DELETE');c.expect('Page and retained plans removed.');c.expect(PAGES);assert query('select count(*) from member_pages')==[(0,)] and query('select count(*) from member_plans')==[(0,)];done(c,True);logout(c,True);checks.append('page_delete_requires_exact_confirmation_and_clears_retained_history')
             other=Path(tmp)/'other';c=Console(a.binary,other,'init');children.append(c);c.expect('Handle: ');c.send('sysop');c.password(password,'New password (12+ characters, hidden): ');c.password(password,'Confirm password (hidden): ');c.expect('Lobby created.');c.finish()
             with sqlite3.connect(other/'faction.sqlite3') as db:assert db.execute('select enabled,name,compact from page_settings').fetchall()==[(0,'Member pages',0)]
-            checks.append('independent_board_policy_remains_disabled_and_local');assert query('pragma user_version')==[(11,)] and query('select count(*) from unread')==[(0,)];assert all(password.encode() not in c.transcript for c in children)
+            checks.append('independent_board_policy_remains_disabled_and_local');assert query('pragma user_version')==[(12,)] and query('select count(*) from unread')==[(0,)];assert all(password.encode() not in c.transcript for c in children)
         finally:
             for c in children:c.close()
-    d=dict(result='pass',count=len(checks),checks=checks,schema_version=11,capacity_claim=False)
+    d=dict(result='pass',count=len(checks),checks=checks,schema_version=12,capacity_claim=False)
     if a.output:a.output.write_text(json.dumps(d,indent=2,sort_keys=True)+'\n')
     print('Local/worker member-page checks passed:',len(checks))
 if __name__=='__main__':

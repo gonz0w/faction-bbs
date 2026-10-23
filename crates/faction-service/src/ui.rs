@@ -90,6 +90,8 @@ impl Client {
         let theme = page_theme.as_ref().unwrap_or(theme);
         let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
         let theme = gathering_theme.as_ref().unwrap_or(theme);
+        let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
+        let theme = poll_theme.as_ref().unwrap_or(theme);
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
         self.ansi = self.capable();
@@ -201,6 +203,8 @@ impl Client {
         let theme = page_theme.as_ref().unwrap_or(theme);
         let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
         let theme = gathering_theme.as_ref().unwrap_or(theme);
+        let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
+        let theme = poll_theme.as_ref().unwrap_or(theme);
         let sysop = self.sysop_display;
         let mut menu = self.focused(theme, sysop);
         let previous = menu.focus();
@@ -236,9 +240,14 @@ impl Client {
             Action::Wall => "Community wall",
             Action::MemberPages => "Member pages",
             Action::Gatherings => "Gatherings",
+            Action::Polls => "Polls",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Polls => {
+                self.state = State::Polls(Box::default());
+                self.polls_show(board, theme)?;
+            }
             Action::Gatherings => {
                 self.state = State::Gatherings(Box::default());
                 self.gatherings_show(board, theme)?;
@@ -273,7 +282,7 @@ impl Client {
                 }
                 self.prompt(
                     State::Sysop,
-                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [C]reate room: ",
+                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [C]reate room: ",
                 );
             }
             Action::Chat => {
@@ -576,6 +585,8 @@ impl Client {
                 let gathering_theme =
                     faction_gatherings::menu_theme(board, self.session()?, theme)?;
                 let theme = gathering_theme.as_ref().unwrap_or(theme);
+                let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
+                let theme = poll_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
@@ -725,6 +736,22 @@ impl Client {
                 self.state = State::Gatherings(desk);
                 self.gatherings_show(board, theme)?;
             }
+            State::Polls(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Polls(desk);
+                self.polls_show(board, theme)?;
+            }
             State::Pages(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -758,6 +785,10 @@ impl Client {
                 self.wall_show(board, theme)?;
             }
             State::Sysop => match text.to_ascii_lowercase().as_str() {
+                "p" => {
+                    self.state = State::Polls(Box::new(faction_polls::Desk::settings()));
+                    self.polls_show(board, theme)?;
+                }
                 "g" => {
                     self.state = State::Gatherings(Box::new(faction_gatherings::Desk::settings()));
                     self.gatherings_show(board, theme)?;
@@ -1026,6 +1057,17 @@ impl Client {
                 .map_err(|_| Error::Invalid("gathering input flush"))?;
             return self.gatherings_show(board, theme);
         }
+        if matches!(self.state, State::Polls(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("member-poll input flush"))?;
+            return self.polls_show(board, theme);
+        }
         if matches!(self.state, State::Pages(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1119,6 +1161,8 @@ impl Client {
             let theme = page_theme.as_ref().unwrap_or(theme);
             let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
             let theme = gathering_theme.as_ref().unwrap_or(theme);
+            let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
+            let theme = poll_theme.as_ref().unwrap_or(theme);
             let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
@@ -1370,11 +1414,12 @@ impl Client {
                     | State::Wall(_)
                     | State::Pages(_)
                     | State::Gatherings(_)
+                    | State::Polls(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
                 let limit = if matches!(
                     self.state,
-                    State::Wall(_) | State::Pages(_) | State::Gatherings(_)
+                    State::Wall(_) | State::Pages(_) | State::Gatherings(_) | State::Polls(_)
                 ) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
@@ -1388,7 +1433,10 @@ impl Client {
                     self.capabilities.unicode
                         && !matches!(
                             self.state,
-                            State::Wall(_) | State::Pages(_) | State::Gatherings(_)
+                            State::Wall(_)
+                                | State::Pages(_)
+                                | State::Gatherings(_)
+                                | State::Polls(_)
                         ),
                     limit,
                 )
