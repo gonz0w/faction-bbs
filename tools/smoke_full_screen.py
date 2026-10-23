@@ -50,11 +50,11 @@ def run(a):
             c=start(worker=True);begin(c);command(c,'Worker body.');enter_screen(c);c.raw(b'\x11');c.expect('Classic line editing; draft kept.');c.expect(PROMPT);command(c,'.save');c.send('.leave');c.expect('last explicit checkpoint kept');action_end(c);logout(c);checks.append('worker_full_screen_returns_to_classic_and_saves')
             c=start();open_saved(c);c.send('.cancel');c.expect('Draft cancelled');action_end(c);begin(c);command(c,'Resize keeps me.');enter_screen(c);c.resize(40,18);c.raw(b'\x1b[D');c.expect(FOOTER);c.resize(30,12);c.raw(b'\x1b[D');c.expect('Press Enter to resume line editing: ');c.send('');c.expect('Classic line editing; draft kept.');c.expect(PROMPT);command(c,'.save');c.send('.leave');c.expect('last explicit checkpoint kept');c.expect('Press Enter to return to menu: ');c.send('');c.expect('Command (then Enter): ');logout(c,True);assert query('select body from room_drafts')==[('Resize keeps me.',)],repr(query('select body from room_drafts'));checks.append('resize_reflows_then_falls_back_with_complete_draft_intact')
             c=start();open_saved(c);enter_screen(c);c.raw(b'\x1b[999~');c.expect('Press Enter to resume line editing: ');c.send('');c.expect('Classic line editing; draft kept.');c.expect(PROMPT);assert count()==1;c.send('.cancel');c.expect('Draft cancelled');action_end(c);logout(c);checks.append('unsupported_input_returns_to_classic_without_send_or_lost_checkpoint')
-            assert query('pragma user_version')==[(10,)] and query('select count(*) from unread')==[(0,)]
+            assert query('pragma user_version')==[(11,)] and query('select count(*) from unread')==[(0,)]
             assert all(password.encode() not in c.transcript for c in children)
         finally:
             for c in children:c.close()
-    d=dict(result='pass',count=len(checks),checks=checks,schema_version=10,capacity_claim=False)
+    d=dict(result='pass',count=len(checks),checks=checks,schema_version=11,capacity_claim=False)
     if a.output:a.output.write_text(json.dumps(d,indent=2,sort_keys=True)+'\n')
     print('Full-screen/saved-draft local/worker checks passed:',len(checks))
 

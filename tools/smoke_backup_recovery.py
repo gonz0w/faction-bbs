@@ -49,6 +49,10 @@ def run(a):
             db.execute("UPDATE page_settings SET enabled=1,name='Recovery members'")
             db.execute("INSERT INTO member_pages VALUES(1,'Recovered bio','','','Recovered project',15,1,0,?,?)",('c'*32,int(time.time())))
             db.execute("INSERT INTO member_plans(member_id,request_id,body,visible,posted_at) VALUES(1,?,'Recovered hidden plan',0,?)",('d'*32,int(time.time())))
+            start=(int(time.time())//60+60)*60
+            db.execute("UPDATE gathering_settings SET enabled=1,name='Recovery gatherings'")
+            db.execute("INSERT INTO gatherings(organizer,request_id,revision,title,body,starts_at,ends_at,place,cancelled,hidden,changed_at) VALUES(1,?,?,'Recovered gathering','Local event survives recovery',?,?,'room:1',0,0,?)",('e'*32,'f'*32,start,start+3600,int(time.time())))
+            db.execute("INSERT INTO gathering_rsvps VALUES(1,1,2)")
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -123,6 +127,11 @@ def run(a):
             assert db.execute('select bio,project from member_pages').fetchall()==[('Recovered bio','Recovered project')]
             assert db.execute('select body,visible from member_plans').fetchall()==[('Recovered hidden plan',0)]
         checks.append('complete_restore_preserves_member_page_and_hidden_plan')
+        with sqlite3.connect(restored/'faction.sqlite3') as db:
+            assert db.execute('select enabled,name from gathering_settings').fetchall()==[(1,'Recovery gatherings')]
+            assert db.execute('select title,body,starts_at,ends_at,place from gatherings').fetchall()==[('Recovered gathering','Local event survives recovery',start,start+3600,'room:1')]
+            assert db.execute('select gathering,member,response from gathering_rsvps').fetchall()==[(1,1,2)]
+        checks.append('complete_restore_preserves_gathering_policy_event_and_response')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)

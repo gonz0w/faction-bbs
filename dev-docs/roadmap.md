@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Local gatherings and social nights
+
+Issue #136 adds the next local social batch: optional one-off UTC events, explicit
+counts-only responses, organizer changes/cancellation, sysop moderation and approved-
+login reminders with deliberate room/chat jumps. Classic terminals and current
+resource defaults remain. Recurrence/external calendars and federation remain
+separate. The saved owner playground stays off; hardening stays later.
+
 ## Current playable preview
 
 After merged #151, #152 makes the current social board easy to try through a

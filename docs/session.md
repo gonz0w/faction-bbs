@@ -46,3 +46,5 @@ Demonstrate the complete approval gate and artwork/menu order on both available 
 - [Local community wall](community-wall.md) — short ASCII signals, paging, moderation and optional weekly archives.
 
 - [Local member pages and dated .plan updates](member-pages.md) — optional profiles, explicit visibility and local moderation.
+
+- [Local gatherings and chat nights](gatherings.md) — optional UTC agenda, counts-only RSVPs and local room/chat jumps.

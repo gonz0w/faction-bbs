@@ -10,6 +10,7 @@ mod directory_ui;
 mod door_ui;
 mod doors;
 mod file_ui;
+mod gatherings_ui;
 mod native_files;
 mod operator;
 mod pages_ui;
@@ -88,6 +89,7 @@ enum State {
     },
     Wall(Box<faction_wall::Desk>),
     Pages(Box<faction_pages::Desk>),
+    Gatherings(Box<faction_gatherings::Desk>),
     Sysop,
     MembersMore(usize),
     MemberStatus(bool),
@@ -606,7 +608,11 @@ fn run() -> Result<()> {
                             c.session = Some(s);
                             c.sysop_display = m.role == faction_core::Role::Sysop;
                             c.theme_index = themes.select_now();
-                            c.identity(themes.get(c.theme_index), &m.handle);
+                            if let Err(e) =
+                                c.identity(themes.get(c.theme_index), &m.handle, &mut board)
+                            {
+                                c.error(e)
+                            }
                         }
                         Ok(_) => {
                             c.success = true;

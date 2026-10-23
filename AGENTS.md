@@ -4,7 +4,8 @@
 
 **Current priority (owner, 2026-10-22): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
-Integrate the local vault with the current client; keep hardening #106–#111 later.** Native-device
+The local vault integration is complete. The #136 gatherings batch is implemented
+and validated with classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1184,3 +1185,41 @@ only in the local picker with no active Remote/SSH child. It opens an existing
 member-side offline vault; no auto-init, BBS password reuse, remote path/trust
 selection, server decryption or network-mail/roaming claim. Keep #90/#91/#88 open.
 Thirty snapshots preserve both input sets and forty-three original result identities.
+
+
+## Local gatherings and scheduled chat nights
+
+Read docs/gatherings.md, plan 0064 and ADR 0059. Schema 11 adds optional default-
+disabled local policy, one-off explicit UTC events and counts-only responses. Keep
+64 retained/eight future per ordinary organizer/250 RSVP rows per event, 30-day lazy
+ended retention and bounded inert ASCII. Revisions guard edit/cancel/moderation and
+reviewed response; changing time/duration/place clears attendance transactionally.
+Organizer edits never clear sysop hide. No attendee-name API, notification export,
+recurrence/external calendar or federation. Operator-readable local plaintext is
+explicit before RSVP Save; private mail stays member-side encrypted.
+
+Use faction-gatherings' shared workflow for local/worker/shared terminals. Only
+explicit Save persists; retained request IDs support Busy retry. Unsaved edits have
+no checkpoint. Typed local room/channel jumps recheck current event/approval/grants;
+foreign inaccessible private channel names are omitted. Cancelled/hidden/ended or
+revoked-organizer events cannot accept new responses/jumps. Optional login title/
+UTC reminder rechecks current visibility and remains readable in plain/compact mode.
+
+Schema-2..10 snapshots stay read-only valid; stopped complete pre-upgrade backup and
+fresh-path rollback apply. Snapshot 31/client-vault-integration-baseline-manifest
+freezes 217 preceding actual inputs and the whole vault integration result. Keep
+all forty-four historical identities fixed; add dedicated current evidence. No
+new registry dependency/helper/listener or relaxed credential/session/output limits.
+Use owned software clones only; saved playground stays off and hardening later.
+
+
+`gatherings-netbsd` pins 220 matched selected native inputs and seventeen host
+harness/review inputs. Validation: 256 Rust per OS /129 Python; eight local/worker
+PTY controls per OS; eleven actual SSH/native/plain and fourteen complete-recovery
+controls per OS (native actual distinct UID CLI), plus local room/editor/social/
+menu/art/vault/picker regressions. A real Busy-save test exposed write-requiring
+redraw; gathering read transactions now tolerate deferred expiry cleanup while a
+WAL writer holds the DB, with age predicates still hiding expired rows. Explicit
+writes remain Busy/retry and unsaved text survives. Keep all 45 saved guards and
+freeze the new actual inputs/whole result before later edits. Owned clone/cache
+removed; saved playground stays off. No new capacity/hardening/federation claim.

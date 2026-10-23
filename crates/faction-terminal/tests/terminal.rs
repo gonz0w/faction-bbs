@@ -728,3 +728,22 @@ fn optional_directory_and_files_keep_full_grid_usable_in_both_enable_orders() {
         }
     }
 }
+
+#[test]
+fn gatherings_are_host_optional_and_remain_reachable_in_full_compact_menus() {
+    let p = grid_pack();
+    let mut theme = Theme::load(&p.0).unwrap();
+    assert_eq!(theme.hotkey(b'g', false), None);
+    theme.set_directory_enabled(true).unwrap();
+    theme.set_files_enabled(true).unwrap();
+    theme.set_wall_enabled(true).unwrap();
+    theme.set_pages_enabled(true).unwrap();
+    theme.set_gatherings_enabled(true).unwrap();
+    for width in [40, 80] {
+        let mut menu = Menu::with_columns(&theme, false, width);
+        assert_eq!(menu.feed(Key::Hotkey(b'G')), Some(Action::Gatherings));
+        assert!(menu.render().len() < 8192);
+    }
+    theme.set_gatherings_enabled(false).unwrap();
+    assert_eq!(theme.hotkey(b'g', false), None);
+}

@@ -8,6 +8,10 @@ Give independent communities a durable, low-bandwidth home that their sysops own
 
 The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes they remember: Vision-X, Vision/2, Oblivion, and personal Pascal-era BBS hacks. These are aesthetic and experiential references, not adopted implementations or verified historical lineage. The system should feel like a place operated by people, with distinctive identity, messaging, file sharing, and games.
 
+The optional [gatherings agenda](gatherings.md) now provides one-off UTC chat nights,
+explicit counts-only RSVPs, organizer/sysop controls and approved-login reminders.
+Local plaintext event data remains separate from device-encrypted private mail.
+
 ## Confirmed requirements
 
 | Area | Requirement |
