@@ -82,3 +82,11 @@ safe menu redraws (? refresh), never over drafts/doors. Schema/default budgets
 stay unchanged. Standalone local login and inherited workers now offer equivalent
 visit availability through their existing synchronous input loops; shared-only
 file/game adapters remain separate.
+
+
+/notify on in chat or the Lounge enables quiet visit-only idle-menu indications.
+The existing event loop polls current eligible signals at most once per two
+seconds, only with an empty menu input/output queue and idle decoder. It charges
+the existing global work budget; no new helper/connection/listener. ANSI redraws
+preserve focus; plain menus append a short ASCII indication. All active workflows
+and partial control/input states remain excluded. Default off on reconnect.

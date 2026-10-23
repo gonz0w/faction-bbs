@@ -1,12 +1,13 @@
-# Opt-in chat lounge and polite pages
+# Social lounge, polite pages and idle notifications
 
 The lounge helps approved members find people who chose to be available during
-local chat. It works in the shared service, inherited worker and local console,
+a BBS visit. It works in the shared service, inherited worker and local console,
 with the same commands on classic/plain terminals. It is disabled by default.
 
 Shared SSH/native access, local login and inherited workers support availability
 outside chat; see the session-lounge section below. Check requests explicitly with /pages or the Lounge panel;
-there are no asynchronous page popups or bells. Accepting
+optional quiet idle-menu notifications are described below; there are no bells
+or interruptions in active workflows. Accepting
 a page never switches channels, overwrites a draft or launches a private session.
 
 ## Turn it on and meet
@@ -136,8 +137,9 @@ No advertisement resumes automatically on a fresh connection.
 A star on the Lounge entry and the generic header “Page waiting: open Social
 lounge” indicate a current incoming invitation or an explicit reply to your sent
 page. The header fits classic/narrow menus even if the Lounge entry is scrolled
-offscreen. It is refreshed only at ordinary safe menu redraws; press ? to refresh
-a waiting menu or open the lounge directly. There are no unsolicited popups,
+offscreen. By default it refreshes at ordinary safe menu redraws; press ? to refresh
+a waiting menu or open the lounge directly. /notify on also enables safe idle
+menu refreshes as described below. There are no unsolicited popups,
 bells or forced switches while editing, reading, running a game or negotiating
 terminal capabilities. R refreshes the lounge. Expired signals do not become
 permanent notifications, and acceptance never automatically opens a channel.
@@ -153,8 +155,8 @@ room picking and full-screen editing. A new login starts hidden. A clean logout
 or ordinary terminal EOF/error closes the lease; abrupt process termination or
 broker-watch exit relies on the existing 60-second expiry. No keepalive helper or
 second database connection is added. Shared-only file/game adapters remain
-separate; this does not add standalone transfer or game support. Optional idle
-notifications remain follow-on #137 scope.
+separate; this does not add standalone transfer or game support. Optional idle-menu
+notifications now follow the same rules across these adapters; see below.
 
 Schema stays 17. There is no new listener, helper/thread, database connection or
 second lease per member, and all existing resource limits remain. Complete
@@ -164,3 +166,35 @@ See [ADR 0070](../dev-docs/decisions/0070-connection-scoped-social.md),
 
 See [ADR 0071](../dev-docs/decisions/0071-standalone-social-visits.md) and
 [plan 0076](../dev-docs/plans/0076-standalone-social.md) for standalone parity.
+
+## Optional idle notifications
+
+Use /notify on in the Lounge or chat to enable quiet notifications for this visit.
+/notify shows the current setting; /notify off disables it. Every new login starts
+off. This does not advertise you or override availability, mute, blocks, quiet
+hours, local approval or sysop feature controls. Choose /available separately.
+The Lounge displays the current visit setting.
+
+After at least two seconds without input, an idle main menu may show the generic
+“Page waiting: open Social lounge” indication. ANSI menus preserve the current
+arrow selection; plain terminals receive a short ASCII line and a fresh empty
+command prompt. A partial menu line or terminal control sequence defers it.
+Repeated polls coalesce the same eligible signals; there is no bell or desktop
+notification escape. Incoming pending invitations and explicit replies to your
+outgoing pages qualify. No sender name or private content appears in the notice.
+
+Drafts, chat input, readers, games/doors, file transfers, terminal settings and
+probes receive no notification output. Returning to the menu checks current
+eligibility; an expired, hidden, blocked, muted or quiet signal is not replayed
+from a deferred event queue. Requests still expire after 60 seconds. The existing
+safe menu badge and ? refresh remain available with notifications off.
+
+This applies to shared SSH/native access, local login and inherited workers,
+including classic/plain terminals. Only opted-in standalone plain main menus
+track their input directly so partial typing is safe; their existing byte and
+120-second line limits remain. No new helper/thread, SQLite connection, listener,
+registry dependency or schema is added. At most eight ID/state keys are retained
+per visit and optional polling is limited to once per two seconds while safe.
+
+See [ADR 0072](../dev-docs/decisions/0072-idle-page-notifications.md) and
+[plan 0077](../dev-docs/plans/0077-idle-notifications.md). Hardening remains later.

@@ -101,3 +101,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0070: Connection-scoped social availability](0070-connection-scoped-social.md).
 
 - [0071: Standalone social visits](0071-standalone-social-visits.md).
+
+- [0072: Safe idle page notifications](0072-idle-page-notifications.md).

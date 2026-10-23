@@ -33,10 +33,16 @@ pub(super) fn run(
             redraw = true;
         }
         if redraw {
-            let (board, lease) = board.parts()?;
+            let (board, lease, notifications) = board.parts()?;
             print!(
                 "{}",
-                desk.render(board, lease, theme, ansi && terminal::capable())?
+                desk.render_with_notifications(
+                    board,
+                    lease,
+                    theme,
+                    ansi && terminal::capable(),
+                    notifications
+                )?
             );
             io::stdout().flush()?;
             redraw = false;
@@ -55,8 +61,8 @@ pub(super) fn run(
             }
             Edit::Submit(text) => {
                 println!();
-                let (core, lease) = board.parts()?;
-                match desk.feed(&text, core, lease) {
+                let (core, lease, notifications) = board.parts()?;
+                match desk.feed_with_notifications(&text, core, lease, notifications) {
                     Ok(true) => return Ok(()),
                     Ok(false) => (),
                     Err(e) => {

@@ -17,7 +17,9 @@ The shared-service [connection lounge](../docs/social-lounge.md) now adds
 outside-chat lifetime, a current-read panel and safe menu redraw badges under
 [plan 0075](plans/0075-boardwide-social.md). Local login/inherited workers now
 catch up under [plan 0076](plans/0076-standalone-social.md), reusing synchronous
-input waits and the existing connection. Keep optional idle notification UX open.
+input waits and the existing connection. Optional idle-menu notifications now
+complete the ordinary shared/local/worker story under [plan 0077](plans/0077-idle-notifications.md),
+with default-off visit consent, bounded current signals and protected workflows.
 No server-readable private-message shortcut; hardening remains later.
 
 ## Deliberate interactive travel

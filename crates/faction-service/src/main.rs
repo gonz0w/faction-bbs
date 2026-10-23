@@ -221,6 +221,8 @@ struct Client {
     editor: LineEditor,
     skip_lf: bool,
     next_input: Instant,
+    last_input: Instant,
+    notifications: faction_pages::notifications::Notifications,
     doors_uid: Option<u32>,
     door: Option<doors::Door>,
     classic_games: Option<Arc<Vec<classic::Game>>>,
@@ -310,6 +312,8 @@ impl Client {
             editor: LineEditor::default(),
             skip_lf: false,
             next_input: now,
+            last_input: now,
+            notifications: Default::default(),
             doors_uid: None,
             door: None,
             classic_games: None,
@@ -809,6 +813,21 @@ fn run() -> Result<()> {
                     }
                 };
                 if let Err(e) = result {
+                    c.recover(e, &mut board, theme);
+                }
+            }
+            if work > 0
+                && !c.close
+                && matches!(c.state, State::Menu)
+                && c.output.is_empty()
+                && c.input.is_empty()
+                && c.decoder.idle()
+                && !ready[i * 2].contains(PollFlags::IN)
+                && c.last_input.elapsed() >= faction_pages::notifications::INTERVAL
+                && c.notifications.due(now)
+            {
+                work -= 1;
+                if let Err(e) = c.idle_notifications(&mut board, theme, now) {
                     c.recover(e, &mut board, theme);
                 }
             }

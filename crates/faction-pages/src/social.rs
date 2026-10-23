@@ -290,6 +290,26 @@ impl Desk {
         theme: &faction_terminal::Theme,
         ansi: bool,
     ) -> Result<String> {
+        self.render_inner(b, l, theme, ansi, None)
+    }
+    pub fn render_with_notifications(
+        &mut self,
+        b: &mut Board,
+        l: &ChatLease,
+        theme: &faction_terminal::Theme,
+        ansi: bool,
+        notifications: &crate::notifications::Notifications,
+    ) -> Result<String> {
+        self.render_inner(b, l, theme, ansi, Some(notifications))
+    }
+    fn render_inner(
+        &mut self,
+        b: &mut Board,
+        l: &ChatLease,
+        theme: &faction_terminal::Theme,
+        ansi: bool,
+        notifications: Option<&crate::notifications::Notifications>,
+    ) -> Result<String> {
         let c = b.social_config(l)?;
         if !c.enabled {
             return Err(Error::Invalid("social lounge disabled by sysop"));
@@ -297,6 +317,14 @@ impl Desk {
         let mut out = faction_terminal::section(theme, &c.name, ansi);
         out.push_str("Board-session lounge / approved local members\nAvailability lasts across menus, rooms and doors until disconnect.\n");
         out.push_str("Q:main R:refresh N:more H:help; /social help for controls.\nMain menu ?:refresh page badge; no popup interruptions.\n");
+        if let Some(notifications) = notifications {
+            writeln!(
+                out,
+                "Idle page notifications: {} (this visit). /notify on|off; idle main menu only.",
+                if notifications.enabled() { "on" } else { "off" }
+            )
+            .unwrap();
+        }
         writeln!(
             out,
             "Your advertisement: {}",
@@ -345,6 +373,20 @@ impl Desk {
             return Err(Error::Invalid("lounge frame budget"));
         }
         Ok(out)
+    }
+    pub fn feed_with_notifications(
+        &mut self,
+        input: &str,
+        b: &mut Board,
+        l: &ChatLease,
+        notifications: &mut crate::notifications::Notifications,
+    ) -> Result<bool> {
+        if let Some(out) = notifications.command(b, l, input)? {
+            self.notice = out;
+            self.view = 0;
+            return Ok(false);
+        }
+        self.feed(input, b, l)
     }
     pub fn feed(&mut self, input: &str, b: &mut Board, l: &ChatLease) -> Result<bool> {
         self.notice.clear();

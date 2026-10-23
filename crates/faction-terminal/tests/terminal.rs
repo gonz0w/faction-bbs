@@ -55,7 +55,9 @@ fn split_coalesced_and_crlf_keys() {
     );
     let now = Instant::now();
     let mut d = Decoder::new();
+    assert!(d.idle());
     assert_eq!(d.feed(27, now), None);
+    assert!(!d.idle());
     assert_eq!(d.feed(b'[', now + Duration::from_millis(40)), None);
     assert_eq!(
         d.feed(b'B', now + Duration::from_millis(80)),
@@ -79,9 +81,11 @@ fn malicious_sequence_tails_never_activate() {
     let start = Instant::now();
     d.feed(27, start);
     d.expire(start + Duration::from_secs(1));
+    assert!(!d.idle());
     assert_eq!(d.feed(b'P', start + Duration::from_secs(1)), None);
     assert_eq!(d.feed(b'\r', start + Duration::from_secs(1)), None);
     assert_eq!(d.feed(b'\n', start + Duration::from_secs(1)), None);
+    assert!(d.idle());
     assert_eq!(
         d.feed(b'P', start + Duration::from_secs(1)),
         Some(Key::Hotkey(b'P'))

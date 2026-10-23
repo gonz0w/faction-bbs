@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 is merged with the reader and authenticated workshop; #137 adds opt-in availability/polite pages across shared/local/worker visits with classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 is merged with the reader and authenticated workshop; #137 adds opt-in availability/polite pages and optional idle-menu notifications across shared/local/worker visits with classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1610,3 +1610,42 @@ signals, schema/default budgets and teardown; preserve the full offline/archive
 workflow. The 190 shared/core runtime source identities remain unchanged; earlier
 shared live observations stay separate. Owned clone/private inputs/vendor removed,
 saved owner preview off/intact. #137 remains open for optional idle notifications.
+
+
+## Safe optional idle page indications (#137)
+
+Read docs/social-lounge.md, ADR 0072 and plan 0077. /notify on|off is presentation
+consent for this visit, default off on every login; it does not advertise a
+member or override core privacy/approval. Share one bounded Notifications state
+across chat/Lounge/menu per visit. Retain only eight eligible signal IDs/states,
+not names/text or delayed events. Re-read current core eligibility and limit
+optional polls to once per two seconds, including Busy retries.
+
+Only a main menu with empty input/output, idle decoder and two seconds without
+keys may emit a generic quiet indication. Preserve focus and all typeahead; never
+flush terminal input for an automatic frame. Plain opted-in standalone menus
+track their own partial input and print ASCII only; default-off plain prompts
+keep their original behavior. No bell, desktop escape, forced join or private
+message preview. Composers/chat input/readers/games/transfers/probes are excluded.
+Returning to the menu only sees currently eligible signals, never expired queued
+notifications. Keep schema 17 and existing helper/credential/output/session limits;
+no extra thread, SQLite connection, listener or dependency. Hardening stays later.
+
+Snapshot 44 sources/pre137-idle and the standalone social baseline manifest
+preserve 329 prior input files and the whole standalone result. All 57 historical
+identities remain fixed. Only marked owned software clones for native validation;
+saved owner playground stays stopped with disk/login/keys preserved. No physical
+SBC, new capacity or new hardening claim. Close #137 only after ordinary supported
+adapters and protected-input notification behavior pass final software validation.
+
+The idle-notifications-netbsd record pins 323 matched native execution inputs,
+44 host harness inputs and thirteen unchanged access/credential/dependency inputs.
+354 Rust tests per OS, 130 host Python, twenty actual local/worker/plain notification
+controls per OS, twelve actual shared SSH/native/Lua and twenty complete-recovery
+controls per OS pass. Maintained standalone/shared real 66-second heartbeat and
+terminal/art regressions also pass. Compact server frames remain escape-free;
+the native client retains its existing final device-side cursor/style reset.
+No new schema or packages. Guard 58 and the full maintained offline/archive
+workflow remain required. Owned clone/private inputs/vendor removed; saved owner
+playground off/intact. #137's ordinary supported-adapter scope is complete in this
+batch; expanded notification surfaces would be separate follow-on work.

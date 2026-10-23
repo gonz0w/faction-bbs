@@ -182,6 +182,7 @@ pub(super) enum Selection {
 }
 pub(super) fn select(
     board: &mut crate::Visit<'_>,
+    session: &faction_core::Session,
     theme: &Theme,
     sysop: bool,
     caps: faction_terminal::capabilities::Capabilities,
@@ -194,13 +195,19 @@ pub(super) fn select(
     };
     let mut raw = Raw::open()?;
     raw.sync = caps.synchronized;
-    let (mut decoder, mut menu) = (
-        Decoder::new(),
-        Menu::with_columns(theme, sysop, dimensions.0),
-    );
+    let mut current = theme.clone();
+    let mut decoder = Decoder::new();
+    let mut focus = 0;
+    let mut last_input = Instant::now();
     let mut output = io::stdout();
     output.write_all(b"\x1b[?25l")?;
-    output.write_all(caps.frame(&menu.render(), true).as_bytes())?;
+    output.write_all(
+        caps.frame(
+            &Menu::with_columns(&current, sysop, dimensions.0).render(),
+            true,
+        )
+        .as_bytes(),
+    )?;
     output.flush()?;
     let stdin = io::stdin();
     loop {
@@ -208,7 +215,6 @@ pub(super) fn select(
         if size() != Some(dimensions) {
             return Ok(Selection::Plain);
         }
-        // Poll the actual stdin TTY, not /dev/tty (Darwin cannot poll that alias).
         let mut fds = [PollFd::new(&stdin, PollFlags::IN)];
         poll(
             &mut fds,
@@ -225,18 +231,37 @@ pub(super) fn select(
             return Err(io::Error::from(io::ErrorKind::UnexpectedEof).into());
         }
         if !fds[0].revents().contains(PollFlags::IN) {
+            if decoder.idle() && last_input.elapsed() >= faction_pages::notifications::INTERVAL {
+                match board.poll_notifications(Instant::now()) {
+                    Ok(Some(_)) => {
+                        current = board.idle_theme(session, theme)?;
+                        let mut menu = Menu::with_columns(&current, sysop, dimensions.0);
+                        menu.restore_focus(focus);
+                        focus = menu.focus();
+                        output.write_all(caps.frame(&menu.render(), true).as_bytes())?;
+                        output.flush()?;
+                    }
+                    Err(faction_core::Error::Busy) => (),
+                    Err(e) => return Err(e.into()),
+                    _ => (),
+                }
+            }
             continue;
         }
         let mut byte = [0];
         (&raw.tty).read_exact(&mut byte)?;
+        last_input = Instant::now();
         if let Some(key) = decoder.feed(byte[0], Instant::now()) {
             if key == faction_terminal::Key::Hotkey(b'?') {
                 return Ok(Selection::Refresh);
             }
+            let mut menu = Menu::with_columns(&current, sysop, dimensions.0);
+            menu.restore_focus(focus);
             let previous = menu.focus();
             if let Some(action) = menu.feed(key) {
                 return Ok(Selection::Action(action));
             }
+            focus = menu.focus();
             output.write_all(caps.frame(&menu.redraw(previous), true).as_bytes())?;
             output.flush()?;
         }

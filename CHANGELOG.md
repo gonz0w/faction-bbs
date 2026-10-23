@@ -4,12 +4,19 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional /notify on|off for this visit across shared SSH/native, local login
+  and inherited workers. Quiet current-page indications appear only at an idle
+  main menu, coalesce repeated signals and preserve arrow focus/control input.
+  Plain terminals keep partial commands and use a short ASCII notice. Drafts,
+  readers, games, transfers and probes receive no page output. Default off on
+  every login; no bell, new schema, helper, database connection or resource bump.
+
 - Bring standalone local login and inherited workers to visit-scoped social
   availability and the common themed Lounge, with quiet ANSI/plain `?` refresh,
   current invitation/privacy reads and safe menu indicators. Existing input loops
   heartbeat one lease; logout/error/EOF cleans it up. Drafts and canonical input
   survive pages. No schema, helper, connection or shared transfer/game change;
-  optional idle notifications and hardening remain deferred.
+  idle notification support is described above; hardening remains deferred.
 
 - Extend shared-service availability across the BBS visit with one existing lease,
   a themed Lounge action, current invitation/answer/privacy panel and generic safe
@@ -21,8 +28,8 @@ This file records meaningful project changes. Product releases will use versione
   status, bodyless page requests/accept/decline, opted-in sysop paging, mute,
   blocks and UTC quiet hours. Reuse shared/worker/plain chat, preserving drafts
   and channel selection. Schema 17 retains privacy intent, stripping live social
-  authority/rate timestamps from exports. Standalone outside-chat parity and
-  optional idle notifications remain #137 follow-on work.
+  authority/rate timestamps from exports. Standalone visit parity and idle
+  notifications are described above.
 
 - Add the opt-in magazine workshop: private drafts, explicit member submissions,
   sysop selection/copied revisions, exact-issue contributor approvals, manual local
