@@ -2,9 +2,9 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): merge checked #150, then the next useful
-local product batch: #135 member pages and dated .plan updates, preserving classic
-fallback. Hardening #106–#111 stays later.** Native-device
+**Current priority (owner, 2026-10-22): #151 is merged. Prepare a populated,
+persistent private Ghostty SSH playground (#152), preserving classic fallback.
+Then continue useful local product batches. Hardening #106–#111 stays later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1143,3 +1143,17 @@ Core and actual SSH negative controls cover deletion/recreation. For successive
 owned VM test suites, restore the normal ANSI config explicitly: the art/plain
 controls can leave a different fixture presentation. Do not mistake it for a new
 application regression or change production startup policy to satisfy the harness.
+
+
+## Requested persistent Ghostty playground
+
+Read docs/test-playground.md, plan 0062 and ADR 0057. The owner now explicitly
+requests a running private test login. This supersedes earlier playground-off
+instructions for the new distinct preview only. Preserve the old saved image,
+keys and helpers; keep preview images/credentials/profiles/logs in ignored private
+storage. Do not stop the handed-over preview as disposable-test cleanup. Record
+its private pointer in local/demo/CURRENT_PREVIEW. tools/playground.py controls
+only a prepared owned VM, validates PID birth/command and uses loopback/pinned SSH.
+The new-only seed is an example outside member entry points; never reseed an
+existing board. No runtime/schema/dependency or historical evidence changes.
+No new 250-user, production, real-Ghostty-pixel or physical-hardware claim.

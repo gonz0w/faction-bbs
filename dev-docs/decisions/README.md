@@ -87,3 +87,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0055: Bounded local community wall](0055-bounded-local-community-wall.md).
 
 - [0056: Local member pages and .plan history](0056-local-member-pages-and-plans.md).
+
+- [0057: Private persistent terminal playground](0057-private-persistent-playground.md).

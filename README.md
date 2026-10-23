@@ -10,6 +10,11 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
+Try the populated private NetBSD [terminal playground](docs/test-playground.md):
+Ghostty/SSH login, Nightwire art, rooms, wall, member pages, chat and Lua demos,
+with persistent testing data and guarded start/stop commands. Operator preparation
+is required; this is a development preview.
+
 The optional [local sysop console](docs/sysop-console.md) now provides themed
 read-only BBS status, live CPU/RAM/network graphs and explicit stale/unavailable health
 after OS login. Its [Recovery panel](docs/backup-checks.md) now shows explicitly

@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Current playable preview
+
+After merged #151, #152 makes the current social board easy to try through a
+[private persistent SSH playground](../docs/test-playground.md). Sample rooms,
+wall/pages/plans/chat and the existing Lua arcade reuse the current runtime.
+This batches owner testing and lifecycle work; next social stories remain open.
+Hardening stays later.
+
 ## Local people and projects
 
 After checked #150, #135 adds optional local member pages and dated `.plan` updates:
