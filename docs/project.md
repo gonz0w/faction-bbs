@@ -50,7 +50,8 @@ bodyless invitation/accept/decline signals across live local chat channels.
 Private mute/block/UTC-hour preferences persist; presence/pages do not survive
 reconnect/restore. The shared service now keeps explicit availability across rooms,
 editing and doors with a Lounge panel and safe menu-return badge. Standalone
-rollback stays chat-only; automatic interruptions are not added.
+local login and inherited workers now share the same visit lifetime and
+classic/plain Lounge. Automatic interruptions are not added.
 
 ## Confirmed requirements
 

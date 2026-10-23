@@ -276,3 +276,13 @@ adds availability and safe pages outside chat; legacy standalone adapters remain
 chat-only. Guard 56 verifies its current native inputs, real idle/editor/Lua waits
 and teardown independently. The saved owner playground stays off/intact; no new
 capacity, physical hardware or hardening claim.
+
+
+Snapshot 43 (`sources/pre137-standalone`) and the independently pinned
+`boardwide-social-baseline-manifest.json` preserve 326 previous input files and
+the complete boardwide record. All 56 historical identities stay unchanged.
+The current [standalone lounge evidence](standalone-social-netbsd/README.md)
+adds local/inherited-worker visit parity; guard 57 checks its registered/approved
+PTYs and sustained menu/full-screen/plain waits. Shared runtime source identity
+is retained separately from earlier shared live observations. Normal budgets,
+schema 17 and the stopped saved playground remain; no new capacity/hardware claim.

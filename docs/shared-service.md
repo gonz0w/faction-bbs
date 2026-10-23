@@ -79,4 +79,6 @@ while reading rooms, editing or playing. Leaving chat parts channels and resets
 its send receipt; only logout/disconnect closes the visit lease. No second lease,
 database connection or helper is created. Current page notices appear only on
 safe menu redraws (? refresh), never over drafts/doors. Schema/default budgets
-stay unchanged; standalone worker rollback retains its chat-only capability.
+stay unchanged. Standalone local login and inherited workers now offer equivalent
+visit availability through their existing synchronous input loops; shared-only
+file/game adapters remain separate.

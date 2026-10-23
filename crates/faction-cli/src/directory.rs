@@ -1,6 +1,6 @@
 //! Same inert cards/navigation as the shared owner; no connector or subprocess.
-use crate::{Result, invalid, line, terminal};
-use faction_core::{Board, Session, Status};
+use crate::{Result, invalid, terminal};
+use faction_core::{Session, Status};
 use faction_terminal::{
     Decoder, Key, Theme,
     directory::{Directory, View},
@@ -10,7 +10,7 @@ use std::{
     time::Instant,
 };
 pub(super) fn run(
-    board: &mut Board,
+    board: &mut crate::Visit<'_>,
     session: &Session,
     theme: &Theme,
     directory: &Directory,
@@ -27,6 +27,7 @@ pub(super) fn run(
     let mut view = View::default();
     let mut redraw = true;
     loop {
+        board.tick()?;
         if redraw {
             if board.whoami(session)?.status != Status::Approved {
                 return Err(invalid("current local approval required"));
@@ -53,7 +54,7 @@ pub(super) fn run(
             };
             key
         } else {
-            let input = line("Directory command: ", 1)?;
+            let input = board.line("Directory command: ", 1)?;
             if input.is_empty() {
                 Key::Enter
             } else {

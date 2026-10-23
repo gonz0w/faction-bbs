@@ -4,11 +4,18 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Bring standalone local login and inherited workers to visit-scoped social
+  availability and the common themed Lounge, with quiet ANSI/plain `?` refresh,
+  current invitation/privacy reads and safe menu indicators. Existing input loops
+  heartbeat one lease; logout/error/EOF cleans it up. Drafts and canonical input
+  survive pages. No schema, helper, connection or shared transfer/game change;
+  optional idle notifications and hardening remain deferred.
+
 - Extend shared-service availability across the BBS visit with one existing lease,
   a themed Lounge action, current invitation/answer/privacy panel and generic safe
   menu-return badge. Chat exit parts channels without dropping explicit visit
   availability. Classic/plain SSH works; no draft/door popup, schema/resource
-  change or new helper/database connection. Standalone rollback stays chat-only.
+  change or new helper/database connection. Standalone parity follows in the next increment above.
 
 - Add an optional local chat lounge with explicit available/busy/away/hidden
   status, bodyless page requests/accept/decline, opted-in sysop paging, mute,

@@ -4,9 +4,8 @@ The lounge helps approved members find people who chose to be available during
 local chat. It works in the shared service, inherited worker and local console,
 with the same commands on classic/plain terminals. It is disabled by default.
 
-The primary shared SSH/native service now supports availability outside chat;
-see the session-lounge section below. The standalone/worker path retains its
-chat-only scope. Check requests explicitly with /pages or the Lounge panel;
+Shared SSH/native access, local login and inherited workers support availability
+outside chat; see the session-lounge section below. Check requests explicitly with /pages or the Lounge panel;
 there are no asynchronous page popups or bells. Accepting
 a page never switches channels, overwrites a draft or launches a private session.
 
@@ -25,8 +24,8 @@ fallback remain; these commands confer no OS-console or host authority. /social
 off clears live lounge presence and invitations, retaining personal controls.
 No host policy, listener, service config or external account setup is needed.
 
-Each new shared BBS connection starts unadvertised; standalone/worker chat entries
-start unadvertised. Members explicitly choose:
+Each new BBS visit starts unadvertised, including local login and inherited
+workers. Members explicitly choose:
 
 | Command | Effect |
 | --- | --- |
@@ -52,7 +51,7 @@ Lounge opt-in differs from existing channel presence. /hide removes lounge
 advertising; it does not hide your explicit channel joins from /names, erase
 messages or make you anonymous to fellow channel members. /who reveals neither
 private-channel participation nor counts of unadvertised/blocked people.
-One account advertises at most one live entry (shared visit or standalone chat);
+One account advertises at most one live visit;
 explicitly opting in from a second entry replaces its previous advertisement and
 invitations. A separate
 still-live entry can remain advertised until closed, hidden or replaced.
@@ -96,8 +95,8 @@ show at most eight signals. Common command frames stay below 4 KiB. No channel
 history or per-member output queue is added.
 
 Existing chat/visit heartbeats run every ten seconds; leases expire after sixty.
-Closing standalone chat or disconnecting a shared visit removes its advertisement
-and invitations. Expired/crashed entries
+Logout and ordinary EOF/error cleanup remove the visit advertisement and
+invitations. Abrupt termination relies on the existing stale-lease expiry. Expired/crashed entries
 are excluded from reads immediately and reclaimed on later social writes/chat
 opens. Clock rollback/future leases fail closed; cooldown guidance reports that
 clock changes can delay a retry. Expired rows can remain at rest until cleanup;
@@ -118,16 +117,16 @@ See [ADR 0069](../dev-docs/decisions/0069-opt-in-chat-lounge.md) and
 limits stay unchanged. No new registry package, helper/listener, IRC protocol,
 federation, encrypted-message transport, capacity, hardware or hardening claim.
 
-## Availability outside chat in the shared service
+## Availability outside chat
 
-The primary shared SSH/native service now has a main-menu **Social lounge**
+Shared SSH/native access, local login and inherited workers have a main-menu **Social lounge**
 action (default L). A sysop enables the existing feature with /social on in chat;
 after that, approved members can open the lounge without joining any channel.
 Choose /available explicitly, /busy, /away or /hide, and Q to return to the BBS.
 The panel shows your own current advertisement, eligible members and current
 bodyless signals. Existing page, answer, privacy and sysop controls work there.
 
-This service keeps one optional lease for the complete connection. Availability
+Each adapter keeps one optional lease for the complete approved visit. Availability
 survives leaving chat while you read rooms, compose or play a door. Chat exit
 parts all channels and discards its unsent chat input; it does not revoke your
 explicit visit availability. Re-entering chat explicitly joins again with a new
@@ -148,14 +147,20 @@ every redraw, including resize. It keeps no old roster/page output in notices.
 Current block, mute, quiet-hour, role/epoch and lease checks still apply. No
 private-channel name or count of unadvertised members appears.
 
-This outside-chat lifetime is a capability of the maintained shared service.
-The legacy standalone console and worker rollback still use their original
-chat-only lifetime and do not expose a session-lounge menu action. The earlier
-chat-entry command descriptions above continue to apply to those adapters.
-Standalone parity and optional idle notifications remain follow-on #137 scope.
+Standalone login and inherited workers use the same panel and menu indicators.
+Their existing input loops silently heartbeat the visit, including plain prompts,
+room picking and full-screen editing. A new login starts hidden. A clean logout
+or ordinary terminal EOF/error closes the lease; abrupt process termination or
+broker-watch exit relies on the existing 60-second expiry. No keepalive helper or
+second database connection is added. Shared-only file/game adapters remain
+separate; this does not add standalone transfer or game support. Optional idle
+notifications remain follow-on #137 scope.
 
 Schema stays 17. There is no new listener, helper/thread, database connection or
 second lease per member, and all existing resource limits remain. Complete
 exports remove these connection leases and live social authority as before.
 See [ADR 0070](../dev-docs/decisions/0070-connection-scoped-social.md),
 [plan 0075](../dev-docs/plans/0075-boardwide-social.md) and the [current software evidence](../dev-docs/evidence/boardwide-social-netbsd/README.md). Later hardening, encrypted mail and federation remain separate.
+
+See [ADR 0071](../dev-docs/decisions/0071-standalone-social-visits.md) and
+[plan 0076](../dev-docs/plans/0076-standalone-social.md) for standalone parity.

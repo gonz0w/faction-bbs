@@ -163,10 +163,12 @@ with /social; members opt in for each chat entry and explicitly check /pages.
 Mute, blocks and UTC quiet-hour intent persist. This is separate from existing
 channel /names: /hide removes lounge advertising, not explicit channel membership.
 No custom private-message body, forced join, automatic page popup or federation.
-Standalone outside-chat presence and optional idle notices remain #137 follow-on work.
+Optional idle notices remain #137 follow-on work.
 
 In the primary shared service, a connection's explicit social availability now
 survives leaving chat. Exit still parts every channel and clears its send context;
 re-entry gets a new join/history floor. A separate main-menu Lounge action offers
 current bodyless pages without joining chat. See [the scope and safe notifications](social-lounge.md).
-Standalone console/worker behavior remains chat-only.
+Standalone local login and inherited workers now use the same visit scope,
+including classic/plain menus. Their synchronous prompts and full-screen editor
+silently heartbeat the existing lease; clean exit closes it.

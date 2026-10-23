@@ -361,4 +361,7 @@ removes the lease. Menu notices are generic and only render at safe redraws.
 The panel re-fetches all eligibility instead of replaying cached rosters/signals.
 No new helper, database connection, private-message body, forced switch, hidden
 channel metadata or live-lease export is added; schema 17 stays unchanged.
-Standalone worker rollback retains the earlier chat-only capability.
+Local login/inherited workers now borrow the same Board for a visit owner and
+silently heartbeat inside existing input loops. Logout/ordinary EOF/error closes
+the lease; abrupt termination still uses stale expiry. No new helper/thread or
+SQLite connection is added. Plain terminals retain the same controls.

@@ -1,7 +1,12 @@
 //! Room writing; only explicit send publishes, only explicit save checkpoints.
 use super::*;
 use faction_terminal::composer::{Command, Draft, HELP, PROMPT, Screen, ScreenEvent, Target};
-fn quote(board: &mut Board, s: &Session, target: &Target<'_>, draft: &mut Draft) -> Result<()> {
+fn quote(
+    board: &mut crate::Visit<'_>,
+    s: &Session,
+    target: &Target<'_>,
+    draft: &mut Draft,
+) -> Result<()> {
     let parent = target
         .reply
         .ok_or_else(|| invalid("select a reply target before quoting"))?;
@@ -14,7 +19,7 @@ fn quote(board: &mut Board, s: &Session, target: &Target<'_>, draft: &mut Draft)
     draft.quote(&p.body).map_err(invalid)
 }
 fn preview(
-    board: &mut Board,
+    board: &mut crate::Visit<'_>,
     s: &Session,
     target: &Target<'_>,
     draft: &Draft,
@@ -24,6 +29,7 @@ fn preview(
 ) -> Result<()> {
     let mut offset = 0;
     loop {
+        board.tick()?;
         board.unread_cursor(s, target.room)?;
         let page = draft
             .preview(
@@ -43,7 +49,10 @@ fn preview(
             page.text
         );
         if let Some(next) = page.next {
-            if !line("Preview more? [y/N]: ", 8)?.eq_ignore_ascii_case("y") {
+            if !board
+                .line("Preview more? [y/N]: ", 8)?
+                .eq_ignore_ascii_case("y")
+            {
                 break;
             }
             offset = next;
@@ -60,7 +69,7 @@ struct ScreenContext<'a> {
     saved: bool,
 }
 fn screen_input(
-    board: &mut Board,
+    board: &mut crate::Visit<'_>,
     s: &Session,
     screen: &mut Screen,
     draft: &mut Draft,
@@ -71,6 +80,7 @@ fn screen_input(
     let mut size = terminal::size().unwrap_or((0, 0));
     let mut at = Instant::now();
     loop {
+        board.tick()?;
         if at.elapsed() > Duration::from_secs(120) {
             return Err(invalid(
                 "writing timed out; last explicit checkpoint retained",
@@ -80,7 +90,7 @@ fn screen_input(
         if !terminal::capable() {
             println!("Terminal resized; returning to line editing with draft intact.");
             drop(raw);
-            line("Press Enter to resume line editing: ", 1024)?;
+            board.line("Press Enter to resume line editing: ", 1024)?;
             return Ok(Command::Line);
         }
         if current != size {
@@ -119,14 +129,14 @@ fn screen_input(
             Err(e) => {
                 println!("{e}; returning to line editing with draft intact.");
                 drop(raw);
-                line("Press Enter to resume line editing: ", 1024)?;
+                board.line("Press Enter to resume line editing: ", 1024)?;
                 return Ok(Command::Line);
             }
         }
     }
 }
 pub(super) fn run(
-    board: &mut Board,
+    board: &mut crate::Visit<'_>,
     s: &Session,
     target: Target<'_>,
     theme: &Theme,
@@ -149,6 +159,7 @@ pub(super) fn run(
     println!("Room post only. Save is plaintext on this board, readable by its sysop.");
     print!("{HELP}");
     loop {
+        board.tick()?;
         board.unread_cursor(s, target.room)?;
         if let Some(parent) = target.reply {
             board.reply_subject(s, target.room, parent)?;
@@ -171,7 +182,7 @@ pub(super) fn run(
                 },
             )?)
         } else {
-            draft.command(&edited_line(PROMPT, 1024, caps.unicode)?)
+            draft.command(&edited_line(board, PROMPT, 1024, caps.unicode)?)
         };
         board.unread_cursor(s, target.room)?;
         match command {
@@ -181,7 +192,7 @@ pub(super) fn run(
                     continue;
                 }
                 if screen.is_some()
-                    && line("Type SEND to post, or Enter to keep editing: ", 8)? != "SEND"
+                    && board.line("Type SEND to post, or Enter to keep editing: ", 8)? != "SEND"
                 {
                     continue;
                 }

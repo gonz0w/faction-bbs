@@ -478,7 +478,7 @@ from complete DB/blob backups. Schema remains 14; no new transfer authority.
 A shared-service board with social availability enabled offers an optional
 action = "lounge" with a unique hotkey/label. If absent, the runtime adds L:
 Social lounge; if L is reserved, define an explicit lounge action with another
-key. The pack cannot enable it or grant access. It is unavailable in standalone
-rollback. Grid packs keep an empty cell when available, otherwise use the ordered
+key. The pack cannot enable it or grant access. Shared service, local login and
+inherited workers gate this action with current board configuration. Grid packs keep an empty cell when available, otherwise use the ordered
 fallback. A generic current-page header and star are presentation on a temporary
 menu copy, preserving the sysop's original theme. See [the lounge guide](social-lounge.md).

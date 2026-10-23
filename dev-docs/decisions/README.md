@@ -99,3 +99,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0069: Opt-in chat lounge](0069-opt-in-chat-lounge.md).
 
 - [0070: Connection-scoped social availability](0070-connection-scoped-social.md).
+
+- [0071: Standalone social visits](0071-standalone-social-visits.md).

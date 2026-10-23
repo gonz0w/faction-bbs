@@ -15,8 +15,9 @@ explicit public status, fixed invitation/accept/decline, personal mute/UTC quiet
 hours/blocks and opt-in sysop paging. See [plan 0074](plans/0074-social-lounge.md).
 The shared-service [connection lounge](../docs/social-lounge.md) now adds
 outside-chat lifetime, a current-read panel and safe menu redraw badges under
-[plan 0075](plans/0075-boardwide-social.md). Keep standalone parity and idle
-notification UX open.
+[plan 0075](plans/0075-boardwide-social.md). Local login/inherited workers now
+catch up under [plan 0076](plans/0076-standalone-social.md), reusing synchronous
+input waits and the existing connection. Keep optional idle notification UX open.
 No server-readable private-message shortcut; hardening remains later.
 
 ## Deliberate interactive travel

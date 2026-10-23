@@ -1,8 +1,8 @@
 use crate::{Result, edited_line, terminal};
-use faction_core::{Board, Session};
+use faction_core::Session;
 use faction_terminal::Theme;
 pub(super) fn run(
-    b: &mut Board,
+    b: &mut crate::Visit<'_>,
     s: &Session,
     t: &Theme,
     c: &faction_library::Catalog,
@@ -26,7 +26,7 @@ pub(super) fn run(
                 return Err(e.into());
             }
         };
-        let input = edited_line(&frame, 128, false)?;
+        let input = edited_line(b, &frame, 128, false)?;
         match desk.feed(&input, b, s, c) {
             Ok(faction_library::Outcome::Stay) => (),
             Ok(out) => return Ok(out),
