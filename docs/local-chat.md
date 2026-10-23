@@ -163,7 +163,8 @@ with /social; members opt in for each chat entry and explicitly check /pages.
 Mute, blocks and UTC quiet-hour intent persist. This is separate from existing
 channel /names: /hide removes lounge advertising, not explicit channel membership.
 No custom private-message body, forced join, automatic page popup or federation.
-Optional idle notices remain #137 follow-on work.
+/notify on|off controls optional idle-menu indications for this visit; it never
+adds page output over chat input.
 
 In the primary shared service, a connection's explicit social availability now
 survives leaving chat. Exit still parts every channel and clears its send context;

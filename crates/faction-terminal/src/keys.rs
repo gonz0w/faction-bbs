@@ -33,6 +33,10 @@ pub struct Decoder {
     utf8_remaining: u8,
 }
 impl Decoder {
+    /// Automatic menu output must not replace a partial/unknown control sequence.
+    pub fn idle(&self) -> bool {
+        self.text_ready()
+    }
     pub(crate) fn text_ready(&self) -> bool {
         matches!(self.state, State::Ground) && self.utf8_remaining == 0
     }

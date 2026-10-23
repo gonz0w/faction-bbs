@@ -482,3 +482,10 @@ key. The pack cannot enable it or grant access. Shared service, local login and
 inherited workers gate this action with current board configuration. Grid packs keep an empty cell when available, otherwise use the ordered
 fallback. A generic current-page header and star are presentation on a temporary
 menu copy, preserving the sysop's original theme. See [the lounge guide](social-lounge.md).
+
+
+Optional /notify on uses the same temporary Lounge star/header while the main
+menu is safely idle. ANSI refresh preserves the current arrow selection and
+uses the chosen theme/capability frame; plain terminals receive an ASCII line.
+The owner name, theme and access gate remain unchanged. No page frame is emitted
+over artwork paging, drafts, doors or terminal negotiation.

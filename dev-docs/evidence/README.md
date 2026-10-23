@@ -286,3 +286,12 @@ adds local/inherited-worker visit parity; guard 57 checks its registered/approve
 PTYs and sustained menu/full-screen/plain waits. Shared runtime source identity
 is retained separately from earlier shared live observations. Normal budgets,
 schema 17 and the stopped saved playground remain; no new capacity/hardware claim.
+
+Snapshot 44 (`sources/pre137-idle`) and the independently pinned
+`standalone-social-baseline-manifest.json` preserve 329 prior input files and the
+whole standalone record. All 57 historical identities remain exact. The current
+[optional idle notification evidence](idle-notifications-netbsd/README.md) covers
+explicit visit consent, safe idle ANSI/plain indications and protected draft/game/
+probe input across local/worker/shared SSH/native access. Guard 58 checks current
+source matches, real sustained regressions, recovery and owned-fixture teardown.
+Schema/resource defaults remain; the saved playground stays stopped and intact.

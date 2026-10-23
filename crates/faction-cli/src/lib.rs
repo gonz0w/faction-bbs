@@ -749,7 +749,7 @@ fn menu_with_library(
             let find_theme = faction_find::menu_theme(board, s, theme)?;
             let theme = find_theme.as_ref().unwrap_or(theme);
             let selected = if ansi {
-                terminal::select(board, theme, member.role == Role::Sysop, caps)?
+                terminal::select(board, s, theme, member.role == Role::Sysop, caps)?
             } else {
                 terminal::Selection::Plain
             };
@@ -761,7 +761,7 @@ fn menu_with_library(
                 Some(action)
             } else {
                 print!("{}", theme.plain_menu(member.role == Role::Sysop));
-                let command = board.line("Command (then Enter): ", 8)?;
+                let command = board.menu_line("Command (then Enter): ", 8)?;
                 if command == "?" {
                     continue;
                 }

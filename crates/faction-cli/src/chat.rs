@@ -1,6 +1,7 @@
 //! Local console chat, not an IRC protocol endpoint or remote-login entry point.
 use crate::{Result, bounded_line, safe, terminal};
 use faction_core::{Board, ChatCommand, ChatKind, ChatLease, ChatPage, Error, Session};
+use faction_pages::notifications::Notifications;
 use faction_terminal::{LINE_BYTES, LineEditor, LineEvent};
 use std::{
     io::{self, Write},
@@ -63,7 +64,11 @@ fn execute(
     lease: &ChatLease,
     state: &mut State,
     input: &str,
+    notifications: &mut Notifications,
 ) -> faction_core::Result<(bool, String)> {
+    if let Some(out) = notifications.command(board, lease, input)? {
+        return Ok((true, out));
+    }
     if let Some(out) = faction_pages::social::visit_command(board, lease, input)? {
         return Ok((true, out));
     }
@@ -74,7 +79,7 @@ fn execute(
     };
     let mut out = String::new();
     match command {
-        ChatCommand::Help=>out.push_str("/social help: opt-in lounge, availability and polite pages\n/list /join #channel /part /names [after-handle] /history [after-sequence] /poll /me text /quit\nPlain text sends to the selected channel; //text sends a literal slash.\nSysop: /create #channel board|private, /allow #channel handle, /deny #channel handle, /kick #channel handle\nAll channels are local; retained history begins at your join.\n"),
+        ChatCommand::Help=>out.push_str("/notify on|off: optional idle-menu notices for this visit\n/social help: opt-in lounge, availability and polite pages\n/list /join #channel /part /names [after-handle] /history [after-sequence] /poll /me text /quit\nPlain text sends to the selected channel; //text sends a literal slash.\nSysop: /create #channel board|private, /allow #channel handle, /deny #channel handle, /kick #channel handle\nAll channels are local; retained history begins at your join.\n"),
         ChatCommand::List=>{for c in board.chat_channels(lease)?{out.push_str(&format!("{} ({}, local)\n",safe(&c.name),if c.private{"private"}else{"board"}));}},
         ChatCommand::Join(name)=>{let c=board.chat_join(lease,name)?;state.cursor=c.sequence;state.channel=Some(c.name);out.push_str("Joined; new messages start here. /history replays eligible retained chat.\n");},
         ChatCommand::Part=>{board.chat_part(lease,state.name()?)?;state.channel=None;state.cursor=0;out.push_str("Left channel.\n");},
@@ -124,7 +129,13 @@ fn heartbeat(board: &mut Board, lease: &ChatLease, last: &mut Instant) -> Result
     }
     Ok(())
 }
-fn plain(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) -> Result<()> {
+fn plain(
+    board: &mut Board,
+    s: &Session,
+    lease: &ChatLease,
+    state: &mut State,
+    notifications: &mut Notifications,
+) -> Result<()> {
     println!("Plain chat: Enter submits; /poll or blank line reads new messages.");
     let mut tty = crate::tty()?;
     let mut last = Instant::now();
@@ -138,7 +149,7 @@ fn plain(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) -
             }
         }
         let line = bounded_line(&mut tty, LINE_BYTES)?;
-        let fetch = match execute(board, s, lease, state, &line) {
+        let fetch = match execute(board, s, lease, state, &line, notifications) {
             Ok((running, out)) => {
                 print!("{out}");
                 if !running {
@@ -177,7 +188,13 @@ fn notify(output: &mut impl Write, text: &str) -> io::Result<()> {
     }
     Ok(())
 }
-fn live(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) -> Result<()> {
+fn live(
+    board: &mut Board,
+    s: &Session,
+    lease: &ChatLease,
+    state: &mut State,
+    notifications: &mut Notifications,
+) -> Result<()> {
     let raw = terminal::Raw::open()?;
     let mut editor = LineEditor::default();
     let mut output = io::stdout();
@@ -225,7 +242,7 @@ fn live(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) ->
                 )?,
                 LineEvent::Submit(input) => {
                     output.write_all(b"\r\n")?;
-                    match execute(board, s, lease, state, &input) {
+                    match execute(board, s, lease, state, &input, notifications) {
                         Ok((running, out)) => {
                             notify(&mut output, &out)?;
                             if !running {
@@ -267,7 +284,7 @@ pub(super) fn run_at(
     channel: &str,
 ) -> Result<()> {
     board.ensure(s)?;
-    let (board, lease) = board.parts()?;
+    let (board, lease, notifications) = board.parts()?;
     let outcome = (|| -> Result<()> {
         let lobby = board.chat_join(lease, channel)?;
         let mut state = State {
@@ -277,9 +294,9 @@ pub(super) fn run_at(
         };
         println!("BBS-local chat. No federation or external IRC connection. /help for commands.");
         if ansi && terminal::capable() {
-            live(board, s, lease, &mut state)
+            live(board, s, lease, &mut state, notifications)
         } else {
-            plain(board, s, lease, &mut state)
+            plain(board, s, lease, &mut state, notifications)
         }
     })();
     // Never resume the menu while failed cleanup may retain channel joins.

@@ -20,10 +20,39 @@ impl Client {
         let State::Lounge(mut desk) = std::mem::replace(&mut self.state, State::Closing) else {
             return Err(Error::Denied);
         };
-        let frame = desk.render(board, self.lease()?, theme, self.ansi)?;
+        let frame = desk.render_with_notifications(
+            board,
+            self.lease()?,
+            theme,
+            self.ansi,
+            &self.notifications,
+        )?;
         self.state = State::Lounge(desk);
         self.queue(&self.capabilities.frame(&frame, self.ansi));
         self.prompt_started = Instant::now();
+        Ok(())
+    }
+}
+
+impl Client {
+    pub(super) fn idle_notifications(
+        &mut self,
+        board: &mut Board,
+        theme: &Theme,
+        now: Instant,
+    ) -> faction_core::Result<()> {
+        let Some(lease) = self.lease.as_ref() else {
+            return Ok(());
+        };
+        match self.notifications.poll(board, lease, now)? {
+            Some(_) if self.ansi => self.menu(theme, board)?,
+            Some(true) => {
+                self.queue("\n");
+                self.queue(faction_pages::notifications::PLAIN_NOTICE);
+                self.queue("\nCommand (then Enter): ");
+            }
+            _ => (),
+        }
         Ok(())
     }
 }

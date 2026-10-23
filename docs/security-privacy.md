@@ -365,3 +365,15 @@ Local login/inherited workers now borrow the same Board for a visit owner and
 silently heartbeat inside existing input loops. Logout/ordinary EOF/error closes
 the lease; abrupt termination still uses stale expiry. No new helper/thread or
 SQLite connection is added. Plain terminals retain the same controls.
+
+
+Optional [idle page notifications](social-lounge.md) require /notify on for the
+current visit and start off at every login. Current core approval/epoch/lease,
+feature state and both-party eligibility are rechecked before a signal appears.
+Only an empty idle main menu is eligible; partial input/control strings, drafts,
+readers, games, transfers and probes are excluded. The bounded presentation state
+retains at most eight signal IDs/states, with no names/text or deferred event queue.
+No bell/desktop escape or private-message preview is emitted. Polling is limited
+to once per two seconds while safe and opted in; no new helper, connection or
+schema. Plain standalone input tracking applies only when opted in and retains
+its existing limits. Hardening remains later.

@@ -74,3 +74,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0075: Board-wide shared social visits](0075-boardwide-social.md).
 
 - [0076: Standalone social parity](0076-standalone-social.md).
+
+- [0077: Optional idle page notifications](0077-idle-notifications.md).

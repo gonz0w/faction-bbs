@@ -51,7 +51,8 @@ Private mute/block/UTC-hour preferences persist; presence/pages do not survive
 reconnect/restore. The shared service now keeps explicit availability across rooms,
 editing and doors with a Lounge panel and safe menu-return badge. Standalone
 local login and inherited workers now share the same visit lifetime and
-classic/plain Lounge. Automatic interruptions are not added.
+classic/plain Lounge. Optional /notify on now adds quiet indications only at
+an idle main menu, preserving partial input and avoiding drafts/games/probes.
 
 ## Confirmed requirements
 
