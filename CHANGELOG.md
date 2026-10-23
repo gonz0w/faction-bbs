@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an optional local chat lounge with explicit available/busy/away/hidden
+  status, bodyless page requests/accept/decline, opted-in sysop paging, mute,
+  blocks and UTC quiet hours. Reuse shared/worker/plain chat, preserving drafts
+  and channel selection. Schema 17 retains privacy intent, stripping live social
+  authority/rate timestamps from exports. Outside-chat presence and automatic
+  notifications remain #137 follow-on work.
+
 - Add the opt-in magazine workshop: private drafts, explicit member submissions,
   sysop selection/copied revisions, exact-issue contributor approvals, manual local
   publication/withdrawal and current-consent owner text export through existing

@@ -1,5 +1,6 @@
 //! Local member-page interaction shared by local/worker and shared terminals.
 #![forbid(unsafe_code)]
+pub mod social;
 use faction_core::{
     Board, Error, MemberPage, PAGE_FIELD_BYTES, PAGE_FIELDS, Result, Role, Session, page_text,
     request_id,

@@ -368,7 +368,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
         .unwrap();
     f.board.mark_read(&f.alice, 1, post.id).unwrap();
     let db = f.db();
-    db.execute_batch("DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; DROP TABLE chat_joins; DROP TABLE chat_messages; DROP TABLE chat_grants; DROP TABLE chat_sessions; DROP TABLE chat_channels; PRAGMA user_version=1;").unwrap();
+    db.execute_batch("DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; DROP TABLE chat_joins; DROP TABLE chat_messages; DROP TABLE chat_grants; DROP TABLE chat_sessions; DROP TABLE chat_channels; PRAGMA user_version=1;").unwrap();
     // A conflicting table fails the migration transaction without deleting data.
     db.execute_batch("CREATE TABLE chat_messages(unrelated TEXT);")
         .unwrap();
@@ -411,7 +411,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
     assert_eq!(
         db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        16
+        17
     );
 }
 #[test]

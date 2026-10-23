@@ -1085,13 +1085,19 @@ impl Client {
         theme: &Theme,
     ) -> faction_core::Result<()> {
         self.approved(board)?;
+        if let Some(out) = faction_pages::social::command(board, self.lease()?, text)? {
+            self.queue(&out);
+            self.chat_prompt();
+            return Ok(());
+        }
+
         let command = if text.trim().is_empty() {
             ChatCommand::Poll
         } else {
             ChatCommand::parse(text)?
         };
         match command {
-            ChatCommand::Help => self.queue("/list /join #channel /part /names [after-handle] /history [after-sequence] /poll /me text /quit\nPlain text sends; //text sends a literal slash.\nSysop: /create #channel board|private /allow #channel handle /deny #channel handle /kick #channel handle\nAll channels are local; history begins at your join.\n"),
+            ChatCommand::Help => self.queue("/social help: opt-in lounge, availability and polite pages\n/list /join #channel /part /names [after-handle] /history [after-sequence] /poll /me text /quit\nPlain text sends; //text sends a literal slash.\nSysop: /create #channel board|private /allow #channel handle /deny #channel handle /kick #channel handle\nAll channels are local; history begins at your join.\n"),
             ChatCommand::List => for c in board.chat_channels(self.lease()?)? { self.queue(&format!("{} ({}, local)\n", Self::safe(&c.name), if c.private { "private" } else { "board" })); },
             ChatCommand::Join(name) => {
                 let channel = board.chat_join(self.lease()?, name)?;

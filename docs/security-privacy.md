@@ -344,3 +344,12 @@ database owner. Edits invalidate consent; withdrawal hides ordinary reading but
 cannot recall exports/downloads/backups. Related file publication/grants are
 separate and need independent withdrawal. Schema 16 upgrade requires a stopped
 complete backup; no new listener, privilege or relaxed runtime budget is added.
+
+The optional [social lounge](social-lounge.md) advertises only explicit live-chat
+availability. Both participants' current approval/epoch/lease and privacy controls
+gate bodyless invitations and replies. No public hidden counts, private channel
+labels or last-seen log is added. Existing channel /names remains independent of
+lounge hiding. Mute, blocked names and UTC quiet-hour intent are private durable
+settings; exports strip presence/signals/rate timestamps. No custom page body,
+plaintext private mail, forced channel switch, privilege or delivery guarantee.
+Take a stopped complete backup before schema 17. Broader hardening stays deferred.

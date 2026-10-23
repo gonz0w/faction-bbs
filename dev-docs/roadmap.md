@@ -8,6 +8,14 @@ discussion jumps. Request/create/fulfill/close and moderation remain next under
 #140. Keep classic terminals/current authority, external pack recovery and normal
 resource defaults; saved playground stays off and hardening later.
 
+## Opt-in local chat lounge
+
+After checked #171, #137 adds [chat-only availability and polite pages](../docs/social-lounge.md):
+explicit public status, fixed invitation/accept/decline, personal mute/UTC quiet
+hours/blocks and opt-in sysop paging. See [plan 0074](plans/0074-social-lounge.md).
+Keep board-wide presence outside chat and safe automatic notifications open.
+No server-readable private-message shortcut; hardening remains later.
+
 ## Deliberate interactive travel
 
 After merged #166, the first #159 increment adds native local travel preferences:

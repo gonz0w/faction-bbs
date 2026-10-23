@@ -9,8 +9,8 @@ pub struct ChatChannel {
     pub sequence: i64,
 }
 pub struct ChatLease {
-    session: Session,
-    id: [u8; 16],
+    pub(super) session: Session,
+    pub(super) id: [u8; 16],
 }
 impl fmt::Debug for ChatLease {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -62,7 +62,11 @@ fn channel_name(value: &str) -> Result<String> {
     }
     Ok(value.to_ascii_lowercase())
 }
-fn lease_current(tx: &Transaction<'_>, identity: &[u8; 32], lease: &ChatLease) -> Result<Member> {
+pub(super) fn lease_current(
+    tx: &Transaction<'_>,
+    identity: &[u8; 32],
+    lease: &ChatLease,
+) -> Result<Member> {
     let m = current(tx, identity, &lease.session, true, false)?;
     let valid:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM chat_sessions WHERE id=?1 AND member=?2 AND epoch=?3 AND touched>unixepoch()-60 AND touched<=unixepoch()+5)",params![lease.id.as_slice(),lease.session.member,lease.session.epoch],|r|r.get(0))?;
     if !valid {
