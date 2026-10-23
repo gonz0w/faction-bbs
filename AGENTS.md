@@ -2,9 +2,9 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): #151 is merged. Prepare a populated,
-persistent private Ghostty SSH playground (#152), preserving classic fallback.
-Then continue useful local product batches. Hardening #106–#111 stays later.** Native-device
+**Current priority (owner, 2026-10-22): stop/preserve the tested playground, merge
+remaining checked PRs in dependency order and batch useful client/product work.
+Integrate the local vault with the current client; keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -271,6 +271,23 @@ remote sockets, current approval and Ctrl-] local return. Remote saves/scores
 stay remote. No JS/TS dependency, mandatory helper or auto-enabled public service.
 Keep the Lua installer root keys before any TOML array tables. No experimental
 network policy/tuning is automatically changed for remote games.
+
+## Native local mail vault
+
+Issue #90 / ADR 0035 adds docs/local-mail-vault.md. Explicit local command only,
+before any SSH profile/child; no terminal-control unlock or remote compose/pin
+requests. Keep owner-only descriptor-relative no-link storage, exclusive live lock
+inode, authenticated bounded format, atomic writes/create-only backup, hidden
+input, five-minute inactivity/cancel/error relock and core-dump denial. Random
+local data/recovery keys and Argon2id64MiB/t3/p1 run on the member device; server
+passwords/credential limits are unchanged. Old backups keep old secrets and pin
+state; no rollback/revocation/memory-erasure guarantee. Local address claims/pins
+are not authenticated home identity, remote device enrollment or implemented
+OMEMO state. Inbox/send/reply/interop/history remain #90, trusted live membership
+binding #91, native signer failure #92 and encrypted attachments #88. Do not
+adopt research Python or an unreviewed ratchet to label this complete. Preserve
+#89's 89 measured inputs via mail-client-baseline-manifest.json; old results
+never become measurements of this revision. See plan 0036 and research 0046.
 
 ## Product constraints
 
@@ -1157,3 +1174,13 @@ only a prepared owned VM, validates PID birth/command and uses loopback/pinned S
 The new-only seed is an example outside member entry points; never reseed an
 existing board. No runtime/schema/dependency or historical evidence changes.
 No new 250-user, production, real-Ghostty-pixel or physical-hardware claim.
+
+
+Latest owner instruction supersedes the prior running-preview handover: the private
+playground is stopped, with its disk/accounts/keys/return helpers retained. Keep it
+off. Use only a separate marked owned VM for validation. Plan 0063 reconciles #94
+and the current client. The optional private board catalog `mail_store` enables M
+only in the local picker with no active Remote/SSH child. It opens an existing
+member-side offline vault; no auto-init, BBS password reuse, remote path/trust
+selection, server decryption or network-mail/roaming claim. Keep #90/#91/#88 open.
+Thirty snapshots preserve both input sets and forty-three original result identities.

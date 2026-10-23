@@ -142,3 +142,6 @@ inline Kitty images and a member-side native-client gate.
 multiplexer validation beyond the current PTY/control fixtures. These follow-ups
 preserve classic fallback and current resource/approval rules; no bitmap adoption
 or physical-hardware gate follows from a feature-list comparison.
+
+Native local vault persistence/UI: [#90](https://github.com/gonz0w/faction-bbs/issues/90),
+[PR #94](https://github.com/gonz0w/faction-bbs/pull/94); network mail and roaming remain open.

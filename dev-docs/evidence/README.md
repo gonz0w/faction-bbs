@@ -194,3 +194,11 @@ per OS, eight page PTYs per OS, fourteen actual SSH/native/plain controls and
 thirteen complete member-page/wall/file recovery checks per OS. Snapshot 28 keeps
 202 previous inputs and the whole wall result; forty-one old identities remain
 fixed. No new capacity, physical SBC, federation or hardening claim.
+
+The pre94 integration snapshots preserve 213 current member-page/client/harness
+inputs and 93 original vault inputs, plus both whole original records. Thirty source
+snapshots now preserve forty-three historical identities. Neither measurement is
+a claim about the combined client; integration gets fresh software checks.
+
+Current combined [client/vault software checks](client-vault-integration-netbsd/README.md)
+keep the preceding two results immutable and use fresh current input pins.

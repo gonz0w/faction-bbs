@@ -80,3 +80,9 @@ article model/codec from #104's optional provider adapter. Formatting never
 confers publication authority; provider traffic stays bounded outside local
 room operations. IRC and XMPP retain their live/private formats. No private mail key/body crosses an IRC
 bridge or visited board, and no room export follows from these requirements.
+
+## Local native vault integration
+
+The member-side offline vault is available through [its explicit local entry](../docs/local-mail-vault.md).
+Remote BBS output cannot select stores, unlock keys or change device trust. Encrypted
+network mail, OMEMO ratchet state, roaming proofs and attachments remain separate.

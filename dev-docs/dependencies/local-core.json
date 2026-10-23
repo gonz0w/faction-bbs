@@ -2,6 +2,14 @@
   "aarch64-unknown-netbsd": [
     {
       "features": [
+        "alloc"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "aead",
+      "version": "0.6.1"
+    },
+    {
+      "features": [
         "alloc",
         "default",
         "getrandom",
@@ -62,6 +70,34 @@
       "license": "MIT OR Apache-2.0",
       "name": "cfg-if",
       "version": "1.0.5"
+    },
+    {
+      "features": [
+        "cipher",
+        "xchacha",
+        "zeroize"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "chacha20",
+      "version": "0.10.2"
+    },
+    {
+      "features": [
+        "alloc",
+        "zeroize"
+      ],
+      "license": "Apache-2.0 OR MIT",
+      "name": "chacha20poly1305",
+      "version": "0.11.0"
+    },
+    {
+      "features": [
+        "block-buffer",
+        "stream-wrapper"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "cipher",
+      "version": "0.5.2"
     },
     {
       "features": [],
@@ -167,6 +203,12 @@
       "version": "2.14.2"
     },
     {
+      "features": [],
+      "license": "MIT OR Apache-2.0",
+      "name": "inout",
+      "version": "0.2.5"
+    },
+    {
       "features": [
         "std"
       ],
@@ -212,6 +254,12 @@
       "license": "MIT OR Apache-2.0",
       "name": "pkg-config",
       "version": "0.3.34"
+    },
+    {
+      "features": [],
+      "license": "Apache-2.0 OR MIT",
+      "name": "poly1305",
+      "version": "0.9.1"
     },
     {
       "features": [
@@ -337,6 +385,12 @@
     },
     {
       "features": [],
+      "license": "MIT OR Apache-2.0",
+      "name": "universal-hash",
+      "version": "0.6.1"
+    },
+    {
+      "features": [],
       "license": "MIT/Apache-2.0",
       "name": "vcpkg",
       "version": "0.2.15"
@@ -358,6 +412,14 @@
     }
   ],
   "x86_64-unknown-linux-gnu": [
+    {
+      "features": [
+        "alloc"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "aead",
+      "version": "0.6.1"
+    },
     {
       "features": [
         "alloc",
@@ -420,6 +482,34 @@
       "license": "MIT OR Apache-2.0",
       "name": "cfg-if",
       "version": "1.0.5"
+    },
+    {
+      "features": [
+        "cipher",
+        "xchacha",
+        "zeroize"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "chacha20",
+      "version": "0.10.2"
+    },
+    {
+      "features": [
+        "alloc",
+        "zeroize"
+      ],
+      "license": "Apache-2.0 OR MIT",
+      "name": "chacha20poly1305",
+      "version": "0.11.0"
+    },
+    {
+      "features": [
+        "block-buffer",
+        "stream-wrapper"
+      ],
+      "license": "MIT OR Apache-2.0",
+      "name": "cipher",
+      "version": "0.5.2"
     },
     {
       "features": [],
@@ -523,6 +613,12 @@
       "license": "Apache-2.0 OR MIT",
       "name": "indexmap",
       "version": "2.14.2"
+    },
+    {
+      "features": [],
+      "license": "MIT OR Apache-2.0",
+      "name": "inout",
+      "version": "0.2.5"
     },
     {
       "features": [
@@ -590,6 +686,12 @@
       "version": "0.3.34"
     },
     {
+      "features": [],
+      "license": "Apache-2.0 OR MIT",
+      "name": "poly1305",
+      "version": "0.9.1"
+    },
+    {
       "features": [
         "backup",
         "bundled",
@@ -710,6 +812,12 @@
       "license": "MIT OR Apache-2.0",
       "name": "unicode-width",
       "version": "0.2.2"
+    },
+    {
+      "features": [],
+      "license": "MIT OR Apache-2.0",
+      "name": "universal-hash",
+      "version": "0.6.1"
     },
     {
       "features": [],

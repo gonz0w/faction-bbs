@@ -81,6 +81,35 @@ history. Optional `--kitty` still requires local capability approval; trusted im
 cleanup runs between visits. No board can open the launcher or choose/confirm a
 profile through text, file frames or graphics. The local keyboard controls it.
 
+## Open your local offline vault between visits
+
+After [initializing your device vault](local-mail-vault.md), optionally add an
+existing store at the catalog root, **before** any `[[boards]]` tables:
+
+```toml
+version = 1
+mail_store = "/home/member/.faction-mail"
+
+[[boards]]
+id = "night-radio"
+label = "Night Radio"
+profile = "/home/member/.config/faction/night-radio.toml"
+```
+
+The local picker then displays **M: local offline vault (no SSH)**. M asks for the
+vault's own hidden passphrase on your device; locking returns to the picker with
+its board selection retained. A missing, busy or wrong-secret store returns an
+error and lets you return to Boards. It never initializes or recovers a store or
+reuses a BBS password. Initialization and recovery remain explicit local commands.
+
+This entry is available only in the local picker, after the previous SSH child
+has closed/reaped and before another is started. While connected, use the existing
+Ctrl-] then B confirmation to leave the board first. No board text, directory,
+Files frame or graphics can choose the store or enter an unlock secret. The
+optional catalog path stays member-owned and local. Drafts remain encrypted,
+**unsent**, and independent of a board; this adds no network inbox, SSO or home
+identity proof. Omitting `mail_store` keeps the existing picker unchanged.
+
 ## Other BBSes and independent communities
 
 Use [Other BBSes](other-boards.md) on a board to discover a destination. Obtain its

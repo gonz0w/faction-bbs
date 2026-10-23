@@ -95,12 +95,18 @@ the client can download recently seen links by number. This preview runs on macO
 and native NetBSD; ordinary SSH/manual SFTP remain available.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
-visited board. Mail and roaming identity are still outside the native product. A
+visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)
+with hidden unlock, offline recovery, drafts and explicit device pins. Network
+inbox/send and roaming authentication remain outside the native product. A
 [working two-home protocol experiment](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 now passes encrypted subject/body/reply, offline/archive and verified-device refusal
-controls, plus scoped native SSH certificate admission. Native mail UI/keystore/
-recovery and trusted local identity binding remain #90/#91; native certificate
+controls, plus scoped native SSH certificate admission. Native OMEMO integration,
+incoming mail/history recovery and trusted local identity binding remain #90/#91;
+native certificate
 signing has a recorded failure under #92. Encrypted attachments stay planned in #88.
+The native [board picker](docs/board-launcher.md#open-your-local-offline-vault-between-visits)
+can now open that existing offline vault with **M** between visits, using an explicit
+member-owned catalog path. Its own hidden local passphrase never goes to a BBS.
 The optional **[Other BBSes directory](docs/other-boards.md)** now provides themed
 pages and connection cards for sysop-reviewed boards, with independent destination
 login/approval. It stays local and never auto-connects or shares keys. Member
@@ -133,8 +139,8 @@ core from future features. Rust/primary NetBSD is selected in
 [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md); local storage and
 identity use SQLite WAL under [ADR 0008](dev-docs/decisions/0008-local-core-and-credentials.md).
 
-The next [modern sysop and communications stories](docs/modern-sysop-and-communications.md)
-add a local VM-console dashboard, capability-aware Ghostty-style enhancements,
+The [modern sysop and communications stories](docs/modern-sysop-and-communications.md)
+guide the local VM-console dashboard, capability-aware Ghostty-style enhancements,
 NetBSD setup/abuse-management workflows and integrated native XMPP notifications.
 Real IRC/IRCv3 integration remains research. [Discussion-room posts](docs/discussion-articles-and-news.md)
 will use Netnews-style articles, with NNTP-first optional peering and news-provider

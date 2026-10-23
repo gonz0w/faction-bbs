@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Integrate the previously separate native local encrypted mail vault with the current
+  client, preserving board selection, terminal graphics and Files behavior. Preserve
+  both source/evidence baselines before reconciliation. Network mail/roaming stays open.
+- Add optional member-owned `mail_store` to the local board picker; M opens the
+  existing encrypted offline vault only between SSH visits and returns locked.
+  Classic 40x18 selection, standalone vault, graphics and Files paths remain.
+
 - Add a populated private Ghostty/SSH playground workflow, guarded prepared-VM
   lifecycle controls and new-only sample community seed. Preserve the older saved
   image and all current runtime/schema/defaults; no public listener or new capacity
