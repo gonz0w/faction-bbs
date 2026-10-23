@@ -320,3 +320,7 @@ Nightwire #25 follow-through now measures canonical page/menu placement and CP43
 widths in real terminal fixtures. See the [compatibility guide](../docs/artwork-terminal-compatibility.md).
 Visual font/palette quality and owner artwork acceptance stay separate; no new
 capacity/native deployment or hardening claim.
+
+The local community wall (#134, plan 0060) adds the next bounded hangout feature:
+ASCII notes, local sysop policy, moderation and explicitly retained weekly editions.
+Keep protocol/identity adapters and later hardening separate from this local UI.

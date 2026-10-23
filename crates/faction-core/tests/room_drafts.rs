@@ -209,7 +209,7 @@ fn schema_seven_exports_stay_readonly_and_upgrade_adds_no_invented_drafts() {
     let meta = b.post_metadata(&s, post.id).unwrap();
     drop(b);
     let db = f.db();
-    db.execute_batch("DROP TABLE room_drafts; PRAGMA user_version=7;")
+    db.execute_batch("DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; PRAGMA user_version=7;")
         .unwrap();
     drop(db);
     let out = f.0.join("seven");
@@ -229,7 +229,7 @@ fn schema_seven_exports_stay_readonly_and_upgrade_adds_no_invented_drafts() {
         f.db()
             .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        8
+        9
     );
 }
 #[test]

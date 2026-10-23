@@ -62,3 +62,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Named room browser](room-browser.md): arrows/hotkeys, unread navigation and selected-room reading/posting.
 
 - [Room writing desk](writing-desk.md): multiline/full-screen editing, classic fallback and explicit saved room checkpoints.
+
+- [Local community wall](community-wall.md) — short ASCII signals, paging, moderation and optional weekly archives.

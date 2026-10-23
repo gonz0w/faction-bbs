@@ -10,7 +10,8 @@ This is an early hobby preview; read the validation limitations below.
 
 First complete [normal setup](quickstart-netbsd.md), initialize your sysop and
 build the current workspace. Before upgrading an existing board, export a private
-pre-upgrade complete backup: current schema 8 also includes [room draft checkpoints](writing-desk.md)
+pre-upgrade complete backup: current schema 9 also includes [room draft checkpoints](writing-desk.md)
+and the optional [community wall](community-wall.md)
 and cannot be opened by an older binary. Schema-2/3/4/5 exports remain readable. Stop member SSH, wait for members to leave,
 and stop the backend before replacing binaries or changing configuration.
 

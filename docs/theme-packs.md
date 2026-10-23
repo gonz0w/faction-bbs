@@ -420,3 +420,9 @@ changes. Follow the guide for provenance, editing/reproduction and visual review
 Optional `writing_title = "Night Desk"` in a base/seasonal theme names the
 [room writing surface](writing-desk.md). It is limited to 24 printable ASCII bytes;
 the room destination and subject remain explicit. The current palette applies.
+
+The optional [community wall](community-wall.md) accepts `action = "wall"` with a
+custom key/label/description. A theme cannot enable it; use sysop Wall settings.
+When more than eleven entries need ordered rendering, a nine-row lightbar window
+scrolls with focus, keeping the recovery footer inside 40×18. All hotkeys remain
+active, and plain menus list every action. Existing smaller menus are unchanged.

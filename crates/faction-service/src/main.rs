@@ -15,6 +15,7 @@ mod operator;
 mod policy;
 mod rooms_ui;
 mod ui;
+mod wall_ui;
 mod writing_ui;
 use config::Config;
 use rustix::{
@@ -84,6 +85,7 @@ enum State {
         body: String,
         key: String,
     },
+    Wall(Box<faction_wall::Desk>),
     Sysop,
     MembersMore(usize),
     MemberStatus(bool),

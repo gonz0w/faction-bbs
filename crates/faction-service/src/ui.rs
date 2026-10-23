@@ -61,6 +61,8 @@ impl Client {
     }
     pub(super) fn menu(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
         self.approved(board)?;
+        let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
+        let theme = wall_theme.as_ref().unwrap_or(theme);
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
         self.ansi = self.capable();
@@ -166,6 +168,8 @@ impl Client {
     }
     fn action(&mut self, key: Key, board: &mut Board, theme: &Theme) -> faction_core::Result<bool> {
         // Cached presentation never grants an action; open/core recheck authority.
+        let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
+        let theme = wall_theme.as_ref().unwrap_or(theme);
         let sysop = self.sysop_display;
         let mut menu = self.focused(theme, sysop);
         let previous = menu.focus();
@@ -198,9 +202,14 @@ impl Client {
             Action::Quit => "Disconnect",
             Action::Terminal => "Terminal settings",
             Action::Contacts => "Other BBSes",
+            Action::Wall => "Community wall",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Wall => {
+                self.state = State::Wall(Box::default());
+                self.wall_show(board, theme)?;
+            }
             Action::Contacts => {
                 self.state = State::Directory(Default::default());
                 self.directory_show(board, theme)?;
@@ -223,7 +232,7 @@ impl Client {
                 }
                 self.prompt(
                     State::Sysop,
-                    "Sysop: [L]ist [A]pprove [V]revoke [C]reate room: ",
+                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [C]reate room: ",
                 );
             }
             Action::Chat => {
@@ -519,6 +528,8 @@ impl Client {
                 return Err(Error::Invalid("probe input state"));
             }
             State::Menu => {
+                let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
+                let theme = wall_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
@@ -629,7 +640,27 @@ impl Client {
                     self.pause();
                 }
             }
+            State::Wall(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Wall(desk);
+                self.wall_show(board, theme)?;
+            }
             State::Sysop => match text.to_ascii_lowercase().as_str() {
+                "w" => {
+                    self.state = State::Wall(Box::new(faction_wall::Desk::settings()));
+                    self.wall_show(board, theme)?;
+                }
                 "l" => self.members(board, 0)?,
                 "a" | "v" => self.prompt(
                     State::MemberStatus(text.eq_ignore_ascii_case("a")),
@@ -875,6 +906,17 @@ impl Client {
             }
             return self.writing_show(board, theme, "resized; draft kept");
         }
+        if matches!(self.state, State::Wall(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("wall input flush"))?;
+            return self.wall_show(board, theme);
+        }
         if matches!(self.state, State::Directory(_) | State::RoomBrowse(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -940,6 +982,8 @@ impl Client {
         self.ansi = false;
         self.queue("Terminal resized; draft discarded. Plain input until the next menu.\n");
         if matches!(self.state, State::Menu) {
+            let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
+            let theme = wall_theme.as_ref().unwrap_or(theme);
             let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
@@ -1184,15 +1228,25 @@ impl Client {
                 }
                 continue;
             }
-            if matches!(self.state, State::PostSubject(..) | State::Writing { .. }) {
+            if matches!(
+                self.state,
+                State::PostSubject(..) | State::Writing { .. } | State::Wall(_)
+            ) {
                 use faction_terminal::subject::{self, Edit};
-                let limit = if matches!(self.state, State::Writing { .. }) {
+                let limit = if matches!(self.state, State::Wall(_)) {
+                    128
+                } else if matches!(self.state, State::Writing { .. }) {
                     1024
                 } else {
                     160
                 };
-                match subject::feed_limited(&mut self.input, byte, self.capabilities.unicode, limit)
-                    .map_err(Error::Invalid)?
+                match subject::feed_limited(
+                    &mut self.input,
+                    byte,
+                    self.capabilities.unicode && !matches!(self.state, State::Wall(_)),
+                    limit,
+                )
+                .map_err(Error::Invalid)?
                 {
                     Edit::Echo(text) => self.queue(&text),
                     Edit::Submit(text) => {
