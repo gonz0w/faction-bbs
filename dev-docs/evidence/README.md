@@ -168,3 +168,9 @@ identities remain immutable; no new server/250-capacity/hardening claim.
 controls with 100 rooms and 22 shared-reader regressions. Snapshot 24 preserves
 178 prior sources/room-list fixtures and the whole launcher result; 24 snapshots/
 37 historical record identities remain unchanged. No new capacity/hardening claim.
+
+[Room writing desk software evidence](writing-desk-netbsd/README.md) covers the
+optional local-room multiline writer, preview/send/cancel and actual SSH/native
+routes. Snapshot 25 freezes 174 prior inputs and the complete #147 room-browser
+record; 25 snapshots/38 historical identities remain unchanged. No new capacity,
+physical SBC, persistent drafts or hardening claim.

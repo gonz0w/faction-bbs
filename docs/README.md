@@ -60,3 +60,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Native board launcher](board-launcher.md): member-owned profiles, deliberate visits, independent login and local return.
 
 - [Named room browser](room-browser.md): arrows/hotkeys, unread navigation and selected-room reading/posting.
+
+- [Room writing desk](writing-desk.md): optional multiline room posts, preview and explicit send/cancel.

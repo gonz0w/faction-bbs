@@ -342,7 +342,7 @@ impl Client {
         self.prompt(State::ReadMore(room, through, next), "More? [y/N]: ");
         Ok(())
     }
-    fn submit(
+    pub(super) fn submit(
         &mut self,
         board: &mut Board,
         room: i64,
@@ -394,6 +394,7 @@ impl Client {
     ) -> faction_core::Result<()> {
         let old = std::mem::replace(&mut self.state, State::Closing);
         match old {
+            State::Writing { .. } => self.writing_line(old, text, board, theme)?,
             State::NativeFiles => self.native_line(text, board, theme)?,
             State::Files | State::FileUploadKey { .. } | State::FileDownloadKey(_) => {
                 self.file_line(old, text, board, theme)?
@@ -582,14 +583,23 @@ impl Client {
                     "Subject (blank for generated/reply default): ",
                 );
             }
-            State::PostSubject(room, reply) => self.prompt(
-                State::PostBody(room, reply, text.into()),
-                "Message (one line, up to 1024 bytes): ",
-            ),
+            State::PostSubject(room, reply) => {
+                self.queue(
+                    "Enter /edit for the multiline writing desk with preview/send/cancel.\n",
+                );
+                self.prompt(
+                    State::PostBody(room, reply, text.into()),
+                    "Message (one line, up to 1024 bytes): ",
+                );
+            }
             State::PostBody(room, reply, subject) => {
-                let key = faction_core::request_id()?;
-                self.queue(&format!("Submission ID: {key}\n"));
-                self.submit(board, room, reply, subject, text.into(), key)?;
+                if text == "/edit" {
+                    self.writing_start(board, theme, room, reply, subject)?;
+                } else {
+                    let key = faction_core::request_id()?;
+                    self.queue(&format!("Submission ID: {key}\n"));
+                    self.submit(board, room, reply, subject, text.into(), key)?;
+                }
             }
             State::PostRetry {
                 room,
@@ -807,6 +817,24 @@ impl Client {
         }
     }
     pub(super) fn resize(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
+        if matches!(self.state, State::Writing { .. })
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.approved(board)?;
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            let _ = termios::tcflush(&self.tty, termios::QueueSelector::IFlush);
+            if let State::Writing { preview, .. } = &mut self.state {
+                *preview = None;
+            }
+            self.queue(
+                "\nTerminal resized; completed draft lines kept; unfinished input cleared.\n",
+            );
+            self.queue(faction_terminal::composer::PROMPT);
+            return Ok(());
+        }
         if matches!(self.state, State::Directory(_) | State::RoomBrowse(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1086,9 +1114,14 @@ impl Client {
                 }
                 continue;
             }
-            if matches!(self.state, State::PostSubject(..)) {
+            if matches!(self.state, State::PostSubject(..) | State::Writing { .. }) {
                 use faction_terminal::subject::{self, Edit};
-                match subject::feed_with(&mut self.input, byte, self.capabilities.unicode)
+                let limit = if matches!(self.state, State::Writing { .. }) {
+                    1024
+                } else {
+                    160
+                };
+                match subject::feed_limited(&mut self.input, byte, self.capabilities.unicode, limit)
                     .map_err(Error::Invalid)?
                 {
                     Edit::Echo(text) => self.queue(&text),

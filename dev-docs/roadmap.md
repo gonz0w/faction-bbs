@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Comfortable room writing
+
+After checked #147, the [room writing desk](../docs/writing-desk.md) adds opt-in
+multiline room posts with quotes, undo/clear, preview and explicit send/cancel.
+This first #141/#21 slice supports #133's social hangout direction. Full-screen
+caret editing and recoverable drafts remain open; the wall/member pages and
+other leading #133 stories follow coherent room/visit work. Hardening stays later.
+
 ## Useful room navigation
 
 After checked #132, the [named room browser](../docs/room-browser.md) adds themed

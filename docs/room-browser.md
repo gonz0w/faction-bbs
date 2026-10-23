@@ -55,3 +55,7 @@ helper/thread, member-side room cache or dependency. Only an ID/card cursor stay
 on each shared connection; at most 100 rows exist transiently per action and a
 browser frame is at most 8 KiB. The existing queue/drain/default limits remain.
 [Plan 0057](../dev-docs/plans/0057-room-browser.md) records exact software validation.
+
+At the body prompt, `/edit` opens the optional [room writing desk](writing-desk.md)
+for multiline paragraphs, quotes, preview and explicit send/cancel. Unsent drafts
+remain in the current connection only.

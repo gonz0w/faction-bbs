@@ -2,8 +2,9 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #132, build useful
-#21/#12/#25 named room navigation and selected-room reading/posting; keep classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #147, build useful
+#141/#21 multiline room writing/preview, supporting #133's social hangout; keep
+classic fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -980,3 +981,33 @@ artifacts before final validation: copied source hashes do not prove an old
 incremental executable rebuilt. Final installed binaries matched the clean build
 and destination label. Owned clone/cache removed; saved playground off. Hardening,
 search/favorites/persistent current-room state and moderation remain later.
+
+
+## Explicit room writing desk
+
+Read plan 0058, ADR 0053 and docs/writing-desk.md. Snapshot 25
+`sources/pre141-writing-desk` / `room-browser-baseline-manifest.json` freezes all
+174 original #147 inputs and its whole record before edits. Keep 25 snapshots
+and 38 historical identities fixed; never refresh old hashes.
+
+`/edit` at the unchanged one-line body prompt opts into local room paragraphs.
+Keep 1024 body bytes/32 lines, inert UTF-8/classic display, exact explicit commands,
+current approval/room/parent checks and all-or-nothing freshly filtered quoting.
+Preview and quote cannot submit or mark read. Only `.send` creates a submission
+key and reuses the existing same-key busy retry. No new schema, listener, package,
+helper/default/credential limits or private-mail authority. Drafts are in memory
+and lost on disconnect; no hidden storage. Full-screen caret, naming/theming and
+recoverable drafts remain #141. Compare native versus opt-in server room drafts
+through the documented ownership/quota/retention/export/recovery gate first.
+Every private-mail draft stays device-side. Use an owned clean-built software VM;
+saved playground stays off and hardening remains later.
+
+The `writing-desk-netbsd` record pins 174 matched selected native inputs and eleven
+host harnesses, with 32 core/build/frontend inputs unchanged. Validation: 199 Rust
+per OS / 118 Python; thirteen writing PTYs per OS; eighteen actual shared SSH/
+native/plain controls; ten browser PTYs per OS, 22 shared-reader regressions and
+existing menu/directory/operator/art checks. Explicit preview/quote leaves zero
+unread rows; busy retry creates exactly one post. Native clean build and installed
+hash/literal checks pass. Keep all 39 saved-evidence guards; preserve these new
+actual inputs and whole record before later edits. Owned clone/cache removed,
+saved playground off. No new capacity or persistent/full-screen draft claim.

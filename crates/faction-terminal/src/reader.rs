@@ -97,7 +97,7 @@ fn heading(out: &mut String, text: &str, width: usize) -> usize {
 }
 impl Message<'_> {
     pub fn page(&self, columns: u16, rows: u16, offset: usize) -> Result<MessagePage> {
-        self.page_inner(columns, rows, offset, None, false)
+        self.page_inner(columns, rows, offset, None, false, false)
     }
     pub fn page_with_metadata(
         &self,
@@ -109,7 +109,7 @@ impl Message<'_> {
         if details.subject.len() > 160 || details.posted.len() > 64 {
             return Err("message metadata limit");
         }
-        self.page_inner(columns, rows, offset, Some(details), false)
+        self.page_inner(columns, rows, offset, Some(details), false, false)
     }
     pub fn page_with_capabilities(
         &self,
@@ -122,7 +122,17 @@ impl Message<'_> {
         if details.subject.len() > 160 || details.posted.len() > 64 {
             return Err("message metadata limit");
         }
-        self.page_inner(columns, rows, offset, Some(details), unicode)
+        self.page_inner(columns, rows, offset, Some(details), unicode, false)
+    }
+    pub(crate) fn draft_page(
+        &self,
+        columns: u16,
+        rows: u16,
+        offset: usize,
+        details: MessageDetails<'_>,
+        unicode: bool,
+    ) -> Result<MessagePage> {
+        self.page_inner(columns, rows, offset, Some(details), unicode, true)
     }
     fn page_inner(
         &self,
@@ -131,6 +141,7 @@ impl Message<'_> {
         offset: usize,
         details: Option<MessageDetails<'_>>,
         unicode: bool,
+        draft: bool,
     ) -> Result<MessagePage> {
         if self.body.len() > MESSAGE_BYTES || self.author.len() > 64 {
             return Err("message presentation limit");
@@ -152,7 +163,11 @@ impl Message<'_> {
         used += 1;
         used += heading(
             &mut text,
-            &format!("#{} by {}", self.id, inert(self.author)),
+            &if draft {
+                "DRAFT PREVIEW (not sent)".into()
+            } else {
+                format!("#{} by {}", self.id, inert(self.author))
+            },
             width,
         );
         if let Some(parent) = self.reply_to {

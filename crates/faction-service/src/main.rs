@@ -15,6 +15,7 @@ mod operator;
 mod policy;
 mod rooms_ui;
 mod ui;
+mod writing_ui;
 use config::Config;
 use rustix::{
     event::{PollFd, PollFlags, Timespec, poll},
@@ -65,6 +66,13 @@ enum State {
     PostReply(i64),
     PostSubject(i64, Option<i64>),
     PostBody(i64, Option<i64>, String),
+    Writing {
+        room: i64,
+        reply: Option<i64>,
+        subject: String,
+        draft: faction_terminal::composer::Draft,
+        preview: Option<usize>,
+    },
     PostRetry {
         room: i64,
         reply: Option<i64>,

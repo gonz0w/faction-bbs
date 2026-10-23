@@ -24,3 +24,5 @@ pub mod seasons;
 pub mod directory;
 
 pub mod rooms;
+
+pub mod composer;
