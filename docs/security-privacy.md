@@ -262,3 +262,14 @@ erasure. Revocation/owner recovery clears affected checkpoints. Owner exports an
 backups include them; old copies may remain. Full-screen input/graphics/theme
 controls confer no member authority or local editor/path/unlock capability. Every
 private-mail draft/key/decryption stays device-side; no server mail fallback.
+
+
+## Local gatherings
+
+[Gatherings](gatherings.md) are approved-member local plaintext, including RSVP rows
+and hidden/cancelled event text in owner backups. Counts-only display is not host
+confidentiality. Only the own response and permitted totals are exposed; no attendee
+list. Revisions reject stale edits/responses; time/place changes clear attendance.
+Current event/approval/private-channel checks apply on deliberate jumps. A title/
+UTC-only optional login notice grants no destination access or notification export.
+Schema-11 upgrades require stopped complete backup and fresh-path rollback.

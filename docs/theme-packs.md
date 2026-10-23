@@ -430,3 +430,9 @@ active, and plain menus list every action. Existing smaller menus are unchanged.
 Optional [member pages](member-pages.md) declare `action = "member_pages"` with a
 custom key/label/description. Sysop settings control enablement, card/compact layout
 and page title; the trusted session palette supplies colors. Themes grant no access.
+
+
+Optional [gatherings](gatherings.md) declare `action = "gatherings"` with a free
+letter, label and description. The host enables it only when the sysop policy is
+on; the default action is G. Crowded/narrow menus retain the ordered scrolling
+fallback, main arrows/Enter and direct hotkeys. Agenda commands use Enter.

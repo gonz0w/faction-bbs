@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional local gatherings/chat nights: one-off UTC events, explicit preview/save,
+  organizer edit/cancel, counts-only RSVPs, sysop policy/moderation, approved-login
+  reminders and deliberate local room/chat jumps. Shared local/worker/SSH workflow
+  keeps classic fallback. Schema 11 includes events/responses in owner recovery;
+  stop/drain and verify a complete pre-upgrade backup. No external calendar.
+
 - Integrate the previously separate native local encrypted mail vault with the current
   client, preserving board selection, terminal graphics and Files behavior. Preserve
   both source/evidence baselines before reconciliation. Network mail/roaming stays open.

@@ -167,3 +167,11 @@ These are plaintext local community data; logical deletion is not secure erasure
 
 Schema 10 includes optional [local member pages](member-pages.md), policy and
 bounded dated updates, including hidden content in plaintext owner snapshots.
+
+
+Schema 11 also includes optional [gatherings](gatherings.md): local agenda policy,
+one-off events (including hidden/cancelled rows) and member RSVP rows. They remain
+plaintext owner data; a counts-only member view does not redact owner backups.
+Old schema-2..10 snapshots remain read-only verifiable/restorable. Make and verify
+a complete stopped pre-upgrade backup; first new-owner open migrates to schema 11.
+Use matching older binaries plus the old complete bundle in fresh paths for rollback.

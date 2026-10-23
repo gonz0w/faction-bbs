@@ -18,3 +18,4 @@ zeroize.workspace = true
 toml.workspace = true
 faction-files = { path = "../faction-files" }
 base64.workspace = true
+faction-gatherings = { path = "../faction-gatherings" }

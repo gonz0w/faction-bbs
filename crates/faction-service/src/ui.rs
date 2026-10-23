@@ -23,19 +23,42 @@ impl Client {
         }
         Ok(())
     }
-    pub(super) fn identity(&mut self, theme: &Theme, handle: &str) {
-        self.identity_page(theme, handle, 0);
+    pub(super) fn identity(
+        &mut self,
+        theme: &Theme,
+        handle: &str,
+        board: &mut Board,
+    ) -> faction_core::Result<()> {
+        self.identity_page(theme, handle, 0, board)
     }
-    fn identity_welcome(&mut self, theme: &Theme, handle: &str) {
+    fn identity_welcome(
+        &mut self,
+        theme: &Theme,
+        handle: &str,
+        board: &mut Board,
+    ) -> faction_core::Result<()> {
+        self.approved(board)?;
+        let notice = board
+            .gathering_reminder(self.session()?)?
+            .map_or(String::new(), |s| format!("{s}\n"));
         self.prompt_started = Instant::now();
         self.state = State::Identity;
         self.queue(&format!(
-            "\n{}\nWelcome, {}.\nPress Enter to continue: ",
+            "\n{}\nWelcome, {}.\n{}Press Enter to continue: ",
             theme.welcome(),
-            Self::safe(handle)
+            Self::safe(handle),
+            notice
         ));
+        Ok(())
     }
-    fn identity_page(&mut self, theme: &Theme, handle: &str, page: usize) {
+    fn identity_page(
+        &mut self,
+        theme: &Theme,
+        handle: &str,
+        page: usize,
+        board: &mut Board,
+    ) -> faction_core::Result<()> {
+        self.approved(board)?;
         self.prompt_started = Instant::now();
         self.ansi = self.capable();
         self.dimensions = self.size();
@@ -48,7 +71,7 @@ impl Client {
             {
                 self.state = State::IdentityArt(page);
                 self.queue(&prompt);
-                return;
+                return Ok(());
             }
         } else {
             self.queue(&theme.identity_fallback_screen(
@@ -57,7 +80,7 @@ impl Client {
                 self.ansi,
             ));
         }
-        self.identity_welcome(theme, handle);
+        self.identity_welcome(theme, handle, board)
     }
     pub(super) fn menu(&mut self, theme: &Theme, board: &mut Board) -> faction_core::Result<()> {
         self.approved(board)?;
@@ -65,6 +88,8 @@ impl Client {
         let theme = wall_theme.as_ref().unwrap_or(theme);
         let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
         let theme = page_theme.as_ref().unwrap_or(theme);
+        let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
+        let theme = gathering_theme.as_ref().unwrap_or(theme);
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
         self.ansi = self.capable();
@@ -174,6 +199,8 @@ impl Client {
         let theme = wall_theme.as_ref().unwrap_or(theme);
         let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
         let theme = page_theme.as_ref().unwrap_or(theme);
+        let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
+        let theme = gathering_theme.as_ref().unwrap_or(theme);
         let sysop = self.sysop_display;
         let mut menu = self.focused(theme, sysop);
         let previous = menu.focus();
@@ -208,9 +235,14 @@ impl Client {
             Action::Contacts => "Other BBSes",
             Action::Wall => "Community wall",
             Action::MemberPages => "Member pages",
+            Action::Gatherings => "Gatherings",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Gatherings => {
+                self.state = State::Gatherings(Box::default());
+                self.gatherings_show(board, theme)?;
+            }
             Action::MemberPages => {
                 self.state = State::Pages(Box::default());
                 self.pages_show(board, theme)?;
@@ -241,7 +273,7 @@ impl Client {
                 }
                 self.prompt(
                     State::Sysop,
-                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [C]reate room: ",
+                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [C]reate room: ",
                 );
             }
             Action::Chat => {
@@ -470,7 +502,7 @@ impl Client {
                 self.approved(board)?;
                 let member = board.whoami(self.session()?)?;
                 if text.is_empty() {
-                    self.identity_page(theme, &member.handle, page + 1);
+                    self.identity_page(theme, &member.handle, page + 1, board)?;
                 } else if text.eq_ignore_ascii_case("s") {
                     self.ansi = self.capable();
                     self.dimensions = self.size();
@@ -479,7 +511,7 @@ impl Client {
                         self.dimensions.1,
                         self.ansi,
                     ));
-                    self.identity_welcome(theme, &member.handle);
+                    self.identity_welcome(theme, &member.handle, board)?;
                 } else {
                     self.state = State::IdentityArt(page);
                     if let Some(prompt) = theme.identity_page_prompt(
@@ -541,6 +573,9 @@ impl Client {
                 let theme = wall_theme.as_ref().unwrap_or(theme);
                 let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
                 let theme = page_theme.as_ref().unwrap_or(theme);
+                let gathering_theme =
+                    faction_gatherings::menu_theme(board, self.session()?, theme)?;
+                let theme = gathering_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
@@ -651,6 +686,45 @@ impl Client {
                     self.pause();
                 }
             }
+            State::Gatherings(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(faction_gatherings::Outcome::Main) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(faction_gatherings::Outcome::Join(place)) => {
+                        match place {
+                            faction_core::GatheringPlace::Room(room) => {
+                                board.unread_cursor(self.session()?, room)?;
+                                self.posts(board, room, 0, 0, theme)?;
+                            }
+                            faction_core::GatheringPlace::Channel(channel) => {
+                                let lease = board.chat_open(self.session()?)?;
+                                self.lease = Some(lease);
+                                let channel = board.chat_join(self.lease()?, &channel)?;
+                                self.channel = channel.name;
+                                self.cursor = channel.sequence;
+                                self.request = 1;
+                                self.heartbeat = Instant::now();
+                                self.next_poll = Instant::now() + Duration::from_millis(250);
+                                self.state = State::Chat;
+                                self.editor = LineEditor::default();
+                                self.queue("BBS-local gathering chat. /help for commands.\n");
+                                self.chat_prompt();
+                            }
+                        }
+                        return Ok(());
+                    }
+                    Ok(faction_gatherings::Outcome::Stay) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Gatherings(desk);
+                self.gatherings_show(board, theme)?;
+            }
             State::Pages(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -684,6 +758,10 @@ impl Client {
                 self.wall_show(board, theme)?;
             }
             State::Sysop => match text.to_ascii_lowercase().as_str() {
+                "g" => {
+                    self.state = State::Gatherings(Box::new(faction_gatherings::Desk::settings()));
+                    self.gatherings_show(board, theme)?;
+                }
                 "m" => {
                     self.state = State::Pages(Box::new(faction_pages::Desk::settings()));
                     self.pages_show(board, theme)?;
@@ -937,6 +1015,17 @@ impl Client {
             }
             return self.writing_show(board, theme, "resized; draft kept");
         }
+        if matches!(self.state, State::Gatherings(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("gathering input flush"))?;
+            return self.gatherings_show(board, theme);
+        }
         if matches!(self.state, State::Pages(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -984,7 +1073,7 @@ impl Client {
                 self.dimensions.1,
                 self.ansi,
             ));
-            self.identity_welcome(theme, &member.handle);
+            self.identity_welcome(theme, &member.handle, board)?;
             return Ok(());
         }
         if matches!(
@@ -1028,6 +1117,8 @@ impl Client {
             let theme = wall_theme.as_ref().unwrap_or(theme);
             let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
             let theme = page_theme.as_ref().unwrap_or(theme);
+            let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
+            let theme = gathering_theme.as_ref().unwrap_or(theme);
             let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
@@ -1274,10 +1365,17 @@ impl Client {
             }
             if matches!(
                 self.state,
-                State::PostSubject(..) | State::Writing { .. } | State::Wall(_) | State::Pages(_)
+                State::PostSubject(..)
+                    | State::Writing { .. }
+                    | State::Wall(_)
+                    | State::Pages(_)
+                    | State::Gatherings(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
-                let limit = if matches!(self.state, State::Wall(_) | State::Pages(_)) {
+                let limit = if matches!(
+                    self.state,
+                    State::Wall(_) | State::Pages(_) | State::Gatherings(_)
+                ) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
                     1024
@@ -1288,7 +1386,10 @@ impl Client {
                     &mut self.input,
                     byte,
                     self.capabilities.unicode
-                        && !matches!(self.state, State::Wall(_) | State::Pages(_)),
+                        && !matches!(
+                            self.state,
+                            State::Wall(_) | State::Pages(_) | State::Gatherings(_)
+                        ),
                     limit,
                 )
                 .map_err(Error::Invalid)?

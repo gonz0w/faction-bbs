@@ -255,9 +255,12 @@ fn live(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) ->
     }
 }
 pub fn run(board: &mut Board, s: &Session, ansi: bool) -> Result<()> {
+    run_at(board, s, ansi, "#lobby")
+}
+pub(super) fn run_at(board: &mut Board, s: &Session, ansi: bool, channel: &str) -> Result<()> {
     let lease = board.chat_open(s)?;
     let outcome = (|| -> Result<()> {
-        let lobby = board.chat_join(&lease, "#lobby")?;
+        let lobby = board.chat_join(&lease, channel)?;
         let mut state = State {
             channel: Some(lobby.name),
             cursor: lobby.sequence,

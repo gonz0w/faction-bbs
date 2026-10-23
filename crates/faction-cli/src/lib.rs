@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 mod chat;
 mod directory;
+mod gatherings;
 pub mod operator;
 mod pages;
 mod rooms;
@@ -545,13 +546,16 @@ fn terminal_settings(
 }
 fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
     let command = line(
-        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [C]reate room: ",
+        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [C]reate room: ",
         8,
     )?
     .to_ascii_lowercase();
     match command.as_str() {
         "w" => wall::run(board, s, theme, ansi, true)?,
         "m" => pages::run(board, s, theme, ansi, true)?,
+        "g" => {
+            gatherings::run(board, s, theme, ansi, true)?;
+        }
         "l" => {
             for m in board.members(s)? {
                 println!("{} {:?} {:?}", safe(&m.handle), m.status, m.role)
@@ -640,7 +644,7 @@ fn menu_with_directory(
         if board.whoami(s)?.status != Status::Approved {
             return Err(Error::Denied.into());
         }
-        Ok(())
+        Ok(board.gathering_reminder(s)?)
     })?;
     println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
     loop {
@@ -652,6 +656,8 @@ fn menu_with_directory(
         let theme = wall_theme.as_ref().unwrap_or(theme);
         let page_theme = faction_pages::menu_theme(board, s, theme)?;
         let theme = page_theme.as_ref().unwrap_or(theme);
+        let gathering_theme = faction_gatherings::menu_theme(board, s, theme)?;
+        let theme = gathering_theme.as_ref().unwrap_or(theme);
         let selected = if ansi {
             terminal::select(theme, member.role == Role::Sysop, caps)?
         } else {
@@ -683,6 +689,7 @@ fn menu_with_directory(
                 Action::Contacts => "Other BBSes",
                 Action::Wall => "Community wall",
                 Action::MemberPages => "Member pages",
+                Action::Gatherings => "Gatherings",
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
@@ -719,6 +726,15 @@ fn menu_with_directory(
             Some(Action::Sysop) => sysop(board, s, theme, used_ansi),
             Some(Action::Wall) => wall::run(board, s, theme, used_ansi, false),
             Some(Action::MemberPages) => pages::run(board, s, theme, used_ansi, false),
+            Some(Action::Gatherings) => match gatherings::run(board, s, theme, used_ansi, false)? {
+                faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Room(room)) => {
+                    read_room_at(board, s, room, false, theme, used_ansi, caps)
+                }
+                faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Channel(
+                    channel,
+                )) => chat::run_at(board, s, ansi, &channel),
+                _ => Ok(()),
+            },
             Some(Action::Chat) => chat::run(board, s, ansi),
             _ => {
                 println!("Unknown or unavailable command.");

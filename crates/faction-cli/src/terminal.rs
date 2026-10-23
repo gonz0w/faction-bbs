@@ -110,12 +110,12 @@ pub(super) fn capable() -> bool {
 pub fn identity(
     theme: &Theme,
     ansi_allowed: bool,
-    mut approved: impl FnMut() -> Result<()>,
+    mut approved: impl FnMut() -> Result<Option<String>>,
 ) -> Result<()> {
     let mut output = io::stdout();
     let mut page = 0;
     loop {
-        approved()?;
+        let notice = approved()?;
         let (columns, rows) = size().unwrap_or((0, 0));
         let ansi = ansi_allowed && capable();
         if let Some(screen) = theme.identity_page_screen(columns, rows, ansi, page) {
@@ -145,6 +145,9 @@ pub fn identity(
                             .as_bytes(),
                     )?;
                     writeln!(output, "\n{}", theme.welcome())?;
+                    if let Some(notice) = approved()? {
+                        writeln!(output, "{notice}")?;
+                    }
                     output.flush()?;
                     line("Press Enter to continue: ", 1)?;
                     approved()?;
@@ -153,8 +156,11 @@ pub fn identity(
             }
             continue;
         }
-        if theme.identity_needs_pause(columns, rows, ansi) {
+        if theme.identity_needs_pause(columns, rows, ansi) || notice.is_some() {
             write!(output, "{}\r\n", theme.welcome())?;
+            if let Some(notice) = notice {
+                writeln!(output, "{notice}")?;
+            }
             output.flush()?;
             termios::tcflush(&crate::tty()?, termios::QueueSelector::IFlush)?;
             line("Press Enter to continue: ", 1)?;

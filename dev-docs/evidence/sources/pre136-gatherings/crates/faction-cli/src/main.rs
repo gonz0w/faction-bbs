@@ -1,0 +1,173 @@
+//! Filesystem-owner console. Never install as an SSH forced command.
+#![forbid(unsafe_code)]
+use faction_cli::{Result, invalid, line, new_secret, secret};
+use faction_core::Board;
+use faction_terminal::Theme;
+use std::path::PathBuf;
+fn run() -> Result<()> {
+    let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if args.is_empty() || args == ["--help"] {
+        println!(
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+        );
+        return Ok(());
+    }
+    if args.first().is_some_and(|v| v == "directory-check") {
+        if args.len() != 2 {
+            return Err(invalid("directory-check needs one pack directory"));
+        }
+        let d = faction_terminal::directory::Directory::load(&PathBuf::from(&args[1]))
+            .map_err(invalid)?;
+        println!(
+            "Directory verified: {} curated listings. No network connection made.",
+            d.len()
+        );
+        return Ok(());
+    }
+    if args.first().is_some_and(|v| v == "verify-export") {
+        if args.len() != 2 {
+            return Err(invalid("verify-export needs one private file"));
+        }
+        let summary = faction_core::verify_export(&PathBuf::from(&args[1]))?;
+        println!(
+            "Export verified: {} members, {} rooms, {} posts, {} channels, {} retained chat messages, {} game score entries.",
+            summary.members,
+            summary.rooms,
+            summary.posts,
+            summary.channels,
+            summary.chat_messages,
+            summary.game_scores
+        );
+        return Ok(());
+    }
+    if args.len() < 3 || args[0] != "--state-dir" {
+        return Err(invalid("use --help for syntax"));
+    }
+    let path = PathBuf::from(&args[1]);
+    let command = args[2].to_str().ok_or_else(|| invalid("invalid command"))?;
+    if ["export", "restore"].contains(&command) {
+        if args.len() != 4 {
+            return Err(invalid("export/restore needs exactly one export file path"));
+        }
+        let file = PathBuf::from(&args[3]);
+        let summary = if command == "restore" {
+            faction_core::restore_local(&file, &path)?
+        } else {
+            faction_core::export_local(&path, &file)?
+        };
+        println!(
+            "{} complete: {} members, {} rooms, {} posts, {} channels, {} retained chat messages, {} game score entries. Private plaintext data; no live sessions or external theme files.",
+            if command == "export" {
+                "Export"
+            } else {
+                "Restore"
+            },
+            summary.members,
+            summary.rooms,
+            summary.posts,
+            summary.channels,
+            summary.chat_messages,
+            summary.game_scores
+        );
+        return Ok(());
+    }
+    if !["init", "register", "login", "recover"].contains(&command) {
+        return Err(invalid("unknown command"));
+    }
+    let (mut ansi, mut base_path, mut season_path, mut schedule_path, mut directory_path) =
+        (false, None, None, None, None);
+    if command != "login" && args.len() > 3 {
+        return Err(invalid("theme options apply only to login"));
+    }
+    let mut index = 3;
+    while index < args.len() {
+        match args[index].to_str() {
+            Some("--ansi") => ansi = true,
+            Some("--plain") => ansi = false,
+            Some("--theme") | Some("--season") | Some("--theme-schedule") | Some("--directory") => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| invalid("theme option needs a directory"))?;
+                if args[index] == "--theme" {
+                    base_path = Some(PathBuf::from(value));
+                } else if args[index] == "--season" {
+                    season_path = Some(PathBuf::from(value));
+                } else if args[index] == "--directory" {
+                    directory_path = Some(PathBuf::from(value));
+                } else {
+                    schedule_path = Some(PathBuf::from(value));
+                }
+                index += 1;
+            }
+            _ => return Err(invalid("unknown login option")),
+        }
+        index += 1;
+    }
+    let mut theme = Theme::default();
+    if let Some(directory) = base_path {
+        match Theme::load(&directory) {
+            Ok(t) => theme = t,
+            Err(reason) => eprintln!("Theme rejected: {reason}; using built-in text fallback."),
+        }
+    }
+    let mut themes = match faction_terminal::seasons::Themes::load(
+        theme.clone(),
+        season_path.as_deref(),
+        schedule_path.as_deref(),
+    ) {
+        Ok(themes) => themes,
+        Err(reason) => {
+            eprintln!("Season/schedule rejected: {reason}; using the unchanged base theme.");
+            faction_terminal::seasons::Themes::fixed(theme)
+        }
+    };
+    let directory = directory_path
+        .map(|p| faction_terminal::directory::Directory::load(&p))
+        .transpose()
+        .map_err(invalid)?;
+    themes
+        .set_directory_enabled(directory.is_some())
+        .map_err(invalid)?;
+    let mut board = Board::open(&path)?;
+    let name = line("Handle: ", 24)?;
+    match command {
+        "init" => {
+            let value = new_secret()?;
+            board.bootstrap(&name, &value)?;
+            println!("Sysop initialized. Lobby created.");
+        }
+        "register" => {
+            let value = new_secret()?;
+            board.register(&name, &value)?;
+            println!("Registered pending sysop approval.");
+        }
+        "login" => {
+            let value = secret("Password (hidden): ")?;
+            let s = board.authenticate(&name, &value)?;
+            drop(value);
+            if let Some(directory) = &directory {
+                faction_cli::scheduled_menu_with_directory(
+                    &mut board, &s, &themes, directory, ansi,
+                )?;
+            } else {
+                faction_cli::scheduled_menu(&mut board, &s, &themes, ansi)?;
+            }
+        }
+        "recover" => {
+            if line("Local filesystem-owner recovery. Type RECOVER: ", 8)? != "RECOVER" {
+                return Err(invalid("recovery cancelled"));
+            }
+            let value = new_secret()?;
+            board.recover_local_sysop(&name, &value)?;
+            println!("Sysop password reset; prior sessions expired.");
+        }
+        _ => unreachable!(),
+    }
+    Ok(())
+}
+fn main() {
+    if let Err(e) = run() {
+        eprintln!("Faction: {e}");
+        std::process::exit(1)
+    }
+}
