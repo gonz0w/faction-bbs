@@ -77,7 +77,7 @@ impl Drop for Remote {
     }
 }
 impl Remote {
-    pub fn start(p: &Profile, rows: u16, cols: u16) -> io::Result<Self> {
+    pub fn start(p: &Profile, rows: u16, cols: u16, compact: bool) -> io::Result<Self> {
         let (master, slave) = faction_client_pty::open(rows, cols)?;
         let mut t = termios::tcgetattr(&slave)?;
         t.make_raw();
@@ -85,6 +85,14 @@ impl Remote {
         let slave = File::from(slave);
         let child = p
             .ssh(false)
+            .env(
+                "TERM",
+                if compact {
+                    "faction-compact"
+                } else {
+                    "xterm-256color"
+                },
+            )
             .stdin(Stdio::from(slave.try_clone()?))
             .stdout(Stdio::from(slave.try_clone()?))
             .stderr(Stdio::from(slave))

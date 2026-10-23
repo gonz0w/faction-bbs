@@ -75,6 +75,10 @@ def validate(root: Path, *, allow_unpublished: bool = False) -> list[str]:
             errors.append(f'{relative}: missing final newline')
         if re.search(r'^(<<<<<<< |=======$|>>>>>>> )', content, re.M):
             errors.append(f'{relative}: unresolved merge conflict')
+        # Frozen Markdown links refer to the original tree, not this source subset.
+        # File policy, newline/conflict checks and exact evidence hashes still apply.
+        if path.suffix == '.md' and relative.parts[:3] == ('dev-docs', 'evidence', 'sources'):
+            continue
         if path.suffix == '.md':
             if relative.as_posix() not in {'AGENTS.md', 'dev-docs/migration.md'} and '.planning/' in content:
                 errors.append(f'{relative}: active reference to retired planning paths')

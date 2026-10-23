@@ -131,3 +131,11 @@ owner, database/schema, server helpers/listeners and ordinary limits are unchang
 
 [Plan 0056](../dev-docs/plans/0056-native-board-launcher.md) records the exact
 software validation and remaining work. Hardening remains a later phase.
+
+
+## Deliberate travel preferences
+
+See [travel settings](travel-modes.md) for the local Boards T panel, compact text
+and per-file payload ceilings chosen before connecting. Limits concern file bytes,
+not total encrypted wire costs. Existing grants/review/confirmations remain.
+Preferences are memory-only; no route, account, vault or profile changes.

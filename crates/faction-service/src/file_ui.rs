@@ -11,7 +11,9 @@ impl Client {
             self.queue("Sysop: create SLUG members|private QUOTA TITLE, allow|deny AREA HANDLE,\n review AREA [after-object], publish OBJECT, remove OBJECT.\n");
         }
         self.prompt(State::Files, "files> ");
-        if self.ansi {
+        // This explicit presentation hint grants no file/member authority.
+        // Ordinary dumb terminals still receive no protocol escape bytes.
+        if self.ansi || self.native_text_hint {
             self.native_frame(&["ready"])?;
         }
         Ok(())

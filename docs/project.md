@@ -30,6 +30,10 @@ Optional [curated art galleries](scene-gallery.md) give each board original/lice
 ANSI/ASCII exhibits, artist notes, text editions and optional current-permission
 file links, using owner-reviewed startup packs and the canonical cell importer.
 
+The [native travel panel](travel-modes.md) now provides deliberate compact visits
+and per-file payload ceilings without changing routes, accounts or board content.
+Offline exchange and link-profile validation remain follow-on work.
+
 ## Confirmed requirements
 
 | Area | Requirement |

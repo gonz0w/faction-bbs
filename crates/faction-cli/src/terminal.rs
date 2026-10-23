@@ -105,7 +105,8 @@ pub(super) fn size() -> Option<(u16, u16)> {
 }
 pub(super) fn capable() -> bool {
     matches!(size(), Some((40..=240, 18..=100)))
-        && std::env::var("TERM").is_ok_and(|s| s != "dumb" && !s.is_empty())
+        && std::env::var("TERM")
+            .is_ok_and(|s| !matches!(s.as_str(), "dumb" | "faction-compact") && !s.is_empty())
 }
 pub fn identity(
     theme: &Theme,
