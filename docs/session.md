@@ -44,3 +44,5 @@ local review/removal and editorial expiry. In-BBS pending submissions remain ope
 Demonstrate the complete approval gate and artwork/menu order on both available access surfaces, persistence of room read/post state after interruption, chat/menu transitions, door entry/return and failure isolation, and a directory visit that grants no remote access. Set measurable payload/latency and terminal-capability conditions before experimenting.
 
 - [Local community wall](community-wall.md) — short ASCII signals, paging, moderation and optional weekly archives.
+
+- [Local member pages and dated .plan updates](member-pages.md) — optional profiles, explicit visibility and local moderation.

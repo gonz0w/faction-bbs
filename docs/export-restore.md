@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2/3/4/5/6/7/8 boards upgrade to schema 9 when
+Verification is read-only; restored schema-2/3/4/5/6/7/8/9 boards upgrade to schema 10 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -164,3 +164,6 @@ fresh-path rollback procedure.
 Schema 9 additionally includes the optional [local community wall](community-wall.md):
 policy, current/explicitly retained notes and bounded per-member cooldown/retry receipts.
 These are plaintext local community data; logical deletion is not secure erasure.
+
+Schema 10 includes optional [local member pages](member-pages.md), policy and
+bounded dated updates, including hidden content in plaintext owner snapshots.

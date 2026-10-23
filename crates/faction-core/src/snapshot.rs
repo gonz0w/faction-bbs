@@ -100,7 +100,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=9).contains(&version) {
+    if app != APP_ID || !(2..=10).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -128,6 +128,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 9 {
         reference.execute_batch(include_str!("wall.sql"))?;
+    }
+    if version >= 10 {
+        reference.execute_batch(include_str!("member_pages.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -317,6 +320,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 9 {
         crate::wall::validate(db, deadline)?;
+    }
+    if version >= 10 {
+        crate::member_pages::validate(db, deadline)?;
     }
     Ok(SnapshotSummary {
         members: count(db, "SELECT count(*) FROM members")?,

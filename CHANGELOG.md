@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional local member pages and dated .plan history: explicit preview/save,
+  field/page visibility, ASCII signatures/projects, own deletion and sysop
+  moderation/presentation/retention settings, with classic terminals and schema-10
+  owner export/complete-bundle recovery. Stop/drain and back up before upgrade.
+
+
 - Add an opt-in local community wall: short ASCII notes/art, explicit review/send,
   chronological paging, own edits/delete and sysop removal, configurable name,
   cooldown/quotas/retention and optional weekly archives, shared across classic,

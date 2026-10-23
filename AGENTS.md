@@ -2,8 +2,9 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #149, complete
-#134 local community wall with classic fallback. Hardening #106–#111 stays later.** Native-device
+**Current priority (owner, 2026-10-22): merge checked #150, then the next useful
+local product batch: #135 member pages and dated .plan updates, preserving classic
+fallback. Hardening #106–#111 stays later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1091,3 +1092,54 @@ An actual run caught the last-archive-note redraw error: archived deletion now
 returns to current with its success message. Keep all 41 saved-evidence guards;
 freeze new actual inputs/whole result before later edits. Owned clone/cache
 removed, saved playground off. No new capacity, hardening or federation claim.
+
+
+## Member-owned local pages and .plan updates
+
+Read docs/member-pages.md, plan 0061 and ADR 0056. Schema 10 adds optional page
+policy, four ASCII fields (240/120/240/120 bytes, 4/2/4/2 lines) and immutable dated
+updates (480 bytes/eight lines, at most sixteen/member, 7–365 day retention). All
+lines <=72 columns. No home files/Finger service, home proof, mail, notifications
+or federation. Hidden fields/updates remain plaintext/sysop-readable local data.
+
+Default disabled. Sysop S/M enables/names, selects card/compact layout, field mask,
+history retention and hide-only versus expressly enabled permanent removal. Core
+rechecks current board/member/epoch/approval/roles. Foreign list/view/history omit
+unpublished, moderated and revoked-author pages and hidden bodies/counts. Own
+revision-checked Save/delete protects other editors and sysop hide. Moderation
+never rewrites another author's text; author edits cannot clear the gate.
+
+Use faction-pages' shared bounded workflow for local/worker/shared routes. Only
+explicit Save persists. Preview bodies paginate; unsaved text has no checkpoint.
+Deleted update actions address the shown stable ID, never a new row at an offset.
+No room unread markers, new listener/helper/registry dependency or changed default/
+credential/output/drain limits. New M action uses temporary theme copies only when
+enabled. Shared resize keeps completed text and clears unfinished input.
+
+Owner snapshots/bundles include policy/pages/retained plans, including hidden text.
+Old schema-2..9 exports remain read-only valid; stopped complete pre-upgrade backup
+and fresh-path rollback required. Snapshot 28/community-wall-baseline-manifest
+preserves 202 prior measured/harness/compatibility inputs and whole wall result.
+Forty-one historical identities stay unchanged. #150's old custom-menu exact
+prompt assertion was corrected to the stable Create-room suffix; its old measured
+fixture already resolves from frozen snapshots. Merge a12eb87 passed corrected CI.
+Use owned software clones only, keep saved playground off and hardening later.
+
+
+`member-pages-netbsd` pins 203 matched native inputs and 22 selected host harness
+inputs. Rust 1.96: 235 tests per OS; Python 118. Eight page PTYs per OS and fourteen
+actual SSH/native/plain controls prove different-member visibility, active hiding/
+revocation, author/moderation conflicts, Busy retry and explicit deletion. Complete
+page/hidden-plan/wall/file recovery thirteen per OS includes native actual distinct-
+UID CLI. Existing wall/editor/reader/menu/art regressions pass. Keep all 42 saved-
+evidence guards, preserve these new inputs/whole result before later edits, remove
+only owned software VM/cache and keep playground off. No new capacity/hardening
+or federation claim.
+
+Own page removal must not clear moderation: delete text/updates but retain a minimal
+empty moderated row with fresh revision, no shared fields and unpublished state.
+A new author save/recreate cannot bypass that gate; only sysop show clears it.
+Core and actual SSH negative controls cover deletion/recreation. For successive
+owned VM test suites, restore the normal ANSI config explicitly: the art/plain
+controls can leave a different fixture presentation. Do not mistake it for a new
+application regression or change production startup policy to satisfy the harness.

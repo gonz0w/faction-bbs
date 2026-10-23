@@ -154,6 +154,7 @@ name = "faction-cli"
 version = "0.1.0-alpha.1"
 dependencies = [
  "faction-core",
+ "faction-pages",
  "faction-terminal",
  "faction-unix",
  "faction-wall",
@@ -206,6 +207,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-pages"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-core",
+ "faction-terminal",
+]
+
+[[package]]
 name = "faction-service"
 version = "0.1.0-alpha.1"
 dependencies = [
@@ -213,6 +222,7 @@ dependencies = [
  "faction-access",
  "faction-core",
  "faction-files",
+ "faction-pages",
  "faction-terminal",
  "faction-unix",
  "faction-wall",

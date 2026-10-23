@@ -46,6 +46,9 @@ def run(a):
             db.execute("UPDATE wall_settings SET enabled=1,name='Recovery wall'")
             db.execute("INSERT INTO wall_notes(edition,member_id,request_id,body,posted_at,edited_at) VALUES(0,1,?,'Wall survives complete recovery',?,0)",('b'*32,int(time.time())))
             db.execute("INSERT INTO wall_receipts VALUES(1,?,1,?)",('b'*32,int(time.time())))
+            db.execute("UPDATE page_settings SET enabled=1,name='Recovery members'")
+            db.execute("INSERT INTO member_pages VALUES(1,'Recovered bio','','','Recovered project',15,1,0,?,?)",('c'*32,int(time.time())))
+            db.execute("INSERT INTO member_plans(member_id,request_id,body,visible,posted_at) VALUES(1,?,'Recovered hidden plan',0,?)",('d'*32,int(time.time())))
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -115,6 +118,11 @@ def run(a):
             assert db.execute('select body from wall_notes').fetchall()==[('Wall survives complete recovery',)]
             assert db.execute('select request_id,note_id from wall_receipts').fetchall()==[('b'*32,1)]
         checks.append('complete_restore_preserves_wall_policy_note_and_cooldown_receipt')
+        with sqlite3.connect(f'file:{restored}/faction.sqlite3?mode=ro',uri=True) as db:
+            assert db.execute('select enabled,name from page_settings').fetchall()==[(1,'Recovery members')]
+            assert db.execute('select bio,project from member_pages').fetchall()==[('Recovered bio','Recovered project')]
+            assert db.execute('select body,visible from member_plans').fetchall()==[('Recovered hidden plan',0)]
+        checks.append('complete_restore_preserves_member_page_and_hidden_plan')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)

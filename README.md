@@ -46,11 +46,16 @@ The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragr
 reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
 for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
 recover local room writing after disconnect; these are plaintext board data,
-readable by its sysop. Schema-9 upgrades require a stopped complete backup.
+readable by its sysop. Schema-10 upgrades require a stopped complete backup.
 The opt-in **[community wall](docs/community-wall.md)** adds short local ASCII
 notes/art, chronological paging, own edits/deletion, sysop moderation and optional
 weekly archives. Enable/name it in S:Sysop controls → W:Wall settings; plain and
 ANSI terminals share explicit review/send.
+Optional **[member pages](docs/member-pages.md)** add bios, interests, original ASCII
+signatures, current projects and dated `.plan` history. Members explicitly preview,
+share/hide and remove their own content; sysops configure presentation/retention
+and moderate without rewriting authorship. Enable through Sysop → Member pages.
+
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
 run the first-install preflight/helper, initialize your sysop and explicitly start

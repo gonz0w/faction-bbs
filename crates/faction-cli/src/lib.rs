@@ -3,6 +3,7 @@
 mod chat;
 mod directory;
 pub mod operator;
+mod pages;
 mod rooms;
 mod terminal;
 mod wall;
@@ -544,12 +545,13 @@ fn terminal_settings(
 }
 fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
     let command = line(
-        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [C]reate room: ",
+        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [C]reate room: ",
         8,
     )?
     .to_ascii_lowercase();
     match command.as_str() {
         "w" => wall::run(board, s, theme, ansi, true)?,
+        "m" => pages::run(board, s, theme, ansi, true)?,
         "l" => {
             for m in board.members(s)? {
                 println!("{} {:?} {:?}", safe(&m.handle), m.status, m.role)
@@ -648,6 +650,8 @@ fn menu_with_directory(
         }
         let wall_theme = faction_wall::menu_theme(board, s, theme)?;
         let theme = wall_theme.as_ref().unwrap_or(theme);
+        let page_theme = faction_pages::menu_theme(board, s, theme)?;
+        let theme = page_theme.as_ref().unwrap_or(theme);
         let selected = if ansi {
             terminal::select(theme, member.role == Role::Sysop, caps)?
         } else {
@@ -678,6 +682,7 @@ fn menu_with_directory(
                 Action::Terminal => "Terminal settings",
                 Action::Contacts => "Other BBSes",
                 Action::Wall => "Community wall",
+                Action::MemberPages => "Member pages",
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
@@ -713,6 +718,7 @@ fn menu_with_directory(
             }
             Some(Action::Sysop) => sysop(board, s, theme, used_ansi),
             Some(Action::Wall) => wall::run(board, s, theme, used_ansi, false),
+            Some(Action::MemberPages) => pages::run(board, s, theme, used_ansi, false),
             Some(Action::Chat) => chat::run(board, s, ansi),
             _ => {
                 println!("Unknown or unavailable command.");
