@@ -13,12 +13,14 @@ enum State {
     Escape,
     Csi(Vec<u8>),
     Osc(Vec<u8>, bool),
+    Apc(Vec<u8>, bool),
     Discard(bool, usize),
 }
 #[derive(Default)]
 pub struct Filter {
     state: State,
     utf8: Vec<u8>,
+    pub graphics: faction_terminal::graphics::Gate,
 }
 impl Filter {
     fn printable(&mut self, b: u8, text: &mut Vec<u8>) {
@@ -62,6 +64,11 @@ impl Filter {
                 State::Escape => match b {
                     b'[' => self.state = State::Csi(Vec::new()),
                     b']' => self.state = State::Osc(Vec::new(), false),
+                    b'_' if self.graphics.enabled => {
+                        let mut v = Vec::with_capacity(4096);
+                        v.extend_from_slice(b"\x1b_");
+                        self.state = State::Apc(v, false)
+                    }
                     b'P' | b'_' | b'^' => self.state = State::Discard(false, 0),
                     _ => (),
                 },
@@ -103,6 +110,36 @@ impl Filter {
                         return Err(invalid());
                     }
                 }
+                State::Apc(mut v, esc) => {
+                    if esc && b == b'\\' {
+                        if v.len() + 2 > faction_terminal::graphics::MAX_COMMAND {
+                            return Err(invalid());
+                        }
+                        v.extend_from_slice(b"\x1b\\");
+                        let command = std::str::from_utf8(&v).map_err(|_| invalid())?;
+                        if let Some(trusted) = self
+                            .graphics
+                            .accept(command, std::time::Instant::now())
+                            .map_err(|_| invalid())?
+                        {
+                            if !text.is_empty() {
+                                out.push(Event::Text(std::mem::take(&mut text)));
+                            }
+                            out.push(Event::Text(trusted.into_bytes()));
+                        }
+                    } else {
+                        if v.len() >= faction_terminal::graphics::MAX_COMMAND - 4 {
+                            return Err(invalid());
+                        }
+                        if esc {
+                            v.push(27);
+                        }
+                        if b != 27 {
+                            v.push(b);
+                        }
+                        self.state = State::Apc(v, b == 27);
+                    }
+                }
                 State::Discard(esc, n) => {
                     if !(esc && b == b'\\') {
                         if n >= 8192 {
@@ -122,6 +159,24 @@ impl Filter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered() {
+        let mut filter = Filter::default();
+        let mut text = Vec::new();
+        let input = "café 界\x1b[38;2;190;80;255mRGB\x1b[0m\x1b[?2026$p\x1b[?2026hframe\x1b[?2026l\x1b_Ga=T,t=f;L2V0Yy9wYXNzd2Q=\x1b\\\x1bPqgraphics\x1b\\\x1b]52;c;clipboard\x07";
+        for b in input.bytes() {
+            for e in filter.feed(&[b]).unwrap() {
+                match e {
+                    Event::Text(t) => text.extend(t),
+                    Event::Frame(_) => panic!("unexpected local action"),
+                }
+            }
+        }
+        assert_eq!(
+            String::from_utf8(text).unwrap(),
+            "café 界\x1b[38;2;190;80;255mRGB\x1b[0mframe"
+        );
+    }
     #[test]
     fn fragmented_frames_and_terminal_queries_cannot_become_local_actions() {
         let frame = native::frame(&["ready"]).unwrap();
@@ -198,5 +253,68 @@ mod recent_tests {
         assert_eq!(r.items[0], newest);
         r.feed(b"faction-file:bad/path");
         assert_eq!(r.items.len(), 8);
+    }
+}
+
+#[cfg(test)]
+mod graphics_tests {
+    use super::*;
+    use faction_terminal::graphics::{self, Gate};
+    fn text(events: Vec<Event>) -> Vec<u8> {
+        events
+            .into_iter()
+            .flat_map(|e| match e {
+                Event::Text(t) => t,
+                _ => panic!("graphics became file authority"),
+            })
+            .collect()
+    }
+    #[test]
+    fn native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate() {
+        let mut filter = Filter::default();
+        assert!(text(filter.feed(graphics::QUERY.as_bytes()).unwrap()).is_empty());
+        filter.graphics = Gate::default();
+        filter.graphics.enabled = true;
+        let mut input = String::from(graphics::QUERY);
+        input.push_str(graphics::DELETE);
+        for i in 0..graphics::CHUNKS {
+            input.push_str(&graphics::chunk(i).unwrap());
+        }
+        input.push_str(graphics::DELETE);
+        let mut output = Vec::new();
+        for b in input.bytes() {
+            output.extend(text(filter.feed(&[b]).unwrap()));
+        }
+        assert_eq!(output, input.as_bytes());
+        assert!(
+            text(
+                filter
+                    .feed(b"\x1b]52;c;secret\x07\x1bPqSIXEL\x1b\\")
+                    .unwrap()
+            )
+            .is_empty()
+        );
+    }
+    #[test]
+    fn native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks() {
+        for malicious in [
+            "\x1b_Gt=f;AAAA\x1b\\".to_owned(),
+            "\x1b_Gt=s;AAAA\x1b\\".into(),
+            "\x1b_Gf=100;AAAA\x1b\\".into(),
+            graphics::chunk(1).unwrap(),
+            format!("\x1b_G{}\x1b\\", "x".repeat(4097)),
+            graphics::chunk(0).unwrap().replace("s=160", "s=161"),
+        ] {
+            let mut filter = Filter::default();
+            filter.graphics.enabled = true;
+            assert!(filter.feed(malicious.as_bytes()).is_err());
+        }
+        let mut filter = Filter::default();
+        filter.graphics.enabled = true;
+        let command = graphics::chunk(0).unwrap();
+        assert!(text(filter.feed(&command.as_bytes()[..2000]).unwrap()).is_empty());
+        // A truncated stream is never emitted; teardown sends only a trusted delete.
+        assert!(text(filter.feed(b"\x1b]52;c;bad\x07").unwrap()).is_empty());
+        assert!(filter.feed(b"\x1b\\").is_err());
     }
 }

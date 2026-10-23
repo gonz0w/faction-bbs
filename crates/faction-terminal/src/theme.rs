@@ -19,6 +19,10 @@ pub enum Action {
     Doors,
     Files,
     Quit,
+    Terminal,
+    Contacts,
+    Wall,
+    MemberPages,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -32,11 +36,20 @@ impl Action {
             "doors" => Ok(Self::Doors),
             "files" => Ok(Self::Files),
             "quit" => Ok(Self::Quit),
+            "terminal" => Ok(Self::Terminal),
+            "contacts" => Ok(Self::Contacts),
+            "wall" => Ok(Self::Wall),
+            "member_pages" => Ok(Self::MemberPages),
             _ => Err("unknown menu action"),
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Doors && self != Self::Files && (self != Self::Sysop || sysop)
+        self != Self::MemberPages
+            && self != Self::Wall
+            && self != Self::Contacts
+            && self != Self::Doors
+            && self != Self::Files
+            && (self != Self::Sysop || sysop)
     }
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -80,6 +93,8 @@ pub struct Entry {
     action: Action,
     key: u8,
     label: String,
+    description: String,
+    position: Option<(usize, usize)>,
 }
 impl Entry {
     pub fn action(&self) -> Action {
@@ -91,11 +106,16 @@ impl Entry {
     pub fn label(&self) -> &str {
         &self.label
     }
+    pub fn description(&self) -> &str {
+        &self.description
+    }
 }
 #[derive(Clone)]
 pub struct Theme {
     id: String,
     board: String,
+    menu_title: String,
+    writing_title: String,
     welcome: String,
     logout: String,
     normal: Style,
@@ -104,7 +124,11 @@ pub struct Theme {
     disabled: Style,
     doors_enabled: bool,
     files_enabled: bool,
+    directory_enabled: bool,
+    wall_enabled: bool,
+    pages_enabled: bool,
     entries: Vec<Entry>,
+    grid: bool,
     identity_ascii: Option<String>,
     identity_ansi: Option<Art>,
 }
@@ -113,6 +137,8 @@ impl Default for Theme {
         Self {
             id: "builtin-text".into(),
             board: "Faction BBS".into(),
+            menu_title: "Main menu".into(),
+            writing_title: "Writing desk".into(),
             welcome: "Independent boards. Private rooms.".into(),
             logout: "Until next time.".into(),
             normal: Style::new(7, 0, false),
@@ -121,6 +147,10 @@ impl Default for Theme {
             disabled: Style::new(8, 0, false),
             doors_enabled: false,
             files_enabled: false,
+            directory_enabled: false,
+            wall_enabled: false,
+            pages_enabled: false,
+            grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
                 (Action::New, b'N', "New messages"),
@@ -129,6 +159,7 @@ impl Default for Theme {
                 (Action::Chat, b'C', "Local chat"),
                 (Action::Sysop, b'S', "Sysop controls"),
                 (Action::Doors, b'D', "Doors"),
+                (Action::Terminal, b'T', "Terminal settings"),
                 (Action::Quit, b'Q', "Log out"),
             ]
             .into_iter()
@@ -136,6 +167,8 @@ impl Default for Theme {
                 action,
                 key,
                 label: label.into(),
+                description: String::new(),
+                position: None,
             })
             .collect(),
             identity_ascii: None,
@@ -147,6 +180,8 @@ const BASE_KEYS: &[&str] = &[
     "version",
     "id",
     "board",
+    "menu_title",
+    "writing_title",
     "welcome",
     "logout",
     "normal",
@@ -154,13 +189,16 @@ const BASE_KEYS: &[&str] = &[
     "hotkey",
     "disabled",
     "menu",
+    "layout",
     "identity_ascii",
     "identity_ansi",
+    "identity_ansi_long",
     "creator",
     "source",
     "permission",
 ];
 const SEASON_KEYS: &[&str] = &[
+    "writing_title",
     "version",
     "id",
     "welcome",
@@ -170,6 +208,7 @@ const SEASON_KEYS: &[&str] = &[
     "disabled",
     "identity_ascii",
     "identity_ansi",
+    "identity_ansi_long",
     "creator",
     "source",
     "permission",
@@ -187,7 +226,7 @@ fn text(value: &Value, max: usize) -> Result<&str> {
     }
     Ok(s)
 }
-fn read_file(root: &Path, name: &str, cap: usize) -> Result<Vec<u8>> {
+pub(crate) fn read_file(root: &Path, name: &str, cap: usize) -> Result<Vec<u8>> {
     if name.is_empty()
         || name.len() > 64
         || !name.as_bytes()[0].is_ascii_alphanumeric()
@@ -280,6 +319,107 @@ impl Theme {
                     action: Action::Files,
                     key: b'F',
                     label: "File areas".into(),
+                    description: "Browse and transfer local files".into(),
+                    position: if self.grid {
+                        (0..5)
+                            .flat_map(|row| (0..2).map(move |col| (row, col)))
+                            .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+                    } else {
+                        None
+                    },
+                },
+            );
+        }
+        if self.grid && self.entries.iter().any(|e| e.position.is_none()) {
+            self.grid = false;
+        }
+        Ok(())
+    }
+    pub fn set_pages_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.pages_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::MemberPages) {
+            let key = std::iter::once(b'M')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free member-page hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            self.entries.insert(
+                self.entries.len() - 1,
+                Entry {
+                    action: Action::MemberPages,
+                    key,
+                    label: "Member pages".into(),
+                    description: "People and dated project plans".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
+    pub fn set_wall_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.wall_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Wall) {
+            let key = std::iter::once(b'W')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free wall hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            self.entries.insert(
+                self.entries.len() - 1,
+                Entry {
+                    action: Action::Wall,
+                    key,
+                    label: "Community wall".into(),
+                    description: "Leave a local signal".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
+    pub fn set_directory_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.directory_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Contacts) {
+            if self.entries.iter().any(|e| e.key == b'O') {
+                return Err("O is reserved; add a contacts action with another key");
+            }
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Contacts,
+                    key: b'O',
+                    label: "Other BBSes".into(),
+                    description: "Find another private community".into(),
+                    position,
                 },
             );
         }
@@ -290,7 +430,10 @@ impl Theme {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Files && self.files_enabled)
+        (action == Action::MemberPages && self.pages_enabled)
+            || (action == Action::Wall && self.wall_enabled)
+            || (action == Action::Contacts && self.directory_enabled)
+            || (action == Action::Files && self.files_enabled)
             || (action == Action::Doors && self.doors_enabled)
             || action.enabled(sysop)
     }
@@ -299,6 +442,12 @@ impl Theme {
     }
     pub fn board(&self) -> &str {
         &self.board
+    }
+    pub fn writing_title(&self) -> &str {
+        &self.writing_title
+    }
+    pub fn menu_title(&self) -> &str {
+        &self.menu_title
     }
     pub fn welcome(&self) -> &str {
         &self.welcome
@@ -322,6 +471,8 @@ impl Theme {
         self.id = text(&t["id"], 32)?.into();
         for (name, dest, max) in [
             ("board", &mut self.board, 36),
+            ("menu_title", &mut self.menu_title, 24),
+            ("writing_title", &mut self.writing_title, 24),
             ("welcome", &mut self.welcome, 36),
             ("logout", &mut self.logout, 60),
         ] {
@@ -339,7 +490,13 @@ impl Theme {
                 *dest = style(value)?
             }
         }
-        if t.contains_key("identity_ascii") || t.contains_key("identity_ansi") {
+        if t.contains_key("identity_ansi") && t.contains_key("identity_ansi_long") {
+            return Err("choose short or long ANSI identity, not both");
+        }
+        if t.contains_key("identity_ascii")
+            || t.contains_key("identity_ansi")
+            || t.contains_key("identity_ansi_long")
+        {
             for key in ["creator", "source", "permission"] {
                 text(t.get(key).ok_or("art provenance required")?, 160)?;
             }
@@ -363,22 +520,61 @@ impl Theme {
         if let Some(value) = t.get("identity_ansi") {
             self.identity_ansi = Some(Art::parse(&read_file(root, text(value, 64)?, 16384)?)?);
         }
+        if let Some(value) = t.get("identity_ansi_long") {
+            self.identity_ansi = Some(Art::parse_long(&read_file(root, text(value, 64)?, 65536)?)?);
+        }
         Ok(())
     }
     pub fn load(root: &Path) -> Result<Self> {
         let t = load_table(root, BASE_KEYS)?;
         let mut theme = Self::default();
         theme.apply(root, &t)?;
+        theme.grid = match t.get("layout").and_then(Value::as_str) {
+            None if !t.contains_key("layout") => false,
+            Some("list") => false,
+            Some("grid") => true,
+            _ => return Err("layout must be list or grid"),
+        };
+        if theme.grid && !t.contains_key("menu") {
+            return Err("grid requires explicit menu entries and coordinates");
+        }
+        let mut positions = BTreeSet::new();
         if let Some(value) = t.get("menu") {
             let values = value.as_array().ok_or("menu must be an array")?;
-            if !(6..=9).contains(&values.len()) {
-                return Err("menu needs 6-9 entries");
+            if !(6..=11).contains(&values.len()) {
+                return Err("menu needs 6-11 entries");
             }
             let (mut keys, mut actions, mut entries) =
                 (BTreeSet::new(), BTreeSet::new(), Vec::new());
             for value in values {
                 let item = value.as_table().ok_or("menu entry must be a table")?;
-                unknown(item, &["action", "key", "label"])?;
+                unknown(
+                    item,
+                    &["action", "key", "label", "description", "row", "column"],
+                )?;
+                let position = if theme.grid {
+                    let row = item
+                        .get("row")
+                        .and_then(Value::as_integer)
+                        .filter(|n| (1..=5).contains(n))
+                        .ok_or("grid row must be 1-5")? as usize
+                        - 1;
+                    let col = item
+                        .get("column")
+                        .and_then(Value::as_integer)
+                        .filter(|n| (1..=2).contains(n))
+                        .ok_or("grid column must be 1-2")? as usize
+                        - 1;
+                    if !positions.insert((row, col)) {
+                        return Err("duplicate grid position");
+                    }
+                    Some((row, col))
+                } else {
+                    if item.contains_key("row") || item.contains_key("column") {
+                        return Err("entry coordinates require grid layout");
+                    }
+                    None
+                };
                 let name = text(item.get("action").ok_or("action required")?, 16)?;
                 let action = Action::parse(name)?;
                 let key = text(item.get("key").ok_or("hotkey required")?, 1)?.as_bytes()[0]
@@ -387,7 +583,18 @@ impl Theme {
                     return Err("duplicate/invalid action or hotkey");
                 }
                 let label = text(item.get("label").ok_or("label required")?, 26)?.into();
-                entries.push(Entry { action, key, label });
+                let description = item
+                    .get("description")
+                    .map(|v| text(v, 30).map(str::to_owned))
+                    .transpose()?
+                    .unwrap_or_default();
+                entries.push(Entry {
+                    action,
+                    key,
+                    label,
+                    description,
+                    position,
+                });
             }
             if ["rooms", "new", "history", "post", "sysop", "quit"]
                 .iter()
@@ -407,7 +614,7 @@ impl Theme {
         Ok(candidate)
     }
     pub fn plain_menu(&self, sysop: bool) -> String {
-        let mut out = format!("\n{}\n{}\n", self.board, self.welcome);
+        let mut out = format!("\n{}\n{}\n{}\n", self.board, self.welcome, self.menu_title);
         for e in &self.entries {
             writeln!(
                 out,
@@ -435,10 +642,16 @@ pub struct Menu<'a> {
     theme: &'a Theme,
     sysop: bool,
     focus: usize,
+    columns: usize,
 }
 impl<'a> Menu<'a> {
     pub fn new(theme: &'a Theme, sysop: bool) -> Self {
+        Self::with_columns(theme, sysop, 40)
+    }
+    /// The caller still owns geometry validation and plain-mode fallback.
+    pub fn with_columns(theme: &'a Theme, sysop: bool, columns: u16) -> Self {
         Self {
+            columns: usize::from(columns.clamp(40, 240)),
             theme,
             sysop,
             focus: theme
@@ -456,10 +669,14 @@ impl<'a> Menu<'a> {
             Key::Cancel => Some(Action::Quit),
             Key::Enter => Some(self.theme.entries[self.focus].action),
             Key::Hotkey(k) => self.theme.hotkey(k, self.sysop),
-            Key::Up | Key::Down => {
+            Key::Up | Key::Down | Key::Left | Key::Right if self.grid() => {
+                self.move_grid(key);
+                None
+            }
+            Key::Up | Key::Down | Key::Left | Key::Right | Key::Next => {
                 let n = self.theme.entries.len();
                 loop {
-                    self.focus = if key == Key::Up {
+                    self.focus = if matches!(key, Key::Up | Key::Left) {
                         (self.focus + n - 1) % n
                     } else {
                         (self.focus + 1) % n
@@ -475,6 +692,63 @@ impl<'a> Menu<'a> {
             }
         }
     }
+    /// Restore an entry index after reconstructing the borrowed menu. Grid
+    /// arrows are spatial, so replaying Down would not restore array order.
+    pub fn restore_focus(&mut self, index: usize) {
+        if self
+            .theme
+            .entries
+            .get(index)
+            .is_some_and(|e| self.theme.enabled(e.action, self.sysop))
+        {
+            self.focus = index;
+        }
+    }
+    fn grid(&self) -> bool {
+        self.theme.grid && self.columns >= 80
+    }
+    fn move_grid(&mut self, key: Key) {
+        let (row, col) = self.theme.entries[self.focus]
+            .position
+            .expect("validated grid");
+        let candidate = self
+            .theme
+            .entries
+            .iter()
+            .enumerate()
+            .filter(|(_, e)| self.theme.enabled(e.action, self.sysop))
+            .filter_map(|(i, e)| {
+                let (r, c) = e.position.expect("validated grid");
+                let rank = match key {
+                    Key::Up if c == col && r != row => ((row + 5 - r) % 5, 0),
+                    Key::Down if c == col && r != row => ((r + 5 - row) % 5, 0),
+                    // Across columns, prefer the same row, then nearest row;
+                    // ties choose the upper row. No disabled cell gets focus.
+                    Key::Left | Key::Right if c != col => (row.abs_diff(r), r),
+                    _ => return None,
+                };
+                Some((rank, i))
+            })
+            .min();
+        if let Some((_, i)) = candidate {
+            self.focus = i;
+        }
+    }
+    fn width(&self) -> usize {
+        if self.columns >= 80 { 76 } else { 38 }
+    }
+    fn position(&self, row: usize) -> String {
+        format!("\x1b[{};{}H", row, (self.columns - self.width()) / 2 + 1)
+    }
+    fn line(&self, row: usize, text: &str, style: Style) -> String {
+        format!(
+            "{}{}{:<width$}\x1b[0m",
+            self.position(row),
+            style.sgr(),
+            text,
+            width = self.width()
+        )
+    }
     fn row(&self, index: usize) -> String {
         let e = &self.theme.entries[index];
         let enabled = self.theme.enabled(e.action, self.sysop);
@@ -486,45 +760,151 @@ impl<'a> Menu<'a> {
         } else {
             self.theme.normal
         };
+        // Keep the hotkey on the lightbar's background instead of punching a
+        // different-colored hole into the selected row.
+        let key_style = if !enabled || focused {
+            style
+        } else {
+            self.theme.hotkey
+        };
+        if self.grid() {
+            let (row, col) = e.position.expect("validated grid");
+            let left = (self.columns - self.width()) / 2 + 2 + col * 37;
+            return format!(
+                "\x1b[{};{}H{}{} {}[{}]{} {:<26}{}\x1b[0m",
+                row + 5,
+                left,
+                style.sgr(),
+                if focused { ">" } else { " " },
+                key_style.sgr(),
+                e.key as char,
+                style.sgr(),
+                e.label,
+                if enabled { "    " } else { " -- " }
+            );
+        }
+        let tail = if self.width() >= 76 {
+            format!(
+                " | {:<30}",
+                if enabled {
+                    &e.description
+                } else {
+                    "(unavailable)"
+                }
+            )
+        } else if !enabled {
+            " --".into()
+        } else {
+            String::new()
+        };
+        let used = 32 + tail.len(); // ASCII marker, hotkey, label and optional detail.
         format!(
-            "\x1b[{};1H{}{} {}[{}]{} {}\x1b[K\x1b[0m",
-            index + 5,
+            "{}{}|{} {}[{}]{} {:<26}{}{}|\x1b[0m",
+            self.position(index - self.window_start(self.focus) + 5),
             style.sgr(),
             if focused { ">" } else { " " },
-            if enabled {
-                self.theme.hotkey.sgr()
-            } else {
-                self.theme.disabled.sgr()
-            },
+            key_style.sgr(),
             e.key as char,
             style.sgr(),
-            e.label
+            e.label,
+            tail,
+            " ".repeat(self.width() - 2 - used)
         )
     }
     pub fn render(&self) -> String {
-        let mut out = format!(
-            "{}\x1b[2J\x1b[H{}\r\n{}\r\n\r\nArrows select; Enter or hotkey opens.\x1b[0m",
-            self.theme.normal.sgr(),
-            self.theme.board,
-            self.theme.welcome
+        let mut out = format!("{}\x1b[2J\x1b[H", self.theme.normal.sgr());
+        out.push_str(&self.line(1, &self.theme.board, self.theme.hotkey));
+        out.push_str(&self.line(2, &self.theme.welcome, self.theme.normal));
+        let rule = format!(
+            "+-- {} {}+",
+            self.theme.menu_title,
+            "-".repeat(self.width() - self.theme.menu_title.len() - 6)
         );
-        for i in 0..self.theme.entries.len() {
+        out.push_str(&self.line(3, &rule, self.theme.hotkey));
+        out.push_str(&self.line(
+            4,
+            &format!(
+                "|{:<inner$}|",
+                "Arrows select; Enter/hotkey opens.",
+                inner = self.width() - 2
+            ),
+            self.theme.normal,
+        ));
+        if self.grid() {
+            for row in 5..10 {
+                out.push_str(&self.line(
+                    row,
+                    &format!("|{}|", " ".repeat(self.width() - 2)),
+                    self.theme.normal,
+                ));
+            }
+        }
+        for i in self.window_start(self.focus)
+            ..(self.window_start(self.focus) + self.visible()).min(self.theme.entries.len())
+        {
             out.push_str(&self.row(i));
         }
-        write!(
-            out,
-            "{}\x1b[{};1HCtrl-C exits; Esc: Enter to recover.\x1b[K\x1b[0m",
-            self.theme.normal.sgr(),
-            self.theme.entries.len() + 7
-        )
-        .expect("string output");
+        let bottom = if self.grid() { 10 } else { self.visible() + 5 };
+        out.push_str(&self.line(
+            bottom,
+            &format!("+{}+", "-".repeat(self.width() - 2)),
+            self.theme.hotkey,
+        ));
+        out.push_str(&self.line(
+            bottom + 1,
+            "Tab advances; -- unavailable.",
+            self.theme.normal,
+        ));
+        // Stable recovery instruction in every theme; never operator-overridden.
+        out.push_str(&self.line(
+            bottom + 2,
+            "Ctrl-C exits; Esc: Enter to recover.",
+            self.theme.normal,
+        ));
+        if self.grid() {
+            out.push_str(&self.detail());
+        }
         out
     }
+    fn detail(&self) -> String {
+        self.line(
+            13,
+            &self.theme.entries[self.focus].description,
+            self.theme.normal,
+        )
+    }
+    fn visible(&self) -> usize {
+        if !self.grid() && self.theme.entries.len() > 11 {
+            9
+        } else {
+            self.theme.entries.len()
+        }
+    }
+    fn window_start(&self, focus: usize) -> usize {
+        if self.visible() < self.theme.entries.len() {
+            focus.saturating_sub(8).min(self.theme.entries.len() - 9)
+        } else {
+            0
+        }
+    }
     pub fn redraw(&self, previous: usize) -> String {
+        if self.window_start(previous) != self.window_start(self.focus) {
+            return self.render();
+        }
+
         if previous == self.focus {
             String::new()
         } else {
-            format!("{}{}", self.row(previous), self.row(self.focus))
+            format!(
+                "{}{}{}",
+                self.row(previous),
+                self.row(self.focus),
+                if self.grid() {
+                    self.detail()
+                } else {
+                    String::new()
+                }
+            )
         }
     }
 }

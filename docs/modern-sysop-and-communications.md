@@ -1,7 +1,9 @@
 # Modern terminal communities and the local sysop console
 
 Status: confirmed product stories and research direction, 2026-10-21. These are
-**planned capabilities**, not features enabled by the current SSH playground.
+**requested capabilities**. The optional [terminal settings](terminal-capabilities.md)
+and [bounded Kitty preview](kitty-graphics.md) now have software implementations;
+the broader dashboard, network and rich-art stories remain planned.
 The owner wants a modern underground communications platform, shared with invited
 independent sysops, whose interface keeps its ANSI/BBS identity while taking
 advantage of terminals such as Ghostty. GitHub holds implementation status.
@@ -27,8 +29,8 @@ select a new runtime, enable a protocol or change a running host's policy.
 
 After authenticating to the VM/host operating system at its console, an authorized
 operator can open a local sysop dashboard. It should feel like the old BBS status
-screens with modern panels, graphs and keyboard controls. The first increment is
-read-only: sessions/limits, pending approvals, aggregate activity, service/peer/
+screens with modern panels, graphs and keyboard controls. The first [local sysop console](sysop-console.md) increment now provides a
+subset of these read-only observations; the complete requested view includes: sessions/limits, pending approvals, aggregate activity, service/peer/
 queue health, transfer/door status, CPU/memory/disk/network and backup health.
 Unavailable or stale data must be labeled rather than fabricated.
 

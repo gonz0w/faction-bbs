@@ -114,3 +114,31 @@ scope/provenance; GitHub state is authoritative.
 
 Owner clarification: article formatting applies to discussion-room posts only;
 IRC and XMPP retain live/private formats. See [article/news requirements](../docs/discussion-articles-and-news.md).
+
+The first #103/#21/#25 build batch adds the local text-article codec and shared
+room pages; see [plan 0038](plans/0038-room-articles-and-reading.md). These issues
+remain open for post migration/integration and the broader UI journey; codec
+formatting enables no room publication or provider connection.
+
+## Later-phase hardening, 2026-10-21
+
+- [#106](https://github.com/gonz0w/faction-bbs/issues/106): Design OpenPGP signing and offline verification for releases and appliance images.
+- [#107](https://github.com/gonz0w/faction-bbs/issues/107): Research optional member-held OpenPGP signatures for discussion articles and files.
+- [#108](https://github.com/gonz0w/faction-bbs/issues/108): Design and validate a hardened NetBSD VM appliance profile.
+- [#109](https://github.com/gonz0w/faction-bbs/issues/109): Prove post-compromise process containment and shell-escape resistance.
+- [#110](https://github.com/gonz0w/faction-bbs/issues/110): Protect databases, file storage, backups and secrets across component compromises.
+- [#111](https://github.com/gonz0w/faction-bbs/issues/111): Run independent hardening validation, fuzzing and compromise-recovery exercises.
+
+See [phase requirements](../docs/later-phase-hardening.md). All are future work.
+
+- [#114: Internationalized subject composing and versioned metadata compatibility](https://github.com/gonz0w/faction-bbs/issues/114) — schema-7 terminal/storage implementation merged through #116; v2 wire support is #103.
+
+## Modern-terminal continuation, 2026-10-22
+
+#96 supplies the bounded [native-text/capability foundation](../docs/terminal-capabilities.md).
+[#117](https://github.com/gonz0w/faction-bbs/issues/117) separately scopes trusted
+inline Kitty images and a member-side native-client gate.
+[#118](https://github.com/gonz0w/faction-bbs/issues/118) covers actual emulator/font/
+multiplexer validation beyond the current PTY/control fixtures. These follow-ups
+preserve classic fallback and current resource/approval rules; no bitmap adoption
+or physical-hardware gate follows from a feature-list comparison.

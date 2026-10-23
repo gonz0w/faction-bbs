@@ -10,8 +10,9 @@ This is an early hobby preview; read the validation limitations below.
 
 First complete [normal setup](quickstart-netbsd.md), initialize your sysop and
 build the current workspace. Before upgrading an existing board, export a private
-pre-upgrade database backup: schema 5 cannot be opened by an older binary. Existing
-schema-2/3/4 exports remain readable. Stop member SSH, wait for members to leave,
+pre-upgrade complete backup. Schema 10 includes [room draft checkpoints](writing-desk.md),
+the optional [community wall](community-wall.md) and [member pages](member-pages.md).
+An older binary cannot open that schema. Schema-2/3/4/5 exports remain readable. Stop member SSH, wait for members to leave,
 and stop the backend before replacing binaries or changing configuration.
 
 As root, from your source checkout:
@@ -174,6 +175,11 @@ standalone export plus all catalog-owned bytes and writes a SHA256/length manife
 It refuses unknown entries, aliases, missing or corrupt published/pending data.
 A bundle is private **plaintext**, including account hashes and private board data;
 store it securely. It excludes themes, SSH host/private keys and system configuration.
+
+A new `verify` operation reuses these complete checks without creating restore
+paths or changing live locks. Add `--record-status --board PATH` to backup/verify
+for the optional [historical Recovery panel](backup-checks.md); default publication
+is off. File/board bytes and secrets stay out of telemetry.
 
 Restore verifies the entire bundle before creating fresh destinations, validates
 the DB with the Rust owner tool, creates a fresh board identity, restores exact

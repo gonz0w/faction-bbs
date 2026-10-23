@@ -1,0 +1,19 @@
+[package]
+name = "faction-access"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+rustix.workspace = true
+faction-unix = { path = "../faction-unix" }
+
+[[bin]]
+name = "faction-ssh"
+path = "src/frontend.rs"
+
+[[bin]]
+name = "faction-broker"
+path = "src/broker.rs"

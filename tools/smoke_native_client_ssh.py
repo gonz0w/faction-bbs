@@ -124,7 +124,7 @@ def smoke(a):
         leavefiles(alice)
         sysop.send('back');menu(sysop)
         # A room message contains a first-class reference. Core renders per reader.
-        sysop.raw(b'p');sysop.expect('Room ID: ');sysop.send('1');sysop.expect('Reply to post ID (blank for new message): ');sysop.send('');sysop.expect('Message (one line, up to 1024 bytes): ');sysop.send(private_link);sysop.expect('Posted #');sysop.expect('Press Enter to return to menu: ');sysop.send('');menu(sysop)
+        sysop.raw(b'p');sysop.expect('Room ID: ');sysop.send('1');sysop.expect('Reply to post ID (blank for new message): ');sysop.send('');sysop.expect('Subject (blank for generated/reply default): ');sysop.send('');sysop.expect('Message (one line, up to 1024 bytes): ');sysop.send(private_link);sysop.expect('Posted #');sysop.expect('Press Enter to return to menu: ');sysop.send('');menu(sysop)
         bob=login('bobby',True)
         for person,allowed in [(alice,True),(bob,False)]:
             start=len(person.transcript);person.raw(b'h');person.expect('Room ID: ');person.send('1');person.expect('More? [y/N]: ')

@@ -1,0 +1,11 @@
+Date: 21 Oct 2026 18:00:00 +0000
+From: alice@home.example
+Message-ID: <fixture-1@home.example>
+Newsgroups: faction.lobby
+Path: home.example!not-for-mail
+Subject: Handwritten test article
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+This is an offline article fixture.

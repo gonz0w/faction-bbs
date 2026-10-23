@@ -182,6 +182,7 @@ def smoke(binary):
             c.send('1')
             c.expect('Reply to post ID (blank for new message): ')
             c.send('')
+            c.expect('Subject (blank for generated/reply default): '); c.send('Midnight signal')
             c.expect('Message (one line, up to 1024 bytes): ')
             c.send('First room post from a real terminal.')
             c.expect('Posted #1.')
@@ -190,6 +191,7 @@ def smoke(binary):
             c.expect('Room ID: ')
             c.send('1')
             c.expect('#1 by member')
+            c.expect('Subject: Midnight signal')
             c.expect('First room post from a real terminal.')
             c.expect('More? [y/N]: ')
             c.send('n')
@@ -230,7 +232,7 @@ def smoke(binary):
             # Identity is visible before the ANSI menu; arrows only move focus.
             c = ansi_login()
             c.raw(b'\x1b[B')
-            c.expect('\x1b[6;1H')
+            c.expect('\x1b[6;3H')
             assert b'Room ID: ' not in c.transcript
             c.raw(b'\r\n')
             c.expect('Room ID: ')
@@ -244,6 +246,7 @@ def smoke(binary):
             c.send('1')
             c.expect('Reply to post ID (blank for new message): ')
             c.send('')
+            c.expect('Subject (blank for generated/reply default): '); c.send('')
             c.expect('Message (one line, up to 1024 bytes): ')
             c.send('r is message text, never a menu command.')
             c.expect('Posted #2.')
@@ -251,14 +254,32 @@ def smoke(binary):
             c.send('')
             c.expect(footer)
             c.raw(b'R')
-            c.expect('Lobby (1 unread)')
-            c.expect('Press Enter to return to menu: ')
-            c.send('')
+            c.expect('#1 (1 unread)')
+            c.expect('N/P:page U:next unread Q:main')
+            c.raw(b'q')
             c.expect(footer)
             c.raw(b'\x1bPpayload\x07P\nDP\x1b\\q')
             c.expect('Logged out.')
             c.finish()
             assert b'\x1b[?25h' in c.transcript, 'cursor not restored'
+            # The shipped theme has wide details, a coherent seasonal palette,
+            # and a compact 40x18 menu retaining direct action/recovery paths.
+            shipped = Path(__file__).resolve().parents[1] / 'themes'
+            c = login('member', member_secret, ['--ansi', '--theme', str(shipped/'base'), '--season', str(shipped/'seasons/autumn')])
+            c.expect('Press Enter to continue: '); c.send(''); c.expect(footer)
+            assert b'LOCAL / MAIN' in c.transcript
+            assert b'Find a room; follow the talk' in c.transcript
+            assert b'Autumn frequencies.' in c.transcript
+            assert b'(unavailable)' in c.transcript
+            c.raw(b'q'); c.expect('Logged out.'); c.finish()
+            c = login('member', member_secret, ['--ansi', '--theme', str(shipped/'base')], columns=40, rows=18)
+            c.expect(footer)
+            assert b'LOCAL / MAIN' in c.transcript
+            assert b'Find a room; follow the talk' not in c.transcript
+            assert b' --' in c.transcript
+            c.raw(b'r'); c.expect('#1 (1 unread)')
+            c.expect('N/P:page U:next unread Q:main'); c.raw(b'q'); c.expect(footer)
+            c.raw(b'q'); c.expect('Logged out.'); c.finish()
             # Escape timeout quarantines following hotkey-like bytes through CRLF.
             c = ansi_login()
             c.raw(b'\x1b')

@@ -51,3 +51,18 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 
 
 - [0037: Capture modern sysop and communication stories](0037-modern-sysop-stories.md) — documentation/backlog only; no running-host changes.
+
+- [0038: Room articles and reading](0038-room-articles-and-reading.md) — codec foundation, shared room screens and native software checks.
+
+- [0039: Post metadata and hardening stories](0039-post-metadata-and-hardening-stories.md) — local persistence/UI increment and later-phase backlog.
+
+- [0040: Authored subjects and room articles](0040-authored-subjects-and-room-articles.md)
+
+- [0041: Broader articles and original INN validation](0041-broader-articles-and-inn-validation.md)
+
+- [0058: Explicit multiline room writing](0058-room-writing-desk.md).
+- [0059: Full-screen editing and room checkpoints](0059-full-screen-and-room-checkpoints.md).
+
+- [0060: Local community wall](0060-local-community-wall.md).
+
+- [0061: Local member pages and .plan history](0061-member-pages-and-plans.md).

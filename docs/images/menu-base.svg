@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="824" height="420" viewBox="0 0 824 420" role="img" aria-labelledby="title description">
+<title id="title">Faction BBS main-menu authoring preview</title>
+<desc id="description">Reference palette, not an emulator screenshot. Arrow lightbar, hotkeys, action descriptions and classic recovery instructions.</desc>
+<rect width="824" height="420" fill="#101018"/>
+<text x="32" y="29" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">Faction BBS                                                                 </text>
+<text x="12" y="51" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Independent signals. Shared nights.                                           </text>
+<text x="32" y="73" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">+-- LOCAL / MAIN ----------------------------------------------------------+</text>
+<text x="12" y="95" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  |Arrows select; Enter/hotkey opens.                                        |  </text>
+<rect x="32" y="100" width="760" height="22" fill="#415b94"/>
+<text x="32" y="117" fill="#f3edf9" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">|&gt; [R] Message rooms              | Find a room; follow the talk           |</text>
+<text x="12" y="139" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="139" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[N]</text>
+<text x="92" y="139" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> New messages               | Catch up where you left off            |  </text>
+<text x="12" y="161" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="161" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[H]</text>
+<text x="92" y="161" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Room history               | Read the local backscroll              |  </text>
+<text x="12" y="183" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="183" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[P]</text>
+<text x="92" y="183" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Post a message             | Start a subject; send a reply          |  </text>
+<text x="12" y="205" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="205" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[C]</text>
+<text x="92" y="205" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Local chat                 | Live channels; slash commands          |  </text>
+<text x="12" y="227" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="227" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[S]</text>
+<text x="92" y="227" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Sysop controls             | Membership and local controls          |  </text>
+<text x="12" y="249" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="249" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[D]</text>
+<text x="92" y="249" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Doors                      | Step into the arcade                   |  </text>
+<text x="12" y="271" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="271" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[T]</text>
+<text x="92" y="271" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Terminal settings          | Text, color and graphics               |  </text>
+<text x="12" y="293" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="293" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[F]</text>
+<text x="92" y="293" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> File areas                 | Browse and transfer local files        |  </text>
+<text x="12" y="315" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="315" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[Q]</text>
+<text x="92" y="315" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Log out                    | Drop carrier; come back soon           |  </text>
+<text x="32" y="337" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">+--------------------------------------------------------------------------+</text>
+<text x="12" y="359" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Tab advances; -- unavailable.                                                 </text>
+<text x="12" y="381" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Ctrl-C exits; Esc: Enter to recover.                                          </text>
+</svg>

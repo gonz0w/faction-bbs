@@ -99,7 +99,7 @@ def smoke(a):
         passed('peer_chat_works_after_playing_both_games')
         remote('/etc/rc.d/faction_doors onestop')
         alice.raw(b'd');menu(alice);alice.expect('That door is unavailable.')
-        sysop.raw(b'r');sysop.expect('lobby - Lobby');pause(sysop)
+        sysop.raw(b'r');sysop.expect('lobby - Lobby');sysop.expect('N/P:page U:next unread Q:main');sysop.raw(b'q');menu(sysop)
         remote('/etc/rc.d/faction_doors onestart');arcade(alice)
         passed('door_service_loss_returns_to_healthy_board_and_recovers')
         status(sysop,'v');alice.raw(b'h');alice.expect('Action failed:');alice.finish(1)

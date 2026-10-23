@@ -1,0 +1,8 @@
+# Manual seasonal override; no calendar or command remapping.
+version = 1
+id = "winter"
+welcome = "Winter frequencies."
+normal = { fg = 6, bg = 0 }
+focus = { fg = 15, bg = 4, bold = true }
+hotkey = { fg = 14, bg = 0, bold = true }
+disabled = { fg = 7, bg = 0 }

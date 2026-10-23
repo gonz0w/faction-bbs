@@ -1,12 +1,13 @@
-# Declarative example; artwork is deliberately supplied by the sysop.
+# Original signal-console palette; identity artwork is supplied by the sysop.
 version = 1
 id = "faction-local"
 board = "Faction BBS"
-welcome = "Make this board your own."
+welcome = "Independent signals. Shared nights."
+menu_title = "LOCAL / MAIN"
 logout = "Until next time."
 normal = { fg = 7, bg = 0 }
-focus = { fg = 15, bg = 5, bold = true }
-hotkey = { fg = 14, bg = 0, bold = true }
+focus = { fg = 15, bg = 4, bold = true }
+hotkey = { fg = 13, bg = 0, bold = true }
 disabled = { fg = 8, bg = 0 }
 
 # Optional files in this directory; record actual rights before enabling.
@@ -20,31 +21,44 @@ disabled = { fg = 8, bg = 0 }
 action = "rooms"
 key = "R"
 label = "Message rooms"
+description = "Find a room; follow the talk"
 [[menu]]
 action = "new"
 key = "N"
 label = "New messages"
+description = "Catch up where you left off"
 [[menu]]
 action = "history"
 key = "H"
 label = "Room history"
+description = "Read the local backscroll"
 [[menu]]
 action = "post"
 key = "P"
 label = "Post a message"
+description = "Start a subject; send a reply"
 [[menu]]
 action = "chat"
 key = "C"
 label = "Local chat"
+description = "Live channels; slash commands"
 [[menu]]
 action = "sysop"
 key = "S"
 label = "Sysop controls"
+description = "Membership and local controls"
 [[menu]]
 action = "doors"
 key = "D"
 label = "Doors"
+description = "Step into the arcade"
+[[menu]]
+action = "terminal"
+key = "T"
+label = "Terminal settings"
+description = "Text, color and graphics"
 [[menu]]
 action = "quit"
 key = "Q"
 label = "Log out"
+description = "Drop carrier; come back soon"

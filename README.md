@@ -10,12 +10,57 @@ The goal is private, human-scale communities whose operators own their systems a
 
 ## Status
 
-**Working hobby preview · updated 2026-10-21 · Rust on NetBSD; no supported release yet.**
+Try the populated private NetBSD [terminal playground](docs/test-playground.md):
+Ghostty/SSH login, Nightwire art, rooms, wall, member pages, chat and Lua demos,
+with persistent testing data and guarded start/stop commands. Operator preparation
+is required; this is a development preview.
+
+The optional [local sysop console](docs/sysop-console.md) now provides themed
+read-only BBS status, live CPU/RAM/network graphs and explicit stale/unavailable health
+after OS login. Its [Recovery panel](docs/backup-checks.md) now shows explicitly
+recorded complete-bundle checks and preserves the last success when a recheck fails.
+Private publication is opt-in; member SSH stays separate.
+
+The [BBS menus and sysop themes](docs/theme-packs.md) now support centered
+lightbars and opt-in two-column layouts with sysop-defined entry positions,
+directional arrows, ordered Tab and direct hotkeys. Narrow/plain terminals keep
+the classic ordered menu. Original CP437 login templates demonstrate bounded
+SAUCE/iCE import; the importer emits canonical cells, never raw art controls.
+Optional seasonal calendars pin colors/login screens for each approved session.
+Opt-in long-form ANSI login art now pages with Enter/skip controls, keeping
+classic ASCII recovery. A local authoring preview needs no running board. The
+example calendar stays disabled. The optional [original Nightwire artwork](docs/artwork-nightwire.md)
+now adds bespoke lettering, a radio-city scene, coordinated seasons and a matching
+short/compact identity. [Real-terminal artwork checks](docs/artwork-terminal-compatibility.md)
+cover cursor placement and cell widths; pixel/font appearance and owner visual
+acceptance remain open.
+
+![Original Nightwire ANSI cover, reference-cell preview](docs/images/nightwire-cover.svg)
+
+
+**Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**
 
 Faction already runs an approved-membership board with hidden-password login,
 ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
 controls and private export/restore. Arrows/Enter and displayed hotkeys both work.
 No JavaScript/TypeScript or public HTTP service is required.
+The **[room browser](docs/room-browser.md)** now adds named arrow/hotkey selection,
+unread counts, next-unread navigation and room cards for reading/posting without
+entering room IDs. Plain terminals and the existing numeric commands remain available.
+The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragraphs,
+reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
+for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
+recover local room writing after disconnect; these are plaintext board data,
+readable by its sysop. Schema-10 upgrades require a stopped complete backup.
+The opt-in **[community wall](docs/community-wall.md)** adds short local ASCII
+notes/art, chronological paging, own edits/deletion, sysop moderation and optional
+weekly archives. Enable/name it in S:Sysop controls → W:Wall settings; plain and
+ANSI terminals share explicit review/send.
+Optional **[member pages](docs/member-pages.md)** add bios, interests, original ASCII
+signatures, current projects and dated `.plan` history. Members explicitly preview,
+share/hide and remove their own content; sysops configure presentation/retention
+and moderate without rewriting authorship. Enable through Sysop → Member pages.
+
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
 run the first-install preflight/helper, initialize your sysop and explicitly start
@@ -56,8 +101,13 @@ now passes encrypted subject/body/reply, offline/archive and verified-device ref
 controls, plus scoped native SSH certificate admission. Native mail UI/keystore/
 recovery and trusted local identity binding remain #90/#91; native certificate
 signing has a recorded failure under #92. Encrypted attachments stay planned in #88.
-The other-BBS directory, federation, payments, mesh and browser access remain
-backlog work.
+The optional **[Other BBSes directory](docs/other-boards.md)** now provides themed
+pages and connection cards for sysop-reviewed boards, with independent destination
+login/approval. It stays local and never auto-connects or shares keys. Member
+submissions, automatic profile import, federation, payments, mesh and browser access
+remain backlog work. The **[native board launcher](docs/board-launcher.md)** now lets
+members pick their own verified profiles, visit independent boards and return to
+the local picker after disconnecting. Every destination still requires local login/approval.
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
 including optional seasonal colors and identity screens.
 
@@ -89,8 +139,45 @@ NetBSD setup/abuse-management workflows and integrated native XMPP notifications
 Real IRC/IRCv3 integration remains research. [Discussion-room posts](docs/discussion-articles-and-news.md)
 will use Netnews-style articles, with NNTP-first optional peering and news-provider
 subscriptions planned. IRC and encrypted XMPP keep their own formats. The goal keeps the underground BBS character with a modern terminal
-experience. These stories are planned; no dashboard, advanced graphics, firewall
-manager or new IRC/forum federation protocol is implemented by this update.
+experience. The first optional [local sysop console](docs/sysop-console.md) now reads private
+aggregate service snapshots, CPU/RAM/network graphs and historical backup checks,
+with ANSI/plain panels and stale/unavailable labels. Host actions, peer collectors,
+firewall management and new IRC/forum federation protocols remain planned.
+An optional [bounded Kitty image preview](docs/kitty-graphics.md) now complements
+the terminal settings: T/G probes then streams one original RGB calibration image;
+the native client requires local `--kitty` and its own positive probe. Classic
+ANSI remains default. [Real terminal profiles](docs/terminal-compatibility.md)
+now validate Ghostty, Kitty and Alacritty through local/NetBSD SSH/native routes,
+tmux and old screen. Old screen needs classic text; image probes fall back through
+both multiplexers. Pixel/glyph certification and rich-art imports remain separate.
+
+The [room reader](docs/room-reading.md) now shares wrapped, paged message screens
+across local/worker and shared-service sessions, with theme-aware ANSI transitions
+and complete-message unread acknowledgment. A bounded
+[Netnews text codec](docs/discussion-articles-and-news.md) is available offline;
+[schema-6 post metadata](docs/post-metadata.md) now gives new messages stable
+article IDs and recorded UTC times, while legacy dates remain unknown. Members
+can now [author subjects and inherit reply defaults](docs/room-articles.md).
+Stored posts project into local articles with reserved author/group aliases and
+bounded reply references, with strict duplicate/conflict comparison and no
+publication. Bodies/replies/unread stay intact and old exports remain readable.
+Follow the stopped-service backup/upgrade procedure before opening an older board.
+The [v2 article profile](docs/article-profile.md) adds UTF-8 encoded wire subjects,
+common dates, plain-text MIME encodings and root/recent reply references. Original
+INN passes twelve offline controls on macOS and NetBSD; no news service is enabled.
+[Unicode subject composing](docs/unicode-subjects.md) now works in local/worker and
+shared terminals with schema-7 metadata, UTF-8-safe reply clipping and inert
+classic-terminal echo/previews. [Terminal settings](docs/terminal-capabilities.md)
+now opt into native Unicode subjects/room text, cell-aware paging, color depth,
+block/braille samples and bounded synchronized redraw with an isolated sync probe.
+Classic mode remains the default and immediate fallback. The optional Kitty preview
+is separately gated; general bitmap assets, extended input, live NNTP/provider
+integration and encrypted network mail remain future work.
+
+A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
+OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise
+containment, protected storage/backups and independent validation. These stories
+preserve current safeguards and do not activate a new isolation profile.
 
 ## Enter the board
 

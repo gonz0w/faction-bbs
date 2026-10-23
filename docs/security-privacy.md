@@ -233,3 +233,31 @@ IRC bridges must keep private XMPP/local-only content out of shared channels.
 Optional forum federation research needs separate room/author/peer consent and
 history/retained-copy policies; a remote peer never imports local account roles
 or approval. Public conversations do not force anonymous/public-web deployment.
+
+The [paged room reader](room-reading.md) re-fetches current approval/file visibility
+for each screen and does not mark incomplete messages read. Shared read positions
+advance only after successful output drain, not a failed close. The article codec
+rejects unsupported/control headers and imports no authority; it is independent
+of storage/publication and does not convert IRC or encrypted XMPP traffic.
+
+The owner requested a substantial [later-phase hardening backlog](later-phase-hardening.md)
+(#106–#111): signing, VM isolation, containment after component compromise, storage
+and independent validation/recovery. No VM/chroot/jail/disk-encryption label alone
+is an adopted end-to-end guarantee. Keep authority and residual risks explicit.
+
+The [optional Kitty preview](kitty-graphics.md) uses only a fixed original asset.
+Probes own their input and confer presentation capability only; native opt-in and
+exact-command regeneration never permit arbitrary APC, local paths, clipboard or
+file/mail/member authority. Image-specific cleanup is best effort on broken TTYs.
+
+## Explicit local-room draft checkpoints
+
+[The room writer](writing-desk.md) stores only explicitly saved local-room
+plaintext, readable by the sysop like local posts. Scope is board/member/epoch/
+room/reply; revisions compare before overwrite/delete, and send clears its matching
+checkpoint in the post transaction. Four rooms/member, 1024 body bytes/32 lines,
+30-day recovery and lazy expiry are bounded application policy, not secure
+erasure. Revocation/owner recovery clears affected checkpoints. Owner exports and
+backups include them; old copies may remain. Full-screen input/graphics/theme
+controls confer no member authority or local editor/path/unlock capability. Every
+private-mail draft/key/decryption stays device-side; no server mail fallback.

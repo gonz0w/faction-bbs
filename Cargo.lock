@@ -143,11 +143,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-articles"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "base64",
+]
+
+[[package]]
 name = "faction-cli"
 version = "0.1.0-alpha.1"
 dependencies = [
  "faction-core",
+ "faction-pages",
  "faction-terminal",
+ "faction-unix",
+ "faction-wall",
  "rustix",
  "zeroize",
 ]
@@ -179,6 +189,7 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "argon2",
  "base64",
+ "faction-articles",
  "getrandom",
  "rusqlite",
  "rustix",
@@ -196,6 +207,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-pages"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-core",
+ "faction-terminal",
+]
+
+[[package]]
 name = "faction-service"
 version = "0.1.0-alpha.1"
 dependencies = [
@@ -203,8 +222,10 @@ dependencies = [
  "faction-access",
  "faction-core",
  "faction-files",
+ "faction-pages",
  "faction-terminal",
  "faction-unix",
+ "faction-wall",
  "rustix",
  "toml",
  "zeroize",
@@ -214,8 +235,10 @@ dependencies = [
 name = "faction-terminal"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "faction-unix",
  "rustix",
  "toml",
+ "unicode-width",
 ]
 
 [[package]]
@@ -223,6 +246,14 @@ name = "faction-unix"
 version = "0.1.0-alpha.1"
 dependencies = [
  "cc",
+]
+
+[[package]]
+name = "faction-wall"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-core",
+ "faction-terminal",
 ]
 
 [[package]]
@@ -492,6 +523,12 @@ name = "unicode-ident"
 version = "1.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563"
+
+[[package]]
+name = "unicode-width"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4ac048d71ede7ee76d585517add45da530660ef4390e49b098733c6e897f254"
 
 [[package]]
 name = "vcpkg"

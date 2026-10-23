@@ -1,6 +1,7 @@
 # Discussion articles and optional news connections
 
-Status: owner direction, 2026-10-21; **planned, not implemented**. Discussion-room
+Status: bounded profile v2, metadata migration and independent offline INN checks implemented, 2026-10-21; network
+adapters remain planned. Discussion-room
 posts should use a Netnews-compatible article representation. Live IRC channels
 and encrypted XMPP private chat/mail keep their respective formats. Keep the
 Citadel experience: enter a room, read new posts in order, post and reply.
@@ -10,6 +11,43 @@ Citadel experience: enter a room, read new posts in order, post and reply.
 | Local article model, codec and old-post migration | [#103](https://github.com/gonz0w/faction-bbs/issues/103) |
 | NNTP-first policy and independent peer interoperability | [#101](https://github.com/gonz0w/faction-bbs/issues/101) |
 | Optional provider subscriptions, read-only first | [#104](https://github.com/gonz0w/faction-bbs/issues/104) |
+
+## Available offline foundation
+
+`faction-articles` is a small Rust library using the existing reviewed base64 crate with validated construction,
+parse and deterministic serialization for a bounded text-only profile. It accepts
+explicit identity/date/group/path metadata; it does not generate missing historical
+facts, read a database or open a connection. There is a hand-authored article
+fixture and an offline validation example:
+
+```sh
+cargo run -p faction-articles --example check_article -- \
+  < crates/faction-articles/tests/fixtures/plain.article
+```
+
+[Profile v2](article-profile.md) supports ASCII wire headers with decoded UTF-8
+subjects (B/Q encoded words), common numeric-zone dates and single text/plain MIME
+7bit/8bit/quoted-printable/base64. Canonical output uses UTF-8 encoded subjects and
+quoted-printable bodies with exact trailing whitespace/newline preservation.
+Unsupported headers/parts/charsets, HTML, binary attachments and decoded terminal
+controls fail explicitly. This is a bounded text profile, not a universal provider
+parser. No file/URL is opened by parsing an article.
+
+Limits remain 24 KiB wire, 4 KiB headers, 16 KiB decoded body, 998 physical input
+bytes per line, four groups and sixteen emitted references. Local projection scans
+at most 128 ancestors, keeping root plus nearest fifteen. Header injection,
+duplicates, invalid IDs/calendar/weekday/time values and self/duplicate references
+fail. Strict normalized comparison distinguishes duplicate from conflicting IDs;
+persistent remote import/dedup and relay Path equivalence remain #101/#104.
+
+[Post metadata](post-metadata.md) stores stable local IDs, authored/default subjects
+and new-post UTC times in schema 6. The reader shows them. [Local article
+projection](room-articles.md) supplies reserved author/group/Path aliases and bounded
+References without publishing codec output. Legacy dates remain unknown. The
+current composer remains ASCII; #114 owns versioned internationalized composing.
+[Original INN software checks](../dev-docs/research/0048-offline-inn-article-validation.md)
+now pass on macOS and native NetBSD; real peer/provider policy and runtime remain
+#101/#104. ADRs 0036–0039 record the successive bounded increments.
 
 ## Article formatting before network transport
 
@@ -27,11 +65,10 @@ article numbers, room membership and member unread positions. Preserve chronolog
 reading and scoped local file links. A remote From or Approved header is data,
 never proof of local membership or an imported sysop role.
 
-Current schema-5 posts have bodies, authors and reply links, but no original
-posting timestamp or subject. Migration must preserve their contents, order and
-read cursors, explicitly label derived metadata and never invent a historical
-posting date. Specify how new posts collect minimal article metadata without
-making the BBS awkward to use. Validate old exports, restored boards, stable IDs
+Legacy schema-5 posts have bodies, authors and reply links, but no original
+posting timestamp or subject. Schema 6 preserves their contents, order and read cursors, labels derived
+metadata and retains unknown historical posting dates. New posts collect an optional
+subject; blank replies inherit one Re: prefix with a visible default. Validate old exports, restored boards, stable IDs
 and interrupted migration/rollback before adoption. Do not use private rotating
 session identity, real email addresses or network addresses as article identity.
 

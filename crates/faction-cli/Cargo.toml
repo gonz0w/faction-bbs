@@ -11,7 +11,10 @@ name = "faction"
 path = "src/main.rs"
 
 [dependencies]
+faction-pages = { path = "../faction-pages" }
+faction-wall = { path = "../faction-wall" }
 faction-core = { path = "../faction-core" }
+faction-unix = { path = "../faction-unix" }
 rustix.workspace = true
 zeroize.workspace = true
 faction-terminal = { path = "../faction-terminal" }
