@@ -151,7 +151,8 @@ impl Client {
             | Action::Polls
             | Action::Catchup
             | Action::Find
-            | Action::Gallery => {
+            | Action::Gallery
+            | Action::Library => {
                 self.queue("Optional section unavailable.\n");
                 self.pause();
             }

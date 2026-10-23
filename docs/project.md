@@ -34,6 +34,10 @@ The [native travel panel](travel-modes.md) now provides deliberate compact visit
 and per-file payload ceilings without changing routes, accounts or board content.
 Offline exchange and link-profile validation remain follow-on work.
 
+Optional [library shelves](library-shelves.md) curate existing eligible files with
+notes/rights/provenance and deliberate current-permission transfer/discussion jumps.
+Request creation and fulfillment remain follow-on #140 work.
+
 ## Confirmed requirements
 
 | Area | Requirement |

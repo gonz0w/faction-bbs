@@ -176,6 +176,7 @@ fn run() -> Result<()> {
                 && a[0] != "--theme-schedule"
                 && a[0] != "--directory"
                 && a[0] != "--gallery"
+                && a[0] != "--library"
         })
     {
         return Err(denied());

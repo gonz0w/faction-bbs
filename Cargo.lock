@@ -213,6 +213,7 @@ dependencies = [
  "faction-find",
  "faction-gallery",
  "faction-gatherings",
+ "faction-library",
  "faction-pages",
  "faction-polls",
  "faction-terminal",
@@ -298,6 +299,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-library"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-core",
+ "faction-terminal",
+ "rusqlite",
+ "rustix",
+ "toml",
+]
+
+[[package]]
 name = "faction-pages"
 version = "0.1.0-alpha.1"
 dependencies = [
@@ -326,6 +338,7 @@ dependencies = [
  "faction-find",
  "faction-gallery",
  "faction-gatherings",
+ "faction-library",
  "faction-pages",
  "faction-polls",
  "faction-terminal",

@@ -212,3 +212,12 @@ See [travel settings](travel-modes.md) for the local Boards T panel, compact tex
 and per-file payload ceilings chosen before connecting. Limits concern file bytes,
 not total encrypted wire costs. Existing grants/review/confirmations remain.
 Preferences are memory-only; no route, account, vault or profile changes.
+
+
+## Curated library shelves
+
+[Library shelves](library-shelves.md) layer owner-reviewed notes/collections over
+current local file publication/grants. Hidden sources expose no captions, shelf
+names or tokens. Transfers/discussion use existing authorized workflows; browsing
+alone never advances unread. Packs are external config to preserve separately
+from complete DB/blob backups. Schema remains 14; no new transfer authority.

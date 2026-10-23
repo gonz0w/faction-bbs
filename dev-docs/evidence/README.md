@@ -234,3 +234,12 @@ Snapshot 36 preserves 277 prior inputs and the whole gallery record. New evidenc
 pins 272 matched native inputs/29 host harnesses/thirteen unchanged inputs; guard
 50 checks it offline. Owned clone/cache removed, saved playground stopped/preserved.
 No wire-budget/offline/route/throughput/physical-radio/capacity claim.
+
+
+[Curated library evidence](library-netbsd/README.md), the first #140 increment,
+records 313 Rust tests per OS, 130 Python, eight local/worker PTYs per OS, ten
+actual SSH/native/SFTP and seventeen recovery controls per OS. Snapshot 37 freezes
+282 prior actual inputs/whole travel record. The new record pins 282 matched native
+inputs/31 host harnesses/thirteen unchanged inputs; guard 51 checks it offline.
+Owned clone/cache removed, owner playground off/preserved. No new request desk,
+transfer authority, public publication or capacity claim.

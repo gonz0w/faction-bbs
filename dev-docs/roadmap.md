@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Curated local library
+
+After merged #167, the first #140 increment adds named shelves over existing
+published catalog files, curator rights/provenance notes and deliberate Files/
+discussion jumps. Request/create/fulfill/close and moderation remain next under
+#140. Keep classic terminals/current authority, external pack recovery and normal
+resource defaults; saved playground stays off and hardening later.
+
 ## Deliberate interactive travel
 
 After merged #166, the first #159 increment adds native local travel preferences:

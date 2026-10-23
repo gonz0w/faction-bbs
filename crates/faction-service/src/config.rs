@@ -19,6 +19,7 @@ pub struct Config {
     pub theme: Option<PathBuf>,
     pub directory: Option<PathBuf>,
     pub gallery: Option<PathBuf>,
+    pub library: Option<PathBuf>,
     pub season: Option<PathBuf>,
     pub theme_schedule: Option<PathBuf>,
     pub max_sessions: usize,
@@ -71,6 +72,7 @@ impl Config {
         let theme = path(&mut t, "theme", None)?;
         let directory = path(&mut t, "directory", None)?;
         let gallery = path(&mut t, "gallery", None)?;
+        let library = path(&mut t, "library", None)?;
         let season = path(&mut t, "season", None)?;
         let theme_schedule = path(&mut t, "theme_schedule", None)?;
         let max_sessions = integer(&mut t, "max_sessions", Some(8), 1, 250)? as usize;
@@ -153,6 +155,7 @@ impl Config {
             theme,
             directory,
             gallery,
+            library,
             season,
             theme_schedule,
             max_sessions,

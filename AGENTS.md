@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 adds deliberate native travel preferences, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 adds curated library shelves, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1392,3 +1392,42 @@ regressions. The actual test caught missing native advertisement under dumb TERM
 reserved faction-compact enables only the existing Files advertisement while using
 plain rendering; ordinary dumb SSH remains escape-free. Keep guard 50 and preserve
 this actual source/result set before later edits. Owner preview off and intact.
+
+
+## Curated local library shelves
+
+Read docs/library-shelves.md, plan 0070 and ADR 0065. #140 remains open: this is
+curated collections/notes over existing files, not request/create/fulfill/close.
+One immutable owner/root startup Catalog Arc, small optional Desk, K host capability
+with trusted theme placement. Required ASCII notes/rights/provenance describe
+canonical local faction-file references, not permission proofs or copied bytes.
+
+Resolve current file approval/publication/namespace/grants before shelf titles,
+captions, notes/tokens and every jump. Private-only shelves expose no name/count;
+unavailable selected sources return to generic catalog, never a successor. Files
+jump reuses current reference/native recent list and existing SFTP; local/worker
+metadata desks have no transfer adapter. Optional discussion uses current room
+checks/existing New reader; previews don't acknowledge unread, deliberate reads do.
+
+Caps 32-KiB manifest, 32 books/eight shelves, four cards/eight text rows/32 prior
+text offsets and 8-KiB frames. No registry dependency, helper/listener, byte copy,
+archive/Internet fetch, schema or resource-default change. Schema remains 14.
+Pack/rights records are external owner config, preserved separately from complete
+DB/blob backups. Review/install/disable on stopped/drained restart; file withdrawal
+and grant changes recheck immediately on next frame/action. No new raw art authority,
+public publication, mail plaintext, hardware/capacity or hardening claim.
+
+Snapshot 37/travel-baseline-manifest freezes 282 prior actual inputs and the whole
+travel result; keep all fifty historical guards/identities fixed. Use only an
+owned marked software clone and keep the saved owner playground stopped/intact.
+
+
+`library-netbsd` pins 282 matched native inputs/31 host harnesses/thirteen unchanged
+access/credential/dependency inputs. Validation: 313 Rust per OS/130 Python, eight
+library PTYs per OS, ten actual SSH/native/SFTP and seventeen recovery controls per
+OS (native distinct UID CLI), plus prior community/editor/art/vault/travel checks.
+Compact native recent-link download, host zero-budget deferral, plain SSH, current
+grant/publication withdrawal, normal explicit room-read acknowledgment and active
+revocation pass. Use ordinary member fixtures for privacy: sysops retain existing
+private-file visibility. Keep guard 51 and preserve actual inputs/whole record
+before later edits. Owned clone/cache removed; saved owner playground off/intact.

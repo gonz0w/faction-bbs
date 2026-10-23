@@ -50,8 +50,8 @@ fn run() -> Result<()> {
     if !path.join("faction.sqlite3").is_file() {
         return Err(invalid("initialized board required"));
     }
-    let (mut base, mut season, mut schedule, mut directory, mut gallery) =
-        (None, None, None, None, None);
+    let (mut base, mut season, mut schedule, mut directory, mut gallery, mut library) =
+        (None, None, None, None, None, None);
     let mut index = 2;
     while index < args.len() {
         let value = args
@@ -63,6 +63,7 @@ fn run() -> Result<()> {
             Some("--theme-schedule") => &mut schedule,
             Some("--directory") => &mut directory,
             Some("--gallery") => &mut gallery,
+            Some("--library") => &mut library,
             _ => return Err(invalid("unknown member worker option")),
         };
         if target.is_some() {
@@ -94,6 +95,14 @@ fn run() -> Result<()> {
     themes
         .set_gallery_enabled(gallery.enabled())
         .map_err(invalid)?;
+    let library = library
+        .map(|p| faction_library::Catalog::load(&p))
+        .transpose()
+        .map_err(invalid)?
+        .unwrap_or_default();
+    themes
+        .set_library_enabled(library.enabled())
+        .map_err(invalid)?;
     let mut board = Board::open(&path)?;
     println!("Faction BBS access. SSH admission does not grant BBS membership.");
     match line("[L]ogin [R]egister [Q]uit: ", 1)?
@@ -105,12 +114,13 @@ fn run() -> Result<()> {
             let password = secret("Password (hidden): ")?;
             let s = board.authenticate(&name, &password)?;
             drop(password);
-            faction_cli::scheduled_menu_with_catalogs(
+            faction_cli::scheduled_menu_with_library(
                 &mut board,
                 &s,
                 &themes,
                 &directory.unwrap_or_default(),
                 &gallery,
+                &library,
                 true,
             )?;
         }

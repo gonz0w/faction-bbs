@@ -131,6 +131,11 @@ before connecting: ordinary/compact text and a per-file payload ceiling. Explici
 apply/cancel, direct CLI flags and size deferral keep low-cost visits deliberate;
 classic board content and existing transfer approvals remain. Offline exchange
 and measured slow-link profiles are follow-on work.
+Optional **[library shelves](docs/library-shelves.md)** now organize existing
+approved files into sysop-curated collections, with notes, declared rights/provenance
+and current-permission file/discussion links. Shared/native Files handoff preserves
+recent links and travel ceilings; classic/plain reading remains available. Member
+requests and fulfillment remain the next #140 increment.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
 visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)
