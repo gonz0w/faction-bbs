@@ -45,3 +45,8 @@ extend them with #103/#104 without claiming implementation.
 [Personal catch-up](../docs/catchup.md): [plan 0066](plans/0066-personal-catchup.md),
 [ADR 0061](decisions/0061-personal-catchup.md) and
 [software checks](evidence/catchup-netbsd/README.md).
+
+[Discussion discovery](../docs/discussion-search.md):
+[plan 0067](plans/0067-discussion-search-and-bookmarks.md),
+[ADR 0062](decisions/0062-discussion-search-and-bookmarks.md),
+[software checks](evidence/discussion-netbsd/README.md).

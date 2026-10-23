@@ -788,3 +788,25 @@ fn optional_catchup_action_fits_crowded_classic_menus_and_disables_cleanly() {
     t.set_catchup_enabled(false).unwrap();
     assert_eq!(t.hotkey(b'u', false), None);
 }
+
+#[test]
+fn optional_find_action_fits_crowded_classic_menus_and_disables_cleanly() {
+    let p = grid_pack();
+    let mut t = Theme::load(&p.0).unwrap();
+    assert_eq!(t.hotkey(b'b', false), None);
+    t.set_directory_enabled(true).unwrap();
+    t.set_files_enabled(true).unwrap();
+    t.set_wall_enabled(true).unwrap();
+    t.set_pages_enabled(true).unwrap();
+    t.set_gatherings_enabled(true).unwrap();
+    t.set_polls_enabled(true).unwrap();
+    t.set_catchup_enabled(true).unwrap();
+    t.set_find_enabled(true).unwrap();
+    for width in [40, 80] {
+        let mut menu = Menu::with_columns(&t, false, width);
+        assert_eq!(menu.feed(Key::Hotkey(b'B')), Some(Action::Find));
+        assert!(menu.render().len() < 8192);
+    }
+    t.set_find_enabled(false).unwrap();
+    assert_eq!(t.hotkey(b'b', false), None);
+}

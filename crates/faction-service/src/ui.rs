@@ -94,6 +94,8 @@ impl Client {
         let theme = poll_theme.as_ref().unwrap_or(theme);
         let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
         let theme = catchup_theme.as_ref().unwrap_or(theme);
+        let find_theme = faction_find::menu_theme(board, self.session()?, theme)?;
+        let theme = find_theme.as_ref().unwrap_or(theme);
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
         self.ansi = self.capable();
@@ -209,6 +211,8 @@ impl Client {
         let theme = poll_theme.as_ref().unwrap_or(theme);
         let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
         let theme = catchup_theme.as_ref().unwrap_or(theme);
+        let find_theme = faction_find::menu_theme(board, self.session()?, theme)?;
+        let theme = find_theme.as_ref().unwrap_or(theme);
         let sysop = self.sysop_display;
         let mut menu = self.focused(theme, sysop);
         let previous = menu.focus();
@@ -246,9 +250,14 @@ impl Client {
             Action::Gatherings => "Gatherings",
             Action::Polls => "Polls",
             Action::Catchup => "Catch up",
+            Action::Find => "Find & save",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Find => {
+                self.state = State::Find(Box::default());
+                self.find_show(board, theme)?;
+            }
             Action::Catchup => {
                 self.state =
                     State::Catchup(Box::new(faction_catchup::Desk::new(self.files_enabled)));
@@ -292,7 +301,7 @@ impl Client {
                 }
                 self.prompt(
                     State::Sysop,
-                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [C]reate room: ",
+                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [B]find [C]reate room: ",
                 );
             }
             Action::Chat => {
@@ -599,6 +608,8 @@ impl Client {
                 let theme = poll_theme.as_ref().unwrap_or(theme);
                 let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
                 let theme = catchup_theme.as_ref().unwrap_or(theme);
+                let find_theme = faction_find::menu_theme(board, self.session()?, theme)?;
+                let theme = find_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
@@ -789,6 +800,22 @@ impl Client {
                 self.state = State::Catchup(desk);
                 self.catchup_show(board, theme)?;
             }
+            State::Find(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Find(desk);
+                self.find_show(board, theme)?;
+            }
             State::Polls(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -838,6 +865,10 @@ impl Client {
                 self.wall_show(board, theme)?;
             }
             State::Sysop => match text.to_ascii_lowercase().as_str() {
+                "b" => {
+                    self.state = State::Find(Box::new(faction_find::Desk::settings()));
+                    self.find_show(board, theme)?;
+                }
                 "u" => {
                     self.state = State::Catchup(Box::new(faction_catchup::Desk::settings()));
                     self.catchup_show(board, theme)?;
@@ -1114,6 +1145,17 @@ impl Client {
                 .map_err(|_| Error::Invalid("gathering input flush"))?;
             return self.gatherings_show(board, theme);
         }
+        if matches!(self.state, State::Find(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("member-find input flush"))?;
+            return self.find_show(board, theme);
+        }
         if matches!(self.state, State::Catchup(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1233,6 +1275,8 @@ impl Client {
             let theme = poll_theme.as_ref().unwrap_or(theme);
             let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
             let theme = catchup_theme.as_ref().unwrap_or(theme);
+            let find_theme = faction_find::menu_theme(board, self.session()?, theme)?;
+            let theme = find_theme.as_ref().unwrap_or(theme);
             let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
@@ -1486,6 +1530,7 @@ impl Client {
                     | State::Gatherings(_)
                     | State::Polls(_)
                     | State::Catchup(_)
+                    | State::Find(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
                 let limit = if matches!(
@@ -1495,6 +1540,7 @@ impl Client {
                         | State::Gatherings(_)
                         | State::Polls(_)
                         | State::Catchup(_)
+                        | State::Find(_)
                 ) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
@@ -1513,6 +1559,7 @@ impl Client {
                                 | State::Gatherings(_)
                                 | State::Polls(_)
                                 | State::Catchup(_)
+                                | State::Find(_)
                         ),
                     limit,
                 )

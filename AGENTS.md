@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 now adds the optional personal catch-up desk, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 now adds discussion search/bookmarks, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1294,3 +1294,41 @@ editor/reader/menu/art/vault/picker checks pass. Keep all 47 saved guards and pr
 these current input bytes/whole result before later edits. Owned VM/cache/test
 credentials removed; saved playground stays off. No new capacity, hardening,
 automatic-login tracking, server mail or fresh SFTP-byte-transfer claim.
+
+
+## Bounded discussion discovery
+
+Read docs/discussion-search.md, plan 0067 and ADR 0062. Schema 14 adds default-
+disabled Find policy, an ordinary author/post B-tree and at most 128 own post
+references. No query persistence, text index/ranker, external service or mail index.
+Fetch <=101 indexed candidate IDs, inspect <=100 current items, return <=4 hits;
+20-ms cooperative iteration deadline is not a hard SQLite/filesystem latency cap.
+Newest first, explicit high-water refresh, <=32 back cursors. Empty scans may have
+older candidates. Apply current file projection before matching/snippets, not just
+before display. Current approval/source checks precede every frame/action/export.
+
+Exact source views reuse Message rendering but never write unread, even after
+complete rendering. Reset offsets if projected text changes; never replace a
+removed selected source with its successor. Normal room/drain acknowledgment
+remains unchanged. Explicit bookmark review, unique member/post idempotency, Busy
+retry, FK deletion cascade and current captions; no copied titles/bodies/history.
+Paged copyable member reference export is not full account backup/import/network
+sync and grants no authority. Keep private mail device-side.
+
+Snapshot 34/catchup-baseline-manifest freezes 248 preceding inputs and the whole
+catch-up result. Preserve all 47 old guards/hashes and add dedicated new evidence.
+No new registry dependency/helper/listener or relaxed resource defaults. Exact
+schema-2..13 exports remain read-only valid; stopped complete backup and matching-
+binary fresh-path rollback apply. Use only an owned marked software clone; saved
+playground stays off and hardening stays later.
+
+
+`discussion-netbsd` pins 250 matched native inputs and 23 host harnesses, with
+fifteen access/credential inputs unchanged. Validation: 292 Rust per OS/129 Python;
+eight local/worker PTYs per OS, eleven actual SSH/native/plain and seventeen
+complete-recovery controls per OS (native actual distinct-UID CLI). Source deletion,
+revoked file projection, Busy retry, resize and unchanged normal room-drain read
+acknowledgment pass. Final writer/seed fixtures expect schema 14. Keep all 48 saved
+guards and preserve these new actual inputs/whole result before future edits.
+Owned VM/cache/test credentials removed; saved playground off and preserved.
+No new capacity, hardening, automatic query retention or server-mail-search claim.

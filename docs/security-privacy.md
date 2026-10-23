@@ -295,3 +295,16 @@ are sysop-readable local data in owner backups, not mandatory login telemetry.
 File publication counters are not exposed, and stale private-file grants are
 rechecked on jumps. No server mail decryption or badge is introduced. Schema 13
 requires stopped complete backup and fresh-path rollback.
+
+
+## Local discussion discovery
+
+[Find & save](discussion-search.md) applies current approval/source checks and
+file-link projection before body matching and snippets. Exact source views and
+bookmark/export actions never advance unread. Queries remain connection-local;
+bookmarks store own references with current captions, not copied bodies or hidden
+history. They remain plaintext operator-readable data in owner backups. Deleted
+posts cascade references; logical deletion is not secure erasure. Paged member
+reference exports contain public local identities and hex titles, never paths,
+credentials or private-mail keys/content. No server-side private-mail index or
+count is added. Schema-14 upgrades require stopped complete backup/fresh rollback.

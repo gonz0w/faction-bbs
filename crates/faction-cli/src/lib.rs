@@ -3,6 +3,7 @@
 mod catchup;
 mod chat;
 mod directory;
+mod find;
 mod gatherings;
 pub mod operator;
 mod pages;
@@ -548,11 +549,12 @@ fn terminal_settings(
 }
 fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
     let command = line(
-        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [C]reate room: ",
+        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [B]find [C]reate room: ",
         8,
     )?
     .to_ascii_lowercase();
     match command.as_str() {
+        "b" => find::run(board, s, theme, ansi, true, Default::default())?,
         "w" => wall::run(board, s, theme, ansi, true)?,
         "m" => pages::run(board, s, theme, ansi, true)?,
         "u" => {
@@ -668,6 +670,8 @@ fn menu_with_directory(
         let theme = poll_theme.as_ref().unwrap_or(theme);
         let catchup_theme = faction_catchup::menu_theme(board, s, theme)?;
         let theme = catchup_theme.as_ref().unwrap_or(theme);
+        let find_theme = faction_find::menu_theme(board, s, theme)?;
+        let theme = find_theme.as_ref().unwrap_or(theme);
         let selected = if ansi {
             terminal::select(theme, member.role == Role::Sysop, caps)?
         } else {
@@ -702,6 +706,7 @@ fn menu_with_directory(
                 Action::Gatherings => "Gatherings",
                 Action::Polls => "Polls",
                 Action::Catchup => "Catch up",
+                Action::Find => "Find & save",
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
@@ -738,6 +743,7 @@ fn menu_with_directory(
             Some(Action::Sysop) => sysop(board, s, theme, used_ansi),
             Some(Action::Wall) => wall::run(board, s, theme, used_ansi, false),
             Some(Action::MemberPages) => pages::run(board, s, theme, used_ansi, false),
+            Some(Action::Find) => find::run(board, s, theme, used_ansi, false, caps),
             Some(Action::Catchup) => match catchup::run(board, s, theme, used_ansi, false)? {
                 faction_catchup::Outcome::Open(faction_core::CatchupTarget::Room(room)) => {
                     read_room_at(board, s, room, true, theme, used_ansi, caps)

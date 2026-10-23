@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional discussion search and personal bookmarks: bounded literal subject/
+  body scans, room/exact-author filters, current file-permission snippets and exact
+  read-only source views. Explicit review/save/remove and copyable paged reference
+  exports preserve classic terminals and existing unread progress. Schema 14 adds
+  own references and an author/post B-tree; stop/drain and verify a complete backup
+  before upgrading. No private-mail index or automatic query history.
+
 - Add optional personal catch-up: bounded unread/direct-reply previews, own room
   favorites, eligible published files, gatherings and sysop notices with shared
   ANSI/classic workflows and current-authority source jumps. Visits are explicitly

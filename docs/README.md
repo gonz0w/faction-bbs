@@ -71,3 +71,4 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 
 - [Community polls](polls.md) — local single-choice questions, explicit ballots and text-cell results.
 - [Personal catch-up](catchup.md) — unread/reply previews, favorites, files, events and explicitly saved visits.
+- [Discussion search and bookmarks](discussion-search.md) — bounded filters, exact read-only sources and own reference export.

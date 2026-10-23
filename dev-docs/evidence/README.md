@@ -209,3 +209,10 @@ complete-recovery controls per OS. Snapshot 33 preserves 238 previous inputs and
 the whole poll result; all 46 prior record identities remain unchanged. The new
 record pins 240 matched native inputs and 21 host harnesses; guard 47 checks it.
 No new capacity, mandatory visit telemetry or server-side private mail is claimed.
+
+[Discussion discovery evidence](discussion-netbsd/README.md) covers 292 Rust tests
+per OS, eight local/worker Find PTYs per OS, eleven actual SSH/native/plain and
+seventeen complete-recovery controls per OS. Snapshot 34 preserves 248 prior
+inputs and the whole catch-up result; 47 historical identities remain unchanged.
+The new record pins 250 matched native inputs and 23 host harnesses; guard 48 checks
+it. No new capacity, private-mail search or automatic query history is claimed.

@@ -26,6 +26,7 @@ pub enum Action {
     Gatherings,
     Polls,
     Catchup,
+    Find,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -43,6 +44,7 @@ impl Action {
             "contacts" => Ok(Self::Contacts),
             "wall" => Ok(Self::Wall),
             "member_pages" => Ok(Self::MemberPages),
+            "find" => Ok(Self::Find),
             "catchup" => Ok(Self::Catchup),
             "polls" => Ok(Self::Polls),
             "gatherings" => Ok(Self::Gatherings),
@@ -50,7 +52,8 @@ impl Action {
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Catchup
+        self != Self::Find
+            && self != Self::Catchup
             && self != Self::Polls
             && self != Self::Gatherings
             && self != Self::MemberPages
@@ -139,6 +142,7 @@ pub struct Theme {
     gatherings_enabled: bool,
     polls_enabled: bool,
     catchup_enabled: bool,
+    find_enabled: bool,
     entries: Vec<Entry>,
     grid: bool,
     identity_ascii: Option<String>,
@@ -165,6 +169,7 @@ impl Default for Theme {
             gatherings_enabled: false,
             polls_enabled: false,
             catchup_enabled: false,
+            find_enabled: false,
             grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
@@ -347,6 +352,36 @@ impl Theme {
         }
         if self.grid && self.entries.iter().any(|e| e.position.is_none()) {
             self.grid = false;
+        }
+        Ok(())
+    }
+    pub fn set_find_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.find_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Find) {
+            let key = std::iter::once(b'B')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free Find hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            self.entries.insert(
+                self.entries.len() - 1,
+                Entry {
+                    action: Action::Find,
+                    key,
+                    label: "Find & save".into(),
+                    description: "Search discussions; save references".into(),
+                    position,
+                },
+            );
         }
         Ok(())
     }
@@ -536,6 +571,7 @@ impl Theme {
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
         (action == Action::Gatherings && self.gatherings_enabled)
+            || (action == Action::Find && self.find_enabled)
             || (action == Action::Catchup && self.catchup_enabled)
             || (action == Action::Polls && self.polls_enabled)
             || (action == Action::MemberPages && self.pages_enabled)

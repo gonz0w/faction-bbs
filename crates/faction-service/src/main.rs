@@ -11,6 +11,7 @@ mod directory_ui;
 mod door_ui;
 mod doors;
 mod file_ui;
+mod find_ui;
 mod gatherings_ui;
 mod native_files;
 mod operator;
@@ -93,6 +94,7 @@ enum State {
     Pages(Box<faction_pages::Desk>),
     Polls(Box<faction_polls::Desk>),
     Catchup(Box<faction_catchup::Desk>),
+    Find(Box<faction_find::Desk>),
     Gatherings(Box<faction_gatherings::Desk>),
     Sysop,
     MembersMore(usize),
