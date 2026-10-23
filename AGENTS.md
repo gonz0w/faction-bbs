@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 adds the owner-reviewed local magazine reader, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 adds the owner-reviewed reader and authenticated local magazine workshop, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1470,3 +1470,36 @@ the exact 7,673-byte actual owner-exported edition; plain SSH, publication/conse
 filtering, withdrawal/revision and revocation pass. Keep guard 53 and preserve
 this actual input/result set before later edits. Owner preview stays off/intact;
 member submission/editor/verified-contributor workflows remain open under #143.
+
+## Authenticated magazine workshop (#143)
+
+Read docs/magazine-workshop.md, ADR 0068 and plan 0073. Schema 16 retains sources,
+copied editorial proposals and exact-issue approvals. Sysops are editors; only
+source authors approve their own selected contributions. Complete-issue header,
+selection/proposal edits rotate all consent. Publication is manual, local and
+requires current submitted revisions, author status and exact approvals. Never
+upgrade editor-declared static-pack consent into authenticated author consent.
+Plain/classic shared/worker paths remain; P is previous page, PUBLISH is explicit.
+
+Source drafts are local plaintext author/sysop storage; submission explicitly
+shares with the selected contributor cohort. No room/private-mail auto-import,
+server mail decryption, cryptographic signing or public syndication. Published
+text is fixed; another revision needs a new issue/approvals. Source/consent
+withdrawal hides affected issues, not existing exports/backups/downloads. Related
+Files offers are separate curator metadata outside approved text; preserve current
+grants and withdraw Files independently. Take a stopped complete backup before
+schema-16 upgrade; exact older schema snapshots remain read-only valid.
+
+Snapshot 40 sources/pre143-editorial preserves the prior reader's 304 union inputs
+and unchanged result. Never refresh historical hashes. Keep normal eight sessions,
+5000-ms admission, two credential permits, three helpers, 32-KiB output/5-second
+drain/8-KiB frames; no new capacity or hardware claim. Saved owner playground stays
+off/intact and hardening remains deferred.
+
+The editorial-netbsd record pins 301 selected native inputs/38 harness inputs,
+336 Rust per OS, 130 Python, ten editorial local/worker PTYs per OS, nine actual
+shared SSH/native/SFTP and nineteen complete-recovery controls per OS. The actual
+433-byte approved edition was exported and downloaded with matching SHA256;
+inert static-reader regressions remain separate. No injected approvals in live
+journeys. The owned clone/private credentials/vendor were removed; owner preview
+stays stopped and preserved. Offline guard 54 validates this software record.

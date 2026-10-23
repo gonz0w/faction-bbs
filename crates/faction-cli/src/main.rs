@@ -8,7 +8,7 @@ fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK, --library PACK\nOffline library check: faction library-check PACK\nOwner magazine tools: faction library-preview PACK ISSUE | library-edition PACK ISSUE NEW_FILE\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner magazine export: faction --state-dir PATH magazine-edition ISSUE_ID NEW_FILE\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK, --library PACK\nOffline library check: faction library-check PACK\nOwner magazine tools: faction library-preview PACK ISSUE | library-edition PACK ISSUE NEW_FILE\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
         );
         return Ok(());
     }
@@ -109,6 +109,23 @@ fn run() -> Result<()> {
     }
     let path = PathBuf::from(&args[1]);
     let command = args[2].to_str().ok_or_else(|| invalid("invalid command"))?;
+    if command == "magazine-edition" {
+        if args.len() != 5 {
+            return Err(invalid(
+                "magazine-edition needs issue ID and new private text file",
+            ));
+        }
+        let id = args[3]
+            .to_str()
+            .and_then(|s| s.parse::<i64>().ok())
+            .filter(|id| *id > 0)
+            .ok_or_else(|| invalid("positive issue ID required"))?;
+        faction_core::export_magazine_local(&path, id, &PathBuf::from(&args[4]))?;
+        println!(
+            "Wrote currently approved local edition; existing file review/publication still applies."
+        );
+        return Ok(());
+    }
     if ["export", "restore"].contains(&command) {
         if args.len() != 4 {
             return Err(invalid("export/restore needs exactly one export file path"));

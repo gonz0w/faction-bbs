@@ -93,3 +93,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0035: Native local mail vault](0035-native-local-mail-vault.md).
 
 - [0058: Local vault from the board picker](0058-local-vault-from-board-picker.md).
+
+- [0068: Magazine workshop and exact-issue consent](0068-magazine-workshop.md).

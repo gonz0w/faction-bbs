@@ -60,7 +60,7 @@ def run(a):
             with sqlite3.connect(f'file:{state}/faction.sqlite3?mode=ro',uri=True) as db:
                 assert db.execute('select body from posts where id=1').fetchone()[0]=='First signal.\n\nSecond signal.'
                 assert db.execute('select body from posts where id=2').fetchone()[0]=='> First signal.\n> \n> Second signal.\nMy reply.'
-                assert db.execute('pragma user_version').fetchone()[0]==15
+                assert db.execute('pragma user_version').fetchone()[0]==16
             assert all(password.encode() not in c.transcript for c in children)
         finally:
             for c in children:c.close()

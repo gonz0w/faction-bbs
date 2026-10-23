@@ -570,3 +570,141 @@ fn maximum_article_reads_beyond_rewind_capacity_on_narrow_terminals() {
             .unwrap();
     }
 }
+
+#[test]
+fn workshop_requires_complete_review_and_cannot_forge_another_authors_consent() {
+    use faction_core::{MagazineIssueDraft, MagazineText};
+    let f = Fixture::new();
+    let (mut b, sysop, _) = f.board();
+    let reader = b.authenticate("reader", PASS).unwrap();
+    let c = Catalog::parse("version=1\nenabled=true\nname='Workshop'\ncompact=false\nshelf=[]\nbook=[]\neditorial=true\nmagazine_name='Local zine'\n")
+        .unwrap();
+    assert!(c.enabled());
+    let source = b
+        .magazine_save_submission(
+            &reader,
+            None,
+            &"a".repeat(32),
+            &MagazineText {
+                title: "Original field report".into(),
+                section: "Reports".into(),
+                rights: "BSD-3-Clause".into(),
+                provenance: "Original synthetic author".into(),
+                body: (0..60)
+                    .map(|n| format!("Line {n}: original contribution.\n"))
+                    .collect::<String>()
+                    .trim_end()
+                    .into(),
+            },
+            true,
+        )
+        .unwrap();
+    let id = b
+        .magazine_save_issue(
+            &sysop,
+            None,
+            &"b".repeat(32),
+            &MagazineIssueDraft {
+                number: 1,
+                edition: 1,
+                name: "Local zine".into(),
+                title: "First issue".into(),
+                released: "Autumn".into(),
+                schedule: "When ready".into(),
+            },
+        )
+        .unwrap();
+    let issue = b.magazine_issue(&sysop, id).unwrap();
+    b.magazine_select(&sysop, id, &issue.token, 1, source)
+        .unwrap();
+    let mut d = Desk::default();
+    for v in ["w", "i", "v", &id.to_string()] {
+        feed(&mut d, v, &mut b, &reader, &c);
+    }
+    let page = render(&mut d, &mut b, &reader, &c);
+    assert!(!page.contains("[End of review]"));
+    assert!(matches!(
+        d.feed("a", &mut b, &reader, &c),
+        Err(Error::Invalid(_))
+    ));
+    for _ in 0..100 {
+        if render(&mut d, &mut b, &reader, &c).contains("[End of review]") {
+            break;
+        }
+        feed(&mut d, "n", &mut b, &reader, &c);
+    }
+    feed(&mut d, "a", &mut b, &reader, &c);
+    assert!(render(&mut d, &mut b, &reader, &c).contains("exact complete issue"));
+    feed(&mut d, "yes", &mut b, &reader, &c);
+    let issue = b.magazine_issue(&sysop, id).unwrap();
+    assert!(issue.entries[0].approved);
+    let mut text = issue.entries[0].text.clone();
+    text.body = "Editor changed the proposal.".into();
+    b.magazine_edit_entry(&sysop, id, &issue.token, 1, &text)
+        .unwrap();
+    let err = d.feed("a", &mut b, &reader, &c).err().unwrap();
+    assert!(d.recover(&err));
+    assert!(render(&mut d, &mut b, &reader, &c).contains("Workshop> "));
+    let issue = b.magazine_issue(&sysop, id).unwrap();
+    assert!(!issue.entries[0].approved);
+    assert!(b.magazine_approve(&sysop, id, &issue.token, true).is_err());
+    assert!(b.magazine_publish(&sysop, id, &issue.token).is_err());
+    for v in ["i", "v", &id.to_string()] {
+        feed(&mut d, v, &mut b, &reader, &c);
+    }
+    for _ in 0..20 {
+        if render(&mut d, &mut b, &reader, &c).contains("[End of review]") {
+            break;
+        }
+        feed(&mut d, "n", &mut b, &reader, &c);
+    }
+    for v in ["a", "yes"] {
+        feed(&mut d, v, &mut b, &reader, &c);
+    }
+    b.magazine_publish(&sysop, id, &issue.token).unwrap();
+    assert_eq!(b.magazine_issue(&reader, id).unwrap().state, "published");
+}
+#[test]
+fn workshop_plain_pages_bound_output_and_require_fresh_review_after_resize() {
+    let f = Fixture::new();
+    let (mut b, s, _) = f.board();
+    let c = Catalog::parse("version=1\nenabled=true\nname='Workshop'\ncompact=false\nshelf=[]\nbook=[]\neditorial=true\n").unwrap();
+    let mut d = Desk::default();
+    feed(&mut d, "w", &mut b, &s, &c);
+    for v in [
+        "s",
+        "c",
+        "Original title",
+        "Art",
+        "BSD-3-Clause",
+        "Synthetic original work",
+    ] {
+        feed(&mut d, v, &mut b, &s, &c);
+    }
+    for _ in 0..32 {
+        feed(&mut d, &"a".repeat(120), &mut b, &s, &c);
+    }
+    feed(&mut d, ".review", &mut b, &s, &c);
+    assert!(d.feed("t", &mut b, &s, &c).is_err());
+    for _ in 0..100 {
+        let frame = d
+            .render(&mut b, &s, &c, &Theme::default(), false, 20)
+            .unwrap();
+        assert!(frame.len() < 8192 && !frame.contains('\u{1b}'));
+        if frame.contains("[End of review]") {
+            break;
+        }
+        feed(&mut d, "n", &mut b, &s, &c);
+    }
+    let frame = d
+        .render(&mut b, &s, &c, &Theme::default(), false, 80)
+        .unwrap();
+    assert!(!frame.contains("[End of review]"));
+    assert!(d.feed("s", &mut b, &s, &c).is_err());
+    assert!(d.feed("\u{1b}[2J", &mut b, &s, &c).is_err());
+    assert!(
+        b.magazine_submissions(&s, false, i64::MAX)
+            .unwrap()
+            .is_empty()
+    );
+}

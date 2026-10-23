@@ -333,3 +333,14 @@ current local file publication/grants. Hidden sources expose no captions, shelf
 names or tokens. Transfers/discussion use existing authorized workflows; browsing
 alone never advances unread. Packs are external config to preserve separately
 from complete DB/blob backups. Schema remains 14; no new transfer authority.
+
+
+The optional [magazine workshop](magazine-workshop.md) stores local plaintext
+editorial work. Private drafts are author/sysop-readable; explicit submission
+shares the proposed complete issue with selected contributors for review. This is
+separate from device-encrypted mail. Current local identity/status and exact-issue
+author approvals gate publication, not PGP signatures or resistance to a malicious
+database owner. Edits invalidate consent; withdrawal hides ordinary reading but
+cannot recall exports/downloads/backups. Related file publication/grants are
+separate and need independent withdrawal. Schema 16 upgrade requires a stopped
+complete backup; no new listener, privilege or relaxed runtime budget is added.
