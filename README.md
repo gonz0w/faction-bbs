@@ -38,7 +38,7 @@ acceptance remain open.
 ![Original Nightwire ANSI cover, reference-cell preview](docs/images/nightwire-cover.svg)
 
 
-**Working hobby preview · updated 2026-10-22 · Rust on NetBSD; no supported release yet.**
+**Working hobby preview · updated 2026-10-23 · Rust on NetBSD; no supported release yet.**
 
 Faction already runs an approved-membership board with hidden-password login,
 ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
@@ -51,7 +51,7 @@ The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragr
 reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
 for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
 recover local room writing after disconnect; these are plaintext board data,
-readable by its sysop. Schema-11 upgrades require a stopped complete backup.
+readable by its sysop. Schema-12 upgrades require a stopped complete backup.
 The opt-in **[community wall](docs/community-wall.md)** adds short local ASCII
 notes/art, chronological paging, own edits/deletion, sysop moderation and optional
 weekly archives. Enable/name it in S:Sysop controls → W:Wall settings; plain and
@@ -66,6 +66,11 @@ Optional **[gatherings and chat nights](docs/gatherings.md)** add a local agenda
 one-off UTC events, counts-only RSVPs, organizer edits/cancellation, sysop moderation,
 optional login reminders and deliberate room/chat jumps. Enable through Sysop →
 Gatherings; classic and plain terminals share the same workflow. No external calendar.
+
+Optional **[community polls](docs/polls.md)** add local single-choice questions,
+explicit ballot review/change/withdrawal, paged text-cell result charts and creator/
+sysop controls. Result visibility is configurable; ballots remain operator-readable
+local data. Enable through Sysop → Polls; plain and ANSI terminals share the desk.
 
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,

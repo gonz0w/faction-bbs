@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional local single-choice polls with explicit preview/ballot confirmation,
+  vote change/withdrawal, result policies and text-cell charts, creator close/cancel
+  and sysop moderation. Preserve plain/classic terminals and resource defaults.
+  First vote permanently locks wording; ballots are ordinary owner-readable data.
+  Schema 12 extends complete recovery; stop/drain and back up before upgrade.
+
+
 - Add optional local gatherings/chat nights: one-off UTC events, explicit preview/save,
   organizer edit/cancel, counts-only RSVPs, sysop policy/moderation, approved-login
   reminders and deliberate local room/chat jumps. Shared local/worker/SSH workflow

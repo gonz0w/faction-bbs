@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Local questions and voting
+
+After merged #162, #139 adds optional local single-choice polls, explicit ballots,
+result-visibility policy/text-cell charts, immutable wording after first vote,
+creator close/cancel and sysop moderation. Keep classic terminals and current
+resource defaults. Multiple selection/grouped surveys remain follow-on work;
+the owner playground stays off and hardening stays later.
+
 ## Local gatherings and social nights
 
 Issue #136 adds the next local social batch: optional one-off UTC events, explicit
@@ -63,7 +71,7 @@ live CPU/RAM/network counters, bounded recent graphs, themed panels and classic 
 authority or host settings change. #95 now adds explicit [backup checks](../docs/backup-checks.md) and a Recovery
 panel; peer adapter telemetry and broader visual acceptance remain. #98 applies/rollback, #97 firewall and hardening stay separate.
 
-Updated 2026-10-22. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+Updated 2026-10-23. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
 
 ## BBS menu and theme polish
 

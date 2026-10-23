@@ -15,6 +15,7 @@ mod native_files;
 mod operator;
 mod pages_ui;
 mod policy;
+mod polls_ui;
 mod rooms_ui;
 mod ui;
 mod wall_ui;
@@ -89,6 +90,7 @@ enum State {
     },
     Wall(Box<faction_wall::Desk>),
     Pages(Box<faction_pages::Desk>),
+    Polls(Box<faction_polls::Desk>),
     Gatherings(Box<faction_gatherings::Desk>),
     Sysop,
     MembersMore(usize),

@@ -1,6 +1,6 @@
 # Faction BBS: product direction
 
-Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-22. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
+Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-23. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
 
 ## Purpose and character
 
@@ -11,6 +11,10 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 The optional [gatherings agenda](gatherings.md) now provides one-off UTC chat nights,
 explicit counts-only RSVPs, organizer/sysop controls and approved-login reminders.
 Local plaintext event data remains separate from device-encrypted private mail.
+
+Optional [community polls](polls.md) now provide local single-choice questions,
+explicit ballot changes and configurable result visibility with plain text charts.
+They are ordinary local operator-readable data, separate from private mail.
 
 ## Confirmed requirements
 

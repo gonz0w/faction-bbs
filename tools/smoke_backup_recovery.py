@@ -53,6 +53,10 @@ def run(a):
             db.execute("UPDATE gathering_settings SET enabled=1,name='Recovery gatherings'")
             db.execute("INSERT INTO gatherings(organizer,request_id,revision,title,body,starts_at,ends_at,place,cancelled,hidden,changed_at) VALUES(1,?,?,'Recovered gathering','Local event survives recovery',?,?,'room:1',0,0,?)",('e'*32,'f'*32,start,start+3600,int(time.time())))
             db.execute("INSERT INTO gathering_rsvps VALUES(1,1,2)")
+            db.execute("UPDATE poll_settings SET enabled=1,name='Recovery polls'")
+            db.execute("INSERT INTO polls(creator,request_id,revision,question,description,results,state,hidden,ever_voted,changed_at) VALUES(1,?,?,'Recovered question','Retained notes',2,1,0,1,?)",('1'*32,'2'*32,int(time.time())))
+            db.executemany("INSERT INTO poll_choices VALUES(1,?,?)",[(1,'First'),(2,'Second')])
+            db.execute("INSERT INTO poll_ballots VALUES(1,1,2)")
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -132,6 +136,12 @@ def run(a):
             assert db.execute('select title,body,starts_at,ends_at,place from gatherings').fetchall()==[('Recovered gathering','Local event survives recovery',start,start+3600,'room:1')]
             assert db.execute('select gathering,member,response from gathering_rsvps').fetchall()==[(1,1,2)]
         checks.append('complete_restore_preserves_gathering_policy_event_and_response')
+        with sqlite3.connect(restored/'faction.sqlite3') as db:
+            assert db.execute('select enabled,name from poll_settings').fetchall()==[(1,'Recovery polls')]
+            assert db.execute('select question,description,results,state,ever_voted from polls').fetchall()==[('Recovered question','Retained notes',2,1,1)]
+            assert db.execute('select number,label from poll_choices order by number').fetchall()==[(1,'First'),(2,'Second')]
+            assert db.execute('select poll,member,choice from poll_ballots').fetchall()==[(1,1,2)]
+        checks.append('complete_restore_preserves_poll_policy_choices_ballot_and_wording_lock')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)
