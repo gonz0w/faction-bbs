@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Personal catch-up
+
+After merged #163, #138 adds a local returning-member desk: notice, capped room/
+reply previews, own favorites, eligible files and gatherings. Explicit saved visits
+avoid automatic login tracking; source jumps reuse existing authorized readers.
+Private-mail notifications stay member-side under #99; no new capacity/hardening
+claim. The saved owner playground stays off. See [the guide](../docs/catchup.md).
+
 ## Local questions and voting
 
 After merged #162, #139 adds optional local single-choice polls, explicit ballots,

@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional personal catch-up: bounded unread/direct-reply previews, own room
+  favorites, eligible published files, gatherings and sysop notices with shared
+  ANSI/classic workflows and current-authority source jumps. Visits are explicitly
+  saved; previews never mark posts read. Schema 13 includes preferences/checkpoints
+  in complete recovery; stop/drain and verify a backup before upgrading. Fix exact
+  snapshot schema checking when the catalog grows beyond the previous row cap.
+
 - Add optional local single-choice polls with explicit preview/ballot confirmation,
   vote change/withdrawal, result policies and text-cell charts, creator close/cancel
   and sysop moderation. Preserve plain/classic terminals and resource defaults.

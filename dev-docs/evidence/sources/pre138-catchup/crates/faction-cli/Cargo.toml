@@ -1,0 +1,26 @@
+[package]
+name = "faction-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "faction"
+path = "src/main.rs"
+
+[dependencies]
+faction-polls = { path = "../faction-polls" }
+faction-gatherings = { path = "../faction-gatherings" }
+faction-pages = { path = "../faction-pages" }
+faction-wall = { path = "../faction-wall" }
+faction-core = { path = "../faction-core" }
+faction-unix = { path = "../faction-unix" }
+rustix.workspace = true
+zeroize.workspace = true
+faction-terminal = { path = "../faction-terminal" }
+
+[[bin]]
+name = "faction-member"
+path = "src/member.rs"

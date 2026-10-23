@@ -86,6 +86,12 @@ fn id(text: &str) -> Result<i64> {
         .ok_or(Error::Invalid("positive gathering ID required"))
 }
 impl Desk {
+    pub fn open(id: i64) -> Self {
+        Self {
+            state: State::Card(id),
+            ..Self::default()
+        }
+    }
     pub fn settings() -> Self {
         Self {
             state: State::Settings,

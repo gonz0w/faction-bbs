@@ -92,6 +92,8 @@ impl Client {
         let theme = gathering_theme.as_ref().unwrap_or(theme);
         let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
         let theme = poll_theme.as_ref().unwrap_or(theme);
+        let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
+        let theme = catchup_theme.as_ref().unwrap_or(theme);
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
         self.ansi = self.capable();
@@ -205,6 +207,8 @@ impl Client {
         let theme = gathering_theme.as_ref().unwrap_or(theme);
         let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
         let theme = poll_theme.as_ref().unwrap_or(theme);
+        let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
+        let theme = catchup_theme.as_ref().unwrap_or(theme);
         let sysop = self.sysop_display;
         let mut menu = self.focused(theme, sysop);
         let previous = menu.focus();
@@ -241,9 +245,15 @@ impl Client {
             Action::MemberPages => "Member pages",
             Action::Gatherings => "Gatherings",
             Action::Polls => "Polls",
+            Action::Catchup => "Catch up",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Catchup => {
+                self.state =
+                    State::Catchup(Box::new(faction_catchup::Desk::new(self.files_enabled)));
+                self.catchup_show(board, theme)?;
+            }
             Action::Polls => {
                 self.state = State::Polls(Box::default());
                 self.polls_show(board, theme)?;
@@ -282,7 +292,7 @@ impl Client {
                 }
                 self.prompt(
                     State::Sysop,
-                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [C]reate room: ",
+                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [C]reate room: ",
                 );
             }
             Action::Chat => {
@@ -587,6 +597,8 @@ impl Client {
                 let theme = gathering_theme.as_ref().unwrap_or(theme);
                 let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
                 let theme = poll_theme.as_ref().unwrap_or(theme);
+                let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
+                let theme = catchup_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
@@ -736,6 +748,47 @@ impl Client {
                 self.state = State::Gatherings(desk);
                 self.gatherings_show(board, theme)?;
             }
+            State::Catchup(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(faction_catchup::Outcome::Main) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(faction_catchup::Outcome::Open(target)) => {
+                        match target {
+                            faction_core::CatchupTarget::Room(room) => {
+                                let after = board.unread_cursor(self.session()?, room)?;
+                                self.posts(board, room, after, 0, theme)?;
+                            }
+                            faction_core::CatchupTarget::File(object) => {
+                                self.file_lobby(board)?;
+                                self.file_line(
+                                    State::Files,
+                                    &format!("info {object}"),
+                                    board,
+                                    theme,
+                                )?;
+                                let reference = board.file_reference(self.session()?, &object)?;
+                                self.queue(&format!("\n{reference}\n"));
+                            }
+                            faction_core::CatchupTarget::Gathering(id) => {
+                                self.state =
+                                    State::Gatherings(Box::new(faction_gatherings::Desk::open(id)));
+                                self.gatherings_show(board, theme)?;
+                            }
+                        }
+                        return Ok(());
+                    }
+                    Ok(faction_catchup::Outcome::Stay) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Catchup(desk);
+                self.catchup_show(board, theme)?;
+            }
             State::Polls(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -785,6 +838,10 @@ impl Client {
                 self.wall_show(board, theme)?;
             }
             State::Sysop => match text.to_ascii_lowercase().as_str() {
+                "u" => {
+                    self.state = State::Catchup(Box::new(faction_catchup::Desk::settings()));
+                    self.catchup_show(board, theme)?;
+                }
                 "p" => {
                     self.state = State::Polls(Box::new(faction_polls::Desk::settings()));
                     self.polls_show(board, theme)?;
@@ -1057,6 +1114,17 @@ impl Client {
                 .map_err(|_| Error::Invalid("gathering input flush"))?;
             return self.gatherings_show(board, theme);
         }
+        if matches!(self.state, State::Catchup(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("member-catchup input flush"))?;
+            return self.catchup_show(board, theme);
+        }
         if matches!(self.state, State::Polls(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1163,6 +1231,8 @@ impl Client {
             let theme = gathering_theme.as_ref().unwrap_or(theme);
             let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
             let theme = poll_theme.as_ref().unwrap_or(theme);
+            let catchup_theme = faction_catchup::menu_theme(board, self.session()?, theme)?;
+            let theme = catchup_theme.as_ref().unwrap_or(theme);
             let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
@@ -1415,11 +1485,16 @@ impl Client {
                     | State::Pages(_)
                     | State::Gatherings(_)
                     | State::Polls(_)
+                    | State::Catchup(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
                 let limit = if matches!(
                     self.state,
-                    State::Wall(_) | State::Pages(_) | State::Gatherings(_) | State::Polls(_)
+                    State::Wall(_)
+                        | State::Pages(_)
+                        | State::Gatherings(_)
+                        | State::Polls(_)
+                        | State::Catchup(_)
                 ) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
@@ -1437,6 +1512,7 @@ impl Client {
                                 | State::Pages(_)
                                 | State::Gatherings(_)
                                 | State::Polls(_)
+                                | State::Catchup(_)
                         ),
                     limit,
                 )

@@ -202,3 +202,10 @@ a claim about the combined client; integration gets fresh software checks.
 
 Current combined [client/vault software checks](client-vault-integration-netbsd/README.md)
 keep the preceding two results immutable and use fresh current input pins.
+
+[Personal catch-up software evidence](catchup-netbsd/README.md) records 280 Rust
+per OS, eight local/worker PTYs per OS, eleven actual SSH/native/plain and sixteen
+complete-recovery controls per OS. Snapshot 33 preserves 238 previous inputs and
+the whole poll result; all 46 prior record identities remain unchanged. The new
+record pins 240 matched native inputs and 21 host harnesses; guard 47 checks it.
+No new capacity, mandatory visit telemetry or server-side private mail is claimed.

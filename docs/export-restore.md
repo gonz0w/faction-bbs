@@ -1,6 +1,6 @@
 # Private local export and restore
 
-Updated 2026-10-22. These are filesystem-owner tools for the local development
+Updated 2026-10-23. These are filesystem-owner tools for the local development
 core, not member commands or a network backup service. Build with
 [the local development instructions](local-development.md). Keep the owner-capable
 executable and state out of member SSH shells/forced commands.
@@ -29,7 +29,7 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2, 3, 4, 5, 6 and 7 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2 through 13 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2/3/4/5/6/7/8/9 boards upgrade to schema 10 when
+Verification is read-only; restored schema-2..12 boards upgrade to schema 13 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -182,3 +182,12 @@ finished polls and permanent wording locks, to private owner recovery. Result
 visibility does not redact owner backups. Old schema-2..11 exports remain read-only
 valid; new-owner open migrates restored data. Stop/drain and verify a complete
 pre-upgrade backup; roll back only with its matching older binaries in fresh paths.
+
+
+Schema 13 adds [catch-up policy, own subscriptions, explicit saved-visit checkpoints
+and ordered file publications](catchup.md). These are plaintext local owner data;
+opening/login/preview does not create a visit record or update unread markers.
+Old schema-2..12 exports remain exact read-only valid. Snapshot schema comparisons
+reject extra objects and an explicit 128-object ceiling prevents truncated checks.
+Stop/drain and verify a complete pre-upgrade backup; matching-binary fresh-path
+rollback remains required.

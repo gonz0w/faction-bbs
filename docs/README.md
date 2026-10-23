@@ -70,3 +70,4 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Local gatherings and chat nights](gatherings.md) — optional UTC agenda, counts-only RSVPs and local room/chat jumps.
 
 - [Community polls](polls.md) — local single-choice questions, explicit ballots and text-cell results.
+- [Personal catch-up](catchup.md) — unread/reply previews, favorites, files, events and explicitly saved visits.

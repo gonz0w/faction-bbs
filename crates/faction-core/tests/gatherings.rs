@@ -412,7 +412,7 @@ fn export_restore_preserves_gathering_policy_and_responses_and_upgrades_old_ten(
     let legacy = f.0.join("legacy");
     fs::copy(&exported, &legacy).unwrap();
     let db = rusqlite::Connection::open(&legacy).unwrap();
-    db.execute_batch("DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; PRAGMA user_version=10;").unwrap();
+    db.execute_batch("DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; PRAGMA user_version=10;").unwrap();
     drop(db);
     let bytes = fs::read(&legacy).unwrap();
     verify_export(&legacy).unwrap();

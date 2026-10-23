@@ -41,3 +41,7 @@ The optional [native client](../docs/native-client.md) integrates Files transfer
 
 [Modern owner stories](../docs/modern-sysop-and-communications.md) and [research 0047](research/0047-modern-terminal-and-federation-options.md) define #95–#101; [article/news stories](../docs/discussion-articles-and-news.md)
 extend them with #103/#104 without claiming implementation.
+
+[Personal catch-up](../docs/catchup.md): [plan 0066](plans/0066-personal-catchup.md),
+[ADR 0061](decisions/0061-personal-catchup.md) and
+[software checks](evidence/catchup-netbsd/README.md).

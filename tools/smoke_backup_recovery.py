@@ -57,6 +57,9 @@ def run(a):
             db.execute("INSERT INTO polls(creator,request_id,revision,question,description,results,state,hidden,ever_voted,changed_at) VALUES(1,?,?,'Recovered question','Retained notes',2,1,0,1,?)",('1'*32,'2'*32,int(time.time())))
             db.executemany("INSERT INTO poll_choices VALUES(1,?,?)",[(1,'First'),(2,'Second')])
             db.execute("INSERT INTO poll_ballots VALUES(1,1,2)")
+            db.execute("UPDATE catchup_settings SET enabled=1,name='Recovered catchup',modules='rooms,files,notice',notice='Retained local notice'")
+            db.execute("INSERT INTO catchup_members VALUES(1,1,?, ?,1)",(int(time.time()),'3'*32))
+            db.execute("INSERT INTO catchup_favorites VALUES(1,1)")
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -142,6 +145,13 @@ def run(a):
             assert db.execute('select number,label from poll_choices order by number').fetchall()==[(1,'First'),(2,'Second')]
             assert db.execute('select poll,member,choice from poll_ballots').fetchall()==[(1,1,2)]
         checks.append('complete_restore_preserves_poll_policy_choices_ballot_and_wording_lock')
+        with sqlite3.connect(f'file:{restored}/faction.sqlite3?mode=ro',uri=True) as db:
+            assert db.execute('select enabled,name,modules,notice from catchup_settings').fetchall()==[(1,'Recovered catchup','rooms,files,notice','Retained local notice')]
+            assert db.execute('select file_cursor,revision,favorites_only from catchup_members').fetchall()==[(1,'3'*32,1)]
+            assert db.execute('select member,room from catchup_favorites').fetchall()==[(1,1)]
+            assert db.execute('select id,object from catchup_publications').fetchall()==[(1,object_id)]
+            assert db.execute("select seq from sqlite_sequence where name='catchup_publications'").fetchall()==[(1,)]
+        checks.append('complete_restore_preserves_catchup_policy_preferences_checkpoint_and_publication_order')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)

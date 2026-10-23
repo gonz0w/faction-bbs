@@ -1,0 +1,11 @@
+[package]
+name = "faction-gatherings"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+faction-core = { path = "../faction-core" }
+faction-terminal = { path = "../faction-terminal" }
