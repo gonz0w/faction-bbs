@@ -408,3 +408,10 @@ requests, explicit eligible published-file fulfillment and author/sysop moderati
 See [the guide](../docs/file-requests.md) and [plan 0071](plans/0071-file-request-desk.md).
 Keep federation, external fetches, private-mail attachments and later hardening
 separate from this ordinary community workflow.
+
+
+#143's first useful increment is the owner-reviewed local magazine reader and
+original Nightwire starter issue. See [the guide](../docs/board-magazine.md) and
+[plan 0072](plans/0072-local-magazine-reader.md). Keep authenticated submissions,
+editor selection/revision/contributor approval, release automation and richer art
+as follow-on work. Local release is not public/Gopher/NNTP publication authority.

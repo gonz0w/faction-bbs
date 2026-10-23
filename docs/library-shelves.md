@@ -4,7 +4,8 @@ The optional **K:Library shelves** gives approved members a browsable collection
 of existing local catalog files: named shelves, curator notes, declared rights and
 provenance, copyable file references and deliberate discussion/Files jumps. The optional
 [file request desk](file-requests.md) adds member create/fulfill/close and moderation
-alongside these shelves, including requests-only packs.
+alongside these shelves, including requests-only packs. Optional [local magazines](board-magazine.md) also
+share the library, with owner-reviewed editions and existing file/discussion links.
 
 ## Prepare a collection
 
@@ -40,7 +41,8 @@ A trusted theme may place/rename an `action = "library"` entry with another key.
 A theme cannot enable the host capability. Otherwise K is reserved while enabled,
 with a clear startup error on a conflicting custom key. Preloaded seasonal themes
 receive the same capability; crowded lightbars and direct/classic hotkeys remain.
-No configured/enabled entries or request desk means no automatic library menu action.
+No enabled shelf entries, request desk or published magazines means no automatic
+library menu action.
 
 ## Browse and discuss
 

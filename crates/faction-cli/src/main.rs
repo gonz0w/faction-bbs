@@ -8,8 +8,47 @@ fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK, --library PACK\nOffline library check: faction library-check PACK\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK, --library PACK\nOffline library check: faction library-check PACK\nOwner magazine tools: faction library-preview PACK ISSUE | library-edition PACK ISSUE NEW_FILE\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
         );
+        return Ok(());
+    }
+    if args
+        .first()
+        .is_some_and(|v| v == "library-preview" || v == "library-edition")
+    {
+        let preview = args[0] == "library-preview";
+        if args.len() != if preview { 3 } else { 4 } {
+            return Err(invalid(
+                "library-preview PACK ISSUE or library-edition PACK ISSUE NEW_FILE",
+            ));
+        }
+        let c = faction_library::Catalog::load(&PathBuf::from(&args[1])).map_err(invalid)?;
+        let text = c
+            .magazine_text(
+                args[2]
+                    .to_str()
+                    .ok_or_else(|| invalid("issue ID needs ASCII"))?,
+                preview,
+            )
+            .map_err(invalid)?;
+        if preview {
+            print!("{text}");
+        } else {
+            use std::{io::Write, os::unix::fs::OpenOptionsExt};
+            let path = PathBuf::from(&args[3]);
+            let mut f = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .open(&path)?;
+            if let Err(e) = f.write_all(text.as_bytes()).and_then(|_| f.sync_all()) {
+                let _ = std::fs::remove_file(&path);
+                return Err(e.into());
+            }
+            println!(
+                "Wrote local text edition; publish permitted bytes through existing Files review."
+            );
+        }
         return Ok(());
     }
     if args.first().is_some_and(|v| v == "library-check") {
@@ -22,6 +61,7 @@ fn run() -> Result<()> {
             c.len(),
             c.enabled()
         );
+        print!("{}", c.magazine_review());
         return Ok(());
     }
     if args.first().is_some_and(|v| v == "gallery-check") {
