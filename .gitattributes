@@ -65,3 +65,6 @@ dev-docs/evidence/sources/pre141-full-screen/** -text
 dev-docs/evidence/sources/pre134-wall/** -text
 
 dev-docs/evidence/sources/pre135-members/** -text
+
+/dev-docs/evidence/sources/pre94-community-integration/** -text
+/dev-docs/evidence/sources/pre94-vault-integration/** -text

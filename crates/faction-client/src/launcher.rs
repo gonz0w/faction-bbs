@@ -18,6 +18,7 @@ pub(super) struct Board {
 }
 pub(super) struct Catalog {
     pub boards: Vec<Board>,
+    pub mail_store: Option<PathBuf>,
 }
 impl Catalog {
     pub fn load(path: &Path) -> io::Result<Self> {
@@ -35,6 +36,11 @@ impl Catalog {
         if t.remove("version").and_then(|v| v.as_integer()) != Some(1) {
             return Err(invalid());
         }
+        let mail_store = match t.remove("mail_store") {
+            None => None,
+            Some(toml::Value::String(path)) => Some(profile::path(path)?),
+            _ => return Err(invalid()),
+        };
         let Some(toml::Value::Array(entries)) = t.remove("boards") else {
             return Err(invalid());
         };
@@ -72,7 +78,7 @@ impl Catalog {
             }
             boards.push(Board { id, label, profile });
         }
-        Ok(Self { boards })
+        Ok(Self { boards, mail_store })
     }
 }
 #[derive(Default)]
@@ -83,12 +89,19 @@ enum Choice {
     Stay,
     Open(usize),
     Quit,
+    Mail,
+}
+pub(super) enum Destination {
+    Board(usize),
+    Mail(usize),
+    Quit,
 }
 impl View {
-    fn feed(&mut self, key: Key, count: usize) -> Choice {
+    fn feed(&mut self, key: Key, count: usize, mail: bool) -> Choice {
         match key {
             Key::Cancel | Key::Hotkey(b'Q') => Choice::Quit,
             Key::Enter => Choice::Open(self.selected),
+            Key::Hotkey(b'M') if mail => Choice::Mail,
             Key::Hotkey(k @ b'A'..=b'D') => {
                 let i = self.selected / PAGE * PAGE + usize::from(k - b'A');
                 if i < count {
@@ -140,15 +153,16 @@ impl View {
                 b.id
             ));
         }
-        out.push_str("\r\nArrows/Tab: select  N/P: page\r\nA-D/Enter: choose  Q: quit\r\nEach board needs its own approval.\r\n");
+        out.push_str("\r\nArrows/Tab: select  N/P: page\r\nA-D/Enter: choose  Q: quit\r\n");
+        out.push_str(if catalog.mail_store.is_some() {
+            "M: local offline vault (no SSH)\r\n"
+        } else {
+            "Each board needs its own approval.\r\n"
+        });
         out
     }
 }
-pub(super) fn choose(
-    t: &mut Terminal,
-    catalog: &Catalog,
-    last: usize,
-) -> io::Result<Option<usize>> {
+pub(super) fn choose(t: &mut Terminal, catalog: &Catalog, last: usize) -> io::Result<Destination> {
     let mut view = View {
         selected: last.min(catalog.boards.len() - 1),
     };
@@ -165,9 +179,10 @@ pub(super) fn choose(
             let Some(key) = decoder.feed(t.byte()?, Instant::now()) else {
                 continue;
             };
-            match view.feed(key, catalog.boards.len()) {
-                Choice::Quit => return Ok(None),
-                Choice::Open(i) => return Ok(Some(i)),
+            match view.feed(key, catalog.boards.len(), catalog.mail_store.is_some()) {
+                Choice::Quit => return Ok(Destination::Quit),
+                Choice::Open(i) => return Ok(Destination::Board(i)),
+                Choice::Mail => return Ok(Destination::Mail(view.selected)),
                 Choice::Stay => break,
             }
         }
@@ -251,12 +266,35 @@ mod tests {
         }
         let c = Catalog::parse(&source).unwrap();
         let mut v = View::default();
-        assert!(matches!(v.feed(Key::Right, 16), Choice::Stay));
+        assert!(matches!(v.feed(Key::Right, 16, false), Choice::Stay));
         assert!(v.render(&c).contains("Page 2 / 4"));
-        assert!(matches!(v.feed(Key::Enter, 16), Choice::Open(4)));
-        assert!(matches!(v.feed(Key::Hotkey(b'D'), 16), Choice::Open(7)));
+        assert!(matches!(v.feed(Key::Enter, 16, false), Choice::Open(4)));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'D'), 16, false),
+            Choice::Open(7)
+        ));
         assert!(v.render(&c).lines().count() <= 18);
         assert!(Catalog::parse(&(source + "[[boards]]" + body)).is_err());
+    }
+    #[test]
+    fn optional_local_store_is_explicit_bounded_and_not_a_remote_profile() {
+        let source = ONE.replace("version=1\n", "version=1\nmail_store='/private/mail'\n");
+        let c = Catalog::parse(&source).unwrap();
+        assert_eq!(c.mail_store.as_deref(), Some(Path::new("/private/mail")));
+        let mut view = View::default();
+        assert!(matches!(
+            view.feed(Key::Hotkey(b'M'), 1, false),
+            Choice::Stay
+        ));
+        assert!(matches!(
+            view.feed(Key::Hotkey(b'M'), 1, true),
+            Choice::Mail
+        ));
+        assert!(view.render(&c).contains("M: local offline vault (no SSH)"));
+        assert!(view.render(&c).lines().count() <= 18);
+        for value in ["'../mail'", "12", "[]", "'/a/../mail'"] {
+            assert!(Catalog::parse(&source.replace("'/private/mail'", value)).is_err());
+        }
     }
     #[test]
     fn keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough() {

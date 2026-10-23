@@ -42,3 +42,8 @@ and license hashes, no active transitive dependencies or build script and a sour
 no-JS scan. Its Rust library forbids unsafe code. Character widths use its static
 tables; actual fonts/complex clusters are not guaranteed, so classic mode and
 per-scalar escapes remain. This changes only presentation, not storage/authority.
+
+The local client vault additionally uses the seven previously reviewed MIT/Apache-2.0
+packages from #94 (aead/chacha20/chacha20poly1305/cipher/inout/poly1305/universal-hash).
+The integrated inventory also retains the current reviewed Unicode width table;
+all selected package versions/licenses/features are compared before acceptance.

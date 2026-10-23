@@ -89,3 +89,7 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0056: Local member pages and .plan history](0056-local-member-pages-and-plans.md).
 
 - [0057: Private persistent terminal playground](0057-private-persistent-playground.md).
+
+- [0035: Native local mail vault](0035-native-local-mail-vault.md).
+
+- [0058: Local vault from the board picker](0058-local-vault-from-board-picker.md).

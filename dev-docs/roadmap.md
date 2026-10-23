@@ -140,7 +140,9 @@ Pause game expansion under #81 while preserving DOS/Amiga/other-host adapters.
 The [two-home reference proof](research/0045-encrypted-mail-and-roaming-proof.md)
 passes encrypted mail/offline/archive/device-refusal controls and native scoped
 SSH certificate verification. No complete native crypto/SSO runtime is adopted.
-#90 builds native mail/keystore/recovery; #91 binds home identity to local membership;
+#90 now has a [local encrypted vault](../docs/local-mail-vault.md), private drafts,
+explicit pins and member backup/recovery. Native inbox/send/ratchet/history and
+independent interop remain; #91 binds proven home identity to local membership;
 #92 investigates native signing failure. Attachments remain #88.
 These explicit mail/identity capabilities supersede older chat-only wording below.
 
@@ -340,3 +342,8 @@ capacity/native deployment or hardening claim.
 The local community wall (#134, plan 0060) adds the next bounded hangout feature:
 ASCII notes, local sysop policy, moderation and explicitly retained weekly editions.
 Keep protocol/identity adapters and later hardening separate from this local UI.
+
+The integrated native client now exposes its local offline vault from the private
+board picker between visits, explicitly configured by the member. Encrypted
+network inbox/send/roaming/attachments remain #90/#91/#88; no server unlock route.
+The owner-tested private playground is stopped and retained for later visits.

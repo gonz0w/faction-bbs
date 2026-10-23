@@ -1,6 +1,9 @@
 //! Local terminal companion. Remote output never selects local paths or endpoints.
 #![forbid(unsafe_code)]
 mod launcher;
+mod mail_data;
+mod mail_ui;
+mod mail_vault;
 mod profile;
 mod sftp;
 mod stream;
@@ -422,12 +425,15 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile) -> io::Result<()> {
 }
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if args.len() == 3 && args[0] == "--mail-store" {
+        return mail_ui::run(Path::new(&args[1]), &args[2]);
+    }
     if !matches!(args.len(), 2 | 3)
         || !matches!(args[0].as_str(), "--profile" | "--boards")
         || (args.len() == 3 && args[2] != "--kitty")
     {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty]",
+            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty] | --mail-store PRIVATE_DIR init|open|recover",
         ));
     }
     let catalog = if args[0] == "--boards" {
@@ -451,7 +457,26 @@ fn run() -> io::Result<()> {
     }
     let catalog = catalog.ok_or_else(invalid)?;
     let mut last = 0;
-    while let Some(i) = launcher::choose(&mut t, &catalog, last)? {
+    loop {
+        let i = match launcher::choose(&mut t, &catalog, last)? {
+            launcher::Destination::Quit => break,
+            launcher::Destination::Board(i) => i,
+            launcher::Destination::Mail(selected) => {
+                last = selected;
+                // This branch exists only in the local picker, with no Remote/SSH child.
+                // Store selection comes from the private member catalog, never the board.
+                let store = catalog.mail_store.as_deref().ok_or_else(invalid)?;
+                if let Err(e) = mail_ui::run(store, "open") {
+                    t.print(&format!(
+                        "\r\nLocal vault closed: {}\r\n",
+                        safe(&e.to_string())
+                    ))?;
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    t.line("Enter to return to local Boards: ", 0)?;
+                }
+                continue;
+            }
+        };
         last = i;
         let b = &catalog.boards[i];
         let result: io::Result<()> = (|| {

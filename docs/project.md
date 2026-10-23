@@ -111,3 +111,10 @@ work; no new host/hardening or capacity claim follows.
 [Named terminal compatibility profiles](terminal-compatibility.md) now have real
 software evidence, including native client/member SSH and conservative old-screen
 fallback. This does not certify pixel/glyph quality or add a terminal runtime.
+
+## Native local vault
+
+The optional [local native mail vault](local-mail-vault.md) now stores encrypted
+offline drafts and device pins with member-held backup/recovery. It does not yet
+provide network inbox/send, OMEMO private state or authenticated roaming. Local
+BBS approval and current rooms/chat/files remain independent.
