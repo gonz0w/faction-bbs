@@ -385,3 +385,8 @@ the Lounge retains its social/paging attributes. All three share the same curren
 visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
 no private resource names or retained activity history. Take a stopped complete
 backup before upgrade; export/restore strips current activity and live authority.
+
+The [device-local connection desk](connection-desk.md) separates file readiness,
+stored pins and untested remote authority. Explicit local ssh-keygen lookups are
+bounded/reaped and never connect; share reports omit contact/key identifiers.
+No server/schema/dependency/default change or broader hardening claim.

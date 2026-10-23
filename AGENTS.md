@@ -1693,3 +1693,21 @@ is exposed; Who/group/Lounge universal privacy never leaks private resource name
 or draft/game content. Final matching installed hashes and owned-fixture teardown
 are recorded; saved owner playground remains off/intact. #176 is the distinct Who
 batch, based on #175, with hardening still deferred.
+
+## Local connection desk (#158)
+
+Read docs/connection-desk.md, ADR 0074 and plan 0079. The native Boards I action
+checks existing local profile/file readiness; K uses fixed base ssh-keygen local
+lookup with checked stdin, two-second/32-KiB bounds and unconditional reap. Never
+claim readability/stored pins imply unlock/live identity/admission/BBS approval.
+Share preview/plain --check-profile omit contact/key identifiers; no writes/network.
+Keep route/Tor/invitation/verified-age diagnostics open, ordinary SSH/plain fallback,
+server/schema/dependency/defaults unchanged. Snapshot 46 freezes all 338 previous
+Who inputs and its exact record; never refresh historical hashes.
+
+The connection-desk software record pins 61 client/dependency execution inputs
+and six actual host/native harness inputs; all 67 native matches verified. It
+records 21 client tests/14 local PTYs per OS, 361 host workspace tests/130 Python,
+and 317 prior non-client sources unchanged. Guard 60/all 70 offline/archive
+commands preserve scope; no new server capacity/hardware/authentication claim.
+Owned clone/cache removed and saved playground stopped/intact.

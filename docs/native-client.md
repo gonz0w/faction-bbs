@@ -129,3 +129,9 @@ See [travel settings](travel-modes.md) for the local Boards T panel, compact tex
 and per-file payload ceilings chosen before connecting. Limits concern file bytes,
 not total encrypted wire costs. Existing grants/review/confirmations remain.
 Preferences are memory-only; no route, account, vault or profile changes.
+
+## Local connection desk
+
+The Boards picker I action opens [local readiness and stored-pin diagnostics](connection-desk.md);
+`--check-profile FILE` prints a redacted plain-text summary without a TTY or network.
+Actual SSH admission and BBS approval remain separate, untested stages.

@@ -139,3 +139,11 @@ See [travel settings](travel-modes.md) for the local Boards T panel, compact tex
 and per-file payload ceilings chosen before connecting. Limits concern file bytes,
 not total encrypted wire costs. Existing grants/review/confirmations remain.
 Preferences are memory-only; no route, account, vault or profile changes.
+
+## Local connection desk
+
+Press **I** for the highlighted board to inspect local profile/file readiness,
+deliberately look up stored host pins and preview a redacted support summary.
+See [the connection desk](connection-desk.md). Nothing connects or changes your
+profile; Q/Ctrl-C returns with selection retained. Plain `--check-profile` also
+works without a TTY.

@@ -440,3 +440,10 @@ original Nightwire starter issue. See [the guide](../docs/board-magazine.md) and
 editor selection/revision, exact-issue contributor consent, local release/withdrawal
 and optional existing Files editions. Release automation, richer art and delegated
 editor roles remain optional follow-on work. Local release is not public/Gopher/NNTP publication authority.
+
+## Local connection readiness (#158)
+
+The native Boards I desk batches strict local file readiness, deliberate stored-pin
+inspection and redacted plain sharing; see [plan 0079](plans/0079-native-connection-desk.md).
+Verified contacts, invitation/route adapters and live probes remain separately
+scoped follow-ons. No network/profile/OS changes or new server costs.

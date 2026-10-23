@@ -105,3 +105,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0072: Safe idle page notifications](0072-idle-page-notifications.md).
 
 - [0073: Universal presence and distinct Who](0073-universal-presence-and-who.md)
+
+- [0074: Local connection readiness](0074-local-connection-readiness.md) — device checks before live probing.
