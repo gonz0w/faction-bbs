@@ -185,6 +185,8 @@ the local picker after disconnecting. Every destination still requires local log
 Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
 including optional seasonal colors and identity screens.
 
+The native Boards picker now includes a **[local connection desk](docs/connection-desk.md)** (I): inspect profile/file readiness and deliberately look up stored host pins before connecting. A redacted `--check-profile` command also works without a TTY. Neither claims live host verification or BBS approval.
+
 Native software validation uses a **NetBSD 11 ARM64 VM**. Physical SBCs and other
 NetBSD ports remain untested. The maintained service uses base OpenSSH, a separate
 terminal identity, private SQLite state and a small native terminal frontend;

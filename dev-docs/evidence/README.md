@@ -303,3 +303,12 @@ historical identities fixed. The current [Who evidence](who-netbsd/README.md)
 checks distinct caller/group/Lounge interfaces, universal presence and broad
 host-derived activity. Guard 59 covers its current sources, privacy, normal
 budgets, protected input, schema-18 recovery and owned-fixture teardown.
+
+[Local connection desk](connection-desk-netbsd/results.json) records a frozen
+NetBSD client build, 21 client tests/14 new PTY controls per OS, launcher/travel/
+vault regressions, 361 host workspace tests and 130 Python tests. All 67 selected
+native source/harness identities match; 317 non-client execution inputs remain
+unchanged from Who. Guard 60 checks this narrow software record. Snapshot 46
+[`who-baseline-manifest.json`](who-baseline-manifest.json) preserves 338 exact
+prior inputs and the complete Who result. No new server/capacity/authentication
+or hardware claim. Saved playground remains off; only owned clone fixtures used.

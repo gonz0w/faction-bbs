@@ -4,6 +4,9 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a local native connection desk, bounded stored-host-pin lookup and redacted plain-text profile checks; SSH/plain fallback and server defaults stay unchanged.
+
+
 - Add a distinct themed Who caller list and group `/who` showing broad current
   activity alongside separate availability/status. Visibility/availability and
   blocks are universal across Who, group commands and the Lounge; Lounge keeps

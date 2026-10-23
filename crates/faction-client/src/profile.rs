@@ -18,6 +18,16 @@ pub struct Profile {
     pub public_key: String,
     pub known_hosts: PathBuf,
 }
+/// Parsed local settings, separate from the readiness of the referenced files.
+pub(super) struct Settings {
+    pub host: String,
+    pub port: u16,
+    pub file_host: String,
+    pub file_port: u16,
+    pub identity: PathBuf,
+    pub public: PathBuf,
+    pub known_hosts: PathBuf,
+}
 pub(super) fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
     let f = OpenOptions::new()
         .read(true)
@@ -54,7 +64,7 @@ fn host(s: &str) -> bool {
         && s.bytes()
             .all(|b| b.is_ascii_alphanumeric() || b".-:".contains(&b))
 }
-impl Profile {
+impl Settings {
     pub fn load(p: &Path) -> io::Result<Self> {
         let mut text = String::new();
         regular(p, 8192, true)?
@@ -91,10 +101,19 @@ impl Profile {
         if !t.is_empty() || !host(&hostname) || !host(&file_host) {
             return Err(invalid());
         }
-        regular(&identity, 65536, false)?;
-        regular(&known_hosts, 1024 * 1024, false)?;
+        Ok(Self {
+            host: hostname,
+            port,
+            file_host,
+            file_port,
+            identity,
+            public,
+            known_hosts,
+        })
+    }
+    pub fn public_key(&self) -> io::Result<String> {
         let mut key = String::new();
-        regular(&public, 256, false)?.read_to_string(&mut key)?;
+        regular(&self.public, 256, false)?.read_to_string(&mut key)?;
         let mut fields = key.split_whitespace();
         if fields.next() != Some("ssh-ed25519") {
             return Err(invalid());
@@ -107,15 +126,26 @@ impl Profile {
         {
             return Err(invalid());
         }
-        Ok(Self {
-            host: hostname,
-            port,
-            file_host,
-            file_port,
-            identity,
+        Ok(public_key)
+    }
+    fn ready(self) -> io::Result<Profile> {
+        regular(&self.identity, 65536, false)?;
+        regular(&self.known_hosts, 1024 * 1024, false)?;
+        let public_key = self.public_key()?;
+        Ok(Profile {
+            host: self.host,
+            port: self.port,
+            file_host: self.file_host,
+            file_port: self.file_port,
+            identity: self.identity,
             public_key,
-            known_hosts,
+            known_hosts: self.known_hosts,
         })
+    }
+}
+impl Profile {
+    pub fn load(p: &Path) -> io::Result<Self> {
+        Settings::load(p)?.ready()
     }
     pub fn ssh(&self, files: bool) -> Command {
         let mut c = Command::new("/usr/bin/ssh");

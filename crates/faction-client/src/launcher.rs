@@ -91,11 +91,13 @@ enum Choice {
     Quit,
     Mail,
     Travel,
+    Inspect,
 }
 pub(super) enum Destination {
     Board(usize),
     Mail(usize),
     Travel(usize),
+    Inspect(usize),
     Quit,
 }
 impl View {
@@ -105,6 +107,7 @@ impl View {
             Key::Enter => Choice::Open(self.selected),
             Key::Hotkey(b'M') if mail => Choice::Mail,
             Key::Hotkey(b'T') => Choice::Travel,
+            Key::Hotkey(b'I') => Choice::Inspect,
             Key::Hotkey(k @ b'A'..=b'D') => {
                 let i = self.selected / PAGE * PAGE + usize::from(k - b'A');
                 if i < count {
@@ -157,7 +160,7 @@ impl View {
             ));
         }
         out.push_str("\r\nArrows/Tab: select  N/P: page\r\nA-D/Enter: choose  Q: quit\r\n");
-        out.push_str("T: travel mode / file ceiling\r\n");
+        out.push_str("T: travel  I: connection desk\r\n");
         out.push_str(if catalog.mail_store.is_some() {
             "M: local offline vault (no SSH)\r\n"
         } else {
@@ -188,6 +191,7 @@ pub(super) fn choose(t: &mut Terminal, catalog: &Catalog, last: usize) -> io::Re
                 Choice::Open(i) => return Ok(Destination::Board(i)),
                 Choice::Mail => return Ok(Destination::Mail(view.selected)),
                 Choice::Travel => return Ok(Destination::Travel(view.selected)),
+                Choice::Inspect => return Ok(Destination::Inspect(view.selected)),
                 Choice::Stay => break,
             }
         }

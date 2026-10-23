@@ -78,3 +78,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0077: Optional idle page notifications](0077-idle-notifications.md).
 
 - [0078: Who and universal presence](0078-who-universal-presence.md)
+
+- [0079: Native connection desk](0079-native-connection-desk.md) — local readiness, stored pins and redacted sharing (#158).

@@ -98,3 +98,6 @@ dev-docs/evidence/sources/pre137-standalone/** -text
 dev-docs/evidence/sources/pre137-idle/** -text
 
 dev-docs/evidence/sources/pre176-who/** -text
+
+# Exact Who execution inputs before the local connection desk.
+dev-docs/evidence/sources/pre158-connection-desk/** -text

@@ -1,5 +1,6 @@
 //! Local terminal companion. Remote output never selects local paths or endpoints.
 #![forbid(unsafe_code)]
+mod connection;
 mod launcher;
 mod mail_data;
 mod mail_ui;
@@ -435,12 +436,23 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile, travel: &Travel) -> 
 }
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if args.len() == 2 && args[0] == "--check-profile" {
+        let report = connection::Report::load(Path::new(&args[1]));
+        print!("{}", report.share_summary());
+        return if report.ready() {
+            Ok(())
+        } else {
+            Err(io::Error::other(
+                "Local profile needs attention; see the redacted report.",
+            ))
+        };
+    }
     if args.len() == 3 && args[0] == "--mail-store" {
         return mail_ui::run(Path::new(&args[1]), &args[2]);
     }
     if args.len() < 2 || !matches!(args[0].as_str(), "--profile" | "--boards") {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty | --compact] [--file-budget BYTES] | --mail-store PRIVATE_DIR init|open|recover",
+            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty | --compact] [--file-budget BYTES] | --check-profile PRIVATE_TOML | --mail-store PRIVATE_DIR init|open|recover",
         ));
     }
     let mut travel = Travel::default();
@@ -501,6 +513,16 @@ fn run() -> io::Result<()> {
                 }
                 continue;
             }
+            launcher::Destination::Inspect(selected) => {
+                last = selected;
+                let board = &catalog.boards[selected];
+                if let Err(e) = connection::panel(&mut t, &board.label, &board.profile)
+                    && e.kind() != io::ErrorKind::Interrupted
+                {
+                    return Err(e);
+                }
+                continue;
+            }
             launcher::Destination::Mail(selected) => {
                 last = selected;
                 // This branch exists only in the local picker, with no Remote/SSH child.
@@ -522,7 +544,7 @@ fn run() -> io::Result<()> {
         let result: io::Result<()> = (|| {
             // Reload only after local selection, retaining all existing SSH/key checks.
             let p = Profile::load(&b.profile)?;
-            t.print(&format!("\x1b[2J\x1b[HLOCAL CONNECTION / {}\r\nSSH: {} port {}\r\nFiles: {} port {}\r\nVerified local profile; independent login/approval.\r\nNo account, agent or device keys forwarded.\r\n", b.label, safe(&p.host), p.port, safe(&p.file_host), p.file_port))?;
+            t.print(&format!("\x1b[2J\x1b[HLOCAL CONNECTION / {}\r\nSSH: {} port {}\r\nFiles: {} port {}\r\nLocal profile parsed; independent login/approval.\r\nNo account, agent or device keys forwarded.\r\n", b.label, safe(&p.host), p.port, safe(&p.file_host), p.file_port))?;
             t.print(&format!(
                 "Travel: {}\r\nPayload bytes only; SSH overhead/retries extra.\r\n",
                 travel.summary()
