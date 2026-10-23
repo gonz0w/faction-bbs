@@ -8,11 +8,29 @@ pub(super) fn run(
     ansi: bool,
     settings: bool,
 ) -> Result<faction_gatherings::Outcome> {
-    let mut desk = if settings {
+    let desk = if settings {
         faction_gatherings::Desk::settings()
     } else {
         faction_gatherings::Desk::default()
     };
+    run_desk(b, s, theme, ansi, desk)
+}
+pub(super) fn run_event(
+    b: &mut Board,
+    s: &Session,
+    theme: &Theme,
+    ansi: bool,
+    id: i64,
+) -> Result<faction_gatherings::Outcome> {
+    run_desk(b, s, theme, ansi, faction_gatherings::Desk::open(id))
+}
+fn run_desk(
+    b: &mut Board,
+    s: &Session,
+    theme: &Theme,
+    ansi: bool,
+    mut desk: faction_gatherings::Desk,
+) -> Result<faction_gatherings::Outcome> {
     loop {
         let columns = terminal::size().map_or(80, |s| s.0);
         let frame = match desk.render(b, s, theme, ansi && terminal::capable(), columns as usize) {

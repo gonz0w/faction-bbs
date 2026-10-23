@@ -90,17 +90,23 @@ fn copy(from: &Connection, to: &mut Connection, deadline: Instant) -> Result<()>
 
 type Schema = Vec<(String, String, String, Option<String>)>;
 fn schema(db: &Connection) -> Result<Schema> {
-    Ok(db
-        .prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name LIMIT 65")?
+    let rows: Schema = db
+        .prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema ORDER BY type,name LIMIT 129")?
         .query_map([], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)))?
-        .collect::<std::result::Result<_, _>>()?)
+        .collect::<std::result::Result<_, _>>()?;
+    // Keep one lookahead beyond the catalog budget. Silent truncation could hide
+    // an imported view or trigger after the legitimate schema grows.
+    if rows.len() > 128 {
+        return Err(Error::Invalid("snapshot catalog exceeds object budget"));
+    }
+    Ok(rows)
 }
 fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<SnapshotSummary> {
     budget(deadline)?;
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=12).contains(&version) {
+    if app != APP_ID || !(2..=13).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -137,6 +143,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 12 {
         reference.execute_batch(include_str!("polls.sql"))?;
+    }
+    if version >= 13 {
+        reference.execute_batch(include_str!("catchup.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -335,6 +344,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 12 {
         crate::polls::validate(db, deadline)?;
+    }
+    if version >= 13 {
+        crate::catchup::validate(db, deadline)?;
     }
     Ok(SnapshotSummary {
         members: count(db, "SELECT count(*) FROM members")?,

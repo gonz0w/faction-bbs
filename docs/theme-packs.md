@@ -442,3 +442,9 @@ Optional [polls](polls.md) declare `action = "polls"` with a free key, label and
 inert description. The host inserts V when enabled and prevents a declared action
 from enabling disabled policy. Results use bounded ASCII `#` bars/numeric counts,
 so a modern graphics terminal is optional. Crowded menus keep classic scrolling.
+
+
+Optional [catch-up](catchup.md) declares `action = "catchup"` with a free key,
+label and description. The enabled host inserts U otherwise; it stays unavailable
+when disabled. Sysop S/U controls its heading, compact/cards, module order and local
+notice. Existing palette, crowded-menu scrolling and plain fallback remain.

@@ -3,6 +3,7 @@
 use faction_access::{Result, check_directory, denied, receive_terminal};
 use faction_core::{Board, ChatCommand, ChatKind, ChatLease, Error, Session, Status};
 use faction_terminal::{Action, Decoder, Key, LineEditor, LineEvent, Menu, Theme};
+mod catchup_ui;
 mod classic;
 mod classic_ui;
 mod config;
@@ -91,6 +92,7 @@ enum State {
     Wall(Box<faction_wall::Desk>),
     Pages(Box<faction_pages::Desk>),
     Polls(Box<faction_polls::Desk>),
+    Catchup(Box<faction_catchup::Desk>),
     Gatherings(Box<faction_gatherings::Desk>),
     Sysop,
     MembersMore(usize),

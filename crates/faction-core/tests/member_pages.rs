@@ -284,7 +284,7 @@ fn owner_export_restore_private_visibility_and_schema9_readonly_upgrade() {
     b.delete_member_page(&s, p.revision.as_deref()).unwrap();
     drop(b);
     let db = rusqlite::Connection::open(dest.join("faction.sqlite3")).unwrap();
-    db.execute_batch("DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; PRAGMA user_version=9").unwrap();
+    db.execute_batch("DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; PRAGMA user_version=9").unwrap();
     drop(db);
     let old = f.0.join("old");
     export_local(&dest, &old).unwrap();

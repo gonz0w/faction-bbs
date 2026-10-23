@@ -322,7 +322,7 @@ fn current_export_ballots_and_exact_readonly_schema_eleven_recovery() {
     assert_eq!(b.poll(&s, id).unwrap().own_vote, 2);
     drop(b);
     let db = f.db();
-    db.execute_batch("PRAGMA foreign_keys=OFF; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; PRAGMA user_version=11;").unwrap();
+    db.execute_batch("PRAGMA foreign_keys=OFF; DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; PRAGMA user_version=11;").unwrap();
     drop(db);
     let old = f.0.join("old");
     export_local(&f.path(), &old).unwrap();

@@ -51,7 +51,7 @@ The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragr
 reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
 for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
 recover local room writing after disconnect; these are plaintext board data,
-readable by its sysop. Schema-12 upgrades require a stopped complete backup.
+readable by its sysop. Schema-13 upgrades require a stopped complete backup.
 The opt-in **[community wall](docs/community-wall.md)** adds short local ASCII
 notes/art, chronological paging, own edits/deletion, sysop moderation and optional
 weekly archives. Enable/name it in S:Sysop controls → W:Wall settings; plain and
@@ -71,6 +71,14 @@ Optional **[community polls](docs/polls.md)** add local single-choice questions,
 explicit ballot review/change/withdrawal, paged text-cell result charts and creator/
 sysop controls. Result visibility is configurable; ballots remain operator-readable
 local data. Enable through Sysop → Polls; plain and ANSI terminals share the desk.
+
+
+Optional **[personal catch-up](docs/catchup.md)** brings together the sysop notice,
+unread rooms/direct replies, your favorite rooms, eligible files and gatherings.
+Enable through Sysop → Catch-up settings. Previews leave room unread unchanged;
+visit checkpoints are explicitly saved, with no automatic login tracking. Shared
+SSH/native and local/worker desks preserve the classic fallback. Private-mail
+content and counts remain outside the server-side desk.
 
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,

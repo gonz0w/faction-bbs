@@ -216,7 +216,7 @@ fn scores_export_restore_and_schema_two_exports_stay_readable() {
         Err(Error::Denied)
     ));
     let db = rusqlite::Connection::open(&export).unwrap();
-    db.execute_batch("DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; PRAGMA user_version=2")
+    db.execute_batch("DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; PRAGMA user_version=2")
         .unwrap();
     drop(db);
     let before = fs::read(&export).unwrap();
@@ -231,7 +231,7 @@ fn scores_export_restore_and_schema_two_exports_stay_readable() {
     assert_eq!(
         db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        12
+        13
     );
 }
 #[test]
@@ -239,7 +239,7 @@ fn migration_failure_rolls_back_and_exports_reject_invalid_score_data() {
     let mut f = Fixture::new();
     let db = rusqlite::Connection::open(f.parent.join("board/faction.sqlite3")).unwrap();
     db.execute_batch(
-        "DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; PRAGMA user_version=2; CREATE TABLE game_scores(unrelated TEXT)",
+        "DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; PRAGMA user_version=2; CREATE TABLE game_scores(unrelated TEXT)",
     )
     .unwrap();
     assert!(Board::open(&f.parent.join("board")).is_err());

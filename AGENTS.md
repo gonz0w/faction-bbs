@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is implemented and validated, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 now adds the optional personal catch-up desk, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1259,3 +1259,38 @@ A test caught a declared poll action bypassing disable; Action::Polls stays host
 optional. Choice pages clamp to real bounds and resize widths. Keep all 46 guards;
 freeze the new actual inputs/whole result before later edits. Owned VM/cache/
 credentials removed; owner playground stays off. No new capacity or hardening claim.
+
+
+## Personal catch-up
+
+Read docs/catchup.md, plan 0066 and ADR 0061. Schema 13 adds default-disabled policy,
+own sixteen-room favorites, explicitly saved file-publication/UTC visit checkpoints
+and monotonic publication cursors. No automatic login/last-seen tracking. Preview,
+refresh and checkpoint never mark unread/downloads; existing complete-message/
+drained output acknowledgment remains the sole shared room read ledger.
+
+Four rooms plus lookahead, at most 101 next unread posts each; 100+ cap and direct
+non-self replies only in next100 unread. Two eligible files/four current events
+plus lookahead, 32 back cursors. Files show opaque object IDs, never private-area
+publication counters. Current approval/config/role/grants apply on each frame/
+jump; local/worker Files unavailable, shared uses existing catalog/reference path.
+No mail count/content/decrypt, network feed, ranking, new helper/listener/registry
+package or default/resource change. Schema-2..12 exports stay exact/read-only valid;
+stopped complete backup and matching-binary fresh-path rollback apply. Snapshot
+schema checking now rejects >128 objects with one lookahead before exact comparison;
+never silently truncate an imported catalog.
+
+Snapshot 33/polls-baseline-manifest preserves 238 prior actual/harness inputs and
+the whole #163 poll record. Keep historical identities and 46 old guards fixed.
+Validate on an owned marked software clone, preserve fresh input/result pins and
+keep the saved owner playground off. Hardening stays later.
+
+
+`catchup-netbsd` pins 240 matched native inputs and 21 host harnesses, with fifteen
+access/credential inputs unchanged. Validation: 280 Rust per OS/129 Python, eight
+catch-up PTYs per OS, eleven actual restricted SSH/native/plain and sixteen complete
+recovery controls per OS (native distinct non-root UID CLI). Existing local social/
+editor/reader/menu/art/vault/picker checks pass. Keep all 47 saved guards and preserve
+these current input bytes/whole result before later edits. Owned VM/cache/test
+credentials removed; saved playground stays off. No new capacity, hardening,
+automatic-login tracking, server mail or fresh SFTP-byte-transfer claim.

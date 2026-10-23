@@ -284,3 +284,14 @@ permanently locks wording; current revisions protect reviewed votes and close ra
 Hidden/inactive polls cannot accept votes; revoked voters are excluded from totals.
 No message publication, unread mutation, private-mail decrypt or federation path.
 Schema-12 upgrades require stopped complete backup and fresh-path rollback.
+
+
+## Explicit local catch-up
+
+[Catch-up](catchup.md) reads current room/reply/file/event metadata under current
+approval and source permissions. Previews never acknowledge read/download; only
+explicit preference or visit saves persist own state. Saved UTC visits/favorites
+are sysop-readable local data in owner backups, not mandatory login telemetry.
+File publication counters are not exposed, and stale private-file grants are
+rechecked on jumps. No server mail decryption or badge is introduced. Schema 13
+requires stopped complete backup and fresh-path rollback.

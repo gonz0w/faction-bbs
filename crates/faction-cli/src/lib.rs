@@ -1,5 +1,6 @@
 //! Shared terminal session presentation. Owner command parsing lives only in faction.
 #![forbid(unsafe_code)]
+mod catchup;
 mod chat;
 mod directory;
 mod gatherings;
@@ -547,13 +548,16 @@ fn terminal_settings(
 }
 fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
     let command = line(
-        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [C]reate room: ",
+        "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [C]reate room: ",
         8,
     )?
     .to_ascii_lowercase();
     match command.as_str() {
         "w" => wall::run(board, s, theme, ansi, true)?,
         "m" => pages::run(board, s, theme, ansi, true)?,
+        "u" => {
+            catchup::run(board, s, theme, ansi, true)?;
+        }
         "p" => polls::run(board, s, theme, ansi, true)?,
         "g" => {
             gatherings::run(board, s, theme, ansi, true)?;
@@ -662,6 +666,8 @@ fn menu_with_directory(
         let theme = gathering_theme.as_ref().unwrap_or(theme);
         let poll_theme = faction_polls::menu_theme(board, s, theme)?;
         let theme = poll_theme.as_ref().unwrap_or(theme);
+        let catchup_theme = faction_catchup::menu_theme(board, s, theme)?;
+        let theme = catchup_theme.as_ref().unwrap_or(theme);
         let selected = if ansi {
             terminal::select(theme, member.role == Role::Sysop, caps)?
         } else {
@@ -695,6 +701,7 @@ fn menu_with_directory(
                 Action::MemberPages => "Member pages",
                 Action::Gatherings => "Gatherings",
                 Action::Polls => "Polls",
+                Action::Catchup => "Catch up",
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
@@ -731,6 +738,23 @@ fn menu_with_directory(
             Some(Action::Sysop) => sysop(board, s, theme, used_ansi),
             Some(Action::Wall) => wall::run(board, s, theme, used_ansi, false),
             Some(Action::MemberPages) => pages::run(board, s, theme, used_ansi, false),
+            Some(Action::Catchup) => match catchup::run(board, s, theme, used_ansi, false)? {
+                faction_catchup::Outcome::Open(faction_core::CatchupTarget::Room(room)) => {
+                    read_room_at(board, s, room, true, theme, used_ansi, caps)
+                }
+                faction_catchup::Outcome::Open(faction_core::CatchupTarget::Gathering(id)) => {
+                    match gatherings::run_event(board, s, theme, used_ansi, id)? {
+                        faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Room(
+                            room,
+                        )) => read_room_at(board, s, room, false, theme, used_ansi, caps),
+                        faction_gatherings::Outcome::Join(
+                            faction_core::GatheringPlace::Channel(channel),
+                        ) => chat::run_at(board, s, ansi, &channel),
+                        _ => Ok(()),
+                    }
+                }
+                _ => Ok(()),
+            },
             Some(Action::Polls) => polls::run(board, s, theme, used_ansi, false),
             Some(Action::Gatherings) => match gatherings::run(board, s, theme, used_ansi, false)? {
                 faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Room(room)) => {

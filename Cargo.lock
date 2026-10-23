@@ -196,9 +196,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "faction-catchup"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-core",
+ "faction-terminal",
+ "rusqlite",
+]
+
+[[package]]
 name = "faction-cli"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "faction-catchup",
  "faction-core",
  "faction-gatherings",
  "faction-pages",
@@ -288,6 +298,7 @@ version = "0.1.0-alpha.1"
 dependencies = [
  "base64",
  "faction-access",
+ "faction-catchup",
  "faction-core",
  "faction-files",
  "faction-gatherings",
