@@ -1,8 +1,8 @@
 use crate::{Result, edited_line, terminal};
-use faction_core::{Board, Session};
+use faction_core::Session;
 use faction_terminal::Theme;
 pub(super) fn run(
-    b: &mut Board,
+    b: &mut crate::Visit<'_>,
     s: &Session,
     theme: &Theme,
     ansi: bool,
@@ -27,7 +27,7 @@ pub(super) fn run(
         };
         // Enter raw input before displaying its prompt; a flush after the prompt
         // can discard a quick member's first keys.
-        let input = edited_line(&frame, 128, false)?;
+        let input = edited_line(b, &frame, 128, false)?;
         match desk.feed(&input, b, s) {
             Ok(true) => return Ok(()),
             Ok(false) => (),

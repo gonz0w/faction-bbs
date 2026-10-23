@@ -64,7 +64,7 @@ fn execute(
     state: &mut State,
     input: &str,
 ) -> faction_core::Result<(bool, String)> {
-    if let Some(out) = faction_pages::social::command(board, lease, input)? {
+    if let Some(out) = faction_pages::social::visit_command(board, lease, input)? {
         return Ok((true, out));
     }
     let command = if input.trim().is_empty() {
@@ -257,13 +257,19 @@ fn live(board: &mut Board, s: &Session, lease: &ChatLease, state: &mut State) ->
         }
     }
 }
-pub fn run(board: &mut Board, s: &Session, ansi: bool) -> Result<()> {
+pub fn run(board: &mut crate::Visit<'_>, s: &Session, ansi: bool) -> Result<()> {
     run_at(board, s, ansi, "#lobby")
 }
-pub(super) fn run_at(board: &mut Board, s: &Session, ansi: bool, channel: &str) -> Result<()> {
-    let lease = board.chat_open(s)?;
+pub(super) fn run_at(
+    board: &mut crate::Visit<'_>,
+    s: &Session,
+    ansi: bool,
+    channel: &str,
+) -> Result<()> {
+    board.ensure(s)?;
+    let (board, lease) = board.parts()?;
     let outcome = (|| -> Result<()> {
-        let lobby = board.chat_join(&lease, channel)?;
+        let lobby = board.chat_join(lease, channel)?;
         let mut state = State {
             channel: Some(lobby.name),
             cursor: lobby.sequence,
@@ -271,12 +277,13 @@ pub(super) fn run_at(board: &mut Board, s: &Session, ansi: bool, channel: &str) 
         };
         println!("BBS-local chat. No federation or external IRC connection. /help for commands.");
         if ansi && terminal::capable() {
-            live(board, s, &lease, &mut state)
+            live(board, s, lease, &mut state)
         } else {
-            plain(board, s, &lease, &mut state)
+            plain(board, s, lease, &mut state)
         }
     })();
-    let closed = board.chat_close(&lease);
+    // Never resume the menu while failed cleanup may retain channel joins.
+    let closed = board.chat_leave_all(lease).map_err(std::io::Error::other);
     outcome?;
     closed?;
     Ok(())

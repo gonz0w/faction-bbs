@@ -1,0 +1,232 @@
+//! Local-only destinations and OpenSSH configuration. Remote frames cannot modify it.
+use base64::{Engine, engine::general_purpose::STANDARD};
+use faction_files::invalid;
+use rustix::fs::OFlags;
+use std::{
+    fs::OpenOptions,
+    io::{self, Read},
+    os::unix::fs::{MetadataExt, OpenOptionsExt},
+    path::{Path, PathBuf},
+    process::Command,
+};
+pub struct Profile {
+    pub host: String,
+    pub port: u16,
+    pub file_host: String,
+    pub file_port: u16,
+    pub identity: PathBuf,
+    pub public_key: String,
+    pub known_hosts: PathBuf,
+}
+pub(super) fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
+    let f = OpenOptions::new()
+        .read(true)
+        .custom_flags((OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC).bits() as i32)
+        .open(path)?;
+    let m = f.metadata()?;
+    let uid = rustix::process::geteuid().as_raw();
+    if !m.is_file()
+        || m.nlink() != 1
+        || (m.uid() != uid && (private || m.uid() != 0))
+        || m.mode() & if private { 0o077 } else { 0o022 } != 0
+        || m.len() > cap
+    {
+        return Err(invalid());
+    }
+    Ok(f)
+}
+pub(super) fn path(s: String) -> io::Result<PathBuf> {
+    let p = PathBuf::from(&s);
+    if !p.is_absolute()
+        || s.len() > 512
+        || s.chars().any(|c| c.is_control() || "\"\\%$".contains(c))
+        || p.components()
+            .any(|c| matches!(c, std::path::Component::ParentDir))
+    {
+        return Err(invalid());
+    }
+    Ok(p)
+}
+fn host(s: &str) -> bool {
+    !s.is_empty()
+        && s.len() <= 253
+        && !s.starts_with('-')
+        && s.bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b".-:".contains(&b))
+}
+impl Profile {
+    pub fn load(p: &Path) -> io::Result<Self> {
+        let mut text = String::new();
+        regular(p, 8192, true)?
+            .take(8193)
+            .read_to_string(&mut text)?;
+        let mut t = text.parse::<toml::Table>().map_err(|_| invalid())?;
+        if t.remove("version").and_then(|v| v.as_integer()) != Some(1) {
+            return Err(invalid());
+        }
+        let mut string = |key: &str| {
+            t.remove(key)
+                .and_then(|v| v.as_str().map(str::to_owned))
+                .ok_or_else(invalid)
+        };
+        let hostname = string("host")?;
+        let file_host = string("file_host")?;
+        let identity = path(string("identity")?)?;
+        let public = path(string("public_key")?)?;
+        let known_hosts = path(string("known_hosts")?)?;
+        let mut port = |key: &str| {
+            t.remove(key)
+                .and_then(|v| v.as_integer())
+                .and_then(|v| u16::try_from(v).ok())
+                .filter(|n| *n > 0)
+                .ok_or_else(invalid)
+        };
+        let port = port("port")?;
+        let file_port = t
+            .remove("file_port")
+            .and_then(|v| v.as_integer())
+            .and_then(|v| u16::try_from(v).ok())
+            .filter(|n| *n > 0)
+            .ok_or_else(invalid)?;
+        if !t.is_empty() || !host(&hostname) || !host(&file_host) {
+            return Err(invalid());
+        }
+        regular(&identity, 65536, false)?;
+        regular(&known_hosts, 1024 * 1024, false)?;
+        let mut key = String::new();
+        regular(&public, 256, false)?.read_to_string(&mut key)?;
+        let mut fields = key.split_whitespace();
+        if fields.next() != Some("ssh-ed25519") {
+            return Err(invalid());
+        }
+        let public_key = fields.next().ok_or_else(invalid)?.to_owned();
+        let blob = STANDARD.decode(&public_key).map_err(|_| invalid())?;
+        if blob.len() != 51
+            || &blob[..19] != b"\0\0\0\x0bssh-ed25519\0\0\0\x20"
+            || STANDARD.encode(&blob) != public_key
+        {
+            return Err(invalid());
+        }
+        Ok(Self {
+            host: hostname,
+            port,
+            file_host,
+            file_port,
+            identity,
+            public_key,
+            known_hosts,
+        })
+    }
+    pub fn ssh(&self, files: bool) -> Command {
+        let mut c = Command::new("/usr/bin/ssh");
+        c.args([
+            "-F",
+            "/dev/null",
+            "-a",
+            "-x",
+            "-e",
+            "none",
+            "-o",
+            "BatchMode=yes",
+            "-o",
+            "StrictHostKeyChecking=yes",
+            "-o",
+            "IdentitiesOnly=yes",
+            "-o",
+            "ClearAllForwardings=yes",
+            "-o",
+            "PermitLocalCommand=no",
+            "-o",
+            "ControlMaster=no",
+            "-o",
+            "ControlPath=none",
+            "-o",
+            "ConnectTimeout=10",
+            "-o",
+            "LogLevel=ERROR",
+        ]);
+        c.arg("-o").arg(format!(
+            "UserKnownHostsFile=\"{}\"",
+            self.known_hosts.display()
+        ));
+        c.arg("-i")
+            .arg(&self.identity)
+            .arg("-p")
+            .arg(if files { self.file_port } else { self.port }.to_string());
+        if files {
+            c.args(["-T", "-l", "factionfiles", "-s"])
+                .arg(&self.file_host)
+                .arg("sftp");
+        } else {
+            c.args(["-tt", "-l", "factionterm"]).arg(&self.host);
+        }
+        c.env_clear()
+            .env("PATH", "/usr/bin:/bin")
+            .env("TERM", "xterm-256color");
+        if let Some(agent) = std::env::var_os("SSH_AUTH_SOCK") {
+            c.env("SSH_AUTH_SOCK", agent);
+        }
+        c
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn profiles_reject_remote_options_unknown_fields_and_loose_local_permissions() {
+        use std::os::unix::fs::{DirBuilderExt, PermissionsExt};
+        let root =
+            std::env::temp_dir().join(format!("faction-client-profile-{}", std::process::id()));
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&root)
+            .unwrap();
+        let key =
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        for name in ["identity", "identity.pub", "known_hosts"] {
+            std::fs::write(
+                root.join(name),
+                if name == "identity.pub" {
+                    key
+                } else {
+                    "fixture"
+                },
+            )
+            .unwrap();
+            std::fs::set_permissions(root.join(name), std::fs::Permissions::from_mode(0o600))
+                .unwrap();
+        }
+        let original = format!(
+            "version=1\nhost=\"example.invalid\"\nport=2222\nfile_host=\"example.invalid\"\nfile_port=2223\nidentity=\"{}/identity\"\npublic_key=\"{}/identity.pub\"\nknown_hosts=\"{}/known_hosts\"\n",
+            root.display(),
+            root.display(),
+            root.display()
+        );
+        let path = root.join("client.toml");
+        std::fs::write(&path, &original).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+        let profile = Profile::load(&path).unwrap();
+        let args = profile
+            .ssh(false)
+            .get_args()
+            .map(|s| s.to_string_lossy().into_owned())
+            .collect::<Vec<_>>();
+        assert!(args.contains(&"StrictHostKeyChecking=yes".into()));
+        assert!(args.contains(&"BatchMode=yes".into()));
+        assert!(args.contains(&"ClearAllForwardings=yes".into()));
+        assert!(args.contains(&"none".into()));
+        for bad in [
+            original.replace("example.invalid", "-oProxyCommand=bad"),
+            format!("{original}unknown=true\n"),
+            original.replace("port=2222", "port=0"),
+        ] {
+            std::fs::write(&path, bad).unwrap();
+            assert!(Profile::load(&path).is_err());
+        }
+        std::fs::write(&path, original).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(Profile::load(&path).is_err());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}

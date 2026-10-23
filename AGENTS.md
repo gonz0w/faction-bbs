@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 is merged with the reader and authenticated workshop; #137 adds opt-in availability/polite pages, with outside-chat shared visits and classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 is merged with the reader and authenticated workshop; #137 adds opt-in availability/polite pages across shared/local/worker visits with classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1552,8 +1552,8 @@ never cache eligible names/page text in generic notices. Page badge/header only
 on safe normal menu redraws; ? refreshes a waiting menu. No popups, bells, forced
 join or plaintext private messages over drafts/doors/probes. Current epoch/lease,
 both-party privacy and original queue/expiry/cooldown limits remain authoritative.
-Legacy local/worker rollback stays chat-only; #137 remains open for adapter parity
-and optional idle-notification UX. Preserve plain/classic primary SSH access.
+This first shared increment left local/worker rollback chat-only; the standalone
+parity increment below supersedes that scope. Preserve plain/classic access.
 
 Snapshot 42 sources/pre137-boardwide freezes 316 prior input files and the entire
 social result; all 55 historical identities stay fixed. Keep owner playground
@@ -1572,3 +1572,41 @@ match tested builds; no new package or schema. The owned clone/private inputs/
 vendor were removed and the saved preview remains off/intact. Keep #137 open
 for standalone parity and optional idle notifications; do not widen current
 software evidence into a capacity, physical-hardware or hardening claim.
+
+
+## Standalone visit parity (#137)
+
+Read docs/social-lounge.md, ADR 0071 and plan 0076. Local login/inherited workers
+now own one optional Visit lease while borrowing the existing Board. All member
+prompts use its heartbeat-aware input; raw menu/room/directory/full-screen loops
+tick the same lease. No new helper/thread, SQLite connection, IPC/listener or
+schema. Authentication and identity precede allocation. Short graphics/probe
+states stay bounded. Do not introduce thread-local/global Board pointers.
+
+Chat shares the visit lease and leaves all channels/reset receipts on return;
+only clean logout/ordinary error/EOF closes the visit. A drop guard covers unwinding;
+abrupt process/broker-watch termination still relies on the original stale expiry.
+The shared common Lounge re-fetches privacy/roster/signals on actions and resize,
+never at every idle poll. Keep current epochs/approval/limits, bodyless signals,
+safe menu redraw badges and quiet ? refresh in ANSI/plain. Never interrupt a
+composer/room prompt, force joins or add server-readable private mail. No new
+standalone file/game adapter is implied. #137 remains open for optional idle
+notification UX; hardening stays later.
+
+Snapshot 43 sources/pre137-standalone and the boardwide social baseline manifest
+freeze 326 previous input files and the complete unchanged boardwide record.
+All 56 historical identities stay fixed. Keep owner playground off/intact,
+normal eight sessions/5000-ms admission/two credential permits/three helpers/
+32-KiB output/five-second drain/8-KiB frames, and no new capacity/hardware claim.
+
+
+The standalone-social-netbsd record pins 320 matched native inputs/42 host
+harnesses, 351 Rust per OS, twelve actual registered/approved standalone controls
+per OS, 130 host Python and twenty complete-recovery controls per OS. Three
+parallel real waits over 66 seconds per OS cover menu/full-screen/plain input;
+unfinished input survives pages. Forced chat-part cleanup contention ends the
+visit rather than renewing retained joins. Guard 57 checks exact inputs, current
+signals, schema/default budgets and teardown; preserve the full offline/archive
+workflow. The 190 shared/core runtime source identities remain unchanged; earlier
+shared live observations stay separate. Owned clone/private inputs/vendor removed,
+saved owner preview off/intact. #137 remains open for optional idle notifications.

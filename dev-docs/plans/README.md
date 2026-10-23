@@ -72,3 +72,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0074: Opt-in social lounge](0074-social-lounge.md).
 
 - [0075: Board-wide shared social visits](0075-boardwide-social.md).
+
+- [0076: Standalone social parity](0076-standalone-social.md).

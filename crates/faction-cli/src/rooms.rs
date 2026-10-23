@@ -1,6 +1,6 @@
 //! ANSI named room picker; the normal numeric/plain workflows stay available.
 use crate::{Result, board_room_rows, terminal};
-use faction_core::{Board, Session};
+use faction_core::Session;
 use faction_terminal::{
     Decoder, Key, Theme,
     capabilities::Capabilities,
@@ -11,7 +11,7 @@ use std::{
     time::Instant,
 };
 pub(super) fn choose(
-    board: &mut Board,
+    board: &mut crate::Visit<'_>,
     session: &Session,
     theme: &Theme,
     caps: Capabilities,
@@ -22,6 +22,7 @@ pub(super) fn choose(
     let mut view = View::default();
     let mut redraw = true;
     loop {
+        board.tick()?;
         if redraw {
             let rows = board.rooms(session)?;
             let items = board_room_rows(&rows);

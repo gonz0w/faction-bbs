@@ -11,7 +11,9 @@ pub mod operator;
 mod pages;
 mod polls;
 mod rooms;
+mod social;
 mod terminal;
+mod visit;
 mod wall;
 mod writing;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
@@ -22,6 +24,7 @@ use std::{
     fs::File,
     io::{self, Read, Write},
 };
+use visit::Visit;
 use zeroize::Zeroizing;
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -39,14 +42,15 @@ pub fn line(prompt: &str, max: usize) -> Result<String> {
         max,
     )
 }
-fn subject_line(unicode: bool) -> Result<String> {
+fn subject_line(board: &mut Visit<'_>, unicode: bool) -> Result<String> {
     edited_line(
+        board,
         "Subject (blank for generated/reply default): ",
         faction_terminal::subject::BYTES,
         unicode,
     )
 }
-fn edited_line(prompt: &str, limit: usize, unicode: bool) -> Result<String> {
+fn edited_line(board: &mut Visit<'_>, prompt: &str, limit: usize, unicode: bool) -> Result<String> {
     use faction_terminal::subject::{self, Edit};
     let tty = tty()?;
     let saved = termios::tcgetattr(&tty)?;
@@ -72,9 +76,13 @@ fn edited_line(prompt: &str, limit: usize, unicode: bool) -> Result<String> {
     let _restore = Hidden { tty: &tty, saved };
     print!("{prompt}");
     io::stdout().flush()?;
-    let mut source = TimedInput {
+    let source = TimedInput {
         file: tty.try_clone()?,
         deadline: Instant::now() + Duration::from_secs(120),
+    };
+    let mut source = visit::Input {
+        visit: board,
+        source,
     };
     let mut input = Vec::with_capacity(limit);
     loop {
@@ -228,8 +236,8 @@ fn safe(value: &str) -> String {
     }
     output
 }
-fn number(prompt: &str) -> Result<i64> {
-    let n: i64 = line(prompt, 20)?.parse()?;
+fn number(board: &mut Visit<'_>, prompt: &str) -> Result<i64> {
+    let n: i64 = board.line(prompt, 20)?.parse()?;
     if n < 1 {
         return Err(invalid("positive ID required"));
     }
@@ -245,7 +253,7 @@ fn board_room_rows(rows: &[faction_core::Room]) -> Vec<faction_terminal::rooms::
         })
         .collect()
 }
-fn show_rooms(board: &mut Board, s: &Session) -> Result<()> {
+fn show_rooms(board: &mut Visit<'_>, s: &Session) -> Result<()> {
     for r in board.rooms(s)? {
         println!(
             "{}  {} - {} ({} unread)",
@@ -259,18 +267,18 @@ fn show_rooms(board: &mut Board, s: &Session) -> Result<()> {
     Ok(())
 }
 fn read_room(
-    board: &mut Board,
+    board: &mut Visit<'_>,
     s: &Session,
     new_only: bool,
     theme: &Theme,
     ansi: bool,
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
-    let room = number("Room ID: ")?;
+    let room = number(board, "Room ID: ")?;
     read_room_at(board, s, room, new_only, theme, ansi, caps)
 }
 fn read_room_at(
-    board: &mut Board,
+    board: &mut Visit<'_>,
     s: &Session,
     room: i64,
     new_only: bool,
@@ -332,24 +340,24 @@ fn read_room_at(
             offset = 0;
             board.mark_read(s, room, after)?;
         }
-        if !line("More? [y/N]: ", 8)?.eq_ignore_ascii_case("y") {
+        if !board.line("More? [y/N]: ", 8)?.eq_ignore_ascii_case("y") {
             break;
         }
     }
     Ok(())
 }
 fn post(
-    board: &mut Board,
+    board: &mut Visit<'_>,
     s: &Session,
     theme: &Theme,
     ansi: bool,
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
-    let room = number("Room ID: ")?;
+    let room = number(board, "Room ID: ")?;
     post_in_room(board, s, room, theme, ansi, caps)
 }
 fn post_in_room(
-    board: &mut Board,
+    board: &mut Visit<'_>,
     s: &Session,
     room: i64,
     theme: &Theme,
@@ -357,12 +365,13 @@ fn post_in_room(
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
     if let Some(saved) = board.room_draft(s, room)? {
-        match line(
-            "Saved room draft: [R]esume [D]elete and start new [Q]uit: ",
-            1,
-        )?
-        .to_ascii_lowercase()
-        .as_str()
+        match board
+            .line(
+                "Saved room draft: [R]esume [D]elete and start new [Q]uit: ",
+                1,
+            )?
+            .to_ascii_lowercase()
+            .as_str()
         {
             "r" => {
                 let subject = saved.subject.clone();
@@ -402,7 +411,7 @@ fn post_in_room(
     let unicode = caps.unicode;
     // Recheck the selected ID before showing the composer too.
     board.unread_cursor(s, room)?;
-    let parent = line("Reply to post ID (blank for new message): ", 20)?;
+    let parent = board.line("Reply to post ID (blank for new message): ", 20)?;
     let reply = if parent.is_empty() {
         None
     } else {
@@ -419,9 +428,9 @@ fn post_in_room(
             )
         );
     }
-    let subject = subject_line(unicode)?;
+    let subject = subject_line(board, unicode)?;
     println!("Enter /edit for the multiline writing desk with preview/send/cancel.");
-    let body = line("Message (one line, up to 1024 bytes): ", POST_BYTES)?;
+    let body = board.line("Message (one line, up to 1024 bytes): ", POST_BYTES)?;
     let body = if body == "/edit" {
         match writing::run(
             board,
@@ -456,7 +465,7 @@ fn post_in_room(
     )
 }
 fn send_post(
-    board: &mut Board,
+    board: &mut Visit<'_>,
     s: &Session,
     room: i64,
     reply: Option<i64>,
@@ -481,7 +490,8 @@ fn send_post(
                 return Ok(());
             }
             Err(Error::Busy) => {
-                if !line("Database busy. Retry this same submission? [y/N]: ", 8)?
+                if !board
+                    .line("Database busy. Retry this same submission? [y/N]: ", 8)?
                     .eq_ignore_ascii_case("y")
                 {
                     return Ok(());
@@ -495,7 +505,7 @@ fn terminal_settings(
     last: &mut Option<std::time::Instant>,
     caps: &mut faction_terminal::capabilities::Capabilities,
     ansi: bool,
-    board: &mut Board,
+    board: &mut Visit<'_>,
     session: &Session,
 ) -> Result<()> {
     let mut image: Option<terminal::Graphics> = None;
@@ -513,7 +523,7 @@ fn terminal_settings(
             caps.screen(columns, rows, ansi && terminal::capable())
         };
         print!("{}", caps.frame(&screen, ansi && terminal::capable()));
-        let choice = line("", 1)?;
+        let choice = board.line("", 1)?;
         if choice.eq_ignore_ascii_case("d") {
             return Ok(());
         }
@@ -549,8 +559,8 @@ fn terminal_settings(
         }
     }
 }
-fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
-    let command = line(
+fn sysop(board: &mut Visit<'_>, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
+    let command = board.line(
         "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [B]find [C]reate room: ",
         8,
     )?
@@ -573,7 +583,7 @@ fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()
             println!("First 100 accounts; approval by exact handle works beyond this list.");
         }
         "a" | "v" => {
-            let name = line("Member handle: ", 24)?;
+            let name = board.line("Member handle: ", 24)?;
             board.set_status(
                 s,
                 &name,
@@ -586,8 +596,8 @@ fn sysop(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()
             println!("Status updated; previous sessions expired.");
         }
         "c" => {
-            let slug = line("Room slug: ", 32)?;
-            let title = line("Room title: ", 64)?;
+            let slug = board.line("Room slug: ", 32)?;
+            let title = board.line("Room title: ", 64)?;
             let id = board.create_room(s, &slug, &title)?;
             println!("Created room #{id}.");
         }
@@ -715,121 +725,146 @@ fn menu_with_library(
         }
         Ok(board.gathering_reminder(s)?)
     })?;
-    println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
-    loop {
-        let member = board.whoami(s)?;
-        if member.status != Status::Approved {
-            return Err(Error::Denied.into());
-        }
-        let wall_theme = faction_wall::menu_theme(board, s, theme)?;
-        let theme = wall_theme.as_ref().unwrap_or(theme);
-        let page_theme = faction_pages::menu_theme(board, s, theme)?;
-        let theme = page_theme.as_ref().unwrap_or(theme);
-        let gathering_theme = faction_gatherings::menu_theme(board, s, theme)?;
-        let theme = gathering_theme.as_ref().unwrap_or(theme);
-        let poll_theme = faction_polls::menu_theme(board, s, theme)?;
-        let theme = poll_theme.as_ref().unwrap_or(theme);
-        let catchup_theme = faction_catchup::menu_theme(board, s, theme)?;
-        let theme = catchup_theme.as_ref().unwrap_or(theme);
-        let find_theme = faction_find::menu_theme(board, s, theme)?;
-        let theme = find_theme.as_ref().unwrap_or(theme);
-        let selected = if ansi {
-            terminal::select(theme, member.role == Role::Sysop, caps)?
-        } else {
-            None
-        };
-        let used_ansi = selected.is_some();
-        let action = if let Some(action) = selected {
-            Some(action)
-        } else {
-            print!("{}", theme.plain_menu(member.role == Role::Sysop));
-            let command = line("Command (then Enter): ", 8)?;
-            if command.len() == 1 {
-                theme.hotkey(command.as_bytes()[0], member.role == Role::Sysop)
+    let mut visit = Visit::new(board);
+    let outcome = (|| -> Result<()> {
+        let board = &mut visit;
+        println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
+        loop {
+            let member = board.whoami(s)?;
+            if member.status != Status::Approved {
+                return Err(Error::Denied.into());
+            }
+            let wall_theme = faction_wall::menu_theme(board, s, theme)?;
+            let theme = wall_theme.as_ref().unwrap_or(theme);
+            let page_theme = faction_pages::menu_theme(board, s, theme)?;
+            let theme = page_theme.as_ref().unwrap_or(theme);
+            let social_theme = board.menu_theme(s, theme)?;
+            let theme = social_theme.as_ref().unwrap_or(theme);
+            let gathering_theme = faction_gatherings::menu_theme(board, s, theme)?;
+            let theme = gathering_theme.as_ref().unwrap_or(theme);
+            let poll_theme = faction_polls::menu_theme(board, s, theme)?;
+            let theme = poll_theme.as_ref().unwrap_or(theme);
+            let catchup_theme = faction_catchup::menu_theme(board, s, theme)?;
+            let theme = catchup_theme.as_ref().unwrap_or(theme);
+            let find_theme = faction_find::menu_theme(board, s, theme)?;
+            let theme = find_theme.as_ref().unwrap_or(theme);
+            let selected = if ansi {
+                terminal::select(board, theme, member.role == Role::Sysop, caps)?
             } else {
-                None
-            }
-        };
-        if let Some(action) = action {
-            let title = match action {
-                Action::Rooms => "Rooms",
-                Action::New | Action::History => "Read messages",
-                Action::Post => "Post a message",
-                Action::Sysop => "Sysop controls",
-                Action::Chat => "Local chat",
-                Action::Lounge => "Social lounge",
-                Action::Doors => "Doors",
-                Action::Files => "File areas",
-                Action::Quit => "Disconnect",
-                Action::Terminal => "Terminal settings",
-                Action::Contacts => "Other BBSes",
-                Action::Gallery => "Art gallery",
-                Action::Library => "Library shelves",
-                Action::Wall => "Community wall",
-                Action::MemberPages => "Member pages",
-                Action::Gatherings => "Gatherings",
-                Action::Polls => "Polls",
-                Action::Catchup => "Catch up",
-                Action::Find => "Find & save",
+                terminal::Selection::Plain
             };
-            print!("{}", caps.section(theme, title, used_ansi));
-        }
-        let mut skip_pause = matches!(
-            action,
-            Some(Action::Contacts | Action::Gallery | Action::Library)
-        );
-        let result = match action {
-            Some(Action::Quit) => {
-                println!("{}\nLogged out.", theme.logout());
-                return Ok(());
+            if matches!(selected, terminal::Selection::Refresh) {
+                continue;
             }
-            Some(Action::Contacts) => directory::run(board, s, theme, directory, used_ansi),
-            Some(Action::Gallery) => gallery::run(board, s, theme, gallery, used_ansi),
-            Some(Action::Library) => match library::run(board, s, theme, library, used_ansi)? {
-                faction_library::Outcome::Room(room) => {
-                    skip_pause = false;
-                    read_room_at(board, s, room, true, theme, used_ansi, caps)
+            let used_ansi = matches!(selected, terminal::Selection::Action(_));
+            let action = if let terminal::Selection::Action(action) = selected {
+                Some(action)
+            } else {
+                print!("{}", theme.plain_menu(member.role == Role::Sysop));
+                let command = board.line("Command (then Enter): ", 8)?;
+                if command == "?" {
+                    continue;
                 }
-                faction_library::Outcome::File(_) => {
-                    skip_pause = false;
-                    println!("Transfers require the shared SSH/native Files service.");
-                    Ok(())
+                if command.len() == 1 {
+                    theme.hotkey(command.as_bytes()[0], member.role == Role::Sysop)
+                } else {
+                    None
                 }
-                _ => Ok(()),
-            },
-            Some(Action::Rooms) if used_ansi => match rooms::choose(board, s, theme, caps)? {
-                faction_terminal::rooms::Choice::Read { room, new_only } => {
-                    read_room_at(board, s, room, new_only, theme, used_ansi, caps)
-                }
-                faction_terminal::rooms::Choice::Post(room) => {
-                    print!(
-                        "{}",
-                        caps.section(theme, &format!("Post in room #{room}"), used_ansi)
-                    );
-                    post_in_room(board, s, room, theme, used_ansi, caps)
-                }
-                _ => {
-                    skip_pause = true;
-                    Ok(())
-                }
-            },
-            Some(Action::Rooms) => show_rooms(board, s),
-            Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
-            Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
-            Some(Action::Post) => post(board, s, theme, used_ansi, caps),
-            Some(Action::Terminal) => {
-                terminal_settings(&mut last_graphics, &mut caps, ansi, board, s)
+            };
+            if let Some(action) = action {
+                let title = match action {
+                    Action::Rooms => "Rooms",
+                    Action::New | Action::History => "Read messages",
+                    Action::Post => "Post a message",
+                    Action::Sysop => "Sysop controls",
+                    Action::Chat => "Local chat",
+                    Action::Lounge => "Social lounge",
+                    Action::Doors => "Doors",
+                    Action::Files => "File areas",
+                    Action::Quit => "Disconnect",
+                    Action::Terminal => "Terminal settings",
+                    Action::Contacts => "Other BBSes",
+                    Action::Gallery => "Art gallery",
+                    Action::Library => "Library shelves",
+                    Action::Wall => "Community wall",
+                    Action::MemberPages => "Member pages",
+                    Action::Gatherings => "Gatherings",
+                    Action::Polls => "Polls",
+                    Action::Catchup => "Catch up",
+                    Action::Find => "Find & save",
+                };
+                print!("{}", caps.section(theme, title, used_ansi));
             }
-            Some(Action::Sysop) => sysop(board, s, theme, used_ansi),
-            Some(Action::Wall) => wall::run(board, s, theme, used_ansi, false),
-            Some(Action::MemberPages) => pages::run(board, s, theme, used_ansi, false),
-            Some(Action::Find) => find::run(board, s, theme, used_ansi, false, caps),
-            Some(Action::Catchup) => match catchup::run(board, s, theme, used_ansi, false)? {
-                faction_catchup::Outcome::Open(faction_core::CatchupTarget::Room(room)) => {
-                    read_room_at(board, s, room, true, theme, used_ansi, caps)
+            let mut skip_pause = matches!(
+                action,
+                Some(Action::Contacts | Action::Gallery | Action::Library | Action::Lounge)
+            );
+            let result = match action {
+                Some(Action::Quit) => {
+                    println!("{}\nLogged out.", theme.logout());
+                    return Ok(());
                 }
-                faction_catchup::Outcome::Open(faction_core::CatchupTarget::Gathering(id)) => {
-                    match gatherings::run_event(board, s, theme, used_ansi, id)? {
+                Some(Action::Contacts) => directory::run(board, s, theme, directory, used_ansi),
+                Some(Action::Gallery) => gallery::run(board, s, theme, gallery, used_ansi),
+                Some(Action::Library) => match library::run(board, s, theme, library, used_ansi)? {
+                    faction_library::Outcome::Room(room) => {
+                        skip_pause = false;
+                        read_room_at(board, s, room, true, theme, used_ansi, caps)
+                    }
+                    faction_library::Outcome::File(_) => {
+                        skip_pause = false;
+                        println!("Transfers require the shared SSH/native Files service.");
+                        Ok(())
+                    }
+                    _ => Ok(()),
+                },
+                Some(Action::Rooms) if used_ansi => match rooms::choose(board, s, theme, caps)? {
+                    faction_terminal::rooms::Choice::Read { room, new_only } => {
+                        read_room_at(board, s, room, new_only, theme, used_ansi, caps)
+                    }
+                    faction_terminal::rooms::Choice::Post(room) => {
+                        print!(
+                            "{}",
+                            caps.section(theme, &format!("Post in room #{room}"), used_ansi)
+                        );
+                        post_in_room(board, s, room, theme, used_ansi, caps)
+                    }
+                    _ => {
+                        skip_pause = true;
+                        Ok(())
+                    }
+                },
+                Some(Action::Rooms) => show_rooms(board, s),
+                Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
+                Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
+                Some(Action::Post) => post(board, s, theme, used_ansi, caps),
+                Some(Action::Terminal) => {
+                    terminal_settings(&mut last_graphics, &mut caps, ansi, board, s)
+                }
+                Some(Action::Sysop) => sysop(board, s, theme, used_ansi),
+                Some(Action::Wall) => wall::run(board, s, theme, used_ansi, false),
+                Some(Action::MemberPages) => pages::run(board, s, theme, used_ansi, false),
+                Some(Action::Find) => find::run(board, s, theme, used_ansi, false, caps),
+                Some(Action::Catchup) => match catchup::run(board, s, theme, used_ansi, false)? {
+                    faction_catchup::Outcome::Open(faction_core::CatchupTarget::Room(room)) => {
+                        read_room_at(board, s, room, true, theme, used_ansi, caps)
+                    }
+                    faction_catchup::Outcome::Open(faction_core::CatchupTarget::Gathering(id)) => {
+                        match gatherings::run_event(board, s, theme, used_ansi, id)? {
+                            faction_gatherings::Outcome::Join(
+                                faction_core::GatheringPlace::Room(room),
+                            ) => read_room_at(board, s, room, false, theme, used_ansi, caps),
+                            faction_gatherings::Outcome::Join(
+                                faction_core::GatheringPlace::Channel(channel),
+                            ) => chat::run_at(board, s, ansi, &channel),
+                            _ => Ok(()),
+                        }
+                    }
+                    _ => Ok(()),
+                },
+                Some(Action::Polls) => polls::run(board, s, theme, used_ansi, false),
+                Some(Action::Gatherings) => {
+                    match gatherings::run(board, s, theme, used_ansi, false)? {
                         faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Room(
                             room,
                         )) => read_room_at(board, s, room, false, theme, used_ansi, caps),
@@ -839,44 +874,38 @@ fn menu_with_library(
                         _ => Ok(()),
                     }
                 }
-                _ => Ok(()),
-            },
-            Some(Action::Polls) => polls::run(board, s, theme, used_ansi, false),
-            Some(Action::Gatherings) => match gatherings::run(board, s, theme, used_ansi, false)? {
-                faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Room(room)) => {
-                    read_room_at(board, s, room, false, theme, used_ansi, caps)
+                Some(Action::Chat) => chat::run(board, s, ansi),
+                Some(Action::Lounge) => social::run(board, s, theme, used_ansi),
+                _ => {
+                    println!("Unknown or unavailable command.");
+                    Ok(())
                 }
-                faction_gatherings::Outcome::Join(faction_core::GatheringPlace::Channel(
-                    channel,
-                )) => chat::run_at(board, s, ansi, &channel),
-                _ => Ok(()),
-            },
-            Some(Action::Chat) => chat::run(board, s, ansi),
-            _ => {
-                println!("Unknown or unavailable command.");
-                Ok(())
+            };
+            if let Err(e) = result {
+                if matches!(
+                    e.downcast_ref::<Error>(),
+                    Some(
+                        Error::Invalid(_)
+                            | Error::NotFound
+                            | Error::RequestConflict
+                            | Error::Busy
+                            | Error::Storage(_)
+                    )
+                ) {
+                    println!("Action failed: {e}");
+                } else {
+                    return Err(e);
+                }
             }
-        };
-        if let Err(e) = result {
-            if matches!(
-                e.downcast_ref::<Error>(),
-                Some(
-                    Error::Invalid(_)
-                        | Error::NotFound
-                        | Error::RequestConflict
-                        | Error::Busy
-                        | Error::Storage(_)
-                )
-            ) {
-                println!("Action failed: {e}");
-            } else {
-                return Err(e);
+            if used_ansi && !skip_pause {
+                board.line("Press Enter to return to menu: ", 1)?;
             }
         }
-        if used_ansi && !skip_pause {
-            line("Press Enter to return to menu: ", 1)?;
-        }
-    }
+    })();
+    let closed = visit.close();
+    outcome?;
+    closed?;
+    Ok(())
 }
 #[cfg(test)]
 mod tests {

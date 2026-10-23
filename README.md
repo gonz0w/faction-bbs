@@ -150,8 +150,9 @@ available/busy/away status and polite bodyless invitations across local chat
 channels, with accept/decline, mute, blocks, UTC quiet hours and opted-in sysop
 paging. Plain/classic commands remain. In the shared SSH/native service, availability
 now survives rooms, editing and doors; the new Lounge menu checks invitations
-and marks current signals during safe menu redraws. Standalone rollback remains
-chat-only; idle popups are not added. Take a stopped complete backup before
+and marks current signals during safe menu redraws. Local login and inherited
+workers now share the visit lifetime, including plain prompts and full-screen
+editing. Classic fallback remains; idle popups are not added. Take a stopped complete backup before
 the forward-only schema-17 upgrade.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each

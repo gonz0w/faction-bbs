@@ -175,16 +175,22 @@ pub fn identity(
 }
 /// None requests the canonical line-mode fallback. Drop restores terminal state
 /// and flushes pending typeahead before editor/sysop prompts get a new context.
-pub fn select(
+pub(super) enum Selection {
+    Action(Action),
+    Plain,
+    Refresh,
+}
+pub(super) fn select(
+    board: &mut crate::Visit<'_>,
     theme: &Theme,
     sysop: bool,
     caps: faction_terminal::capabilities::Capabilities,
-) -> Result<Option<Action>> {
+) -> Result<Selection> {
     if !capable() {
-        return Ok(None);
+        return Ok(Selection::Plain);
     }
     let Some(dimensions @ (40..=240, 18..=100)) = size() else {
-        return Ok(None);
+        return Ok(Selection::Plain);
     };
     let mut raw = Raw::open()?;
     raw.sync = caps.synchronized;
@@ -198,8 +204,9 @@ pub fn select(
     output.flush()?;
     let stdin = io::stdin();
     loop {
+        board.tick()?;
         if size() != Some(dimensions) {
-            return Ok(None);
+            return Ok(Selection::Plain);
         }
         // Poll the actual stdin TTY, not /dev/tty (Darwin cannot poll that alias).
         let mut fds = [PollFd::new(&stdin, PollFlags::IN)];
@@ -223,9 +230,12 @@ pub fn select(
         let mut byte = [0];
         (&raw.tty).read_exact(&mut byte)?;
         if let Some(key) = decoder.feed(byte[0], Instant::now()) {
+            if key == faction_terminal::Key::Hotkey(b'?') {
+                return Ok(Selection::Refresh);
+            }
             let previous = menu.focus();
             if let Some(action) = menu.feed(key) {
-                return Ok(Some(action));
+                return Ok(Selection::Action(action));
             }
             output.write_all(caps.frame(&menu.redraw(previous), true).as_bytes())?;
             output.flush()?;
