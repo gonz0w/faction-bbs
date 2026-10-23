@@ -26,6 +26,10 @@ subject/body/room/author search, current-permission snippets, exact read-only so
 views, own bookmarks and deliberate paged reference exports. No stored query
 history, private-mail indexing or extra unread ledger is introduced.
 
+Optional [curated art galleries](scene-gallery.md) give each board original/licensed
+ANSI/ASCII exhibits, artist notes, text editions and optional current-permission
+file links, using owner-reviewed startup packs and the canonical cell importer.
+
 ## Confirmed requirements
 
 | Area | Requirement |

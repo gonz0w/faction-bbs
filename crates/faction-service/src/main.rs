@@ -12,6 +12,7 @@ mod door_ui;
 mod doors;
 mod file_ui;
 mod find_ui;
+mod gallery_ui;
 mod gatherings_ui;
 mod native_files;
 mod operator;
@@ -60,6 +61,7 @@ enum State {
     Menu,
     Terminal,
     Directory(faction_terminal::directory::View),
+    Gallery(Box<faction_gallery::Desk>),
     RoomBrowse(faction_terminal::rooms::View),
     GraphicsProbe(faction_terminal::graphics::Probe),
     Graphics(usize, Instant),
@@ -221,6 +223,7 @@ struct Client {
     files_enabled: bool,
     native: Option<native_files::Native>,
     directory: Option<Arc<faction_terminal::directory::Directory>>,
+    gallery: Option<Arc<faction_gallery::Catalog>>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -307,6 +310,7 @@ impl Client {
             files_enabled: false,
             native: None,
             directory: None,
+            gallery: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -453,6 +457,15 @@ fn run() -> Result<()> {
             config.doors_uid.is_some() || !config.classic_games.is_empty(),
         )
         .map_err(|_| denied())?;
+    let gallery = config
+        .gallery
+        .as_ref()
+        .map(|p| faction_gallery::Catalog::load(p).map(Arc::new))
+        .transpose()
+        .map_err(|_| denied())?;
+    themes
+        .set_gallery_enabled(gallery.as_ref().is_some_and(|c| c.enabled()))
+        .map_err(|_| denied())?;
     let directory = config
         .directory
         .as_ref()
@@ -597,6 +610,7 @@ fn run() -> Result<()> {
             if let Ok(mut client) = Client::new(generation, control, tty, &term, ansi) {
                 client.files_enabled = config.files_uid.is_some();
                 client.directory = directory.as_ref().map(Arc::clone);
+                client.gallery = gallery.as_ref().map(Arc::clone);
                 client.doors_uid = config.doors_uid;
                 client.classic_games = Some(Arc::clone(&classic_games));
                 clients.push(client);

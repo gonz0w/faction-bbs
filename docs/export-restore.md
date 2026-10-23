@@ -199,3 +199,11 @@ query history is added. Post deletion cascades references. Member-side copyable
 paged reference exports are deliberately narrower than this owner recovery format.
 Old schema-2..13 exports remain exact/read-only valid. Stop/drain, verify a complete
 pre-upgrade backup and use matching-binary fresh-path rollback.
+
+
+## Curated gallery packs
+
+See [the gallery guide](scene-gallery.md) for the optional owner-managed startup
+pack, current-approval file links, canonical ANSI/text editions and rights review.
+Gallery packs are external host configuration, preserved separately from database
+exports/bundles. No new schema, public service or raw uploaded graphics authority.

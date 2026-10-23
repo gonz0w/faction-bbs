@@ -379,3 +379,10 @@ The integrated native client now exposes its local offline vault from the privat
 board picker between visits, explicitly configured by the member. Encrypted
 network inbox/send/roaming/attachments remain #90/#91/#88; no server unlock route.
 The owner-tested private playground is stopped and retained for later visits.
+
+
+The #144 curated terminal gallery batch adds owner-reviewed original/licensed
+exhibits using existing canonical cells and classic text editions. See
+[the guide](../docs/scene-gallery.md) and [plan 0068](plans/0068-scene-gallery.md).
+Further gallery submissions/live curation remain optional follow-on work; retain
+ordinary product usability ahead of deferred hardening.

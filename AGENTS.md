@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 now adds discussion search/bookmarks, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 adds curated terminal exhibits, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1332,3 +1332,33 @@ acknowledgment pass. Final writer/seed fixtures expect schema 14. Keep all 48 sa
 guards and preserve these new actual inputs/whole result before future edits.
 Owned VM/cache/test credentials removed; saved playground off and preserved.
 No new capacity, hardening, automatic query retention or server-mail-search claim.
+
+
+## Curated terminal exhibits
+
+Read docs/scene-gallery.md, plan 0068 and ADR 0063. Gallery packs are immutable
+owner/root startup configuration, not DB/member uploads. One shared Catalog Arc
+and optional small Desk; host-only A action, theme arrangement never enables it.
+Mandatory artist/license/provenance/original-or-licensed/display permission and
+explicit ASCII editions. Separate download permission/token; current local Files
+resolution on every link frame, no filename/token when unavailable. Do not put
+private tokens/names in descriptive metadata. Stop/drain/review/restart to remove
+works or disable formats. Preserve external packs/rights separately from DB backups.
+
+Keep eight works/four exhibits, 32-KiB manifest, 64-KiB per/256-KiB aggregate art,
+64 canonical 80x16 pages, 7168 encoded bytes/page, 8-KiB per/32-KiB total fallback,
+128 lines/72 columns, four cards/eight text rows/32 back offsets and <=8-KiB frames.
+No raw art, bitmap/Kitty authority, new registry dependency/helper/listener/schema,
+room unread or mail-state mutation. Schema remains 14. Keep resource defaults,
+owner playground off and hardening later. Snapshot 35/discussion-baseline-manifest
+freezes 258 prior actual inputs and the whole #165 result before edits; preserve
+all 48 historical guards and original hashes. Validate only an owned software VM.
+
+
+`gallery-netbsd` pins 269 matched native inputs/25 harnesses/thirteen unchanged
+access/credential/dependency inputs. Broker fixed gallery argv and service config
+are deliberately excluded from the unchanged group. Validation: 302 Rust per OS,
+129 Python, eight gallery PTYs per OS, eleven real SSH/native/plain and seventeen
+recovery controls per OS (native distinct UID CLI), plus prior terminal/social/
+writer/vault regressions. Keep guard 49 and preserve this actual input/result set
+before later edits. Owned clone/cache removed; saved owner preview stays off.

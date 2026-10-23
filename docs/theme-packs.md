@@ -455,3 +455,11 @@ key/label/description. The enabled host inserts B otherwise; disabled capability
 stays unavailable. Sysop S/B sets heading/cards/compact. Snippets/source views
 inherit trusted presentation and existing classic/Unicode rules; no raw member
 control becomes theme authority.
+
+
+## Curated gallery packs
+
+See [the gallery guide](scene-gallery.md) for the optional owner-managed startup
+pack, current-approval file links, canonical ANSI/text editions and rights review.
+Gallery packs are external host configuration, preserved separately from database
+exports/bundles. No new schema, public service or raw uploaded graphics authority.

@@ -245,6 +245,7 @@ impl Client {
             Action::Quit => "Disconnect",
             Action::Terminal => "Terminal settings",
             Action::Contacts => "Other BBSes",
+            Action::Gallery => "Art gallery",
             Action::Wall => "Community wall",
             Action::MemberPages => "Member pages",
             Action::Gatherings => "Gatherings",
@@ -254,6 +255,10 @@ impl Client {
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Gallery => {
+                self.state = State::Gallery(Box::default());
+                self.gallery_show(board, theme)?;
+            }
             Action::Find => {
                 self.state = State::Find(Box::default());
                 self.find_show(board, theme)?;
@@ -800,6 +805,27 @@ impl Client {
                 self.state = State::Catchup(desk);
                 self.catchup_show(board, theme)?;
             }
+            State::Gallery(mut desk) => {
+                match desk.feed(
+                    text,
+                    board,
+                    self.session()?,
+                    self.gallery.as_ref().ok_or(Error::Denied)?,
+                ) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Gallery(desk);
+                self.gallery_show(board, theme)?;
+            }
             State::Find(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -1144,6 +1170,17 @@ impl Client {
             termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
                 .map_err(|_| Error::Invalid("gathering input flush"))?;
             return self.gatherings_show(board, theme);
+        }
+        if matches!(self.state, State::Gallery(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("member-gallery input flush"))?;
+            return self.gallery_show(board, theme);
         }
         if matches!(self.state, State::Find(_))
             && self.size() != self.dimensions
@@ -1531,6 +1568,7 @@ impl Client {
                     | State::Polls(_)
                     | State::Catchup(_)
                     | State::Find(_)
+                    | State::Gallery(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
                 let limit = if matches!(
@@ -1541,6 +1579,7 @@ impl Client {
                         | State::Polls(_)
                         | State::Catchup(_)
                         | State::Find(_)
+                        | State::Gallery(_)
                 ) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
@@ -1560,6 +1599,7 @@ impl Client {
                                 | State::Polls(_)
                                 | State::Catchup(_)
                                 | State::Find(_)
+                                | State::Gallery(_)
                         ),
                     limit,
                 )

@@ -52,3 +52,11 @@ group/user policy. Its frontend alone uses setuid root and needs independent
 review before production adoption. Setup, host policy, loader/runtime trust and
 rollback are explicit. Defaults/core authorization/credentials/resource ceilings
 are unchanged; broader same-UID/process/all-family/admission threats stay open.
+
+
+## Curated gallery packs
+
+See [the gallery guide](scene-gallery.md) for the optional owner-managed startup
+pack, current-approval file links, canonical ANSI/text editions and rights review.
+Gallery packs are external host configuration, preserved separately from database
+exports/bundles. No new schema, public service or raw uploaded graphics authority.
