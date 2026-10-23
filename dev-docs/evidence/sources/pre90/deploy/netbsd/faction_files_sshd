@@ -1,0 +1,22 @@
+#!/bin/sh
+# PROVIDE: faction_files_sshd
+# REQUIRE: faction_broker LOGIN
+# KEYWORD: shutdown
+. /etc/rc.subr
+name="faction_files_sshd"
+rcvar=$name
+command="/usr/sbin/sshd"
+pidfile="/var/run/faction-files-sshd.pid"
+command_args="-E /var/log/faction-files.log -f /etc/ssh/faction/files_sshd_config"
+required_files="/etc/faction/files.toml /etc/ssh/faction/files_sshd_config /usr/local/libexec/faction-files"
+start_precmd="faction_files_check"
+faction_files_check()
+{
+    # The owner holds its existing PID lock before binding the policy endpoint.
+    [ -n "$(check_pidfile /var/run/faction/terminal.pid /usr/local/libexec/faction-service)" ] || return 1
+    [ -S /var/run/faction/file-policy.sock ] || return 1
+    /usr/sbin/sshd -t -f /etc/ssh/faction/files_sshd_config
+}
+load_rc_config "$name"
+: ${faction_files_sshd:=NO}
+run_rc_command "$1"

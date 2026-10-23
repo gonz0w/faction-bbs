@@ -35,3 +35,34 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Original LORD on NetBSD](original-lord.md) — unchanged original DOS game, private software proof and limits.
 
 - [File areas and restricted SFTP](file-areas.md) and [native-client encrypted mail/home identities](private-mail.md).
+
+- [Later-phase hardening](later-phase-hardening.md) — signing, hardened VM, containment, storage and independent verification backlog.
+- [Room reading](room-reading.md) — wrapped chronological messages, reply context, ANSI transitions and complete-message unread behavior.
+- [Discussion articles and news connections](discussion-articles-and-news.md) — planned Netnews room articles and optional NNTP peers/providers; IRC/XMPP remain separate.
+- [Modern sysop console and communications stories](modern-sysop-and-communications.md) — planned local dashboard, capability-aware UI, host operations and protocol integration.
+
+- [Persistent post metadata](post-metadata.md) — schema-6 subject/date/ID semantics and stopped-service upgrade/rollback.
+
+- [Authored subjects and local room articles](room-articles.md)
+
+- [Article profile v2 and original INN validation](article-profile.md)
+
+- [Original Nightwire ANSI artwork and login screens](artwork-nightwire.md).
+
+- [Nightwire terminal compatibility](artwork-terminal-compatibility.md): real-emulator cell placement, viewport requirements and classic recovery.
+
+- [Local sysop console](sysop-console.md): OS-authorized read-only BBS status, live CPU/RAM/network graphs, serial-login validation and classic/ANSI operator panels.
+
+- [Backup checks and Recovery panel](backup-checks.md): explicit complete-bundle verification and historical private check receipts.
+
+- [Contacts / Other BBSes](other-boards.md): curated local listings and safe SSH connection cards for approved members.
+
+- [Native board launcher](board-launcher.md): member-owned profiles, deliberate visits, independent login and local return.
+
+- [Named room browser](room-browser.md): arrows/hotkeys, unread navigation and selected-room reading/posting.
+
+- [Room writing desk](writing-desk.md): multiline/full-screen editing, classic fallback and explicit saved room checkpoints.
+
+- [Local community wall](community-wall.md) — short ASCII signals, paging, moderation and optional weekly archives.
+
+- [Local member pages and dated .plan updates](member-pages.md) — optional profiles, explicit visibility and local moderation.

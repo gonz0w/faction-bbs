@@ -42,7 +42,7 @@ to a remote member entry point or treat an export as authority to publish data.
 - Treat terminal controls, user messages, filenames, uploads, imported records, directory submissions, and federated traffic as untrusted input.
 - Prevent terminal escape injection, path traversal, resource exhaustion, unauthorized file access, and approval bypasses.
 - Keep legacy doors and extensions optional and isolated, with bounded filesystem/network/process privileges, resource limits, and reliable session cleanup.
-- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, rooms, files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards.
+- Future external capabilities are explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs (ADR 0031). Local-only channels, local rooms/community files, games, directories and account/approval stores stay local; home mailboxes are not copied into visited boards. #101 validates NNTP-first explicitly shared rooms; #103 plans Netnews article representation and #104 optional providers. Formatting grants no export authority; IRC/XMPP keep their formats. No production wire runtime or automatic publication is adopted.
 - No JavaScript/TypeScript code or dependencies, including browser-terminal assets and project tooling. Track dependency provenance, licenses, updates, and supply-chain risk for the eventual stack.
 
 The [restricted SSH development gateway](restricted-ssh.md) separates the terminal
@@ -212,3 +212,52 @@ remain #90/#91. The native signer failure under #92 blocks native issuance adopt
 No terminal file frame or remote ANSI prompt may unlock mail secrets or import a
 home identity/role. Device-encrypted attachments remain #88; current file areas
 remain readable by the sysop.
+
+## New operator/modern-terminal story boundaries
+
+The [operator and communications stories](modern-sysop-and-communications.md)
+are requirements, not new deployed authority. Local OS login/operator privileges,
+in-BBS sysop permissions and member SSH admission are distinct. Read-only status
+uses bounded metadata/health; host/firewall writes require a separate narrow
+host-authorized path with exact plans, validation, backups and recovery. Never
+run the BBS owner as root or silently alter host policy. Show the actual observed
+peer and NAT/shared-source limitations; do not trust supplied original-IP claims.
+
+Capability negotiation grants rendering/input options only. Untrusted probe
+replies or graphics data cannot become commands, credentials, terminal file/
+network reads or clipboard operations. Existing terminal filtering remains until
+a reviewed bounded feature path is implemented. Native XMPP unread/private views
+retain local decryption/trust; a remote frame or theme cannot imitate key unlock.
+
+IRC bridges must keep private XMPP/local-only content out of shared channels.
+Optional forum federation research needs separate room/author/peer consent and
+history/retained-copy policies; a remote peer never imports local account roles
+or approval. Public conversations do not force anonymous/public-web deployment.
+
+The [paged room reader](room-reading.md) re-fetches current approval/file visibility
+for each screen and does not mark incomplete messages read. Shared read positions
+advance only after successful output drain, not a failed close. The article codec
+rejects unsupported/control headers and imports no authority; it is independent
+of storage/publication and does not convert IRC or encrypted XMPP traffic.
+
+The owner requested a substantial [later-phase hardening backlog](later-phase-hardening.md)
+(#106–#111): signing, VM isolation, containment after component compromise, storage
+and independent validation/recovery. No VM/chroot/jail/disk-encryption label alone
+is an adopted end-to-end guarantee. Keep authority and residual risks explicit.
+
+The [optional Kitty preview](kitty-graphics.md) uses only a fixed original asset.
+Probes own their input and confer presentation capability only; native opt-in and
+exact-command regeneration never permit arbitrary APC, local paths, clipboard or
+file/mail/member authority. Image-specific cleanup is best effort on broken TTYs.
+
+## Explicit local-room draft checkpoints
+
+[The room writer](writing-desk.md) stores only explicitly saved local-room
+plaintext, readable by the sysop like local posts. Scope is board/member/epoch/
+room/reply; revisions compare before overwrite/delete, and send clears its matching
+checkpoint in the post transaction. Four rooms/member, 1024 body bytes/32 lines,
+30-day recovery and lazy expiry are bounded application policy, not secure
+erasure. Revocation/owner recovery clears affected checkpoints. Owner exports and
+backups include them; old copies may remain. Full-screen input/graphics/theme
+controls confer no member authority or local editor/path/unlock capability. Every
+private-mail draft/key/decryption stays device-side; no server mail fallback.

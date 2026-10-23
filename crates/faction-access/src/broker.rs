@@ -170,9 +170,12 @@ fn run() -> Result<()> {
         theme_args.drain(i..i + 2);
     }
     if !theme_args.len().is_multiple_of(2)
-        || theme_args
-            .chunks(2)
-            .any(|a| a[0] != "--theme" && a[0] != "--season")
+        || theme_args.chunks(2).any(|a| {
+            a[0] != "--theme"
+                && a[0] != "--season"
+                && a[0] != "--theme-schedule"
+                && a[0] != "--directory"
+        })
     {
         return Err(denied());
     }

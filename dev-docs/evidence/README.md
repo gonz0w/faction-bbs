@@ -91,3 +91,106 @@ The earlier five snapshots/eighteen historical record identities remain fixed.
 workflow tests separately; historical file-area tests were not relabeled as new runs.
 
 [Encrypted-mail/identity evidence](encrypted-mail-netbsd/README.md) adds a separate two-home protocol/native verifier record and retains native signing failure. No maintained executed input or older record was changed, so no historical snapshot is replaced or relabeled.
+
+- [Room reader and article batch](room-reader-netbsd/README.md) — native codec tests and UID/PTY shared-reader controls; no new capacity claim.
+
+- [Post metadata evidence](post-metadata-netbsd/README.md) — schema-6 migration/restore tests and real native metadata headers; no hardened deployment claim.
+
+- [Authored subjects and local article NetBSD software evidence](authored-articles-netbsd/README.md)
+
+- [Broader article profile and original INN software evidence](broader-articles-netbsd/README.md)
+
+The fifteenth snapshot `sources/pre25` freezes all 124 distinct source inputs
+from the original [real terminal record](terminal-compatibility/results.json):
+115 application/build, seven harness and two reproduction files. Its pinned
+`terminal-compatibility-baseline-manifest.json` also locks the whole record.
+Fifteen snapshots and twenty-seven historical result identities remain unchanged;
+menu changes do not inherit #118's emulator/image results as fresh measurements.
+
+The sixteenth snapshot `sources/pre25-calendar` freezes all 122 distinct inputs
+and three generated previews used by the original menu record (#122); those
+previews are included within the 122 total. `menu-themes-baseline-manifest.json`
+pins both the source tree and unchanged result. Keep sixteen snapshots and
+twenty-eight historical result identities fixed when extending calendars/art.
+
+The seventeenth source snapshot, `sources/pre25-layouts`, preserves 133 distinct
+executed #123 application/harness/SVG inputs. The pinned
+[seasonal manifest](seasonal-themes-baseline-manifest.json) also fixes the whole
+original seasonal result record. Seventeen snapshots and twenty-nine historical
+record identities remain unchanged; do not refresh their hashes to later code.
+
+[Custom-menu NetBSD software validation](custom-menus-netbsd/README.md) records
+130 final guest input matches, 167 Rust per OS / 111 host Python, four custom
+PTY controls per OS and four actual shared SSH/native controls, with seasonal/
+reader regressions. No fresh capacity, terminal/font or final artwork claim.
+
+Eighteenth snapshot `sources/pre25-paging` and the pinned
+[custom-menu baseline](custom-menus-baseline-manifest.json) preserve 137 executed
+#124 inputs and its original result. Keep eighteen snapshots / thirty historical
+record identities unchanged when adding long-form login art.
+
+[Login paging NetBSD software validation](login-paging-netbsd/README.md) records
+135 final guest input matches, 171 Rust per OS / 112 host Python, eight paging
+PTY controls per OS and eight actual shared SSH/native paging controls, plus
+calendar/reader regressions. No fresh capacity/font/final artwork claim.
+
+[Original Nightwire artwork validation](nightwire-netbsd/README.md) records eighteen
+render profiles and seven local/worker routes per OS, seven actual SSH/native
+routes and 157 native input matches. All 144 prior paging inputs remain unchanged;
+new assets require no new frozen snapshot. Owner artwork acceptance and real
+emulator/font certification remain open, with no new capacity claim.
+
+[Nightwire real-terminal measurements](nightwire-terminals/README.md) record
+canonical artwork/menu placement and CP437 widths through private real macOS
+emulators, including actual compact windows. The original native Nightwire
+record and its 167 distinct inputs remain unchanged. No new source snapshot,
+native/capacity, pixel/font certification or product runtime change is implied.
+
+`nightwire-baseline-manifest.json` and nineteenth snapshot `sources/pre95-operator`
+preserve 176 measured inputs and both complete Nightwire records before the local
+operator runtime change. Nineteen snapshots / thirty-two historical identities
+stay immutable. See [operator evidence](operator-netbsd/README.md) for new results.
+
+[Other BBSes directory software evidence](directory-netbsd/README.md) records
+188 Rust tests per OS, eleven directory PTY controls per OS and twelve actual
+SSH/native controls, with operator/backup/serial/art regressions. Snapshot 22
+`sources/pre27-directory` freezes all 173 prior recovery inputs and its complete
+record; 22 snapshots/35 historical identities remain unchanged.
+
+[Native board-launcher evidence](board-launcher-netbsd/README.md) records 191 Rust
+tests per OS, seven launcher PTY checks per OS and ten real two-board controls
+with independent member approval and host keys. Snapshot 23 freezes 174 prior
+directory inputs and its complete record. All 23 snapshots/36 historical record
+identities remain immutable; no new server/250-capacity/hardening claim.
+
+[Named-room browser software evidence](room-browser-netbsd/README.md) records
+194 Rust tests per OS, ten local/worker controls per OS, eleven real SSH/native
+controls with 100 rooms and 22 shared-reader regressions. Snapshot 24 preserves
+178 prior sources/room-list fixtures and the whole launcher result; 24 snapshots/
+37 historical record identities remain unchanged. No new capacity/hardening claim.
+
+[Room writing desk software evidence](writing-desk-netbsd/README.md) covers the
+optional local-room multiline writer, preview/send/cancel and actual SSH/native
+routes. Snapshot 25 freezes 174 prior inputs and the complete #147 room-browser
+record; 25 snapshots/38 historical identities remain unchanged. No new capacity,
+physical SBC, persistent drafts or hardening claim.
+
+[Full-screen/editor checkpoint evidence](full-screen-netbsd/README.md) records
+213 Rust tests per OS, seven full editor/recovery PTYs per OS, eleven actual
+SSH/native/plain controls and distinct-UID backup/export checks. Snapshot 26
+freezes 180 prior inputs and the whole #148 record; 26 snapshots/39 historical
+identities stay fixed. Schema 8 holds explicit local-room plaintext checkpoints;
+no private-mail, new capacity or hardening claim follows.
+
+[Local community wall software evidence](community-wall-netbsd/README.md) covers
+224 Rust tests per OS, seven wall PTYs per OS, eleven actual SSH/native/plain
+controls and twelve complete wall/file recovery checks per OS. Snapshot 27 freezes
+192 prior measured/harness/compatibility inputs and the whole #149 record; all
+forty historical identities remain unchanged. Schema 9 adds bounded local wall
+state; no private-mail, capacity, physical SBC or hardening claim follows.
+
+[Local member-page evidence](member-pages-netbsd/README.md) records 235 Rust tests
+per OS, eight page PTYs per OS, fourteen actual SSH/native/plain controls and
+thirteen complete member-page/wall/file recovery checks per OS. Snapshot 28 keeps
+202 previous inputs and the whole wall result; forty-one old identities remain
+fixed. No new capacity, physical SBC, federation or hardening claim.

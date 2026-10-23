@@ -1,0 +1,7 @@
+# Manual seasonal override; no calendar or command remapping.
+version = 1
+id = "autumn"
+welcome = "Autumn frequencies."
+normal = { fg = 3, bg = 0 }
+focus = { fg = 15, bg = 1, bold = true }
+hotkey = { fg = 14, bg = 0, bold = true }

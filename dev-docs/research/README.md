@@ -72,3 +72,12 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [Native file-area implementation evidence](../evidence/file-areas-netbsd/README.md) — #83 scoped SFTP, quarantine and complete file-data recovery.
 
 - [0045: Two-home encrypted mail and scoped roaming proof](0045-encrypted-mail-and-roaming-proof.md) — actual reference mail/native verifier controls, dependency gates and native signing failure; #84 remains open.
+
+
+- [0047: Modern terminal, operator and protocol inputs](0047-modern-terminal-and-federation-options.md) — primary-source inputs for #95–#101 plus the #103/#104 Netnews article/NNTP-first direction; no production wire adoption or runtime evidence.
+
+- [0048: Original INN offline article validation](0048-offline-inn-article-validation.md)
+
+- [0050: Bounded inline Kitty graphics](0050-kitty-graphics.md)
+
+- [0051: Real terminal compatibility](0051-real-terminal-compatibility.md)

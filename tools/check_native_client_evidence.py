@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify recorded native-client evidence and source identity; does not rerun a VM."""
 import hashlib
+from evidence_sources import source_bytes
 import json
 from pathlib import Path
 
@@ -28,7 +29,7 @@ def check():
     for name, expected in data['execution_sources'].items():
         path = Path(name)
         assert not path.is_absolute() and '..' not in path.parts
-        assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest() == expected, 'native-client executed source changed: '+name
+        assert hashlib.sha256(source_bytes(name, expected)).hexdigest() == expected, 'native-client executed source changed: '+name
     print('Native-client evidence passed: 10 real client/SSH/SFTP/recovery checks, 100 native Rust tests; no mail, hardware or capacity claim.')
 
 

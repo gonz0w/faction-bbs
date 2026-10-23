@@ -6,12 +6,18 @@ use faction_terminal::{Action, Decoder, Key, LineEditor, LineEvent, Menu, Theme}
 mod classic;
 mod classic_ui;
 mod config;
+mod directory_ui;
 mod door_ui;
 mod doors;
 mod file_ui;
 mod native_files;
+mod operator;
+mod pages_ui;
 mod policy;
+mod rooms_ui;
 mod ui;
+mod wall_ui;
+mod writing_ui;
 use config::Config;
 use rustix::{
     event::{PollFd, PollFlags, Timespec, poll},
@@ -46,20 +52,42 @@ enum State {
     Confirm(String, Zeroizing<String>),
     Authenticating,
     Identity,
+    IdentityArt(usize),
     Menu,
+    Terminal,
+    Directory(faction_terminal::directory::View),
+    RoomBrowse(faction_terminal::rooms::View),
+    GraphicsProbe(faction_terminal::graphics::Probe),
+    Graphics(usize, Instant),
+    Probe(faction_terminal::capabilities::Probe),
     Pause,
     RoomsMore(usize),
     RoomId(bool),
-    ReadMore(i64, i64),
+    ReadMore(i64, i64, usize),
     PostRoom,
+    DraftChoice(i64, faction_core::SavedRoomDraft),
     PostReply(i64),
-    PostBody(i64, Option<i64>),
+    PostSubject(i64, Option<i64>),
+    PostBody(i64, Option<i64>, String),
+    Writing {
+        room: i64,
+        reply: Option<i64>,
+        subject: String,
+        draft: faction_terminal::composer::Draft,
+        preview: Option<usize>,
+        key: Option<String>,
+        screen: Option<faction_terminal::composer::Screen>,
+        confirm: bool,
+    },
     PostRetry {
         room: i64,
         reply: Option<i64>,
+        subject: String,
         body: String,
         key: String,
     },
+    Wall(Box<faction_wall::Desk>),
+    Pages(Box<faction_pages::Desk>),
     Sysop,
     MembersMore(usize),
     MemberStatus(bool),
@@ -162,6 +190,7 @@ struct Client {
     heartbeat: Instant,
     next_poll: Instant,
     focus: usize,
+    theme_index: usize,
     sysop_display: bool,
     mark_after_flush: Option<(i64, i64)>,
     close: bool,
@@ -170,6 +199,10 @@ struct Client {
     ansi: bool,
     dimensions: (u16, u16),
     geometry_check: Instant,
+    graphics_active: bool,
+    last_graphics: Option<Instant>,
+    last_graphics_frame: Option<Instant>,
+    capabilities: faction_terminal::capabilities::Capabilities,
     editor: LineEditor,
     skip_lf: bool,
     next_input: Instant,
@@ -179,11 +212,20 @@ struct Client {
     classic: Option<classic::Connection>,
     files_enabled: bool,
     native: Option<native_files::Native>,
+    directory: Option<Arc<faction_terminal::directory::Directory>>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
         // Best effort while still nonblocking: never hang cleanup behind a peer.
+        if self.graphics_active {
+            let _ = self
+                .tty
+                .write(faction_terminal::graphics::CLEANUP.as_bytes());
+        }
         if self.ansi {
+            if self.capabilities.synchronized {
+                let _ = self.tty.write(b"\x1b[?2026l");
+            }
             let _ = self.tty.write(b"\x1b[0m\x1b[?25h\r\n");
         }
         let _ = termios::tcsetattr(&self.tty, OptionalActions::Now, &self.saved);
@@ -234,6 +276,7 @@ impl Client {
             heartbeat: now,
             next_poll: now,
             focus: 0,
+            theme_index: 0,
             sysop_display: false,
             mark_after_flush: None,
             close: false,
@@ -242,6 +285,10 @@ impl Client {
             ansi: false,
             dimensions: (0, 0),
             geometry_check: now,
+            graphics_active: false,
+            last_graphics: None,
+            last_graphics_frame: None,
+            capabilities: Default::default(),
             editor: LineEditor::default(),
             skip_lf: false,
             next_input: now,
@@ -251,6 +298,7 @@ impl Client {
             classic: None,
             files_enabled: false,
             native: None,
+            directory: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -305,7 +353,15 @@ impl Client {
         if self.written == self.output.len() {
             self.output.clear();
             self.written = 0;
-            if let Some((room, through)) = self.mark_after_flush.take() {
+            if let State::GraphicsProbe(probe) = &mut self.state {
+                probe.begin(Instant::now());
+            }
+            if let State::Probe(probe) = &mut self.state {
+                probe.begin(Instant::now());
+            }
+            if !self.close
+                && let Some((room, through)) = self.mark_after_flush.take()
+            {
                 board.mark_read(self.session.as_ref().ok_or_else(denied)?, room, through)?;
             }
             if matches!(self.state, State::Closing) {
@@ -372,18 +428,32 @@ fn run() -> Result<()> {
         return Err(denied());
     }
     let config = Config::load(Path::new(&args[1]))?;
-    let mut theme = if let Some(path) = &config.theme {
+    let base = if let Some(path) = &config.theme {
         Theme::load(path).map_err(|_| denied())?
     } else {
         Theme::default()
     };
-    if let Some(path) = &config.season {
-        theme = theme.with_season(path).map_err(|_| denied())?;
-    }
-    theme
-        .set_files_enabled(config.files_uid.is_some())
+    let mut themes = faction_terminal::seasons::Themes::load(
+        base,
+        config.season.as_deref(),
+        config.theme_schedule.as_deref(),
+    )
+    .map_err(|_| denied())?;
+    themes
+        .set_services(
+            config.files_uid.is_some(),
+            config.doors_uid.is_some() || !config.classic_games.is_empty(),
+        )
         .map_err(|_| denied())?;
-    theme.set_doors_enabled(config.doors_uid.is_some() || !config.classic_games.is_empty());
+    let directory = config
+        .directory
+        .as_ref()
+        .map(|p| faction_terminal::directory::Directory::load(p).map(Arc::new))
+        .transpose()
+        .map_err(|_| denied())?;
+    themes
+        .set_directory_enabled(directory.is_some())
+        .map_err(|_| denied())?;
     let classic_games = Arc::new(config.classic_games.clone());
     if args[0] == "--check-config" {
         return Ok(());
@@ -496,8 +566,10 @@ fn run() -> Result<()> {
     eprintln!(
         "Faction shared service ready; session limit {max_sessions}, admission refill {launch_ms} ms."
     );
+    let mut operator = operator::Publisher::new(config.operator_status, state);
     let mut turn = 0usize;
     while !faction_unix::shutdown_requested() {
+        operator.tick(&board, &clients, &jobs, max_sessions);
         if let Some(p) = &mut file_policy {
             p.pump(&mut board);
         }
@@ -516,6 +588,7 @@ fn run() -> Result<()> {
             generation = generation.checked_add(1).ok_or_else(denied)?;
             if let Ok(mut client) = Client::new(generation, control, tty, &term, ansi) {
                 client.files_enabled = config.files_uid.is_some();
+                client.directory = directory.as_ref().map(Arc::clone);
                 client.doors_uid = config.doors_uid;
                 client.classic_games = Some(Arc::clone(&classic_games));
                 clients.push(client);
@@ -532,8 +605,8 @@ fn run() -> Result<()> {
                         Ok(m) if m.status == Status::Approved => {
                             c.session = Some(s);
                             c.sysop_display = m.role == faction_core::Role::Sysop;
-                            c.identity(&theme, &m.handle);
-                            c.state = State::Identity;
+                            c.theme_index = themes.select_now();
+                            c.identity(themes.get(c.theme_index), &m.handle);
                         }
                         Ok(_) => {
                             c.success = true;
@@ -588,6 +661,7 @@ fn run() -> Result<()> {
         for offset in 0..count {
             let i = (turn + offset) % count;
             let c = &mut clients[i];
+            let theme = themes.get(c.theme_index);
             let now = Instant::now();
             if !ready[i * 2 + 1].is_empty()
                 || ready[i * 2].intersects(PollFlags::ERR | PollFlags::HUP | PollFlags::NVAL)
@@ -598,29 +672,46 @@ fn run() -> Result<()> {
             if work > 0 && matches!(c.state, State::DoorPending) && c.output.is_empty() && !c.close
             {
                 work -= 1;
-                if let Err(e) = c.door_poll(&theme, &mut board) {
-                    c.recover(e, &mut board, &theme);
+                if let Err(e) = c.door_poll(theme, &mut board) {
+                    c.recover(e, &mut board, theme);
                     c.door = None;
                 }
             }
             if work > 0 && matches!(c.state, State::Classic) && c.output.is_empty() && !c.close {
                 work -= 1;
-                if let Err(e) = c.classic_poll(&theme, &mut board) {
+                if let Err(e) = c.classic_poll(theme, &mut board) {
                     c.classic = None;
-                    c.recover(e, &mut board, &theme);
+                    c.recover(e, &mut board, theme);
+                }
+            }
+            if work > 0 && !c.close && matches!(&c.state,State::Probe(p) if p.expired(now)) {
+                work -= 1;
+                if c.probe_finish(&mut board).is_err() {
+                    c.close = true;
+                }
+            }
+            if work > 0
+                && !c.close
+                && c.output.is_empty()
+                && (matches!(&c.state, State::GraphicsProbe(p) if p.expired(now))
+                    || matches!(&c.state, State::Graphics(..)))
+            {
+                work -= 1;
+                if c.graphics_poll(&mut board).is_err() {
+                    c.close = true;
                 }
             }
             if work > 0 && c.geometry_check.elapsed() >= Duration::from_millis(100) {
                 work -= 1;
                 c.geometry_check = now;
-                if c.resize(&theme, &mut board).is_err() {
+                if c.resize(theme, &mut board).is_err() {
                     c.close = true;
                 }
             }
             if work > 0 && !c.close && ready[i * 2].contains(PollFlags::IN) {
                 work -= 1;
                 c.next_input = now + Duration::from_millis(20);
-                if c.input(&mut board, &jobs, &theme).is_err() {
+                if c.input(&mut board, &jobs, theme).is_err() {
                     c.close = true;
                 }
             }
@@ -629,7 +720,7 @@ fn run() -> Result<()> {
             }
             if matches!(c.state, State::Classic)
                 && c.prompt_started.elapsed() > Duration::from_secs(120)
-                && c.classic_return("Classic game input timed out.", &theme, &mut board)
+                && c.classic_return("Classic game input timed out.", theme, &mut board)
                     .is_err()
             {
                 c.close = true;
@@ -664,7 +755,7 @@ fn run() -> Result<()> {
                     }
                 })();
                 if let Err(e) = result {
-                    c.recover(e, &mut board, &theme);
+                    c.recover(e, &mut board, theme);
                 }
             }
             if ready[i * 2].contains(PollFlags::OUT) && c.flush(&mut board).is_err() {
@@ -698,6 +789,7 @@ fn run() -> Result<()> {
         }
     }
     drop(clients);
+    operator.stopped(&board, max_sessions);
     pid.set_len(0)?;
     Ok(())
 }

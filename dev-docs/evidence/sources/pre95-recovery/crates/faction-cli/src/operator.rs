@@ -1,0 +1,538 @@
+//! Local OS-authorized read-only console, separate from member/session UIs.
+use crate::{Result, invalid, terminal};
+use faction_core::operator::{self, Snapshot};
+use faction_terminal::{Decoder, Key, Theme};
+use std::{
+    collections::VecDeque,
+    fs,
+    io::{self, IsTerminal, Write},
+    path::PathBuf,
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+};
+
+mod host;
+use host::{Host, Reading, Sampler};
+
+#[derive(Default)]
+struct History {
+    connected: VecDeque<Option<u8>>,
+    cpu: VecDeque<Option<u8>>,
+    ram: VecDeque<Option<u8>>,
+    network: VecDeque<Option<u64>>,
+}
+impl History {
+    fn push(&mut self, snapshot: Option<&Snapshot>, available: bool, host: &Host) {
+        fn keep<T>(v: &mut VecDeque<T>, n: T) {
+            if v.len() == 60 {
+                v.pop_front();
+            }
+            v.push_back(n);
+        }
+        keep(
+            &mut self.connected,
+            snapshot
+                .filter(|s| {
+                    available && s.running && now().checked_sub(s.sampled).is_some_and(|a| a <= 15)
+                })
+                .map(|s| (u32::from(s.connected) * 100 / u32::from(s.capacity)) as u8),
+        );
+        keep(
+            &mut self.cpu,
+            match host.cpu {
+                Reading::Value(v) => Some(v),
+                _ => None,
+            },
+        );
+        keep(
+            &mut self.ram,
+            host.used
+                .zip(host.ram)
+                .filter(|(_, n)| *n > 0)
+                .map(|(used, n)| (u128::from(used) * 100 / u128::from(n)) as u8),
+        );
+        keep(
+            &mut self.network,
+            match host.network {
+                Reading::Value((rx, tx)) => rx.checked_add(tx),
+                _ => None,
+            },
+        );
+    }
+}
+fn trace(label: &str, values: &VecDeque<Option<u8>>, columns: usize, unicode: bool) -> String {
+    let width = columns.saturating_sub(label.len() + 1).min(60);
+    let start = values.len().saturating_sub(width);
+    let glyph = |value: Option<u8>| match value {
+        None => ' ',
+        Some(v) if unicode => {
+            ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'][usize::from(v.min(100)) * 7 / 100]
+        }
+        Some(0) => '.',
+        Some(1..=25) => ':',
+        Some(26..=50) => '*',
+        Some(51..=75) => '#',
+        _ => '@',
+    };
+    format!(
+        "{label}{}",
+        values
+            .iter()
+            .skip(start)
+            .map(|v| glyph(*v))
+            .collect::<String>()
+    )
+}
+fn percent(value: Reading<u8>) -> String {
+    match value {
+        Reading::Value(v) => format!("{v}%"),
+        Reading::Warming => "warming up".into(),
+        Reading::Unavailable => "unavailable".into(),
+    }
+}
+fn bar(value: Option<u8>, width: usize, unicode: bool) -> String {
+    let Some(v) = value else {
+        return String::new();
+    };
+    let n = usize::from(v.min(100)) * width / 100;
+    format!(
+        " [{}{}]",
+        if unicode { "█" } else { "#" }.repeat(n),
+        "-".repeat(width - n)
+    )
+}
+struct ExitScreen {
+    ansi: bool,
+}
+impl Drop for ExitScreen {
+    fn drop(&mut self) {
+        let text = if self.ansi {
+            match terminal::size() {
+                Some((40..=240, rows @ 18..=100)) => format!("\x1b[{rows};1H\x1b[0m\n"),
+                _ => "\n".into(),
+            }
+        } else {
+            "\n".into()
+        };
+        let _ = io::stdout().write_all(text.as_bytes());
+        let _ = io::stdout().flush();
+    }
+}
+fn now() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs())
+}
+fn number(value: Option<u64>) -> String {
+    value.map_or_else(|| "unavailable".into(), |v| v.to_string())
+}
+fn mib(value: Option<u64>) -> String {
+    value.map_or_else(|| "unavailable".into(), |v| format!("{} MiB", v / 1048576))
+}
+fn safe_line(text: &str, columns: usize) -> String {
+    text.chars()
+        .take(columns.saturating_sub(1))
+        .map(|c| {
+            if (c.is_ascii() && !c.is_ascii_control()) || ('▁'..='█').contains(&c) {
+                c
+            } else {
+                '?'
+            }
+        })
+        .collect()
+}
+fn freshness(snapshot: Option<&Snapshot>, available: bool, clock: u64) -> String {
+    if !available {
+        return "UNAVAILABLE / last-known only".into();
+    }
+    let Some(s) = snapshot else {
+        return "UNAVAILABLE / enable operator_status".into();
+    };
+    if !s.running {
+        return "STOPPED / final snapshot".into();
+    }
+    match clock.checked_sub(s.sampled) {
+        Some(age) if age <= 15 => format!("FRESH sample / {age}s old"),
+        Some(age) => format!("STALE / {age}s old"),
+        None => "CLOCK UNKNOWN / future sample".into(),
+    }
+}
+fn lines(
+    theme: &Theme,
+    snapshot: Option<&Snapshot>,
+    host: &Host,
+    available: bool,
+    state: (usize, bool, usize, bool),
+    history: &History,
+) -> Vec<String> {
+    let (view, paused, columns, unicode) = state;
+    let mut out = vec![
+        format!("{} / LOCAL SYSOP", theme.board()),
+        format!(
+            "[B]oard [H]ost [I]nfo | {}",
+            if paused { "PAUSED" } else { "READ ONLY" }
+        ),
+        freshness(snapshot, available, now()),
+        String::new(),
+    ];
+    if view == 0 {
+        let counts = snapshot.and_then(|s| s.counts);
+        out.push(format!(
+            "Connected: {} / {}",
+            number(snapshot.map(|s| u64::from(s.connected))),
+            number(snapshot.map(|s| u64::from(s.capacity)))
+        ));
+        out.push(format!(
+            "Credentials: {} / 2 | queued: {} B",
+            number(snapshot.map(|s| u64::from(s.credentials))),
+            number(snapshot.map(|s| s.output_bytes))
+        ));
+        for (label, a, b) in [
+            ("Members / pending", 0, 1),
+            ("Rooms / posts", 2, 3),
+            ("Channels / retained chat", 4, 5),
+            ("Published / pending files", 6, 7),
+            ("Transfers / completed games", 8, 9),
+        ] {
+            out.push(format!(
+                "{label}: {} / {}",
+                number(counts.map(|v| v[a])),
+                number(counts.map(|v| v[b]))
+            ));
+        }
+        out.push(format!(
+            "Active doors: {}",
+            number(snapshot.map(|s| u64::from(s.doors)))
+        ));
+        out.push(trace(
+            "Connected history: ",
+            &history.connected,
+            columns,
+            unicode,
+        ));
+        out.push(format!(
+            "PID {} / uptime {}s",
+            number(snapshot.map(|s| u64::from(s.pid))),
+            number(snapshot.map(|s| s.uptime))
+        ));
+        out.push("Counts are board-wide, not identities.".into());
+    } else if view == 1 {
+        let width = if columns >= 80 { 20 } else { 8 };
+        let cpu = match host.cpu {
+            Reading::Value(v) => Some(v),
+            _ => None,
+        };
+        out.push(format!(
+            "CPU {} busy: {}{}",
+            number(host.cpus.map(u64::from)),
+            percent(host.cpu),
+            bar(cpu, width, unicode)
+        ));
+        out.push(format!(
+            "Load 1/5/15m: {}",
+            host.load.as_deref().unwrap_or("unavailable")
+        ));
+        let used_percent = host
+            .used
+            .zip(host.ram)
+            .filter(|(_, n)| *n > 0)
+            .map(|(u, n)| (u128::from(u) * 100 / u128::from(n)) as u8);
+        out.push(format!(
+            "RAM used: {}/{}{}",
+            mib(host.used),
+            mib(host.ram),
+            bar(used_percent, width, unicode)
+        ));
+        out.push(format!(
+            "RAM free: {} (used includes cache)",
+            mib(host.free)
+        ));
+        out.push(format!(
+            "Disk free: {}/{}",
+            mib(host.disk.map(|v| v.0)),
+            mib(host.disk.map(|v| v.1))
+        ));
+        let network = match host.network {
+            Reading::Value((rx, tx)) => format!("{}/{} KiB/s", rx / 1024, tx / 1024),
+            Reading::Warming => "warming up".into(),
+            Reading::Unavailable => "unavailable".into(),
+        };
+        out.push(format!("Net RX/TX: {network}"));
+        out.push(format!(
+            "Non-loopback interfaces: {}",
+            number(host.interfaces.map(|n| n as u64))
+        ));
+        out.push(trace("CPU hist: ", &history.cpu, columns, unicode));
+        out.push(trace("RAM hist: ", &history.ram, columns, unicode));
+        let peak = history.network.iter().flatten().copied().max().unwrap_or(0);
+        let net = history
+            .network
+            .iter()
+            .map(|v| {
+                v.map(|n| {
+                    (u128::from(n) * 100)
+                        .checked_div(u128::from(peak))
+                        .unwrap_or(0) as u8
+                })
+            })
+            .collect();
+        out.push(trace("Net hist*: ", &net, columns, unicode));
+        out.push("*window peak; peers/backup uninstrumented".into());
+    } else {
+        out.extend(
+            [
+                "OS owner/root access; not a BBS role.",
+                "Arrows/Tab or B/H/I: change panel.",
+                "P: pause/resume local sampling.",
+                "R: redraw; sampling stays rate-limited.",
+                "Q or Ctrl-C/D: return to OS shell.",
+                "Esc: Enter to recover keyboard input.",
+                "No writes, actions, message bodies or keys.",
+                "No getty/autologin or member-SSH change.",
+                "Host changes require separate tools.",
+            ]
+            .map(str::to_owned),
+        );
+    }
+    out.push(String::new());
+    out.push("Q:quit P:pause R:redraw B/H/I:views".into());
+    out
+}
+
+pub fn run() -> Result<()> {
+    let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if args.is_empty() || args == ["--help"] {
+        println!(
+            "Faction local sysop console (read-only, after OS login)\nUsage: faction-sysop --state-dir PATH [--theme PACK] [--ansi|--plain] [--unicode] [--once] [--view board|host|help] [--refresh 2..60]\nUnix state-owner/root access required. Never use as a member SSH forced command."
+        );
+        return Ok(());
+    }
+    if rustix::process::getuid() != rustix::process::geteuid()
+        || rustix::process::getgid() != rustix::process::getegid()
+    {
+        return Err(invalid("setuid/setgid operator launch refused"));
+    }
+    let mut directory = None;
+    let mut theme = Theme::default();
+    let mut ansi = false;
+    let mut unicode = false;
+    let mut once = false;
+    let mut refresh = 5;
+    let mut view = 0;
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].to_str() {
+            Some("--state-dir") | Some("--theme") | Some("--refresh") | Some("--view") => {
+                let v = args
+                    .get(i + 1)
+                    .ok_or_else(|| invalid("missing option value"))?;
+                if args[i] == "--state-dir" {
+                    directory = Some(PathBuf::from(v));
+                } else if args[i] == "--theme" {
+                    theme = Theme::load(&PathBuf::from(v)).map_err(invalid)?;
+                } else if args[i] == "--view" {
+                    view = match v.to_str() {
+                        Some("board") => 0,
+                        Some("host") => 1,
+                        Some("help") => 2,
+                        _ => return Err(invalid("view must be board, host or help")),
+                    };
+                } else {
+                    refresh = v
+                        .to_str()
+                        .and_then(|s| s.parse::<u64>().ok())
+                        .filter(|v| (2..=60).contains(v))
+                        .ok_or_else(|| invalid("refresh must be 2..60 seconds"))?;
+                }
+                i += 1;
+            }
+            Some("--ansi") => ansi = true,
+            Some("--plain") => ansi = false,
+            Some("--unicode") => unicode = true,
+            Some("--once") => once = true,
+            _ => return Err(invalid("unknown operator option")),
+        }
+        i += 1;
+    }
+    let directory = directory.ok_or_else(|| invalid("--state-dir required"))?;
+    let mut snapshot = match operator::read(&directory) {
+        Ok(s) => Some(s),
+        Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
+            return Err(invalid(
+                "OS operator permission required; unsafe/private snapshot denied",
+            ));
+        }
+        Err(_) => None,
+    };
+    // A missing directory is not an authorized operator context.
+    let m = fs::symlink_metadata(&directory)?;
+    if !m.is_dir() {
+        return Err(invalid("private owner directory required"));
+    }
+    let mut available = snapshot.is_some();
+    let interactive = !once && io::stdin().is_terminal() && io::stdout().is_terminal();
+    let raw = if interactive {
+        Some(terminal::Raw::input_only()?)
+    } else {
+        None
+    };
+    let _exit =
+        (interactive || (ansi && io::stdout().is_terminal())).then_some(ExitScreen { ansi });
+    let mut sampler = Sampler::default();
+    let mut host = sampler.sample(&directory);
+    let mut history = History::default();
+    history.push(snapshot.as_ref(), available, &host);
+    let mut decoder = Decoder::new();
+    let mut paused = false;
+    let mut previous = Vec::<String>::new();
+    let mut geometry = None;
+    let mut next = Instant::now() + Duration::from_secs(refresh);
+    let mut redraw = true;
+    loop {
+        if !paused && Instant::now() >= next {
+            next = Instant::now() + Duration::from_secs(refresh);
+            match operator::read(&directory) {
+                Ok(s) => {
+                    snapshot = Some(s);
+                    available = true;
+                }
+                Err(_) => available = false,
+            }
+            host = sampler.sample(&directory);
+            history.push(snapshot.as_ref(), available, &host);
+            redraw = true;
+        }
+        let size = terminal::size();
+        if size != geometry {
+            previous.clear();
+            geometry = size;
+            redraw = true;
+        }
+        if redraw {
+            let use_ansi = ansi && matches!(size, Some((40..=240, 18..=100)));
+            let (columns, rows) = size.unwrap_or((80, 24));
+            let mut content = lines(
+                &theme,
+                snapshot.as_ref(),
+                &host,
+                available,
+                (view, paused, usize::from(columns), unicode && use_ansi),
+                &history,
+            );
+            content[2].push_str(&format!(" | {columns}x{rows}"));
+            let rendered: Vec<_> = content
+                .into_iter()
+                .take(usize::from(rows.saturating_sub(1)))
+                .map(|s| safe_line(&s, usize::from(columns)))
+                .collect();
+            let mut frame = String::new();
+            if use_ansi {
+                if previous.is_empty() {
+                    frame.push_str("\x1b[2J\x1b[H");
+                }
+                for n in 0..rendered.len().max(previous.len()) {
+                    if rendered.get(n) != previous.get(n) {
+                        frame.push_str(&format!(
+                            "\x1b[{};1H{}{}\x1b[K",
+                            n + 1,
+                            if n == 0 {
+                                theme.menu_styles().1.sgr()
+                            } else {
+                                theme.menu_styles().0.sgr()
+                            },
+                            rendered.get(n).map_or("", String::as_str)
+                        ));
+                    }
+                }
+                frame.push_str("\x1b[0m");
+            } else {
+                frame = rendered.join("\n") + "\n";
+            }
+            if frame.len() > 4096 {
+                return Err(invalid("operator frame budget"));
+            }
+            io::stdout().write_all(frame.as_bytes())?;
+            io::stdout().flush()?;
+            previous = rendered;
+            redraw = false;
+        }
+        if !interactive {
+            break;
+        }
+        if terminal::ready()? {
+            let byte = raw.as_ref().expect("interactive raw guard").read_byte()?;
+            if let Some(key) = decoder.feed(byte, Instant::now()) {
+                match key {
+                    Key::Cancel | Key::Hotkey(b'Q') => break,
+                    Key::Left | Key::Up => view = (view + 2) % 3,
+                    Key::Right | Key::Down | Key::Next => view = (view + 1) % 3,
+                    Key::Hotkey(b'B') => view = 0,
+                    Key::Hotkey(b'H') => view = 1,
+                    Key::Hotkey(b'I') => view = 2,
+                    Key::Hotkey(b'P') => {
+                        paused = !paused;
+                        sampler.reset();
+                    }
+                    _ => (),
+                }
+                redraw = true;
+            }
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn stale_future_and_unavailable_never_look_fresh() {
+        let s = Snapshot {
+            sampled: 100,
+            pid: 1,
+            uptime: 1,
+            running: true,
+            connected: 0,
+            capacity: 8,
+            credentials: 0,
+            output_bytes: 0,
+            doors: 0,
+            counts: None,
+        };
+        assert!(freshness(Some(&s), true, 116).starts_with("STALE"));
+        assert!(freshness(Some(&s), true, 99).starts_with("CLOCK UNKNOWN"));
+        assert!(freshness(Some(&s), false, 101).starts_with("UNAVAILABLE"));
+    }
+    #[test]
+    fn histories_keep_recent_tail_and_fixed_bounds() {
+        let mut history = History::default();
+        let host = Host {
+            cpu: Reading::Value(100),
+            ..Host::default()
+        };
+        for _ in 0..80 {
+            history.push(None, false, &host);
+        }
+        assert_eq!(history.cpu.len(), 60);
+        assert_eq!(history.network.len(), 60);
+        history.cpu[59] = Some(0);
+        let tail = trace("CPU: ", &history.cpu, 10, false);
+        assert_eq!(tail, "CPU: @@@.");
+        assert!(trace("CPU: ", &history.cpu, 10, true).ends_with('▁'));
+    }
+    #[test]
+    fn compact_lines_are_inert_and_leave_right_margin() {
+        assert_eq!(safe_line("ab\x1bcd", 5), "ab?c");
+        for view in 0..3 {
+            let rows = lines(
+                &Theme::default(),
+                None,
+                &Host::default(),
+                false,
+                (view, false, 40, false),
+                &History::default(),
+            );
+            assert!(rows.len() <= 17);
+            assert!(rows.iter().all(|s| safe_line(s, 40).len() < 40));
+        }
+    }
+}

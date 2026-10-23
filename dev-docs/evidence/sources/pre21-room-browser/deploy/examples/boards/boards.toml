@@ -1,0 +1,22 @@
+# Illustrative endpoints only. No listing is enabled or contacted automatically.
+version = 1
+
+[[boards]]
+slug = "night-radio"
+name = "Night Radio BBS"
+summary = "Late-night radio talk, local rooms and ANSI games."
+host = "radio.example"
+port = 2222
+login = "bbs"
+reviewed = "2026-10-22"
+valid_until = "2027-10-22"
+
+[[boards]]
+slug = "wire-garden"
+name = "Wire Garden"
+summary = "A small independent board for hardware and art."
+host = "garden.example"
+port = 22
+login = "bbs"
+reviewed = "2026-10-22"
+valid_until = "2027-10-22"

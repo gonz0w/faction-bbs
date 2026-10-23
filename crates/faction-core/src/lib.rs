@@ -6,11 +6,23 @@ mod chat;
 mod credentials;
 mod file_links;
 mod files;
+mod member_pages;
+pub mod operator;
+mod post_metadata;
+mod room_article;
+mod room_drafts;
+mod wall;
+pub use member_pages::{
+    MemberPage, PAGE_FIELD_BYTES, PAGE_FIELDS, PageConfig, PlanUpdate, page_text,
+};
+pub use room_drafts::{ROOM_DRAFT_SECONDS, ROOM_DRAFTS, SavedRoomDraft};
+pub use wall::{WallConfig, WallNote, WallPage, wall_text};
 mod scores;
 pub use files::{
     AreaFile, FILE_BOARD_BYTES, FILE_BYTES, FILE_CHUNK, FILE_ROWS, FileArea, TransferGrant,
     file_id, file_key, file_name,
 };
+pub use post_metadata::PostMetadata;
 mod snapshot;
 use argon2::{Algorithm, Argon2, Params, PasswordHasher, PasswordVerifier, Version};
 pub use chat::{ChatChannel, ChatCommand, ChatKind, ChatLease, ChatMessage, ChatNames, ChatPage};
@@ -25,6 +37,12 @@ use std::{
 };
 
 const APP_ID: i64 = 0x46414354;
+/// Bounded posting input; empty subject selects the local default.
+pub struct PostDraft<'a> {
+    pub subject: &'a str,
+    pub body: &'a str,
+    pub reply_to: Option<i64>,
+}
 pub const POST_BYTES: usize = 1024;
 pub const PAGE_BYTES: usize = 2048;
 pub const PAGE_ROWS: usize = 20;
@@ -303,12 +321,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=5).contains(&version) {
+        } else if app != APP_ID || !(1..=10).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=5).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=10).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -318,7 +336,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=5).contains(&v) {
+            } else if !(2..=10).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -329,7 +347,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=5).contains(&v) {
+            } else if !(3..=10).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -339,7 +357,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=5).contains(&v) {
+        } else if !(4..=10).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -349,7 +367,78 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if v != 5 {
+        } else if !(5..=10).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 5 {
+            tx.execute_batch(include_str!("post_metadata.sql"))?;
+            tx.pragma_update(None, "user_version", 6)?;
+        } else if !(6..=10).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 6 {
+            let expected = include_str!("post_metadata.sql")
+                .split("INSERT INTO")
+                .next()
+                .ok_or(Error::UnsupportedSchema)?
+                .trim()
+                .trim_end_matches(';');
+            let actual: String = tx.query_row(
+                "SELECT sql FROM sqlite_schema WHERE type='table' AND name='post_metadata'",
+                [],
+                |r| r.get(0),
+            )?;
+            let entries: i64 = tx.query_row(
+                "SELECT count(*) FROM sqlite_schema WHERE tbl_name='post_metadata'",
+                [],
+                |r| r.get(0),
+            )?;
+            if actual != expected || entries != 2 {
+                return Err(Error::UnsupportedSchema);
+            }
+            // Validate the old contract before widening it. Never bless UTF-8
+            // smuggled into schema 6, or replace existing public article IDs.
+            post_metadata::validate(
+                &tx,
+                std::time::Instant::now() + std::time::Duration::from_secs(5),
+                6,
+            )?;
+            tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
+            tx.pragma_update(None, "user_version", 7)?;
+        } else if !(7..=10).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 7 {
+            tx.execute_batch(include_str!("room_drafts.sql"))?;
+            tx.pragma_update(None, "user_version", 8)?;
+        } else if !(8..=10).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 8 {
+            tx.execute_batch(include_str!("wall.sql"))?;
+            tx.pragma_update(None, "user_version", 9)?;
+        } else if !(9..=10).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 9 {
+            tx.execute_batch(include_str!("member_pages.sql"))?;
+            tx.pragma_update(None, "user_version", 10)?;
+        } else if v != 10 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -492,6 +581,7 @@ impl Board {
             "UPDATE members SET status=?1,epoch=epoch+1 WHERE id=?2",
             params![value, id],
         )?;
+        tx.execute("DELETE FROM room_drafts WHERE member_id=?1", [id])?;
         tx.commit()?;
         Ok(())
     }
@@ -510,6 +600,10 @@ impl Board {
         if changed != 1 {
             return Err(Error::NotFound);
         }
+        tx.execute(
+            "DELETE FROM room_drafts WHERE member_id IN (SELECT id FROM members WHERE handle=?1)",
+            [name],
+        )?;
         tx.commit()?;
         Ok(())
     }
@@ -592,6 +686,31 @@ impl Board {
         body: &str,
         reply: Option<i64>,
     ) -> Result<Post> {
+        self.post_article(
+            session,
+            room,
+            request,
+            PostDraft {
+                subject: "",
+                body,
+                reply_to: reply,
+            },
+        )
+    }
+    /// Empty subject selects a generated label or the parent's reply subject.
+    pub fn post_article(
+        &mut self,
+        session: &Session,
+        room: i64,
+        request: &str,
+        draft: PostDraft<'_>,
+    ) -> Result<Post> {
+        let PostDraft {
+            subject,
+            body,
+            reply_to: reply,
+        } = draft;
+        post_metadata::subject(subject)?;
         text(body, POST_BYTES, true)?;
         if !(16..=64).contains(&request.len())
             || !request
@@ -611,6 +730,19 @@ impl Board {
             if p.room_id != room || p.body != body || p.reply_to != reply {
                 return Err(Error::RequestConflict);
             }
+            let wanted = post_metadata::resolve_subject(&tx, room, reply, subject, p.id)?;
+            let stored: String = tx.query_row(
+                "SELECT subject FROM post_metadata WHERE post_id=?1",
+                [p.id],
+                |r| r.get(0),
+            )?;
+            if stored != wanted {
+                return Err(Error::RequestConflict);
+            }
+            tx.execute(
+                "DELETE FROM room_drafts WHERE member_id=?1 AND room_id=?2 AND request_id=?3",
+                params![session.member, room, request],
+            )?;
             tx.commit()?;
             return Ok(p);
         }
@@ -647,6 +779,12 @@ impl Board {
             body: body.to_owned(),
             reply_to: reply,
         };
+        let subject = post_metadata::resolve_subject(&tx, room, reply, subject, post.id)?;
+        tx.execute("INSERT INTO post_metadata(post_id,article_id,subject,created_at,origin) VALUES(?1,lower(hex(randomblob(16))),?2,unixepoch(),'local')",params![post.id,subject])?;
+        tx.execute(
+            "DELETE FROM room_drafts WHERE member_id=?1 AND room_id=?2 AND request_id=?3",
+            params![session.member, room, request],
+        )?;
         tx.commit()?;
         Ok(post)
     }

@@ -15,7 +15,7 @@ class RepositoryChecks(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / 'repo'
         shutil.copytree(ROOT, self.root, ignore=shutil.ignore_patterns(
-            '.git', '__pycache__', '.venv', 'target', '.DS_Store'))
+            '.git', '__pycache__', '.venv', 'target', '.DS_Store', 'local'))
 
     def errors(self):
         return '\n'.join(validate(self.root, allow_unpublished=True))

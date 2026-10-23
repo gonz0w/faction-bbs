@@ -8,7 +8,7 @@ Separate community semantics from transport-specific addressing, discovery, rout
 
 - The server enforces approved membership for every community action on each access surface.
 - A node operates independently with no public HTTP service, shared-channel federation, central discovery, or alternative transport requirement.
-- Owner direction now permits explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs. Local-only chat, rooms, files and approval stores remain local; home mailbox access stays between the member device and home. No replicated passwords or automatic visited-board membership.
+- Owner direction now permits explicit shared chat, addressed device-encrypted mail and scoped home-identity proofs. Local-only chat, local rooms/community files and approval stores remain local; #101 prioritizes NNTP-first explicitly shared discussion rooms; #103 has a local codec foundation for Netnews articles and #104 optional providers, without enabling an export path. Home mailbox access stays between the member device and home. No replicated passwords or automatic visited-board membership.
 - Directory listings are local discovery records, not membership grants or federation subscriptions.
 - Doors are optional and isolated from the core, with explicit resources, privileges, lifecycle, and return/recovery behavior.
 - Text/ASCII remains useful; ANSI capabilities and legacy encodings need a compatibility contract.
@@ -122,3 +122,47 @@ visiting-board auth protocols. No current login/database migration is introduced
 by these design records. Never move member-side plaintext/decryption into a BBS
 helper to preserve the old thin-SSH UI. #83 builds local files; #84 proves the
 separate home/client/mail model. Native games remain optional host adapters.
+
+## New operator, terminal and communication seams
+
+The [modern stories](../docs/modern-sysop-and-communications.md) introduce a local
+operator status surface, capability-negotiated presentation, narrowly authorized
+host/firewall plans and distinct IRC/XMPP/room adapter research. Keep read-only
+snapshots separate from privileged applies, UI features separate from authority,
+and public/shared channels separate from private device-side conversations.
+No new implementation ABI or production wire runtime is selected. The owner
+selected a Netnews article direction for discussion-room posts only; #103 owns
+codec/migration, #101 NNTP-first validation and #104 optional provider access.
+IRC/XMPP keep their formats. Keep SQLite, local read/approval state and explicit
+publication policy; see [article/news stories](../docs/discussion-articles-and-news.md)
+and [research 0047](research/0047-modern-terminal-and-federation-options.md).
+
+## Room article and reader increment
+
+[ADR 0036](decisions/0036-room-articles-and-reading.md) adds faction-articles,
+a bounded, bounded text-only codec with no database/transport authority.
+Schema 6 now adds local metadata without changing post bodies/replies/unread;
+Authored subjects and local projection now exist; live NNTP adapters remain open.
+The shared faction-terminal message presenter is used by local/worker and service
+readers, retaining only cursors, re-fetching current permissions and acknowledging
+only complete output. No IRC/XMPP formats, session/credential limits or owner
+threads change. See [room reading](../docs/room-reading.md).
+
+[ADR 0037](decisions/0037-persistent-post-metadata.md) specifies transactional
+post metadata, generated legacy labels/unknown dates, local proto-article IDs
+and exact old/new snapshot validation. No live/mixed-version upgrade is supported;
+operators stop/drain and verify complete backups before the first new owner open.
+
+[ADR 0038](decisions/0038-authored-subjects-and-local-article-projection.md) adds
+subject-aware PostDraft posting, reply previews/defaults and approved local
+proto-article projection. Core depends on the existing bounded article
+crate; no new registry package, thread/helper/listener or schema version. Current
+local file permissions apply before returning an exact canonical body. Broader
+interchange and peer/provider runtime remain gated.
+
+[ADR 0039](decisions/0039-broader-articles-and-inn-validation.md) promotes text profile
+v2 with existing reviewed base64 support, exact MIME body semantics, bounded UTF-8
+wire subjects/common dates and root/recent reference pruning. Original INN inews
+passes twelve offline controls on both hosts; temporary refusal fixtures are test
+infrastructure, not a BBS listener or runtime adoption. #101/#104 keep actual
+transport/consent gates and #114 keeps versioned Unicode composing separate.

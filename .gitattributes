@@ -25,3 +25,43 @@ dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
 dev-docs/evidence/sources/** linguist-generated=true
 # A unified diff's required context prefix may precede upstream indentation tabs.
 dev-docs/evidence/sources/*/dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Article fixtures retain protocol-mandated CRLF bytes.
+crates/faction-articles/tests/fixtures/*.article -text whitespace=cr-at-eol
+
+# Preserve the exact executed terminal compatibility baseline.
+dev-docs/evidence/sources/pre25/** -text
+
+dev-docs/evidence/sources/pre25-calendar/** -text
+
+# ANSI templates preserve authored CRLF and canonical import bytes.
+themes/seasons/**/*.ans -text whitespace=cr-at-eol
+
+# Preserve executed seasonal art/source bytes before custom layout work.
+dev-docs/evidence/sources/pre25-layouts/** -text
+
+# Original CP437/SAUCE asset: binary byte encoding and CRLF are intentional.
+themes/grid/login.ans -text
+
+# Exact executed custom-menu inputs before long-form art.
+dev-docs/evidence/sources/pre25-paging/** -text
+
+# Intentional original CP437/SAUCE bytes.
+themes/longform/login.ans -text whitespace=cr-at-eol
+
+# Original Nightwire CP437/SAUCE artwork: preserve binary bytes.
+themes/nightwire*/**/*.ans -text whitespace=cr-at-eol
+
+dev-docs/evidence/sources/pre95-operator/** -text
+
+dev-docs/evidence/sources/pre95-hoststats/** -text
+dev-docs/evidence/sources/pre95-recovery/** -text
+dev-docs/evidence/sources/pre27-directory/** -text
+dev-docs/evidence/sources/pre27-launcher/** -text
+dev-docs/evidence/sources/pre21-room-browser/** -text
+dev-docs/evidence/sources/pre141-writing-desk/** -text
+dev-docs/evidence/sources/pre141-full-screen/** -text
+
+dev-docs/evidence/sources/pre134-wall/** -text
+
+dev-docs/evidence/sources/pre135-members/** -text

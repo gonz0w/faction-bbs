@@ -4,6 +4,204 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a populated private Ghostty/SSH playground workflow, guarded prepared-VM
+  lifecycle controls and new-only sample community seed. Preserve the older saved
+  image and all current runtime/schema/defaults; no public listener or new capacity
+  claim.
+
+- Add optional local member pages and dated .plan history: explicit preview/save,
+  field/page visibility, ASCII signatures/projects, own deletion and sysop
+  moderation/presentation/retention settings, with classic terminals and schema-10
+  owner export/complete-bundle recovery. Stop/drain and back up before upgrade.
+
+
+- Add an opt-in local community wall: short ASCII notes/art, explicit review/send,
+  chronological paging, own edits/delete and sysop removal, configurable name,
+  cooldown/quotas/retention and optional weekly archives, shared across classic,
+  ANSI, worker and shared-service terminals. Schema 9 extends owner snapshots;
+  stop/drain and make a verified complete backup before upgrade.
+
+
+- Full-screen caret/paragraph room editing, themed desk names, explicit confirmed
+  send, and classic fallback with resize/input recovery. Schema 8 adds explicit
+  sysop-readable room checkpoints, resume/delete, four-room quotas, 30-day
+  recovery and atomic send cleanup; old exports remain readable. Stop/drain and
+  verify a complete backup before upgrade. Private-mail drafts remain device-side.
+
+
+- Optional `/edit` room writing desk: multiline paragraphs, undo/clear, fresh reply
+  quoting, paged inert preview and explicit send/cancel in local/worker/shared
+  sessions. Existing one-line posts and retry/unread semantics remain. Drafts
+  are connection-local; full-screen editing and reconnect recovery stay #141.
+
+
+- Add a shared themed ANSI room browser: four-entry pages, arrow/hotkey cards,
+  next-unread selection and New/History/Post into the selected room. Composer
+  clears stale controls and labels the destination. Plain/numeric paths remain.
+- Reuse chronological reader, subject/retry and complete-message unread/output-
+  drain rules; current approval/room/file visibility checks remain authoritative.
+- Preserve 178 prior launcher/fixture inputs and its whole result before changes.
+  No schema, dependency, extra owner helper or normal-limit change; hardening later.
+
+- Add an optional native board launcher with private member-owned profile catalogs,
+  arrow/hotkey pages, explicit connection/disconnect confirmation and return after
+  logout/failure. Retain single-profile behavior and classic-door escape passthrough.
+- Revalidate each selected profile, keep strict SSH host keys and fresh per-visit
+  filters/Files state; no server-supplied endpoint or credential/agent forwarding.
+- Preserve 174 prior directory inputs and its whole result before client edits.
+  Server/schema/defaults remain unchanged; native identity/mail and hardening stay later.
+
+- Add opt-in sysop-curated Other BBSes packs and approved-member connection cards
+  in local, inherited-worker and shared sessions. Arrows/hotkeys, paging, compact/
+  plain and main-menu return share one bounded presenter. No automatic connection,
+  credential/host-key import or remote membership/federation.
+- Add offline directory validation, startup config and deliberate review/expiry/
+  removal documentation. A full custom grid falls back to an ordered eleven-action
+  menu when Files plus Contacts need more cells. Defaults/artwork stay unchanged.
+- Preserve all 173 prior source/harness/build inputs and the entire recovery result
+  before edits. The old standalone UI only gains a disabled-action compatibility
+  arm; its frozen measured sources and historical claims remain unchanged.
+
+- Add complete-bundle verify-only checks and optional private backup/check receipts.
+  Restore shares the same catalog/blob verification before creating fresh paths.
+- Add D:Data/Recovery operator panel with latest-attempt/last-success ages/totals,
+  explicit failure/clock/unavailable labels and the existing themed classic fallback.
+  No live artifact or successful-restore promise, schema, host action or hardening change.
+- Preserve 162 actual host-stat execution/harness inputs and its complete result
+  before this batch; historical measurements remain unchanged.
+
+- Complete the CPU/RAM/network host-stat slice with a fixed native read-only
+  bridge, interval/reset/warming semantics, bounded recent graphs and optional
+  Unicode blocks. Remove the refresh subprocess; preserve plain/classic fallback.
+- Polish compact history and shell return; validate real disposable NetBSD
+  OS-console login/launch/exit without a login-profile or getty change.
+- Preserve 162 original operator/build inputs and the whole initial result before
+  runtime edits. Host applies, peer/backup adapters and hardening remain later.
+
+- Add an explicitly enabled owner-only aggregate status feed and separate local
+  `faction-sysop` console: themed ANSI/plain panels, read-only host summaries,
+  pause/navigation/resize and stale/unavailable/stopped/clock labels. No new
+  listener/helper/schema or member privilege; publication defaults disabled.
+- Preserve both complete Nightwire records and 176 executed inputs before runtime
+  changes; add aggregate privacy/SQL-budget/export and native operator validation.
+
+- Add isolated real-terminal Nightwire probes for page/menu cursor placement,
+  CP437 cell widths and actual compact windows, with explicit fallback and
+  multiplexer viewport guidance. No runtime, theme asset or default change.
+
+- Add original Nightwire CP437 artwork with bespoke slanted lettering, radio-city/
+  receiver scenes, matching short cover and autumn/winter/compact ASCII variants.
+- Add reproducible offline authoring source, product-based geometry/contrast/menu
+  checks and preview/login validation. Packs are opt-in; runtime/default installer,
+  earlier themes and measured inputs stay unchanged. Final owner art review open.
+
+- Add opt-in long ANSI login identities with bounded 16-row paging, Enter/skip,
+  approval checks and compact/plain/resize recovery in local/worker/shared flows.
+- Add original three-page CP437 sample and deterministic page previews. Long
+  imports cap at 80x256 / 64 KiB, each output page <=16 KiB; short imports unchanged.
+- Preserve executed #124 inputs/results before changes; no new dependency/schema.
+
+- Add opt-in sysop grid menus with explicit positions, spatial lightbars, ordered
+  Tab/hotkeys and shared focus restoration; compact/plain ordered recovery stays.
+- Add bounded SAUCE00 Character/ANSi and non-blink iCE background import, an
+  original CP437 grid/login template and inert Unicode-cell authoring previews.
+  Existing 80x16/16 KiB limits and provenance requirements remain.
+- Preserve all executed #123 seasonal sources and its original result before edits.
+
+- Add opt-in annual #25 theme calendars with UTC/system-local dates, bounded
+  priorities/year-wrapping windows, manual/disabled recovery and coherent
+  next-login selection across local/worker/shared sessions.
+- Add original autumn/winter ANSI and compact ASCII login templates, a shared
+  bounded identity presenter and deterministic date/login authoring previews.
+  Calendar defaults disabled; classic/plain recovery and approval stay intact.
+- Extend the existing native bridge for OS calendar conversion; no external
+  dependency/helper, clock/host policy or schema change. Preserve original #122
+  inputs/results before edits; final scene-art acceptance and hardening remain later.
+
+- Polish #25 main menus in both terminal adapters: centered compact/wide panels,
+  continuous lightbar focus, explicit unavailable markers, safe sysop titles and
+  optional wide action descriptions. Keep arrow/hotkey authority and classic/plain fallback.
+- Coordinate base/manual seasonal palettes and add local theme authoring plus
+  original reference-palette previews; no archived art, runtime dependency or graphics-filter change.
+- Freeze all 124 actual #121 source inputs and its unchanged compatibility record
+  before changing presentation. Hardening stays later; no fresh capacity claim.
+
+- Validate twelve real terminal/font/tmux/screen profiles (#118), 48 local/SSH/
+  native BBS sessions, image retention/deletion and live SSH resize recovery.
+  Qualify old GNU screen as classic-only; retain default filtering and fallback.
+- Add reproducible isolated native reference/measurement tools and exact evidence;
+  no runtime dependency, protocol/filter, schema, capacity or hardening change.
+
+- Add optional T/G inline Kitty graphics (#117): positive isolated probes, one
+  original 160x80 RGB calibration image, <=4-KiB chunks after output drain,
+  rate/deadline limits and partial-stream cleanup with classic ANSI fallback.
+- Add explicit native `--kitty` local probe and exact trusted-command regeneration
+  gate; preserve default APC refusal, schema/helper/admission limits and all old
+  measured evidence. No arbitrary art/image-file/PNG/Sixel support or GUI claim.
+
+- Add optional session Terminal settings (#96): native UTF-8 room/subject text,
+  cell-aware paging/clipping/backspace, 16/256/RGB choices, block/braille samples
+  and bounded synchronized redraw with an isolated explicit sync probe. Keep
+  classic defaults/recovery and native-client graphics/control filtering.
+- Review/pin unicode-width 0.2.2 without default features; preserve schema 7,
+  prior evidence and existing credential/helper/admission/output limits. Record
+  modern terminal research/budgets and software fixtures; bitmap/extended input
+  and later hardening remain separately scoped.
+
+- Add schema-7 UTF-8 room subjects (#114) with one shared local/worker/service
+  input editor, split-character/backspace validation, UTF-8-safe reply clipping,
+  bounded inert ASCII echo/previews and subject-aware retry preservation.
+  Validate old schema-6 ASCII before migration; retain public IDs, provenance and
+  read-only old exports. Document stopped backup/upgrade/restore/rollback.
+  Native glyph rendering stays separate; no new dependency, helper or hardening.
+
+- Broaden #103's text codec to profile v2: UTF-8 encoded wire subjects, common
+  numeric-zone dates, bounded plain-text MIME 7bit/8bit/QP/base64 input and exact
+  QP output. Preserve long lines, trailing whitespace and final-newline semantics;
+  keep DB schema 6/composer ASCII and track Unicode composing separately in #114.
+- Prune bounded local reply ancestry to root plus fifteen recent References with
+  a fixed 128-ancestor work cap. Add original INN 2.7.4 offline roundtrip/rejection
+  validation on macOS/NetBSD and CI; no news runtime, publication or hardening
+  activation. Preserve all earlier measured source/result identities.
+
+- Add authored room subjects, previewed inherited reply defaults and subject-aware
+  retry checks in local/worker and shared terminal sessions (#103). Keep schema 6.
+- Connect approved stored posts to bounded local proto-articles with safe aliases,
+  UTC, group/Path mapping, ordered references and strict duplicate/conflict
+  comparison. Preserve canonical bodies, unknown legacy dates and current file
+  permissions; no publication/import/NNTP runtime. Add independent MIME parsing
+  and separate synthetic codec allocation measurements.
+
+- Add schema-6 persistent post metadata (#103): stable local article IDs, generated
+  subject labels and actual new-post UTC timestamps; preserve unknown legacy dates,
+  body/reply/unread data and old exports. Show bounded metadata headers in both
+  room readers. Document stopped-service backup/upgrade/rollback; no news feed,
+  new authority or authored-subject composer is enabled.
+
+- Capture later-phase hardening stories #106–#111: release/member signing, minimal
+  VM, post-compromise containment, storage/backups and independent validation.
+  No host/firewall/key changes or adopted hardened profile.
+
+- Add a dependency-free Rust Netnews text-article codec and offline validator
+  (#103 foundation), plus shared wrapped/paged room screens for local/worker and
+  shared-service sessions (#21/#25). Preserve contiguous file-reference tokens,
+  current approval checks and drain-before-complete-message unread acknowledgment;
+  use sysop theme colors for ANSI section changes. No schema migration, listener,
+  provider connection or automatic publication. Preserve the original native-client
+  sources in the exact pre90 snapshot before shared UI/workspace changes.
+
+- Capture owner stories #95–#101: local VM-console sysop dashboard, modern terminal
+  capability/graphics research, NAT-aware firewall controls, NetBSD host assistance,
+  integrated native XMPP unread/private UX, real IRC comparison and opt-in shared
+  discussion-room protocol research. Update current product/agent trust boundaries,
+  UI-polish expectations and primary-source inputs. No runtime/protocol adoption,
+  live host/firewall change or automatic room publication is implemented.
+
+- Record the owner's Netnews article direction for discussion-room posts only
+  (#103), NNTP-first optional peering (#101) and read-only-first news-provider
+  subscriptions (#104). Keep IRC/XMPP formats, chronological rooms, local storage
+  and explicit publication boundaries; no codec, migration or adapter is enabled.
+
 - Add a separate two-home encrypted-mail and scoped roaming research proof (#84):
   12 real OMEMO-2/SCE mail controls against independently owned Prosody 13.0.7
   processes on NetBSD, plus 11 native SSH certificate-verifier controls. Retain

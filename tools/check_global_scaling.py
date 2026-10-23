@@ -245,7 +245,7 @@ def run(args):
                         phase='full_ui_at_250';c=clients[-1];began=time.monotonic()
                         c.send('/quit');c.expect('Chat closed.');c.expect('Ctrl-C exits; Esc: Enter to recover.')
                         c.raw(b'r');c.expect('More rooms? [y/N]: ');c.send('n');c.expect('Press Enter to return to menu: ');c.send('');c.expect('Ctrl-C exits; Esc: Enter to recover.')
-                        c.raw(b'p');c.expect('Room ID: ');c.send('1');c.expect('Reply to post ID');c.send('');c.expect('Message (one line');c.send('UI load '+secrets.token_hex(8));c.expect('Submission ID: ');c.expect('Posted #');c.expect('Press Enter to return to menu: ');c.send('');c.expect('Ctrl-C exits; Esc: Enter to recover.')
+                        c.raw(b'p');c.expect('Room ID: ');c.send('1');c.expect('Reply to post ID');c.send('');c.expect('Subject (blank for generated/reply default): ');c.send('');c.expect('Message (one line');c.send('UI load '+secrets.token_hex(8));c.expect('Submission ID: ');c.expect('Posted #');c.expect('Press Enter to return to menu: ');c.send('');c.expect('Ctrl-C exits; Esc: Enter to recover.')
                         c.raw(b'n');c.expect('Room ID: ');c.send('50');c.expect('More? [y/N]: ');c.send('n');c.expect('Press Enter to return to menu: ');c.send('');c.expect('Ctrl-C exits; Esc: Enter to recover.');c.raw(b'c');c.expect('chat[#lobby]> ')
                         observed=ui_stream.finish();observed.update({'connected_members':250,'peers_in_chat':249,'room_list':'pass','selected_room_page':'pass','post_submission':'pass','return_to_live_chat':'pass','elapsed_seconds':time.monotonic()-began});ui_work.append(observed)
                     finally:ui_stream.abort()

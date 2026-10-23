@@ -331,6 +331,12 @@
     },
     {
       "features": [],
+      "license": "MIT OR Apache-2.0",
+      "name": "unicode-width",
+      "version": "0.2.2"
+    },
+    {
+      "features": [],
       "license": "MIT/Apache-2.0",
       "name": "vcpkg",
       "version": "0.2.15"
@@ -698,6 +704,12 @@
       "license": "MIT OR Apache-2.0",
       "name": "typenum",
       "version": "1.20.1"
+    },
+    {
+      "features": [],
+      "license": "MIT OR Apache-2.0",
+      "name": "unicode-width",
+      "version": "0.2.2"
     },
     {
       "features": [],

@@ -1,6 +1,129 @@
 # Roadmap and stage
 
-Updated 2026-10-21. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+## Current playable preview
+
+After merged #151, #152 makes the current social board easy to try through a
+[private persistent SSH playground](../docs/test-playground.md). Sample rooms,
+wall/pages/plans/chat and the existing Lua arcade reuse the current runtime.
+This batches owner testing and lifecycle work; next social stories remain open.
+Hardening stays later.
+
+## Local people and projects
+
+After checked #150, #135 adds optional local member pages and dated `.plan` updates:
+explicit author preview/visibility/removal, bounded history, sysop presentation and
+moderation, classic fallback and schema-10 recovery. No public Finger/home files,
+identity proofs or profile federation. Next social stories remain separate, and
+hardening stays later.
+
+## Full-screen writing and room recovery
+
+After checked #148, #141 adds the [full-screen room editor](../docs/writing-desk.md),
+classic fallback and explicit recoverable board checkpoints. Native device mail
+remains separate. Schema-8 stopped upgrades/backups, inert themed titles, current
+approval and original resource defaults stay explicit. Social wall/member pages/
+gatherings and the other #133 stories can build on the room/visit foundation;
+advanced editor/autosave/member-export increments remain separate. Hardening later.
+
+## Useful room navigation
+
+After checked #132, the [named room browser](../docs/room-browser.md) adds themed
+ANSI room selection, current unread counts and selected-room reading/posting.
+Plain and manual N/H/P remain, with unchanged chronological/unread semantics.
+This #21/#12/#25 batch adds no schema, federation or hardening work.
+
+## Native community visits
+
+After checked #131, the optional [native board launcher](../docs/board-launcher.md)
+adds member-owned profiles and deliberate visits/return without restarting the
+client. Directory cards never import profile/host-key authority; every destination
+requires its own account/approval. Member submissions and automatic profile handoff
+remain follow-on #27 work; hardening remains later.
+
+## Useful community directory
+
+After checked #130, #27/#21 adds the optional local [Other BBSes directory](../docs/other-boards.md):
+reviewed pack, themed arrow/hotkey paging and SSH connection cards. No automatic
+connection, credentials, host-key trust, remote approval or federation. Submission
+UI/native handoff remain follow-on work. Hardening stays later.
+
+## Local operator batch
+
+After merged #130, related #95/#18/#98 work adds the first optional
+[local sysop console](../docs/sysop-console.md): private aggregate snapshots,
+live CPU/RAM/network counters, bounded recent graphs, themed panels and classic fallback. No member SSH
+authority or host settings change. #95 now adds explicit [backup checks](../docs/backup-checks.md) and a Recovery
+panel; peer adapter telemetry and broader visual acceptance remain. #98 applies/rollback, #97 firewall and hardening stay separate.
+
+Updated 2026-10-22. GitHub issue and milestone state is authoritative; see the [issue index](issue-index.md).
+
+## BBS menu and theme polish
+
+After merged #121's software compatibility work, #25 now improves the ordinary
+lightbar main menu and sysop authoring workflow. Compact/wide ASCII panels,
+base titles/descriptions and manual seasonal palettes preserve classic fallback,
+action checks and output limits. [Preview/customization](../docs/theme-packs.md)
+needs no live board. Final original/authorized identity art and native visual review
+remain separate work. Optional annual UTC/system-local calendars,
+priorities, manual/disabled recovery and original seasonal login templates now
+extend this foundation. Each approved login pins its shared catalog selection;
+examples default disabled. See the [calendar guide](../docs/theme-packs.md#seasonal-calendar-and-login-screens).
+Opt-in custom grids now define explicit positions, spatial arrows and ordered
+Tab with classic fallback. Bounded SAUCE/iCE import enables original/licensed
+80-column login cards. Opt-in long-form identities now page in bounded screens
+with Enter/skip and classic recovery. Animation, larger formats and final scene
+identity stay open.
+The opt-in [Nightwire artwork](../docs/artwork-nightwire.md) now provides original
+bespoke lettering and radio-city scenes across short/paged and seasonal identities,
+with matched compact cards. Authoring source/previews are reproducible; owner
+visual acceptance and real terminal/font certification remain open.
+Hardening stays later.
+
+## Modern terminal foundation
+
+Merged #116 completes schema-7 Unicode composing. #96 now supplies optional
+[native room/subject text and terminal settings](../docs/terminal-capabilities.md),
+cell-aware wrapping/clipping, color/graph samples and isolated sync probing.
+Default classic mode, native-client control filtering and existing resource/
+approval rules remain. Bitmap rendering, extended input and full emulator/font
+interop remain separate work; hardening #106–#111 stays later.
+
+## Unicode subject composing
+
+#115 is merged (a5c0465), completing the bounded local #103 text profile and
+original INN validation. #114 now implements [schema-7 UTF-8 composing](../docs/unicode-subjects.md)
+in local/worker and shared terminals, with a stopped upgrade, versioned snapshot
+validation and bounded classic display. Optional native scalar rendering follows under #96;
+actual news peers/providers stay #101/#104. Keep hardening #106–#111 later.
+Software-only native NetBSD validation suffices; no new 250-user capacity claim.
+
+## New owner stories from the running playground
+
+[Modern sysop/communications stories](../docs/modern-sysop-and-communications.md)
+#95–#101 capture the OS-console dashboard, modern terminal detection/graphics,
+NAT-aware abuse rules, NetBSD setup assistant, native XMPP unread/private UX,
+actual IRC reuse/server linking and NNTP-first optional room federation. The
+owner selected Netnews article formatting for discussion posts only (#103); IRC
+and XMPP keep live/private formats. #104 captures optional news-provider access,
+read-only first; [article/news requirements](../docs/discussion-articles-and-news.md)
+separate local codec/migration from publication and peering.
+These are planned, not implemented. Improve #21/#25 screen/message presentation
+and bounded operator visibility while keeping the existing local board useful and
+continuing #90/#91/#88. Privileged host applies and protocol adoption follow their
+own design/validation gates. The local playground was already cleanly powered
+off; a private standalone image checkpoint and restart helpers are preserved.
+
+Researching explicit shared rooms is now allowed beyond older local-only wording;
+this does not enable automatic export, account replication or public syndication.
+Read [research 0047](research/0047-modern-terminal-and-federation-options.md) before
+assuming Ghostty graphics, guest IP bans, IRC federation or a forum protocol works.
+
+The room-article batch supplies a dependency-free text-article codec, paged room
+presentation (#21/#25), persistent metadata, authored subjects and local article
+projection. Merged #115 completes the bounded #103 profile and original INN offline
+controls; schema-7 Unicode composing follows in #114. #101/#104 still gate live
+peer/provider interoperability. No automatic room export or external service is
+introduced. See [room articles](../docs/room-articles.md).
 
 ## Product-first sequencing
 
@@ -174,3 +297,46 @@ research direction selected by the owner. Keep #55 adoption/independent loader
 review, #23/#18 broader source/admission policy, #20 maintained host/timekeeping
 and CPU interpretation, and implementation of #28's overlap/long-soak/budget
 contract under #55 open. #28 itself is the closed budget-definition deliverable.
+
+## Later-phase hardening
+
+[#106–#111](../docs/later-phase-hardening.md) capture release/member signing,
+minimal VM, post-compromise isolation, storage/backups and independent validation.
+These extend #19/#18/#55/#29/#30/#31 and #97/#98; they do not block ordinary product
+work or weaken existing safeguards. Software fixtures now, physical claims later.
+
+The next #103 increment implements schema-6 local metadata and headers; see
+[upgrade requirements](../docs/post-metadata.md). Actual From/Path/group injection,
+authored subjects, broader MIME and peer/provider interoperability remain open.
+
+The next #103 increment implements authored subjects, reply defaults, local article
+projection and strict duplicate/conflict comparison. Broader header/MIME/date/
+reference policy and independent news software remain open; #101/#104 own actual
+peering/provider delivery. Keep #106–#111 hardening queued for its later phase.
+
+#103's bounded local article foundation now includes profile-v2 MIME/UTF-8 wire
+support, common dates, root/recent References and original INN offline controls on
+macOS/NetBSD. Live news/peer/provider gates remain #101/#104. Internationalized
+composer/storage compatibility is #114. Hardening #106–#111 remains later.
+
+Follow-ups: [bounded inline bitmap renderer #117](https://github.com/gonz0w/faction-bbs/issues/117)
+and [real emulator/font/multiplexer validation #118](https://github.com/gonz0w/faction-bbs/issues/118).
+
+#117 now adds a narrow opt-in trusted inline RGB preview and a separate native
+member gate under [ADR 0042](decisions/0042-kitty-graphics.md). Classic remains
+default; rich licensed asset import, real GUI/font/tmux validation (#118), sysop
+dashboard and later hardening remain separate.
+
+#118's [real software matrix](../docs/terminal-compatibility.md) now qualifies
+twelve pinned profiles and actual native/member-SSH paths. Old screen is
+classic-only; tmux keeps image fallback. Physical keys, pixel/artwork quality and
+GPU FPS remain unclaimed; richer licensed art continues under #25.
+
+Nightwire #25 follow-through now measures canonical page/menu placement and CP437
+widths in real terminal fixtures. See the [compatibility guide](../docs/artwork-terminal-compatibility.md).
+Visual font/palette quality and owner artwork acceptance stay separate; no new
+capacity/native deployment or hardening claim.
+
+The local community wall (#134, plan 0060) adds the next bounded hangout feature:
+ASCII notes, local sysop policy, moderation and explicitly retained weekly editions.
+Keep protocol/identity adapters and later hardening separate from this local UI.

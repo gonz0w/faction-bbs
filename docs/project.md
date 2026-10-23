@@ -1,6 +1,6 @@
 # Faction BBS: product direction
 
-Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-21. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
+Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-22. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
 
 ## Purpose and character
 
@@ -14,17 +14,17 @@ The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes 
 | --- | --- |
 | Membership | Login/registration and local sysop approval before community access. |
 | Session | WWIV-inspired flow: approved login, BBS-specific ANSI identity art, sysop-defined welcome/broadcast/quote, main menu. |
-| Boards | Citadel-style rooms: discover/enter a room, read new messages, post, reply. Exact reply presentation remains open. |
-| Chat | IRC-style commands and channels. The local console and restricted SSH worker now have board/private channels and bounded history ([guide](local-chat.md)); future shared-channel participation remains separate. |
+| Boards | Citadel-style chronological rooms: discover/enter, read new messages, post and reply, with formatted headers/wrapping/pagination and clean section transitions. Local by default; Shared wrapped/paged room presentation and an offline Netnews text codec exist; schema-6 metadata now adds local article IDs, authored/default subjects and new-post UTC times; local proto-article projection exists, while bounded v2 MIME/UTF-8 wire support and offline original INN checks exist (#103); live NNTP peering/providers (#101/#104) remain planned; schema-7 Unicode composing and optional [native text rendering](terminal-capabilities.md) now exist. |
+| Chat | Local IRC-style commands/channels and bounded history exist ([guide](local-chat.md)). #100 now compares actual IRC/IRCv3 and invited server links for public/shared chat; private XMPP conversations/unread UX are #99. No IRC wire support is claimed. |
 | Files/mail | [Local file areas](file-areas.md) with separate restricted SFTP first; later classic transfer adapters. [Private mail](private-mail.md) requires member-side encryption and a native local terminal client; no BBS/home server reads plaintext. File areas/SFTP and the [native transfer client](native-client.md) are optional working previews, including permission-checked room/chat file links; encrypted mail/attachments and roaming identity remain outside the product, with a [two-home protocol proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md) and native integration tracked in #90/#91. |
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
-| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local membership/approval, rooms, files, directories and local-only chat remain local. See [home identities/mail](private-mail.md); not implemented. |
+| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 prioritizes NNTP-first opt-in discussion rooms; article format #103 and optional providers #104 remain planned. See [home identities/mail](private-mail.md); protocols remain gated. |
 | Terminal | Ordinary SSH terminal clients are the initial secure-access direction, with optional invitation-only private-network operation (owner acceptance 2026-10-19). Overlay admission, SSH identity and local BBS approval remain distinct; no member host shell is implied. Physical serial terminals are not a current target. A [restricted development gateway](restricted-ssh.md) now passes native NetBSD application/member oracles; complete production enforcement/capacity remains unvalidated. |
-| Menus/themes | Oblivion/2-inspired arrow-key highlight + Enter and direct displayed hotkeys (D/d for `[D]oors`). Sysop-defined palettes/layouts/art are foundational; seasonal colors/login screens are an optional direction. ACiD/iCE and Razor/scene typography are visual references; see [menu/theme direction](menus-and-themes.md). |
+| Menus/themes | Oblivion/2-inspired arrow-key highlight + Enter and direct displayed hotkeys (D/d for `[D]oors`). Sysop-defined palettes/layouts/art are foundational; optional bounded custom grids, SAUCE/iCE import and long-art login paging now extend the classic list. Optional manual/annual seasonal palettes and login templates now work in the preview, with a disabled example calendar and next-login selection. ACiD/iCE and Razor/scene typography are visual references; see [menu/theme direction](menus-and-themes.md). |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
 | Networks | Initial focus: modern private networks, with occasional poor/interrupted connections (owner clarification 2026-10-19). Constrained links remain research inputs; future mesh/non-IP networks are separately evaluated and no specific alternative transport is promised. |
-| Operations | Software/developer-host and NetBSD VM validation now; physical SBC testing deferred until a complete product can be loaded by the owner. No physical hardware gate on software work. Approachable hobby operation on small SBCs/Raspberry Pi or a small VM appliance; MINIX is a candidate, not mandatory (owner clarification 2026-10-19). Compare whole runtime images and update/recovery burden, not full distribution size. Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. [Current private snapshot tools](export-restore.md) cover schema-2 through schema-5 databases, including arcade bests and file catalog/public references; complete file-area bundles additionally preserve blobs. Full installation/member-scoped exports remain work. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
+| Operations | Software/developer-host and NetBSD VM validation now; physical SBC testing deferred until a complete product can be loaded by the owner. No physical hardware gate on software work. Approachable hobby operation on small SBCs/Raspberry Pi or a small VM appliance; MINIX is a candidate, not mandatory (owner clarification 2026-10-19). Compare whole runtime images and update/recovery burden, not full distribution size. Small, fast, lightweight self-hosting; local ownership, export, backup/recovery, and graceful degradation. [Current private snapshot tools](export-restore.md) cover schema-2 through schema-10 databases, including arcade bests, file catalog/public references, explicit local-room draft checkpoints and local wall notes/settings/receipts and member pages/dated updates; complete file-area bundles additionally preserve blobs. Full installation/member-scoped exports remain work. Owner research envelope: small SBC/VM, 1–2 cores, about 1 GiB host RAM, 100–250 connected members (2026-10-19). This is a measurement target, not supported capacity or an application memory allowance. |
 | Extensions | Core first, then Lua menus/isolated game doors. Research optional public permanent rooms, ANSI commerce/payment models, blockchain-linked game economies and modern network adapters; no provider/custody/runtime adopted. See [extension direction](extensions.md). |
 | Privacy | Minimal opt-in telemetry, deliberate exposure and retention policies, no mandatory public directory or central service. |
 | Technology | Rust selected; NetBSD primary target, initially validating NetBSD 11 ARM64. No broad NetBSD-port or physical SBC support claim. No JavaScript or TypeScript anywhere in project source/tooling/dependencies, including browser-terminal assets. Select fast/lightweight implementation options through comparison and prototypes. |
@@ -56,7 +56,7 @@ Current sequencing is [software-first local core, then Lua](../dev-docs/decision
 
 - Full account lifecycle, registration fields and remote-safe recovery; local bootstrap, pending/approved/revoked status and owner-only recovery exist in the [development console](local-development.md).
 - Room reading order, unread state, quoting/reply behavior, and retention/moderation.
-- Whether existing IRC clients must interoperate; the implemented console slash commands do not provide an IRC wire server.
+- Which real IRC service/adapter/client interoperability and invited linking profile to adopt (#100); implemented slash commands still provide no IRC wire server.
 - SSH backend, identity/bootstrap mapping, confinement and private-only binding validation; any legacy Telnet compatibility remains separate from the accepted secure-access direction. Disabled/private portal operation remains required.
 - Whether a useful browser console is achievable with no JavaScript dependencies; permitted alternatives and explicit tradeoffs need research.
 - Character encodings, ANSI capabilities, safe parsing, plain-text fallback, and link budgets.
@@ -80,3 +80,34 @@ XMPP/OMEMO and cross-BBS auth are under research #84, not working integrations.
 This supersedes earlier blanket chat-only/local-mail constraints only for these
 explicit capabilities. See ADRs [0030](../dev-docs/decisions/0030-file-areas-and-transfer-adapters.md)
 and [0031](../dev-docs/decisions/0031-home-identities-and-client-encrypted-mail.md).
+
+## Latest direction: local sysop console and modern communications
+
+After using the live SSH playground, the owner requested a local OS-console
+sysop dashboard (#95), progressive terminal capability/graphics support (#96),
+NAT-aware abuse rules (#97), NetBSD maintenance/setup assistance (#98), tightly
+integrated native XMPP unread/private chat/mail/attachments (#99), a real IRC
+reuse comparison (#100) and optional discussion-room federation research (#101).
+The [current stories](modern-sysop-and-communications.md) define acceptance and
+trust boundaries. The operator console follows OS authentication rather than the
+member SSH path; an in-BBS sysop role grants no host privileges. Capability probes
+and guest firewall rules must reflect actual terminal/network topology.
+
+The owner clarified that discussion posts should use Netnews-format articles,
+with optional NNTP/news-provider connections; IRC and XMPP retain live/private
+formats. See [article/news requirements](discussion-articles-and-news.md) and
+#103/#104. Formatting does not publish content or replace SQLite.
+
+The new room item supersedes an absolute ban on **researching** shared rooms;
+local-by-default storage and consent remain. No automatic room replication,
+shared approvals, public listener, host change or new wire
+runtime is adopted. Keep ordinary board operation useful with every adapter off.
+
+The optional [Kitty preview](kitty-graphics.md) adds one bounded trusted RGB image
+and a separate native local opt-in gate, preserving classic ANSI and sysop themes.
+Real emulator/font/multiplexer certification and richer licensed assets stay future
+work; no new host/hardening or capacity claim follows.
+
+[Named terminal compatibility profiles](terminal-compatibility.md) now have real
+software evidence, including native client/member SSH and conservative old-screen
+fallback. This does not certify pixel/glyph quality or add a terminal runtime.

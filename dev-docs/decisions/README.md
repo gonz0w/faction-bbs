@@ -60,3 +60,32 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0033: Native terminal transfers and local file references](0033-native-terminal-files.md).
 
 - [0034: Encrypted-mail reuse and roaming-admission proof](0034-encrypted-mail-reuse-proof.md) — accepted experiment boundary; complete native adoption remains open.
+
+- [0036: Room article foundation and paged reading](0036-room-articles-and-reading.md) — bounded local text profile and shared safe screens; no schema/feed adoption.
+
+- [0037: Persistent local post metadata](0037-persistent-post-metadata.md) — atomic metadata, honest legacy dates and old/new snapshot validation.
+
+- [0038: Authored subjects and local article projection](0038-authored-subjects-and-local-article-projection.md)
+
+- [0039: Broader articles and INN validation](0039-broader-articles-and-inn-validation.md)
+
+- [0043: Bounded BBS main-menu composition](0043-bounded-menu-composition.md).
+
+- [0044: Preloaded next-login seasonal themes](0044-next-login-seasonal-themes.md).
+
+- [0045: Custom grids and bounded SAUCE/iCE import](0045-custom-grid-and-sauce-import.md).
+
+- [0046: Bounded long-form login art](0046-paged-long-form-login-art.md).
+
+- [0047: Opt-in private operator snapshots](0047-private-operator-snapshots.md).
+
+- [0052: Named room browser](0052-named-room-browser.md).
+- [0053: Explicit multiline room writing](0053-explicit-room-writing-desk.md).
+
+- [0054: Full-screen room editor and explicit checkpoints](0054-room-editor-and-checkpoints.md).
+
+- [0055: Bounded local community wall](0055-bounded-local-community-wall.md).
+
+- [0056: Local member pages and .plan history](0056-local-member-pages-and-plans.md).
+
+- [0057: Private persistent terminal playground](0057-private-persistent-playground.md).

@@ -1,6 +1,6 @@
 # Private local export and restore
 
-Updated 2026-10-21. These are filesystem-owner tools for the local development
+Updated 2026-10-22. These are filesystem-owner tools for the local development
 core, not member commands or a network backup service. Build with
 [the local development instructions](local-development.md). Keep the owner-capable
 executable and state out of member SSH shells/forced commands.
@@ -29,14 +29,19 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2, 3, 4 and 5 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2, 3, 4, 5, 6 and 7 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
 when files are installed. Schema 5 additionally preserves the stable **public**
 file namespace and room/chat references; this does not preserve session authority.
-Verification is read-only; restored schema-2/3/4 boards upgrade to schema 5 when
-opened by the new build. For schema 1 upgrades, stop
+Schema 6 additionally preserves article IDs, generated subjects, timestamp/origin
+metadata and unknown legacy dates. Schema 7 preserves these fields and adds
+[byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
+requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
+Verification is read-only; restored schema-2/3/4/5/6/7/8/9 boards upgrade to schema 10 when
+opened by the new build. Follow the
+[stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
 before the existing transactional upgrade; this exporter cannot replace that copy.
 
@@ -139,3 +144,26 @@ Credential-budget lock files coordinate running local processes and contain no
 passwords. They are not part of the snapshot artifact; a fresh restored board
 creates new locks on credential work. Never unlink them from a live source board
 or interpret their presence as approval/authentication state.
+
+The optional [Recovery panel](backup-checks.md) reports explicit checks of complete
+file-area bundles. A standalone catalog export is not a complete file backup and
+does not generate such a receipt. `backup.status` is disposable local telemetry,
+not authoritative board data and not part of export/fresh restore.
+
+The optional [other-BBS directory](other-boards.md) is external reviewed host
+configuration. Preserve its pack separately; it is not part of the DB export or
+complete file-area bundle and never imports remote membership.
+
+Schema-8 exports also include private [room draft checkpoints](writing-desk.md).
+These are sysop-readable plaintext with member/room/revision binding; restored
+checkpoints still require current local approval. Explicit send removes its saved
+revision atomically, and expired checkpoints cannot be resumed. Logical deletion
+does not erase older exports or WAL bytes. Keep the stopped complete upgrade and
+fresh-path rollback procedure.
+
+Schema 9 additionally includes the optional [local community wall](community-wall.md):
+policy, current/explicitly retained notes and bounded per-member cooldown/retry receipts.
+These are plaintext local community data; logical deletion is not secure erasure.
+
+Schema 10 includes optional [local member pages](member-pages.md), policy and
+bounded dated updates, including hidden content in plaintext owner snapshots.

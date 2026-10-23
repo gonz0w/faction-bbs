@@ -1,9 +1,9 @@
 # Menus, sysop themes and seasonal identity
 
-Status: confirmed owner direction, 2026-10-19. A local vertical-menu/theme baseline
-is implemented; [the pack guide](theme-packs.md) states exact supported behavior.
-The broader design below includes future requirements. No scheduler, historical
-art pack or network BBS release is available.
+Status: owner direction with menu polish implemented, 2026-10-22. List/grid menus and bounded identity import
+are implemented; [the pack guide](theme-packs.md) states exact supported behavior.
+The broader design below includes future requirements. Annual next-login scheduling is now available; historical
+art packs and a supported network BBS release remain separate.
 Issues: #13/#21/#25/#29/#31. [Visual references](../dev-docs/research/0025-menu-and-art-direction.md).
 
 ## Interaction that belongs on a BBS
@@ -49,17 +49,18 @@ need Lua; later Lua menus/doors use the bounded extension contract.
 
 ANSI is a primary product surface. Preserve CP437/text-cell composition, palette,
 shade/half-block detail, intended aspect/font and safe control semantics where
-supported. Research SAUCE metadata and iCE bright-background versus blink behavior;
-do not reinterpret an artist's file as arbitrary Unicode or raw trusted escape bytes.
+supported. The bounded SAUCE/iCE profile is documented in the pack guide; broader
+format/font compatibility remains research.
+Do not reinterpret an artist's file as arbitrary Unicode or raw trusted escape bytes.
 Plain text is an alternative mode, not the visual quality target for capable sessions.
 Long scrolling identity art and a compact interactive menu can be different assets.
 
 ## Seasonal themes
 
 Support the direction of sysop-defined seasonal colors and login/identity screens.
-The initial step may be manual pack/override selection; calendar automation remains
-an optional #25 design item. Proposed scheduling supports named date windows,
-the sysop's timezone/calendar, explicit priority for overlaps and a manual override.
+Manual pack/override selection and annual next-login calendars are implemented.
+The calendar supports named date windows, explicit UTC/system-local rules,
+overlap priorities and a manual override; see the [pack guide](theme-packs.md).
 Do not hardcode Northern Hemisphere seasons or a particular holiday calendar.
 
 Use a base theme with optional seasonal palette/art overrides. Missing overrides
@@ -86,3 +87,61 @@ Historical archive access is a study reference, not a redistribution license.
 Themes/assets need creator, source, permissions, modifications and encoding/dimension
 records before distribution. The reference catalog links examples without bundling
 their files, screenshots, group logos or incidental historical text.
+
+## Live-playground follow-up stories
+
+The owner confirmed that the current functional screens need a dedicated polish
+pass: clear/replace distinct views, consistent contextual headers/help/back paths,
+formatted chronological room messages, width-aware wrapping, reply/quote context
+and bounded pagination (#21/#25). Preserve drafts and deliberate live-chat scrolling.
+[Modern terminal story #96](modern-sysop-and-communications.md) adds capability-based
+colors/text graphs/graphics research with safe fallback. The local sysop dashboard
+#95 uses the same board identity where appropriate; richer rendering never gives
+an in-BBS role host authority or lets a sysop theme replace trusted local mail UI.
+
+The [shared room reader](room-reading.md) now implements the first presentation
+polish: themed ANSI section clears, room/author/reply headers, separators and
+wrapped message pages. Plain text follows the same journey. File-reference tokens
+remain intact for native shortcuts. Optional native Unicode/graphics and seasonal calendars now extend this
+foundation; further composition and final artwork remain #21/#25/#96 work.
+
+## Current lightbar presentation (#25)
+
+The local/worker and shared-service main menu now uses the same compact/wide
+framed lightbar with sysop title and optional wide action descriptions. See the
+[pack guide and actual-renderer previews](theme-packs.md). Themes retain 16-color
+ASCII menu chrome, clear section changes, explicit unavailable markers and bounded
+focus updates; classic/plain recovery needs no graphics or Unicode negotiation.
+Manual autumn/winter overrides stay independent of command mappings. The new
+local preview example and stdlib SVG renderer let sysops validate layout without
+opening a live board. These are original interface elements, not final approved
+identity art. Commissioned/authorized art, visual font review and
+broader formats remain open; don't infer those from the previews.
+
+The [calendar and login guide](theme-packs.md#seasonal-calendar-and-login-screens)
+now implements UTC/system-local annual windows, explicit overlap priority,
+manual/disabled recovery and next-login selection. A shared preloaded catalog
+keeps each approved session coherent. Original seasonal ANSI/compact ASCII
+examples exercise the common bounded presenter; the shipped calendar is disabled.
+Opt-in [custom grids](theme-packs.md#custom-grid-layouts-and-cp437-art) now add
+explicit two-column/five-row positions and spatial arrows while keeping ordered
+Tab/hotkeys and compact/plain recovery. The importer accepts bounded SAUCE00
+Character/ANSi metadata and non-blink iCE backgrounds, never raw escape streams.
+An original CP437 sample demonstrates the path. Final scene identity-art
+acceptance, animation and larger formats remain #25 work. Optional long-form
+login paging is now implemented in the bounded profile below.
+
+The [long-form login guide](theme-packs.md#long-form-login-art-and-paging) now
+supports explicit 80x256 / 64 KiB assets, sixteen-row pages, Enter/skip and
+classic/compact recovery. This retains the short-art importer contract and does
+not imply unlimited scrolling, animation or compatibility with every scene pack.
+
+## Original artwork candidate
+
+The [Nightwire set](artwork-nightwire.md) is original CP437 artwork with a custom
+slanted/beveled FACTION wordmark, radio-city skyline and illustrated receiver.
+Short cover, three-page identity, seasonal colors and compact ASCII cards now
+form one coordinated set. It is opt-in with exact source/rights and reproducible
+canonical previews; the default installer and all existing packs stay unchanged.
+Owner visual acceptance and actual terminal/font review remain distinct from
+software checks. No archival artwork or generic font logo is bundled.
