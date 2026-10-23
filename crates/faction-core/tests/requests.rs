@@ -226,7 +226,7 @@ fn snapshot_roundtrip_preserves_requests_and_exact_schema_fourteen_stays_readonl
     assert!(b.file_request(&s, id).unwrap().offer.is_some());
     drop(b);
     f.db()
-        .execute_batch("DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;PRAGMA user_version=14")
+        .execute_batch("DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;PRAGMA user_version=14")
         .unwrap();
     let out = f.0.join("old");
     export_local(&f.path(), &out).unwrap();

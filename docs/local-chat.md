@@ -154,3 +154,13 @@ actual IRC/IRCv3/server linking a specific comparison (#100), with native XMPP
 private chat/mail/attachments UX (#99/#90/#88). Current slash commands still do
 not provide an IRC wire server. #101 separately researches explicitly shared
 persistent rooms; local-only channels and existing rooms are never auto-relayed.
+
+## Optional social lounge
+
+The [opt-in social lounge](social-lounge.md) adds availability and bodyless polite
+page/accept/decline signals across live local chat channels. Sysops enable/name it
+with /social; members opt in for each chat entry and explicitly check /pages.
+Mute, blocks and UTC quiet-hour intent persist. This is separate from existing
+channel /names: /hide removes lounge advertising, not explicit channel membership.
+No custom private-message body, forced join, automatic page popup or federation.
+Board-wide presence outside chat remains #137 follow-on work.

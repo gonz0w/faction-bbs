@@ -29,7 +29,7 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2 through 16 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2 through 17 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2..15 boards upgrade to schema 16 when
+Verification is read-only; restored schema-2..16 boards upgrade to schema 17 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -237,3 +237,12 @@ cryptographic proof of author intent. Exact schemas 2–15 remain read-only vali
 owner startup migrates restored older boards forward. Stop/drain and verify a
 complete backup before upgrading; older software cannot open schema 16. Retained
 copies/backups are not erased by withdrawal or deletion.
+
+Schema 17 additionally preserves [social lounge](social-lounge.md) configuration,
+personal mute, UTC quiet hours and bounded block intent. Live chat-linked social
+presence, invitations/replies and per-account rate timestamps are removed from
+exports; restore never re-advertises a member or revives a page. Complete bundles
+retain this privacy intent alongside editorial/file/room state. Exact supported
+schemas 2–16 remain read-only valid; stop/drain and verify a complete backup before
+upgrading, with new owner startup migrating restored older boards to schema 17.
+No in-place downgrade, mixed-version owners or secure-erasure promise.

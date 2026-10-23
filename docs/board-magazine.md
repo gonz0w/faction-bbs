@@ -126,7 +126,7 @@ from member-device encrypted private mail and attachments.
 Magazine packs and permission records remain external configuration: preserve them
 alongside complete database/blob/config/key backups and restore the intended pack
 before restarting. The static reader adds no tables; database snapshots do not contain these
-pack editions. The current board is schema 16 because the separate workshop stores
+pack editions. The current board is schema 17 with later social preferences and the separate workshop storing
 manuscripts/proposals/approvals. Recheck download namespaces/grants and room IDs after restore. The entire
 combined manifest remains 32 KiB; all magazines together share that bound. Eight
 text rows/four cards, 32 recent previous offsets (forward reading remains unlimited within the article)

@@ -73,7 +73,7 @@ The OS filesystem owner may export an eligible published edition:
 faction --state-dir /path/to/stopped-or-live-board magazine-edition 1 /private/new-edition.txt
 ~~~
 
-This validates a read-only exact schema-16 catalog and creates a new mode-0600
+This validates a read-only supported schema-16/17 catalog and creates a new mode-0600
 text file without overwrite/symlink-following. It does not initialize or migrate
 the board, authenticate as a member, export private drafts, or publish bytes.
 Use the existing reviewed Files upload/publication procedure to distribute that
@@ -98,11 +98,11 @@ No raw ANSI/control/Unicode prose or embedded file-token authority is accepted;
 use the related-file action. Larger/Unicode/art formats remain future work.
 
 Stop owner sessions and take a [complete backup](export-restore.md) before the
-forward-only schema-16 upgrade. Export/verify/restore accepts exact supported
-schemas 2–16 read-only; ordinary owner startup migrates older restored boards.
+forward-only catalog upgrade (current schema 17). Export/verify/restore accepts exact supported
+schemas 2–17 read-only; ordinary owner startup migrates older restored boards.
 Complete backups retain sources, proposals, consent and related-file metadata.
 Static packs/themes remain external configuration and need separate preservation.
 Restore matching catalog and file objects together; older binaries cannot open
-schema 16. Normal eight-session, five-second admission, credential/helper/output
+the newer catalog. Normal eight-session, five-second admission, credential/helper/output
 and transfer limits are unchanged. No new capacity, hardening, cryptographic
 signing, federation or external publication claim.

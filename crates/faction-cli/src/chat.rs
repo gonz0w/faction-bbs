@@ -64,6 +64,9 @@ fn execute(
     state: &mut State,
     input: &str,
 ) -> faction_core::Result<(bool, String)> {
+    if let Some(out) = faction_pages::social::command(board, lease, input)? {
+        return Ok((true, out));
+    }
     let command = if input.trim().is_empty() {
         ChatCommand::Poll
     } else {
@@ -71,7 +74,7 @@ fn execute(
     };
     let mut out = String::new();
     match command {
-        ChatCommand::Help=>out.push_str("/list /join #channel /part /names [after-handle] /history [after-sequence] /poll /me text /quit\nPlain text sends to the selected channel; //text sends a literal slash.\nSysop: /create #channel board|private, /allow #channel handle, /deny #channel handle, /kick #channel handle\nAll channels are local; retained history begins at your join.\n"),
+        ChatCommand::Help=>out.push_str("/social help: opt-in lounge, availability and polite pages\n/list /join #channel /part /names [after-handle] /history [after-sequence] /poll /me text /quit\nPlain text sends to the selected channel; //text sends a literal slash.\nSysop: /create #channel board|private, /allow #channel handle, /deny #channel handle, /kick #channel handle\nAll channels are local; retained history begins at your join.\n"),
         ChatCommand::List=>{for c in board.chat_channels(lease)?{out.push_str(&format!("{} ({}, local)\n",safe(&c.name),if c.private{"private"}else{"board"}));}},
         ChatCommand::Join(name)=>{let c=board.chat_join(lease,name)?;state.cursor=c.sequence;state.channel=Some(c.name);out.push_str("Joined; new messages start here. /history replays eligible retained chat.\n");},
         ChatCommand::Part=>{board.chat_part(lease,state.name()?)?;state.channel=None;state.cursor=0;out.push_str("Left channel.\n");},

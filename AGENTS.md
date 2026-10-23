@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 adds the owner-reviewed reader and authenticated local magazine workshop, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 is merged with the reader and authenticated workshop; #137 adds opt-in chat availability/polite pages, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1503,3 +1503,35 @@ shared SSH/native/SFTP and nineteen complete-recovery controls per OS. The actua
 inert static-reader regressions remain separate. No injected approvals in live
 journeys. The owned clone/private credentials/vendor were removed; owner preview
 stays stopped and preserved. Offline guard 54 validates this software record.
+
+## Opt-in chat lounge (#137)
+
+Read docs/social-lounge.md, ADR 0069 and plan 0074. Schema 17 adds social privacy
+intent separately from live chat-lease-bound presence, bodyless invitations and
+rate timestamps. Default disabled/hidden; explicit opt-in only during chat.
+Sysop page availability is opt-in and grants no OS authority. Never add custom
+page bodies, plaintext private mail, forced joins, hidden counts, private-channel
+labels or a public last-seen log. Existing channel /names is separate from lounge
+hiding. Board-wide presence and automatic notifications stay follow-on #137 work.
+
+Use current epoch/status/live-lease/both-party preference checks on every action
+and read. Page attempts consume a per-account 30-second cooldown, signals expire
+after 60 seconds, eight records per entry/128 total/256 transient cooldown rows.
+Mute, 16 blocked names and UTC quiet-hour intent persist; privacy/mode changes
+remove old invitations. Export removes live presence/pages/cooldowns; take a
+stopped complete backup before schema 17. No background helper/listener/package,
+normal-budget change, physical-hardware/capacity or hardening claim.
+
+Snapshot 41 sources/pre137-social preserves 310 previous input bytes and the
+unchanged editorial result. All 54 historical result identities stay fixed.
+Saved owner playground remains off/intact; only owned marked software clones
+are used for native validation.
+
+The social-netbsd record pins 307 selected native inputs and 40 host harnesses,
+345 Rust per OS, 130 Python, eight social local/worker PTYs per OS, seven actual
+SSH/native and twenty complete-recovery controls per OS. Clock aging is explicit
+synthetic fixture work. Final installed hashes match the clean native build;
+normal resource/credential/helper defaults remain. Keep offline guard 55 and all
+historical hashes fixed. The owned clone/private inputs/vendor were removed;
+saved owner preview remains off/intact. #137 stays open for outside-chat presence
+and safe notifications, not server-readable private messaging.

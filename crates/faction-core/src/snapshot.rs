@@ -106,7 +106,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=16).contains(&version) {
+    if app != APP_ID || !(2..=17).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -155,6 +155,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 16 {
         reference.execute_batch(include_str!("editorial.sql"))?;
+    }
+    if version >= 17 {
+        reference.execute_batch(include_str!("social.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -366,6 +369,16 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     if version >= 16 {
         crate::editorial::validate(db, deadline)?;
     }
+    if version >= 17 {
+        crate::social::validate(db)?;
+        if exported
+            && db
+                .prepare("SELECT 1 FROM social_cooldowns LIMIT 1")?
+                .exists([])?
+        {
+            return Err(Error::Invalid("snapshot live social cooldowns"));
+        }
+    }
     Ok(SnapshotSummary {
         members: count(db, "SELECT count(*) FROM members")?,
         rooms: count(db, "SELECT count(*) FROM rooms")?,
@@ -556,6 +569,10 @@ fn export_connection(
     // Validate the copied catalog before any writes that could fire imported SQL.
     validate(&db, false, deadline)?;
     db.execute_batch("DELETE FROM chat_sessions;")?;
+    let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+    if version >= 17 {
+        db.execute_batch("DELETE FROM social_cooldowns;")?;
+    }
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
     if version >= 4 {
         db.execute_batch("DELETE FROM file_transfers;")?;

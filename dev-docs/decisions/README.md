@@ -95,3 +95,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0058: Local vault from the board picker](0058-local-vault-from-board-picker.md).
 
 - [0068: Magazine workshop and exact-issue consent](0068-magazine-workshop.md).
+
+- [0069: Opt-in chat lounge](0069-opt-in-chat-lounge.md).

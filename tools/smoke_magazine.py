@@ -53,10 +53,10 @@ def run(a):
             for id,ok in [('signal-2',False),('signal-1',True),('signal-1',False)]:
                 x=subprocess.run([str(a.binary),'library-edition',str(catalog),id,str(out)],capture_output=True);assert (x.returncode==0)==ok
             assert out.stat().st_mode&0o777==0o600 and b'ORIGINAL-ARTICLE-END' in out.read_bytes();out.unlink();out.symlink_to(root/'missing');x=subprocess.run([str(a.binary),'library-edition',str(catalog),'signal-1',str(out)],capture_output=True);assert x.returncode!=0 and not (root/'missing').exists();checks.append('owner_plain_draft_preview_published_text_export_private_no_overwrite_or_symlink_follow')
-            c=start(handle='pending');c.expect('No community access.');c.finish();assert query('PRAGMA user_version')==[(16,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_denied_no_schema_unread_transfer_or_secret_echo_side_effects')
+            c=start(handle='pending');c.expect('No community access.');c.finish();assert query('PRAGMA user_version')==[(17,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_denied_no_schema_unread_transfer_or_secret_echo_side_effects')
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=16,capacity_claim=False,contributor_authentication=False,member_submission_queue=False,new_transfer_authority=False,public_publication=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=17,capacity_claim=False,contributor_authentication=False,member_submission_queue=False,new_transfer_authority=False,public_publication=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker magazine passed:',len(checks),'controls.')
 if __name__=='__main__':
