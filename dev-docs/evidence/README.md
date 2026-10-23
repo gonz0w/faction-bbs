@@ -243,3 +243,12 @@ actual SSH/native/SFTP and seventeen recovery controls per OS. Snapshot 37 freez
 inputs/31 host harnesses/thirteen unchanged inputs; guard 51 checks it offline.
 Owned clone/cache removed, owner playground off/preserved. No new request desk,
 transfer authority, public publication or capacity claim.
+
+
+The thirty-eighth source snapshot `sources/pre140-file-requests` and
+`library-baseline-manifest.json` freeze 292 previous library execution/harness
+inputs and its whole original result. Fifty-one historical result identities
+remain fixed. The current [file request record](file-requests-netbsd/README.md)
+pins 288 matched native inputs, 321 Rust tests per OS, six request PTYs per OS,
+eight actual shared SSH/native/SFTP and 18 recovery controls per OS. Guard 52 checks
+its evidence and teardown offline. No new capacity, listener or transfer authority.

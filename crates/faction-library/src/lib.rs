@@ -1,6 +1,7 @@
 //! Shared approved-member shelf workflow. No file bytes, transfer grants or network I/O.
 #![forbid(unsafe_code)]
 mod catalog;
+mod requests;
 pub use catalog::{BOOKS, BYTES, Catalog, SHELVES};
 use faction_core::{AreaFile, Board, Error, Result, Session, Status};
 use faction_terminal::{Theme, subject::preview};
@@ -8,6 +9,7 @@ use std::{collections::VecDeque, fmt::Write};
 #[derive(Clone, Copy)]
 enum State {
     List,
+    Requests,
     Shelves,
     Choose,
     Info(usize),
@@ -21,6 +23,7 @@ pub enum Outcome {
 }
 pub struct Desk {
     files: bool,
+    requests: requests::Desk,
     state: State,
     shelf: Option<usize>,
     page: usize,
@@ -34,6 +37,7 @@ impl Default for Desk {
     fn default() -> Self {
         Self {
             files: false,
+            requests: requests::Desk::default(),
             state: State::List,
             shelf: None,
             page: 0,
@@ -122,6 +126,12 @@ impl Desk {
         if !c.enabled() {
             return Err(Error::Denied);
         }
+        if matches!(self.state, State::Requests) {
+            if !c.requests {
+                return Err(Error::Denied);
+            }
+            return self.requests.render(b, s, c, t, ansi, columns, self.files);
+        }
         if self.dimensions.is_some_and(|old| old != columns) {
             self.reset()
         }
@@ -132,6 +142,7 @@ impl Desk {
             writeln!(out, "{}", preview(&self.notice, width)).unwrap()
         }
         match self.state {
+            State::Requests => unreachable!(),
             State::List => {
                 let visible = Self::visible(b, s, c)?;
                 let rows = visible
@@ -170,6 +181,9 @@ impl Desk {
                             .unwrap()
                         }
                     }
+                }
+                if c.requests {
+                    out.push_str("R:file requests ");
                 }
                 out.push_str("E:shelves V:entry N/P:page Q:main\nLibrary> ");
             }
@@ -245,14 +259,27 @@ impl Desk {
         if !c.enabled() {
             return Err(Error::Denied);
         }
-        if input.len() > 64 || !input.bytes().all(|b| (32..=126).contains(&b)) {
+        if matches!(self.state, State::Requests) {
+            if !c.requests {
+                return Err(Error::Denied);
+            }
+            let out = self.requests.feed(input, b, s, self.files)?;
+            if matches!(out, Outcome::Main) {
+                self.state = State::List;
+                return Ok(Outcome::Stay);
+            }
+            return Ok(out);
+        }
+        if input.len() > 128 || !input.bytes().all(|b| (32..=126).contains(&b)) {
             return Err(Error::Invalid("bounded ASCII library command required"));
         }
         self.notice.clear();
         let cmd = input.to_ascii_lowercase();
         match self.state {
+            State::Requests => unreachable!(),
             State::List => match cmd.as_str() {
                 "q" => return Ok(Outcome::Main),
+                "r" if c.requests => self.state = State::Requests,
                 "e" => self.state = State::Shelves,
                 "v" => self.state = State::Choose,
                 "n" => self.page = (self.page + 1).min(BOOKS / 4),
@@ -333,6 +360,9 @@ impl Desk {
         Ok(Outcome::Stay)
     }
     pub fn recover(&mut self, e: &Error) -> bool {
+        if matches!(self.state, State::Requests) {
+            return self.requests.recover(e);
+        }
         if matches!(e, Error::Invalid(_) | Error::NotFound | Error::Busy) {
             self.notice = format!("Library: {e}");
             if matches!(e, Error::NotFound) {

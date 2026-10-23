@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 adds curated library shelves, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 adds curated library shelves and optional file requests/fulfillment, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1431,3 +1431,16 @@ grant/publication withdrawal, normal explicit room-read acknowledgment and activ
 revocation pass. Use ordinary member fixtures for privacy: sysops retain existing
 private-file visibility. Keep guard 51 and preserve actual inputs/whole record
 before later edits. Owned clone/cache removed; saved owner playground off/intact.
+
+
+## File request desk (#140)
+
+Read docs/file-requests.md and ADR 0066. Schema 15 adds bounded ordinary local
+requests and published-object fulfillment. Keep exact current actor/requester file
+checks in one transaction, current viewer filtering of all offer metadata, explicit
+YES/revision confirmation, ownership/sysop moderation, 256 retained/8 open quotas
+and classic/plain shared adapters. Never turn request text into file authority or
+server-readable private mail. Pack requests defaults false; requests-only packs
+are valid. Preserve schema-2..14 read-only verification and stopped complete upgrade
+backups; no in-place downgrade or mixed-version owners. Snapshot 38 freezes the
+292 library execution/harness inputs and original result before these changes.

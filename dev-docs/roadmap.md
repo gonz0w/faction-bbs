@@ -401,3 +401,10 @@ exhibits using existing canonical cells and classic text editions. See
 [the guide](../docs/scene-gallery.md) and [plan 0068](plans/0068-scene-gallery.md).
 Further gallery submissions/live curation remain optional follow-on work; retain
 ordinary product usability ahead of deferred hardening.
+
+
+#140 now pairs curated shelves with the optional local file request desk, persistent
+requests, explicit eligible published-file fulfillment and author/sysop moderation.
+See [the guide](../docs/file-requests.md) and [plan 0071](plans/0071-file-request-desk.md).
+Keep federation, external fetches, private-mail attachments and later hardening
+separate from this ordinary community workflow.

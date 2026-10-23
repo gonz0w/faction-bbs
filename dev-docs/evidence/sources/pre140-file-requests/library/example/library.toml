@@ -1,0 +1,15 @@
+version = 1
+enabled = false
+name = "Nightwire library"
+compact = false
+[[shelf]]
+id = "manuals"
+title = "Manuals and field notes"
+[[book]]
+id = "your-first-manual"
+shelf = "manuals"
+reference = "faction-file:00000000000000000000000000000000/00000000000000000000000000000000"
+note = "Replace this example with a reviewed local published file."
+rights = "Replace with the actual file's distribution/display permission."
+provenance = "Disabled template only; no file bytes or permission are supplied."
+room = 1

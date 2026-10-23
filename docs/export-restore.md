@@ -29,7 +29,7 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2 through 14 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2 through 15 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2..13 boards upgrade to schema 14 when
+Verification is read-only; restored schema-2..14 boards upgrade to schema 15 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -215,4 +215,13 @@ exports/bundles. No new schema, public service or raw uploaded graphics authorit
 current local file publication/grants. Hidden sources expose no captions, shelf
 names or tokens. Transfers/discussion use existing authorized workflows; browsing
 alone never advances unread. Packs are external config to preserve separately
-from complete DB/blob backups. Schema remains 14; no new transfer authority.
+from complete DB/blob backups. Shelves add no transfer authority; the optional
+request desk adds schema-15 request records.
+
+
+Schema 15 additionally retains the [file request desk](file-requests.md): request
+authors, retry/revision IDs, title/description, state and fulfillment rights/source
+metadata. Snapshot validation checks exact schema, text/key bounds and request
+quotas. Fulfillments do not confer file access after restore. Exact schemas 2–14
+remain read-only verifiable/restorable; make a verified complete backup before the
+first new owner open. Desk availability/names remain external library configuration.

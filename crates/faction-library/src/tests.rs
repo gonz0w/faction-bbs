@@ -288,3 +288,107 @@ fn invisible_selected_source_is_not_replaced_and_unavailable_transfers_stay_disa
     assert!(!out.contains("file-2.txt") && !out.contains("PRIVATE-NOTE"));
     assert!(out.contains("Library>"));
 }
+
+#[test]
+fn requests_only_pack_preview_cancel_create_fulfill_close_and_classic_frames() {
+    let f = Fixture::new();
+    let (mut b, s, db) = f.board();
+    let c=f.load("version=1\nenabled=true\nname='Community library'\ncompact=false\nrequests=true\nrequests_name='Wanted files'\nshelf=[]\nbook=[]\n").unwrap();
+    assert!(c.enabled());
+    let mut d = Desk::default();
+    feed(&mut d, "r", &mut b, &s, &c);
+    assert!(render(&mut d, &mut b, &s, &c).contains("Wanted files"));
+    for input in ["c", "A useful guide", "Original licensed documentation"] {
+        feed(&mut d, input, &mut b, &s, &c);
+        render(&mut d, &mut b, &s, &c);
+    }
+    assert!(b.file_requests(&s, i64::MAX).unwrap().is_empty());
+    feed(&mut d, "q", &mut b, &s, &c);
+    feed(&mut d, "c", &mut b, &s, &c);
+    feed(&mut d, "A useful guide", &mut b, &s, &c);
+    feed(&mut d, "Original licensed documentation", &mut b, &s, &c);
+    feed(&mut d, "yes", &mut b, &s, &c);
+    let id = b.file_requests(&s, i64::MAX).unwrap()[0].id;
+    for input in [
+        "u",
+        &format!("{:032x}", 1),
+        "BSD-3-Clause original fixture",
+        "Fixture author",
+        "yes",
+    ] {
+        feed(&mut d, input, &mut b, &s, &c);
+        let out = render(&mut d, &mut b, &s, &c);
+        assert!(out.len() < 8192 && !out.contains('\x1b'));
+    }
+    assert!(b.file_request(&s, id).unwrap().offer.is_some());
+    feed(&mut d, "v", &mut b, &s, &c);
+    feed(&mut d, &id.to_string(), &mut b, &s, &c);
+    feed(&mut d, "l", &mut b, &s, &c);
+    assert!(render(&mut d, &mut b, &s, &c).contains("faction-file:"));
+    feed(&mut d, "q", &mut b, &s, &c);
+    feed(&mut d, "x", &mut b, &s, &c);
+    feed(&mut d, "yes", &mut b, &s, &c);
+    assert_eq!(b.file_request(&s, id).unwrap().state, "closed");
+    assert_eq!(
+        db.query_row("SELECT count(*) FROM unread", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        0
+    );
+}
+#[test]
+fn request_review_never_silently_adopts_changed_revision_or_withdrawn_file() {
+    let f = Fixture::new();
+    let (mut b, s, _) = f.board();
+    let c = f
+        .load(
+            &f.source(&rusqlite::Connection::open(f.0.join("board/faction.sqlite3")).unwrap())
+                .replace("compact=false", "compact=false\nrequests=true"),
+        )
+        .unwrap();
+    let id = b
+        .create_file_request(
+            &s,
+            &faction_core::request_id().unwrap(),
+            &faction_core::FileRequestDraft {
+                title: "Guide".into(),
+                description: "Original manual".into(),
+            },
+        )
+        .unwrap();
+    let mut d = Desk::default();
+    for input in ["r", "v", &id.to_string(), "x"] {
+        feed(&mut d, input, &mut b, &s, &c);
+    }
+    let row = b.file_request(&s, id).unwrap();
+    b.finish_file_request(&s, id, &row.revision, false).unwrap();
+    let e = d
+        .render(&mut b, &s, &c, &Theme::default(), false, 40)
+        .unwrap_err();
+    assert!(d.recover(&e));
+    assert!(render(&mut d, &mut b, &s, &c).contains("reopen"));
+    assert_eq!(b.file_request(&s, id).unwrap().state, "closed");
+}
+
+#[test]
+fn long_request_review_pages_and_resize_never_send_unseen_tail() {
+    let f = Fixture::new();
+    let (mut b, s, _) = f.board();
+    let c=f.load("version=1\nenabled=true\nname='Library'\ncompact=false\nrequests=true\nshelf=[]\nbook=[]").unwrap();
+    let mut d = Desk::default();
+    for input in ["r", "c", &"T".repeat(64), &"D".repeat(128)] {
+        feed(&mut d, input, &mut b, &s, &c);
+    }
+    let out = d
+        .render(&mut b, &s, &c, &Theme::default(), false, 20)
+        .unwrap();
+    assert!(out.contains("Post request?"));
+    assert!(d.feed("yes", &mut b, &s, &c).is_err());
+    assert!(b.file_requests(&s, i64::MAX).unwrap().is_empty());
+    feed(&mut d, "n", &mut b, &s, &c);
+    d.render(&mut b, &s, &c, &Theme::default(), false, 20)
+        .unwrap();
+    d.render(&mut b, &s, &c, &Theme::default(), false, 40)
+        .unwrap();
+    feed(&mut d, "yes", &mut b, &s, &c);
+    assert_eq!(b.file_requests(&s, i64::MAX).unwrap().len(), 1);
+}

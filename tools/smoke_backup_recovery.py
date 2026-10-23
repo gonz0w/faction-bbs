@@ -64,6 +64,7 @@ def run(a):
             db.execute("INSERT INTO post_metadata VALUES(1,?,'Recovered subject',?,'local')",('5'*32,int(time.time())))
             db.execute("UPDATE discussion_settings SET enabled=1,name='Recovered find'")
             db.execute("INSERT INTO discussion_bookmarks VALUES(1,1)")
+            db.execute("INSERT INTO file_requests(creator,nonce,revision,title,description,state,fulfiller,object,rights,provenance) VALUES(1,?,?,'Recovered request','Original permitted manual','fulfilled',1,?,'BSD-3-Clause','Fixture author')",('5'*32,'6'*32,object_id))
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -161,6 +162,9 @@ def run(a):
             assert db.execute('select member,post from discussion_bookmarks').fetchall()==[(1,1)]
             assert db.execute('select subject,article_id from post_metadata').fetchall()==[('Recovered subject','5'*32)]
         checks.append('complete_restore_preserves_discussion_policy_and_own_bookmarks')
+        with sqlite3.connect(restored/'faction.sqlite3') as db:
+            assert db.execute('SELECT title,state,object,rights,provenance FROM file_requests').fetchall()==[('Recovered request','fulfilled',object_id,'BSD-3-Clause','Fixture author')]
+        checks.append('complete_restore_preserves_file_request_fulfillment_and_provenance')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)
