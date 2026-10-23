@@ -6,7 +6,7 @@ impl Client {
     pub(super) fn session(&self) -> faction_core::Result<&Session> {
         self.session.as_ref().ok_or(Error::Denied)
     }
-    fn lease(&self) -> faction_core::Result<&ChatLease> {
+    pub(super) fn lease(&self) -> faction_core::Result<&ChatLease> {
         self.lease.as_ref().ok_or(Error::Denied)
     }
     pub(super) fn size(&self) -> (u16, u16) {
@@ -88,6 +88,9 @@ impl Client {
         let theme = wall_theme.as_ref().unwrap_or(theme);
         let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
         let theme = page_theme.as_ref().unwrap_or(theme);
+        let social_theme =
+            faction_pages::social::menu_theme(board, self.session()?, self.lease.as_ref(), theme)?;
+        let theme = social_theme.as_ref().unwrap_or(theme);
         let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
         let theme = gathering_theme.as_ref().unwrap_or(theme);
         let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
@@ -201,10 +204,17 @@ impl Client {
     }
     fn action(&mut self, key: Key, board: &mut Board, theme: &Theme) -> faction_core::Result<bool> {
         // Cached presentation never grants an action; open/core recheck authority.
+        if key == Key::Hotkey(b'?') {
+            self.menu(theme, board)?;
+            return Ok(true);
+        }
         let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
         let theme = wall_theme.as_ref().unwrap_or(theme);
         let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
         let theme = page_theme.as_ref().unwrap_or(theme);
+        let social_theme =
+            faction_pages::social::menu_theme(board, self.session()?, self.lease.as_ref(), theme)?;
+        let theme = social_theme.as_ref().unwrap_or(theme);
         let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
         let theme = gathering_theme.as_ref().unwrap_or(theme);
         let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
@@ -240,6 +250,7 @@ impl Client {
             Action::Post => "Post a message",
             Action::Sysop => "Sysop controls",
             Action::Chat => "Local chat",
+            Action::Lounge => "Social lounge",
             Action::Files => "File areas",
             Action::Doors => "Doors",
             Action::Quit => "Disconnect",
@@ -316,9 +327,16 @@ impl Client {
                     "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [B]find [C]reate room: ",
                 );
             }
+            Action::Lounge => {
+                if !board.social_session_config(self.session()?)?.enabled {
+                    return Err(Error::Denied);
+                }
+                self.ensure_visit(board)?;
+                self.state = State::Lounge(Box::default());
+                self.lounge_show(board, theme)?;
+            }
             Action::Chat => {
-                let lease = board.chat_open(self.session()?)?;
-                self.lease = Some(lease); // Cleanup also owns the lease if joining fails.
+                self.ensure_visit(board)?;
                 let channel = board.chat_join(self.lease()?, "#lobby")?;
                 self.channel = channel.name;
                 self.cursor = channel.sequence;
@@ -613,6 +631,13 @@ impl Client {
                 let theme = wall_theme.as_ref().unwrap_or(theme);
                 let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
                 let theme = page_theme.as_ref().unwrap_or(theme);
+                let social_theme = faction_pages::social::menu_theme(
+                    board,
+                    self.session()?,
+                    self.lease.as_ref(),
+                    theme,
+                )?;
+                let theme = social_theme.as_ref().unwrap_or(theme);
                 let gathering_theme =
                     faction_gatherings::menu_theme(board, self.session()?, theme)?;
                 let theme = gathering_theme.as_ref().unwrap_or(theme);
@@ -745,8 +770,7 @@ impl Client {
                                 self.posts(board, room, 0, 0, theme)?;
                             }
                             faction_core::GatheringPlace::Channel(channel) => {
-                                let lease = board.chat_open(self.session()?)?;
-                                self.lease = Some(lease);
+                                self.ensure_visit(board)?;
                                 let channel = board.chat_join(self.lease()?, &channel)?;
                                 self.channel = channel.name;
                                 self.cursor = channel.sequence;
@@ -896,6 +920,22 @@ impl Client {
                 }
                 self.state = State::Polls(desk);
                 self.polls_show(board, theme)?;
+            }
+            State::Lounge(mut desk) => {
+                match desk.feed(text, board, self.lease()?) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Lounge(desk);
+                self.lounge_show(board, theme)?;
             }
             State::Pages(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
@@ -1085,7 +1125,7 @@ impl Client {
         theme: &Theme,
     ) -> faction_core::Result<()> {
         self.approved(board)?;
-        if let Some(out) = faction_pages::social::command(board, self.lease()?, text)? {
+        if let Some(out) = faction_pages::social::visit_command(board, self.lease()?, text)? {
             self.queue(&out);
             self.chat_prompt();
             return Ok(());
@@ -1122,7 +1162,7 @@ impl Client {
             ChatCommand::Allow(name, member, allow) => { board.chat_allow(self.session()?, name, member, allow)?; self.queue("Channel grant updated; target must join again.\n"); }
             ChatCommand::Kick(name, member) => { board.chat_kick(self.session()?, name, member)?; self.queue("Member parted; a kick does not remove a private grant.\n"); }
             ChatCommand::Quit => {
-                board.chat_close(self.lease()?)?; self.lease = None; self.editor.clear();
+                board.chat_leave_all(self.lease()?)?; self.editor.clear();
                 self.queue("Chat closed.\n"); self.menu(theme, board)?; return Ok(());
             }
         }
@@ -1271,6 +1311,17 @@ impl Client {
                 .map_err(|_| Error::Invalid("member-poll input flush"))?;
             return self.polls_show(board, theme);
         }
+        if matches!(self.state, State::Lounge(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("lounge input flush"))?;
+            return self.lounge_show(board, theme);
+        }
         if matches!(self.state, State::Pages(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1362,6 +1413,13 @@ impl Client {
             let theme = wall_theme.as_ref().unwrap_or(theme);
             let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
             let theme = page_theme.as_ref().unwrap_or(theme);
+            let social_theme = faction_pages::social::menu_theme(
+                board,
+                self.session()?,
+                self.lease.as_ref(),
+                theme,
+            )?;
+            let theme = social_theme.as_ref().unwrap_or(theme);
             let gathering_theme = faction_gatherings::menu_theme(board, self.session()?, theme)?;
             let theme = gathering_theme.as_ref().unwrap_or(theme);
             let poll_theme = faction_polls::menu_theme(board, self.session()?, theme)?;
@@ -1493,8 +1551,7 @@ impl Client {
                     self.menu(theme, board)?;
                     termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
                 } else if matches!(self.state, State::Chat) {
-                    board.chat_close(self.lease()?)?;
-                    self.lease = None;
+                    board.chat_leave_all(self.lease()?)?;
                     self.editor.clear();
                     self.queue("Chat closed.\n");
                     self.menu(theme, board)?;
@@ -1620,6 +1677,7 @@ impl Client {
                     | State::Writing { .. }
                     | State::Wall(_)
                     | State::Pages(_)
+                    | State::Lounge(_)
                     | State::Gatherings(_)
                     | State::Polls(_)
                     | State::Catchup(_)
@@ -1632,6 +1690,7 @@ impl Client {
                     self.state,
                     State::Wall(_)
                         | State::Pages(_)
+                        | State::Lounge(_)
                         | State::Gatherings(_)
                         | State::Polls(_)
                         | State::Catchup(_)
@@ -1653,6 +1712,7 @@ impl Client {
                             self.state,
                             State::Wall(_)
                                 | State::Pages(_)
+                                | State::Lounge(_)
                                 | State::Gatherings(_)
                                 | State::Polls(_)
                                 | State::Catchup(_)

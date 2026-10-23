@@ -353,3 +353,12 @@ lounge hiding. Mute, blocked names and UTC quiet-hour intent are private durable
 settings; exports strip presence/signals/rate timestamps. No custom page body,
 plaintext private mail, forced channel switch, privilege or delivery guarantee.
 Take a stopped complete backup before schema 17. Broader hardening stays deferred.
+
+The shared service's [outside-chat lounge](social-lounge.md) reuses one optional
+connection lease with a silent heartbeat across UI states. Leaving chat removes
+channel joins/send context while retaining explicit visit availability; disconnect
+removes the lease. Menu notices are generic and only render at safe redraws.
+The panel re-fetches all eligibility instead of replaying cached rosters/signals.
+No new helper, database connection, private-message body, forced switch, hidden
+channel metadata or live-lease export is added; schema 17 stays unchanged.
+Standalone worker rollback retains the earlier chat-only capability.

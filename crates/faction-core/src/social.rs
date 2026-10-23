@@ -134,6 +134,18 @@ fn clear_pages(tx: &Transaction<'_>, member: i64) -> Result<()> {
     Ok(())
 }
 impl Board {
+    /// Presentation discovery before a visit lease is allocated. Never grants opt-in.
+    pub fn social_session_config(&mut self, session: &Session) -> Result<SocialConfig> {
+        let tx = self.db.transaction()?;
+        current(&tx, &self.identity, session, true, false)?;
+        config(&tx)
+    }
+    pub fn social_advertisement(&mut self, l: &ChatLease) -> Result<Option<SocialPerson>> {
+        let tx = self.db.transaction()?;
+        chat::lease_current(&tx, &self.identity, l)?;
+        enabled(&tx)?;
+        Ok(person(&tx, l.id.as_slice(), now(&tx)?, false)?.map(|(_, p)| p))
+    }
     pub fn social_config(&mut self, l: &ChatLease) -> Result<SocialConfig> {
         let tx = self.db.transaction()?;
         chat::lease_current(&tx, &self.identity, l)?;

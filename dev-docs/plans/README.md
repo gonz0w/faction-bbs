@@ -70,3 +70,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0073: Authenticated magazine workshop](0073-magazine-workshop.md).
 
 - [0074: Opt-in social lounge](0074-social-lounge.md).
+
+- [0075: Board-wide shared social visits](0075-boardwide-social.md).

@@ -108,6 +108,7 @@ impl Decoder {
                     Some(Key::Enter)
                 }
                 b'\t' => Some(Key::Next),
+                b'?' => Some(Key::Hotkey(b'?')),
                 b if b.is_ascii_alphabetic() => Some(Key::Hotkey(b.to_ascii_uppercase())),
                 _ => None,
             },

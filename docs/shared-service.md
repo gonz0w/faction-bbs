@@ -69,3 +69,14 @@ current local file publication/grants. Hidden sources expose no captions, shelf
 names or tokens. Transfers/discussion use existing authorized workflows; browsing
 alone never advances unread. Packs are external config to preserve separately
 from complete DB/blob backups. Schema remains 14; no new transfer authority.
+
+## Session lounge
+
+When the sysop enables the [social lounge](social-lounge.md), the shared service
+adds a runtime-gated Lounge action (default L). One optional connection lease,
+heartbeating silently in the existing event loop, preserves explicit availability
+while reading rooms, editing or playing. Leaving chat parts channels and resets
+its send receipt; only logout/disconnect closes the visit lease. No second lease,
+database connection or helper is created. Current page notices appear only on
+safe menu redraws (? refresh), never over drafts/doors. Schema/default budgets
+stay unchanged; standalone worker rollback retains its chat-only capability.

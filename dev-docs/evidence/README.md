@@ -261,3 +261,18 @@ pins 294 matched native inputs, 327 Rust tests per OS, seven magazine PTYs per O
 nine actual shared SSH/native/SFTP and eighteen recovery controls per OS. Guard 53
 checks the reader-only scope, original edition and teardown offline. No new schema,
 capacity, authenticated submission/consent or public-publication claim.
+
+
+Snapshot 40 (`sources/pre143-editorial`) and the editorial manifest preserve 304
+previous reader inputs and its whole result. Snapshot 41 (`sources/pre137-social`)
+and the editorial baseline manifest preserve 310 editorial inputs/whole result.
+Their [editorial](editorial-netbsd/README.md) and [chat lounge](social-netbsd/README.md)
+records remain unchanged; guards 54/55 retain their original scope.
+
+Snapshot 42 (`sources/pre137-boardwide`) and `social-baseline-manifest.json`
+preserve 316 prior input files and the entire social result. All 55 historical
+result identities remain exact. The current [shared visit lounge evidence](boardwide-social-netbsd/README.md)
+adds availability and safe pages outside chat; legacy standalone adapters remain
+chat-only. Guard 56 verifies its current native inputs, real idle/editor/Lua waits
+and teardown independently. The saved owner playground stays off/intact; no new
+capacity, physical hardware or hardening claim.

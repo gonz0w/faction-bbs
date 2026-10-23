@@ -4,12 +4,18 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Extend shared-service availability across the BBS visit with one existing lease,
+  a themed Lounge action, current invitation/answer/privacy panel and generic safe
+  menu-return badge. Chat exit parts channels without dropping explicit visit
+  availability. Classic/plain SSH works; no draft/door popup, schema/resource
+  change or new helper/database connection. Standalone rollback stays chat-only.
+
 - Add an optional local chat lounge with explicit available/busy/away/hidden
   status, bodyless page requests/accept/decline, opted-in sysop paging, mute,
   blocks and UTC quiet hours. Reuse shared/worker/plain chat, preserving drafts
   and channel selection. Schema 17 retains privacy intent, stripping live social
-  authority/rate timestamps from exports. Outside-chat presence and automatic
-  notifications remain #137 follow-on work.
+  authority/rate timestamps from exports. Standalone outside-chat parity and
+  optional idle notifications remain #137 follow-on work.
 
 - Add the opt-in magazine workshop: private drafts, explicit member submissions,
   sysop selection/copied revisions, exact-issue contributor approvals, manual local
