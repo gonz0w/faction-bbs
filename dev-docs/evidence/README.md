@@ -312,3 +312,13 @@ unchanged from Who. Guard 60 checks this narrow software record. Snapshot 46
 [`who-baseline-manifest.json`](who-baseline-manifest.json) preserves 338 exact
 prior inputs and the complete Who result. No new server/capacity/authentication
 or hardware claim. Saved playground remains off; only owned clone fixtures used.
+
+
+[Local passport evidence](passport-netbsd/results.json) records 25 client tests and
+16 actual local PTYs per OS, 365 host Rust/130 Python and maintained local-client
+regressions. All 72 selected native inputs match; 317 non-client identities remain
+unchanged. Guard 61 covers bounded plaintext device notes/unverified original ASCII
+souvenirs, no automatic visits or remote authority. Snapshot 47 and
+[connection-desk-baseline-manifest.json](connection-desk-baseline-manifest.json)
+preserve 330 prior input bytes and the entire immutable connection-desk result.
+Keep all 71 offline/archive commands and owned-clone teardown; saved playground off.

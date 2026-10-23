@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify all frozen source bytes and historical result identities."""
 import hashlib
-from evidence_sources import ROOT,manifest,source_bytes,key_manifest,global_manifest,file_baseline_manifest,native_client_baseline_manifest,mail_client_baseline_manifest,room_reader_baseline_manifest,post_metadata_baseline_manifest,authored_articles_baseline_manifest,broader_articles_baseline_manifest,unicode_subjects_baseline_manifest,modern_terminals_baseline_manifest,kitty_graphics_baseline_manifest,terminal_compatibility_baseline_manifest,menu_themes_baseline_manifest,seasonal_themes_baseline_manifest,custom_menus_baseline_manifest,nightwire_baseline_manifest,operator_baseline_manifest,operator_host_baseline_manifest,operator_recovery_baseline_manifest,directory_baseline_manifest,board_launcher_baseline_manifest,room_browser_baseline_manifest,writing_desk_baseline_manifest,full_screen_baseline_manifest,community_wall_baseline_manifest,member_pages_baseline_manifest,local_mail_vault_baseline_manifest,client_vault_integration_baseline_manifest,gatherings_baseline_manifest,polls_baseline_manifest,catchup_baseline_manifest,discussion_baseline_manifest,gallery_baseline_manifest,travel_baseline_manifest,library_baseline_manifest,file_requests_baseline_manifest,magazine_baseline_manifest,editorial_baseline_manifest,social_baseline_manifest,boardwide_social_baseline_manifest,standalone_social_baseline_manifest,idle_notifications_baseline_manifest,who_baseline_manifest
+from evidence_sources import ROOT,manifest,source_bytes,key_manifest,global_manifest,file_baseline_manifest,native_client_baseline_manifest,mail_client_baseline_manifest,room_reader_baseline_manifest,post_metadata_baseline_manifest,authored_articles_baseline_manifest,broader_articles_baseline_manifest,unicode_subjects_baseline_manifest,modern_terminals_baseline_manifest,kitty_graphics_baseline_manifest,terminal_compatibility_baseline_manifest,menu_themes_baseline_manifest,seasonal_themes_baseline_manifest,custom_menus_baseline_manifest,nightwire_baseline_manifest,operator_baseline_manifest,operator_host_baseline_manifest,operator_recovery_baseline_manifest,directory_baseline_manifest,board_launcher_baseline_manifest,room_browser_baseline_manifest,writing_desk_baseline_manifest,full_screen_baseline_manifest,community_wall_baseline_manifest,member_pages_baseline_manifest,local_mail_vault_baseline_manifest,client_vault_integration_baseline_manifest,gatherings_baseline_manifest,polls_baseline_manifest,catchup_baseline_manifest,discussion_baseline_manifest,gallery_baseline_manifest,travel_baseline_manifest,library_baseline_manifest,file_requests_baseline_manifest,magazine_baseline_manifest,editorial_baseline_manifest,social_baseline_manifest,boardwide_social_baseline_manifest,standalone_social_baseline_manifest,idle_notifications_baseline_manifest,who_baseline_manifest,connection_desk_baseline_manifest
 def check():
     data=manifest();snapshots=[data]+data.get('snapshots',[])
     assert data['schema']==1 and data['origin_commit']=='09b506ea4f6da2830a0f2f480918ffb5048749aa'
@@ -407,5 +407,14 @@ def check():
         assert hashlib.sha256(source_bytes(name,digest)).hexdigest()==digest
     for name,digest in extra['records'].items():
         assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest
-    print('Forty-six source snapshots and fifty-nine unchanged historical records passed.')
+    extra=connection_desk_baseline_manifest()
+    base=ROOT/'dev-docs/evidence'/extra['source_root']
+    assert len(extra['files'])==330 and len(extra['records'])==1
+    assert {str(p.relative_to(base)) for p in base.rglob('*') if p.is_file()}==set(extra['files'])
+    for name,digest in extra['files'].items():
+        assert hashlib.sha256((base/name).read_bytes()).hexdigest()==digest
+        assert hashlib.sha256(source_bytes(name,digest)).hexdigest()==digest
+    for name,digest in extra['records'].items():
+        assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest
+    print('Forty-seven source snapshots and sixty unchanged historical records passed.')
 if __name__=='__main__':check()

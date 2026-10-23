@@ -80,3 +80,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0078: Who and universal presence](0078-who-universal-presence.md)
 
 - [0079: Native connection desk](0079-native-connection-desk.md) — local readiness, stored pins and redacted sharing (#158).
+
+- [0080: Local board passport](0080-local-passport.md) — device notes, original seals and selective sharing (#161).

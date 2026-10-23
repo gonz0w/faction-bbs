@@ -447,3 +447,10 @@ The native Boards I desk batches strict local file readiness, deliberate stored-
 inspection and redacted plain sharing; see [plan 0079](plans/0079-native-connection-desk.md).
 Verified contacts, invitation/route adapters and live probes remain separately
 scoped follow-ons. No network/profile/OS changes or new server costs.
+
+## Device-local passport (#161)
+
+The optional native notebook batches explicit local notes, original ASCII calling
+cards, profile-change review, removed-contact management and selective sharing.
+See [plan 0080](plans/0080-local-passport.md). Verified contact binding, integrated
+generic offers and encrypted notebooks remain follow-ons; no server/visit tracker.

@@ -390,3 +390,9 @@ The [device-local connection desk](connection-desk.md) separates file readiness,
 stored pins and untested remote authority. Explicit local ssh-keygen lookups are
 bounded/reaped and never connect; share reports omit contact/key identifiers.
 No server/schema/dependency/default change or broader hardening claim.
+
+The [local passport](local-passport.md) keeps explicitly saved plaintext notes
+on the member device under private permissions, separate from encrypted mail.
+No automatic visits/timestamps/beacons or server passport. Generic seals and local
+profile hashes grant no verified identity or admission; private fields share only
+when selected and public exports omit contact/key/route/binding identifiers.
