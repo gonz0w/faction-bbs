@@ -6,6 +6,7 @@ mod directory;
 mod find;
 mod gallery;
 mod gatherings;
+mod library;
 pub mod operator;
 mod pages;
 mod polls;
@@ -609,6 +610,30 @@ pub fn scheduled_menu(
     };
     menu(board, s, themes.get(index), ansi)
 }
+pub fn scheduled_menu_with_library(
+    board: &mut Board,
+    s: &Session,
+    themes: &faction_terminal::seasons::Themes,
+    directory: &faction_terminal::directory::Directory,
+    gallery: &faction_gallery::Catalog,
+    library: &faction_library::Catalog,
+    ansi: bool,
+) -> Result<()> {
+    let index = if board.whoami(s)?.status == Status::Approved {
+        themes.select_now()
+    } else {
+        0
+    };
+    menu_with_library(
+        board,
+        s,
+        themes.get(index),
+        directory,
+        gallery,
+        library,
+        ansi,
+    )
+}
 pub fn scheduled_menu_with_catalogs(
     board: &mut Board,
     s: &Session,
@@ -622,7 +647,15 @@ pub fn scheduled_menu_with_catalogs(
     } else {
         0
     };
-    menu_with_catalogs(board, s, themes.get(index), directory, gallery, ansi)
+    menu_with_library(
+        board,
+        s,
+        themes.get(index),
+        directory,
+        gallery,
+        &faction_library::Catalog::default(),
+        ansi,
+    )
 }
 pub fn scheduled_menu_with_directory(
     board: &mut Board,
@@ -636,31 +669,34 @@ pub fn scheduled_menu_with_directory(
     } else {
         0
     };
-    menu_with_catalogs(
+    menu_with_library(
         board,
         s,
         themes.get(index),
         directory,
         &faction_gallery::Catalog::default(),
+        &faction_library::Catalog::default(),
         ansi,
     )
 }
 pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result<()> {
-    menu_with_catalogs(
+    menu_with_library(
         board,
         s,
         theme,
         &faction_terminal::directory::Directory::default(),
         &faction_gallery::Catalog::default(),
+        &faction_library::Catalog::default(),
         ansi,
     )
 }
-fn menu_with_catalogs(
+fn menu_with_library(
     board: &mut Board,
     s: &Session,
     theme: &Theme,
     directory: &faction_terminal::directory::Directory,
     gallery: &faction_gallery::Catalog,
+    library: &faction_library::Catalog,
     ansi: bool,
 ) -> Result<()> {
     let member = board.whoami(s)?;
@@ -727,6 +763,7 @@ fn menu_with_catalogs(
                 Action::Terminal => "Terminal settings",
                 Action::Contacts => "Other BBSes",
                 Action::Gallery => "Art gallery",
+                Action::Library => "Library shelves",
                 Action::Wall => "Community wall",
                 Action::MemberPages => "Member pages",
                 Action::Gatherings => "Gatherings",
@@ -736,7 +773,10 @@ fn menu_with_catalogs(
             };
             print!("{}", caps.section(theme, title, used_ansi));
         }
-        let mut skip_pause = matches!(action, Some(Action::Contacts | Action::Gallery));
+        let mut skip_pause = matches!(
+            action,
+            Some(Action::Contacts | Action::Gallery | Action::Library)
+        );
         let result = match action {
             Some(Action::Quit) => {
                 println!("{}\nLogged out.", theme.logout());
@@ -744,6 +784,18 @@ fn menu_with_catalogs(
             }
             Some(Action::Contacts) => directory::run(board, s, theme, directory, used_ansi),
             Some(Action::Gallery) => gallery::run(board, s, theme, gallery, used_ansi),
+            Some(Action::Library) => match library::run(board, s, theme, library, used_ansi)? {
+                faction_library::Outcome::Room(room) => {
+                    skip_pause = false;
+                    read_room_at(board, s, room, true, theme, used_ansi, caps)
+                }
+                faction_library::Outcome::File(_) => {
+                    skip_pause = false;
+                    println!("Transfers require the shared SSH/native Files service.");
+                    Ok(())
+                }
+                _ => Ok(()),
+            },
             Some(Action::Rooms) if used_ansi => match rooms::choose(board, s, theme, caps)? {
                 faction_terminal::rooms::Choice::Read { room, new_only } => {
                     read_room_at(board, s, room, new_only, theme, used_ansi, caps)

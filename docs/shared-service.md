@@ -60,3 +60,12 @@ See [the gallery guide](scene-gallery.md) for the optional owner-managed startup
 pack, current-approval file links, canonical ANSI/text editions and rights review.
 Gallery packs are external host configuration, preserved separately from database
 exports/bundles. No new schema, public service or raw uploaded graphics authority.
+
+
+## Curated library shelves
+
+[Library shelves](library-shelves.md) layer owner-reviewed notes/collections over
+current local file publication/grants. Hidden sources expose no captions, shelf
+names or tokens. Transfers/discussion use existing authorized workflows; browsing
+alone never advances unread. Packs are external config to preserve separately
+from complete DB/blob backups. Schema remains 14; no new transfer authority.

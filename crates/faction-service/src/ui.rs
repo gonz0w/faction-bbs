@@ -246,6 +246,7 @@ impl Client {
             Action::Terminal => "Terminal settings",
             Action::Contacts => "Other BBSes",
             Action::Gallery => "Art gallery",
+            Action::Library => "Library shelves",
             Action::Wall => "Community wall",
             Action::MemberPages => "Member pages",
             Action::Gatherings => "Gatherings",
@@ -255,6 +256,12 @@ impl Client {
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::Library => {
+                self.state = State::Library(Box::new(faction_library::Desk::with_files(
+                    self.files_enabled,
+                )));
+                self.library_show(board, theme)?;
+            }
             Action::Gallery => {
                 self.state = State::Gallery(Box::default());
                 self.gallery_show(board, theme)?;
@@ -805,6 +812,38 @@ impl Client {
                 self.state = State::Catchup(desk);
                 self.catchup_show(board, theme)?;
             }
+            State::Library(mut desk) => {
+                match desk.feed(
+                    text,
+                    board,
+                    self.session()?,
+                    self.library.as_ref().ok_or(Error::Denied)?,
+                ) {
+                    Ok(faction_library::Outcome::Main) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(faction_library::Outcome::Room(room)) => {
+                        let after = board.unread_cursor(self.session()?, room)?;
+                        self.posts(board, room, after, 0, theme)?;
+                        return Ok(());
+                    }
+                    Ok(faction_library::Outcome::File(object)) => {
+                        let reference = board.file_reference(self.session()?, &object)?;
+                        self.queue(&format!("{reference}\n"));
+                        self.file_lobby(board)?;
+                        return Ok(());
+                    }
+                    Ok(faction_library::Outcome::Stay) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Library(desk);
+                self.library_show(board, theme)?;
+            }
             State::Gallery(mut desk) => {
                 match desk.feed(
                     text,
@@ -1170,6 +1209,17 @@ impl Client {
             termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
                 .map_err(|_| Error::Invalid("gathering input flush"))?;
             return self.gatherings_show(board, theme);
+        }
+        if matches!(self.state, State::Library(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("member-library input flush"))?;
+            return self.library_show(board, theme);
         }
         if matches!(self.state, State::Gallery(_))
             && self.size() != self.dimensions
@@ -1569,6 +1619,7 @@ impl Client {
                     | State::Catchup(_)
                     | State::Find(_)
                     | State::Gallery(_)
+                    | State::Library(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
                 let limit = if matches!(
@@ -1580,6 +1631,7 @@ impl Client {
                         | State::Catchup(_)
                         | State::Find(_)
                         | State::Gallery(_)
+                        | State::Library(_)
                 ) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
@@ -1600,6 +1652,7 @@ impl Client {
                                 | State::Catchup(_)
                                 | State::Find(_)
                                 | State::Gallery(_)
+                                | State::Library(_)
                         ),
                     limit,
                 )

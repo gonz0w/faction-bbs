@@ -28,6 +28,7 @@ pub enum Action {
     Catchup,
     Find,
     Gallery,
+    Library,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -47,6 +48,7 @@ impl Action {
             "member_pages" => Ok(Self::MemberPages),
             "find" => Ok(Self::Find),
             "gallery" => Ok(Self::Gallery),
+            "library" => Ok(Self::Library),
             "catchup" => Ok(Self::Catchup),
             "polls" => Ok(Self::Polls),
             "gatherings" => Ok(Self::Gatherings),
@@ -54,7 +56,8 @@ impl Action {
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Gallery
+        self != Self::Library
+            && self != Self::Gallery
             && self != Self::Find
             && self != Self::Catchup
             && self != Self::Polls
@@ -141,6 +144,7 @@ pub struct Theme {
     files_enabled: bool,
     directory_enabled: bool,
     gallery_enabled: bool,
+    library_enabled: bool,
     wall_enabled: bool,
     pages_enabled: bool,
     gatherings_enabled: bool,
@@ -169,6 +173,7 @@ impl Default for Theme {
             files_enabled: false,
             directory_enabled: false,
             gallery_enabled: false,
+            library_enabled: false,
             wall_enabled: false,
             pages_enabled: false,
             gatherings_enabled: false,
@@ -600,12 +605,43 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_library_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.library_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Library) {
+            if self.entries.iter().any(|e| e.key == b'K') {
+                return Err("K is reserved; add a library action with another key");
+            }
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Library,
+                    key: b'K',
+                    label: "Library shelves".into(),
+                    description: "Curated local files and field notes".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
     /// Runtime capability, set only by the host; a theme cannot enable a door.
     pub fn set_doors_enabled(&mut self, enabled: bool) {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
         (action == Action::Gatherings && self.gatherings_enabled)
+            || (action == Action::Library && self.library_enabled)
             || (action == Action::Gallery && self.gallery_enabled)
             || (action == Action::Find && self.find_enabled)
             || (action == Action::Catchup && self.catchup_enabled)

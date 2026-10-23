@@ -14,6 +14,7 @@ mod file_ui;
 mod find_ui;
 mod gallery_ui;
 mod gatherings_ui;
+mod library_ui;
 mod native_files;
 mod operator;
 mod pages_ui;
@@ -62,6 +63,7 @@ enum State {
     Terminal,
     Directory(faction_terminal::directory::View),
     Gallery(Box<faction_gallery::Desk>),
+    Library(Box<faction_library::Desk>),
     RoomBrowse(faction_terminal::rooms::View),
     GraphicsProbe(faction_terminal::graphics::Probe),
     Graphics(usize, Instant),
@@ -225,6 +227,7 @@ struct Client {
     native: Option<native_files::Native>,
     directory: Option<Arc<faction_terminal::directory::Directory>>,
     gallery: Option<Arc<faction_gallery::Catalog>>,
+    library: Option<Arc<faction_library::Catalog>>,
 }
 impl Drop for Client {
     fn drop(&mut self) {
@@ -313,6 +316,7 @@ impl Client {
             native: None,
             directory: None,
             gallery: None,
+            library: None,
         };
         c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
@@ -458,6 +462,15 @@ fn run() -> Result<()> {
             config.files_uid.is_some(),
             config.doors_uid.is_some() || !config.classic_games.is_empty(),
         )
+        .map_err(|_| denied())?;
+    let library = config
+        .library
+        .as_ref()
+        .map(|p| faction_library::Catalog::load(p).map(Arc::new))
+        .transpose()
+        .map_err(|_| denied())?;
+    themes
+        .set_library_enabled(library.as_ref().is_some_and(|c| c.enabled()))
         .map_err(|_| denied())?;
     let gallery = config
         .gallery
@@ -613,6 +626,7 @@ fn run() -> Result<()> {
                 client.files_enabled = config.files_uid.is_some();
                 client.directory = directory.as_ref().map(Arc::clone);
                 client.gallery = gallery.as_ref().map(Arc::clone);
+                client.library = library.as_ref().map(Arc::clone);
                 client.doors_uid = config.doors_uid;
                 client.classic_games = Some(Arc::clone(&classic_games));
                 clients.push(client);

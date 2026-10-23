@@ -8,7 +8,19 @@ fn run() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.is_empty() || args == ["--help"] {
         println!(
-            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+            "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK, --library PACK\nOffline library check: faction library-check PACK\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
+        );
+        return Ok(());
+    }
+    if args.first().is_some_and(|v| v == "library-check") {
+        if args.len() != 2 {
+            return Err(invalid("library-check needs one pack directory"));
+        }
+        let c = faction_library::Catalog::load(&PathBuf::from(&args[1])).map_err(invalid)?;
+        println!(
+            "Library verified: {} curated entries; enabled {}. File permissions are checked per member at use.",
+            c.len(),
+            c.enabled()
         );
         return Ok(());
     }
@@ -93,7 +105,8 @@ fn run() -> Result<()> {
         mut schedule_path,
         mut directory_path,
         mut gallery_path,
-    ) = (false, None, None, None, None, None);
+        mut library_path,
+    ) = (false, None, None, None, None, None, None);
     if command != "login" && args.len() > 3 {
         return Err(invalid("theme options apply only to login"));
     }
@@ -106,7 +119,8 @@ fn run() -> Result<()> {
             | Some("--season")
             | Some("--theme-schedule")
             | Some("--directory")
-            | Some("--gallery") => {
+            | Some("--gallery")
+            | Some("--library") => {
                 let value = args
                     .get(index + 1)
                     .ok_or_else(|| invalid("theme option needs a directory"))?;
@@ -114,6 +128,11 @@ fn run() -> Result<()> {
                     base_path = Some(PathBuf::from(value));
                 } else if args[index] == "--season" {
                     season_path = Some(PathBuf::from(value));
+                } else if args[index] == "--library" {
+                    if library_path.is_some() {
+                        return Err(invalid("duplicate library option"));
+                    }
+                    library_path = Some(PathBuf::from(value));
                 } else if args[index] == "--gallery" {
                     if gallery_path.is_some() {
                         return Err(invalid("duplicate gallery option"));
@@ -163,6 +182,14 @@ fn run() -> Result<()> {
     themes
         .set_gallery_enabled(gallery.enabled())
         .map_err(invalid)?;
+    let library = library_path
+        .map(|p| faction_library::Catalog::load(&p))
+        .transpose()
+        .map_err(invalid)?
+        .unwrap_or_default();
+    themes
+        .set_library_enabled(library.enabled())
+        .map_err(invalid)?;
     let mut board = Board::open(&path)?;
     let name = line("Handle: ", 24)?;
     match command {
@@ -180,12 +207,13 @@ fn run() -> Result<()> {
             let value = secret("Password (hidden): ")?;
             let s = board.authenticate(&name, &value)?;
             drop(value);
-            faction_cli::scheduled_menu_with_catalogs(
+            faction_cli::scheduled_menu_with_library(
                 &mut board,
                 &s,
                 &themes,
                 &directory.unwrap_or_default(),
                 &gallery,
+                &library,
                 ansi,
             )?;
         }

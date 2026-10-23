@@ -324,3 +324,12 @@ exports/bundles. No new schema, public service or raw uploaded graphics authorit
 or remote authority. Compact uses the same pinned SSH and local approval path;
 per-file size deferral precedes upload reservation/download grant/SFTP. No route
 fallback, server mail decryption, new schema or changed resource defaults.
+
+
+## Curated library shelves
+
+[Library shelves](library-shelves.md) layer owner-reviewed notes/collections over
+current local file publication/grants. Hidden sources expose no captions, shelf
+names or tokens. Transfers/discussion use existing authorized workflows; browsing
+alone never advances unread. Packs are external config to preserve separately
+from complete DB/blob backups. Schema remains 14; no new transfer authority.

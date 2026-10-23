@@ -272,6 +272,12 @@ impl Themes {
         }
         Ok(())
     }
+    pub fn set_library_enabled(&mut self, enabled: bool) -> Result<()> {
+        for theme in &mut self.themes {
+            theme.set_library_enabled(enabled)?;
+        }
+        Ok(())
+    }
     /// Startup-only host capabilities, never a member-controlled selection.
     pub fn set_services(&mut self, files: bool, doors: bool) -> Result<()> {
         for theme in &mut self.themes {

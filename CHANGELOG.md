@@ -4,6 +4,11 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional curated library shelves over existing local files: named collections,
+  provenance/rights notes, paged plain/ANSI reading and deliberate Files/discussion
+  jumps. Recheck current visibility before captions/links; no new file authority,
+  schema or resource-default change. Request fulfillment remains follow-on work.
+
 - Add device-local native travel preferences: ordinary/compact visits, explicit
   apply/cancel and per-file payload ceilings before transfer grants. Preserve
   classic presentation, default limits and existing file review/checksum paths.
