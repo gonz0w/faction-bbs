@@ -216,3 +216,12 @@ seventeen complete-recovery controls per OS. Snapshot 34 preserves 248 prior
 inputs and the whole catch-up result; 47 historical identities remain unchanged.
 The new record pins 250 matched native inputs and 23 host harnesses; guard 48 checks
 it. No new capacity, private-mail search or automatic query history is claimed.
+
+
+[Curated gallery evidence](gallery-netbsd/README.md), issue #144, records 302 Rust
+checks per OS, eight local/worker PTYs per OS, eleven actual SSH/native/plain
+controls and seventeen existing recovery controls per OS. Snapshot 35 freezes
+258 prior inputs/whole discussion record; 48 historical results remain exact.
+The new record pins 269 matched native inputs/25 host harnesses/thirteen unchanged
+inputs. Guard 49 checks it offline. Owned clone/cache removed, saved preview off;
+no capacity, raw-art, public-publication or hardening claim.

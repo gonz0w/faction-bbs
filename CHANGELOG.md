@@ -4,6 +4,11 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add optional owner-curated ANSI/ASCII art galleries, named exhibits, required
+  artist/provenance/permission notes, bounded canonical paging and explicit text
+  editions. Original Nightwire pack and current-grant file offers work through
+  local/worker/shared menus. Preserve classic fallback, schema 14 and resource defaults.
+
 - Add optional discussion search and personal bookmarks: bounded literal subject/
   body scans, room/exact-author filters, current file-permission snippets and exact
   read-only source views. Explicit review/save/remove and copyable paged reference

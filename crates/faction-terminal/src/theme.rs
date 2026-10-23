@@ -27,6 +27,7 @@ pub enum Action {
     Polls,
     Catchup,
     Find,
+    Gallery,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -45,6 +46,7 @@ impl Action {
             "wall" => Ok(Self::Wall),
             "member_pages" => Ok(Self::MemberPages),
             "find" => Ok(Self::Find),
+            "gallery" => Ok(Self::Gallery),
             "catchup" => Ok(Self::Catchup),
             "polls" => Ok(Self::Polls),
             "gatherings" => Ok(Self::Gatherings),
@@ -52,7 +54,8 @@ impl Action {
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Find
+        self != Self::Gallery
+            && self != Self::Find
             && self != Self::Catchup
             && self != Self::Polls
             && self != Self::Gatherings
@@ -137,6 +140,7 @@ pub struct Theme {
     doors_enabled: bool,
     files_enabled: bool,
     directory_enabled: bool,
+    gallery_enabled: bool,
     wall_enabled: bool,
     pages_enabled: bool,
     gatherings_enabled: bool,
@@ -164,6 +168,7 @@ impl Default for Theme {
             doors_enabled: false,
             files_enabled: false,
             directory_enabled: false,
+            gallery_enabled: false,
             wall_enabled: false,
             pages_enabled: false,
             gatherings_enabled: false,
@@ -565,12 +570,43 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_gallery_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.gallery_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Gallery) {
+            if self.entries.iter().any(|e| e.key == b'A') {
+                return Err("A is reserved; add a gallery action with another key");
+            }
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Gallery,
+                    key: b'A',
+                    label: "Art gallery".into(),
+                    description: "Original scene art and artist notes".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
     /// Runtime capability, set only by the host; a theme cannot enable a door.
     pub fn set_doors_enabled(&mut self, enabled: bool) {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
         (action == Action::Gatherings && self.gatherings_enabled)
+            || (action == Action::Gallery && self.gallery_enabled)
             || (action == Action::Find && self.find_enabled)
             || (action == Action::Catchup && self.catchup_enabled)
             || (action == Action::Polls && self.polls_enabled)

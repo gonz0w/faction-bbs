@@ -308,3 +308,11 @@ posts cascade references; logical deletion is not secure erasure. Paged member
 reference exports contain public local identities and hex titles, never paths,
 credentials or private-mail keys/content. No server-side private-mail index or
 count is added. Schema-14 upgrades require stopped complete backup/fresh rollback.
+
+
+## Curated gallery packs
+
+See [the gallery guide](scene-gallery.md) for the optional owner-managed startup
+pack, current-approval file links, canonical ANSI/text editions and rights review.
+Gallery packs are external host configuration, preserved separately from database
+exports/bundles. No new schema, public service or raw uploaded graphics authority.

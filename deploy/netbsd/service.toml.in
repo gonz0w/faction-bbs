@@ -1,5 +1,7 @@
 # Root-owned mode 0644 or 0640; readable by factiond, never writable by members.
 version = 1
+# Optional owned curated art pack; see docs/scene-gallery.md.
+# gallery = "/usr/pkg/share/faction/gallery/nightwire"
 terminal_uid = @FACTION_TERMINAL_UID@
 socket = "/var/run/faction/terminal.sock"
 state_dir = "/var/db/faction"

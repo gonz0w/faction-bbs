@@ -35,6 +35,12 @@ short/compact identity. [Real-terminal artwork checks](docs/artwork-terminal-com
 cover cursor placement and cell widths; pixel/font appearance and owner visual
 acceptance remain open.
 
+Optional **[art galleries](docs/scene-gallery.md)** now add curated original/licensed
+ANSI/ASCII exhibits, artist/provenance notes and bounded paged viewing. The included
+Nightwire collection has readable text editions for classic/narrow terminals;
+optional file offers use current local Files permissions. Sysops install/review
+packs explicitly; no new schema or public publication.
+
 ![Original Nightwire ANSI cover, reference-cell preview](docs/images/nightwire-cover.svg)
 
 
