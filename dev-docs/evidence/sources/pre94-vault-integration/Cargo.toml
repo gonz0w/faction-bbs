@@ -1,0 +1,26 @@
+[workspace]
+members = ["crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service", "crates/faction-files", "crates/faction-client", "crates/faction-client-pty"]
+exclude = ["experiments/004-native-sessions", "experiments/023-netbsd-dependencies"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0-alpha.1"
+edition = "2024"
+rust-version = "1.96"
+license = "BSD-3-Clause"
+publish = false
+
+[workspace.dependencies]
+argon2 = { version = "=0.6.0", features = ["zeroize"] }
+getrandom = "=0.4.3"
+rusqlite = { version = "=0.40.1", default-features = false, features = ["bundled", "backup", "hooks", "limits"] }
+rustix = { version = "=1.1.5", default-features = false, features = ["std", "process", "termios", "event", "fs", "net"] }
+toml = { version = "=1.1.8", default-features = false, features = ["std", "parse", "serde"] }
+zeroize = "=1.9.1"
+base64 = "=0.23.1"
+sha2 = "=0.11.1"
+chacha20poly1305 = { version = "=0.11.0", default-features = false, features = ["alloc", "zeroize"] }
+
+[profile.release]
+opt-level = 2
+strip = true
