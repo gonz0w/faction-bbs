@@ -74,6 +74,7 @@ def run(a):
             db.execute("INSERT INTO social_prefs VALUES(1,1,1320,420)")
             db.execute("INSERT INTO social_blocks VALUES(1,'unknown')")
             db.execute("INSERT INTO chat_sessions(id,member,epoch,touched) SELECT zeroblob(16),id,epoch,unixepoch() FROM members WHERE id=1")
+            db.execute("INSERT INTO visit_activity VALUES(zeroblob(16),'Doors')")
             db.execute("INSERT INTO social_presence VALUES(zeroblob(16),1,'available','Synthetic recovery presence')")
             db.execute("INSERT INTO social_cooldowns VALUES(1,unixepoch())")
         db.close()
@@ -130,6 +131,7 @@ def run(a):
         failed=backup_status.read(state,owner);assert failed['result']==0 and failed['verified']==good['verified'] and failed['object_bytes']==len(content)
         assert b'Last attempt: FAILED' in data()
         checks.append('corrupt_recheck_records_failure_and_retains_last_success')
+        checks.append('complete_restore_drops_transient_current_visit_activity')
         target=SimpleNamespace(**vars(x));target.board=restored;target.store=restored_store
         action('restore',expected=False,values=target);assert not restored.exists() and not restored_store.exists()
         checks.append('corrupt_bundle_cannot_reserve_restore_paths')
@@ -185,7 +187,7 @@ def run(a):
             assert db.execute("SELECT enabled,name FROM social_settings").fetchall()==[(1,'Recovered lounge')]
             assert db.execute("SELECT muted,quiet_start,quiet_end FROM social_prefs").fetchall()==[(1,1320,420)]
             assert db.execute("SELECT handle FROM social_blocks").fetchall()==[('unknown',)]
-            for table in ['social_presence','social_pages','social_cooldowns']:
+            for table in ['social_presence','social_pages','social_cooldowns','visit_activity']:
                 assert db.execute('SELECT count(*) FROM '+table).fetchall()==[(0,)]
         checks.append('complete_restore_preserves_lounge_privacy_intent_without_live_presence_pages_or_rate_timestamps')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded' ;action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1

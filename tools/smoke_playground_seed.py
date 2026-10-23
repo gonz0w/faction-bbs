@@ -22,7 +22,7 @@ def run(binary):
         assert password not in result.stdout + result.stderr
         db_path = state / 'faction.sqlite3'
         with sqlite3.connect(f'file:{db_path}?mode=ro', uri=True) as db:
-            assert db.execute('pragma user_version').fetchone() == (17,)
+            assert db.execute('pragma user_version').fetchone() == (18,)
             assert db.execute('select count(*) from rooms').fetchone() == (5,)
             assert db.execute('select count(*) from posts').fetchone() == (5,)
             assert db.execute("select handle,role,status from members order by handle").fetchall() == [

@@ -251,6 +251,7 @@ impl Client {
             Action::Sysop => "Sysop controls",
             Action::Chat => "Local chat",
             Action::Lounge => "Social lounge",
+            Action::Who => "Who is here",
             Action::Files => "File areas",
             Action::Doors => "Doors",
             Action::Quit => "Disconnect",
@@ -326,6 +327,14 @@ impl Client {
                     State::Sysop,
                     "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [G]atherings [P]olls [U]catch-up [B]find [C]reate room: ",
                 );
+            }
+            Action::Who => {
+                if !board.social_session_config(self.session()?)?.enabled {
+                    return Err(Error::Denied);
+                }
+                self.ensure_visit(board)?;
+                self.state = State::Who(Box::default());
+                self.who_show(board, theme)?;
             }
             Action::Lounge => {
                 if !board.social_session_config(self.session()?)?.enabled {
@@ -648,7 +657,11 @@ impl Client {
                 let find_theme = faction_find::menu_theme(board, self.session()?, theme)?;
                 let theme = find_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
-                if text.len() == 1
+                if text.eq_ignore_ascii_case("who")
+                    && board.social_session_config(self.session()?)?.enabled
+                {
+                    self.open(Action::Who, board, theme)?;
+                } else if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
                 {
                     self.open(action, board, theme)?;
@@ -920,6 +933,22 @@ impl Client {
                 }
                 self.state = State::Polls(desk);
                 self.polls_show(board, theme)?;
+            }
+            State::Who(mut desk) => {
+                match desk.feed(text, board, self.lease()?) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Who(desk);
+                self.who_show(board, theme)?;
             }
             State::Lounge(mut desk) => {
                 match desk.feed_with_notifications(
@@ -1324,6 +1353,17 @@ impl Client {
                 .map_err(|_| Error::Invalid("member-poll input flush"))?;
             return self.polls_show(board, theme);
         }
+        if matches!(self.state, State::Who(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("who input flush"))?;
+            return self.who_show(board, theme);
+        }
         if matches!(self.state, State::Lounge(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1692,6 +1732,7 @@ impl Client {
                     | State::Wall(_)
                     | State::Pages(_)
                     | State::Lounge(_)
+                    | State::Who(_)
                     | State::Gatherings(_)
                     | State::Polls(_)
                     | State::Catchup(_)
@@ -1705,6 +1746,7 @@ impl Client {
                     State::Wall(_)
                         | State::Pages(_)
                         | State::Lounge(_)
+                        | State::Who(_)
                         | State::Gatherings(_)
                         | State::Polls(_)
                         | State::Catchup(_)
@@ -1727,6 +1769,7 @@ impl Client {
                             State::Wall(_)
                                 | State::Pages(_)
                                 | State::Lounge(_)
+                                | State::Who(_)
                                 | State::Gatherings(_)
                                 | State::Polls(_)
                                 | State::Catchup(_)

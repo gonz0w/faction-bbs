@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a distinct themed Who caller list and group `/who` showing broad current
+  activity alongside separate availability/status. Visibility/availability and
+  blocks are universal across Who, group commands and the Lounge; Lounge keeps
+  its invitation/paging workflow. Local/worker/shared ANSI/plain paths remain.
+  Schema 18 adds lease-bound transient activity, removed by logout/export/restore;
+  no private resource names, history, helper, dependency or resource-default bump.
+
 - Add optional /notify on|off for this visit across shared SSH/native, local login
   and inherited workers. Quiet current-page indications appear only at an idle
   main menu, coalesce repeated signals and preserve arrow focus/control input.

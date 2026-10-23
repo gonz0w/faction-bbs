@@ -106,6 +106,13 @@ fn command_scoped(
             out.push_str(if mode=="hidden"{"Lounge availability hidden; existing invitations removed.\n"}else{"Availability shared with local lounge viewers for this chat entry.\nStatus is public to approved viewers; use /hide to leave the roster.\n"});
         }
         "/who" | "/page-sysop" if verb == "/who" || args.is_empty() => {
+            if verb == "/who" {
+                return Ok(Some(crate::who::roster(
+                    b,
+                    l,
+                    if args.is_empty() { None } else { Some(args) },
+                )?));
+            }
             let c = b.social_config(l)?;
             let rows = b.social_roster(
                 l,
@@ -267,6 +274,7 @@ pub fn menu_theme(
     }
     let mut t = theme.clone();
     t.set_lounge_enabled(true).map_err(Error::Invalid)?;
+    t.set_who_enabled(true).map_err(Error::Invalid)?;
     if let Some(l) = lease {
         let waiting = b
             .social_pages(l)?

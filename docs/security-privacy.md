@@ -377,3 +377,11 @@ No bell/desktop escape or private-message preview is emitted. Polling is limited
 to once per two seconds while safe and opted in; no new helper, connection or
 schema. Plain standalone input tracking applies only when opted in and retains
 its existing limits. Hardening remains later.
+
+
+The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu
+Who and group `/who` show broad current activity plus availability/status, while
+the Lounge retains its social/paging attributes. All three share the same current
+visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
+no private resource names or retained activity history. Take a stopped complete
+backup before upgrade; export/restore strips current activity and live authority.

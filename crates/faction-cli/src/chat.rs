@@ -283,6 +283,7 @@ pub(super) fn run_at(
     ansi: bool,
     channel: &str,
 ) -> Result<()> {
+    board.set_activity(faction_core::VisitActivity::Chat)?;
     board.ensure(s)?;
     let (board, lease, notifications) = board.parts()?;
     let outcome = (|| -> Result<()> {

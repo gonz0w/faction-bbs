@@ -1,0 +1,68 @@
+version = 1
+enabled = true
+name = "Nightwire library"
+compact = false
+requests = false
+magazine_name = "Nightwire magazine"
+shelf = []
+book = []
+
+[[magazine]]
+id = "signal-001"
+number = 1
+revision = 1
+state = "published"
+title = "The first signal"
+editor = "Faction BBS project"
+released = "Autumn 2026"
+schedule = "When the board has something worth sharing"
+
+[[magazine.article]]
+id = "editorial"
+title = "Keep the signal human"
+section = "Editorial"
+author = "Faction BBS project"
+rights = "BSD-3-Clause; original starter text and ASCII"
+provenance = "Written for the original Faction Nightwire starter edition"
+consent = "board-local"
+body = "N I G H T W I R E  //  0 0 1\n\nA board begins with people who care enough to return.\nSomeone has a question. Someone has a useful old manual.\nSomeone stays up late making the welcome screen feel like home.\n\nThis little edition is an invitation to make things together.\nPublish an original tutorial. Interview a friend about a project.\nAsk the author before reprinting a room conversation.\nGive every contributor credit and keep the permission record.\n\nPick a room and leave a thoughtful reply. Make an arcade night.\nShare a file you have permission to distribute. Write something\nworth discovering on a quiet evening.\n\nThe sysop supplies the world; the members give it a pulse.\n\nEnd of editorial."
+
+[[magazine.article]]
+id = "field-notes"
+title = "From a file request to a useful manual"
+section = "Field notes"
+author = "Faction BBS project"
+rights = "BSD-3-Clause; original starter text and ASCII"
+provenance = "Written for the original Faction Nightwire starter edition"
+consent = "board-local"
+body = "The library can start with a question.\n\nUse the request desk to ask for documentation, original tools or\npermitted shareware. A clear title helps another member recognize\nwhat you need. A request never grants distribution permission.\n\nIf you already have a suitable published file, open the request,\noffer its local file ID and record the actual rights and source.\nRead the review, then confirm. The requester must be allowed to\nread the file too.\n\nIf it needs uploading first, use the ordinary Files area. The\nsysop reviews pending uploads before publication. Keep the author,\nversion and license with the file so the next reader has context.\n\nFulfillment links a catalog object. A later permission change or\nwithdrawal can make that link unavailable. Keep your own permitted\ncopy and your attribution notes.\n\nEnd of field notes."
+
+[[magazine.article]]
+id = "interlude"
+title = "A little carrier in the noise"
+section = "ASCII interlude"
+author = "Faction BBS project"
+rights = "BSD-3-Clause; original starter text and ASCII"
+provenance = "Written for the original Faction Nightwire starter edition"
+consent = "board-local"
+body = "                   .\n          .        |        .\n           \\       |       /\n       ----- [ NIGHTWIRE ] -----\n           /       |       \\\n          .        |        .\n                   '\n\n       independent boards / shared imagination\n\nOriginal printable ASCII for this starter edition.\nUse your own lettering and palette to make the next one yours."
+
+[[magazine.article]]
+id = "arcade"
+title = "Make a night of it"
+section = "Arcade"
+author = "Faction BBS project"
+rights = "BSD-3-Clause; original starter text and ASCII"
+provenance = "Written for the original Faction Nightwire starter edition"
+consent = "board-local"
+body = "Choose a time in UTC so everyone can find the same evening.\nMake a gathering, give it a clear name and link the local room\nwhere people can introduce themselves.\n\nTry a Lua door, compare scores and write down the best story from\nthe session. Save larger compatibility experiments for a separate\ngame host. Board accounts never need an operating-system shell.\n\nA tiny original game can be enough: a riddle, a salvage run or a\nshort challenge that makes the next visitor smile.\n\nIf you write a scene report, ask before naming another member or\nquoting them. Let them review the exact text you plan to include.\n\nEnd of arcade notes."
+
+[[magazine.article]]
+id = "next-issue"
+title = "Build your next edition"
+section = "Colophon"
+author = "Faction BBS project"
+rights = "BSD-3-Clause; original starter text and ASCII"
+provenance = "Written for the original Faction Nightwire starter edition"
+consent = "board-local"
+body = "Start with a small editorial plan.\n\n1. Invite a few original contributions.\n2. Keep drafts and consent records in private editor storage.\n3. Let every author review the exact proposed words and credit.\n4. Record distribution rights and where the work came from.\n5. Preview a complete issue in classic and narrow terminals.\n6. Publish locally only after the sysop reviews the whole pack.\n\nThe current magazine reader uses owner-reviewed editions.\nMember submission queues and authenticated contributor approvals\nare future work. A manifest declaration is an editorial record.\n\nArchive each released revision and its permission records.\nChanging the live pack does not recall copies already downloaded.\nUse the existing reviewed file workflow for a text edition.\n\nOriginal text and ASCII: Faction BBS project. BSD-3-Clause.\nEnd of issue 001."

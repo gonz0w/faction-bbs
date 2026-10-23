@@ -159,7 +159,7 @@ persistent rooms; local-only channels and existing rooms are never auto-relayed.
 
 The [opt-in social lounge](social-lounge.md) adds availability and bodyless polite
 page/accept/decline signals across live local chat channels. Sysops enable/name it
-with /social; members opt in for each chat entry and explicitly check /pages.
+with /social; members opt in for each BBS visit and explicitly check /pages.
 Mute, blocks and UTC quiet-hour intent persist. This is separate from existing
 channel /names: /hide removes lounge advertising, not explicit channel membership.
 No custom private-message body, forced join, automatic page popup or federation.
@@ -173,3 +173,11 @@ current bodyless pages without joining chat. See [the scope and safe notificatio
 Standalone local login and inherited workers now use the same visit scope,
 including classic/plain menus. Their synchronous prompts and full-screen editor
 silently heartbeat the existing lease; clean exit closes it.
+
+
+The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu
+Who and group `/who` show broad current activity plus availability/status, while
+the Lounge retains its social/paging attributes. All three share the same current
+visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
+no private resource names or retained activity history. Take a stopped complete
+backup before upgrade; export/restore strips current activity and live authority.

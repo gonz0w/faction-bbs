@@ -62,6 +62,7 @@ enum State {
     IdentityArt(usize),
     Menu,
     Lounge(Box<faction_pages::social::Desk>),
+    Who(Box<faction_pages::who::Desk>),
     Terminal,
     Directory(faction_terminal::directory::View),
     Gallery(Box<faction_gallery::Desk>),
@@ -222,6 +223,8 @@ struct Client {
     skip_lf: bool,
     next_input: Instant,
     last_input: Instant,
+    published_activity: Option<faction_core::VisitActivity>,
+    activity_retry: Instant,
     notifications: faction_pages::notifications::Notifications,
     doors_uid: Option<u32>,
     door: Option<doors::Door>,
@@ -313,6 +316,8 @@ impl Client {
             skip_lf: false,
             next_input: now,
             last_input: now,
+            published_activity: None,
+            activity_retry: now,
             notifications: Default::default(),
             doors_uid: None,
             door: None,
@@ -778,6 +783,21 @@ fn run() -> Result<()> {
                     && c.prompt_started.elapsed() > Duration::from_secs(120))
             {
                 c.close = true;
+            }
+            if work > 0
+                && !c.close
+                && c.lease.is_some()
+                && now >= c.activity_retry
+                && c.activity() != c.published_activity
+            {
+                work -= 1;
+                if let Some(activity) = c.activity() {
+                    match board.visit_activity(c.lease.as_ref().ok_or(Error::Denied)?, activity) {
+                        Ok(()) => c.published_activity = Some(activity),
+                        Err(Error::Busy) => c.activity_retry = now + Duration::from_secs(1),
+                        Err(e) => c.recover(e, &mut board, theme),
+                    }
+                }
             }
             // One connection lease, including while a member reads, composes or plays.
             // This produces no TTY output and never changes the active UI state.

@@ -90,3 +90,11 @@ seconds, only with an empty menu input/output queue and idle decoder. It charges
 the existing global work budget; no new helper/connection/listener. ANSI redraws
 preserve focus; plain menus append a short ASCII indication. All active workflows
 and partial control/input states remain excluded. Default off on reconnect.
+
+
+The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu
+Who and group `/who` show broad current activity plus availability/status, while
+the Lounge retains its social/paging attributes. All three share the same current
+visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
+no private resource names or retained activity history. Take a stopped complete
+backup before upgrade; export/restore strips current activity and live authority.

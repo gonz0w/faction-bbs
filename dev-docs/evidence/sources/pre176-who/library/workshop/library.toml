@@ -1,0 +1,8 @@
+version = 1
+enabled = true
+name = "Community library"
+compact = false
+editorial = true
+magazine_name = "Board magazine"
+shelf = []
+book = []

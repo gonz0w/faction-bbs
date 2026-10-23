@@ -106,7 +106,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=17).contains(&version) {
+    if app != APP_ID || !(2..=18).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -158,6 +158,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 17 {
         reference.execute_batch(include_str!("social.sql"))?;
+    }
+    if version >= 18 {
+        reference.execute_batch(include_str!("activity.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -371,6 +374,14 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 17 {
         crate::social::validate(db)?;
+        if version >= 18
+            && db.query_row("SELECT count(*) FROM visit_activity", [], |r| {
+                r.get::<_, i64>(0)
+            })? > 256
+        {
+            return Err(Error::Invalid("visit activity quota"));
+        }
+
         if exported
             && db
                 .prepare("SELECT 1 FROM social_cooldowns LIMIT 1")?

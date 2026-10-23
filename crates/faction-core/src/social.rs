@@ -11,6 +11,7 @@ pub struct SocialPerson {
     pub mode: String,
     pub status: String,
     pub sysop: bool,
+    pub activity: String,
 }
 #[derive(Debug)]
 pub struct SocialRoster {
@@ -108,7 +109,7 @@ fn person(
     at: i64,
     paging: bool,
 ) -> Result<Option<(i64, SocialPerson)>> {
-    let row=db.query_row("SELECT p.member,m.handle,p.mode,p.status,m.role='sysop' FROM social_presence p JOIN chat_sessions c ON c.id=p.session AND c.member=p.member JOIN members m ON m.id=p.member WHERE p.session=?1 AND m.status='approved' AND m.epoch=c.epoch AND c.touched>?2-60 AND c.touched<=?2+5",params![id,at],|r|Ok((r.get::<_,i64>(0)?,SocialPerson{handle:r.get(1)?,mode:r.get(2)?,status:r.get(3)?,sysop:r.get(4)?}))).optional()?;
+    let row=db.query_row("SELECT p.member,m.handle,p.mode,p.status,m.role='sysop',coalesce(a.activity,'Menu') FROM social_presence p LEFT JOIN visit_activity a ON a.session=p.session JOIN chat_sessions c ON c.id=p.session AND c.member=p.member JOIN members m ON m.id=p.member WHERE p.session=?1 AND m.status='approved' AND m.epoch=c.epoch AND c.touched>?2-60 AND c.touched<=?2+5",params![id,at],|r|Ok((r.get::<_,i64>(0)?,SocialPerson{handle:r.get(1)?,mode:r.get(2)?,status:r.get(3)?,sysop:r.get(4)?,activity:r.get(5)?}))).optional()?;
     if let Some((member, v)) = row {
         let p = prefs(db, member)?;
         if !paging || (v.mode == "available" && !p.muted && !quiet(&p, at)) {

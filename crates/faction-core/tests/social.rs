@@ -348,7 +348,7 @@ fn exact_snapshots_keep_preferences_but_remove_live_social_authority_and_schema_
         "unknown"
     );
     drop(b);
-    f.db().execute_batch("DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;PRAGMA user_version=16").unwrap();
+    f.db().execute_batch("DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;PRAGMA user_version=16").unwrap();
     let old = f.0.join("old");
     export_local(&f.path(), &old).unwrap();
     verify_export(&old).unwrap();
@@ -471,4 +471,142 @@ fn board_visit_pages_work_without_channel_joins_and_end_on_disconnect() {
     b.set_status(&s, "alice", Status::Revoked).unwrap();
     assert!(b.social_session_config(&session).is_err());
     assert!(b.chat_leave_all(&next).is_err());
+}
+
+#[test]
+fn host_activity_is_current_cross_connection_and_uses_universal_visibility() {
+    use faction_core::VisitActivity as A;
+    let f = Fixture::new();
+    let (mut b, s, op) = f.board();
+    let (_, a) = f.member(&mut b, &s, "alice");
+    f.enable(&mut b, &op);
+    b.visit_activity(&a, A::Doors).unwrap();
+    assert!(b.social_roster(&op, None, false).unwrap().people.is_empty());
+    f.ready(&mut b, &a);
+    let mut reader = Board::open(&f.path()).unwrap();
+    let row = reader
+        .social_roster(&op, None, false)
+        .unwrap()
+        .people
+        .remove(0);
+    assert_eq!(
+        (row.activity.as_str(), row.mode.as_str()),
+        ("Doors", "available")
+    );
+    b.social_availability(&a, "busy", "Taking a break").unwrap();
+    b.visit_activity(&a, A::Rooms).unwrap();
+    let row = reader
+        .social_roster(&op, None, false)
+        .unwrap()
+        .people
+        .remove(0);
+    assert_eq!(
+        (
+            row.activity.as_str(),
+            row.mode.as_str(),
+            row.status.as_str()
+        ),
+        ("Rooms", "busy", "Taking a break")
+    );
+    b.social_block(&a, "sysop", true).unwrap();
+    assert!(
+        reader
+            .social_roster(&op, None, false)
+            .unwrap()
+            .people
+            .is_empty()
+    );
+    b.social_block(&a, "sysop", false).unwrap();
+    b.social_availability(&a, "hidden", "").unwrap();
+    assert!(
+        reader
+            .social_roster(&op, None, false)
+            .unwrap()
+            .people
+            .is_empty()
+    );
+    f.ready(&mut b, &a);
+    b.set_status(&s, "alice", Status::Revoked).unwrap();
+    assert!(b.visit_activity(&a, A::Chat).is_err());
+    assert!(
+        reader
+            .social_roster(&op, None, false)
+            .unwrap()
+            .people
+            .is_empty()
+    );
+}
+
+#[test]
+fn current_activity_cascades_on_close_and_never_survives_export_restore() {
+    use faction_core::VisitActivity as A;
+    let f = Fixture::new();
+    let (mut b, _, op) = f.board();
+    f.enable(&mut b, &op);
+    f.ready(&mut b, &op);
+    b.visit_activity(&op, A::Files).unwrap();
+    let output = f.0.join("current-export");
+    export_local(&f.path(), &output).unwrap();
+    verify_export(&output).unwrap();
+    let db = rusqlite::Connection::open(&output).unwrap();
+    assert_eq!(
+        db.query_row("SELECT count(*) FROM visit_activity", [], |r| r
+            .get::<_, i64>(0))
+            .unwrap(),
+        0
+    );
+    let restored = f.0.join("restored");
+    restore_local(&output, &restored).unwrap();
+    let restored = rusqlite::Connection::open(restored.join("faction.sqlite3")).unwrap();
+    assert_eq!(
+        restored
+            .query_row("SELECT count(*) FROM visit_activity", [], |r| r
+                .get::<_, i64>(0))
+            .unwrap(),
+        0
+    );
+    b.chat_close(&op).unwrap();
+    assert_eq!(
+        f.db()
+            .query_row("SELECT count(*) FROM visit_activity", [], |r| r
+                .get::<_, i64>(0))
+            .unwrap(),
+        0
+    );
+}
+
+#[test]
+fn schema_seventeen_export_is_read_only_and_owner_open_adds_empty_activity() {
+    let f = Fixture::new();
+    let (b, _, _) = f.board();
+    drop(b);
+    f.db()
+        .execute_batch("DROP TABLE visit_activity; PRAGMA user_version=17;")
+        .unwrap();
+    let output = f.0.join("schema17-export");
+    export_local(&f.path(), &output).unwrap();
+    verify_export(&output).unwrap();
+    assert_eq!(
+        f.db()
+            .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        17
+    );
+    let mut b = Board::open(&f.path()).unwrap();
+    assert_eq!(
+        f.db()
+            .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        18
+    );
+    assert_eq!(
+        f.db()
+            .query_row("SELECT count(*) FROM visit_activity", [], |r| r
+                .get::<_, i64>(0))
+            .unwrap(),
+        0
+    );
+    let s = b.authenticate("sysop", PASS).unwrap();
+    let lease = b.chat_open(&s).unwrap();
+    assert!(b.social_advertisement(&lease).is_err()); // feature remains off
 }

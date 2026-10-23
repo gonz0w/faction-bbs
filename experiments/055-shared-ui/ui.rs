@@ -109,7 +109,7 @@ impl Client {
             self.queue("\x1b[0m\x1b[?25h\n");
         }
         match action {
-            Action::Lounge => return Err(Error::Denied),
+            Action::Lounge | Action::Who => return Err(Error::Denied),
             Action::Quit => {
                 self.queue(&format!("{}\nLogged out.\n", theme.logout()));
                 self.success = true;

@@ -83,7 +83,7 @@ def run(a):
             bobby.raw(b'\x11');bobby.expect('Classic line editing; draft kept.');bobby.expect(PROMPT);frame=cmd(bobby,'.preview',PROMPT);assert b'Worker kept.' in frame
             bobby.send('.cancel');bobby.expect('Draft cancelled');action_end(bobby);assert b'Page waiting: open Social lounge' in bobby.transcript;frame=lounge(bobby);assert b'from sysop: pending' in frame
             charlie.send('');charlie.expect('Reply to post ID (blank for new message): ');charlie.send('');charlie.expect('Subject (blank for generated/reply default): ');charlie.send('Plain remains');charlie.expect('Message (one line, up to 1024 bytes): ');charlie.send('/edit');charlie.expect(PROMPT);charlie.send('.cancel');charlie.expect('Draft cancelled');action_end(charlie,True);frame=lounge(charlie,True);assert b'from sysop: pending' in frame;passed('worker_full_screen_and_plain_canonical_prefix_survive_invitations_without_popup')
-            cmd(bobby,'/block sysop');frame=cmd(owner,'/who','Not a delivery guarantee.');assert b'bobby [' not in frame;owner.expect('chat[#lobby]> ')
+            cmd(bobby,'/block sysop');frame=cmd(owner,'/who','Not a delivery guarantee.');assert b'bobby |' not in frame;owner.expect('chat[#lobby]> ')
             mark=len(bobby.transcript);bobby.resize(40,18);collect(bobby,.6);assert len(bobby.transcript)>mark and b'from sysop: pending' not in bobby.transcript[mark:];bobby.buffer=b'';frame=cmd(bobby,'r');assert b'from sysop: pending' not in frame
             cmd(bobby,'/unblock sysop');cmd(bobby,'/mute on');page(owner,'bobby');assert incoming('bobby')==[];cmd(bobby,'/mute off');minute=query('SELECT (unixepoch()/60)%1440')[0][0];end=(minute+2)%1440
             cmd(bobby,f'/quiet {minute//60:02}:{minute%60:02} {end//60:02}:{end%60:02}');page(owner,'bobby');assert incoming('bobby')==[];cmd(bobby,'/quiet off');passed('current_block_mute_quiet_and_resize_remove_ineligible_signals')
@@ -109,7 +109,7 @@ def run(a):
             write("UPDATE chat_sessions SET touched=unixepoch()-61 WHERE member=(SELECT id FROM members WHERE handle='charlie')")
             passed('failed_chat_part_cleanup_ends_visit_instead_of_resuming_with_retained_channel_joins')
             held=start('charlie');lounge(held);chat(owner,True);cmd(owner,'/social off','Social configuration updated.');cmd(held,'r',MENU);assert b'Social lounge disabled' in held.transcript;logout(held);leave_chat(owner,True);owner.send('?');owner.expect(PLAIN);assert query('SELECT count(*) FROM social_presence')==[(0,)] and query('SELECT count(*) FROM social_pages')==[(0,)];logout(owner,True);passed('sysop_disable_clears_live_signals_and_logout_closes_final_visit')
-            assert query('PRAGMA user_version')==[(17,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children)
+            assert query('PRAGMA user_version')==[(18,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children)
             passed('schema_unread_transfer_state_unchanged_and_passwords_never_echoed')
         except Exception:
             if a.diagnostics:
@@ -118,7 +118,7 @@ def run(a):
             raise
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=17,sustained=not a.quick,heartbeat_observations=observations,synthetic_clock_aging=True,actual_registration_and_approval=True,standalone_visit_availability=True,capacity_claim=False,automatic_popups=False,private_message_bodies=False,new_transfer_authority=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=18,sustained=not a.quick,heartbeat_observations=observations,synthetic_clock_aging=True,actual_registration_and_approval=True,standalone_visit_availability=True,capacity_claim=False,automatic_popups=False,private_message_bodies=False,new_transfer_authority=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Standalone visit lounge passed:',len(checks),'controls; sustained:',not a.quick,flush=True)
 if __name__=='__main__':
