@@ -1,7 +1,7 @@
 # 0072: Local magazine reader and original Nightwire issue
 
 Issue: [#143](https://github.com/gonz0w/faction-bbs/issues/143)
-Status: implemented and validated; archive/PR preparation
+Status: implemented and validated; [PR #170](https://github.com/gonz0w/faction-bbs/pull/170) open
 
 ## Goal and constraints
 
@@ -22,7 +22,8 @@ normal budgets and the stopped owner playground; defer later hardening.
 - [x] Complete host/native/shared terminal, permission, recovery and Rust workflow checks.
 - [x] Record source-pinned evidence and remove owned VM/private inputs/vendor;
   saved owner playground remains stopped/intact.
-- [ ] Verify committed source archive/policies and open focused PR (refs #143).
+- [x] Verify the committed source archive with all 63 offline policy/evidence
+  commands and open PR #170 (refs #143); GitHub CI is running.
 
 ## Validation and discoveries
 

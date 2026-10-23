@@ -1459,3 +1459,14 @@ content loads on stopped/drained restart; disk edits alone cannot withdraw loade
 text. Preserve packs/revisions/permission records separately; schema stays 15.
 Native private mail remains device-side. Snapshot 39 preserves 298 prior actual
 request inputs and the whole result. Keep owner playground off and hardening later.
+
+
+`magazine-netbsd` pins 294 matched native execution inputs, 36 harness inputs and
+13 unchanged dependency/access/credential inputs. Final software validation: 327
+Rust per OS, 130 Python, seven magazine PTYs per OS, nine actual SSH/native/SFTP
+and eighteen complete recovery controls per OS. The final reader reaches maximum
+article tails beyond the bounded rewind history. Compact native SFTP downloaded
+the exact 7,673-byte actual owner-exported edition; plain SSH, publication/consent
+filtering, withdrawal/revision and revocation pass. Keep guard 53 and preserve
+this actual input/result set before later edits. Owner preview stays off/intact;
+member submission/editor/verified-contributor workflows remain open under #143.
