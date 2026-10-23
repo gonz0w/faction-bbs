@@ -3,7 +3,7 @@ use crate::{Message, MessageDetails, MessagePage, Result};
 pub const BYTES: usize = 1024;
 pub const LINES: usize = 32;
 pub const PROMPT: &str = "Write> ";
-pub const HELP: &str = "Enter adds a line. .preview .send .undo .clear .quote .cancel .help\nStart with two dots for a literal dot. Drafts are lost on disconnect.\n";
+pub const HELP: &str = "Enter adds a line. .preview .send .undo .clear .quote .cancel .help\n.screen: full editor; .line: classic; .save: sysop-readable checkpoint; .leave: keep saved\nStart with two dots for a literal dot. Use .save for a board checkpoint; unsaved edits are lost on disconnect.\n";
 pub struct Target<'a> {
     pub room: i64,
     pub reply: Option<i64>,
@@ -22,8 +22,37 @@ pub enum Command {
     Cancel,
     Quote,
     Help,
+    Save,
+    Screen,
+    Line,
+    Leave,
 }
+mod screen;
+pub use screen::{Screen, ScreenEvent};
 impl Draft {
+    pub fn from_body(body: &str) -> Result<Self> {
+        if body.len() > BYTES
+            || body.split('\n').count() > LINES
+            || body.chars().any(|c| c.is_control() && c != '\n')
+        {
+            return Err("invalid room draft");
+        }
+        Ok(Self {
+            body: body.into(),
+            lines: if body.is_empty() {
+                0
+            } else {
+                body.split('\n').count()
+            },
+        })
+    }
+    fn replace(&mut self, start: usize, end: usize, text: &str) -> Result<()> {
+        let mut next = self.body.clone();
+        next.replace_range(start..end, text);
+        *self = Self::from_body(&next)?;
+        Ok(())
+    }
+
     pub fn body(&self) -> &str {
         &self.body
     }
@@ -47,6 +76,10 @@ impl Draft {
     }
     pub fn command(&mut self, line: &str) -> Result<Command> {
         Ok(match line {
+            ".save" => Command::Save,
+            ".screen" => Command::Screen,
+            ".line" => Command::Line,
+            ".leave" => Command::Leave,
             ".preview" => Command::Preview,
             ".send" => {
                 if self.body.trim().is_empty() {

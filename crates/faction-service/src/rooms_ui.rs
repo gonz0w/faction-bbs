@@ -82,10 +82,7 @@ impl Client {
                     &format!("Post in room #{room}"),
                     self.ansi,
                 ));
-                self.prompt(
-                    State::PostReply(room),
-                    "Reply to post ID (blank for new message): ",
-                );
+                self.post_open(board, room)?;
                 Ok(true)
             }
         }

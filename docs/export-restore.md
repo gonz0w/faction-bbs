@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2/3/4/5/6 boards upgrade to schema 7 when
+Verification is read-only; restored schema-2/3/4/5/6/7 boards upgrade to schema 8 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -153,3 +153,10 @@ not authoritative board data and not part of export/fresh restore.
 The optional [other-BBS directory](other-boards.md) is external reviewed host
 configuration. Preserve its pack separately; it is not part of the DB export or
 complete file-area bundle and never imports remote membership.
+
+Schema-8 exports also include private [room draft checkpoints](writing-desk.md).
+These are sysop-readable plaintext with member/room/revision binding; restored
+checkpoints still require current local approval. Explicit send removes its saved
+revision atomically, and expired checkpoints cannot be resumed. Logical deletion
+does not erase older exports or WAL bytes. Keep the stopped complete upgrade and
+fresh-path rollback procedure.

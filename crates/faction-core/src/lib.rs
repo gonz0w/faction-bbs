@@ -9,6 +9,8 @@ mod files;
 pub mod operator;
 mod post_metadata;
 mod room_article;
+mod room_drafts;
+pub use room_drafts::{ROOM_DRAFT_SECONDS, ROOM_DRAFTS, SavedRoomDraft};
 mod scores;
 pub use files::{
     AreaFile, FILE_BOARD_BYTES, FILE_BYTES, FILE_CHUNK, FILE_ROWS, FileArea, TransferGrant,
@@ -313,12 +315,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=7).contains(&version) {
+        } else if app != APP_ID || !(1..=8).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=7).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=8).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -328,7 +330,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=7).contains(&v) {
+            } else if !(2..=8).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -339,7 +341,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=7).contains(&v) {
+            } else if !(3..=8).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -349,7 +351,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=7).contains(&v) {
+        } else if !(4..=8).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -359,7 +361,7 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if !(5..=7).contains(&v) {
+        } else if !(5..=8).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -368,7 +370,7 @@ impl Board {
         if v == 5 {
             tx.execute_batch(include_str!("post_metadata.sql"))?;
             tx.pragma_update(None, "user_version", 6)?;
-        } else if !(6..=7).contains(&v) {
+        } else if !(6..=8).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -403,7 +405,16 @@ impl Board {
             )?;
             tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
             tx.pragma_update(None, "user_version", 7)?;
-        } else if v != 7 {
+        } else if !(7..=8).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 7 {
+            tx.execute_batch(include_str!("room_drafts.sql"))?;
+            tx.pragma_update(None, "user_version", 8)?;
+        } else if v != 8 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -546,6 +557,7 @@ impl Board {
             "UPDATE members SET status=?1,epoch=epoch+1 WHERE id=?2",
             params![value, id],
         )?;
+        tx.execute("DELETE FROM room_drafts WHERE member_id=?1", [id])?;
         tx.commit()?;
         Ok(())
     }
@@ -564,6 +576,10 @@ impl Board {
         if changed != 1 {
             return Err(Error::NotFound);
         }
+        tx.execute(
+            "DELETE FROM room_drafts WHERE member_id IN (SELECT id FROM members WHERE handle=?1)",
+            [name],
+        )?;
         tx.commit()?;
         Ok(())
     }
@@ -699,6 +715,10 @@ impl Board {
             if stored != wanted {
                 return Err(Error::RequestConflict);
             }
+            tx.execute(
+                "DELETE FROM room_drafts WHERE member_id=?1 AND room_id=?2 AND request_id=?3",
+                params![session.member, room, request],
+            )?;
             tx.commit()?;
             return Ok(p);
         }
@@ -737,6 +757,10 @@ impl Board {
         };
         let subject = post_metadata::resolve_subject(&tx, room, reply, subject, post.id)?;
         tx.execute("INSERT INTO post_metadata(post_id,article_id,subject,created_at,origin) VALUES(?1,lower(hex(randomblob(16))),?2,unixepoch(),'local')",params![post.id,subject])?;
+        tx.execute(
+            "DELETE FROM room_drafts WHERE member_id=?1 AND room_id=?2 AND request_id=?3",
+            params![session.member, room, request],
+        )?;
         tx.commit()?;
         Ok(post)
     }

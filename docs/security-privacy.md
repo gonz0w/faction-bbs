@@ -249,3 +249,15 @@ The [optional Kitty preview](kitty-graphics.md) uses only a fixed original asset
 Probes own their input and confer presentation capability only; native opt-in and
 exact-command regeneration never permit arbitrary APC, local paths, clipboard or
 file/mail/member authority. Image-specific cleanup is best effort on broken TTYs.
+
+## Explicit local-room draft checkpoints
+
+[The room writer](writing-desk.md) stores only explicitly saved local-room
+plaintext, readable by the sysop like local posts. Scope is board/member/epoch/
+room/reply; revisions compare before overwrite/delete, and send clears its matching
+checkpoint in the post transaction. Four rooms/member, 1024 body bytes/32 lines,
+30-day recovery and lazy expiry are bounded application policy, not secure
+erasure. Revocation/owner recovery clears affected checkpoints. Owner exports and
+backups include them; old copies may remain. Full-screen input/graphics/theme
+controls confer no member authority or local editor/path/unlock capability. Every
+private-mail draft/key/decryption stays device-side; no server mail fallback.

@@ -2,9 +2,9 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #147, build useful
-#141/#21 multiline room writing/preview, supporting #133's social hangout; keep
-classic fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #148, complete useful
+#141 full-screen room editing and explicit saved drafts, preserving classic
+fallback and hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1011,3 +1011,42 @@ unread rows; busy retry creates exactly one post. Native clean build and install
 hash/literal checks pass. Keep all 39 saved-evidence guards; preserve these new
 actual inputs and whole record before later edits. Owned clone/cache removed,
 saved playground off. No new capacity or persistent/full-screen draft claim.
+
+
+## Full-screen editor and schema-8 room checkpoints
+
+Read plan 0059, ADR 0054 and docs/writing-desk.md. Snapshot 26
+`sources/pre141-full-screen` / `writing-desk-baseline-manifest.json` freezes 180
+actual #148 inputs and its whole result before edits. Keep 26 snapshots/39 old
+record identities fixed; never refresh historical hashes to current code.
+
+Use the same 1024-byte/32-line room model for line/full editing. Only explicit
+Save persists, with visible plaintext/sysop-readable scope. Four rooms/member,
+one checkpoint/room, 30-day recovery/lazy per-member expiry, revision CAS on save/
+delete, epoch/status/reply checks. Matching send cleanup is in the posting
+transaction and uses the saved request ID for retry; never clear another
+connection's newer checkpoint. Pending/revoked members cannot recover/send;
+status changes and local owner recovery clear affected checkpoints. All private
+mail drafts/keys/decryption remain member-side. Owner exports/bundles include
+local room drafts; no secure-erasure/autosave/remote sync/member-export claim.
+Schema 8 requires stopped/drained complete backup and fresh-path rollback.
+
+Full-screen arrows/cell widths, paragraph keys, preview/quote, explicit SEND
+confirmation and Line fallback use inert text and trusted theme controls. Optional
+`writing_title` is <=24 printable ASCII bytes. Preserve decoder/scalar state across
+fitting resizes: resetting a partial arrow caused `[D` to enter draft text in an
+initial PTY run. Too-small/malformed input uses an Enter recovery barrier before
+classic text so delayed fragments cannot become edits. Shared redraw is once per
+bounded read, frames <=8 KiB, existing output queue/drain/defaults unchanged. No
+new helper/listener/package or capacity/hardening claim; saved playground stays off.
+
+`full-screen-netbsd` pins 184 matched selected native inputs and 17 host harness
+inputs, with 25 dependency/access/credential inputs unchanged. Validation: 213
+Rust per OS / 118 Python; seven full-screen/checkpoint PTYs per OS, eleven real
+SSH/native/plain controls, thirteen legacy unsaved writer controls per OS,
+22 shared-reader regressions and ordinary browser/menu/operator/art checks.
+Complete-bundle eleven per OS includes actual distinct non-root owner/file CLI
+proof on native NetBSD; export/restore and schema-7/8 compatibility pass. Keep
+all 40 saved-evidence guards and preserve these new inputs/whole result before
+later edits. Owned clone/cache removed; saved playground off. No new capacity,
+autosave, private-mail plaintext, secure-erasure or hardening claim.

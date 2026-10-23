@@ -81,3 +81,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 
 - [0052: Named room browser](0052-named-room-browser.md).
 - [0053: Explicit multiline room writing](0053-explicit-room-writing-desk.md).
+
+- [0054: Full-screen room editor and explicit checkpoints](0054-room-editor-and-checkpoints.md).

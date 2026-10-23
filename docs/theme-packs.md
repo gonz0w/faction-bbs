@@ -416,3 +416,7 @@ palettes and matching compact cards. Select a complete pack or its manual
 seasonal override using the existing options. These are new opt-in assets; no
 runtime parser, default installer, menu mapping or previously measured pack
 changes. Follow the guide for provenance, editing/reproduction and visual review.
+
+Optional `writing_title = "Night Desk"` in a base/seasonal theme names the
+[room writing surface](writing-desk.md). It is limited to 24 printable ASCII bytes;
+the room destination and subject remain explicit. The current palette applies.

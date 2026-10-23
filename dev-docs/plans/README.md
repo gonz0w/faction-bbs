@@ -59,3 +59,6 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0040: Authored subjects and room articles](0040-authored-subjects-and-room-articles.md)
 
 - [0041: Broader articles and original INN validation](0041-broader-articles-and-inn-validation.md)
+
+- [0058: Explicit multiline room writing](0058-room-writing-desk.md).
+- [0059: Full-screen editing and room checkpoints](0059-full-screen-and-room-checkpoints.md).

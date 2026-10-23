@@ -43,8 +43,10 @@ The **[room browser](docs/room-browser.md)** now adds named arrow/hotkey selecti
 unread counts, next-unread navigation and room cards for reading/posting without
 entering room IDs. Plain terminals and the existing numeric commands remain available.
 The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragraphs,
-reply quotes, undo/clear and paged preview with explicit send/cancel. Enter `/edit`
-at the body prompt; unsent drafts are held only for the current connection.
+reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
+for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
+recover local room writing after disconnect; these are plaintext board data,
+readable by its sysop. Schema-8 upgrades require a stopped complete backup.
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
 run the first-install preflight/helper, initialize your sysop and explicitly start

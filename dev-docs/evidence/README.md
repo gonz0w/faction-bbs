@@ -174,3 +174,10 @@ optional local-room multiline writer, preview/send/cancel and actual SSH/native
 routes. Snapshot 25 freezes 174 prior inputs and the complete #147 room-browser
 record; 25 snapshots/38 historical identities remain unchanged. No new capacity,
 physical SBC, persistent drafts or hardening claim.
+
+[Full-screen/editor checkpoint evidence](full-screen-netbsd/README.md) records
+213 Rust tests per OS, seven full editor/recovery PTYs per OS, eleven actual
+SSH/native/plain controls and distinct-UID backup/export checks. Snapshot 26
+freezes 180 prior inputs and the whole #148 record; 26 snapshots/39 historical
+identities stay fixed. Schema 8 holds explicit local-room plaintext checkpoints;
+no private-mail, new capacity or hardening claim follows.
