@@ -65,6 +65,10 @@ def run(a):
             db.execute("UPDATE discussion_settings SET enabled=1,name='Recovered find'")
             db.execute("INSERT INTO discussion_bookmarks VALUES(1,1)")
             db.execute("INSERT INTO file_requests(creator,nonce,revision,title,description,state,fulfiller,object,rights,provenance) VALUES(1,?,?,'Recovered request','Original permitted manual','fulfilled',1,?,'BSD-3-Clause','Fixture author')",('5'*32,'6'*32,object_id))
+            # Synthetic recovery data, not evidence of authenticated contributor action.
+            db.execute("INSERT INTO magazine_submissions VALUES(1,1,?,?,'submitted','Recovered manuscript','Reports','BSD-3-Clause','Synthetic fixture author','Original recovery manuscript')",('7'*32,'8'*32))
+            db.execute("INSERT INTO magazine_issues VALUES(1,1,?,?,1,1,'Recovery zine','Recovered issue','Autumn','When ready','published',?)",('9'*32,'a'*32,object_id))
+            db.execute("INSERT INTO magazine_entries VALUES(1,1,1,?,?,'Recovered proposal','Reports','BSD-3-Clause','Synthetic fixture author','Original recovery proposal')",('8'*32,'a'*32))
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -165,6 +169,11 @@ def run(a):
         with sqlite3.connect(restored/'faction.sqlite3') as db:
             assert db.execute('SELECT title,state,object,rights,provenance FROM file_requests').fetchall()==[('Recovered request','fulfilled',object_id,'BSD-3-Clause','Fixture author')]
         checks.append('complete_restore_preserves_file_request_fulfillment_and_provenance')
+        with sqlite3.connect(f'file:{restored}/faction.sqlite3?mode=ro',uri=True) as db:
+            assert db.execute("SELECT state,revision,body FROM magazine_submissions").fetchall()==[('submitted','8'*32,'Original recovery manuscript')]
+            assert db.execute("SELECT state,token,object FROM magazine_issues").fetchall()==[('published','a'*32,object_id)]
+            assert db.execute("SELECT source_revision,approved,body FROM magazine_entries").fetchall()==[('8'*32,'a'*32,'Original recovery proposal')]
+        checks.append('complete_restore_preserves_editorial_source_proposal_exact_consent_and_related_file')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)

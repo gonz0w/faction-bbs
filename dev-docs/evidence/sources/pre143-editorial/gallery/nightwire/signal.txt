@@ -1,0 +1,13 @@
+       .-- FACTION --.
+       |  NIGHTWIRE  |
+       '------+------'
+              |
+     +--------+---------+
+     |        |         |
+   ROOMS    CHAT       FILES
+     |        |         |
+     +--------+---------+
+              |
+       people on the wire
+
+Original ASCII sketch by Faction contributors.

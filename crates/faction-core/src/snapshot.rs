@@ -106,7 +106,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=15).contains(&version) {
+    if app != APP_ID || !(2..=16).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -152,6 +152,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 15 {
         reference.execute_batch(include_str!("requests.sql"))?;
+    }
+    if version >= 16 {
+        reference.execute_batch(include_str!("editorial.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -360,6 +363,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     if version >= 15 {
         crate::requests::validate(db, deadline)?;
     }
+    if version >= 16 {
+        crate::editorial::validate(db, deadline)?;
+    }
     Ok(SnapshotSummary {
         members: count(db, "SELECT count(*) FROM members")?,
         rooms: count(db, "SELECT count(*) FROM rooms")?,
@@ -563,4 +569,41 @@ fn export_connection(
     fs::hard_link(stage.path(), output)?;
     sync(p)?;
     Ok(summary)
+}
+
+/// Filesystem-owner plaintext edition export. Never route this to member adapters.
+/// Like snapshot export, opens an existing catalog read-only and never migrates it.
+pub fn export_magazine_local(directory: &Path, id: i64, output: &Path) -> Result<()> {
+    use std::io::Write;
+    private(directory, true)?;
+    let path = directory.join("faction.sqlite3");
+    private(&path, false)?;
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let p = directory.join(format!("faction.sqlite3{suffix}"));
+        match fs::symlink_metadata(&p) {
+            Ok(_) => private(&p, false)?,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => (),
+            Err(e) => return Err(e.into()),
+        }
+    }
+    let deadline = Instant::now() + BUDGET;
+    let db = Connection::open_with_flags(
+        fs::canonicalize(directory)?.join("faction.sqlite3"),
+        OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NOFOLLOW,
+    )?;
+    harden(&db, deadline)?;
+    db.execute_batch("BEGIN DEFERRED")?;
+    validate(&db, false, deadline)?;
+    let issue = crate::editorial::owner_edition(&db, id)?;
+    let text = issue.text();
+    let mut f = fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(output)?;
+    if let Err(e) = f.write_all(text.as_bytes()).and_then(|_| f.sync_all()) {
+        let _ = fs::remove_file(output);
+        return Err(e.into());
+    }
+    Ok(())
 }

@@ -66,3 +66,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0060: Local community wall](0060-local-community-wall.md).
 
 - [0061: Local member pages and .plan history](0061-member-pages-and-plans.md).
+
+- [0073: Authenticated magazine workshop](0073-magazine-workshop.md).

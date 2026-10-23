@@ -21,6 +21,7 @@ pub struct Catalog {
     pub(crate) books: Vec<Book>,
     pub(crate) magazine_name: String,
     pub(crate) issues: Vec<crate::magazine::Issue>,
+    pub(crate) editorial: bool,
 }
 pub(crate) struct Shelf {
     pub id: String,
@@ -92,6 +93,7 @@ impl Catalog {
         self.enabled
             && (!self.books.is_empty()
                 || self.requests
+                || self.editorial
                 || self.issues.iter().any(|i| i.state == "published"))
     }
     pub fn len(&self) -> usize {
@@ -196,6 +198,11 @@ impl Catalog {
                 room,
             });
         }
+        let editorial = match t.remove("editorial") {
+            None => false,
+            Some(Value::Boolean(v)) => v,
+            _ => return Err("invalid editorial setting"),
+        };
         let magazine_name = if t.contains_key("magazine_name") {
             text(&mut t, "magazine_name", 24, false)?
         } else {
@@ -215,6 +222,7 @@ impl Catalog {
             books,
             magazine_name,
             issues,
+            editorial,
         })
     }
 }

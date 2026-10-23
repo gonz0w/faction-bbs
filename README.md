@@ -140,8 +140,11 @@ published-file fulfillment, author/sysop close/delete and current-permission lin
 Optional **[local magazines](docs/board-magazine.md)** now add published editions,
 a themed contents/reader, full contributor credits and optional current-permission
 text downloads. An original five-article Nightwire issue includes an editorial,
-field notes, ASCII interlude and arcade ideas. Sysops preview/assemble packs offline;
-member submission queues and authenticated approvals remain follow-on #143 work.
+field notes, ASCII interlude and arcade ideas. Sysops can also enable the **[magazine workshop](docs/magazine-workshop.md)**:
+private drafts, explicit submissions, copied editorial revisions, exact-issue
+contributor approvals, local publish/withdrawal and optional Files editions.
+Published text stays fixed; changes require a new edition and new approvals.
+Take a stopped complete backup before the forward-only schema-16 upgrade.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
 visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)

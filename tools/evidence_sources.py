@@ -230,11 +230,17 @@ def file_requests_baseline_manifest(root=ROOT):
     return json.loads(raw)
 
 
+def magazine_baseline_manifest(root=ROOT):
+    raw=(root/'dev-docs/evidence/magazine-baseline-manifest.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='a13d3f06599f09d8975a5921e73376027ffea0bdadda2fc513ff8e13c853432f','frozen magazine baseline changed'
+    return json.loads(raw)
+
+
 def source_bytes(name,expected,root=ROOT):
     assert re.fullmatch('[a-f0-9]{64}',expected)
     path=Path(name);assert not path.is_absolute() and '..' not in path.parts
     m=manifest(root)
-    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root),authored_articles_baseline_manifest(root),broader_articles_baseline_manifest(root),unicode_subjects_baseline_manifest(root),modern_terminals_baseline_manifest(root),kitty_graphics_baseline_manifest(root),terminal_compatibility_baseline_manifest(root),menu_themes_baseline_manifest(root),seasonal_themes_baseline_manifest(root),custom_menus_baseline_manifest(root),nightwire_baseline_manifest(root),operator_baseline_manifest(root),operator_host_baseline_manifest(root),operator_recovery_baseline_manifest(root),directory_baseline_manifest(root),board_launcher_baseline_manifest(root),room_browser_baseline_manifest(root),writing_desk_baseline_manifest(root),full_screen_baseline_manifest(root),community_wall_baseline_manifest(root),member_pages_baseline_manifest(root),local_mail_vault_baseline_manifest(root),client_vault_integration_baseline_manifest(root),gatherings_baseline_manifest(root),polls_baseline_manifest(root),catchup_baseline_manifest(root),discussion_baseline_manifest(root),gallery_baseline_manifest(root),travel_baseline_manifest(root),library_baseline_manifest(root),file_requests_baseline_manifest(root)]
+    candidates=[m]+m.get('snapshots',[])+[key_manifest(root),global_manifest(root),file_baseline_manifest(root),native_client_baseline_manifest(root),mail_client_baseline_manifest(root),room_reader_baseline_manifest(root),post_metadata_baseline_manifest(root),authored_articles_baseline_manifest(root),broader_articles_baseline_manifest(root),unicode_subjects_baseline_manifest(root),modern_terminals_baseline_manifest(root),kitty_graphics_baseline_manifest(root),terminal_compatibility_baseline_manifest(root),menu_themes_baseline_manifest(root),seasonal_themes_baseline_manifest(root),custom_menus_baseline_manifest(root),nightwire_baseline_manifest(root),operator_baseline_manifest(root),operator_host_baseline_manifest(root),operator_recovery_baseline_manifest(root),directory_baseline_manifest(root),board_launcher_baseline_manifest(root),room_browser_baseline_manifest(root),writing_desk_baseline_manifest(root),full_screen_baseline_manifest(root),community_wall_baseline_manifest(root),member_pages_baseline_manifest(root),local_mail_vault_baseline_manifest(root),client_vault_integration_baseline_manifest(root),gatherings_baseline_manifest(root),polls_baseline_manifest(root),catchup_baseline_manifest(root),discussion_baseline_manifest(root),gallery_baseline_manifest(root),travel_baseline_manifest(root),library_baseline_manifest(root),file_requests_baseline_manifest(root),magazine_baseline_manifest(root)]
     matches=[snapshot for snapshot in candidates if snapshot['files'].get(name)==expected]
     if matches:
         target=root/'dev-docs/evidence'/matches[0]['source_root']/name

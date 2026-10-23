@@ -412,6 +412,8 @@ separate from this ordinary community workflow.
 
 #143's first useful increment is the owner-reviewed local magazine reader and
 original Nightwire starter issue. See [the guide](../docs/board-magazine.md) and
-[plan 0072](plans/0072-local-magazine-reader.md). Keep authenticated submissions,
-editor selection/revision/contributor approval, release automation and richer art
-as follow-on work. Local release is not public/Gopher/NNTP publication authority.
+[plan 0072](plans/0072-local-magazine-reader.md). The [workshop](../docs/magazine-workshop.md) and
+[plan 0073](plans/0073-magazine-workshop.md) add authenticated submissions,
+editor selection/revision, exact-issue contributor consent, local release/withdrawal
+and optional existing Files editions. Release automation, richer art and delegated
+editor roles remain optional follow-on work. Local release is not public/Gopher/NNTP publication authority.

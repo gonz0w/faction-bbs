@@ -4,10 +4,16 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add the opt-in magazine workshop: private drafts, explicit member submissions,
+  sysop selection/copied revisions, exact-issue contributor approvals, manual local
+  publication/withdrawal and current-consent owner text export through existing
+  Files. Shared/worker/classic/plain paths retain normal limits. Schema 16 stores
+  manuscripts/proposals/consent; take a stopped complete backup before upgrade.
+
 - Add owner-reviewed local magazine editions in the library, with themed contents,
   paged articles/credits, an original Nightwire starter issue, explicit local consent
   declarations, owner preview/new-file text export and existing file/discussion
-  jumps. Classic/plain remains; submission/approval workflows stay open (#143).
+  jumps. Classic/plain remains; the separate workshop supplies authenticated submissions/approvals (#143).
 
 - Add opt-in local file requests inside the library: explicit review/create,
   published-file fulfillment with rights/provenance, author/sysop close/delete,

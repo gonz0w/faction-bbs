@@ -125,8 +125,9 @@ from member-device encrypted private mail and attachments.
 
 Magazine packs and permission records remain external configuration: preserve them
 alongside complete database/blob/config/key backups and restore the intended pack
-before restarting. **Schema stays 15**; database snapshots do not contain these
-editions. Recheck download namespaces/grants and room IDs after restore. The entire
+before restarting. The static reader adds no tables; database snapshots do not contain these
+pack editions. The current board is schema 16 because the separate workshop stores
+manuscripts/proposals/approvals. Recheck download namespaces/grants and room IDs after restore. The entire
 combined manifest remains 32 KiB; all magazines together share that bound. Eight
 text rows/four cards, 32 recent previous offsets (forward reading remains unlimited within the article)
 and an 8-KiB frame cap bound each optional
@@ -137,3 +138,9 @@ There is no new physical-hardware, capacity or hardening claim.
 See [ADR 0067](../dev-docs/decisions/0067-local-magazine-reader.md),
 [plan 0072](../dev-docs/plans/0072-local-magazine-reader.md) and
 [software evidence](../dev-docs/evidence/magazine-netbsd/README.md).
+
+
+For authenticated member submissions, sysop proposal editing and exact-issue
+contributor approvals, enable the separate [magazine workshop](magazine-workshop.md).
+Its database records and runtime withdrawal differ from this immutable startup
+pack. Static consent labels remain editor declarations, not authenticated approvals.
