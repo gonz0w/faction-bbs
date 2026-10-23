@@ -15,6 +15,7 @@ pub enum Action {
     History,
     Post,
     Chat,
+    Lounge,
     Sysop,
     Doors,
     Files,
@@ -38,6 +39,7 @@ impl Action {
             "history" => Ok(Self::History),
             "post" => Ok(Self::Post),
             "chat" => Ok(Self::Chat),
+            "lounge" => Ok(Self::Lounge),
             "sysop" => Ok(Self::Sysop),
             "doors" => Ok(Self::Doors),
             "files" => Ok(Self::Files),
@@ -56,7 +58,8 @@ impl Action {
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Library
+        self != Self::Lounge
+            && self != Self::Library
             && self != Self::Gallery
             && self != Self::Find
             && self != Self::Catchup
@@ -145,6 +148,8 @@ pub struct Theme {
     directory_enabled: bool,
     gallery_enabled: bool,
     library_enabled: bool,
+    lounge_enabled: bool,
+    lounge_notice: bool,
     wall_enabled: bool,
     pages_enabled: bool,
     gatherings_enabled: bool,
@@ -174,6 +179,8 @@ impl Default for Theme {
             directory_enabled: false,
             gallery_enabled: false,
             library_enabled: false,
+            lounge_enabled: false,
+            lounge_notice: false,
             wall_enabled: false,
             pages_enabled: false,
             gatherings_enabled: false,
@@ -605,6 +612,47 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_lounge_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.lounge_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Lounge) {
+            if self.entries.iter().any(|e| e.key == b'L') {
+                return Err("L is reserved; add a lounge action with another key");
+            }
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Lounge,
+                    key: b'L',
+                    label: "Social lounge".into(),
+                    description: "Availability and polite pages".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
+    /// Generic coalesced badge, only on an ordinary safe menu redraw.
+    pub fn set_lounge_notice(&mut self, waiting: bool) {
+        self.lounge_notice = waiting;
+    }
+    fn display_label(&self, e: &Entry) -> String {
+        if self.lounge_notice && e.action == Action::Lounge {
+            format!("* {:.24}", e.label)
+        } else {
+            e.label.clone()
+        }
+    }
     pub fn set_library_enabled(&mut self, enabled: bool) -> Result<()> {
         self.library_enabled = enabled;
         if enabled && !self.entries.iter().any(|e| e.action == Action::Library) {
@@ -640,7 +688,8 @@ impl Theme {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Gatherings && self.gatherings_enabled)
+        (action == Action::Lounge && self.lounge_enabled)
+            || (action == Action::Gatherings && self.gatherings_enabled)
             || (action == Action::Library && self.library_enabled)
             || (action == Action::Gallery && self.gallery_enabled)
             || (action == Action::Find && self.find_enabled)
@@ -666,7 +715,11 @@ impl Theme {
         &self.menu_title
     }
     pub fn welcome(&self) -> &str {
-        &self.welcome
+        if self.lounge_notice {
+            "Page waiting: open Social lounge"
+        } else {
+            &self.welcome
+        }
     }
     pub fn logout(&self) -> &str {
         &self.logout
@@ -830,13 +883,18 @@ impl Theme {
         Ok(candidate)
     }
     pub fn plain_menu(&self, sysop: bool) -> String {
-        let mut out = format!("\n{}\n{}\n{}\n", self.board, self.welcome, self.menu_title);
+        let mut out = format!(
+            "\n{}\n{}\n{}\n",
+            self.board,
+            self.welcome(),
+            self.menu_title
+        );
         for e in &self.entries {
             writeln!(
                 out,
                 "[{}] {}{}",
                 e.key as char,
-                e.label,
+                self.display_label(e),
                 if self.enabled(e.action, sysop) {
                     ""
                 } else {
@@ -995,7 +1053,7 @@ impl<'a> Menu<'a> {
                 key_style.sgr(),
                 e.key as char,
                 style.sgr(),
-                e.label,
+                self.theme.display_label(e),
                 if enabled { "    " } else { " -- " }
             );
         }
@@ -1022,7 +1080,7 @@ impl<'a> Menu<'a> {
             key_style.sgr(),
             e.key as char,
             style.sgr(),
-            e.label,
+            self.theme.display_label(e),
             tail,
             " ".repeat(self.width() - 2 - used)
         )
@@ -1030,7 +1088,7 @@ impl<'a> Menu<'a> {
     pub fn render(&self) -> String {
         let mut out = format!("{}\x1b[2J\x1b[H", self.theme.normal.sgr());
         out.push_str(&self.line(1, &self.theme.board, self.theme.hotkey));
-        out.push_str(&self.line(2, &self.theme.welcome, self.theme.normal));
+        out.push_str(&self.line(2, self.theme.welcome(), self.theme.normal));
         let rule = format!(
             "+-- {} {}+",
             self.theme.menu_title,
@@ -1122,5 +1180,41 @@ impl<'a> Menu<'a> {
                 }
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod lounge_tests {
+    use super::*;
+    #[test]
+    fn lounge_is_runtime_gated_and_badge_preserves_bounded_plain_and_ansi_geometry() {
+        let mut t = Theme::default();
+        assert_eq!(t.hotkey(b'L', false), None);
+        t.set_lounge_enabled(true).unwrap();
+        assert_eq!(t.hotkey(b'L', false), Some(Action::Lounge));
+        assert!(t.plain_menu(false).contains("[L] Social lounge"));
+        t.set_lounge_notice(true);
+        assert!(t.plain_menu(false).contains("* Social lounge"));
+        assert!(Menu::with_columns(&t, false, 80).render().len() < 8192);
+        t.set_lounge_enabled(false).unwrap();
+        assert_eq!(t.hotkey(b'L', false), None);
+    }
+    #[test]
+    fn custom_lounge_key_is_respected_without_reserving_another_entry() {
+        let mut t = Theme::default();
+        t.entries.insert(
+            0,
+            Entry {
+                action: Action::Lounge,
+                key: b'J',
+                label: "Night lounge".into(),
+                description: String::new(),
+                position: None,
+            },
+        );
+        t.set_lounge_enabled(true).unwrap();
+        assert_eq!(t.hotkey(b'J', false), Some(Action::Lounge));
+        assert_eq!(t.hotkey(b'L', false), None);
+        assert_eq!(Action::parse("lounge").unwrap(), Action::Lounge);
     }
 }

@@ -21,6 +21,7 @@ mod pages_ui;
 mod policy;
 mod polls_ui;
 mod rooms_ui;
+mod social_ui;
 mod ui;
 mod wall_ui;
 mod writing_ui;
@@ -60,6 +61,7 @@ enum State {
     Identity,
     IdentityArt(usize),
     Menu,
+    Lounge(Box<faction_pages::social::Desk>),
     Terminal,
     Directory(faction_terminal::directory::View),
     Gallery(Box<faction_gallery::Desk>),
@@ -773,6 +775,20 @@ fn run() -> Result<()> {
             {
                 c.close = true;
             }
+            // One connection lease, including while a member reads, composes or plays.
+            // This produces no TTY output and never changes the active UI state.
+            if work > 0
+                && !c.close
+                && c.lease.is_some()
+                && c.heartbeat.elapsed() >= Duration::from_secs(10)
+            {
+                work -= 1;
+                match board.chat_heartbeat(c.lease.as_ref().ok_or(Error::Denied)?) {
+                    Ok(()) => c.heartbeat = now,
+                    Err(Error::Busy) => (),
+                    Err(e) => c.recover(e, &mut board, theme),
+                }
+            }
             if work > 0
                 && matches!(c.state, State::Chat)
                 && now >= c.next_poll
@@ -781,11 +797,7 @@ fn run() -> Result<()> {
             {
                 work -= 1;
                 c.next_poll = now + Duration::from_millis(250);
-                let result = (|| -> faction_core::Result<()> {
-                    if c.heartbeat.elapsed() >= Duration::from_secs(10) {
-                        board.chat_heartbeat(c.lease.as_ref().ok_or(Error::Denied)?)?;
-                        c.heartbeat = now;
-                    }
+                let result = {
                     if c.editor.expire(now).is_some() {
                         c.queue("Draft discarded; press Enter to recover.\n");
                         c.chat_prompt();
@@ -795,7 +807,7 @@ fn run() -> Result<()> {
                     } else {
                         c.approved(&mut board)
                     }
-                })();
+                };
                 if let Err(e) = result {
                     c.recover(e, &mut board, theme);
                 }

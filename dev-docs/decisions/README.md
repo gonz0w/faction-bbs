@@ -97,3 +97,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0068: Magazine workshop and exact-issue consent](0068-magazine-workshop.md).
 
 - [0069: Opt-in chat lounge](0069-opt-in-chat-lounge.md).
+
+- [0070: Connection-scoped social availability](0070-connection-scoped-social.md).

@@ -21,6 +21,17 @@ fn minute(v: &str) -> Result<u16> {
 }
 const HELP: &str = "/available [public status] /busy [public status] /away [public status] /hide\n/who [after-handle] /pages /page handle /page-sysop [handle]\n/answer ID accept|decline /mute on|off /block handle /unblock handle\n/quiet HH:MM HH:MM (UTC) or /quiet off; /privacy shows your controls.\nPages are bodyless invitations, not private messages. Accepting never switches channels.\nAvailability lasts only during this chat entry; /pages explicitly checks requests.\nSysop: /social on|off|name LABEL. No OS privileges.\n";
 pub fn command(b: &mut Board, l: &ChatLease, input: &str) -> Result<Option<String>> {
+    command_scoped(b, l, input, false)
+}
+pub fn visit_command(b: &mut Board, l: &ChatLease, input: &str) -> Result<Option<String>> {
+    command_scoped(b, l, input, true)
+}
+fn command_scoped(
+    b: &mut Board,
+    l: &ChatLease,
+    input: &str,
+    visit: bool,
+) -> Result<Option<String>> {
     let (verb, args) = input.split_once(' ').unwrap_or((input, ""));
     let args = args.trim();
     let verb = verb.to_ascii_lowercase();
@@ -212,6 +223,15 @@ pub fn command(b: &mut Board, l: &ChatLease, input: &str) -> Result<Option<Strin
     if out.len() > 4096 {
         return Err(Error::Invalid("lounge frame budget"));
     }
+    if visit {
+        out = out
+            .replace("during this chat entry", "during this BBS visit")
+            .replace("for this chat entry", "for this BBS visit")
+            .replace(
+                "Availability lasts only during this chat entry",
+                "Availability lasts during this BBS visit",
+            );
+    }
     Ok(Some(out))
 }
 #[cfg(test)]
@@ -231,6 +251,150 @@ mod tests {
             "-1:00",
         ] {
             assert!(minute(s).is_err(), "{s}");
+        }
+    }
+}
+
+/// Enable only in hosts which maintain a connection-scoped lease outside chat.
+pub fn menu_theme(
+    b: &mut Board,
+    s: &faction_core::Session,
+    lease: Option<&ChatLease>,
+    theme: &faction_terminal::Theme,
+) -> Result<Option<faction_terminal::Theme>> {
+    if !b.social_session_config(s)?.enabled {
+        return Ok(None);
+    }
+    let mut t = theme.clone();
+    t.set_lounge_enabled(true).map_err(Error::Invalid)?;
+    if let Some(l) = lease {
+        let waiting = b
+            .social_pages(l)?
+            .iter()
+            .any(|p| (!p.outgoing && p.state == "pending") || (p.outgoing && p.state != "pending"));
+        t.set_lounge_notice(waiting);
+    }
+    Ok(Some(t))
+}
+#[derive(Default)]
+pub struct Desk {
+    notice: String,
+    after: Option<String>,
+    view: u8,
+}
+impl Desk {
+    pub fn render(
+        &mut self,
+        b: &mut Board,
+        l: &ChatLease,
+        theme: &faction_terminal::Theme,
+        ansi: bool,
+    ) -> Result<String> {
+        let c = b.social_config(l)?;
+        if !c.enabled {
+            return Err(Error::Invalid("social lounge disabled by sysop"));
+        }
+        let mut out = faction_terminal::section(theme, &c.name, ansi);
+        out.push_str("Board-session lounge / approved local members\nAvailability lasts across menus, rooms and doors until disconnect.\n");
+        out.push_str("Q:main R:refresh N:more H:help; /social help for controls.\nMain menu ?:refresh page badge; no popup interruptions.\n");
+        writeln!(
+            out,
+            "Your advertisement: {}",
+            b.social_advertisement(l)?
+                .map(|p| format!("{} / {}", p.mode, p.status))
+                .unwrap_or_else(|| "hidden".into())
+        )
+        .unwrap();
+        if !self.notice.is_empty() {
+            writeln!(out, "{}", self.notice).unwrap();
+        }
+        if self.view == 1 {
+            out.push_str(&visit_command(b, l, "/privacy")?.ok_or(Error::NotFound)?);
+        }
+        if self.view == 2 {
+            out.push_str(&HELP.replace("during this chat entry", "during this BBS visit"));
+        }
+        let roster = b.social_roster(l, self.after.as_deref(), self.view == 3)?;
+        for p in &roster.people {
+            writeln!(
+                out,
+                "{} [{}{}] {}",
+                p.handle,
+                p.mode,
+                if p.sysop { ", sysop" } else { "" },
+                p.status
+            )
+            .unwrap();
+        }
+        out.push_str("Current requests/replies (expire; no delivery guarantee):\n");
+        for p in b.social_pages(l)? {
+            writeln!(
+                out,
+                "Page {} {} {}: {}",
+                p.id,
+                if p.outgoing { "to" } else { "from" },
+                if p.outgoing { p.to } else { p.from },
+                p.state
+            )
+            .unwrap();
+        }
+        out.push_str(
+            "No private message bodies. Accepting does not change your location.\nLounge> ",
+        );
+        if out.len() > 8192 {
+            return Err(Error::Invalid("lounge frame budget"));
+        }
+        Ok(out)
+    }
+    pub fn feed(&mut self, input: &str, b: &mut Board, l: &ChatLease) -> Result<bool> {
+        self.notice.clear();
+        let cmd = input.to_ascii_lowercase();
+        match cmd.as_str() {
+            "q" | "/quit" => return Ok(true),
+            "" | "r" => {
+                self.view = 0;
+                self.after = None;
+            }
+            "h" => self.view = 2,
+            "n" => {
+                let rows = b.social_roster(l, self.after.as_deref(), self.view == 3)?;
+                self.after = rows.next;
+            }
+            _ => {
+                let out = visit_command(b, l, input)?
+                    .ok_or(Error::Invalid("use displayed lounge commands"))?;
+                let (verb, args) = cmd.split_once(' ').unwrap_or((&cmd, ""));
+                match verb {
+                    "/privacy" => self.view = 1,
+                    "/social" if args.is_empty() || args == "help" => self.view = 2,
+                    "/page-sysop" if args.is_empty() => {
+                        self.view = 3;
+                        self.after = None;
+                    }
+                    "/who" => {
+                        self.view = 0;
+                        self.after = if args.trim().is_empty() {
+                            None
+                        } else {
+                            Some(args.trim().into())
+                        };
+                    }
+                    "/pages" => self.view = 0,
+                    _ => {
+                        self.view = 0;
+                        self.notice = out;
+                    }
+                }
+            }
+        }
+        Ok(false)
+    }
+    pub fn recover(&mut self, e: &Error) -> bool {
+        if matches!(e, Error::Invalid(_) | Error::NotFound | Error::Busy) {
+            self.notice = format!("Lounge: {e}");
+            true
+        } else {
+            false
         }
     }
 }

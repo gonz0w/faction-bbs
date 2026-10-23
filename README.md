@@ -148,8 +148,10 @@ Take a stopped complete backup before upgrading the catalog (current schema 17).
 The optional **[chat lounge](docs/social-lounge.md)** now adds explicit
 available/busy/away status and polite bodyless invitations across local chat
 channels, with accept/decline, mute, blocks, UTC quiet hours and opted-in sysop
-paging. Plain/classic commands remain. Presence outside chat and automatic page
-notifications remain follow-on work. Take a stopped complete backup before
+paging. Plain/classic commands remain. In the shared SSH/native service, availability
+now survives rooms, editing and doors; the new Lounge menu checks invitations
+and marks current signals during safe menu redraws. Standalone rollback remains
+chat-only; idle popups are not added. Take a stopped complete backup before
 the forward-only schema-17 upgrade.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each

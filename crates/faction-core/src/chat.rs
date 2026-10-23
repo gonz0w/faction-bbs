@@ -145,6 +145,21 @@ impl Board {
         )?;
         Ok(())
     }
+    /// Leave all channels without ending the connection's optional social visit.
+    /// Reset the send receipt so the next explicit chat entry starts at request 1.
+    pub fn chat_leave_all(&mut self, lease: &ChatLease) -> Result<()> {
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        lease_current(&tx, &self.identity, lease)?;
+        tx.execute(
+            "DELETE FROM chat_joins WHERE session=?1",
+            [lease.id.as_slice()],
+        )?;
+        tx.execute("UPDATE chat_sessions SET last_request=0,last_channel=NULL,last_sequence=NULL,last_floor=NULL,last_body=NULL,last_kind=NULL WHERE id=?1",[lease.id.as_slice()])?;
+        tx.commit()?;
+        Ok(())
+    }
     pub fn chat_heartbeat(&mut self, lease: &ChatLease) -> Result<()> {
         let tx = self
             .db

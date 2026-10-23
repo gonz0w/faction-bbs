@@ -393,3 +393,82 @@ fn malformed_status_config_quiet_hours_and_forged_lease_snapshot_fail() {
         .unwrap();
     assert!(export_local(&f.path(), &f.0.join("bad")).is_err());
 }
+
+#[test]
+fn leaving_chat_keeps_connection_presence_but_clears_joins_receipt_and_history_floor() {
+    use faction_core::ChatKind;
+    let f = Fixture::new();
+    let (mut b, s, op) = f.board();
+    let (_, a) = f.member(&mut b, &s, "alice");
+    let (_, bob) = f.member(&mut b, &s, "bob");
+    f.enable(&mut b, &op);
+    f.ready(&mut b, &a);
+    f.ready(&mut b, &bob);
+    b.chat_create(&s, "#vault", true).unwrap();
+    b.chat_allow(&s, "#vault", "alice", true).unwrap();
+    b.chat_join(&a, "#lobby").unwrap();
+    b.chat_join(&bob, "#lobby").unwrap();
+    b.chat_join(&a, "#vault").unwrap();
+    b.chat_send(&a, "#vault", 1, "before leaving", ChatKind::Say)
+        .unwrap();
+    b.chat_leave_all(&a).unwrap();
+    assert_eq!(b.chat_names(&bob, "#lobby", None).unwrap().handles, ["bob"]);
+    assert!(b.chat_read(&a, "#vault", 0).is_err());
+    assert_eq!(
+        b.social_advertisement(&a).unwrap().unwrap().mode,
+        "available"
+    );
+    assert!(
+        b.social_roster(&bob, None, false)
+            .unwrap()
+            .people
+            .iter()
+            .any(|p| p.handle == "alice")
+    );
+    f.db().execute("UPDATE chat_sessions SET touched=unixepoch()-50 WHERE member=(SELECT id FROM members WHERE handle='alice')",[]).unwrap();
+    b.chat_heartbeat(&a).unwrap();
+    assert_eq!(
+        f.db()
+            .query_row("SELECT count(*) FROM chat_sessions", [], |r| r
+                .get::<_, i64>(0))
+            .unwrap(),
+        3
+    );
+    b.chat_join(&a, "#vault").unwrap();
+    b.chat_send(&a, "#vault", 1, "new explicit entry", ChatKind::Say)
+        .unwrap();
+    let history = b.chat_read(&a, "#vault", 0).unwrap();
+    assert_eq!(history.messages.len(), 1);
+    assert_eq!(history.messages[0].body, "new explicit entry");
+}
+#[test]
+fn board_visit_pages_work_without_channel_joins_and_end_on_disconnect() {
+    let f = Fixture::new();
+    let (mut b, s, op) = f.board();
+    let (session, a) = f.member(&mut b, &s, "alice");
+    let (_, bob) = f.member(&mut b, &s, "bob");
+    f.enable(&mut b, &op);
+    assert!(b.social_session_config(&session).unwrap().enabled);
+    assert!(b.social_advertisement(&a).unwrap().is_none());
+    f.ready(&mut b, &a);
+    f.ready(&mut b, &bob);
+    b.social_request(&bob, "alice", &request_id().unwrap(), false)
+        .unwrap();
+    let rows = b.social_pages(&a).unwrap();
+    assert_eq!(rows.len(), 1);
+    b.social_answer(&a, rows[0].id, true).unwrap();
+    assert_eq!(
+        f.db()
+            .query_row("SELECT count(*) FROM chat_joins", [], |r| r
+                .get::<_, i64>(0))
+            .unwrap(),
+        0
+    );
+    b.chat_close(&a).unwrap();
+    assert!(b.social_pages(&bob).unwrap().is_empty());
+    let next = b.chat_open(&session).unwrap();
+    assert!(b.social_advertisement(&next).unwrap().is_none());
+    b.set_status(&s, "alice", Status::Revoked).unwrap();
+    assert!(b.social_session_config(&session).is_err());
+    assert!(b.chat_leave_all(&next).is_err());
+}

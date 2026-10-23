@@ -757,6 +757,7 @@ fn menu_with_library(
                 Action::Post => "Post a message",
                 Action::Sysop => "Sysop controls",
                 Action::Chat => "Local chat",
+                Action::Lounge => "Social lounge",
                 Action::Doors => "Doors",
                 Action::Files => "File areas",
                 Action::Quit => "Disconnect",

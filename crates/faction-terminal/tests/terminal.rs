@@ -39,6 +39,8 @@ fn decode(bytes: &[u8]) -> Vec<Key> {
 }
 #[test]
 fn split_coalesced_and_crlf_keys() {
+    assert_eq!(decode(b"?"), vec![Key::Hotkey(b'?')]);
+    assert_eq!(decode(b"\x1b[?25l?\r?"), vec![Key::Hotkey(b'?')]);
     assert_eq!(
         decode(b"\x1b[A\x1b[B\x1bOC\x1bODpP\r\n"),
         vec![

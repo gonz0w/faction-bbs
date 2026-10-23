@@ -79,6 +79,7 @@ jobs:
           python3 tools/check_magazine_evidence.py
           python3 tools/check_editorial_evidence.py
           python3 tools/check_social_evidence.py
+          python3 tools/check_boardwide_social_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py

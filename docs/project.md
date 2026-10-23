@@ -48,8 +48,9 @@ before local publication, with withdrawal, new editions and owner text export.
 The optional [chat lounge](social-lounge.md) adds explicit availability and
 bodyless invitation/accept/decline signals across live local chat channels.
 Private mute/block/UTC-hour preferences persist; presence/pages do not survive
-reconnect/restore. Board-wide presence outside chat and automatic notifications
-remain #137 follow-on work.
+reconnect/restore. The shared service now keeps explicit availability across rooms,
+editing and doors with a Lounge panel and safe menu-return badge. Standalone
+rollback stays chat-only; automatic interruptions are not added.
 
 ## Confirmed requirements
 
