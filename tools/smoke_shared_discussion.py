@@ -78,8 +78,8 @@ def run(a):
         checks.append('actual_revocation_blocks_bookmark_while_normal_complete_room_read_still_acks')
         enter(first);search(first,'guide');second=connect();settings(second);second.send('e');second.expect(SETTINGS);back(second);logout(second);mark=len(first.transcript);first.send('r');first.expect(MENU);assert b'Caf' not in first.transcript[mark:];logout(first)
         checks.append('actual_disabled_host_feature_hides_held_query_and_source_results')
-        assert query('pragma user_version')==[[14]] and all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=14,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False,server_mail_search=False,automatic_query_retention=False),indent=2,sort_keys=True)+'\n');print('Actual shared discussion discovery passed:',len(checks),'controls.')
+        assert query('pragma user_version')==[[15]] and all(password.encode() not in c.transcript for c in children)
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=15,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False,server_mail_search=False,automatic_query_retention=False),indent=2,sort_keys=True)+'\n');print('Actual shared discussion discovery passed:',len(checks),'controls.')
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('discussion-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

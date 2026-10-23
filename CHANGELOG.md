@@ -4,6 +4,11 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add opt-in local file requests inside the library: explicit review/create,
+  published-file fulfillment with rights/provenance, author/sysop close/delete,
+  current-permission links and existing native Files handoff. Schema 15 snapshots
+  retain requests; classic/plain and requests-only packs remain available (#140).
+
 - Add optional curated library shelves over existing local files: named collections,
   provenance/rights notes, paged plain/ANSI reading and deliberate Files/discussion
   jumps. Recheck current visibility before captions/links; no new file authority,

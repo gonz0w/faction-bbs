@@ -2,9 +2,9 @@
 
 The optional **K:Library shelves** gives approved members a browsable collection
 of existing local catalog files: named shelves, curator notes, declared rights and
-provenance, copyable file references and deliberate discussion/Files jumps. It is
-the curated-shelf increment of #140. Member request/create/fulfill/close and request
-moderation remain follow-on work under that issue.
+provenance, copyable file references and deliberate discussion/Files jumps. The optional
+[file request desk](file-requests.md) adds member create/fulfill/close and moderation
+alongside these shelves, including requests-only packs.
 
 ## Prepare a collection
 
@@ -40,7 +40,7 @@ A trusted theme may place/rename an `action = "library"` entry with another key.
 A theme cannot enable the host capability. Otherwise K is reserved while enabled,
 with a clear startup error on a conflicting custom key. Preloaded seasonal themes
 receive the same capability; crowded lightbars and direct/classic hotkeys remain.
-No configured/enabled entries means no automatic library menu action.
+No configured/enabled entries or request desk means no automatic library menu action.
 
 ## Browse and discuss
 
@@ -102,8 +102,8 @@ There is no new registry dependency, listener/helper or capacity measurement.
 
 Packs/curation permission records are external host configuration, preserved and
 checked separately alongside existing complete database/blob backups, like themes
-and galleries. Schema remains 14; there is no library DB migration or member data
-store. Restore the intended owner's pack/config and recheck current local file
+and galleries. Shelf metadata stays external; the optional [request desk](file-requests.md)
+adds schema-15 request data. Restore the intended owner's pack/config and recheck current local file
 references before restart. File catalog/object/grant recovery stays in the existing
 backup workflow. Private mail/attachments remain device-encrypted and separate.
 

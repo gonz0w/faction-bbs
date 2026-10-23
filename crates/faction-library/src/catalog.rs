@@ -15,6 +15,8 @@ pub struct Catalog {
     pub(crate) enabled: bool,
     pub(crate) name: String,
     pub(crate) compact: bool,
+    pub(crate) requests: bool,
+    pub(crate) requests_name: String,
     pub(crate) shelves: Vec<Shelf>,
     pub(crate) books: Vec<Book>,
 }
@@ -85,7 +87,7 @@ fn check_reference(s: &str) -> Result<()> {
 }
 impl Catalog {
     pub fn enabled(&self) -> bool {
-        self.enabled && !self.books.is_empty()
+        self.enabled && (!self.books.is_empty() || self.requests)
     }
     pub fn len(&self) -> usize {
         self.books.len()
@@ -138,6 +140,16 @@ impl Catalog {
         let enabled = boolean(&mut t, "enabled")?;
         let name = text(&mut t, "name", 24, false)?;
         let compact = boolean(&mut t, "compact")?;
+        let requests = match t.remove("requests") {
+            None => false,
+            Some(Value::Boolean(v)) => v,
+            _ => return Err("invalid requests setting"),
+        };
+        let requests_name = if t.contains_key("requests_name") {
+            text(&mut t, "requests_name", 24, false)?
+        } else {
+            "File request desk".into()
+        };
         let mut shelves: Vec<Shelf> = vec![];
         for mut row in tables(&mut t, "shelf", SHELVES)? {
             let id = text(&mut row, "id", 32, false)?;
@@ -186,6 +198,8 @@ impl Catalog {
             enabled,
             name,
             compact,
+            requests,
+            requests_name,
             shelves,
             books,
         })

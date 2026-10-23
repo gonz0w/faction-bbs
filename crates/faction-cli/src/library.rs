@@ -26,7 +26,7 @@ pub(super) fn run(
                 return Err(e.into());
             }
         };
-        let input = edited_line(&frame, 64, false)?;
+        let input = edited_line(&frame, 128, false)?;
         match desk.feed(&input, b, s, c) {
             Ok(faction_library::Outcome::Stay) => (),
             Ok(out) => return Ok(out),

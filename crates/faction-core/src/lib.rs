@@ -8,6 +8,8 @@ pub use catchup::{
     CatchupConfig, CatchupItem, CatchupModule, CatchupPage, CatchupPrefs, CatchupTarget,
     CatchupWindow,
 };
+mod requests;
+pub use requests::{FileRequest, FileRequestDraft, FileRequestOffer};
 mod discussion;
 pub use discussion::{
     DiscussionConfig, DiscussionField, DiscussionHit, DiscussionItem, DiscussionPage,
@@ -335,12 +337,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=14).contains(&version) {
+        } else if app != APP_ID || !(1..=15).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=14).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=15).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -350,7 +352,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=14).contains(&v) {
+            } else if !(2..=15).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -361,7 +363,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=14).contains(&v) {
+            } else if !(3..=15).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -371,7 +373,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=14).contains(&v) {
+        } else if !(4..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -381,7 +383,7 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if !(5..=14).contains(&v) {
+        } else if !(5..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -390,7 +392,7 @@ impl Board {
         if v == 5 {
             tx.execute_batch(include_str!("post_metadata.sql"))?;
             tx.pragma_update(None, "user_version", 6)?;
-        } else if !(6..=14).contains(&v) {
+        } else if !(6..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -425,7 +427,7 @@ impl Board {
             )?;
             tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
             tx.pragma_update(None, "user_version", 7)?;
-        } else if !(7..=14).contains(&v) {
+        } else if !(7..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -434,7 +436,7 @@ impl Board {
         if v == 7 {
             tx.execute_batch(include_str!("room_drafts.sql"))?;
             tx.pragma_update(None, "user_version", 8)?;
-        } else if !(8..=14).contains(&v) {
+        } else if !(8..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -443,7 +445,7 @@ impl Board {
         if v == 8 {
             tx.execute_batch(include_str!("wall.sql"))?;
             tx.pragma_update(None, "user_version", 9)?;
-        } else if !(9..=14).contains(&v) {
+        } else if !(9..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -452,7 +454,7 @@ impl Board {
         if v == 9 {
             tx.execute_batch(include_str!("member_pages.sql"))?;
             tx.pragma_update(None, "user_version", 10)?;
-        } else if !(10..=14).contains(&v) {
+        } else if !(10..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -461,7 +463,7 @@ impl Board {
         if v == 10 {
             tx.execute_batch(include_str!("gatherings.sql"))?;
             tx.pragma_update(None, "user_version", 11)?;
-        } else if !(11..=14).contains(&v) {
+        } else if !(11..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -470,7 +472,7 @@ impl Board {
         if v == 11 {
             tx.execute_batch(include_str!("polls.sql"))?;
             tx.pragma_update(None, "user_version", 12)?;
-        } else if !(12..=14).contains(&v) {
+        } else if !(12..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -479,7 +481,7 @@ impl Board {
         if v == 12 {
             tx.execute_batch(include_str!("catchup.sql"))?;
             tx.pragma_update(None, "user_version", 13)?;
-        } else if !(13..=14).contains(&v) {
+        } else if !(13..=15).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -488,7 +490,16 @@ impl Board {
         if v == 13 {
             tx.execute_batch(include_str!("discussion.sql"))?;
             tx.pragma_update(None, "user_version", 14)?;
-        } else if v != 14 {
+        } else if !(14..=15).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 14 {
+            tx.execute_batch(include_str!("requests.sql"))?;
+            tx.pragma_update(None, "user_version", 15)?;
+        } else if v != 15 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;

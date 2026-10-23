@@ -41,7 +41,12 @@ fn namespace(db: &Connection) -> Result<String> {
     file_id(&id)?;
     Ok(id)
 }
-fn visible(tx: &Transaction<'_>, member: i64, board: &str, object: &str) -> Result<AreaFile> {
+pub(crate) fn visible(
+    tx: &Transaction<'_>,
+    member: i64,
+    board: &str,
+    object: &str,
+) -> Result<AreaFile> {
     if namespace(tx)? != board {
         return Err(Error::Denied);
     }

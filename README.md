@@ -57,7 +57,7 @@ The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragr
 reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
 for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
 recover local room writing after disconnect; these are plaintext board data,
-readable by its sysop. Schema-14 upgrades require a stopped complete backup.
+readable by its sysop. Schema-15 upgrades require a stopped complete backup.
 The opt-in **[community wall](docs/community-wall.md)** adds short local ASCII
 notes/art, chronological paging, own edits/deletion, sysop moderation and optional
 weekly archives. Enable/name it in S:Sysop controls → W:Wall settings; plain and
@@ -134,8 +134,9 @@ and measured slow-link profiles are follow-on work.
 Optional **[library shelves](docs/library-shelves.md)** now organize existing
 approved files into sysop-curated collections, with notes, declared rights/provenance
 and current-permission file/discussion links. Shared/native Files handoff preserves
-recent links and travel ceilings; classic/plain reading remains available. Member
-requests and fulfillment remain the next #140 increment.
+recent links and travel ceilings; classic/plain reading remains available. The optional
+[file request desk](docs/file-requests.md) now adds member requests, explicit
+published-file fulfillment, author/sysop close/delete and current-permission links.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
 visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)

@@ -2,6 +2,9 @@ version = 1
 enabled = false
 name = "Nightwire library"
 compact = false
+# Optional local request desk, independent of shelf entries.
+requests = false
+requests_name = "File request desk"
 [[shelf]]
 id = "manuals"
 title = "Manuals and field notes"

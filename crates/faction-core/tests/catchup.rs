@@ -322,7 +322,7 @@ fn snapshot_publication_baseline_and_exact_schema_twelve_recovery() {
     assert_eq!(b.catchup_window(&s).unwrap().after, 1);
     assert_eq!(b.catchup_preferences(&s).unwrap().favorites, vec![1]);
     drop(b);
-    f.db().execute_batch("DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;DROP TRIGGER catchup_file_insert;DROP TRIGGER catchup_file_publish;DROP TABLE catchup_favorites;DROP TABLE catchup_members;DROP TABLE catchup_settings;DROP TABLE catchup_publications;PRAGMA user_version=12").unwrap();
+    f.db().execute_batch("DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;DROP TRIGGER catchup_file_insert;DROP TRIGGER catchup_file_publish;DROP TABLE catchup_favorites;DROP TABLE catchup_members;DROP TABLE catchup_settings;DROP TABLE catchup_publications;PRAGMA user_version=12").unwrap();
     let old = f.0.join("old-export");
     export_local(&f.path(), &old).unwrap();
     verify_export(&old).unwrap();
