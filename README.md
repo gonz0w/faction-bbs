@@ -137,6 +137,11 @@ and current-permission file/discussion links. Shared/native Files handoff preser
 recent links and travel ceilings; classic/plain reading remains available. The optional
 [file request desk](docs/file-requests.md) now adds member requests, explicit
 published-file fulfillment, author/sysop close/delete and current-permission links.
+Optional **[local magazines](docs/board-magazine.md)** now add published editions,
+a themed contents/reader, full contributor credits and optional current-permission
+text downloads. An original five-article Nightwire issue includes an editorial,
+field notes, ASCII interlude and arcade ideas. Sysops preview/assemble packs offline;
+member submission queues and authenticated approvals remain follow-on #143 work.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
 visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)

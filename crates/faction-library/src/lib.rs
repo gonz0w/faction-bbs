@@ -1,6 +1,7 @@
 //! Shared approved-member shelf workflow. No file bytes, transfer grants or network I/O.
 #![forbid(unsafe_code)]
 mod catalog;
+mod magazine;
 mod requests;
 pub use catalog::{BOOKS, BYTES, Catalog, SHELVES};
 use faction_core::{AreaFile, Board, Error, Result, Session, Status};
@@ -10,6 +11,7 @@ use std::{collections::VecDeque, fmt::Write};
 enum State {
     List,
     Requests,
+    Magazine,
     Shelves,
     Choose,
     Info(usize),
@@ -24,6 +26,7 @@ pub enum Outcome {
 pub struct Desk {
     files: bool,
     requests: requests::Desk,
+    magazine: magazine::Desk,
     state: State,
     shelf: Option<usize>,
     page: usize,
@@ -38,6 +41,7 @@ impl Default for Desk {
         Self {
             files: false,
             requests: requests::Desk::default(),
+            magazine: magazine::Desk::default(),
             state: State::List,
             shelf: None,
             page: 0,
@@ -126,6 +130,9 @@ impl Desk {
         if !c.enabled() {
             return Err(Error::Denied);
         }
+        if matches!(self.state, State::Magazine) {
+            return self.magazine.render(b, s, c, t, ansi, columns, self.files);
+        }
         if matches!(self.state, State::Requests) {
             if !c.requests {
                 return Err(Error::Denied);
@@ -142,7 +149,7 @@ impl Desk {
             writeln!(out, "{}", preview(&self.notice, width)).unwrap()
         }
         match self.state {
-            State::Requests => unreachable!(),
+            State::Requests | State::Magazine => unreachable!(),
             State::List => {
                 let visible = Self::visible(b, s, c)?;
                 let rows = visible
@@ -181,6 +188,9 @@ impl Desk {
                             .unwrap()
                         }
                     }
+                }
+                if c.published_issues() > 0 {
+                    out.push_str("M:magazine ");
                 }
                 if c.requests {
                     out.push_str("R:file requests ");
@@ -259,6 +269,14 @@ impl Desk {
         if !c.enabled() {
             return Err(Error::Denied);
         }
+        if matches!(self.state, State::Magazine) {
+            let out = self.magazine.feed(input, b, s, c, self.files)?;
+            if matches!(out, Outcome::Main) {
+                self.state = State::List;
+                return Ok(Outcome::Stay);
+            }
+            return Ok(out);
+        }
         if matches!(self.state, State::Requests) {
             if !c.requests {
                 return Err(Error::Denied);
@@ -276,9 +294,10 @@ impl Desk {
         self.notice.clear();
         let cmd = input.to_ascii_lowercase();
         match self.state {
-            State::Requests => unreachable!(),
+            State::Requests | State::Magazine => unreachable!(),
             State::List => match cmd.as_str() {
                 "q" => return Ok(Outcome::Main),
+                "m" if c.published_issues() > 0 => self.state = State::Magazine,
                 "r" if c.requests => self.state = State::Requests,
                 "e" => self.state = State::Shelves,
                 "v" => self.state = State::Choose,
@@ -360,6 +379,9 @@ impl Desk {
         Ok(Outcome::Stay)
     }
     pub fn recover(&mut self, e: &Error) -> bool {
+        if matches!(self.state, State::Magazine) {
+            return self.magazine.recover(e);
+        }
         if matches!(self.state, State::Requests) {
             return self.requests.recover(e);
         }

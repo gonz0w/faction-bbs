@@ -39,6 +39,11 @@ notes/rights/provenance and deliberate current-permission transfer/discussion ju
 The optional [file request desk](file-requests.md) now adds persistent requests,
 explicit published-file fulfillment and author/sysop close/delete moderation.
 
+Optional [local magazines](board-magazine.md) add owner-reviewed numbered editions,
+paged contents/articles/credits and existing permission-checked file/discussion
+jumps. The original Nightwire starter issue is included. Member submissions and
+authenticated contributor approval remain follow-on #143 work.
+
 ## Confirmed requirements
 
 | Area | Requirement |

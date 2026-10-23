@@ -252,3 +252,12 @@ remain fixed. The current [file request record](file-requests-netbsd/README.md)
 pins 288 matched native inputs, 321 Rust tests per OS, six request PTYs per OS,
 eight actual shared SSH/native/SFTP and 18 recovery controls per OS. Guard 52 checks
 its evidence and teardown offline. No new capacity, listener or transfer authority.
+
+
+Snapshot 39, `sources/pre143-magazine` and `file-requests-baseline-manifest.json`,
+preserves 298 previous request inputs and its complete original result. All 52 old
+result identities remain unchanged. The current [magazine record](magazine-netbsd/README.md)
+pins 294 matched native inputs, 327 Rust tests per OS, seven magazine PTYs per OS,
+nine actual shared SSH/native/SFTP and eighteen recovery controls per OS. Guard 53
+checks the reader-only scope, original edition and teardown offline. No new schema,
+capacity, authenticated submission/consent or public-publication claim.

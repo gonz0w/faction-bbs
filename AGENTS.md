@@ -5,7 +5,7 @@
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
-poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 adds curated library shelves and optional file requests/fulfillment, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
+poll batch is merged. #138 catch-up is merged. #142 discussion discovery is merged; #144 gallery is merged; #159 interactive travel is merged; #140 is merged with curated shelves/requests; #143 adds the owner-reviewed local magazine reader, retaining classic fallback. Keep hardening #106–#111 later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1396,8 +1396,8 @@ this actual source/result set before later edits. Owner preview off and intact.
 
 ## Curated local library shelves
 
-Read docs/library-shelves.md, plan 0070 and ADR 0065. #140 remains open: this is
-curated collections/notes over existing files, not request/create/fulfill/close.
+Read docs/library-shelves.md, plan 0070 and ADR 0065. Historical #140 shelf increment: curated collections/notes over existing files;
+the later request-desk section records completion of request/create/fulfill/close.
 One immutable owner/root startup Catalog Arc, small optional Desk, K host capability
 with trusted theme placement. Required ASCII notes/rights/provenance describe
 canonical local faction-file references, not permission proofs or copied bytes.
@@ -1444,3 +1444,29 @@ server-readable private mail. Pack requests defaults false; requests-only packs
 are valid. Preserve schema-2..14 read-only verification and stopped complete upgrade
 backups; no in-place downgrade or mixed-version owners. Snapshot 38 freezes the
 292 library execution/harness inputs and original result before these changes.
+
+
+## Local magazine reader (#143)
+
+Read docs/board-magazine.md and ADR 0067. This batch is the owner-reviewed reader
+and original starter issue, not authenticated submissions/contributor approval.
+Keep published-only member visibility, explicit declared local consent for every
+published article, fixed current approval/file checks and common classic/plain
+adapters. No private-room copying, raw ANSI controls or public-publication inference.
+Packs stay under the existing combined 32-KiB cap (8 issues/32 articles, max 8 per
+issue); fixed four-card/eight-row/8-KiB frames and 32 prior offsets. Immutable shared
+content loads on stopped/drained restart; disk edits alone cannot withdraw loaded
+text. Preserve packs/revisions/permission records separately; schema stays 15.
+Native private mail remains device-side. Snapshot 39 preserves 298 prior actual
+request inputs and the whole result. Keep owner playground off and hardening later.
+
+
+`magazine-netbsd` pins 294 matched native execution inputs, 36 harness inputs and
+13 unchanged dependency/access/credential inputs. Final software validation: 327
+Rust per OS, 130 Python, seven magazine PTYs per OS, nine actual SSH/native/SFTP
+and eighteen complete recovery controls per OS. The final reader reaches maximum
+article tails beyond the bounded rewind history. Compact native SFTP downloaded
+the exact 7,673-byte actual owner-exported edition; plain SSH, publication/consent
+filtering, withdrawal/revision and revocation pass. Keep guard 53 and preserve
+this actual input/result set before later edits. Owner preview stays off/intact;
+member submission/editor/verified-contributor workflows remain open under #143.

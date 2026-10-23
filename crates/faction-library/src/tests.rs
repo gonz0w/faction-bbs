@@ -392,3 +392,181 @@ fn long_request_review_pages_and_resize_never_send_unseen_tail() {
     feed(&mut d, "yes", &mut b, &s, &c);
     assert_eq!(b.file_requests(&s, i64::MAX).unwrap().len(), 1);
 }
+
+fn magazine_source(state: &str, consent: &str, articles: usize) -> String {
+    let mut out = format!(
+        "version=1\nenabled=true\nname='Library'\ncompact=false\nmagazine_name='Nightwire'\nshelf=[]\nbook=[]\n[[magazine]]\nid='signal-1'\nnumber=1\nrevision=1\nstate='{state}'\ntitle='Local edition'\neditor='Fixture editor'\nreleased='Autumn 2026'\nschedule='When ready'\n"
+    );
+    for i in 0..articles {
+        out.push_str(&format!("[[magazine.article]]\nid='article-{i}'\ntitle='Original article {i}'\nsection='Notes'\nauthor='Fixture author'\nrights='BSD-3-Clause original fixture'\nprovenance='Original local editorial fixture'\nconsent='{consent}'\nbody='''{}'''\n",(0..50).map(|i|format!("Line {i} original body\n")).collect::<String>()));
+    }
+    out
+}
+#[test]
+fn magazine_strict_roles_of_declared_consent_states_and_unknown_fields() {
+    let good = magazine_source("published", "board-local", 1);
+    let c = Catalog::parse(&good).unwrap();
+    assert!(c.enabled());
+    assert_eq!(c.published_issues(), 1);
+    for (a, b) in [
+        ("consent='board-local'", "consent='pending'"),
+        ("number=1", "number=0"),
+        ("state='published'", "state='public'"),
+        ("revision=1", "revision=10000"),
+        ("author='Fixture author'", "author='bad\x1b'"),
+        ("body='''", "body='''faction-file:unreviewed "),
+    ] {
+        assert!(Catalog::parse(&good.replace(a, b)).is_err());
+    }
+    assert!(Catalog::parse(&format!("{good}unknown=true\n")).is_err());
+    assert!(Catalog::parse(&magazine_source("published", "board-local", 9)).is_err());
+    for state in ["draft", "withdrawn"] {
+        let c = Catalog::parse(&magazine_source(state, "pending", 1)).unwrap();
+        assert!(!c.enabled());
+        assert_eq!(c.published_issues(), 0);
+        assert!(c.magazine_text("signal-1", false).is_err());
+        assert!(c.magazine_text("signal-1", true).unwrap().contains("["));
+    }
+}
+#[test]
+fn magazine_plain_complete_read_credits_toc_pages_resize_and_no_unread_ack() {
+    let f = Fixture::new();
+    let (mut b, s, _) = f.board();
+    let c = Catalog::parse(&magazine_source("published", "board-local", 5)).unwrap();
+    let mut d = Desk::default();
+    for key in ["m", "v", "signal-1"] {
+        feed(&mut d, key, &mut b, &s, &c);
+    }
+    assert!(render(&mut d, &mut b, &s, &c).contains("article-0"));
+    feed(&mut d, "n", &mut b, &s, &c);
+    assert!(render(&mut d, &mut b, &s, &c).contains("article-4"));
+    for key in ["r", "article-0"] {
+        feed(&mut d, key, &mut b, &s, &c);
+    }
+    let mut all = String::new();
+    for _ in 0..20 {
+        let frame = render(&mut d, &mut b, &s, &c);
+        assert!(frame.len() < 8192 && !frame.contains('\x1b'));
+        all.push_str(&frame);
+        feed(&mut d, "n", &mut b, &s, &c);
+    }
+    assert!(all.contains("Line 49 original body"));
+    feed(&mut d, "p", &mut b, &s, &c);
+    d.render(&mut b, &s, &c, &Theme::default(), false, 20)
+        .unwrap();
+    feed(&mut d, "c", &mut b, &s, &c);
+    let mut credits = String::new();
+    for _ in 0..6 {
+        credits.push_str(&render(&mut d, &mut b, &s, &c));
+        feed(&mut d, "n", &mut b, &s, &c);
+    }
+    assert!(credits.contains("Original local editorial"));
+    feed(&mut d, "t", &mut b, &s, &c);
+    assert!(render(&mut d, &mut b, &s, &c).contains("Contents>"));
+    assert_eq!(b.unread_cursor(&s, 1).unwrap(), 0);
+}
+#[test]
+fn magazine_current_approval_unpublished_selection_and_file_grants_are_independent() {
+    let f = Fixture::new();
+    let (mut b, s, db) = f.board();
+    let reader = b.authenticate("reader", PASS).unwrap();
+    let ns = b.file_namespace(&s).unwrap();
+    let raw = magazine_source("published", "board-local", 1).replace(
+        "schedule='When ready'",
+        &format!(
+            "schedule='When ready'\ndownload='faction-file:{ns}/{:032x}'\nroom=1",
+            2
+        ),
+    );
+    let c = Catalog::parse(&raw).unwrap();
+    let mut d = Desk::with_files(true);
+    for key in ["m", "v", "signal-1"] {
+        feed(&mut d, key, &mut b, &reader, &c);
+    }
+    assert!(!render(&mut d, &mut b, &reader, &c).contains("F:Files"));
+    assert!(d.feed("l", &mut b, &reader, &c).is_err());
+    b.file_allow(&s, 2, "reader", true).unwrap();
+    assert!(render(&mut d, &mut b, &reader, &c).contains("F:Files"));
+    feed(&mut d, "l", &mut b, &reader, &c);
+    assert!(render(&mut d, &mut b, &reader, &c).contains("faction-file:"));
+    b.file_allow(&s, 2, "reader", false).unwrap();
+    let e = d
+        .render(&mut b, &reader, &c, &Theme::default(), false, 40)
+        .unwrap_err();
+    assert!(d.recover(&e));
+    assert!(!render(&mut d, &mut b, &reader, &c).contains("faction-file:"));
+    for key in ["v", "signal-1"] {
+        feed(&mut d, key, &mut b, &reader, &c);
+    }
+    assert!(matches!(
+        d.feed("d", &mut b, &reader, &c).unwrap(),
+        Outcome::Room(1)
+    ));
+    assert_eq!(b.unread_cursor(&reader, 1).unwrap(), 0);
+    b.set_status(&s, "reader", Status::Revoked).unwrap();
+    assert!(
+        d.render(&mut b, &reader, &c, &Theme::default(), false, 40)
+            .is_err()
+    );
+    assert!(d.feed("q", &mut b, &reader, &c).is_err());
+    drop(db);
+}
+#[test]
+fn magazine_owner_export_is_bounded_inert_and_starter_edition_is_original() {
+    let c =
+        Catalog::load(&PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../library/nightwire"))
+            .unwrap();
+    let text = c.magazine_text("signal-001", false).unwrap();
+    assert!(text.contains("End of issue 001."));
+    assert!(text.len() < 65536 && text.bytes().all(|b| b == b'\n' || (32..=126).contains(&b)));
+    assert_eq!(c.published_issues(), 1);
+    assert!(c.magazine_text("missing", false).is_err());
+}
+#[test]
+fn magazine_body_pack_and_issue_limits_reject_oversize_duplicate_or_empty_editions() {
+    let raw = magazine_source("published", "board-local", 1);
+    assert!(Catalog::parse(&raw.replace("Line 0 original body", &"x".repeat(121))).is_err());
+    assert!(Catalog::parse(&raw.replace("Line 0 original body", &"x\n".repeat(129))).is_err());
+    assert!(Catalog::parse(&magazine_source("published", "board-local", 0)).is_err());
+    let issue = raw.split_once("[[magazine]]").unwrap().1;
+    assert!(Catalog::parse(&format!("{raw}[[magazine]]{issue}")).is_err());
+    assert!(Catalog::parse(&raw.repeat(20)).is_err());
+}
+
+#[test]
+fn maximum_article_reads_beyond_rewind_capacity_on_narrow_terminals() {
+    let f = Fixture::new();
+    let (mut b, s, _) = f.board();
+    let raw = magazine_source("published", "board-local", 1);
+    let old = (0..50)
+        .map(|i| format!("Line {i} original body\n"))
+        .collect::<String>();
+    let body = format!(
+        "{}FINAL-ARTICLE-MARKER",
+        format!("{}\n", "X".repeat(120)).repeat(67)
+    );
+    assert!(body.len() <= 8192);
+    let c = Catalog::parse(&raw.replace(&old, &body)).unwrap();
+    let mut d = Desk::default();
+    for key in ["m", "v", "signal-1", "r", "article-0"] {
+        feed(&mut d, key, &mut b, &s, &c);
+    }
+    let mut found = false;
+    for _ in 0..150 {
+        let out = d
+            .render(&mut b, &s, &c, &Theme::default(), false, 20)
+            .unwrap();
+        assert!(out.len() <= 8192);
+        if out.contains("FINAL-ARTICLE-MARKE") {
+            found = true;
+            break;
+        }
+        feed(&mut d, "n", &mut b, &s, &c);
+    }
+    assert!(found);
+    for _ in 0..40 {
+        feed(&mut d, "p", &mut b, &s, &c);
+        d.render(&mut b, &s, &c, &Theme::default(), false, 20)
+            .unwrap();
+    }
+}

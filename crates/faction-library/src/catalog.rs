@@ -19,6 +19,8 @@ pub struct Catalog {
     pub(crate) requests_name: String,
     pub(crate) shelves: Vec<Shelf>,
     pub(crate) books: Vec<Book>,
+    pub(crate) magazine_name: String,
+    pub(crate) issues: Vec<crate::magazine::Issue>,
 }
 pub(crate) struct Shelf {
     pub id: String,
@@ -33,7 +35,7 @@ pub(crate) struct Book {
     pub provenance: String,
     pub room: Option<i64>,
 }
-fn text(t: &mut Table, key: &str, cap: usize, multiline: bool) -> Result<String> {
+pub(super) fn text(t: &mut Table, key: &str, cap: usize, multiline: bool) -> Result<String> {
     match t.remove(key) {
         Some(Value::String(s))
             if !s.trim().is_empty()
@@ -52,7 +54,7 @@ fn boolean(t: &mut Table, key: &str) -> Result<bool> {
         _ => Err("library boolean required"),
     }
 }
-fn slug(s: &str) -> Result<()> {
+pub(super) fn slug(s: &str) -> Result<()> {
     if s.is_empty()
         || s.len() > 32
         || !s
@@ -64,7 +66,7 @@ fn slug(s: &str) -> Result<()> {
         Ok(())
     }
 }
-fn tables(t: &mut Table, key: &str, cap: usize) -> Result<Vec<Table>> {
+pub(super) fn tables(t: &mut Table, key: &str, cap: usize) -> Result<Vec<Table>> {
     match t.remove(key) {
         Some(Value::Array(a)) if a.len() <= cap => a
             .into_iter()
@@ -76,7 +78,7 @@ fn tables(t: &mut Table, key: &str, cap: usize) -> Result<Vec<Table>> {
         _ => Err("missing/oversized library tables"),
     }
 }
-fn check_reference(s: &str) -> Result<()> {
+pub(super) fn check_reference(s: &str) -> Result<()> {
     let (b, o) = s
         .strip_prefix("faction-file:")
         .and_then(|s| s.split_once('/'))
@@ -87,7 +89,10 @@ fn check_reference(s: &str) -> Result<()> {
 }
 impl Catalog {
     pub fn enabled(&self) -> bool {
-        self.enabled && (!self.books.is_empty() || self.requests)
+        self.enabled
+            && (!self.books.is_empty()
+                || self.requests
+                || self.issues.iter().any(|i| i.state == "published"))
     }
     pub fn len(&self) -> usize {
         self.books.len()
@@ -191,6 +196,12 @@ impl Catalog {
                 room,
             });
         }
+        let magazine_name = if t.contains_key("magazine_name") {
+            text(&mut t, "magazine_name", 24, false)?
+        } else {
+            "Board magazine".into()
+        };
+        let issues = crate::magazine::parse(&mut t)?;
         if !t.is_empty() {
             return Err("unknown library setting");
         }
@@ -202,6 +213,8 @@ impl Catalog {
             requests_name,
             shelves,
             books,
+            magazine_name,
+            issues,
         })
     }
 }
