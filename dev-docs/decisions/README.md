@@ -78,3 +78,6 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0046: Bounded long-form login art](0046-paged-long-form-login-art.md).
 
 - [0047: Opt-in private operator snapshots](0047-private-operator-snapshots.md).
+
+- [0052: Named room browser](0052-named-room-browser.md).
+- [0053: Explicit multiline room writing](0053-explicit-room-writing-desk.md).

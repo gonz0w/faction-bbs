@@ -5,6 +5,7 @@ mod directory;
 pub mod operator;
 mod rooms;
 mod terminal;
+mod writing;
 use faction_core::{Board, Error, POST_BYTES, Role, Session, Status, request_id};
 use faction_terminal::{Action, Theme};
 use rustix::termios::{self, InputModes, LocalModes, OptionalActions, SpecialCodeIndex, Termios};
@@ -31,6 +32,13 @@ pub fn line(prompt: &str, max: usize) -> Result<String> {
     )
 }
 fn subject_line(unicode: bool) -> Result<String> {
+    edited_line(
+        "Subject (blank for generated/reply default): ",
+        faction_terminal::subject::BYTES,
+        unicode,
+    )
+}
+fn edited_line(prompt: &str, limit: usize, unicode: bool) -> Result<String> {
     use faction_terminal::subject::{self, Edit};
     let tty = tty()?;
     let saved = termios::tcgetattr(&tty)?;
@@ -54,17 +62,17 @@ fn subject_line(unicode: bool) -> Result<String> {
     mode.special_codes[SpecialCodeIndex::VTIME] = 0;
     termios::tcsetattr(&tty, OptionalActions::Flush, &mode)?;
     let _restore = Hidden { tty: &tty, saved };
-    print!("Subject (blank for generated/reply default): ");
+    print!("{prompt}");
     io::stdout().flush()?;
     let mut source = TimedInput {
         file: tty.try_clone()?,
         deadline: Instant::now() + Duration::from_secs(120),
     };
-    let mut input = Vec::with_capacity(subject::BYTES);
+    let mut input = Vec::with_capacity(limit);
     loop {
         let mut byte = [0];
         source.read_exact(&mut byte)?;
-        match subject::feed_with(&mut input, byte[0], unicode)
+        match subject::feed_limited(&mut input, byte[0], unicode, limit)
             .map_err(|reason| io::Error::new(io::ErrorKind::InvalidData, reason))?
         {
             Edit::Echo(text) => {
@@ -322,11 +330,25 @@ fn read_room_at(
     }
     Ok(())
 }
-fn post(board: &mut Board, s: &Session, unicode: bool) -> Result<()> {
+fn post(
+    board: &mut Board,
+    s: &Session,
+    theme: &Theme,
+    ansi: bool,
+    caps: faction_terminal::capabilities::Capabilities,
+) -> Result<()> {
     let room = number("Room ID: ")?;
-    post_in_room(board, s, room, unicode)
+    post_in_room(board, s, room, theme, ansi, caps)
 }
-fn post_in_room(board: &mut Board, s: &Session, room: i64, unicode: bool) -> Result<()> {
+fn post_in_room(
+    board: &mut Board,
+    s: &Session,
+    room: i64,
+    theme: &Theme,
+    ansi: bool,
+    caps: faction_terminal::capabilities::Capabilities,
+) -> Result<()> {
+    let unicode = caps.unicode;
     // Recheck the selected ID before showing the composer too.
     board.unread_cursor(s, room)?;
     let parent = line("Reply to post ID (blank for new message): ", 20)?;
@@ -347,7 +369,27 @@ fn post_in_room(board: &mut Board, s: &Session, room: i64, unicode: bool) -> Res
         );
     }
     let subject = subject_line(unicode)?;
+    println!("Enter /edit for the multiline writing desk with preview/send/cancel.");
     let body = line("Message (one line, up to 1024 bytes): ", POST_BYTES)?;
+    let body = if body == "/edit" {
+        match writing::run(
+            board,
+            s,
+            faction_terminal::composer::Target {
+                room,
+                reply,
+                subject: &subject,
+            },
+            theme,
+            ansi,
+            caps,
+        )? {
+            Some(body) => body,
+            None => return Ok(()),
+        }
+    } else {
+        body
+    };
     let key = request_id()?;
     println!("Submission ID: {key}");
     loop {
@@ -582,7 +624,7 @@ fn menu_with_directory(
                         "{}",
                         caps.section(theme, &format!("Post in room #{room}"), used_ansi)
                     );
-                    post_in_room(board, s, room, caps.unicode)
+                    post_in_room(board, s, room, theme, used_ansi, caps)
                 }
                 _ => {
                     skip_pause = true;
@@ -592,7 +634,7 @@ fn menu_with_directory(
             Some(Action::Rooms) => show_rooms(board, s),
             Some(Action::New) => read_room(board, s, true, theme, used_ansi, caps),
             Some(Action::History) => read_room(board, s, false, theme, used_ansi, caps),
-            Some(Action::Post) => post(board, s, caps.unicode),
+            Some(Action::Post) => post(board, s, theme, used_ansi, caps),
             Some(Action::Terminal) => {
                 terminal_settings(&mut last_graphics, &mut caps, ansi, board, s)
             }

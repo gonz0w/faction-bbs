@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Optional `/edit` room writing desk: multiline paragraphs, undo/clear, fresh reply
+  quoting, paged inert preview and explicit send/cancel in local/worker/shared
+  sessions. Existing one-line posts and retry/unread semantics remain. Drafts
+  are connection-local; full-screen editing and reconnect recovery stay #141.
+
+
 - Add a shared themed ANSI room browser: four-entry pages, arrow/hotkey cards,
   next-unread selection and New/History/Post into the selected room. Composer
   clears stale controls and labels the destination. Plain/numeric paths remain.

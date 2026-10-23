@@ -42,6 +42,9 @@ No JavaScript/TypeScript or public HTTP service is required.
 The **[room browser](docs/room-browser.md)** now adds named arrow/hotkey selection,
 unread counts, next-unread navigation and room cards for reading/posting without
 entering room IDs. Plain terminals and the existing numeric commands remain available.
+The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragraphs,
+reply quotes, undo/clear and paged preview with explicit send/cancel. Enter `/edit`
+at the body prompt; unsent drafts are held only for the current connection.
 
 **[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
 run the first-install preflight/helper, initialize your sysop and explicitly start

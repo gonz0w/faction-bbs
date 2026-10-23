@@ -62,6 +62,7 @@ jobs:
           python3 tools/check_directory_evidence.py
           python3 tools/check_board_launcher_evidence.py
           python3 tools/check_room_browser_evidence.py
+          python3 tools/check_writing_desk_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
@@ -151,6 +152,7 @@ jobs:
           cmp docs/images/login-compact.svg "$RUNNER_TEMP/login-compact.svg"
           python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_room_browser.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_writing_desk.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_room_reader.py "$CARGO_TARGET_DIR/release/faction"
           python3 tools/smoke_unicode_subjects.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_modern_terminals.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"

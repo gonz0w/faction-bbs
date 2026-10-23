@@ -12,6 +12,9 @@ pub fn feed(input: &mut Vec<u8>, byte: u8) -> Result<Edit> {
     feed_with(input, byte, false)
 }
 pub fn feed_with(input: &mut Vec<u8>, byte: u8, unicode: bool) -> Result<Edit> {
+    feed_limited(input, byte, unicode, BYTES)
+}
+pub fn feed_limited(input: &mut Vec<u8>, byte: u8, unicode: bool, limit: usize) -> Result<Edit> {
     if byte == b'\r' || byte == b'\n' {
         let text = std::str::from_utf8(input)
             .map_err(|_| "invalid UTF-8 subject")?
@@ -30,7 +33,7 @@ pub fn feed_with(input: &mut Vec<u8>, byte: u8, unicode: bool) -> Result<Edit> {
         input.truncate(start);
         return Ok(Edit::Echo("\x08 \x08".repeat(cells)));
     }
-    if byte < 32 || input.len() >= BYTES {
+    if byte < 32 || input.len() >= limit {
         return Err("invalid or oversized subject input");
     }
     input.push(byte);
