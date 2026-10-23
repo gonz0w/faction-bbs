@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: disabled until the sysop chooses local date windows/timezone.
+# These are illustrative northern-calendar windows, never a global default.
+version = 1
+enabled = false
+timezone = "UTC" # or "system" for the trusted service/OS timezone and DST rules
+
+[[season]]
+pack = "autumn"
+start = "09-01"
+end = "12-01" # exclusive
+priority = 10
+
+[[season]]
+pack = "winter"
+start = "12-01"
+end = "03-01" # wraps into the next year; exclusive
+priority = 10

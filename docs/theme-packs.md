@@ -426,3 +426,7 @@ custom key/label/description. A theme cannot enable it; use sysop Wall settings.
 When more than eleven entries need ordered rendering, a nine-row lightbar window
 scrolls with focus, keeping the recovery footer inside 40×18. All hotkeys remain
 active, and plain menus list every action. Existing smaller menus are unchanged.
+
+Optional [member pages](member-pages.md) declare `action = "member_pages"` with a
+custom key/label/description. Sysop settings control enablement, card/compact layout
+and page title; the trusted session palette supplies colors. Themes grant no access.

@@ -85,3 +85,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0054: Full-screen room editor and explicit checkpoints](0054-room-editor-and-checkpoints.md).
 
 - [0055: Bounded local community wall](0055-bounded-local-community-wall.md).
+
+- [0056: Local member pages and .plan history](0056-local-member-pages-and-plans.md).

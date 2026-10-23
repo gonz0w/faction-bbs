@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Local people and projects
+
+After checked #150, #135 adds optional local member pages and dated `.plan` updates:
+explicit author preview/visibility/removal, bounded history, sysop presentation and
+moderation, classic fallback and schema-10 recovery. No public Finger/home files,
+identity proofs or profile federation. Next social stories remain separate, and
+hardening stays later.
+
 ## Full-screen writing and room recovery
 
 After checked #148, #141 adds the [full-screen room editor](../docs/writing-desk.md),

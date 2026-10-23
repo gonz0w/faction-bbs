@@ -188,3 +188,9 @@ controls and twelve complete wall/file recovery checks per OS. Snapshot 27 freez
 192 prior measured/harness/compatibility inputs and the whole #149 record; all
 forty historical identities remain unchanged. Schema 9 adds bounded local wall
 state; no private-mail, capacity, physical SBC or hardening claim follows.
+
+[Local member-page evidence](member-pages-netbsd/README.md) records 235 Rust tests
+per OS, eight page PTYs per OS, fourteen actual SSH/native/plain controls and
+thirteen complete member-page/wall/file recovery checks per OS. Snapshot 28 keeps
+202 previous inputs and the whole wall result; forty-one old identities remain
+fixed. No new capacity, physical SBC, federation or hardening claim.

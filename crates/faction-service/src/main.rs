@@ -12,6 +12,7 @@ mod doors;
 mod file_ui;
 mod native_files;
 mod operator;
+mod pages_ui;
 mod policy;
 mod rooms_ui;
 mod ui;
@@ -86,6 +87,7 @@ enum State {
         key: String,
     },
     Wall(Box<faction_wall::Desk>),
+    Pages(Box<faction_pages::Desk>),
     Sysop,
     MembersMore(usize),
     MemberStatus(bool),

@@ -64,3 +64,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Room writing desk](writing-desk.md): multiline/full-screen editing, classic fallback and explicit saved room checkpoints.
 
 - [Local community wall](community-wall.md) — short ASCII signals, paging, moderation and optional weekly archives.
+
+- [Local member pages and dated .plan updates](member-pages.md) — optional profiles, explicit visibility and local moderation.

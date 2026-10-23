@@ -22,6 +22,7 @@ pub enum Action {
     Terminal,
     Contacts,
     Wall,
+    MemberPages,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -38,11 +39,13 @@ impl Action {
             "terminal" => Ok(Self::Terminal),
             "contacts" => Ok(Self::Contacts),
             "wall" => Ok(Self::Wall),
+            "member_pages" => Ok(Self::MemberPages),
             _ => Err("unknown menu action"),
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Wall
+        self != Self::MemberPages
+            && self != Self::Wall
             && self != Self::Contacts
             && self != Self::Doors
             && self != Self::Files
@@ -123,6 +126,7 @@ pub struct Theme {
     files_enabled: bool,
     directory_enabled: bool,
     wall_enabled: bool,
+    pages_enabled: bool,
     entries: Vec<Entry>,
     grid: bool,
     identity_ascii: Option<String>,
@@ -145,6 +149,7 @@ impl Default for Theme {
             files_enabled: false,
             directory_enabled: false,
             wall_enabled: false,
+            pages_enabled: false,
             grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
@@ -330,6 +335,36 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_pages_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.pages_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::MemberPages) {
+            let key = std::iter::once(b'M')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free member-page hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            self.entries.insert(
+                self.entries.len() - 1,
+                Entry {
+                    action: Action::MemberPages,
+                    key,
+                    label: "Member pages".into(),
+                    description: "People and dated project plans".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
     pub fn set_wall_enabled(&mut self, enabled: bool) -> Result<()> {
         self.wall_enabled = enabled;
         if enabled && !self.entries.iter().any(|e| e.action == Action::Wall) {
@@ -395,7 +430,8 @@ impl Theme {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Wall && self.wall_enabled)
+        (action == Action::MemberPages && self.pages_enabled)
+            || (action == Action::Wall && self.wall_enabled)
             || (action == Action::Contacts && self.directory_enabled)
             || (action == Action::Files && self.files_enabled)
             || (action == Action::Doors && self.doors_enabled)

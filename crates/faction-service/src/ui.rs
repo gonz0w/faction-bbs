@@ -63,6 +63,8 @@ impl Client {
         self.approved(board)?;
         let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
         let theme = wall_theme.as_ref().unwrap_or(theme);
+        let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
+        let theme = page_theme.as_ref().unwrap_or(theme);
         let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
         self.sysop_display = sysop;
         self.ansi = self.capable();
@@ -170,6 +172,8 @@ impl Client {
         // Cached presentation never grants an action; open/core recheck authority.
         let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
         let theme = wall_theme.as_ref().unwrap_or(theme);
+        let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
+        let theme = page_theme.as_ref().unwrap_or(theme);
         let sysop = self.sysop_display;
         let mut menu = self.focused(theme, sysop);
         let previous = menu.focus();
@@ -203,9 +207,14 @@ impl Client {
             Action::Terminal => "Terminal settings",
             Action::Contacts => "Other BBSes",
             Action::Wall => "Community wall",
+            Action::MemberPages => "Member pages",
         };
         self.queue(&self.capabilities.section(theme, title, self.ansi));
         match action {
+            Action::MemberPages => {
+                self.state = State::Pages(Box::default());
+                self.pages_show(board, theme)?;
+            }
             Action::Wall => {
                 self.state = State::Wall(Box::default());
                 self.wall_show(board, theme)?;
@@ -232,7 +241,7 @@ impl Client {
                 }
                 self.prompt(
                     State::Sysop,
-                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [C]reate room: ",
+                    "Sysop: [L]ist [A]pprove [V]revoke [W]all settings [M]ember pages [C]reate room: ",
                 );
             }
             Action::Chat => {
@@ -530,6 +539,8 @@ impl Client {
             State::Menu => {
                 let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
                 let theme = wall_theme.as_ref().unwrap_or(theme);
+                let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
+                let theme = page_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
                 if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
@@ -640,6 +651,22 @@ impl Client {
                     self.pause();
                 }
             }
+            State::Pages(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(true) => {
+                        self.menu(theme, board)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::Pages(desk);
+                self.pages_show(board, theme)?;
+            }
             State::Wall(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -657,6 +684,10 @@ impl Client {
                 self.wall_show(board, theme)?;
             }
             State::Sysop => match text.to_ascii_lowercase().as_str() {
+                "m" => {
+                    self.state = State::Pages(Box::new(faction_pages::Desk::settings()));
+                    self.pages_show(board, theme)?;
+                }
                 "w" => {
                     self.state = State::Wall(Box::new(faction_wall::Desk::settings()));
                     self.wall_show(board, theme)?;
@@ -906,6 +937,17 @@ impl Client {
             }
             return self.writing_show(board, theme, "resized; draft kept");
         }
+        if matches!(self.state, State::Pages(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("member-page input flush"))?;
+            return self.pages_show(board, theme);
+        }
         if matches!(self.state, State::Wall(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -984,6 +1026,8 @@ impl Client {
         if matches!(self.state, State::Menu) {
             let wall_theme = faction_wall::menu_theme(board, self.session()?, theme)?;
             let theme = wall_theme.as_ref().unwrap_or(theme);
+            let page_theme = faction_pages::menu_theme(board, self.session()?, theme)?;
+            let theme = page_theme.as_ref().unwrap_or(theme);
             let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
             self.queue(&theme.plain_menu(sysop));
             self.queue("Command (then Enter): ");
@@ -1230,10 +1274,10 @@ impl Client {
             }
             if matches!(
                 self.state,
-                State::PostSubject(..) | State::Writing { .. } | State::Wall(_)
+                State::PostSubject(..) | State::Writing { .. } | State::Wall(_) | State::Pages(_)
             ) {
                 use faction_terminal::subject::{self, Edit};
-                let limit = if matches!(self.state, State::Wall(_)) {
+                let limit = if matches!(self.state, State::Wall(_) | State::Pages(_)) {
                     128
                 } else if matches!(self.state, State::Writing { .. }) {
                     1024
@@ -1243,7 +1287,8 @@ impl Client {
                 match subject::feed_limited(
                     &mut self.input,
                     byte,
-                    self.capabilities.unicode && !matches!(self.state, State::Wall(_)),
+                    self.capabilities.unicode
+                        && !matches!(self.state, State::Wall(_) | State::Pages(_)),
                     limit,
                 )
                 .map_err(Error::Invalid)?
