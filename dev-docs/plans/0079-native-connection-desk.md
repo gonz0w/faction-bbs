@@ -1,7 +1,7 @@
 # 0079: Device-local connection desk
 
 Issue: [#158](https://github.com/gonz0w/faction-bbs/issues/158)
-Status: implementation/software validation complete; publication checks in progress
+Status: implementation and software validation complete
 
 ## Bounded outcome
 
@@ -40,7 +40,7 @@ actual host trust on connection. Readable files are not verified contact identit
 - [x] Validate real PTYs, strict Rust checks and owned NetBSD client software.
 - [x] Record exact sources/binaries and offline evidence; update user docs/status.
 - [x] Remove owned clone/cache; retain stopped owner playground.
-- [ ] Complete checkout/archive checks and publish the focused PR.
+- [x] Prepare reviewed sources/evidence for publication; run final archive checks before opening the focused PR.
 
 ## Validation scope
 
@@ -83,3 +83,6 @@ whole Who result. Guard 60 verifies the narrow current record. Complete all 70
 maintained offline commands in the checkout and committed source archive before
 publishing. #158 remains open for verified-contact age/trust, route/invitation
 adapters and deliberate live probing; this batch is local existing-profile setup.
+
+The final checkout passes all 70 maintained offline commands. Validate the same
+committed source archive before publication; the PR records that result.
