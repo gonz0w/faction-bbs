@@ -19,7 +19,8 @@ Hardening remains later. No public endpoint, image distribution or capacity clai
 - [x] Clean-build the unchanged current runtime and tests inside NetBSD 11 ARM64.
 - [x] Populate five rooms, local wall/pages/plans/chat and enable existing Lua demos.
 - [x] Verify the exact supplied SSH profile, compact fallback and restart persistence.
-- [ ] Run repository checks, update docs, open/attach PR and hand over live login.
+- [x] Run repository checks, update docs and open/attach [PR #153](https://github.com/gonz0w/faction-bbs/pull/153).
+- [x] Prepare the live owner login and private return-visit instructions for handover.
 
 ## Steps and commands
 
@@ -71,3 +72,8 @@ QEMU's SO_REUSEADDR behavior fixes that without allowing a live listener, covere
 by a real bound-listener refusal test. The preview is deliberately left running in
 ignored private storage for the owner; private credentials/ports/VM paths are not
 published. Files/SFTP stays disabled in this fixture; wider product stories remain.
+
+All 52 offline workflow commands also passed from a clean committed archive; the
+owned archive was removed. GitHub CI for #153 is pending. Host Rust was 1.98.0;
+native NetBSD/CI retain the project's 1.96.0 baseline. No actual Ghostty GUI was
+controlled by the agent; owner visual/play testing is the purpose of this login.
