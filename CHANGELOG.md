@@ -4,6 +4,11 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a populated private Ghostty/SSH playground workflow, guarded prepared-VM
+  lifecycle controls and new-only sample community seed. Preserve the older saved
+  image and all current runtime/schema/defaults; no public listener or new capacity
+  claim.
+
 - Add optional local member pages and dated .plan history: explicit preview/save,
   field/page visibility, ASCII signatures/projects, own deletion and sysop
   moderation/presentation/retention settings, with classic terminals and schema-10

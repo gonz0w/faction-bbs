@@ -120,6 +120,8 @@ jobs:
           cargo clippy --workspace --all-targets --release --locked -- -D warnings
           cargo test --workspace --locked --release
           cargo build --workspace --locked --release
+          cargo build -p faction-core --example playground_seed --release --locked
+          python3 tools/smoke_playground_seed.py "$CARGO_TARGET_DIR/release/examples/playground_seed"
           cargo build -p faction-terminal --examples --release --locked
           python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --output "$RUNNER_TEMP/menu-base.svg"
           cmp docs/images/menu-base.svg "$RUNNER_TEMP/menu-base.svg"
