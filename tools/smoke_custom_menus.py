@@ -9,7 +9,7 @@ from smoke_local_console import Console
 from smoke_member_worker import Worker
 
 FOOTER='Ctrl-C exits; Esc: Enter to recover.'
-SYSOP='Sysop: [L]ist [A]pprove [V]revoke [C]reate room: '
+SYSOP='[C]reate room: '
 
 def smoke(a):
     password=secrets.token_hex(20);children=[];checks=[]
