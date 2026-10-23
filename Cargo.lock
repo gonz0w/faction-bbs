@@ -156,6 +156,7 @@ dependencies = [
  "faction-core",
  "faction-terminal",
  "faction-unix",
+ "faction-wall",
  "rustix",
  "zeroize",
 ]
@@ -214,6 +215,7 @@ dependencies = [
  "faction-files",
  "faction-terminal",
  "faction-unix",
+ "faction-wall",
  "rustix",
  "toml",
  "zeroize",
@@ -234,6 +236,14 @@ name = "faction-unix"
 version = "0.1.0-alpha.1"
 dependencies = [
  "cc",
+]
+
+[[package]]
+name = "faction-wall"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-core",
+ "faction-terminal",
 ]
 
 [[package]]

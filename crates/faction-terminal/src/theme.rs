@@ -21,6 +21,7 @@ pub enum Action {
     Quit,
     Terminal,
     Contacts,
+    Wall,
 }
 impl Action {
     fn parse(s: &str) -> Result<Self> {
@@ -36,11 +37,13 @@ impl Action {
             "quit" => Ok(Self::Quit),
             "terminal" => Ok(Self::Terminal),
             "contacts" => Ok(Self::Contacts),
+            "wall" => Ok(Self::Wall),
             _ => Err("unknown menu action"),
         }
     }
     pub fn enabled(self, sysop: bool) -> bool {
-        self != Self::Contacts
+        self != Self::Wall
+            && self != Self::Contacts
             && self != Self::Doors
             && self != Self::Files
             && (self != Self::Sysop || sysop)
@@ -119,6 +122,7 @@ pub struct Theme {
     doors_enabled: bool,
     files_enabled: bool,
     directory_enabled: bool,
+    wall_enabled: bool,
     entries: Vec<Entry>,
     grid: bool,
     identity_ascii: Option<String>,
@@ -140,6 +144,7 @@ impl Default for Theme {
             doors_enabled: false,
             files_enabled: false,
             directory_enabled: false,
+            wall_enabled: false,
             grid: false,
             entries: [
                 (Action::Rooms, b'R', "Message rooms"),
@@ -325,6 +330,36 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_wall_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.wall_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Wall) {
+            let key = std::iter::once(b'W')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free wall hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            self.entries.insert(
+                self.entries.len() - 1,
+                Entry {
+                    action: Action::Wall,
+                    key,
+                    label: "Community wall".into(),
+                    description: "Leave a local signal".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
     pub fn set_directory_enabled(&mut self, enabled: bool) -> Result<()> {
         self.directory_enabled = enabled;
         if enabled && !self.entries.iter().any(|e| e.action == Action::Contacts) {
@@ -360,7 +395,8 @@ impl Theme {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Contacts && self.directory_enabled)
+        (action == Action::Wall && self.wall_enabled)
+            || (action == Action::Contacts && self.directory_enabled)
             || (action == Action::Files && self.files_enabled)
             || (action == Action::Doors && self.doors_enabled)
             || action.enabled(sysop)
@@ -728,7 +764,7 @@ impl<'a> Menu<'a> {
         let used = 32 + tail.len(); // ASCII marker, hotkey, label and optional detail.
         format!(
             "{}{}|{} {}[{}]{} {:<26}{}{}|\x1b[0m",
-            self.position(index + 5),
+            self.position(index - self.window_start(self.focus) + 5),
             style.sgr(),
             if focused { ">" } else { " " },
             key_style.sgr(),
@@ -767,14 +803,12 @@ impl<'a> Menu<'a> {
                 ));
             }
         }
-        for i in 0..self.theme.entries.len() {
+        for i in self.window_start(self.focus)
+            ..(self.window_start(self.focus) + self.visible()).min(self.theme.entries.len())
+        {
             out.push_str(&self.row(i));
         }
-        let bottom = if self.grid() {
-            10
-        } else {
-            self.theme.entries.len() + 5
-        };
+        let bottom = if self.grid() { 10 } else { self.visible() + 5 };
         out.push_str(&self.line(
             bottom,
             &format!("+{}+", "-".repeat(self.width() - 2)),
@@ -803,7 +837,25 @@ impl<'a> Menu<'a> {
             self.theme.normal,
         )
     }
+    fn visible(&self) -> usize {
+        if !self.grid() && self.theme.entries.len() > 11 {
+            9
+        } else {
+            self.theme.entries.len()
+        }
+    }
+    fn window_start(&self, focus: usize) -> usize {
+        if self.visible() < self.theme.entries.len() {
+            focus.saturating_sub(8).min(self.theme.entries.len() - 9)
+        } else {
+            0
+        }
+    }
     pub fn redraw(&self, previous: usize) -> String {
+        if self.window_start(previous) != self.window_start(self.focus) {
+            return self.render();
+        }
+
         if previous == self.focus {
             String::new()
         } else {

@@ -181,3 +181,10 @@ SSH/native/plain controls and distinct-UID backup/export checks. Snapshot 26
 freezes 180 prior inputs and the whole #148 record; 26 snapshots/39 historical
 identities stay fixed. Schema 8 holds explicit local-room plaintext checkpoints;
 no private-mail, new capacity or hardening claim follows.
+
+[Local community wall software evidence](community-wall-netbsd/README.md) covers
+224 Rust tests per OS, seven wall PTYs per OS, eleven actual SSH/native/plain
+controls and twelve complete wall/file recovery checks per OS. Snapshot 27 freezes
+192 prior measured/harness/compatibility inputs and the whole #149 record; all
+forty historical identities remain unchanged. Schema 9 adds bounded local wall
+state; no private-mail, capacity, physical SBC or hardening claim follows.

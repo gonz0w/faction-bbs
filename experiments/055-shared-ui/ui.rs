@@ -143,7 +143,7 @@ impl Client {
                 self.chat_prompt();
             }
             // Compatibility only: modern settings belong to the maintained UI.
-            Action::Terminal | Action::Contacts => {
+            Action::Terminal | Action::Contacts | Action::Wall => {
                 self.queue("Optional section unavailable.\n");
                 self.pause();
             }

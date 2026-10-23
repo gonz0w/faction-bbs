@@ -43,6 +43,9 @@ def run(a):
         with sqlite3.connect(state/'faction.sqlite3') as db:
             db.execute("INSERT INTO file_areas(slug,title,private,quota) VALUES('uploads','Uploads',0,1048576)")
             db.execute("INSERT INTO file_objects VALUES(?,1,1,'fixture.bin','Synthetic test data',?,?, 'published')",(object_id,len(content),hashlib.sha256(content).hexdigest()))
+            db.execute("UPDATE wall_settings SET enabled=1,name='Recovery wall'")
+            db.execute("INSERT INTO wall_notes(edition,member_id,request_id,body,posted_at,edited_at) VALUES(0,1,?,'Wall survives complete recovery',?,0)",('b'*32,int(time.time())))
+            db.execute("INSERT INTO wall_receipts VALUES(1,?,1,?)",('b'*32,int(time.time())))
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -107,6 +110,11 @@ def run(a):
             c.expect('Handle: ');c.send('sysop');c.password(password);c.expect('Command (then Enter): ');c.send('q');c.expect('Logged out.');c.finish()
         finally:c.close()
         checks.append('restored_board_login_and_exact_blobs_without_receipt')
+        with sqlite3.connect(f'file:{restored}/faction.sqlite3?mode=ro',uri=True) as db:
+            assert db.execute('select enabled,name from wall_settings').fetchall()==[(1,'Recovery wall')]
+            assert db.execute('select body from wall_notes').fetchall()==[('Wall survives complete recovery',)]
+            assert db.execute('select request_id,note_id from wall_receipts').fetchall()==[('b'*32,1)]
+        checks.append('complete_restore_preserves_wall_policy_note_and_cooldown_receipt')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)

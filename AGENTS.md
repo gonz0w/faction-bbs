@@ -2,9 +2,8 @@
 
 ## Read first
 
-**Current priority (owner, 2026-10-22): after merging checked #148, complete useful
-#141 full-screen room editing and explicit saved drafts, preserving classic
-fallback and hardening #106–#111 later.** Native-device
+**Current priority (owner, 2026-10-22): after merging checked #149, complete
+#134 local community wall with classic fallback. Hardening #106–#111 stays later.** Native-device
 encrypted mail and scoped home identity (#84/#90/#91) remain follow-on work. See docs/file-areas.md,
 docs/private-mail.md and ADRs 0030/0031. Pause further game expansion; preserve
 optional DOS/Amiga/other-host adapters under #81 without claiming new title support.
@@ -1050,3 +1049,45 @@ proof on native NetBSD; export/restore and schema-7/8 compatibility pass. Keep
 all 40 saved-evidence guards and preserve these new inputs/whole result before
 later edits. Owned clone/cache removed; saved playground off. No new capacity,
 autosave, private-mail plaintext, secure-erasure or hardening claim.
+
+
+## Local community wall
+
+Read docs/community-wall.md, plan 0060 and ADR 0055. Schema 9 adds optional local
+wall policy, <=128 notes/edition, <=240 ASCII bytes/four <=72-column lines, at most
+twelve explicitly retained previous weekly editions and one cooldown/retry row
+per member. No room/chat/mail/notification/federation projection. Default disabled.
+Sysop S/W enables/names/configures; changing weekly mode requires YES and clears
+notes/archives. Retention and UTC-Monday rotation are lazy, without a new helper.
+
+Current board/member/epoch/approval checks precede each frame/action. Own edit uses
+expected-body conflict detection; delete uses the shown stable ID and current
+owner/sysop authority. Archive edits/posting are denied, deletion allowed. Only
+explicit Send makes a key, retained on Busy; no wall checkpoint/autosave. Rendering
+is inert ASCII with trusted theme controls, classic commands followed by Enter.
+Enter raw input before showing its prompt: initial PTY evidence caught a fast
+first-keystroke loss from flushing after display. Shared resize keeps completed
+text, clears unfinished input and recomputes classic capability.
+
+The shared workflow lives in faction-wall, with core/terminal dependencies only,
+no I/O/host/network authority or new registry package. Shared State allocates it
+only while open. Enabled main menus use a temporary theme copy; disabled paths
+retain the original. More than eleven entries scroll a nine-row ordered lightbar
+window; direct hotkeys/plain all-entry menus remain. Keep frames <=8 KiB and
+existing queue/drain/session/credential/helper budgets; no new capacity claim.
+
+Owner snapshots/bundles include wall state; old schema-2..8 exports stay read-only
+valid. Stopped/drained complete pre-upgrade backup and fresh-path rollback required.
+Logical deletion is not secure erasure. Snapshot 27/full-screen-baseline-manifest
+freezes 192 prior actual inputs and the whole #149 result; keep all forty historical
+identities unchanged. Validate only owned software clones; saved playground off.
+
+
+`community-wall-netbsd` pins 193 matched native inputs and nineteen selected host
+harness inputs. Rust 1.96: 224 tests per OS; Python 118. Seven wall PTYs per OS,
+eleven actual SSH/native/plain, twelve complete wall/file recovery controls per
+OS (native actual distinct-UID CLI), room/editor/reader/menu/art regressions pass.
+An actual run caught the last-archive-note redraw error: archived deletion now
+returns to current with its success message. Keep all 41 saved-evidence guards;
+freeze new actual inputs/whole result before later edits. Owned clone/cache
+removed, saved playground off. No new capacity, hardening or federation claim.

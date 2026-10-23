@@ -4,6 +4,13 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an opt-in local community wall: short ASCII notes/art, explicit review/send,
+  chronological paging, own edits/delete and sysop removal, configurable name,
+  cooldown/quotas/retention and optional weekly archives, shared across classic,
+  ANSI, worker and shared-service terminals. Schema 9 extends owner snapshots;
+  stop/drain and make a verified complete backup before upgrade.
+
+
 - Full-screen caret/paragraph room editing, themed desk names, explicit confirmed
   send, and classic fallback with resize/input recovery. Schema 8 adds explicit
   sysop-readable room checkpoints, resume/delete, four-room quotas, 30-day
