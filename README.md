@@ -144,7 +144,7 @@ field notes, ASCII interlude and arcade ideas. Sysops can also enable the **[mag
 private drafts, explicit submissions, copied editorial revisions, exact-issue
 contributor approvals, local publish/withdrawal and optional Files editions.
 Published text stays fixed; changes require a new edition and new approvals.
-Take a stopped complete backup before upgrading the catalog (current schema 17).
+Take a stopped complete backup before upgrading the catalog (current schema 18).
 The optional **[chat lounge](docs/social-lounge.md)** now adds explicit
 available/busy/away status and polite bodyless invitations across local chat
 channels, with accept/decline, mute, blocks, UTC quiet hours and opted-in sysop
@@ -155,7 +155,12 @@ workers now share the visit lifetime, including plain prompts and full-screen
 editing. Classic fallback remains. Optional `/notify on` adds quiet idle-menu
 indications for this visit, preserving partial input and staying silent in
 drafts/games/probes. Take a stopped complete backup before the forward-only
-schema-17 upgrade.
+schema-18 upgrade.
+The distinct **[Who caller list](docs/who-and-presence.md)** shows current broad
+activity and separate availability. Group `/who` uses the same visible callers;
+Who, group commands and the Lounge share visibility/availability, while the
+Lounge retains its social/paging features. Private locations and draft contents
+stay hidden. Classic/plain menus remain available.
 The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
 independent invited home servers, member-held keys and local approval at each
 visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)

@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 pub mod notifications;
 pub mod social;
+pub mod who;
 use faction_core::{
     Board, Error, MemberPage, PAGE_FIELD_BYTES, PAGE_FIELDS, Result, Role, Session, page_text,
     request_id,

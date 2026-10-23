@@ -76,3 +76,5 @@ Routine small edits need no execution plan. Do not create a parallel hidden plan
 - [0076: Standalone social parity](0076-standalone-social.md).
 
 - [0077: Optional idle page notifications](0077-idle-notifications.md).
+
+- [0078: Who and universal presence](0078-who-universal-presence.md)

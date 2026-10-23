@@ -2,6 +2,11 @@
 
 ## Read first
 
+**Latest owner contract (#176): main-menu Who shows broad current activity plus
+availability; group /who is the slash-command entry to that caller list; Lounge
+retains its own social/paging attributes. Availability/visibility are universal
+across all three. Read docs/who-and-presence.md, ADR 0073 and plan 0078.**
+
 **Current priority (owner, 2026-10-23): stop/preserve the tested playground, merge
 remaining checked PRs in dependency order and batch useful client/product work.
 The local vault integration and #136 gatherings are merged. The #139 local
@@ -1649,3 +1654,42 @@ No new schema or packages. Guard 58 and the full maintained offline/archive
 workflow remain required. Owned clone/private inputs/vendor removed; saved owner
 playground off/intact. #137's ordinary supported-adapter scope is complete in this
 batch; expanded notification surfaces would be separate follow-on work.
+
+
+## Universal presence and distinct Who (#176)
+
+Read docs/who-and-presence.md, ADR 0073 and plan 0078. One existing lease-bound
+social presence/availability/visibility model serves Who, group /who and Lounge;
+never fork privacy preferences/rosters by interface. Who/group show only broad
+host-derived activity plus availability/status. Lounge keeps invitation/answer/
+privacy/page-the-sysop attributes and its own name. Existing /names membership is
+separate. Current opt-in/hidden reconnect, both-party block/approval/epoch/lease
+checks remain. No private room/channel names, drafts, game detail, addresses,
+native private-mail state or retained activity log.
+
+Schema 18 adds a bounded transient visit_activity relation to existing leases.
+Publish trusted enum transitions, not user location strings; shared work remains
+charged with bounded contention backoff. Local/worker nested room/chat transitions
+must update the same visit. Ordinary logout cascades cleanup, stale reads filter
+out current-invalid leases, and complete exports/restores strip all activity.
+Keep read-only older snapshots, stopped complete upgrades and matching-build
+rollback; no mixed owners or version relabeling. No new helper/thread, SQLite
+connection/listener, registry package or normal budget increase.
+
+Themes can name/map Who separately; choose a free hotkey if W is already used by
+Wall, and accept plain-menu word who. Keep classic fallback. Snapshot 45 preserves
+332 previous actual inputs and the whole idle-notification result; all 58
+historical identities stay fixed. #175 remains a separate prerequisite PR; merge
+in dependency order when authorized. Only marked owned software clones; saved
+owner playground off/intact and hardening deferred. No new capacity/hardware claim.
+
+The who-netbsd record pins 328 matched native inputs/47 host harnesses/thirteen
+unchanged dependency/access/credential inputs. 359 Rust per OS/130 host Python,
+21 local/worker/plain Who controls per OS, twelve actual SSH/native/Lua/Files and
+21 complete-recovery controls per OS pass. Existing idle-notification, real
+66-second heartbeat, terminal/art and editor regressions pass. Keep guard 59 and
+all 69 maintained offline/source-archive checks. Only broad host-derived location
+is exposed; Who/group/Lounge universal privacy never leaks private resource names
+or draft/game content. Final matching installed hashes and owned-fixture teardown
+are recorded; saved owner playground remains off/intact. #176 is the distinct Who
+batch, based on #175, with hardening still deferred.

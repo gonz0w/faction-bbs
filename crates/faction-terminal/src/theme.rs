@@ -16,6 +16,7 @@ pub enum Action {
     Post,
     Chat,
     Lounge,
+    Who,
     Sysop,
     Doors,
     Files,
@@ -40,6 +41,7 @@ impl Action {
             "post" => Ok(Self::Post),
             "chat" => Ok(Self::Chat),
             "lounge" => Ok(Self::Lounge),
+            "who" => Ok(Self::Who),
             "sysop" => Ok(Self::Sysop),
             "doors" => Ok(Self::Doors),
             "files" => Ok(Self::Files),
@@ -59,6 +61,7 @@ impl Action {
     }
     pub fn enabled(self, sysop: bool) -> bool {
         self != Self::Lounge
+            && self != Self::Who
             && self != Self::Library
             && self != Self::Gallery
             && self != Self::Find
@@ -149,6 +152,7 @@ pub struct Theme {
     gallery_enabled: bool,
     library_enabled: bool,
     lounge_enabled: bool,
+    who_enabled: bool,
     lounge_notice: bool,
     wall_enabled: bool,
     pages_enabled: bool,
@@ -180,6 +184,7 @@ impl Default for Theme {
             gallery_enabled: false,
             library_enabled: false,
             lounge_enabled: false,
+            who_enabled: false,
             lounge_notice: false,
             wall_enabled: false,
             pages_enabled: false,
@@ -612,6 +617,37 @@ impl Theme {
         }
         Ok(())
     }
+    pub fn set_who_enabled(&mut self, enabled: bool) -> Result<()> {
+        self.who_enabled = enabled;
+        if enabled && !self.entries.iter().any(|e| e.action == Action::Who) {
+            let key = std::iter::once(b'W')
+                .chain(b'A'..=b'Z')
+                .find(|k| !self.entries.iter().any(|e| e.key == *k))
+                .ok_or("no free Who hotkey")?;
+            let position = if self.grid {
+                (0..5)
+                    .flat_map(|r| (0..2).map(move |c| (r, c)))
+                    .find(|p| !self.entries.iter().any(|e| e.position == Some(*p)))
+            } else {
+                None
+            };
+            if self.grid && position.is_none() {
+                self.grid = false;
+            }
+            let index = self.entries.len() - 1;
+            self.entries.insert(
+                index,
+                Entry {
+                    action: Action::Who,
+                    key,
+                    label: "Who is here".into(),
+                    description: "Current activity and availability".into(),
+                    position,
+                },
+            );
+        }
+        Ok(())
+    }
     pub fn set_lounge_enabled(&mut self, enabled: bool) -> Result<()> {
         self.lounge_enabled = enabled;
         if enabled && !self.entries.iter().any(|e| e.action == Action::Lounge) {
@@ -688,7 +724,8 @@ impl Theme {
         self.doors_enabled = enabled;
     }
     fn enabled(&self, action: Action, sysop: bool) -> bool {
-        (action == Action::Lounge && self.lounge_enabled)
+        (action == Action::Who && self.who_enabled)
+            || (action == Action::Lounge && self.lounge_enabled)
             || (action == Action::Gatherings && self.gatherings_enabled)
             || (action == Action::Library && self.library_enabled)
             || (action == Action::Gallery && self.gallery_enabled)
@@ -1216,5 +1253,34 @@ mod lounge_tests {
         assert_eq!(t.hotkey(b'J', false), Some(Action::Lounge));
         assert_eq!(t.hotkey(b'L', false), None);
         assert_eq!(Action::parse("lounge").unwrap(), Action::Lounge);
+    }
+}
+
+#[cfg(test)]
+mod who_tests {
+    use super::*;
+    #[test]
+    fn who_keeps_distinct_runtime_gate_and_owner_key_without_displacing_wall() {
+        let mut t = Theme::default();
+        t.set_wall_enabled(true).unwrap();
+        t.set_who_enabled(true).unwrap();
+        assert_eq!(t.hotkey(b'W', false), Some(Action::Wall));
+        let who = t.entries.iter().find(|e| e.action == Action::Who).unwrap();
+        assert_ne!(who.key, b'W');
+        assert_eq!(t.hotkey(who.key, false), Some(Action::Who));
+        assert!(t.plain_menu(false).contains("Who is here"));
+        t.set_who_enabled(false).unwrap();
+        assert!(!t.enabled(Action::Who, false));
+        let entry = t
+            .entries
+            .iter_mut()
+            .find(|e| e.action == Action::Who)
+            .unwrap();
+        entry.key = b'Z';
+        entry.label = "Caller deck".into();
+        t.set_who_enabled(true).unwrap();
+        assert_eq!(t.hotkey(b'Z', false), Some(Action::Who));
+        assert!(t.plain_menu(false).contains("Caller deck"));
+        assert_eq!(Action::parse("who").unwrap(), Action::Who);
     }
 }

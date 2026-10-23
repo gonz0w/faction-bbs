@@ -489,3 +489,11 @@ menu is safely idle. ANSI refresh preserves the current arrow selection and
 uses the chosen theme/capability frame; plain terminals receive an ASCII line.
 The owner name, theme and access gate remain unchanged. No page frame is emitted
 over artwork paging, drafts, doors or terminal negotiation.
+
+
+The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu
+Who and group `/who` show broad current activity plus availability/status, while
+the Lounge retains its social/paging attributes. All three share the same current
+visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
+no private resource names or retained activity history. Take a stopped complete
+backup before upgrade; export/restore strips current activity and live authority.

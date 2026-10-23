@@ -12,6 +12,8 @@ pub(super) struct Visit<'a> {
     board: &'a mut Board,
     lease: Option<ChatLease>,
     heartbeat: Instant,
+    activity: faction_core::VisitActivity,
+    published_activity: Option<faction_core::VisitActivity>,
     notifications: faction_pages::notifications::Notifications,
 }
 impl<'a> Visit<'a> {
@@ -20,6 +22,8 @@ impl<'a> Visit<'a> {
             board,
             lease: None,
             heartbeat: Instant::now(),
+            activity: faction_core::VisitActivity::Menu,
+            published_activity: None,
             notifications: Default::default(),
         }
     }
@@ -27,6 +31,23 @@ impl<'a> Visit<'a> {
         if self.lease.is_none() {
             self.lease = Some(self.board.chat_open(session)?);
             self.heartbeat = Instant::now();
+        }
+        self.publish_activity()?;
+        Ok(())
+    }
+    pub(super) fn set_activity(
+        &mut self,
+        activity: faction_core::VisitActivity,
+    ) -> faction_core::Result<()> {
+        self.activity = activity;
+        self.publish_activity()
+    }
+    fn publish_activity(&mut self) -> faction_core::Result<()> {
+        if self.published_activity != Some(self.activity)
+            && let Some(lease) = &self.lease
+        {
+            self.board.visit_activity(lease, self.activity)?;
+            self.published_activity = Some(self.activity);
         }
         Ok(())
     }
@@ -59,6 +80,7 @@ impl<'a> Visit<'a> {
     ) -> faction_core::Result<faction_terminal::Theme> {
         let mut base = theme.clone();
         base.set_lounge_enabled(false).map_err(Error::Invalid)?;
+        base.set_who_enabled(false).map_err(Error::Invalid)?;
         base.set_lounge_notice(false);
         Ok(self.menu_theme(s, &base)?.unwrap_or(base))
     }

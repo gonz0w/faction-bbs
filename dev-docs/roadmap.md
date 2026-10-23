@@ -22,6 +22,15 @@ complete the ordinary shared/local/worker story under [plan 0077](plans/0077-idl
 with default-off visit consent, bounded current signals and protected workflows.
 No server-readable private-message shortcut; hardening remains later.
 
+## Universal presence and distinct Who
+
+The owner clarified #176 after #175: main-menu Who shows broad current location
+plus separate availability; group `/who` is the slash-command interface to the
+same caller list. Lounge keeps its own social/paging attributes. Universal
+visibility/availability/blocks apply to all three. See [the product contract](../docs/who-and-presence.md)
+and [plan 0078](plans/0078-who-universal-presence.md). Keep current privacy,
+classic fallback, complete recovery and ordinary resource limits; hardening later.
+
 ## Deliberate interactive travel
 
 After merged #166, the first #159 increment adds native local travel preferences:

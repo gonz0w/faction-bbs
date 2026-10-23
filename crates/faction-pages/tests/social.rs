@@ -241,3 +241,62 @@ fn notification_poll_announces_only_explicit_outgoing_answers_and_rechecks_disab
     assert_eq!(n.poll(&mut b, &l, now + INTERVAL * 3).unwrap(), Some(false));
     assert_eq!(n.poll(&mut b, &l, now + INTERVAL * 4).unwrap(), None);
 }
+
+#[test]
+fn who_and_group_command_share_privacy_and_availability_but_lounge_keeps_its_own_desk() {
+    let f = Fixture::new();
+    let mut b = Board::open(&f.0.join("board")).unwrap();
+    b.bootstrap("sysop", PASS).unwrap();
+    let s = b.authenticate("sysop", PASS).unwrap();
+    let op = b.chat_open(&s).unwrap();
+    b.social_configure(
+        &op,
+        &SocialConfig {
+            enabled: true,
+            name: "Night lounge".into(),
+        },
+    )
+    .unwrap();
+    b.register("alice", PASS).unwrap();
+    b.set_status(&s, "alice", Status::Approved).unwrap();
+    let s = b.authenticate("alice", PASS).unwrap();
+    let a = b.chat_open(&s).unwrap();
+    b.visit_activity(&a, faction_core::VisitActivity::Doors)
+        .unwrap();
+    let mut who = faction_pages::who::Desk::default();
+    let hidden = who.render(&mut b, &op, &Theme::default(), false).unwrap();
+    assert!(!hidden.contains("alice"));
+    b.social_availability(&a, "available", "Public signal")
+        .unwrap();
+    let group = faction_pages::social::visit_command(&mut b, &op, "/who")
+        .unwrap()
+        .unwrap();
+    let frame = who.render(&mut b, &op, &Theme::default(), false).unwrap();
+    assert!(group.contains("alice | Doors | available | Public signal") && frame.contains(&group));
+    assert!(
+        frame.contains("Who> ")
+            && !frame.contains("Current requests/replies")
+            && !frame.contains('\u{1b}')
+    );
+    who.feed("/busy Reading", &mut b, &a).unwrap();
+    let mut lounge = Desk::default();
+    let frame = lounge.render(&mut b, &a, &Theme::default(), false).unwrap();
+    assert!(
+        frame.contains("Night lounge")
+            && frame.contains("Your advertisement: busy / Reading")
+            && frame.contains("Lounge> ")
+    );
+    assert!(who.feed("/page sysop", &mut b, &a).is_err());
+    who.feed("/hide", &mut b, &a).unwrap();
+    assert!(
+        !faction_pages::who::roster(&mut b, &op, None)
+            .unwrap()
+            .contains("alice")
+    );
+    assert!(
+        !lounge
+            .render(&mut b, &op, &Theme::default(), false)
+            .unwrap()
+            .contains("alice")
+    );
+}

@@ -10,12 +10,31 @@ pub(super) fn run(
     theme: &Theme,
     ansi: bool,
 ) -> Result<()> {
+    run_panel(board, session, theme, ansi, false)
+}
+
+pub(super) fn who(
+    board: &mut Visit<'_>,
+    session: &Session,
+    theme: &Theme,
+    ansi: bool,
+) -> Result<()> {
+    run_panel(board, session, theme, ansi, true)
+}
+fn run_panel(
+    board: &mut Visit<'_>,
+    session: &Session,
+    theme: &Theme,
+    ansi: bool,
+    who: bool,
+) -> Result<()> {
     if !board.social_session_config(session)?.enabled {
         return Err(faction_core::Error::Denied.into());
     }
     board.ensure(session)?;
     let _raw = terminal::Raw::input_only()?;
     let mut desk = Desk::default();
+    let mut who_desk = faction_pages::who::Desk::default();
     let mut input = Vec::with_capacity(128);
     let mut size = terminal::size();
     let mut redraw = true;
@@ -34,16 +53,18 @@ pub(super) fn run(
         }
         if redraw {
             let (board, lease, notifications) = board.parts()?;
-            print!(
-                "{}",
+            let frame = if who {
+                who_desk.render(board, lease, theme, ansi && terminal::capable())?
+            } else {
                 desk.render_with_notifications(
                     board,
                     lease,
                     theme,
                     ansi && terminal::capable(),
-                    notifications
+                    notifications,
                 )?
-            );
+            };
+            print!("{frame}");
             io::stdout().flush()?;
             redraw = false;
         }
@@ -62,11 +83,20 @@ pub(super) fn run(
             Edit::Submit(text) => {
                 println!();
                 let (core, lease, notifications) = board.parts()?;
-                match desk.feed_with_notifications(&text, core, lease, notifications) {
+                let outcome = if who {
+                    who_desk.feed(&text, core, lease)
+                } else {
+                    desk.feed_with_notifications(&text, core, lease, notifications)
+                };
+                match outcome {
                     Ok(true) => return Ok(()),
                     Ok(false) => (),
                     Err(e) => {
-                        if !desk.recover(&e) {
+                        if !(if who {
+                            who_desk.recover(&e)
+                        } else {
+                            desk.recover(&e)
+                        }) {
                             return Err(e.into());
                         }
                     }

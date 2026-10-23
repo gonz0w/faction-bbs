@@ -1,0 +1,31 @@
+#!/bin/sh
+# PROVIDE: faction_doors
+# REQUIRE: DAEMON
+# BEFORE: faction_broker
+# KEYWORD: shutdown
+. /etc/rc.subr
+name="faction_doors"
+rcvar=$name
+command="/usr/local/libexec/faction-doors"
+pidfile="/var/run/faction-doors/door.sock.pid"
+start_cmd="faction_doors_start"
+faction_doors_start()
+{
+    [ -z "$rc_pid" ] || return 1
+    [ -x "$command" ] && [ -d /usr/local/share/faction/doors ] || return 1
+    [ ! -L /var/run/faction-doors ] || return 1
+    /usr/bin/install -d -o factiongames -g factionipc -m 2710 /var/run/faction-doors || return 1
+    owner=$(/usr/bin/id -u factiond) || return 1
+    /usr/bin/su -m factiongames -c "exec /usr/bin/env -i PATH=/usr/bin:/bin HOME=/nonexistent $command --socket /var/run/faction-doors/door.sock --owner-uid $owner --scripts /usr/local/share/faction/doors --daemon" </dev/null >>/var/log/faction-doors.log 2>&1
+    n=0
+    while [ "$n" -lt 50 ]; do
+        [ -z "$(check_pidfile "$pidfile" "$command")" ] || return 0
+        sleep 0.1
+        n=$((n+1))
+    done
+    warn "Lua doors did not start; inspect /var/log/faction-doors.log"
+    return 1
+}
+load_rc_config "$name"
+: ${faction_doors:=NO}
+run_rc_command "$1"

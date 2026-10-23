@@ -34,7 +34,7 @@ workers. Members explicitly choose:
 | /busy optional public status | Stay on the opt-in roster while not accepting invitations. |
 | /away optional public status | Advertise away, without invitations. |
 | /hide | Leave the lounge roster and remove current invitations. |
-| /who optional after-handle | See up to eight eligible opted-in handles/statuses; follow the shown cursor. |
+| /who optional after-handle | See up to eight visible callers with broad activity and availability/status; follow the cursor. |
 | /page handle | Attempt a bodyless invitation to a currently available member. |
 | /pages | Check current sent/received requests and replies. |
 | /answer ID accept or /answer ID decline | Explicitly answer a received pending invitation. |
@@ -198,3 +198,11 @@ per visit and optional polling is limited to once per two seconds while safe.
 
 See [ADR 0072](../dev-docs/decisions/0072-idle-page-notifications.md) and
 [plan 0077](../dev-docs/plans/0077-idle-notifications.md). Hardening remains later.
+
+
+The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu
+Who and group `/who` show broad current activity plus availability/status, while
+the Lounge retains its social/paging attributes. All three share the same current
+visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
+no private resource names or retained activity history. Take a stopped complete
+backup before upgrade; export/restore strips current activity and live authority.

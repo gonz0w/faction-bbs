@@ -56,10 +56,10 @@ def run(a):
             c=start(worker=True);enter(c);view(c);assert b'F:Files' not in c.transcript;c.send('d');c.expect('No more messages.');c.expect('Press Enter to return to menu: ');c.send('');c.expect(MENU);quit(c);checks.append('worker_reuses_library_and_deliberate_existing_room_reader_without_transfer_authority')
             c=start(enabled=False);assert b'Library shelves' not in c.transcript;quit(c);(catalog/'library.toml').write_text(text.replace('enabled=true','enabled=false'));c=start();assert b'Library shelves' not in c.transcript;quit(c);(catalog/'library.toml').write_text(text);checks.append('absent_and_disabled_pack_do_not_add_main_menu_capability')
             (catalog/'library.toml').write_text(text.replace('rights="BSD-3-Clause synthetic fixture only"','rights=""',1));result=subprocess.run([str(a.binary),'library-check',str(catalog)],capture_output=True);assert result.returncode!=0;result=subprocess.run([str(a.binary),'--state-dir',str(state),'login','--library',str(catalog)],input=b'',capture_output=True);assert result.returncode!=0 and b'Handle:' not in result.stdout;(catalog/'library.toml').write_text(text);checks.append('invalid_curator_metadata_rejected_before_member_login')
-            c=start(handle='pending');c.expect('No community access.');c.finish();assert b'Library>' not in c.transcript and query('SELECT count(*) FROM unread')==[(0,)] and query('PRAGMA user_version')==[(17,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_member_denied_unchanged_schema_and_no_preview_read_ack_or_secret_echo')
+            c=start(handle='pending');c.expect('No community access.');c.finish();assert b'Library>' not in c.transcript and query('SELECT count(*) FROM unread')==[(0,)] and query('PRAGMA user_version')==[(18,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_member_denied_unchanged_schema_and_no_preview_read_ack_or_secret_echo')
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=17,capacity_claim=False,request_desk=False,new_transfer_authority=False,public_library=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=18,capacity_claim=False,request_desk=False,new_transfer_authority=False,public_library=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker library passed:',len(checks),'controls.')
 if __name__=='__main__':

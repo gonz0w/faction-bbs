@@ -286,6 +286,7 @@ fn read_room_at(
     ansi: bool,
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
+    board.set_activity(faction_core::VisitActivity::Rooms)?;
     let mut after = if new_only {
         board.unread_cursor(s, room)?
     } else {
@@ -364,6 +365,7 @@ fn post_in_room(
     ansi: bool,
     caps: faction_terminal::capabilities::Capabilities,
 ) -> Result<()> {
+    board.set_activity(faction_core::VisitActivity::Rooms)?;
     if let Some(saved) = board.room_draft(s, room)? {
         match board
             .line(
@@ -730,6 +732,7 @@ fn menu_with_library(
         let board = &mut visit;
         println!("Welcome, {}. Faction BBS session.", safe(&member.handle));
         loop {
+            board.set_activity(faction_core::VisitActivity::Menu)?;
             let member = board.whoami(s)?;
             if member.status != Status::Approved {
                 return Err(Error::Denied.into());
@@ -765,13 +768,31 @@ fn menu_with_library(
                 if command == "?" {
                     continue;
                 }
-                if command.len() == 1 {
+                if command.eq_ignore_ascii_case("who") && board.social_session_config(s)?.enabled {
+                    Some(Action::Who)
+                } else if command.len() == 1 {
                     theme.hotkey(command.as_bytes()[0], member.role == Role::Sysop)
                 } else {
                     None
                 }
             };
             if let Some(action) = action {
+                use faction_core::VisitActivity as A;
+                let activity = match action {
+                    Action::Rooms | Action::New | Action::History | Action::Post => A::Rooms,
+                    Action::Chat => A::Chat,
+                    Action::Doors => A::Doors,
+                    Action::Files => A::Files,
+                    Action::Lounge => A::Lounge,
+                    Action::Who => A::Who,
+                    Action::Terminal | Action::Sysop => A::Settings,
+                    Action::Gallery => A::Gallery,
+                    Action::Library => A::Library,
+                    Action::Contacts => A::Directory,
+                    Action::Quit => A::Menu,
+                    _ => A::Community,
+                };
+                board.set_activity(activity)?;
                 let title = match action {
                     Action::Rooms => "Rooms",
                     Action::New | Action::History => "Read messages",
@@ -779,6 +800,7 @@ fn menu_with_library(
                     Action::Sysop => "Sysop controls",
                     Action::Chat => "Local chat",
                     Action::Lounge => "Social lounge",
+                    Action::Who => "Who is here",
                     Action::Doors => "Doors",
                     Action::Files => "File areas",
                     Action::Quit => "Disconnect",
@@ -797,7 +819,13 @@ fn menu_with_library(
             }
             let mut skip_pause = matches!(
                 action,
-                Some(Action::Contacts | Action::Gallery | Action::Library | Action::Lounge)
+                Some(
+                    Action::Contacts
+                        | Action::Gallery
+                        | Action::Library
+                        | Action::Lounge
+                        | Action::Who
+                )
             );
             let result = match action {
                 Some(Action::Quit) => {
@@ -876,6 +904,7 @@ fn menu_with_library(
                 }
                 Some(Action::Chat) => chat::run(board, s, ansi),
                 Some(Action::Lounge) => social::run(board, s, theme, used_ansi),
+                Some(Action::Who) => social::who(board, s, theme, used_ansi),
                 _ => {
                     println!("Unknown or unavailable command.");
                     Ok(())

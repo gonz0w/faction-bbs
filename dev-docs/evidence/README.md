@@ -295,3 +295,11 @@ explicit visit consent, safe idle ANSI/plain indications and protected draft/gam
 probe input across local/worker/shared SSH/native access. Guard 58 checks current
 source matches, real sustained regressions, recovery and owned-fixture teardown.
 Schema/resource defaults remain; the saved playground stays stopped and intact.
+
+
+Snapshot 45 (`sources/pre176-who`) and `idle-notifications-baseline-manifest.json`
+preserve 332 prior inputs and the entire idle-notification result, with all 58
+historical identities fixed. The current [Who evidence](who-netbsd/README.md)
+checks distinct caller/group/Lounge interfaces, universal presence and broad
+host-derived activity. Guard 59 covers its current sources, privacy, normal
+budgets, protected input, schema-18 recovery and owned-fixture teardown.
