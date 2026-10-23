@@ -29,7 +29,7 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2 through 13 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2 through 14 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2..12 boards upgrade to schema 13 when
+Verification is read-only; restored schema-2..13 boards upgrade to schema 14 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -191,3 +191,11 @@ Old schema-2..12 exports remain exact read-only valid. Snapshot schema compariso
 reject extra objects and an explicit 128-object ceiling prevents truncated checks.
 Stop/drain and verify a complete pre-upgrade backup; matching-binary fresh-path
 rollback remains required.
+
+
+Schema 14 includes [Find policy and own discussion bookmark references](discussion-search.md).
+The ordinary author/post B-tree is maintained by SQLite; no copied text index or
+query history is added. Post deletion cascades references. Member-side copyable
+paged reference exports are deliberately narrower than this owner recovery format.
+Old schema-2..13 exports remain exact/read-only valid. Stop/drain, verify a complete
+pre-upgrade backup and use matching-binary fresh-path rollback.

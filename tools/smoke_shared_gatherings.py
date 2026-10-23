@@ -72,8 +72,8 @@ def run(a):
         checks.append('actual_active_revocation_prevents_reviewed_rsvp_save')
         enter(sysop);view(sysop);sysop.send('c');sysop.expect('Type CANCEL (anything else returns): ');sysop.send('CANCEL');sysop.expect(CARD);sysop.send('j');sysop.expect('event is cancelled, hidden or ended');sysop.expect(CARD);main(sysop);settings(sysop);sysop.send('m');sysop.expect('Gathering ID and hide|show|remove: ');sysop.send('1 remove');sysop.expect('Type DELETE (anything else cancels): ');sysop.send('DELETE');sysop.expect(SETTINGS);assert query('select count(*) from gathering_rsvps')==[[0]];sysop.send('e');sysop.expect(SETTINGS);back(sysop);logout(sysop)
         checks.append('actual_cancel_blocks_jump_and_explicit_remove_cascades_responses')
-        assert query('pragma user_version')==[[13]] and query('select count(*) from unread')==[[0]] and all(password.encode() not in x.transcript for x in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=13,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared gathering checks passed:',len(checks))
+        assert query('pragma user_version')==[[14]] and query('select count(*) from unread')==[[0]] and all(password.encode() not in x.transcript for x in children)
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=14,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared gathering checks passed:',len(checks))
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('gatherings-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

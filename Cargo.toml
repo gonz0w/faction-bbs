@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/faction-catchup", "crates/faction-polls", "crates/faction-gatherings", "crates/faction-pages", "crates/faction-wall", "crates/faction-articles", "crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service", "crates/faction-files", "crates/faction-client", "crates/faction-client-pty"]
+members = ["crates/faction-find", "crates/faction-catchup", "crates/faction-polls", "crates/faction-gatherings", "crates/faction-pages", "crates/faction-wall", "crates/faction-articles", "crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service", "crates/faction-files", "crates/faction-client", "crates/faction-client-pty"]
 exclude = ["experiments/004-native-sessions", "experiments/023-netbsd-dependencies"]
 resolver = "3"
 

@@ -60,6 +60,10 @@ def run(a):
             db.execute("UPDATE catchup_settings SET enabled=1,name='Recovered catchup',modules='rooms,files,notice',notice='Retained local notice'")
             db.execute("INSERT INTO catchup_members VALUES(1,1,?, ?,1)",(int(time.time()),'3'*32))
             db.execute("INSERT INTO catchup_favorites VALUES(1,1)")
+            db.execute("INSERT INTO posts(room_id,author_id,request_id,body) VALUES(1,1,?,'Recovered discussion')",('4'*32,))
+            db.execute("INSERT INTO post_metadata VALUES(1,?,'Recovered subject',?,'local')",('5'*32,int(time.time())))
+            db.execute("UPDATE discussion_settings SET enabled=1,name='Recovered find'")
+            db.execute("INSERT INTO discussion_bookmarks VALUES(1,1)")
         db.close()
         bundle.mkdir(x.store,files);blob=x.store/object_id;blob.write_bytes(content);blob.chmod(0o600);os.chown(blob,files,-1)
         x.pidfile.write_bytes(b'fixture\n');x.pidfile.chmod(0o600);os.chown(x.pidfile,owner,-1)
@@ -152,6 +156,11 @@ def run(a):
             assert db.execute('select id,object from catchup_publications').fetchall()==[(1,object_id)]
             assert db.execute("select seq from sqlite_sequence where name='catchup_publications'").fetchall()==[(1,)]
         checks.append('complete_restore_preserves_catchup_policy_preferences_checkpoint_and_publication_order')
+        with sqlite3.connect(f'file:{restored}/faction.sqlite3?mode=ro',uri=True) as db:
+            assert db.execute('select enabled,name from discussion_settings').fetchall()==[(1,'Recovered find')]
+            assert db.execute('select member,post from discussion_bookmarks').fetchall()==[(1,1)]
+            assert db.execute('select subject,article_id from post_metadata').fetchall()==[('Recovered subject','5'*32)]
+        checks.append('complete_restore_preserves_discussion_policy_and_own_bookmarks')
         target=SimpleNamespace(**vars(x));target.bundle=root/'bundle-recorded';action('backup',record=True,values=target);assert backup_status.read(state,owner)['result']==1
         checks.append('backup_command_can_explicitly_record_success')
         receipt=state/'backup.status';receipt.chmod(0o644);assert b'Backup check: UNAVAILABLE' in data();receipt.chmod(0o600)

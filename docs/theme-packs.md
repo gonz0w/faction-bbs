@@ -448,3 +448,10 @@ Optional [catch-up](catchup.md) declares `action = "catchup"` with a free key,
 label and description. The enabled host inserts U otherwise; it stays unavailable
 when disabled. Sysop S/U controls its heading, compact/cards, module order and local
 notice. Existing palette, crowded-menu scrolling and plain fallback remain.
+
+
+Optional [Find & save](discussion-search.md) declares `action = "find"` with a free
+key/label/description. The enabled host inserts B otherwise; disabled capability
+stays unavailable. Sysop S/B sets heading/cards/compact. Snippets/source views
+inherit trusted presentation and existing classic/Unicode rules; no raw member
+control becomes theme authority.

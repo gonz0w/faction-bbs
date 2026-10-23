@@ -67,8 +67,8 @@ def run(a):
         checks.append('actual_close_race_refuses_stale_review_without_changing_ballots')
         enter(first);view(first,2);first.send('c');first.expect('Type CANCEL (anything else returns): ');first.send('CANCEL');first.expect(CARD);main(first);settings(first);first.send('m');first.expect('Poll ID and hide|show|remove: ');first.send('1 remove');first.expect('Type DELETE (anything else cancels): ');first.send('no');first.expect(SETTINGS);assert query('select count(*) from polls where id=1')==[[1]];first.send('m');first.expect('Poll ID and hide|show|remove: ');first.send('1 remove');first.expect('Type DELETE (anything else cancels): ');first.send('DELETE');first.expect(SETTINGS);assert query('select count(*) from poll_ballots where poll=1')==[[0]];first.send('e');first.expect(SETTINGS);back(first);logout(first)
         checks.append('actual_cancel_and_explicit_delete_cascade_then_disable')
-        assert query('pragma user_version')==[[13]] and query('select count(*) from unread')==[[0]] and all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=13,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False,secret_ballot_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared polls passed:',len(checks),'controls.')
+        assert query('pragma user_version')==[[14]] and query('select count(*) from unread')==[[0]] and all(password.encode() not in c.transcript for c in children)
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=14,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False,secret_ballot_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared polls passed:',len(checks),'controls.')
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('polls-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

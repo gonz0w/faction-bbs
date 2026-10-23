@@ -1,5 +1,13 @@
 # Roadmap and stage
 
+## Discussion discovery
+
+After merged #164, #142 adds useful access to older conversations: bounded literal
+filters, exact read-only sources, own bookmarks and deliberate reference exports.
+Accelerated FTS, other bookmark types and member import remain follow-on work.
+Classic terminals, current resource defaults and device-only private-mail search
+remain; the saved playground stays off and hardening stays later.
+
 ## Personal catch-up
 
 After merged #163, #138 adds a local returning-member desk: notice, capped room/
