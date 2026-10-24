@@ -454,3 +454,10 @@ The optional native notebook batches explicit local notes, original ASCII callin
 cards, profile-change review, removed-contact management and selective sharing.
 See [plan 0080](plans/0080-local-passport.md). Verified contact binding, integrated
 generic offers and encrypted notebooks remain follow-ons; no server/visit tracker.
+
+## Learn the board (#21/#133)
+
+The current-menu guide batches F1/plain help, live enabled-key/role filtering,
+room/writing/chat/file references and themed house notes. See [plan 0081](plans/0081-board-guide.md).
+Keep action shortcuts/context-sensitive editor help as follow-ons; no new server
+schema/dependency/helper or hardening phase.

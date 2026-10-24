@@ -104,3 +104,6 @@ dev-docs/evidence/sources/pre158-connection-desk/** -text
 
 # Exact connection-desk inputs before the optional passport.
 dev-docs/evidence/sources/pre161-passport/** -text
+
+# Exact passport software inputs before the board guide.
+dev-docs/evidence/sources/pre21-guide/** -text

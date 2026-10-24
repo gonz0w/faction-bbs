@@ -50,6 +50,9 @@ Faction already runs an approved-membership board with hidden-password login,
 ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
 controls and private export/restore. Arrows/Enter and displayed hotkeys both work.
 No JavaScript/TypeScript or public HTTP service is required.
+The **[board guide](docs/board-guide.md)** now adds ANSI F1 and plain `help` at
+the main menu: current keys, room/writing and chat/file references, plus sysop
+house notes. It stays read-only and keeps `?` refresh and existing hotkeys.
 The **[room browser](docs/room-browser.md)** now adds named arrow/hotkey selection,
 unread counts, next-unread navigation and room cards for reading/posting without
 entering room IDs. Plain terminals and the existing numeric commands remain available.

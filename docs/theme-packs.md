@@ -497,3 +497,9 @@ the Lounge retains its social/paging attributes. All three share the same curren
 visibility/availability/blocks. Schema 18 adds transient lease-bound activity;
 no private resource names or retained activity history. Take a stopped complete
 backup before upgrade; export/restore strips current activity and live authority.
+
+## Board guide
+
+Optional root guide_title/guide_notes fields customize the [read-only board guide](board-guide.md)
+in base/season packs. F1/plain help use no new menu action/key slot; ? refresh
+and custom-grid positions remain. Notes are at most 1024 inert ASCII bytes/16 lines.

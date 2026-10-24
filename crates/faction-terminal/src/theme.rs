@@ -140,6 +140,8 @@ pub struct Theme {
     board: String,
     menu_title: String,
     writing_title: String,
+    guide_title: String,
+    guide_notes: String,
     welcome: String,
     logout: String,
     normal: Style,
@@ -172,6 +174,8 @@ impl Default for Theme {
             board: "Faction BBS".into(),
             menu_title: "Main menu".into(),
             writing_title: "Writing desk".into(),
+            guide_title: "BOARD GUIDE".into(),
+            guide_notes: String::new(),
             welcome: "Independent boards. Private rooms.".into(),
             logout: "Until next time.".into(),
             normal: Style::new(7, 0, false),
@@ -224,6 +228,8 @@ const BASE_KEYS: &[&str] = &[
     "board",
     "menu_title",
     "writing_title",
+    "guide_title",
+    "guide_notes",
     "welcome",
     "logout",
     "normal",
@@ -241,6 +247,8 @@ const BASE_KEYS: &[&str] = &[
 ];
 const SEASON_KEYS: &[&str] = &[
     "writing_title",
+    "guide_title",
+    "guide_notes",
     "version",
     "id",
     "welcome",
@@ -723,7 +731,7 @@ impl Theme {
     pub fn set_doors_enabled(&mut self, enabled: bool) {
         self.doors_enabled = enabled;
     }
-    fn enabled(&self, action: Action, sysop: bool) -> bool {
+    pub(crate) fn enabled(&self, action: Action, sysop: bool) -> bool {
         (action == Action::Who && self.who_enabled)
             || (action == Action::Lounge && self.lounge_enabled)
             || (action == Action::Gatherings && self.gatherings_enabled)
@@ -747,6 +755,12 @@ impl Theme {
     }
     pub fn writing_title(&self) -> &str {
         &self.writing_title
+    }
+    pub fn guide_title(&self) -> &str {
+        &self.guide_title
+    }
+    pub fn guide_notes(&self) -> &str {
+        &self.guide_notes
     }
     pub fn menu_title(&self) -> &str {
         &self.menu_title
@@ -779,12 +793,25 @@ impl Theme {
             ("board", &mut self.board, 36),
             ("menu_title", &mut self.menu_title, 24),
             ("writing_title", &mut self.writing_title, 24),
+            ("guide_title", &mut self.guide_title, 24),
             ("welcome", &mut self.welcome, 36),
             ("logout", &mut self.logout, 60),
         ] {
             if let Some(value) = t.get(name) {
                 *dest = text(value, max)?.into()
             }
+        }
+        if let Some(value) = t.get("guide_notes") {
+            let notes = value.as_str().ok_or("guide notes must be text")?;
+            if notes.len() > 1024
+                || notes.lines().count() > 16
+                || notes
+                    .bytes()
+                    .any(|b| b != b'\n' && !b.is_ascii_graphic() && b != b' ')
+            {
+                return Err("guide notes must be bounded inert ASCII");
+            }
+            self.guide_notes = notes.into();
         }
         for (name, dest) in [
             ("normal", &mut self.normal),
@@ -940,6 +967,7 @@ impl Theme {
             )
             .expect("string output");
         }
+        out.push_str("help: board guide; ?: refresh\n");
         out
     }
     pub fn hotkey(&self, key: u8, sysop: bool) -> Option<Action> {
@@ -977,6 +1005,7 @@ impl<'a> Menu<'a> {
     }
     pub fn feed(&mut self, key: Key) -> Option<Action> {
         match key {
+            Key::Guide => None,
             Key::Cancel => Some(Action::Quit),
             Key::Enter => Some(self.theme.entries[self.focus].action),
             Key::Hotkey(k) => self.theme.hotkey(k, self.sysop),
@@ -1163,7 +1192,7 @@ impl<'a> Menu<'a> {
         ));
         out.push_str(&self.line(
             bottom + 1,
-            "Tab advances; -- unavailable.",
+            "F1 guide; Tab next; -- unavailable.",
             self.theme.normal,
         ));
         // Stable recovery instruction in every theme; never operator-overridden.
@@ -1282,5 +1311,44 @@ mod who_tests {
         assert_eq!(t.hotkey(b'Z', false), Some(Action::Who));
         assert!(t.plain_menu(false).contains("Caller deck"));
         assert_eq!(Action::parse("who").unwrap(), Action::Who);
+    }
+}
+
+#[cfg(test)]
+mod guide_fields_tests {
+    use super::*;
+    #[test]
+    fn guide_fields_are_inert_and_current_key_labels_are_used() {
+        let mut t = Theme::default();
+        let values="id='guide-test'\nguide_title='CREW HANDBOOK'\nguide_notes='''Be kind.\nAsk before sharing files.'''".parse::<Table>().unwrap();
+        unknown(&values, BASE_KEYS).unwrap();
+        unknown(&values, SEASON_KEYS).unwrap();
+        t.apply(Path::new("/"), &values).unwrap();
+        let chat = t
+            .entries
+            .iter_mut()
+            .find(|e| e.action == Action::Chat)
+            .unwrap();
+        chat.key = b'Z';
+        chat.label = "Crew talk".into();
+        let mut v = crate::guide::View::default();
+        v.feed(Key::Hotkey(b'B'), &t, false);
+        let page = v.render(&t, false, 80, 24, false);
+        assert!(page.contains("[Z] Crew talk"));
+        assert!(!page.contains("Sysop controls"));
+        v.feed(Key::Hotkey(b'A'), &t, false);
+        let page = v.render(&t, false, 80, 24, false);
+        assert!(page.contains("CREW HANDBOOK"));
+        assert!(page.contains("Ask before sharing files."));
+        for note in [
+            "x".repeat(1025),
+            "a\n".repeat(17),
+            "\x1b[2J".into(),
+            "non-ascii é".into(),
+        ] {
+            let mut bad = values.clone();
+            bad.insert("guide_notes".into(), note.into());
+            assert!(t.apply(Path::new("/"), &bad).is_err());
+        }
     }
 }

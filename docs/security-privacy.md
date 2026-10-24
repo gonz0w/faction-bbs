@@ -396,3 +396,8 @@ on the member device under private permissions, separate from encrypted mail.
 No automatic visits/timestamps/beacons or server passport. Generic seals and local
 profile hashes grant no verified identity or admission; private fields share only
 when selected and public exports omit contact/key/route/binding identifiers.
+
+The [board guide](board-guide.md) rechecks approval/current feature gates/role and
+fetches no private resource names, content or counts. References never execute
+actions or unlock device stores. House notes are inert approved-member text;
+keys/invitation secrets do not belong in them. F1 is a main-menu entry only.

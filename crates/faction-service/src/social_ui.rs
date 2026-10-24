@@ -90,6 +90,7 @@ impl Client {
             | State::MemberStatus(_)
             | State::RoomSlug
             | State::RoomTitle(_) => A::Settings,
+            State::Guide(_) => A::Menu,
             State::Directory(_) => A::Directory,
             State::Gallery(_) => A::Gallery,
             State::Library(_) => A::Library,

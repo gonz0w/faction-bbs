@@ -179,6 +179,7 @@ pub(super) enum Selection {
     Action(Action),
     Plain,
     Refresh,
+    Guide,
 }
 pub(super) fn select(
     board: &mut crate::Visit<'_>,
@@ -252,6 +253,9 @@ pub(super) fn select(
         (&raw.tty).read_exact(&mut byte)?;
         last_input = Instant::now();
         if let Some(key) = decoder.feed(byte[0], Instant::now()) {
+            if key == faction_terminal::Key::Guide {
+                return Ok(Selection::Guide);
+            }
             if key == faction_terminal::Key::Hotkey(b'?') {
                 return Ok(Selection::Refresh);
             }

@@ -264,6 +264,7 @@ impl Client {
                 .iter()
                 .find(|c| c.key == key)
                 .map(|c| c.target.clone()),
+            Key::Guide => None,
             Key::Cancel => Some(doors::Target::Back),
         };
         if let Some(target) = target {
