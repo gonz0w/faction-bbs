@@ -16,8 +16,8 @@ with persistent testing data and guarded start/stop commands. Operator preparati
 is required; this is a development preview.
 
 The optional [local sysop console](docs/sysop-console.md) now provides themed
-read-only BBS status, live CPU/RAM/network graphs and explicit stale/unavailable health
-after OS login. Its [Recovery panel](docs/backup-checks.md) now shows explicitly
+read-only BBS status, live CPU/RAM/network graphs and separate observations of snapshot age
+and publisher lifetime after OS login. Its [Recovery panel](docs/backup-checks.md) now shows explicitly
 recorded complete-bundle checks and preserves the last success when a recheck fails.
 Private publication is opt-in; member SSH stays separate.
 
@@ -225,7 +225,8 @@ will use Netnews-style articles, with NNTP-first optional peering and news-provi
 subscriptions planned. IRC and encrypted XMPP keep their own formats. The goal keeps the underground BBS character with a modern terminal
 experience. The first optional [local sysop console](docs/sysop-console.md) now reads private
 aggregate service snapshots, CPU/RAM/network graphs and historical backup checks,
-with ANSI/plain panels and stale/unavailable labels. Host actions, peer collectors,
+with ANSI/plain panels, stale/unavailable labels and an independent publisher lease
+that rejects old startup instances even when a PID is reused. Host actions, peer collectors,
 firewall management and new IRC/forum federation protocols remain planned.
 An optional [bounded Kitty image preview](docs/kitty-graphics.md) now complements
 the terminal settings: T/G probes then streams one original RGB calibration image;

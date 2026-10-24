@@ -51,3 +51,21 @@ BBS features retain their authority/defaults. No capacity/hardware/sandbox claim
 console coverage. Host write/apply/rollback #98 and abuse policy #97 need separate
 narrow designs. Reopen this boundary if data stops being aggregate telemetry or
 member/host actions are introduced; do not add commands to the snapshot protocol.
+
+## Publisher lifetime refinement — 2026-10-24, issue #95
+
+Snapshot v2 adds a per-start opaque instance ID. The opt-in publisher holds one
+persistent private `operator.lease` inode exclusively; bounded local readers use
+nonblocking shared-lock probes and match the PID/instance. This avoids PID-only
+reuse errors, platform process parsers, signals, refresh subprocesses, a new socket
+or database reads. The disabled path creates no lease. Acquisition failure leaves
+optional publication unavailable without stopping the board. Never unlink a live
+lease inode. Owner-controlled copies/forgeries remain outside this telemetry trust
+boundary; the instance is not an authentication token or member capability.
+
+The UI separates lease-held/released/different/unverified/unavailable observations
+from freshness, stopped markers and queue occupancy. A held lease is not proof
+of responsiveness, adapter reachability or delivery. Legacy v1 stays readable but
+unverified. Existing query, refresh, history, helper and output budgets remain.
+Current software evidence belongs to the issue; earlier native records retain
+their original source identities and do not measure this refinement.

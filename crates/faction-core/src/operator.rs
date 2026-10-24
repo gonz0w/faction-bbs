@@ -9,6 +9,7 @@ use std::{
 };
 
 pub mod backup;
+pub mod lease;
 
 pub const STATUS_BYTES: usize = 2048;
 pub const STATUS_FILE: &str = "operator.status";
@@ -19,6 +20,8 @@ pub type Counts = [u64; 10];
 pub struct Snapshot {
     pub sampled: u64,
     pub pid: u32,
+    /// Per-start publisher identity; absent in legacy v1 observations.
+    pub instance: Option<String>,
     pub uptime: u64,
     pub running: bool,
     pub connected: u16,
@@ -34,8 +37,9 @@ impl Snapshot {
             || "unavailable".to_owned(),
             |a| a.map(|n| n.to_string()).join(","),
         );
-        format!(
-            "version=1\nsampled={}\npid={}\nuptime={}\nrunning={}\nconnected={}\ncapacity={}\ncredentials={}\noutput_bytes={}\ndoors={}\ncounts={}\n",
+        let mut text = format!(
+            "version={}\nsampled={}\npid={}\nuptime={}\nrunning={}\nconnected={}\ncapacity={}\ncredentials={}\noutput_bytes={}\ndoors={}\ncounts={}\n",
+            if self.instance.is_some() { 2 } else { 1 },
             self.sampled,
             self.pid,
             self.uptime,
@@ -46,7 +50,11 @@ impl Snapshot {
             self.output_bytes,
             self.doors,
             counts
-        )
+        );
+        if let Some(instance) = &self.instance {
+            text.push_str(&format!("instance={instance}\n"));
+        }
+        text
     }
     pub fn parse(text: &str) -> Option<Self> {
         if text.len() > STATUS_BYTES || !text.is_ascii() {
@@ -54,7 +62,8 @@ impl Snapshot {
         }
         let mut lines = text.lines();
         let mut value = |name: &str| lines.next()?.strip_prefix(name);
-        if value("version=")? != "1" {
+        let version = value("version=")?;
+        if !matches!(version, "1" | "2") {
             return None;
         }
         let sampled = value("sampled=")?.parse().ok()?;
@@ -84,6 +93,15 @@ impl Snapshot {
                 Some(counts)
             }
         };
+        let instance = if version == "2" {
+            let raw = value("instance=")?;
+            if !lease::valid_instance(raw) {
+                return None;
+            }
+            Some(raw.to_owned())
+        } else {
+            None
+        };
         if lines.next().is_some()
             || !(1..=250).contains(&capacity)
             || connected > capacity
@@ -98,6 +116,7 @@ impl Snapshot {
         Some(Self {
             sampled,
             pid,
+            instance,
             uptime,
             running,
             connected,
@@ -199,7 +218,7 @@ pub fn read(directory: &Path) -> io::Result<Snapshot> {
         .ok_or_else(|| io::ErrorKind::InvalidData.into())
 }
 
-fn read_text(directory: &Path, name: &str, cap: usize) -> io::Result<String> {
+fn open_private(directory: &Path, name: &str, cap: usize) -> io::Result<File> {
     let parent = fs::symlink_metadata(directory)?;
     let uid = rustix::process::geteuid().as_raw();
     if !parent.is_dir() || parent.mode() & 0o077 != 0 || (uid != 0 && parent.uid() != uid) {
@@ -223,6 +242,11 @@ fn read_text(directory: &Path, name: &str, cap: usize) -> io::Result<String> {
     {
         return Err(io::ErrorKind::PermissionDenied.into());
     }
+    Ok(file)
+}
+
+fn read_text(directory: &Path, name: &str, cap: usize) -> io::Result<String> {
+    let file = open_private(directory, name, cap)?;
     let mut text = String::new();
     file.take(cap as u64 + 1).read_to_string(&mut text)?;
     if text.len() > cap {
@@ -239,6 +263,7 @@ mod tests {
         let s = Snapshot {
             sampled: 10,
             pid: 2,
+            instance: None,
             uptime: 2,
             running: true,
             connected: 1,

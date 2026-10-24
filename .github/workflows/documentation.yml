@@ -152,6 +152,7 @@ jobs:
           python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --columns 40 --output "$RUNNER_TEMP/menu-compact.svg"
           cmp docs/images/menu-compact.svg "$RUNNER_TEMP/menu-compact.svg"
           python3 tools/smoke_operator.py "$CARGO_TARGET_DIR/release/faction-sysop"
+          python3 tools/smoke_operator_health.py "$CARGO_TARGET_DIR/release/faction-sysop"
           python3 tools/smoke_passport.py "$CARGO_TARGET_DIR/release/faction-client"
           python3 tools/smoke_connection_desk.py "$CARGO_TARGET_DIR/release/faction-client"
           python3 tools/smoke_travel.py "$CARGO_TARGET_DIR/release/faction-client"

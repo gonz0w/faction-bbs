@@ -1,6 +1,6 @@
 # Local sysop console
 
-Updated 2026-10-22. The read-only local operator console is available as
+Updated 2026-10-24. The read-only local operator console is available as
 `faction-sysop`. It is separate from member SSH and from the in-BBS sysop menu.
 Log into the operating system normally, then run the command as the board's Unix
 owner or an already-authorized root operator. A BBS sysop role grants no OS access.
@@ -46,7 +46,7 @@ console uses text panels rather than replaying login art or running theme code.
 | Panel | Contents |
 | --- | --- |
 | B: Board | Connected/capacity, credential permits, queued output, member/pending totals, room/post/channel/retained-chat totals, published/pending files, active transfers, completed games, active doors, service PID/uptime and connected history. |
-| H: Host | CPU count/busy percentage, 1/5/15-minute load, RAM used/free/physical capacity, board-filesystem available/total space, non-loopback network RX/TX rates and bounded CPU/RAM/network traces. Peer/backup collectors remain uninstrumented. |
+| H: Host | CPU count/busy percentage, 1/5/15-minute load, RAM used/free/physical capacity, board-filesystem available/total space, non-loopback network RX/TX rates and bounded CPU/RAM/network traces. Federation adapters remain unconfigured; recovery checks are in D:Data. |
 | D: Data | Historical selected-bundle check, latest attempt and last successful check age/totals; see [backup checks](backup-checks.md). |
 | I: Info | Local authority, controls and read-only scope. |
 
@@ -68,19 +68,43 @@ actual TTY geometry (or the declared 80x24 formatting width for a pipe).
 
 ## Reading health honestly
 
-FRESH means a running-marked snapshot is at most 15 seconds old, not independently
-verified process/service health. STALE, STOPPED, UNAVAILABLE and CLOCK UNKNOWN are
+FRESH means a running-marked snapshot is at most 15 seconds old. The separate
+**Owner:** line observes the optional publisher's kernel lease; neither indicator
+alone proves service responsiveness or end-to-end delivery. STALE, STOPPED, UNAVAILABLE and CLOCK UNKNOWN are
 distinct; unavailable reads keep only explicitly labeled last-known values. A
 future timestamp never becomes a fresh sample. Graceful shutdown writes a final
 stopped snapshot; a crash leaves the old sample to age. Samples use the host clock;
 this is not a clock-synchronization service.
 
+When publication is enabled, the owner holds an exclusive lock on the persistent,
+mode-0600 `operator.lease` inode for the publisher's lifetime. Each start writes a
+new opaque instance ID and publishes it with the PID in a version-2 snapshot. The
+console reads at most 64 bytes and tries a nonblocking shared lock through a
+separate read-only descriptor. It creates no lease file, launches no helper,
+sends no signal and opens no service connection.
+
+| Owner indicator | Observation |
+| --- | --- |
+| LEASE HELD / current instance | The kernel lock is held and its PID/instance match the sample. |
+| NO LEASE / publisher inactive | No exclusive publisher lock was observed. This does not prove that every BBS process is stopped. |
+| DIFFERENT / last-known sample | The held lease belongs to another PID or startup instance, even if the PID has been reused. |
+| UNVERIFIED / legacy sample | A readable v1 snapshot has no instance binding. |
+| UNAVAILABLE | The current sample or safe lease observation could not be read. |
+
+A held lease can coexist with stale data or a hung publisher. Keep sample age and
+owner lifetime separate. Failed refreshes clear the previous owner observation;
+last-known counts remain labeled. Connected history accepts only fresh snapshots
+with a matching held lease. A paused dashboard freezes all its local observations.
+Federation is explicitly **not configured**; no invented peer collector or health
+promise is added. Output is labeled idle/buffered occupancy, not delivery health.
+
 Queued bytes measure the retained encoded output buffer, including an already
 written prefix until that buffer drains. This is buffer occupancy, not a count of
 unsent or end-to-end delivered network bytes.
 
-Counts are aggregate-only. No handle, message body, password/hash, file name,
-address or device key appears in the status protocol. The dashboard never opens
+Counts are aggregate-only. The per-start instance ID is telemetry metadata, not
+an authentication token. No handle, message body, password/hash, file name, address
+or device key appears in the status protocol. The dashboard never opens
 SQLite or takes the BBS writer lock. Owner SQL uses a zero busy wait plus a
 50,000-instruction/five-millisecond progress budget and restores the connection's
 previous busy timeout/hooks; interrupted aggregates are unavailable, not zero.
@@ -133,7 +157,13 @@ from the private state directory while the publisher is stopped if desired.
 A leftover `.operator.status.next` after an interrupted publication prevents a
 new publication rather than overwriting an unknown temporary inode; inspect/remove
 that one owner-owned file during stopped recovery. Never remove a live lock file.
-Status is disposable telemetry, excluded from board export/restore; authoritative
+Never unlink or replace `operator.lease` while a publisher may hold it. It is a
+persistent lock inode, not a stale temporary file. If acquisition fails, optional
+publication stays unavailable and the board continues; inspect the private file
+under stopped recovery before retrying. Old binaries may still read v1 samples;
+old dashboards reject v2 instead of treating an unknown identity as current.
+
+Status and lease identity are disposable telemetry, excluded from board export/restore; authoritative
 DB/blob/config/key backups follow the existing [backup guide](export-restore.md).
 
 ## Validation and remaining work
@@ -147,7 +177,10 @@ are exercised through its real virtual serial/getty console. Actual shared-owner
 restricted member SSH, owner PTY resize and stop/restart checks remain separate.
 No getty replacement, profile change, autologin or physical hardware claim.
 
-#95 retains peer adapter telemetry and any broader visual acceptance.
+The [publisher-lifetime software evidence](../dev-docs/evidence/operator-health-netbsd/README.md)
+and [issue #95](https://github.com/gonz0w/faction-bbs/issues/95) record current
+publisher-lifetime and stale-instance validation. Software checks are not broader
+owner artwork approval or a production availability guarantee.
 The [Recovery panel](backup-checks.md) now reads explicitly recorded complete-bundle
 checks; their historical timestamps are separate from the **Board:** service age.
 Collectors cannot invent a peer protocol or a successful restore receipt. #98 host
