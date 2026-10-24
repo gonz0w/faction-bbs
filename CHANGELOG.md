@@ -4,6 +4,11 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Adopt a pinned Agent Temper method with explicit Faction policy, strict test-first
+  and GitHub profiles, offline provenance, and concise agent navigation. Preserve
+  product/security/evidence rules and required checks. Recognize only the exact
+  bundle license/checksum paths as documentation metadata in the PR gate.
+
 - Make GitHub Issues the only work tracker, retire repository plans/roadmap and
   agent status history, reconcile completed issues, and require tested closing PRs.
 

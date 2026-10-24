@@ -54,6 +54,31 @@ class IssueWorkflow(unittest.TestCase):
   self.assertEqual(self.errors(pr=p,files=['docs/board-guide.md','AGENTS.md']),'')
   for name in ['crates/faction-core/src/lib.rs','.github/ISSUE_TEMPLATE/helper.py']:
    self.assertIn('executable',self.errors(pr=p,files=[name]))
+ def test_docs_and_research_accept_exact_temper_metadata(self):
+  metadata=['.agent-temper/LICENSE','.agent-temper/SHA256SUMS']
+  for mode in ['docs','research']:
+   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+f'## TDD evidence\nMode: {mode}\nReason: Documentation provenance and links are checked against the pinned upstream source.\n'
+   for files in [[metadata[0]],[metadata[1]],metadata+['.agent-temper/METHOD.md']]:
+    with self.subTest(mode=mode,files=files):
+     self.assertEqual(self.errors(pr=p,files=files),'')
+ def test_temper_metadata_cannot_hide_executable_unknown_or_lookalike_paths(self):
+  rejected=[
+   '.agent-temper/run.sh','.agent-temper/check.py','.agent-temper/config.yml',
+   '.agent-temper/unknown','.agent-temper/nested/LICENSE',
+   '.agent-temper/nested/SHA256SUMS','.agent-temper/../LICENSE',
+   '../.agent-temper/LICENSE','.agent-temper/../.agent-temper/SHA256SUMS',
+   '.agent-temper/./LICENSE','./.agent-temper/LICENSE',
+   '/.agent-temper/LICENSE','.agent-temper//LICENSE',
+   '.agent-temper/LICENSE.py','.agent-temper/SHA256SUMS.sh',
+   '.agent-temper/LICENSE.bak','.agent-temper/license',
+   '.agent-temper/sha256sums','.Agent-Temper/LICENSE',
+   '.agent-temper-extra/LICENSE','other/.agent-temper/LICENSE',
+  ]
+  for mode in ['docs','research']:
+   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+f'## TDD evidence\nMode: {mode}\nReason: Documentation provenance and links are checked against the pinned upstream source.\n'
+   for name in rejected:
+    with self.subTest(mode=mode,path=name):
+     self.assertIn('Docs/research exception cannot cover executable/configuration changes',self.errors(pr=p,files=['.agent-temper/LICENSE','.agent-temper/SHA256SUMS',name]))
  def test_no_fake_tdd_for_prior_implementation_but_cutoff_is_fixed(self):
   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+'## TDD evidence\nMode: existing-implementation\nException: #181\nReason: This implementation and its regression evidence predate the migration; no retrospective red-first claim.\n'
   self.assertIn('predate',self.errors(pr=p));p['created_at']='2026-10-24T00:45:00Z';self.assertEqual(self.errors(pr=p),'')

@@ -1,5 +1,12 @@
 # Issue-only agentic development
 
+This is Faction's adapter for the [pinned Agent Temper method](../.agent-temper/METHOD.md),
+[GitHub profile](../.agent-temper/profiles/github.md) and
+[strict test-first profile](../.agent-temper/profiles/strict-test-first.md).
+[PROJECT.md](../PROJECT.md) owns the selected profiles, state mapping and lasting
+local policy. The rules below preserve Faction's exact issue/PR syntax and gates;
+the general method is maintained upstream and updated only by reviewed adoption.
+
 GitHub Issues are the sole work tracker. Issue bodies/comments hold scope,
 acceptance, dependencies, approach, red/green results, discoveries and handoffs.
 There is no repository backlog, roadmap, execution-plan directory or agent status
@@ -40,7 +47,7 @@ research, decisions and immutable validation. Git history preserves retired plan
    lines. Update the issue acceptance checklist only after evidence demonstrates it.
    Leave the issue open, with `status:review`, until merge. CI rejects nonexistent,
    closed, PR or epic targets, unchecked acceptance and missing evidence.
-8. **Merge and reconcile.** The required `Documentation and policy` check must pass
+8. **Merge and reconcile.** Required `Documentation and policy` and `Issue closure and TDD` checks must pass
    on the exact current head against current `main`; resolve review conversations.
    No second-maintainer approval is mandated for this hobby repository. GitHub
    closes the linked issues on default-branch merge. Verify that closure, remove
@@ -70,6 +77,11 @@ observable behavior and uses behavior tests. The one-time `Mode: existing-implem
 with `Exception: #181` applies only to PRs created before #181 opened, plus an
 honest `Reason:`; no new work can use that cutoff. Existing failures stay visible.
 
+The exact `.agent-temper/LICENSE` and `.agent-temper/SHA256SUMS` paths are prose
+license/provenance metadata. This does not exempt executable, configuration or
+unknown files elsewhere in the bundle. Changes to their classifier are behavior
+changes and require actual red/green evidence.
+
 The metadata gate validates structure and actual GitHub issue state; it cannot
 prove a red run occurred or that tests are adequate. Review code, assertions and
 recorded commands/logs. Never treat a green checkbox as a security or completeness
@@ -83,6 +95,8 @@ completion authority; closed issues need no progress label. `type:epic` identifi
 parents, never a standing coding assignment. Parent checklists link real child
 issues and are reconciled when a child changes; there is no second copied roadmap.
 `priority:p0/p1/p2`, area and type labels support selection without extra trackers.
+The [local mapping](../PROJECT.md#github-state-mapping) gives needs-triage the
+upstream backlog meaning; existing issues do not need to be relabeled.
 
 An issue is ready only when outcome, non-goals, dependencies, acceptance and test
 plan are clear. A blocked issue names what would unblock it. A deferred issue is
