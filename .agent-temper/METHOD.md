@@ -87,4 +87,3 @@ after checking its users and recovery implications.
 - [Profiles and extensions](docs/reference/extensions.md): compose rules and feed adoption findings back.
 - [GitHub profile](profiles/github.md): the first concrete mapping of portable concepts.
 - [Strict test-first profile](profiles/strict-test-first.md): an optional stronger verification practice.
-

@@ -76,6 +76,25 @@ comment identifies the revision or branch, completed acceptance, actual checks,
 remaining work, blockers, and next action. Do not add a comment for every command.
 Keep sensitive evidence outside public issues and link only approved material.
 
+## Maintenance passes
+
+Bound a pass by its trigger, issue/PR scope, and completion condition in an issue.
+Search existing reports before adding one. Link duplicates to the canonical issue
+and preserve unique reproduction details; use the project's authorized closure
+reason and remove active progress labels from closed issues. An unclear report
+stays in backlog with the missing information named, not ready by default.
+
+Inspect the exact failing check and revision before classifying a code defect,
+environment failure, or unavailable service. Preserve failed evidence; a retry
+does not explain an intermittent failure. For a stalled PR, inspect outstanding
+reviews and ownership before proposing its next action. Do not infer abandonment
+from age. When a dependency closes, recheck the blocked issue's full readiness.
+
+Dependency/support findings become bounded work under existing priority and scope
+authority. Reconcile milestone exit conditions from delivered evidence, not issue
+counts. A completed pass records findings, existing or new issue links, unresolved
+limits, and next owners; it does not require every discovered defect to be fixed.
+
 ## Reviews and completion
 
 Open a pull request against the project's recorded integration branch when GitHub

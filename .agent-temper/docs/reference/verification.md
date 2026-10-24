@@ -92,4 +92,3 @@ Automated gates can detect missing structure and run assertions. They cannot pro
 that every requirement is correct, every reported run occurred, or every important
 failure was tested. Inspect the actual evidence and final diff. A project must
 name who may accept unresolved gaps and what cannot be waived.
-
