@@ -35,5 +35,5 @@ result identities remain fixed. Guard 58 checks this new record offline.
 The owned VM/private inputs/vendor are removed after validation; saved owner
 playground stays stopped with disk/login/keys preserved. No physical hardware,
 new capacity, Ghostty pixel, federation, mail, secure-erasure or hardening claim.
-See [plan 0077](../../plans/0077-idle-notifications.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137) and
 [ADR 0072](../../decisions/0072-idle-page-notifications.md).

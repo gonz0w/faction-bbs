@@ -44,7 +44,7 @@ packs explicitly; no new schema or public publication.
 ![Original Nightwire ANSI cover, reference-cell preview](docs/images/nightwire-cover.svg)
 
 
-**Working hobby preview · updated 2026-10-23 · Rust on NetBSD; no supported release yet.**
+**Working hobby preview · updated 2026-10-24 · Rust on NetBSD; no supported release yet.**
 
 Faction already runs an approved-membership board with hidden-password login,
 ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
@@ -211,7 +211,7 @@ privileged-code review stay open. **250 is a research target, not supported
 capacity.** These experiments and physical hardware tests do not block building
 the ordinary small-board experience.
 
-[Project direction](docs/project.md), [the roadmap](dev-docs/roadmap.md) and
+[Project direction](docs/project.md), [the GitHub issue](https://github.com/gonz0w/faction-bbs/issues/133) and
 [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) separate the working
 core from future features. Rust/primary NetBSD is selected in
 [ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md); local storage and
@@ -280,7 +280,7 @@ connect -> log in / register -> local sysop approval required
 
 ## The boundaries matter
 
-Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Future cross-board capabilities are participating shared chat, explicitly addressed encrypted mail and scoped home-identity proofs.** Local-only channels, local rooms/community files and local approval stores remain local; visited boards do not receive home mailboxes or decryption keys. [#101](https://github.com/gonz0w/faction-bbs/issues/101) validates NNTP-first opt-in shared discussion rooms; [#103](https://github.com/gonz0w/faction-bbs/issues/103) plans Netnews article formatting and [#104](https://github.com/gonz0w/faction-bbs/issues/104) optional news providers. Formatting does not publish a room; no room export or new protocol is enabled. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
+Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Future cross-board capabilities are participating shared chat, explicitly addressed encrypted mail and scoped home-identity proofs.** Local-only channels, local rooms/community files and local approval stores remain local; visited boards do not receive home mailboxes or decryption keys. [#101](https://github.com/gonz0w/faction-bbs/issues/101) validates NNTP-first opt-in shared discussion rooms; [#103](https://github.com/gonz0w/faction-bbs/issues/103) delivered the bounded Netnews article codec and [#104](https://github.com/gonz0w/faction-bbs/issues/104) optional news providers. Formatting does not publish a room; no room export or new protocol is enabled. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
 
 Privacy, security, lightweight operation, and efficient text interaction are core requirements. Telemetry must be minimal and opt-in. Constrained, intermittent, private, and future mesh networks are research targets; no alternative-network support is claimed today. Public discovery, an HTTP portal, and shared chat must not become prerequisites for operating an independent BBS.
 
@@ -295,7 +295,7 @@ Privacy, security, lightweight operation, and efficient text interaction are cor
 | Explore the BBS look and feel | [Customization direction](docs/customization.md) |
 | Contribute research or implementation | [Contributing](CONTRIBUTING.md) and [development guide](dev-docs/README.md) |
 | Work with Codex | [Agent instructions](AGENTS.md) and [workflow](dev-docs/workflow.md) |
-| Find work and dependencies | [Issue index](dev-docs/issue-index.md) and [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) |
+| Find work and dependencies | [GitHub issue](https://github.com/gonz0w/faction-bbs/issues) and [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) |
 | Review architecture decisions | [Decision records](dev-docs/decisions/README.md) |
 | Report a vulnerability | [Security policy](SECURITY.md) |
 
@@ -319,3 +319,5 @@ See [local development](docs/local-development.md) for member registration, syso
 Faction BBS is licensed under [BSD-3-Clause](LICENSE). Third-party games, source, fonts, and artwork retain their own licenses; nothing in this repository grants rights to redistribute them. The historical names above describe the founder's inspiration, not affiliation or a claim that their code is included.
 
 Earlier planning used the working name Citadel IRC. Its records are preserved in the [historical archive](dev-docs/archive/README.md); they do not govern current work.
+
+Work is **100% [GitHub issue-driven](dev-docs/workflow.md)**: finite acceptance, test-first behavior changes, and PRs that close completed issues. Plans/handoffs live in issues; there is no repository task tracker.

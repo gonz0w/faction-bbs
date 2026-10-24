@@ -141,7 +141,7 @@ this binary. Older schema-2..9 exports remain read-only verifiable/restorable;
 opening restores upgrades them. Rollback restores a pre-upgrade backup to a fresh
 path with the earlier binary; never drop new tables in a running board.
 
-See [plan 0061](../dev-docs/plans/0061-member-pages-and-plans.md) for software test
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/135) for software test
 results. Default eight sessions, credential/helper/output limits and private-mail
 boundaries remain. No new listener, registry dependency, host operation, physical
 SBC, memory/capacity, protocol interoperability or hardened-host claim is made.

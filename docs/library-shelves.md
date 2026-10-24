@@ -110,5 +110,5 @@ references before restart. File catalog/object/grant recovery stays in the exist
 backup workflow. Private mail/attachments remain device-encrypted and separate.
 
 See [file areas](file-areas.md), [ADR 0065](../dev-docs/decisions/0065-curated-library-shelves.md),
-[plan 0070](../dev-docs/plans/0070-library-shelves.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/140) and
 [software validation](../dev-docs/evidence/library-netbsd/README.md).

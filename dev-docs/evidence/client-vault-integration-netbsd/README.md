@@ -2,7 +2,7 @@
 
 This record validates the reconciled native client and optional local vault entry
 from the member-owned board picker on macOS ARM64 and NetBSD 11 ARM64 software.
-See [plan 0063](../../plans/0063-current-client-and-local-vault.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/90) and
 [ADR 0058](../../decisions/0058-local-vault-from-board-picker.md).
 
 The preceding member-page record and original standalone vault record remain

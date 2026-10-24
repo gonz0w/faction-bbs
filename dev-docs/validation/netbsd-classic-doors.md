@@ -1,7 +1,7 @@
 # Native classic-server connector rehearsal
 
 Date: 2026-10-21. Issue [#77](https://github.com/gonz0w/faction-bbs/issues/77),
-[plan 0030](../plans/0030-classic-server-doors.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/77),
 [ADR 0029](../decisions/0029-classic-server-door.md).
 The [machine-readable record](netbsd-classic-doors.json) pins 59 executed code/
 fixture inputs and installed binaries. **The game server is an owned test fixture;

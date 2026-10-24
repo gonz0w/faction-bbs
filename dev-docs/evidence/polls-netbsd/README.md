@@ -1,6 +1,6 @@
 # Local polls: NetBSD software validation
 
-Issue #139, [plan 0065](../../plans/0065-local-community-polls.md),
+Issue #139, [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/139),
 [ADR 0060](../../decisions/0060-local-community-polls.md).
 
 Validation uses owned synthetic boards, host Rust 1.98.0 and a separate NetBSD

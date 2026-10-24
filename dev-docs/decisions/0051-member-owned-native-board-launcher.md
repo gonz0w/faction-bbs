@@ -34,7 +34,7 @@ No owner runtime, schema, server listener/helper or dependency change is needed.
 
 ## Validation and reversal
 
-[Plan 0056](../plans/0056-native-board-launcher.md): host/native Rust/PTY checks,
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27): host/native Rust/PTY checks,
 actual two independently hosted boards with separate state and member host keys,
 confirmation/host-key refusal, independent approval and Files return. Use two
 owned marked software VMs because the production owner intentionally pins its

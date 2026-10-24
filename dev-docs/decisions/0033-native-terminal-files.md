@@ -32,7 +32,7 @@ public blob URL, file copy or remote fetch follows from sharing a reference.
 ## Validation and limits
 
 See [current evidence](../evidence/native-client-netbsd/README.md) and
-[plan 0034](../plans/0034-native-client-file-links.md). Real host and native NetBSD
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/87). Real host and native NetBSD
 clients exercise login/approval, menus, upload/review/download, no-overwrite/failure
 cleanup, per-reader room/chat redaction, recent links and revocation. Rust tests
 cover versioned framing, terminal controls, profile permission/options policy,

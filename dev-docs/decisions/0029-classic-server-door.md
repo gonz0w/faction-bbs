@@ -52,7 +52,7 @@ Primary protocol and title sources, retrieved 2026-10-21, are linked in the
 Unit tests exercise fragmentation, options, CP437, unsafe controls, limits, real
 TCP and eight-slot release. A marked NetBSD VM/owned server exercises actual SSH
 menu/confirm/input/return/revocation and Lua score coexistence; see
-[plan 0030](../plans/0030-classic-server-doors.md) for actual results.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/77) for actual results.
 
 Reversal cost is low: remove config entries and restart, leaving local schema-3
 state unchanged. Existing old custom Lua lobbies need an explicit classics target;

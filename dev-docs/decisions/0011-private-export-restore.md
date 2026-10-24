@@ -91,7 +91,7 @@ the developer host. Tests cover live WAL + concurrent writes, durable record/ret
 preservation, session nonce isolation, permissions/sidecars, malformed/extra schema,
 FK/content/credential errors, source immutability, sparse oversize, concurrent restore
 one-winner publication, busy-store failure/retry and discarded-receipt bytes. Full validation outcomes and
-CI handoff are in [plan 0011](../plans/0011-local-export-restore.md). High confidence
+CI handoff are in [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/18). High confidence
 in these narrow host oracles; native NetBSD, power-loss/disk-full injection, complete
 host cost and remote-safe operator separation are untested.
 

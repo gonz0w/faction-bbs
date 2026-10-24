@@ -58,7 +58,7 @@ remain separate. No new capacity, physical-hardware or hardening claim.
 
 ## Evidence and reversal
 
-See [plan 0064](../plans/0064-local-gatherings.md) and the dedicated
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/136) and the dedicated
 [NetBSD software record](../evidence/gatherings-netbsd/README.md). Snapshot 31 freezes
 the preceding actual inputs and whole result; historical records stay fixed.
 Remove the optional UI without touching old data, or restore the stopped pre-upgrade

@@ -19,5 +19,5 @@ inputs are preserved through source snapshot 40 and
 [its manifest](../magazine-baseline-manifest.json). Historical hashes stay fixed.
 The owned VM/private credentials/vendor are removed after validation; the saved
 owner playground stays stopped and intact. See
-[plan 0073](../../plans/0073-magazine-workshop.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/143) and
 [ADR 0068](../../decisions/0068-magazine-workshop.md) for scope and limits.

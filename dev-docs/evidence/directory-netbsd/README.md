@@ -1,7 +1,7 @@
 # Other BBSes directory: actual NetBSD software checks
 
 2026-10-22, #27/#21. [Sanitized results](results.json) record a fresh owned
-2-core/1-GiB NetBSD 11 ARM64 software clone. See [plan 0055](../../plans/0055-local-other-board-directory.md),
+2-core/1-GiB NetBSD 11 ARM64 software clone. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27),
 [ADR 0050](../../decisions/0050-curated-local-other-board-directory.md) and
 [operator/member workflow](../../../docs/other-boards.md). The saved playground
 stayed off; the disposable clone and temporary vendor cache were removed.

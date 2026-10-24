@@ -94,5 +94,5 @@ restore/check them as the intended owner before restart. Schema remains 14; no
 new database migration or gallery state is added.
 
 See [ADR 0063](../dev-docs/decisions/0063-curated-terminal-gallery.md),
-[plan 0068](../dev-docs/plans/0068-scene-gallery.md) and the
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/144) and the
 [software validation](../dev-docs/evidence/gallery-netbsd/README.md).

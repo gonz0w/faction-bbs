@@ -77,7 +77,7 @@ Never unlink live PID/credential/transfer locks to recover telemetry.
 
 ## Validation and remaining scope
 
-[Plan 0054](../dev-docs/plans/0054-backup-checks-and-recovery-panel.md) records
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/95) records
 actual developer and native NetBSD software checks. Native validation exercises
 root CLI commands with distinct non-root owner/file UIDs, corruption refusal,
 last-success retention, a real fresh restore/login and the installed Rust panel.

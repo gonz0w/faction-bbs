@@ -32,7 +32,7 @@ removal now. Catalog data is not copied into board exports or shared room/mail d
 
 ## Validation and reversal
 
-[Plan 0055](../plans/0055-local-other-board-directory.md) covers parser/file bounds,
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27) covers parser/file bounds,
 full-grid fallback, actual local/worker and native shared SSH/client routes,
 approval/revocation, compact/plain/resize and a no-connect trap. Measure enabled
 maximum-catalog memory separately from default-disabled console regressions.

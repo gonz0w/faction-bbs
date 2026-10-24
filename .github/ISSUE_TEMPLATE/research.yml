@@ -1,31 +1,39 @@
-name: Research / architecture question
-description: Compare options or validate one named uncertainty.
-title: "Research: "
+name: Finite research or architecture question
+description: Resolve one uncertainty with sourced, falsifiable evidence.
 labels: ["type:research", "status:needs-triage"]
 body:
   - type: textarea
-    id: question
+    id: outcome
     attributes:
-      label: Question and problem
-      description: State one decision and why it matters.
+      label: Outcome
+      description: State one decision/question and the finite deliverable. This is not a standing implementation epic.
     validations:
       required: true
   - type: textarea
-    id: constraints
+    id: scope
     attributes:
-      label: Constraints and alternatives
-      description: Include privacy/security, no-JS, terminal, deployment, and resource constraints.
+      label: Scope and constraints
+      description: Relevant alternatives, existing decisions, no-JS/NetBSD/privacy/classic/resource limits and non-goals. Do not restart accepted decisions without a named failure gate.
     validations:
       required: true
-  - type: textarea
-    id: evidence
-    attributes:
-      label: Evidence and related work
-      description: Primary sources, retrieval dates, versions, related issues, and dependencies.
   - type: textarea
     id: acceptance
     attributes:
-      label: Deliverables and falsifiable validation
-      description: Define the bounded output and measurable pass/fail observations.
+      label: Acceptance criteria
+      description: Markdown checkboxes for a sourced comparison/experiment, explicit pass/fail/proceed/defer outcome and honest unsupported claims.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan
+      description: Define falsifiable oracles, reproducible commands/environment, costs and cleanup. Prototype behavior uses red/green tests; prose-only research names actual source/link validation instead of fabricated TDD.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and primary sources
+      description: Link issues/docs and dated upstream sources. Plan/handoff lives in issue comments, not repository task files.
     validations:
       required: true

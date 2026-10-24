@@ -53,7 +53,7 @@ No independent sandbox, supported host capacity or protocol adoption is claimed.
 
 ## Evidence and reversal
 
-See [plan 0060](../plans/0060-local-community-wall.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/134) and
 [member/sysop behavior](../../docs/community-wall.md). Tests must cover two board
 policies, current authority, control/overflow rejection, edit conflict, stable-ID
 moderation, explicit archives/deletion, classic fallback and actual native flows.

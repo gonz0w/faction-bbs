@@ -15,7 +15,7 @@ Owner priorities include tiny working sets, modern or older technologies on meri
 
 ## Predeclared experiment and actual environment
 
-[Plan 0005](../plans/0005-runtime-storage-decisions.md) defined 250 simultaneous native local Unix-stream connections with bounded commands, synthetic approval/revocation, connection cap, oversized/fragmented input and slow-client progress before comparison. Source and [raw results](results/004-native-sessions.json) are reproducible with:
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/4) defined 250 simultaneous native local Unix-stream connections with bounded commands, synthetic approval/revocation, connection cap, oversized/fragmented input and slow-client progress before comparison. Source and [raw results](results/004-native-sessions.json) are reproducible with:
 
 ```sh
 python3 tools/measure_native_sessions.py --run

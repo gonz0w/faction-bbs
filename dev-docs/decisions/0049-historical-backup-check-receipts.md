@@ -34,7 +34,7 @@ Full restore still validates every object before reserving any fresh destination
 
 ## Evidence and reversal
 
-The [native evidence](../evidence/operator-recovery-netbsd/README.md) and [plan 0054](../plans/0054-backup-checks-and-recovery-panel.md) for actual tests
+The [native evidence](../evidence/operator-recovery-netbsd/README.md) and [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/95) for actual tests
 and [operator documentation](../../docs/backup-checks.md) for limitations. Validate
 native root CLI with distinct owner/file UIDs separately from single-UID developer
 API fixtures. Repeated checks must leave bundle bytes and restore destinations

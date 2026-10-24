@@ -1,6 +1,6 @@
 # Local gatherings: NetBSD software validation
 
-Issue #136, plan [0064](../../plans/0064-local-gatherings.md),
+Issue #136, plan [0064](https://github.com/gonz0w/faction-bbs/issues/136),
 [ADR 0059](../../decisions/0059-local-gatherings.md).
 
 The record in this directory covers the optional local agenda, UTC scheduling,

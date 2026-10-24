@@ -4,6 +4,9 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Make GitHub Issues the only work tracker, retire repository plans/roadmap and
+  agent status history, reconcile completed issues, and require tested closing PRs.
+
 - Add a themed read-only board guide through main-menu F1/plain `help`, using
   current enabled keys and role-aware topics. Sysop/season house notes are inert;
   `?` refresh, existing hotkeys, classic fallback and server defaults remain.

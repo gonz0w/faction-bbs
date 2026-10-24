@@ -1,6 +1,6 @@
 # Seasonal calendar and login software validation
 
-Executed 2026-10-22 for #25 / [plan 0047](../../plans/0047-seasonal-login-themes.md).
+Executed 2026-10-22 for #25 / [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/25).
 [Results](results.json) pin selected build/run inputs, host harnesses, original
 preview assets, installed native binaries and qualified observations.
 `tools/check_seasonal_themes_evidence.py` checks this record without booting a VM.

@@ -102,5 +102,5 @@ are external configuration and must be preserved separately. Database restoratio
 rolls approval/grants back too; re-review before enabling services.
 
 See [ADR 0066](../dev-docs/decisions/0066-file-request-desk.md),
-[plan 0071](../dev-docs/plans/0071-file-request-desk.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/140) and
 [software evidence](../dev-docs/evidence/file-requests-netbsd/README.md).

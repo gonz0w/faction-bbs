@@ -52,7 +52,7 @@ or old backup copies. Votes on a hidden or revoked creator's poll cannot continu
 
 ## Validation and reversal
 
-See [plan 0065](../plans/0065-local-community-polls.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/139) and
 [NetBSD software evidence](../evidence/polls-netbsd/README.md). Snapshot 32 preserves
 the preceding 228 measured/harness inputs and whole gathering result before edits;
 all older records remain fixed. Remove the optional UI or restore a complete older

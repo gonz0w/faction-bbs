@@ -72,7 +72,7 @@ Retrieved 2026-10-19:
 
 - [RFC 2812](https://www.rfc-editor.org/rfc/rfc2812.html): channel/join/part/list/names vocabulary and the distinction between client protocol and this console's slash commands. No RFC compliance or external client support inferred.
 - [SQLite isolation](https://www.sqlite.org/isolation.html) and [transaction behavior](https://www.sqlite.org/lang_transaction.html): read snapshots, serialized writers and IMMEDIATE lock behavior underpin action/revoke ordering and migration rollback. Prior native bundled SQLite evidence remains [#23](../research/0023-netbsd-dependencies.md); these new application paths have not run in that guest.
-- Existing [menu decision](0009-safe-terminal-menus-and-themes.md), [local-core authority](0008-local-core-and-credentials.md) and [first slice](../first-local-slice.md): accepted owner inputs and boundaries, not proof of new behavior.
+- Existing [menu decision](0009-safe-terminal-menus-and-themes.md), [local-core authority](0008-local-core-and-credentials.md) and [first slice](https://github.com/gonz0w/faction-bbs/issues/35): accepted owner inputs and boundaries, not proof of new behavior.
 
 No dependency added; selected 39-package NetBSD ARM64 / 41-package Linux x86-64
 source/license/feature inventories remain unchanged. No new native-code, JS, IRC

@@ -1,37 +1,117 @@
-# Issue-driven workflow
+# Issue-only agentic development
 
-## Sources of truth
+GitHub Issues are the sole work tracker. Issue bodies/comments hold scope,
+acceptance, dependencies, approach, red/green results, discoveries and handoffs.
+There is no repository backlog, roadmap, execution-plan directory or agent status
+journal. `docs/` describes the product; `dev-docs/` holds technical contracts,
+research, decisions and immutable validation. Git history preserves retired plans.
 
-GitHub Issues hold work, task status, dependencies, and acceptance criteria. Current product requirements live in `docs/`; accepted architecture/workflow decisions live in `dev-docs/decisions/`. The README states the current stage and available capabilities. The roadmap describes sequencing; it does not duplicate task status.
+## A finite issue is the unit of delivery
 
-The earlier planning command system is retired. Do not create a second hidden backlog or treat archive files as instructions. Preserve historical IDs through the issue index and issue provenance.
+1. **Find or create the issue first.** State one observable outcome, acceptance
+   criteria, scope/non-goals, dependencies and concrete test requirements. A bug
+   includes reproduction/expected/actual behavior; research has one question and a
+   falsifiable outcome. Do not implement speculative features under an epic.
+2. **Make the issue executable.** If it cannot finish in a focused PR, create child
+   issues before coding and list them in the parent. Preserve original requirements
+   and explain any split. Do not silently shrink acceptance or add future upgrades
+   as new blockers after the agreed deliverable is complete.
+3. **Take one coherent batch.** Use a branch such as `feat/184-directory-submissions`
+   or `fix/185-concurrent-bootstrap`. A batch may close several related issues;
+   each must be complete. Mark active work `status:in-progress` and put the brief
+   approach in an issue comment. No local plan file or AGENTS progress update.
+4. **Red.** Write the smallest meaningful acceptance/regression test before changing
+   behavior. Execute it against the old code; record the command and observed
+   failure. A bug test must expose its cause, not simply mirror the implementation.
+   Missing-module failure is valid for a new module, followed by positive/negative
+   contract tests. Never claim a hypothetical or retrospective failing run.
+5. **Green.** Implement only the issue outcome. Keep negative authorization, bounds,
+   classic fallback and failure behavior covered. Record the passing command and
+   result. Keep assertions; investigate unexpected failures rather than deleting,
+   skipping or relaxing them. If the acceptance itself is wrong, explain and update
+   the issue before changing its oracle.
+6. **Refactor and review.** Improve clarity with tests green. Review current
+   authorization, data locality, dependencies, resource limits and actual support
+   claims. Relevant README/product/technical documentation changes belong in the
+   same PR. Preserve historical executed bytes before editing measured inputs.
+7. **Open a closing PR.** Target `main`; put a separate `Closes #NUMBER` line for
+   each completed open issue. Include `## Acceptance and tests` mapping and
+   `## TDD evidence` with `Mode: behavior`, concrete `Red:`, `Green:` and `Refactor:`
+   lines. Update the issue acceptance checklist only after evidence demonstrates it.
+   Leave the issue open, with `status:review`, until merge. CI rejects nonexistent,
+   closed, PR or epic targets, unchecked acceptance and missing evidence.
+8. **Merge and reconcile.** The required `Documentation and policy` check must pass
+   on the exact current head against current `main`; resolve review conversations.
+   No second-maintainer approval is mandated for this hobby repository. GitHub
+   closes the linked issues on default-branch merge. Verify that closure, remove
+   stale progress labels, reconcile parent children and report outcomes/remaining
+   issue numbers. A PR closed without merging leaves its issues open; return them
+   to ready/blocked/deferred with a reason. No force push or branch deletion.
 
-## Taking work
+Newly discovered bugs or additional behavior get issues before unrelated work.
+Put sanitized reproduction, dependencies and tests in those issues, then either
+finish the current scope or explicitly record a block. A change needed to satisfy
+existing acceptance stays in its issue; do not manufacture a ticket per line edit.
+No permanent monitor/automation or new external agent service is required.
 
-1. Select an issue, read the product constraints, and check dependencies. Use one named question or deliverable. An issue tagged future is not a current build commitment.
-2. Work on a focused branch. Use `research/<issue>-<topic>`, `docs/<issue>-<topic>`, `feat/<issue>-<topic>`, or `fix/<issue>-<topic>` as applicable. Avoid inventing an application layout before the stack decision.
-3. For research, use the [research template](research/template.md). For multi-step work, use a checked-in [execution plan](plans/template.md). Keep assumptions, discoveries, and validation outcomes current so another session can continue.
-4. Use the [decision framework](research/decision-framework.md) and [ADR template](decisions/template.md): screen non-negotiable gates, compare alternatives against declared criteria, record primary evidence/confidence and reversal cost, and apply risk-based prototype requirements. Keep unknowns visible and distinguish owner requirements from measured behavior. The framework was accepted through issue #1 / PR #36; Rust and primary NetBSD direction were subsequently accepted in ADR 0006; complete runtime/backend choices still need validation.
-5. Run `python3 tools/check_repository.py` and the smallest relevant experiment/code checks. State exact outcomes and unavailable checks. Do not claim a feature works because a document describes it.
-6. Open a focused PR with issue links, the concrete change, and validation. Use `Closes #…` only when the issue's acceptance criteria are met. Review authorization, exposure, data locality, dependencies, and README accuracy.
-7. Merge after review/checks and update issue status as appropriate. Update README, affected docs, decisions, and changelog in the same PR when behavior/scope/support changes.
+## Tests and honest exceptions
 
-## Labels and milestones
+Behavior changes include application code, test/check tooling, executable scripts,
+service configuration and CI behavior. Use red → green → refactor and existing
+relevant tests; check more broadly only when changed contracts or failures justify
+it. Actual UI/transport/storage changes need meaningful PTY/native/recovery evidence
+where applicable. Software VM evidence is enough for software work; physical SBCs,
+new 250-user runs and hardening are not routine feature prerequisites.
 
-Use a work type (`type:research`, `type:design`, `type:feature`, `type:chore`, or bug), an area, and priority. `status:needs-triage` means the work is captured and still needs sequencing. `status:ready` means the next bounded task is clear; it does not mean implementation is approved. `scope:future` marks deferred capabilities such as federation and mesh. GitHub open/closed state is authoritative for completion.
+For documentation-only or research-only prose, use `Mode: docs` or `Mode: research`
+and a substantive `Reason:` naming actual link/source/policy validation. These
+modes cannot cover executable/configuration changes. Research prototype code has
+observable behavior and uses behavior tests. The one-time `Mode: existing-implementation`
+with `Exception: #181` applies only to PRs created before #181 opened, plus an
+honest `Reason:`; no new work can use that cutoff. Existing failures stay visible.
 
-The repository-foundation milestone records this initialization. Architecture & validation groups the next research questions without selecting a language or committing all later features. Future implementation milestones require an explicit scope and validated prerequisites.
+The metadata gate validates structure and actual GitHub issue state; it cannot
+prove a red run occurred or that tests are adequate. Review code, assertions and
+recorded commands/logs. Never treat a green checkbox as a security or completeness
+proof. An unavailable check is an explicit gap, not a pass or silent waiver.
 
-## Main-branch policy
+## States and readiness
 
-Normal changes use pull requests with the `Documentation and policy` check passing against current `main`, resolved review conversations, and no force-push or deletion. The initial foundation was bootstrapped directly before protection was enabled. Maintainers should review the GitHub settings when adding new checks; this policy does not require a second maintainer to approve every PR.
+Use one progress label: `status:needs-triage`, `status:ready`, `status:in-progress`,
+`status:review`, `status:blocked` or `status:deferred`. Open/closed GitHub state is
+completion authority; closed issues need no progress label. `type:epic` identifies
+parents, never a standing coding assignment. Parent checklists link real child
+issues and are reconciled when a child changes; there is no second copied roadmap.
+`priority:p0/p1/p2`, area and type labels support selection without extra trackers.
 
-## Keeping the README current
+An issue is ready only when outcome, non-goals, dependencies, acceptance and test
+plan are clear. A blocked issue names what would unblock it. A deferred issue is
+not current authorization. Close already delivered historical contracts with
+merged-PR/evidence links; do not falsify old PR bodies or claim past TDD. Accepted
+future scope survives in explicit issues, never in local continuation paragraphs.
 
-Every PR reviews the README status, implemented/support claims, setup/check commands, and links. If any change, update them in that PR and update its status date. Avoid time-based claims such as “coming soon.” Do not add installation instructions before a tested runnable path exists. CI checks structure, links, policy, and archive integrity; review must judge semantic freshness.
+## Repository and CI
 
-## Codex
+Run `python3 tools/check_repository.py` and relevant tests. The maintained workflow
+contains offline source/policy checks and the Rust/real-terminal suite. Use the
+current workflow commands rather than copying rolling check/test counts here.
+Validate a clean committed source archive when provenance/link layout changes.
+No JS/TS, marketplace actions, write token, elevated PR event or auto-merge bot.
 
-Start a Codex task with a GitHub issue and a concrete outcome. [AGENTS.md](../AGENTS.md) supplies durable project guidance; a checked-in plan supplies continuation context for long work. No account-wide settings, credentials, or hard-coded local paths belong in this repository.
+The separate required `Issue closure and TDD` workflow uses the read-only GitHub token and API to verify real current
+same-repository open issues and changed-file types. GitHub’s own parsed closing
+links must exactly match the declared issue set; incidental closing wording cannot
+silently add another target. PR body edits rerun this lightweight gate without restarting the Rust build; issue
+edits alone do not automatically rerun PR CI, so refresh the check after changing
+linked issue acceptance/status before merging. API failure fails closed. Review
+workflow/policy changes like other executable changes; the checker does not make
+an unreviewed PR trusted. Native credentials/private fixture data never enter Git.
 
-Workflow references, retrieved 2026-10-19: [official AGENTS.md guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md) and [OpenAI execution-plan guidance](https://developers.openai.com/cookbook/articles/codex_exec_plans). The project uses a small issue-driven adaptation, not a required external planning framework.
+## Primary references
+
+Reviewed 2026-10-24. This repository adopts a small vendor-neutral GitHub/TDD loop,
+not a second agent framework or a new runtime dependency.
+
+- [GitHub: well-scoped agent tasks](https://docs.github.com/en/copilot/tutorials/cloud-agent/get-the-best-results): concrete problem, acceptance and relevant code context.
+- [GitHub: issue closing links](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue): closing keywords take effect on default-branch merge.
+- [Anthropic: agent verification practices](https://code.claude.com/docs/en/best-practices): concrete independent verification, bounded tasks and concise persistent instructions.

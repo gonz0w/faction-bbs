@@ -143,7 +143,7 @@ member count or compare their different cache histories as controlled candidates
 
 Run `python3 tools/check_memory_evidence.py` for saved source/oracle/integrity/
 cleanup verification; it starts no guest. See [ADR 0014](../decisions/0014-credential-budget-and-scaling-experiments.md)
-for the gate/experiment decision and [plan 0014](../plans/0014-memory-scaling.md)
+for the gate/experiment decision and [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/28)
 for continuation context.
 
 ## Next gates

@@ -62,7 +62,7 @@ No member-side mail key or ciphertext store is inspected, even for a search badg
 
 ## Validation and reversal
 
-See [plan 0067](../plans/0067-discussion-search-and-bookmarks.md),
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/142),
 [guide](../../docs/discussion-search.md) and
 [software evidence](../evidence/discussion-netbsd/README.md). Snapshot 34 preserves
 248 preceding inputs and the whole catch-up record before edits; historical hashes

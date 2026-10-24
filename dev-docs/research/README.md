@@ -34,7 +34,7 @@ The [restricted SSH/native application report](0024-restricted-ssh-netbsd.md) re
 
 The [managed lifecycle/load report](0026-service-lifecycle-load.md) extends this with service, overload and failure oracles.
 
-The [architecture map](../architecture.md) and [roadmap](../roadmap.md) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.
+The [architecture map](../architecture.md) and [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/133) identify the next questions. Full secure-server, target-hardware, real-network and terminal/failure experiments remain to be built.
 
 - [0027: Native memory profiling and distinct-account SSH scaling](0027-memory-scaling.md)
 

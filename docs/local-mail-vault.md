@@ -94,4 +94,4 @@ No public file-area upload substitutes for a private attachment.
 
 The current combined client preserves the standalone `--mail-store` commands and
 adds the optional local picker entry. The earlier vault validation is immutable;
-current integration checks are recorded in [plan 0063](../dev-docs/plans/0063-current-client-and-local-vault.md).
+current integration checks are recorded in [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/90).

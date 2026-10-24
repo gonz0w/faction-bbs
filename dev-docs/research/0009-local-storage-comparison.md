@@ -35,7 +35,7 @@ Physical backups should use a consistent snapshot/backup facility, not copy only
 
 ## Experiment, commands and controls
 
-[Plan 0005](../plans/0005-runtime-storage-decisions.md) predeclared comparable journals, fixed seed/cache/sync, retries, contention, snapshots, process crashes, export, FTS deletion and backup/restore. Run:
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/4) predeclared comparable journals, fixed seed/cache/sync, retries, contention, snapshots, process crashes, export, FTS deletion and backup/restore. Run:
 
 ```sh
 python3 experiments/009-local-storage/probe.py --run

@@ -57,7 +57,7 @@ The core tests exercise ordering/ties/top ten, duplicate/foreign/stale authority
 busy retry, personal game limits, reopen, migration rollback and old/new backups;
 protocol tests reject active/duplicate/out-of-range scores. Actual Lua and SSH
 play/reboot passed (72 Rust tests, 18 evaluator and 17 SSH check groups). See
-[plan 0029](../plans/0029-persistent-arcade-scores.md) for results and limitations.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/75) for results and limitations.
 
 Confidence is limited to recorded software tests; no capacity, physical SBC,
 all-platform, hostile native-code or production sandbox claim. Reopen for game

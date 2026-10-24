@@ -99,7 +99,7 @@ older boards migrate to 14 when opened by the new build. Use matching old binari
 and a complete older backup in fresh paths for rollback. Logical removal does not
 erase old backups/WAL/storage. See [export/restore](export-restore.md).
 
-[Plan 0067](../dev-docs/plans/0067-discussion-search-and-bookmarks.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/142),
 [ADR 0062](../dev-docs/decisions/0062-discussion-search-and-bookmarks.md) and
 [NetBSD software evidence](../dev-docs/evidence/discussion-netbsd/README.md)
 record the implementation and checks. The saved owner playground stays off.

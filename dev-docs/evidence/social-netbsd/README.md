@@ -25,5 +25,5 @@ inputs remain unchanged through snapshot 41 and
 normal-budget change. The owned VM, test credentials and temporary vendor are
 removed after validation; the saved owner playground remains stopped/intact.
 No physical hardware, new capacity, encrypted-mail transport, public service or
-hardening claim. See [plan 0074](../../plans/0074-social-lounge.md) and
+hardening claim. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137) and
 [ADR 0069](../../decisions/0069-opt-in-chat-lounge.md).

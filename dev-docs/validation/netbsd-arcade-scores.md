@@ -1,7 +1,7 @@
 # NetBSD arcade scores rehearsal
 
 Date: 2026-10-21. Issue [#75](https://github.com/gonz0w/faction-bbs/issues/75),
-[plan 0029](../plans/0029-persistent-arcade-scores.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/75),
 [ADR 0028](../decisions/0028-local-arcade-scores.md).
 Exact inputs, installed binary hashes and sanitized outcomes are in
 [the machine-readable record](netbsd-arcade-scores.json).

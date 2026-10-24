@@ -61,4 +61,4 @@ is supported; rollback uses the matching old build and a complete older backup
 into fresh paths. This adds no new hardening or capacity claim.
 
 See [social controls](social-lounge.md), [ADR 0073](../dev-docs/decisions/0073-universal-presence-and-who.md)
-and [plan 0078](../dev-docs/plans/0078-who-universal-presence.md).
+and [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/176).

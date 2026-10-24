@@ -5,7 +5,7 @@ Date: 2026-10-22
 Owner: owner request after #151; implementation in #152
 Issue: [#152](https://github.com/gonz0w/faction-bbs/issues/152), related #21/#71
 Supersedes: earlier playground-off request only for this explicitly requested preview
-Research/evidence: [plan 0062](../plans/0062-private-ghostty-playground.md)
+Research/evidence: [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/152)
 
 ## Decision and alternatives
 

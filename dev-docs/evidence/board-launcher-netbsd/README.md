@@ -4,7 +4,7 @@
 actual NetBSD 11 ARM64 native clients visiting two independent software boards.
 Each disposable VM has two cores / 1 GiB configured RAM; this is two VMs, not a
 claim that two whole boards were benchmarked on one 1-GiB machine. The saved
-playground remained off. See [plan 0056](../../plans/0056-native-board-launcher.md),
+playground remained off. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27),
 [ADR 0051](../../decisions/0051-member-owned-native-board-launcher.md) and
 [member workflow](../../../docs/board-launcher.md).
 

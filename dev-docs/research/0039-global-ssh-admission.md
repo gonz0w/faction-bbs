@@ -4,7 +4,7 @@ Date: 2026-10-21. Issues: #55, #23, #18, #28.
 Status: native software experiment; adoption and supported capacity remain open.
 [ADR 0024](../decisions/0024-global-ssh-admission.md),
 [operator boundary](../../docs/experimental-global-admission.md),
-[plan](../plans/0025-global-ssh-admission.md) and
+[plan](https://github.com/gonz0w/faction-bbs/issues/55) and
 [result 040](results/040-netbsd-global-admission.json).
 
 ## Question and owner direction

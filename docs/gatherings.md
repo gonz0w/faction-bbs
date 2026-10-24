@@ -100,5 +100,5 @@ uses matching old binaries and a complete pre-upgrade backup in fresh paths;
 never relabel `user_version` or unlink live lock files.
 
 See [ADR 0059](../dev-docs/decisions/0059-local-gatherings.md),
-[plan 0064](../dev-docs/plans/0064-local-gatherings.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/136) and
 [software validation](../dev-docs/evidence/gatherings-netbsd/README.md).

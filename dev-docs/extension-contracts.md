@@ -20,9 +20,9 @@ requirements guide additions without widening those existing privileges.
 | Terminal capability | Bounded verified hints/query responses and rendered assets | UI/feature bounds only; no identity, file/network/clipboard or command authority |
 | Optional shared discussion | Explicit room/author/peer publication and bounded delivery | Default locality, current scope/ACLs, no account/approval replication; NNTP-first #101, article #103, provider #104 |
 
-First add only contracts needed for SFTP and the selected mail proof. Do not build
-an all-purpose plugin framework or native shared-library loader before useful
-features exist. Keep semantic operations separate from network locators, storage
+Apply these authority contracts only within a selected finite GitHub issue. No
+generic plugin framework or native shared-library loader is adopted by this
+document. Keep semantic operations separate from network locators, storage
 formats and terminal layouts. Rust interfaces can express local seams; versioned
 bounded IPC with peer identity checks is required for separate privileged/native/
 network helpers. Third-party native code must not run in the BBS owner process.

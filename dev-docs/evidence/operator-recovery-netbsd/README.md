@@ -3,7 +3,7 @@
 2026-10-22, #95/#18/#98. [Sanitized results](results.json) record an owned disposable
 two-core/1-GiB NetBSD 11 ARM64 software clone. The saved playground stayed off.
 See [ADR 0049](../../decisions/0049-historical-backup-check-receipts.md),
-[plan 0054](../../plans/0054-backup-checks-and-recovery-panel.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/95) and
 [operator workflow](../../../docs/backup-checks.md).
 
 ## Executed checks
