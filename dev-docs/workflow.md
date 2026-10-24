@@ -99,7 +99,9 @@ Validate a clean committed source archive when provenance/link layout changes.
 No JS/TS, marketplace actions, write token, elevated PR event or auto-merge bot.
 
 The separate required `Issue closure and TDD` workflow uses the read-only GitHub token and API to verify real current
-same-repository open issues and changed-file types. PR body edits rerun this lightweight gate without restarting the Rust build; issue
+same-repository open issues and changed-file types. GitHub’s own parsed closing
+links must exactly match the declared issue set; incidental closing wording cannot
+silently add another target. PR body edits rerun this lightweight gate without restarting the Rust build; issue
 edits alone do not automatically rerun PR CI, so refresh the check after changing
 linked issue acceptance/status before merging. API failure fails closed. Review
 workflow/policy changes like other executable changes; the checker does not make

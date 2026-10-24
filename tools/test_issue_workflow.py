@@ -17,7 +17,7 @@ Green: the same tests pass after implementing the metadata checker; repository a
 Refactor: keep API reads separate from pure validation; preserve all acceptance assertions.
 '''
 ISSUE={'number':181,'state':'open','labels':[], 'body':'## Acceptance criteria\n- [x] Reject orphan PRs and close real issues.\n\n## Test plan\nRun policy tests with synthetic open/closed issue and PR metadata.'}
-PR={'body':BODY,'state':'open','created_at':'2026-10-24T01:00:00Z','base':{'ref':'main','repo':{'full_name':REPO,'default_branch':'main'}}}
+PR={'github_closing_issues':[{'number':181,'repository':REPO}], 'body':BODY,'state':'open','created_at':'2026-10-24T01:00:00Z','base':{'ref':'main','repo':{'full_name':REPO,'default_branch':'main'}}}
 class IssueWorkflow(unittest.TestCase):
  def errors(self,pr=None,issues=None,files=None):
   return '\n'.join(validate(pr or copy.deepcopy(PR),issues if issues is not None else {181:copy.deepcopy(ISSUE)},files or ['tools/check_issue_workflow.py'],REPO))
@@ -35,6 +35,7 @@ class IssueWorkflow(unittest.TestCase):
   p=copy.deepcopy(PR);p['body']=BODY.replace('Closes #181','Closes #181\nFixes #182');i=copy.deepcopy(ISSUE);i['number']=182
   self.assertIn('#182',self.errors(pr=p,issues={181:ISSUE,182:i}))
   p['body']=p['body'].replace('#181: orphan','#181/#182: orphan')
+  p['github_closing_issues'].append({'number':182,'repository':REPO})
   self.assertEqual(self.errors(pr=p,issues={181:ISSUE,182:i}),'')
   i['body']='Nothing actionable';self.assertIn('acceptance',self.errors(pr=p,issues={181:ISSUE,182:i}).lower())
  def test_only_default_branch_in_this_repository_can_close_work(self):
@@ -53,6 +54,9 @@ class IssueWorkflow(unittest.TestCase):
  def test_no_fake_tdd_for_prior_implementation_but_cutoff_is_fixed(self):
   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+'## TDD evidence\nMode: existing-implementation\nException: #181\nReason: This implementation and its regression evidence predate the migration; no retrospective red-first claim.\n'
   self.assertIn('predate',self.errors(pr=p));p['created_at']='2026-10-24T00:45:00Z';self.assertEqual(self.errors(pr=p),'')
+ def test_actual_github_closing_links_cannot_exceed_declared_scope(self):
+  for linked in [[{'number':181,'repository':REPO},{'number':185,'repository':REPO}],[{'number':181,'repository':'other/repo'}],None]:
+   p=copy.deepcopy(PR);p['github_closing_issues']=linked;self.assertIn('GitHub',self.errors(pr=p))
  def test_unfilled_template_is_not_test_evidence(self):
   p=copy.deepcopy(PR);p['body']=BODY.replace('Red: python3 -m unittest discover -s tools -p test_issue_workflow.py fails because the policy module is missing, before implementing it.','Red: Replace with the actual command and observed failure before implementation.')
   self.assertIn('Red',self.errors(pr=p))
