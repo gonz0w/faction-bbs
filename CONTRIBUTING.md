@@ -34,3 +34,23 @@ stdlib/shell for repository tooling. No new cloud agent service is required.
 Do not publish private endpoints, credentials, member content or unlicensed game/art
 assets. Report sensitive findings via [SECURITY.md](SECURITY.md). Contributions use
 [BSD-3-Clause](LICENSE); third-party material retains its own terms.
+
+## Core contention checks
+
+From the repository root, run the focused storage tests with Rust 1.96.0 or a
+compatible toolchain:
+
+```sh
+cargo test -p faction-core --release --locked --test core busy_
+cargo test -p faction-core --release --locked --test core concurrent_bootstrap_and_duplicate_submit_are_atomic
+cargo test -p faction-core --release --locked --test credential_budget
+```
+
+The concurrency test repeats five independent two-connection races. Held-writer
+controls exercise SQLite's bounded `Busy` outcome, release-and-retry, persistent
+contention and request conflicts. Its test-only retry helper allows three total
+attempts for `Busy`, preserves the same request and returns every other error
+immediately. Exhaustion still fails the success oracle; it is not skipped or
+counted as a successful operation. Production calls retain the 100-ms database
+wait and two credential slots. These tests establish the stated atomicity and
+rejection contracts, not a latency or eventual-success guarantee under starvation.

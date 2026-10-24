@@ -263,53 +263,193 @@ fn bootstrap_only_once_and_registration_never_squats_sysop() {
     ));
     assert!(board.register("SYSOP", &secret).is_err());
 }
+// Test callers may retry a bounded database Busy result with the same request.
+// Three total attempts, only on Busy; the production timeout/budgets stay unchanged.
+fn retry_busy<T>(mut attempt: impl FnMut() -> faction_core::Result<T>) -> faction_core::Result<T> {
+    for _ in 0..2 {
+        match attempt() {
+            Err(Error::Busy) => (),
+            result => return result,
+        }
+    }
+    attempt()
+}
+
+#[test]
+fn busy_post_retries_reconcile_after_writer_releases() {
+    let mut f = Fixture::new();
+    let mut db = rusqlite::Connection::open(f.dir.0.join("faction.sqlite3")).unwrap();
+    let mut writer = Some(
+        db.transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+            .unwrap(),
+    );
+    let key = request_id().unwrap();
+    let mut attempts = 0;
+    let post = retry_busy(|| {
+        attempts += 1;
+        let result = f.board.post(&f.root, 1, &key, "retry", None);
+        if attempts == 1 {
+            assert!(matches!(result, Err(Error::Busy)));
+            writer.take().unwrap().rollback().unwrap();
+        }
+        result
+    })
+    .unwrap();
+    assert_eq!(attempts, 2);
+    let mut reopened = Board::open(&f.dir.0).unwrap();
+    assert_eq!(
+        reopened.post(&f.root, 1, &key, "retry", None).unwrap(),
+        post
+    );
+    assert!(matches!(
+        reopened.post(&f.root, 1, &key, "changed", None),
+        Err(Error::RequestConflict)
+    ));
+    assert_eq!(reopened.posts(&f.root, 1, 0).unwrap(), vec![post]);
+}
+
+#[test]
+fn busy_bootstrap_retries_preserve_single_owner() {
+    let dir = Temp::new();
+    let mut board = Board::open(&dir.0).unwrap();
+    let mut db = rusqlite::Connection::open(dir.0.join("faction.sqlite3")).unwrap();
+    let mut writer = Some(
+        db.transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+            .unwrap(),
+    );
+    let secret = request_id().unwrap();
+    let mut attempts = 0;
+    retry_busy(|| {
+        attempts += 1;
+        let result = board.bootstrap("sysop", &secret);
+        if attempts == 1 {
+            assert!(matches!(result, Err(Error::Busy)));
+            writer.take().unwrap().rollback().unwrap();
+        }
+        result
+    })
+    .unwrap();
+    assert_eq!(attempts, 2);
+    let mut reopened = Board::open(&dir.0).unwrap();
+    assert!(matches!(
+        reopened.bootstrap("other", &secret),
+        Err(Error::AlreadyInitialized)
+    ));
+    let root = reopened.authenticate("sysop", &secret).unwrap();
+    assert_eq!(reopened.members(&root).unwrap().len(), 1);
+    assert_eq!(reopened.rooms(&root).unwrap().len(), 1);
+}
+
+#[test]
+fn busy_retries_are_finite_and_never_retry_other_errors() {
+    let mut f = Fixture::new();
+    let mut db = rusqlite::Connection::open(f.dir.0.join("faction.sqlite3")).unwrap();
+    let writer = db
+        .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+        .unwrap();
+    let key = request_id().unwrap();
+    let mut attempts = 0;
+    let result = retry_busy(|| {
+        attempts += 1;
+        f.board.post(&f.root, 1, &key, "retry", None)
+    });
+    assert!(matches!(result, Err(Error::Busy)));
+    assert_eq!(attempts, 3);
+    assert!(f.board.posts(&f.root, 1, 0).unwrap().is_empty());
+    writer.rollback().unwrap();
+    let post = retry_busy(|| f.board.post(&f.root, 1, &key, "retry", None)).unwrap();
+    assert_eq!(f.board.posts(&f.root, 1, 0).unwrap(), vec![post]);
+    for error in [
+        Error::CredentialBusy,
+        Error::Credentials,
+        Error::Denied,
+        Error::StaleSession,
+        Error::RequestConflict,
+        Error::AlreadyInitialized,
+        Error::Invalid("test rejection"),
+    ] {
+        let expected = std::mem::discriminant(&error);
+        let mut error = Some(error);
+        let mut calls = 0;
+        let result = retry_busy(|| {
+            calls += 1;
+            Err::<(), _>(
+                error
+                    .take()
+                    .expect("non-Busy rejection must not be retried"),
+            )
+        });
+        assert_eq!(calls, 1);
+        assert_eq!(std::mem::discriminant(&result.unwrap_err()), expected);
+    }
+}
+
 #[test]
 fn concurrent_bootstrap_and_duplicate_submit_are_atomic() {
-    let dir = Temp::new();
-    let a = Board::open(&dir.0).unwrap();
-    let b = Board::open(&dir.0).unwrap();
-    let barrier = Arc::new(Barrier::new(2));
-    let secret = request_id().unwrap();
-    let threads: Vec<_> = [a, b]
-        .into_iter()
-        .map(|mut board| {
-            let barrier = barrier.clone();
-            let secret = secret.clone();
-            thread::spawn(move || {
-                barrier.wait();
-                board.bootstrap("sysop", &secret)
+    // Repeated independent races also run in Linux CI with the workspace suite.
+    for _ in 0..5 {
+        let dir = Temp::new();
+        let a = Board::open(&dir.0).unwrap();
+        let b = Board::open(&dir.0).unwrap();
+        let barrier = Arc::new(Barrier::new(2));
+        let secret = request_id().unwrap();
+        let threads: Vec<_> = [a, b]
+            .into_iter()
+            .map(|mut board| {
+                let barrier = barrier.clone();
+                let secret = secret.clone();
+                thread::spawn(move || {
+                    barrier.wait();
+                    retry_busy(|| board.bootstrap("sysop", &secret))
+                })
             })
-        })
-        .collect();
-    let results: Vec<_> = threads.into_iter().map(|t| t.join().unwrap()).collect();
-    assert_eq!(results.iter().filter(|r| r.is_ok()).count(), 1);
-    assert!(
-        results
-            .iter()
-            .any(|r| matches!(r, Err(Error::AlreadyInitialized)))
-    );
-    let mut a = Board::open(&dir.0).unwrap();
-    let mut b = Board::open(&dir.0).unwrap();
-    let sa = a.authenticate("sysop", &secret).unwrap();
-    let sb = b.authenticate("sysop", &secret).unwrap();
-    let key = request_id().unwrap();
-    let barrier = Arc::new(Barrier::new(2));
-    let threads: Vec<_> = [(a, sa), (b, sb)]
-        .into_iter()
-        .map(|(mut board, s)| {
-            let barrier = barrier.clone();
-            let key = key.clone();
-            thread::spawn(move || {
-                barrier.wait();
-                board.post(&s, 1, &key, "retry", None)
+            .collect();
+        let results: Vec<_> = threads.into_iter().map(|t| t.join().unwrap()).collect();
+        assert_eq!(results.iter().filter(|r| r.is_ok()).count(), 1);
+        assert!(
+            results
+                .iter()
+                .any(|r| matches!(r, Err(Error::AlreadyInitialized)))
+        );
+        let mut a = Board::open(&dir.0).unwrap();
+        let mut b = Board::open(&dir.0).unwrap();
+        let sa = a.authenticate("sysop", &secret).unwrap();
+        let sb = b.authenticate("sysop", &secret).unwrap();
+        let key = request_id().unwrap();
+        let barrier = Arc::new(Barrier::new(2));
+        let threads: Vec<_> = [(a, sa), (b, sb)]
+            .into_iter()
+            .map(|(mut board, s)| {
+                let barrier = barrier.clone();
+                let key = key.clone();
+                thread::spawn(move || {
+                    barrier.wait();
+                    retry_busy(|| board.post(&s, 1, &key, "retry", None))
+                })
             })
-        })
-        .collect();
-    let results: Vec<_> = threads
-        .into_iter()
-        .map(|t| t.join().unwrap().unwrap())
-        .collect();
-    assert_eq!(results[0].id, results[1].id);
+            .collect();
+        let results: Vec<_> = threads
+            .into_iter()
+            .map(|t| t.join().unwrap().unwrap())
+            .collect();
+        assert_eq!(results[0].id, results[1].id);
+        let mut reopened = Board::open(&dir.0).unwrap();
+        let root = reopened.authenticate("sysop", &secret).unwrap();
+        assert_eq!(reopened.members(&root).unwrap().len(), 1);
+        assert_eq!(reopened.rooms(&root).unwrap().len(), 1);
+        assert_eq!(
+            reopened.posts(&root, 1, 0).unwrap(),
+            vec![results[0].clone()]
+        );
+        assert_eq!(
+            reopened.post(&root, 1, &key, "retry", None).unwrap(),
+            results[0]
+        );
+        assert!(matches!(
+            reopened.post(&root, 1, &key, "changed", None),
+            Err(Error::RequestConflict)
+        ));
+    }
 }
 #[test]
 fn role_is_checked_from_database_not_cached_session() {
