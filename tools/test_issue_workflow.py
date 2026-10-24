@@ -22,6 +22,9 @@ class IssueWorkflow(unittest.TestCase):
  def errors(self,pr=None,issues=None,files=None):
   return '\n'.join(validate(pr or copy.deepcopy(PR),issues if issues is not None else {181:copy.deepcopy(ISSUE)},files or ['tools/check_issue_workflow.py'],REPO))
  def test_behavior_with_real_issue_and_evidence_passes(self):self.assertEqual(self.errors(),'')
+ def test_github_issue_form_headings_are_supported(self):
+  i=copy.deepcopy(ISSUE);i['body']=i['body'].replace('## ','### ')
+  self.assertEqual(self.errors(issues={181:i}),'')
  def test_every_closing_target_must_be_an_open_issue(self):
   for update in [{'state':'closed'},{'pull_request':{'url':'ignored'}},{'labels':[{'name':'type:epic'}]}]:
    with self.subTest(update=update):

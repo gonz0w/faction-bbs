@@ -17,7 +17,7 @@ def closing_numbers(body):
     return sorted({int(n) for n in re.findall(r'^\s*(?:close[sd]?|fix(?:es|ed)?|resolve[sd]?)\s*:?\s+#([1-9]\d*)\s*\.?\s*$',prose(body),re.I|re.M)})
 
 def section(body,title):
-    match=re.search(r'^## '+re.escape(title)+r'\s*\n(.*?)(?=^## |\Z)',prose(body),re.M|re.S)
+    match=re.search(r'^#{2,3} '+re.escape(title)+r'\s*\n(.*?)(?=^#{2,3} |\Z)',prose(body),re.M|re.S)
     return match.group(1).strip() if match else ''
 
 def substantive(text):
