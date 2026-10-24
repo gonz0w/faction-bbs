@@ -177,7 +177,8 @@ are exercised through its real virtual serial/getty console. Actual shared-owner
 restricted member SSH, owner PTY resize and stop/restart checks remain separate.
 No getty replacement, profile change, autologin or physical hardware claim.
 
-[Issue #95](https://github.com/gonz0w/faction-bbs/issues/95) records the current
+The [publisher-lifetime software evidence](../dev-docs/evidence/operator-health-netbsd/README.md)
+and [issue #95](https://github.com/gonz0w/faction-bbs/issues/95) record current
 publisher-lifetime and stale-instance validation. Software checks are not broader
 owner artwork approval or a production availability guarantee.
 The [Recovery panel](backup-checks.md) now reads explicitly recorded complete-bundle
