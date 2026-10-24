@@ -26,3 +26,10 @@ Follow the [Faction workflow](dev-docs/workflow.md) for exact issue/PR/check rul
 - The owner playground stays **stopped and intact** unless the owner asks to run it.
   Use marked owned disposable fixtures and prove teardown. Never publish keys,
   private endpoints, member data or unlicensed games/art. Use SECURITY.md.
+
+Apply the Codex routing profile selected in PROJECT.md. When useful, delegate
+bounded routine inspection to `temper_workflow`, accepted implementation to
+`temper_implementer`, difficult analysis to `temper_analyst`, and separate final
+review to `temper_reviewer`. Supply the issue/comments, policy, relevant files,
+acceptance, checks and edit boundaries. Follow local escalation, fallback and
+resource limits; the lead owns integration and verifies returned evidence.
