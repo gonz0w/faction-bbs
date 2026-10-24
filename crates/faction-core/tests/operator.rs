@@ -25,6 +25,7 @@ fn sample() -> Snapshot {
     Snapshot {
         sampled: 100,
         pid: 1,
+        instance: None,
         uptime: 5,
         running: true,
         connected: 1,
@@ -91,4 +92,85 @@ fn failed_publication_leaves_last_good_sample_readable() {
     next.connected = 2;
     assert!(operator::publish(&f.0, &next).is_err());
     assert_eq!(operator::read(&f.0).unwrap(), s);
+}
+
+#[test]
+fn publisher_lease_distinguishes_live_dead_and_reused_pid_samples() {
+    use operator::lease::{Lease, State, observe};
+    let f = Fixture::new();
+    let mut s = sample();
+    assert_eq!(observe(&f.0, &s), State::Unverified);
+    assert!(!f.0.join(operator::lease::LEASE_FILE).exists());
+    let lease = Lease::acquire(&f.0).unwrap();
+    s.pid = std::process::id();
+    s.instance = Some(lease.instance().to_owned());
+    let path = f.0.join(operator::lease::LEASE_FILE);
+    let before = fs::read(&path).unwrap();
+    assert_eq!(observe(&f.0, &s), State::Held);
+    assert_eq!(observe(&f.0, &s), State::Held);
+    assert!(Lease::acquire(&f.0).is_err());
+    assert_eq!(fs::read(&path).unwrap(), before);
+    drop(lease);
+    assert_eq!(observe(&f.0, &s), State::Released);
+    let next = Lease::acquire(&f.0).unwrap();
+    assert_ne!(s.instance.as_deref(), Some(next.instance()));
+    assert_eq!(observe(&f.0, &s), State::Different);
+    s.instance = Some(next.instance().to_owned());
+    s.pid += 1;
+    assert_eq!(observe(&f.0, &s), State::Different);
+    s.pid = std::process::id();
+    s.sampled = 1; // Lifetime observation never refreshes the sample timestamp.
+    assert_eq!(observe(&f.0, &s), State::Held);
+    assert_eq!(s.sampled, 1);
+}
+
+#[test]
+fn lease_readers_never_create_files_and_unsafe_claims_are_unavailable() {
+    use operator::lease::{LEASE_FILE, Lease, State, observe};
+    let f = Fixture::new();
+    let mut s = sample();
+    s.instance = Some("a".repeat(32));
+    assert_eq!(observe(&f.0, &s), State::Unavailable);
+    assert!(!f.0.join(LEASE_FILE).exists());
+    let lease = Lease::acquire(&f.0).unwrap();
+    s.pid = std::process::id();
+    s.instance = Some(lease.instance().to_owned());
+    let path = f.0.join(LEASE_FILE);
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o644)).unwrap();
+    assert_eq!(observe(&f.0, &s), State::Unavailable);
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+    let hard = f.0.join("hard");
+    fs::hard_link(&path, &hard).unwrap();
+    assert_eq!(observe(&f.0, &s), State::Unavailable);
+    fs::remove_file(hard).unwrap();
+    drop(lease);
+    fs::write(&path, "malformed\n").unwrap();
+    assert_eq!(observe(&f.0, &s), State::Unavailable);
+    fs::write(&path, vec![b'x'; 65]).unwrap();
+    assert_eq!(observe(&f.0, &s), State::Unavailable);
+    assert!(Lease::acquire(&f.0).is_err());
+    fs::remove_file(&path).unwrap();
+    symlink(f.0.join("elsewhere"), &path).unwrap();
+    assert_eq!(observe(&f.0, &s), State::Unavailable);
+    assert!(Lease::acquire(&f.0).is_err());
+    assert!(!f.0.join("elsewhere").exists());
+}
+
+#[test]
+fn instance_snapshot_protocol_is_strict_and_keeps_legacy_unverified() {
+    let mut s = sample();
+    assert!(s.encode().starts_with("version=1\n"));
+    assert_eq!(Snapshot::parse(&s.encode()), Some(s.clone()));
+    s.instance = Some("a".repeat(32));
+    let wire = s.encode();
+    assert!(wire.starts_with("version=2\n"));
+    assert_eq!(Snapshot::parse(&wire), Some(s));
+    for bad in [
+        wire.replace(&"a".repeat(32), &"a".repeat(31)),
+        wire.replace(&"a".repeat(32), &"G".repeat(32)),
+        wire.replace("version=2", "version=1"),
+        wire.clone() + "unknown=1\n",
+    ] {
+        assert!(Snapshot::parse(&bad).is_none());
+    }
 }

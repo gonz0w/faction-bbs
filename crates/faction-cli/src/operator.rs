@@ -13,6 +13,37 @@ use std::{
 mod host;
 use host::{Host, Reading, Sampler};
 
+struct Service {
+    snapshot: Option<Snapshot>,
+    available: bool,
+    owner: operator::lease::State,
+}
+impl Service {
+    fn refresh(&mut self, directory: &std::path::Path) {
+        match operator::read(directory) {
+            Ok(snapshot) => {
+                self.owner = operator::lease::observe(directory, &snapshot);
+                self.snapshot = Some(snapshot);
+                self.available = true;
+            }
+            Err(_) => {
+                self.available = false;
+                self.owner = operator::lease::State::Unavailable;
+            }
+        }
+    }
+}
+fn owner_text(state: operator::lease::State) -> &'static str {
+    use operator::lease::State;
+    match state {
+        State::Held => "LEASE HELD / current instance",
+        State::Released => "NO LEASE / publisher inactive",
+        State::Different => "DIFFERENT / last-known sample",
+        State::Unverified => "UNVERIFIED / legacy sample",
+        State::Unavailable => "UNAVAILABLE",
+    }
+}
+
 #[derive(Default)]
 enum Backup {
     #[default]
@@ -66,7 +97,7 @@ impl Backup {
                 "As of check; no live revalidation.",
                 "No off-host or restore guarantee.",
                 "Themes/OS/device keys excluded.",
-                "Peer adapters: uninstrumented.",
+                "Federation: not configured.",
             ]
             .map(str::to_owned),
         );
@@ -201,6 +232,11 @@ fn safe_line(text: &str, columns: usize) -> String {
         })
         .collect()
 }
+fn geometry_line(header: &str, columns: u16, rows: u16) -> String {
+    let suffix = format!(" | {columns}x{rows}");
+    let prefix = usize::from(columns).saturating_sub(suffix.len() + 1);
+    safe_line(header, prefix + 1) + &suffix
+}
 fn freshness(snapshot: Option<&Snapshot>, available: bool, clock: u64) -> String {
     if !available {
         return "UNAVAILABLE / last-known only".into();
@@ -219,14 +255,15 @@ fn freshness(snapshot: Option<&Snapshot>, available: bool, clock: u64) -> String
 }
 fn lines(
     theme: &Theme,
-    snapshot: Option<&Snapshot>,
+    service: &Service,
     host: &Host,
-    available: bool,
     state: (usize, bool, usize, bool),
     history: &History,
     backup: &Backup,
 ) -> Vec<String> {
     let (view, paused, columns, unicode) = state;
+    let snapshot = service.snapshot.as_ref();
+    let available = service.available;
     let mut out = vec![
         format!("{} / LOCAL SYSOP", theme.board()),
         format!(
@@ -234,7 +271,7 @@ fn lines(
             if paused { "PAUSED" } else { "READ ONLY" }
         ),
         format!("Board: {}", freshness(snapshot, available, now())),
-        String::new(),
+        format!("Owner: {}", owner_text(service.owner)),
     ];
     if view == 0 {
         let counts = snapshot.and_then(|s| s.counts);
@@ -262,8 +299,13 @@ fn lines(
             ));
         }
         out.push(format!(
-            "Active doors: {}",
-            number(snapshot.map(|s| u64::from(s.doors)))
+            "Active doors: {} | output: {}",
+            number(snapshot.map(|s| u64::from(s.doors))),
+            snapshot.map_or("unknown", |s| if s.output_bytes == 0 {
+                "idle"
+            } else {
+                "buffered"
+            })
         ));
         out.push(trace(
             "Connected history: ",
@@ -351,6 +393,8 @@ fn lines(
                 "Q or Ctrl-C/D: return to OS shell.",
                 "Esc: Enter to recover keyboard input.",
                 "No writes, actions, message bodies or keys.",
+                "Lease held is not responsiveness proof.",
+                "Federation: not configured.",
                 "No getty/autologin or member-SSH change.",
                 "Host changes require separate tools.",
             ]
@@ -419,7 +463,7 @@ pub fn run() -> Result<()> {
         i += 1;
     }
     let directory = directory.ok_or_else(|| invalid("--state-dir required"))?;
-    let mut snapshot = match operator::read(&directory) {
+    let snapshot = match operator::read(&directory) {
         Ok(s) => Some(s),
         Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
             return Err(invalid(
@@ -433,7 +477,15 @@ pub fn run() -> Result<()> {
     if !m.is_dir() {
         return Err(invalid("private owner directory required"));
     }
-    let mut available = snapshot.is_some();
+    let mut service = Service {
+        available: snapshot.is_some(),
+        owner: snapshot
+            .as_ref()
+            .map_or(operator::lease::State::Unavailable, |s| {
+                operator::lease::observe(&directory, s)
+            }),
+        snapshot,
+    };
     let interactive = !once && io::stdin().is_terminal() && io::stdout().is_terminal();
     let raw = if interactive {
         Some(terminal::Raw::input_only()?)
@@ -446,7 +498,11 @@ pub fn run() -> Result<()> {
     let mut host = sampler.sample(&directory);
     let mut backup = Backup::read(&directory);
     let mut history = History::default();
-    history.push(snapshot.as_ref(), available, &host);
+    history.push(
+        service.snapshot.as_ref(),
+        service.available && service.owner == operator::lease::State::Held,
+        &host,
+    );
     let mut decoder = Decoder::new();
     let mut paused = false;
     let mut previous = Vec::<String>::new();
@@ -456,16 +512,14 @@ pub fn run() -> Result<()> {
     loop {
         if !paused && Instant::now() >= next {
             next = Instant::now() + Duration::from_secs(refresh);
-            match operator::read(&directory) {
-                Ok(s) => {
-                    snapshot = Some(s);
-                    available = true;
-                }
-                Err(_) => available = false,
-            }
+            service.refresh(&directory);
             host = sampler.sample(&directory);
             backup = Backup::read(&directory);
-            history.push(snapshot.as_ref(), available, &host);
+            history.push(
+                service.snapshot.as_ref(),
+                service.available && service.owner == operator::lease::State::Held,
+                &host,
+            );
             redraw = true;
         }
         let size = terminal::size();
@@ -479,14 +533,13 @@ pub fn run() -> Result<()> {
             let (columns, rows) = size.unwrap_or((80, 24));
             let mut content = lines(
                 &theme,
-                snapshot.as_ref(),
+                &service,
                 &host,
-                available,
                 (view, paused, usize::from(columns), unicode && use_ansi),
                 &history,
                 &backup,
             );
-            content[2].push_str(&format!(" | {columns}x{rows}"));
+            content[2] = geometry_line(&content[2], columns, rows);
             let rendered: Vec<_> = content
                 .into_iter()
                 .take(usize::from(rows.saturating_sub(1)))
@@ -558,6 +611,7 @@ mod tests {
         let s = Snapshot {
             sampled: 100,
             pid: 1,
+            instance: None,
             uptime: 1,
             running: true,
             connected: 0,
@@ -571,6 +625,25 @@ mod tests {
         assert!(freshness(Some(&s), true, 99).starts_with("CLOCK UNKNOWN"));
         assert!(freshness(Some(&s), false, 101).starts_with("UNAVAILABLE"));
     }
+    #[test]
+    fn owner_lifetime_is_separate_from_sample_age_and_resets_on_failed_read() {
+        use operator::lease::State;
+        assert!(owner_text(State::Held).contains("LEASE HELD"));
+        assert!(owner_text(State::Released).contains("NO LEASE"));
+        assert!(owner_text(State::Different).contains("DIFFERENT"));
+        assert!(owner_text(State::Unverified).contains("UNVERIFIED"));
+        assert!(owner_text(State::Unavailable).contains("UNAVAILABLE"));
+        let path = std::env::temp_dir().join(faction_core::request_id().unwrap());
+        let mut service = Service {
+            snapshot: None,
+            available: true,
+            owner: State::Held,
+        };
+        service.refresh(&path);
+        assert!(!service.available);
+        assert_eq!(service.owner, State::Unavailable);
+    }
+
     #[test]
     fn histories_keep_recent_tail_and_fixed_bounds() {
         let mut history = History::default();
@@ -591,6 +664,9 @@ mod tests {
     #[test]
     fn compact_lines_are_inert_and_leave_right_margin() {
         assert_eq!(safe_line("ab\x1bcd", 5), "ab?c");
+        let header = geometry_line("Board: UNAVAILABLE / last-known only", 40, 18);
+        assert_eq!(header.len(), 39);
+        assert!(header.ends_with(" | 40x18"));
         let receipt = Backup::Recorded(operator::backup::Receipt {
             attempted: 10,
             verified: 10,
@@ -604,9 +680,12 @@ mod tests {
         for view in 0..4 {
             let rows = lines(
                 &Theme::default(),
-                None,
+                &Service {
+                    snapshot: None,
+                    available: false,
+                    owner: operator::lease::State::Unavailable,
+                },
                 &Host::default(),
-                false,
                 (view, false, 40, false),
                 &History::default(),
                 &receipt,

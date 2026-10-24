@@ -1,0 +1,20 @@
+{
+  "actual": "timeout waiting for 40x18; long status text clipped the dimension suffix",
+  "claims": {
+    "capacity": false,
+    "hardware": false,
+    "production_security": false
+  },
+  "cores": 2,
+  "date": "2026-10-24",
+  "expected": "40x18 suffix remains visible",
+  "issue": 95,
+  "ram_mib": 1024,
+  "result": "failed",
+  "source_overrides_sha256": {
+    "crates/faction-cli/src/operator.rs": "a78e6470c28fbdf9995e424e91453f89bd8173c5204f94f791fbeccc59bfbf34",
+    "tools/smoke_operator_health.py": "b8caf44a78b72f469cb456a2d8b5c1d072d380ee170e95323f9a3aa25fc9861e"
+  },
+  "stage": "operator lifetime PTY compact unavailable-header resize",
+  "system": "NetBSD 11.0 evbarm"
+}

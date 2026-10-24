@@ -10,15 +10,26 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 pub(super) struct Publisher {
-    enabled: bool,
+    lease: Option<operator::lease::Lease>,
     directory: PathBuf,
     started: Instant,
     next: Instant,
 }
 impl Publisher {
     pub fn new(enabled: bool, directory: PathBuf) -> Self {
+        let lease = if enabled {
+            match operator::lease::Lease::acquire(&directory) {
+                Ok(lease) => Some(lease),
+                Err(_) => {
+                    eprintln!("operator status unavailable: publisher lease could not be acquired");
+                    None
+                }
+            }
+        } else {
+            None
+        };
         Self {
-            enabled,
+            lease,
             directory,
             started: Instant::now(),
             next: Instant::now(),
@@ -31,13 +42,14 @@ impl Publisher {
         jobs: &CredentialJobs,
         capacity: usize,
     ) {
-        if !self.enabled || Instant::now() < self.next {
+        if self.lease.is_none() || Instant::now() < self.next {
             return;
         }
         self.next = Instant::now() + Duration::from_secs(5);
         let snapshot = Snapshot {
             sampled: stamp(),
             pid: std::process::id(),
+            instance: self.lease.as_ref().map(|lease| lease.instance().to_owned()),
             uptime: self.started.elapsed().as_secs(),
             running: true,
             connected: clients.len() as u16,
@@ -53,12 +65,13 @@ impl Publisher {
         let _ = operator::publish(&self.directory, &snapshot);
     }
     pub fn stopped(&self, board: &Board, capacity: usize) {
-        if !self.enabled {
+        if self.lease.is_none() {
             return;
         }
         let snapshot = Snapshot {
             sampled: stamp(),
             pid: std::process::id(),
+            instance: self.lease.as_ref().map(|lease| lease.instance().to_owned()),
             uptime: self.started.elapsed().as_secs(),
             running: false,
             connected: 0,
@@ -75,4 +88,35 @@ fn stamp() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |v| v.as_secs())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::os::unix::fs::DirBuilderExt;
+    #[test]
+    fn disabled_publisher_creates_no_lifetime_authority() {
+        let dir = std::env::temp_dir().join(faction_core::request_id().unwrap());
+        std::fs::DirBuilder::new().mode(0o700).create(&dir).unwrap();
+        let publisher = Publisher::new(false, dir.clone());
+        assert!(publisher.lease.is_none());
+        assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 0);
+        drop(publisher);
+        std::fs::remove_dir(dir).unwrap();
+    }
+    #[test]
+    fn optional_publication_failure_never_steals_a_live_lease() {
+        let dir = std::env::temp_dir().join(faction_core::request_id().unwrap());
+        std::fs::DirBuilder::new().mode(0o700).create(&dir).unwrap();
+        let first = Publisher::new(true, dir.clone());
+        assert!(first.lease.is_some());
+        let second = Publisher::new(true, dir.clone());
+        assert!(second.lease.is_none());
+        drop(second);
+        assert!(operator::lease::Lease::acquire(&dir).is_err());
+        drop(first);
+        let next = operator::lease::Lease::acquire(&dir).unwrap();
+        drop(next);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
 }
