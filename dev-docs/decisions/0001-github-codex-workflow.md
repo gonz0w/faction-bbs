@@ -1,9 +1,9 @@
 # 0001: Use a GitHub issue-driven Codex workflow
 
-Status: accepted
+Status: superseded by [ADR 0077](0077-issue-only-test-first-workflow.md); historical rationale follows
 Date: 2026-10-19
 Owner: project founder
-Issue: BBS-032 in the [issue index](../issue-index.md)
+Issue: BBS-032 in the [GitHub issue](https://github.com/gonz0w/faction-bbs/issues)
 Supersedes: the earlier hidden planning command workflow
 
 ## Question and constraints
@@ -24,4 +24,4 @@ GitHub becomes the canonical hosted task tracker; the checked-in issue index and
 
 ## Validation
 
-Verify every legacy candidate maps to exactly one GitHub issue, every source archive hash matches, current docs contain no active old planning references, internal links resolve, no JS/TS files/dependencies/actions are introduced, repository CI passes, and public repo/folder naming agree. Record results in [the foundation execution plan](../plans/0001-repository-foundation.md).
+Verify every legacy candidate maps to exactly one GitHub issue, every source archive hash matches, current docs contain no active old planning references, internal links resolve, no JS/TS files/dependencies/actions are introduced, repository CI passes, and public repo/folder naming agree. Record results in [the foundation GitHub issue](https://github.com/gonz0w/faction-bbs/issues/32).

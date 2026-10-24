@@ -6,7 +6,7 @@ Issues: #5/#10/#18/#20/#35 and the new candidates linked in the research report.
 Supersedes: any near-term physical-SBC testing dependency in ADR 0005/0006 plans.
 Rust/primary NetBSD, security, privacy and resource measurement requirements remain.
 Evidence: [research](../research/0010-extensible-ansi-platform.md),
-[software scope](../first-local-slice.md), [product direction](../../docs/extensions.md).
+[software scope](https://github.com/gonz0w/faction-bbs/issues/35), [product direction](../../docs/extensions.md).
 
 ## Decision
 

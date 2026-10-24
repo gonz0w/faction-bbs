@@ -14,7 +14,7 @@ bounded malicious input/preauthentication work? Keep all measured historical
 sources/results unchanged. No physical SBC, new resident server, weaker credentials,
 JavaScript, automatic host tuning or default-cap increase.
 
-[Plan 0023](../plans/0023-sustained-abuse.md) declares the workload before execution:
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/55) declares the workload before execution:
 15 minutes at 250 distinct approved local accounts, rotating chat sender with a
 one-broadcast/second target, delivery confirmation to every connected member;
 30-second room/menu/read/post cycles; 60-second disconnect/fresh real credentials;

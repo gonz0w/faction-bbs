@@ -129,7 +129,7 @@ public registry, browser launch or automatic federation. Those remain separately
 scoped work; member-held mail keys are not part of a connection profile. The BBS
 owner, database/schema, server helpers/listeners and ordinary limits are unchanged.
 
-[Plan 0056](../dev-docs/plans/0056-native-board-launcher.md) records the exact
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27) records the exact
 software validation and remaining work. Hardening remains a later phase.
 
 

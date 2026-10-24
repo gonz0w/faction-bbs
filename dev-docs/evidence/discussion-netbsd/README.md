@@ -1,6 +1,6 @@
 # Discussion discovery: NetBSD software validation
 
-Issue #142, [plan 0067](../../plans/0067-discussion-search-and-bookmarks.md),
+Issue #142, [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/142),
 [ADR 0062](../../decisions/0062-discussion-search-and-bookmarks.md).
 
 Owned synthetic boards use host Rust 1.98.0 and a separate NetBSD 11.0 AArch64

@@ -1,6 +1,6 @@
 # Personal catch-up: NetBSD software validation
 
-Issue #138, [plan 0066](../../plans/0066-personal-catchup.md),
+Issue #138, [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/138),
 [ADR 0061](../../decisions/0061-personal-catchup.md).
 
 Owned synthetic boards run on host Rust 1.98.0 and a separate NetBSD 11.0 AArch64

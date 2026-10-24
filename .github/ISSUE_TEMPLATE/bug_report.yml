@@ -1,24 +1,41 @@
-name: Bug / documentation defect
-description: Report a reproducible non-sensitive problem; report vulnerabilities privately.
-title: "Bug: "
+name: Reproducible bug
+description: Report non-sensitive failures; vulnerabilities belong in SECURITY.md.
 labels: ["bug", "status:needs-triage"]
 body:
   - type: markdown
     attributes:
-      value: "There is no product release yet. Documentation and repository-check defects are welcome. Use SECURITY.md for sensitive findings. Remove credentials, private addresses, and user content."
+      value: "Use SECURITY.md for sensitive findings. Remove credentials, private addresses and member content. Record intermittent failures rather than hiding them with retries."
   - type: input
     id: version
     attributes:
-      label: Commit or affected document
+      label: Commit and environment
     validations:
       required: true
   - type: textarea
     id: reproduction
     attributes:
-      label: Steps, expected result, and actual result
+      label: Reproduction and expected versus actual behavior
+      description: Include the minimal command/input, observed failure and sanitized CI/fixture reference. Distinguish a hypothesis from a proven cause.
     validations:
       required: true
   - type: textarea
-    id: evidence
+    id: acceptance
     attributes:
-      label: Sanitized environment and evidence
+      label: Acceptance criteria
+      description: Finite Markdown checkboxes defining the corrected behavior and preserved invariants.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan
+      description: Reproduce red before fixing; add a deterministic regression and positive/negative controls, then green. Preserve bounds/security/assertions; do not skip the failure.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Scope and dependencies
+      description: Relevant issue/PR links, affected code/contracts and what is explicitly outside this fix.
+    validations:
+      required: true

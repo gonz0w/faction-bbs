@@ -130,7 +130,7 @@ work, not a requirement for discovering or visiting another board.
 
 ## Validation
 
-[Plan 0055](../dev-docs/plans/0055-local-other-board-directory.md) records software
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27) records software
 checks. Local/worker PTYs cover paging, arrows/hotkeys, card return, compact/plain,
 revocation, configuration and a loopback no-connect trap. Native shared SSH/client
 checks exercise the actual maintained service separately. No new physical-SBC,

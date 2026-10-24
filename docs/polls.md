@@ -100,5 +100,5 @@ migrates restored data on open. Rollback uses matching old binaries and a comple
 pre-upgrade backup in fresh paths. Never relabel the schema or unlink live locks.
 
 See [ADR 0060](../dev-docs/decisions/0060-local-community-polls.md),
-[plan 0065](../dev-docs/plans/0065-local-community-polls.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/139) and
 [software validation](../dev-docs/evidence/polls-netbsd/README.md).

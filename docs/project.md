@@ -76,7 +76,7 @@ ANSI F1/plain help and themed house notes without new menu slots or content acti
 | Files/mail | [Local file areas](file-areas.md) with separate restricted SFTP first; later classic transfer adapters. [Private mail](private-mail.md) requires member-side encryption and a native local terminal client; no BBS/home server reads plaintext. File areas/SFTP and the [native transfer client](native-client.md) are optional working previews, including permission-checked room/chat file links; encrypted mail/attachments and roaming identity remain outside the product, with a [two-home protocol proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md) and native integration tracked in #90/#91. |
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
-| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 prioritizes NNTP-first opt-in discussion rooms; article format #103 and optional providers #104 remain planned. See [home identities/mail](private-mail.md); protocols remain gated. |
+| Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 prioritizes NNTP-first opt-in discussion rooms; article format #103 is implemented; optional providers #104 remain future work. See [home identities/mail](private-mail.md); protocols remain gated. |
 | Terminal | Ordinary SSH terminal clients are the initial secure-access direction, with optional invitation-only private-network operation (owner acceptance 2026-10-19). Overlay admission, SSH identity and local BBS approval remain distinct; no member host shell is implied. Physical serial terminals are not a current target. A [restricted development gateway](restricted-ssh.md) now passes native NetBSD application/member oracles; complete production enforcement/capacity remains unvalidated. |
 | Menus/themes | Oblivion/2-inspired arrow-key highlight + Enter and direct displayed hotkeys (D/d for `[D]oors`). Sysop-defined palettes/layouts/art are foundational; optional bounded custom grids, SAUCE/iCE import and long-art login paging now extend the classic list. Optional manual/annual seasonal palettes and login templates now work in the preview, with a disabled example calendar and next-login selection. ACiD/iCE and Razor/scene typography are visual references; see [menu/theme direction](menus-and-themes.md). |
 | Web | HTTP portal/browser-console access is a goal, optional and under sysop control. It may be private, disabled, or absent from an initial deployment. No public HTTP dependency. |
@@ -107,7 +107,7 @@ binaries on 2026-10-21. The [classic connector](classic-game-doors.md) has bound
 owned-fixture NetBSD evidence; [the per-title inventory](../dev-docs/research/0041-classic-door-reuse.md)
 records actual acquisition/interface unknowns. Original game availability and compatibility are per-title questions. This project includes no original game executables or third-party artwork. Future ports are separate work, not a prerequisite for the first useful BBS.
 
-Current sequencing is [software-first local core, then Lua](../dev-docs/decisions/0007-software-first-and-extension-direction.md). The [first software slice](../dev-docs/first-local-slice.md) defines the build scope; physical SBC hardware is not a near-term dependency. Both external-member-wallet and sysop-payment-service models remain open comparison candidates.
+Current sequencing is [software-first local core, then Lua](../dev-docs/decisions/0007-software-first-and-extension-direction.md). The [first software slice](https://github.com/gonz0w/faction-bbs/issues/35) defines the build scope; physical SBC hardware is not a near-term dependency. Both external-member-wallet and sysop-payment-service models remain open comparison candidates.
 
 ## Unresolved questions
 
@@ -122,7 +122,7 @@ Current sequencing is [software-first local core, then Lua](../dev-docs/decision
 - Directory submission review, stale listings, and connection handoff.
 - Shared-channel ownership, subscriptions, author identity, moderation, history, reconnect, and disconnected operation.
 
-See the [roadmap](../dev-docs/roadmap.md) and [issue index](../dev-docs/issue-index.md) for bounded work and dependencies.
+See the [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/133) and [GitHub issue](https://github.com/gonz0w/faction-bbs/issues) for bounded work and dependencies.
 
 ## Latest direction: file areas and independent home identities
 

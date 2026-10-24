@@ -1,6 +1,6 @@
 # Library shelves: NetBSD software validation
 
-Issue #140 (curated shelves increment), [plan 0070](../../plans/0070-library-shelves.md),
+Issue #140 (curated shelves increment), [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/140),
 [ADR 0065](../../decisions/0065-curated-library-shelves.md).
 
 Validation uses host Rust 1.98.0 and a separate owned NetBSD 11.0 AArch64 software

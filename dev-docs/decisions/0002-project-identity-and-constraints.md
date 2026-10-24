@@ -3,7 +3,7 @@
 Status: accepted product constraints; technical choices unvalidated
 Date: 2026-10-19
 Owner: project founder
-Issue: BBS-004, BBS-024, and BBS-032 in the [issue index](../issue-index.md)
+Issue: BBS-004, BBS-024, and BBS-032 in the [GitHub issue](https://github.com/gonz0w/faction-bbs/issues)
 Supersedes: Citadel IRC working name and older optional-terminal/web-first draft framing
 
 ## Question and decision

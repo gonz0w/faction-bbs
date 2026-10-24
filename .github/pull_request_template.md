@@ -1,20 +1,39 @@
 ## Change and reason
 
-Describe the concrete problem and resulting behavior or research outcome.
+Describe the issue's concrete problem and resulting behavior.
 
-## Related work
+## Closing issues
 
-Link the issue and any dependencies/decision records. Use a closing reference only when acceptance criteria are met.
+Closes #NUMBER
 
-## Validation
+Use one real same-repository open executable issue per line. Finish its acceptance
+criteria before merge. An epic/reference alone does not qualify; create a bounded
+child before implementing partial scope. Do not close issues for unmerged work.
 
-Record commands and actual results, experiment conditions, and unavailable checks.
+## Acceptance and tests
+
+Map every closing issue's criteria to named tests, commands, actual results and
+relevant evidence. Include negative/failure/classic fallback checks when applicable.
+State unavailable checks and support limits honestly. Check the issue criteria only
+after evidence supports them; leave its GitHub state open until merge.
+
+## TDD evidence
+
+Mode: behavior
+
+Red: Replace with the actual command and observed failure before implementation.
+Green: Replace with the passing command and outcome after the implementation.
+Refactor: Replace with the cleanup performed and the tests that remained green.
+
+For prose-only changes use Mode: docs or Mode: research plus Reason: explaining
+actual validation. Executable/configuration changes require behavior tests. Never
+invent red-first history; the fixed pre-#181 exception is documented in the workflow.
 
 ## Review
 
-- [ ] Reviewed README status/support/setup claims and updated them when needed.
-- [ ] Updated relevant product/developer docs, decisions, and changelog where affected.
-- [ ] Ran `python3 tools/check_repository.py` and relevant focused checks.
-- [ ] Preserved approval, privacy, local-data, and optional-exposure boundaries.
-- [ ] Introduced no JS/TS code, assets, tooling, actions, or dependencies.
-- [ ] Included no credentials, real deployment endpoints, private data, or unlicensed assets.
+- [ ] Finished the linked issues' agreed scope; captured new bugs/follow-ups in GitHub.
+- [ ] Reviewed README and relevant product/technical docs/changelog for actual behavior.
+- [ ] Ran required repository checks and relevant tests; preserved historical evidence.
+- [ ] Preserved local approval, device keys, classic fallback and resource boundaries.
+- [ ] Added no JS/TS, secret data, real private endpoints or unlicensed assets.
+- [ ] Added no local task tracker, execution plan or agent progress journal.

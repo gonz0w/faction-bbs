@@ -14,7 +14,7 @@ source identities are in results.json; previous #105 inputs/results are separate
 frozen, without refreshing historical measurements.
 
 Run the documented Rust/PTY checks and tools/smoke_shared_room_reader.py only on
-an explicitly marked disposable NetBSD fixture. See [plan 0039](../../plans/0039-post-metadata-and-hardening-stories.md)
+an explicitly marked disposable NetBSD fixture. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/103)
 and [upgrade requirements](../../../docs/post-metadata.md). No physical SBC,
 new capacity, live NNTP, PGP implementation or adopted hardening claim. The original
 playground remains off; the private test clone and synthetic state are removed.

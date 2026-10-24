@@ -3,7 +3,7 @@
 **Marked disposable NetBSD 11 ARM64 software fixture only.**
 The [report](../../dev-docs/research/0031-repeatable-headroom.md),
 [ADR 0017](../../dev-docs/decisions/0017-repeatable-headroom.md) and
-[plan](../../dev-docs/plans/0017-repeatable-headroom.md) define the experiment.
+[plan](https://github.com/gonz0w/faction-bbs/issues/58) define the experiment.
 Normal services remain eight workers; this is not an installer or support claim.
 
 ## Candidate and evidence

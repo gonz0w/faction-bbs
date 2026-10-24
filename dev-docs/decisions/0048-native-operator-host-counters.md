@@ -26,7 +26,7 @@ ASCII; UTF-8 block graphs require explicit `--unicode` and valid ANSI geometry.
 
 ## Evidence, confidence and reversal
 
-See [plan 0053](../plans/0053-host-stats-and-console-polish.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/95) and
 [native observations](../evidence/operator-host-netbsd/README.md). Actual installed
 NetBSD 11 headers/SDK and native builds/runtime checks complement deterministic
 reset/failure/delta tests. This is software evidence, not a supported capacity,

@@ -107,6 +107,6 @@ Theme packs are still separate operator-managed files.
 Software tests cover the native NetBSD implementation, real restricted SSH and
 native terminal clients, ANSI/plain/compact/worker input, rotation/archives,
 authority changes, retry, moderation and backup. See the
-[execution plan](../dev-docs/plans/0060-local-community-wall.md) for current results.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/134) for current results.
 No new listener/helper/package from a registry, session/default/credential limit,
 private-mail decryption, physical SBC or 250-member support claim is introduced.

@@ -5,7 +5,7 @@ Date: 2026-10-22
 Owner: owner requested remaining PR merges and continued useful development
 Issue: [#90](https://github.com/gonz0w/faction-bbs/issues/90), [PR #94](https://github.com/gonz0w/faction-bbs/pull/94)
 Supersedes: none; extends local entry under ADR 0035
-Evidence: [plan 0063](../plans/0063-current-client-and-local-vault.md)
+Evidence: [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/90)
 
 ## Decision, gates and alternatives
 

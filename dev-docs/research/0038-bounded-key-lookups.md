@@ -4,7 +4,7 @@ Status: bounded experiment complete; production adoption deferred.
 Date: 2026-10-21.
 Issue: [#66](https://github.com/gonz0w/faction-bbs/issues/66), related #55/#23/#28.
 Decision: [ADR 0023](../decisions/0023-bounded-key-lookups.md).
-Plan: [0024](../plans/0024-bounded-key-lookups.md).
+Plan: [0024](https://github.com/gonz0w/faction-bbs/issues/66).
 Stopping condition: bounded helper/state implementation, native compatibility,
 eight-adversary lookup accounting and two fresh whole-host 250-member controls.
 Production adoption and global connection-rate policy remain separate gates.

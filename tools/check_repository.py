@@ -41,9 +41,10 @@ def validate(root: Path, *, allow_unpublished: bool = False) -> list[str]:
         'CHANGELOG.md', '.gitignore', '.gitattributes', '.editorconfig',
         'docs/README.md', 'docs/project.md', 'docs/session.md',
         'docs/security-privacy.md', 'dev-docs/README.md', 'dev-docs/workflow.md',
-        'dev-docs/roadmap.md', 'dev-docs/issue-index.md',
-        'dev-docs/issue-map.json', 'dev-docs/archive/manifest.json',
-        '.github/workflows/documentation.yml',
+        'dev-docs/archive/issue-provenance/issue-index.md',
+        'dev-docs/archive/issue-provenance/issue-map.json', 'dev-docs/archive/manifest.json',
+        'tools/check_issue_workflow.py', 'tools/test_issue_workflow.py',
+        '.github/workflows/documentation.yml', '.github/workflows/issue-policy.yml',
         '.github/ISSUE_TEMPLATE/research.yml', '.github/ISSUE_TEMPLATE/feature.yml',
         '.github/ISSUE_TEMPLATE/bug_report.yml', '.github/pull_request_template.md',
     ]
@@ -52,6 +53,13 @@ def validate(root: Path, *, allow_unpublished: bool = False) -> list[str]:
             errors.append(f'Missing required foundation file: {relative}')
     if (root / '.planning').exists():
         errors.append('Retired .planning directory must not exist at repository root')
+    for name in ['.gsd', '.gsd-graph', 'dev-docs/plans', 'dev-docs/roadmap.md',
+                 'dev-docs/first-local-slice.md', 'dev-docs/issue-index.md', 'dev-docs/issue-map.json']:
+        if (root / name).exists():
+            errors.append(f'Local task tracker is prohibited; use GitHub Issues: {name}')
+    for path in root.iterdir():
+        if path.name.casefold() in {'todo.md','tasks.md','plan.md','roadmap.md','backlog.md','state.md'}:
+            errors.append(f'Local task tracker is prohibited; use GitHub Issues: {path.name}')
 
     for path in root.rglob('*'):
         relative = path.relative_to(root)
@@ -121,6 +129,14 @@ def validate(root: Path, *, allow_unpublished: bool = False) -> list[str]:
             errors.append('Foundation CI must use shell/Python steps, without external actions')
         if 'contents: read' not in text or 'pull_request_target' in text:
             errors.append('Foundation CI must retain read-only permissions and unprivileged PR events')
+    policy = root / '.github/workflows/issue-policy.yml'
+    if policy.is_file():
+        text = policy.read_text()
+        if not all(value in text for value in ['contents: read', 'issues: read',
+                'pull-requests: read', 'python3 tools/check_issue_workflow.py --event', 'edited']):
+            errors.append('CI must enforce issue closure on PR metadata edits with read-only access')
+        if 'pull_request_target' in text or re.search(r'^\s*(?:-\s*)?uses\s*:', text, re.M):
+            errors.append('Issue policy must use unprivileged shell/Python without external actions')
 
     manifest = read_json(root, 'dev-docs/archive/manifest.json', errors)
     if manifest is not None:
@@ -149,13 +165,13 @@ def validate(root: Path, *, allow_unpublished: bool = False) -> list[str]:
                     if path.is_file() and path.relative_to(root).as_posix() not in archived_paths:
                         errors.append(f'Historical file missing from manifest: {path.relative_to(root)}')
 
-    mapping = read_json(root, 'dev-docs/issue-map.json', errors)
+    mapping = read_json(root, 'dev-docs/archive/issue-provenance/issue-map.json', errors)
     if mapping is not None:
         if not isinstance(mapping, list):
             errors.append('Issue map must be a list')
         else:
             keys, numbers, legacy_ids = set(), set(), set()
-            index = (root / 'dev-docs/issue-index.md').read_text() if (root / 'dev-docs/issue-index.md').is_file() else ''
+            index = (root / 'dev-docs/archive/issue-provenance/issue-index.md').read_text() if (root / 'dev-docs/archive/issue-provenance/issue-index.md').is_file() else ''
             for item in mapping:
                 if not isinstance(item, dict) or not {'key','legacy_id','number','url','source'} <= item.keys():
                     errors.append('Issue map contains a malformed entry')

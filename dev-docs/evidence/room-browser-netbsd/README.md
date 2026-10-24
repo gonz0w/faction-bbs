@@ -2,7 +2,7 @@
 
 2026-10-22, #21/#12/#25. [Sanitized results](results.json) record an owned disposable
 2-core/1-GiB NetBSD 11 ARM64 software VM, with host and actual NetBSD native clients.
-See [plan 0057](../../plans/0057-room-browser.md),
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/21),
 [ADR 0052](../../decisions/0052-named-room-browser.md) and
 [member workflow](../../../docs/room-browser.md). The saved playground stayed off.
 

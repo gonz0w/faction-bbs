@@ -111,3 +111,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0075: Device-local passport](0075-device-local-passport.md) — unverified souvenirs without travel tracking.
 
 - [0076: Read-only board guide](0076-read-only-board-guide.md) — F1/plain help without new menu slots.
+
+- [0077: Issue-only test-first workflow](0077-issue-only-test-first-workflow.md) — sole GitHub task authority, finite acceptance and closing PRs.

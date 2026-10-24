@@ -52,7 +52,7 @@ deletion cannot promise removal from earlier WAL, exports or backups.
 
 ## Evidence and reversal
 
-See [plan 0061](../plans/0061-member-pages-and-plans.md) and the
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/135) and the
 [member/sysop guide](../../docs/member-pages.md). Validate separate members,
 current revocation, ownership/conflicts, hidden-body/count filtering, configured
 layouts/fields, history retention, preview/retry/delete and actual native recovery.

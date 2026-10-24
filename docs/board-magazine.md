@@ -136,7 +136,7 @@ copies/cache, new registry dependency, listener/helper or changed ordinary budge
 There is no new physical-hardware, capacity or hardening claim.
 
 See [ADR 0067](../dev-docs/decisions/0067-local-magazine-reader.md),
-[plan 0072](../dev-docs/plans/0072-local-magazine-reader.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/143) and
 [software evidence](../dev-docs/evidence/magazine-netbsd/README.md).
 
 

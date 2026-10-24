@@ -19,7 +19,7 @@ inputs, 14 harness identities and all assertions above offline. Snapshot 48 reta
 sessions, 5000-ms admission, schema 18 and existing helper/output/crypto limits stay.
 Guide access uses the existing visit/heartbeat and broad Menu activity; it performs
 no content action. See [the guide](../../../docs/board-guide.md) and
-[plan 0081](../../plans/0081-board-guide.md) for scope and validation corrections.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/182) for scope and validation corrections.
 
 The record covers owned software fixtures only. It makes no new capacity,
 hardware, hardening, federation, private-mail or graphical-terminal acceptance

@@ -55,7 +55,7 @@ ceiling before exact comparison; negative snapshot controls reject extras.
 
 ## Validation and reversal
 
-See [plan 0066](../plans/0066-personal-catchup.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/138) and
 [software evidence](../evidence/catchup-netbsd/README.md). Snapshot 33 preserves 238
 preceding inputs and the whole poll result before edits; historical identities
 stay fixed. Validate current sources separately on an owned software VM and keep

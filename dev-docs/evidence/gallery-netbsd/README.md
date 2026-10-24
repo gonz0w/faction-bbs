@@ -1,6 +1,6 @@
 # Gallery: NetBSD software validation
 
-Issue #144, [plan 0068](../../plans/0068-scene-gallery.md),
+Issue #144, [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/144),
 [ADR 0063](../../decisions/0063-curated-terminal-gallery.md).
 
 Owned synthetic boards exercise the same faction-gallery workflow on the host

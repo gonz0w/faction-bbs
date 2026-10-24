@@ -39,6 +39,6 @@ stay open. Original sample material is clearly Codex-assisted template linework.
 The existing [SAUCE revision 00.5](https://www.acid.org/info/sauce/sauce.htm) reference
 (retrieved 2026-10-22 in ADR 0045) defines metadata; this is Faction's narrower
 presentation profile, not a new interpretation of file rights or terminal fonts.
-See [plan 0049](../plans/0049-paged-login-art.md) for executed software validation.
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/25) for executed software validation.
 No hardware, broader emulator/font, RSS or new 250-user support claim follows.
 Revert to a short/base pack and restart after preflight; no data migration.

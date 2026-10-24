@@ -71,5 +71,5 @@ supported-throughput or capacity claim follows from this UI.
 
 See [native client](native-client.md), [board launcher](board-launcher.md),
 [ADR 0064](../dev-docs/decisions/0064-native-travel-preferences.md),
-[plan 0069](../dev-docs/plans/0069-native-travel.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/159) and
 [software evidence](../dev-docs/evidence/travel-netbsd/README.md).

@@ -4,7 +4,7 @@ This opt-in Rust shared owner extends the frozen #58 headroom backend with the
 existing local UI features. It is never installed by normal services. The normal
 gateway remains eight per-session workers; this experiment has a fixed 250-client
 cap, burst eight / 100-ms admission refill and two credential operations. See
-[plan 0018](../../dev-docs/plans/0018-shared-ui-themes.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/55),
 [research 0032](../../dev-docs/research/0032-shared-ui-themes.md) and
 [ADR 0018](../../dev-docs/decisions/0018-shared-ui-themes.md).
 

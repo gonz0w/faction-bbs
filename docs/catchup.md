@@ -94,7 +94,7 @@ Roll back with matching older binaries and their complete backup in fresh paths,
 never by relabeling the schema or deleting live locks. Logical deletion does not
 erase old snapshots/WAL/storage. See [export/restore](export-restore.md).
 
-[Plan 0066](../dev-docs/plans/0066-personal-catchup.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/138),
 [ADR 0061](../dev-docs/decisions/0061-personal-catchup.md) and
 [NetBSD software evidence](../dev-docs/evidence/catchup-netbsd/README.md) document
 the implementation and validation. The saved owner playground stays off.

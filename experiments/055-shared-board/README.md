@@ -48,4 +48,4 @@ disposable NetBSD VM. `tools/check_shared_oracles.py` and `terminal_probe.py`
 exercise approval/epochs, failed foreign connection, forged control, actual guest
 PTY backpressure, disconnect/crash, durable post and recovery. These scripts use
 synthetic accounts and private generated credentials, never a real member board.
-See the execution plan and resulting research before interpreting any numbers.
+See the recorded research and issue #55 before interpreting historical numbers.

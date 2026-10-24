@@ -29,5 +29,5 @@ identities. Guard 59 validates this record offline. Final current sources and
 installed Rust/C door hashes match; owned fixtures are removed after validation. The saved
 owner playground remains stopped/intact. No new capacity, physical-SBC, Ghostty
 pixel, private-message, federation, secure-erasure or hardening claim.
-See [plan 0078](../../plans/0078-who-universal-presence.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/176) and
 [ADR 0073](../../decisions/0073-universal-presence-and-who.md).

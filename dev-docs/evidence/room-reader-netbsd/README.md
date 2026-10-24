@@ -21,7 +21,7 @@ service users, rc wrapper and native frontend, mark it explicitly disposable and
 use tools/smoke_shared_room_reader.py with --disposable-fixture, --admin-argv and
 --bin-dir. It installs supplied binaries/configuration and creates a synthetic
 board; never point it at a real installation. All SSH keys/argv and transcripts
-stay private. See [plan 0038](../../plans/0038-room-articles-and-reading.md).
+stay private. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/103).
 
 The final checks cover partial-message unread retention, full-page output and
 exact word order, drain-before-read acknowledgment and current revocation at the

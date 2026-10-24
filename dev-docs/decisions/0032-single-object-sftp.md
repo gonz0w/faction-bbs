@@ -45,7 +45,7 @@ filesystem completion precedes pending catalog state and never publishes partial
 
 ## Evidence, limits and reversal
 
-See [plan 0033](../plans/0033-file-areas-sftp.md) and the native report linked there.
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/83) and the native report linked there.
 Host tests cover policy/epoch/key/replay/expiry/quota races, framing, path aliases,
 menu capabilities and exports. The software NetBSD VM uses real OpenSSH SFTP for
 upload, quarantine review, publication, checksummed download, path/alias/revocation

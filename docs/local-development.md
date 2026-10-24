@@ -134,6 +134,6 @@ the complete workspace and terminal/recovery flows passed natively on NetBSD 11 
 Managed [NetBSD service lifecycle](service-lifecycle.md) and bounded load/failure
 checks now pass; account/room lifecycle, complete resource/capacity accounting and
 maintained deployment remain next; Lua menus/isolated
-doors follow the useful local core. See [scope](../dev-docs/first-local-slice.md),
+doors follow the useful local core. See [scope](https://github.com/gonz0w/faction-bbs/issues/35),
 [ADR 0008](../dev-docs/decisions/0008-local-core-and-credentials.md) and
 [ADR 0009](../dev-docs/decisions/0009-safe-terminal-menus-and-themes.md).

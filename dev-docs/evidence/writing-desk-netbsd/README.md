@@ -10,7 +10,7 @@ The implementation adds only an opt-in room writer: paragraphs, undo/clear,
 fresh authorized parent quotes, paged inert preview and explicit send/cancel.
 There is no saved draft, new schema, runtime package, listener or private-mail
 plaintext. See [the writing guide](../../../docs/writing-desk.md),
-[plan 0058](../../plans/0058-room-writing-desk.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/141) and
 [ADR 0053](../../decisions/0053-explicit-room-writing-desk.md).
 
 ## Validation

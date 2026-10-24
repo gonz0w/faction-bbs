@@ -192,7 +192,7 @@ then start and test the recovered board. Do not merge it into existing state.
 
 ## Validation and extensibility
 
-See [implementation plan](../dev-docs/plans/0033-file-areas-sftp.md) and the linked
+See [implementation plan](https://github.com/gonz0w/faction-bbs/issues/83) and the linked
 native evidence for actual checks. Software VM checks do not establish physical
 SBC support or 250-user capacity. The owner still uses its existing three helper
 threads, two credential permits/slots, crypto settings and eight-session default.

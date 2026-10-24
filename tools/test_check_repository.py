@@ -50,11 +50,19 @@ class RepositoryChecks(unittest.TestCase):
         self.assertIn('without external actions', errors)
 
     def test_duplicate_legacy_mapping_is_rejected(self):
-        path = self.root / 'dev-docs/issue-map.json'
+        path = self.root / 'dev-docs/archive/issue-provenance/issue-map.json'
         data = json.loads(path.read_text())
         data[1]['legacy_id'] = data[0]['legacy_id']
         path.write_text(json.dumps(data) + '\n')
         self.assertIn('Duplicate legacy issue mapping', self.errors())
+
+    def test_new_local_task_tracker_is_rejected(self):
+        (self.root / 'dev-docs/plans').mkdir()
+        self.assertIn('Local task tracker', self.errors())
+
+    def test_root_todo_journal_is_rejected(self):
+        (self.root / 'TODO.md').write_text('- [ ] Untracked work\n')
+        self.assertIn('Local task tracker', self.errors())
 
     def test_retired_planning_directory_is_rejected(self):
         (self.root / '.planning').mkdir()

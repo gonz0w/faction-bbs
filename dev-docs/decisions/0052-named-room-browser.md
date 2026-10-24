@@ -31,7 +31,7 @@ and themed session selection remain unchanged; no room publication or IRC/XMPP.
 
 ## Validation and reversal
 
-[Plan 0057](../plans/0057-room-browser.md) tests parser-free presentation, stable ID
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/21) tests parser-free presentation, stable ID
 selection, Unicode/classic clipping, paging/next-unread, selected composing/reading,
 partial unread, pending/revoked denial and resize on host/NetBSD PTYs plus actual
 shared SSH/native routes. Existing reader/menu/art regressions retain their scope;

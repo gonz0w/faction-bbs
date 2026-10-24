@@ -33,6 +33,8 @@ class IssueWorkflow(unittest.TestCase):
     p=copy.deepcopy(PR);p['body']=BODY.replace('Closes #181',target);self.assertIn('closing',self.errors(pr=p).lower())
  def test_multiple_issues_all_require_acceptance_and_validation(self):
   p=copy.deepcopy(PR);p['body']=BODY.replace('Closes #181','Closes #181\nFixes #182');i=copy.deepcopy(ISSUE);i['number']=182
+  self.assertIn('#182',self.errors(pr=p,issues={181:ISSUE,182:i}))
+  p['body']=p['body'].replace('#181: orphan','#181/#182: orphan')
   self.assertEqual(self.errors(pr=p,issues={181:ISSUE,182:i}),'')
   i['body']='Nothing actionable';self.assertIn('acceptance',self.errors(pr=p,issues={181:ISSUE,182:i}).lower())
  def test_only_default_branch_in_this_repository_can_close_work(self):
@@ -46,10 +48,14 @@ class IssueWorkflow(unittest.TestCase):
  def test_docs_exception_cannot_hide_executable_changes(self):
   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+'## TDD evidence\nMode: docs\nReason: Only documentation links and text change; run repository link and archive checks.\n'
   self.assertEqual(self.errors(pr=p,files=['docs/board-guide.md','AGENTS.md']),'')
-  self.assertIn('executable',self.errors(pr=p,files=['crates/faction-core/src/lib.rs']))
+  for name in ['crates/faction-core/src/lib.rs','.github/ISSUE_TEMPLATE/helper.py']:
+   self.assertIn('executable',self.errors(pr=p,files=[name]))
  def test_no_fake_tdd_for_prior_implementation_but_cutoff_is_fixed(self):
   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+'## TDD evidence\nMode: existing-implementation\nException: #181\nReason: This implementation and its regression evidence predate the migration; no retrospective red-first claim.\n'
   self.assertIn('predate',self.errors(pr=p));p['created_at']='2026-10-24T00:45:00Z';self.assertEqual(self.errors(pr=p),'')
+ def test_unfilled_template_is_not_test_evidence(self):
+  p=copy.deepcopy(PR);p['body']=BODY.replace('Red: python3 -m unittest discover -s tools -p test_issue_workflow.py fails because the policy module is missing, before implementing it.','Red: Replace with the actual command and observed failure before implementation.')
+  self.assertIn('Red',self.errors(pr=p))
  def test_empty_changed_file_list_cannot_prove_docs_only(self):
   p=copy.deepcopy(PR);p['body']=BODY.split('## TDD evidence')[0]+'## TDD evidence\nMode: docs\nReason: Only documentation changes, checked with the repository link checker.\n'
   self.assertNotEqual(validate(p,{181:ISSUE},[],REPO),[])

@@ -180,7 +180,7 @@ Keeping extensions optional and the boundary disposable makes reversal inexpensi
 External immutable publication or custody would raise reversal cost sharply, which
 is why fake providers/no-value tests precede live features.
 
-Next implement the [first local software slice](../first-local-slice.md), starting
+Next implement the [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/35), starting
 with real identity/approval/rooms and terminal safety in #6/#12/#21/#29/#30/#35.
 Then #10 advances Lua with a versioned capability/lifecycle contract, actual
 NetBSD software tests and OS-level worker/resource enforcement. Parallel bounded

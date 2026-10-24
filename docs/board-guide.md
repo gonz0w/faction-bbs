@@ -64,4 +64,4 @@ Guide pages fit the supported 40x18 ANSI baseline and remain below the existing
 8-KiB frame cap. Large windows use bounded text pages rather than unbounded output.
 Modern synchronization/text capabilities retain their existing gates; ordinary
 SSH/plain access needs no native companion. Normal resource defaults and server
-schema stay unchanged. See [plan 0081](../dev-docs/plans/0081-board-guide.md).
+schema stay unchanged. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/182).

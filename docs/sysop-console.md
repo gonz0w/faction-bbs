@@ -140,7 +140,7 @@ DB/blob/config/key backups follow the existing [backup guide](export-restore.md)
 
 See the [initial operator evidence](../dev-docs/evidence/operator-netbsd/README.md),
 [host-stat/console evidence](../dev-docs/evidence/operator-host-netbsd/README.md)
-and [plan 0053](../dev-docs/plans/0053-host-stats-and-console-polish.md). Software
+and [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/95). Software
 validation uses an owned two-core/1-GiB NetBSD 11 ARM64 VM. Normal OS-password
 login, manual dashboard launch, panels, clean exit/termios restoration and logout
 are exercised through its real virtual serial/getty console. Actual shared-owner,

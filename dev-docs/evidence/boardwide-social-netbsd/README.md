@@ -28,5 +28,5 @@ The owned VM, private test credentials and temporary vendor are removed after
 validation. The saved owner playground stays stopped with disk/login/keys intact.
 No physical SBC, 250-user capacity, GUI graphics, private-message body, federation,
 public endpoint, secure-erasure or new hardening claim. See
-[plan 0075](../../plans/0075-boardwide-social.md) and
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137) and
 [ADR 0070](../../decisions/0070-connection-scoped-social.md).

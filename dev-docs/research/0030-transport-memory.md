@@ -1,7 +1,7 @@
 # 0030: Native allocator and remaining SSH transport memory
 
 Date: 2026-10-20. Issue [#58](https://github.com/gonz0w/faction-bbs/issues/58),
-[plan 0016](../plans/0016-transport-memory.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/58),
 [ADR 0016](../decisions/0016-native-allocator-comparison.md).
 
 Follow-up: [research 0031](0031-repeatable-headroom.md) records the later

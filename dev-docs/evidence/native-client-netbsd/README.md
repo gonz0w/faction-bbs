@@ -27,4 +27,4 @@ trust, home identity or roaming login is implemented by these tests.
 Historical file-area result 13/90/90/101 is retained byte-for-byte through the sixth
 baseline snapshot. It is not a measurement of this client increment. See
 [ADR 0033](../../decisions/0033-native-terminal-files.md) and
-[plan 0034](../../plans/0034-native-client-file-links.md).
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/87).

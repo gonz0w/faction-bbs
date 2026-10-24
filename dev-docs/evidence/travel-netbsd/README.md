@@ -1,6 +1,6 @@
 # Native travel software validation
 
-Issue #159 (first interactive increment), [plan 0069](../../plans/0069-native-travel.md),
+Issue #159 (first interactive increment), [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/159),
 [ADR 0064](../../decisions/0064-native-travel-preferences.md).
 
 The final result uses host Rust 1.98.0 and an owned separate NetBSD 11.0 AArch64

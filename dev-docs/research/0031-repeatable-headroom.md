@@ -1,7 +1,7 @@
 # 0031: Repeatable 250-member headroom and the time daemon
 
 Date: 2026-10-20. Issue [#58](https://github.com/gonz0w/faction-bbs/issues/58),
-[plan 0017](../plans/0017-repeatable-headroom.md),
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/58),
 [ADR 0017](../decisions/0017-repeatable-headroom.md).
 
 ## Result and scope

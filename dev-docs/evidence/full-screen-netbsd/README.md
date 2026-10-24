@@ -5,7 +5,7 @@ harnesses and installed executable hashes. macOS ARM64 and an owned NetBSD 11
 ARM64 VM (two cores / 1 GiB) validate software, not physical SBCs or new capacity.
 Read [the product contract](../../../docs/writing-desk.md),
 [ADR 0054](../../decisions/0054-room-editor-and-checkpoints.md) and
-[plan 0059](../../plans/0059-full-screen-and-room-checkpoints.md).
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/141).
 
 ## Results
 

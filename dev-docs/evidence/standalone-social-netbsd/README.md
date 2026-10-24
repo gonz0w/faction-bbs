@@ -30,5 +30,5 @@ identities. Final selected sources and native/installed binaries are pinned.
 The owned VM/private inputs/vendor are removed after validation; saved owner
 playground stays stopped with its disk/login/keys preserved. No new capacity,
 physical-SBC, private-message-body, federation, secure-erasure or hardening claim.
-See [plan 0076](../../plans/0076-standalone-social.md) and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137) and
 [ADR 0071](../../decisions/0071-standalone-social-visits.md).

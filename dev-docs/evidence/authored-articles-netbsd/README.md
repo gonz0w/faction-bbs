@@ -35,6 +35,6 @@ private playground/checkpoint remain untouched.
 Reproduce with release workspace tests/build, tools/smoke_local_console.py,
 tools/smoke_room_reader.py, tools/smoke_shared_room_reader.py on a marked disposable
 NetBSD fixture, faction-articles emit_fixture/profile_articles examples and
-tools/check_article_interop.py. See [plan 0040](../../plans/0040-authored-subjects-and-room-articles.md)
+tools/check_article_interop.py. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/103)
 and [product limits](../../../docs/room-articles.md). No public room publication,
 remote insertion, live NNTP or activated hardening in this increment.

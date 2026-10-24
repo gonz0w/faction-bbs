@@ -41,6 +41,6 @@ All 100 product/theme/helper source inputs were hash-checked against the actual
 native checkout before cleanup. Tenth snapshot freezes all 95 #113 inputs and
 its unchanged original record; twenty-two earlier result identities stay fixed.
 The disposable VM, reference package and synthetic state are removed; the owner's
-stopped playground/checkpoint remain untouched. See [plan 0041](../../plans/0041-broader-articles-and-inn-validation.md)
+stopped playground/checkpoint remain untouched. See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/103)
 and [profile/reproduction](../../../docs/article-profile.md). Live #101/#104 and
 Unicode composer #114 remain separate; hardening #106–#111 remains later.

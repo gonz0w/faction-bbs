@@ -113,7 +113,7 @@ upgrade; older binaries cannot open schema 17. Supported older snapshots remain
 read-only verifiable/restorable and owner startup migrates them forward.
 
 See [ADR 0069](../dev-docs/decisions/0069-opt-in-chat-lounge.md) and
-[plan 0074](../dev-docs/plans/0074-social-lounge.md). Normal eight-session,
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137). Normal eight-session,
 5000-ms admission, two credential permits, three owner helpers, output and drain
 limits stay unchanged. No new registry package, helper/listener, IRC protocol,
 federation, encrypted-message transport, capacity, hardware or hardening claim.
@@ -162,10 +162,10 @@ Schema stays 17. There is no new listener, helper/thread, database connection or
 second lease per member, and all existing resource limits remain. Complete
 exports remove these connection leases and live social authority as before.
 See [ADR 0070](../dev-docs/decisions/0070-connection-scoped-social.md),
-[plan 0075](../dev-docs/plans/0075-boardwide-social.md) and the [current software evidence](../dev-docs/evidence/boardwide-social-netbsd/README.md). Later hardening, encrypted mail and federation remain separate.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137) and the [current software evidence](../dev-docs/evidence/boardwide-social-netbsd/README.md). Later hardening, encrypted mail and federation remain separate.
 
 See [ADR 0071](../dev-docs/decisions/0071-standalone-social-visits.md) and
-[plan 0076](../dev-docs/plans/0076-standalone-social.md) for standalone parity.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137) for standalone parity.
 
 ## Optional idle notifications
 
@@ -197,7 +197,7 @@ registry dependency or schema is added. At most eight ID/state keys are retained
 per visit and optional polling is limited to once per two seconds while safe.
 
 See [ADR 0072](../dev-docs/decisions/0072-idle-page-notifications.md) and
-[plan 0077](../dev-docs/plans/0077-idle-notifications.md). Hardening remains later.
+[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/137). Hardening remains later.
 
 
 The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu

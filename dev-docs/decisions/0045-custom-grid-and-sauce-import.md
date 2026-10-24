@@ -48,6 +48,6 @@ quality is not claimed. The deliberate EOF/dimension restrictions reject some
 otherwise valid broader-format assets. Reversal: choose `layout="list"` or base
 pack, remove the optional art and restart after preflight; no data migration.
 
-See [plan 0048](../plans/0048-custom-menu-layouts.md) for executed validation and
+See [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/25) for executed validation and
 [theme guide](../../docs/theme-packs.md) for exact authoring and recovery behavior.
 Long art/animation and final original/licensed artistic acceptance stay open.

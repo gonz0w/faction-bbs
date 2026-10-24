@@ -5,7 +5,7 @@ Date: 2026-10-20
 Owner: project owner requested restricted SSH and native NetBSD application validation
 Issues: [#23](https://github.com/gonz0w/faction-bbs/issues/23), #18/#19/#20/#30/#31/#35
 Supersedes: no prior product decision; implements ADR 0004/0006 direction
-Evidence: [native report](../research/0024-restricted-ssh-netbsd.md), [plan 0012](../plans/0012-restricted-ssh-netbsd.md)
+Evidence: [native report](../research/0024-restricted-ssh-netbsd.md), [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/23)
 
 ## Question, scenarios and stopping condition
 

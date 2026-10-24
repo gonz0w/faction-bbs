@@ -34,7 +34,7 @@ login profile, network/firewall or clock changes are installed automatically.
 ## Validation and confidence
 
 Prototype required for authority, live-owner interaction, telemetry costs and TTY
-restoration. [Plan 0052](../plans/0052-local-sysop-console.md) and
+restoration. [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/95) and
 [native results](../evidence/operator-netbsd/README.md) record actual Rust/UI,
 private-file/budget/privacy/export, member-denial, restricted SSH, resize and
 service lifecycle observations on a two-core/1-GiB NetBSD VM. Confidence is scoped
