@@ -62,6 +62,9 @@ The optional [device-local passport](local-passport.md) adds explicit board note
 original ASCII souvenirs and selective share previews. There is no automatic
 travel history or verified identity claim; private mail stays separate.
 
+The [read-only board guide](board-guide.md) adds current-key/command references,
+ANSI F1/plain help and themed house notes without new menu slots or content actions.
+
 ## Confirmed requirements
 
 | Area | Requirement |

@@ -1730,3 +1730,20 @@ Rust/130 Python. Prior 317 non-client source identities remain unchanged. Guard
 61/all 71 offline/archive commands retain historical evidence. No new server
 capacity/physical hardware or verified-souvenir claim. Only owned test clones;
 saved playground stays stopped with disk/login/key material preserved.
+
+## Read-only board guide (#21/#133)
+
+Read docs/board-guide.md, ADR 0076 and plan 0081. Main-menu F1 (SS3 P/CSI 11~) and
+plain help open a bounded reference; preserve ? refresh and all menu keys/grids.
+Current approved membership, feature gates and sysop role control topics; no
+private content/count queries, content actions or native vault unlock. Existing
+lease/heartbeat, Menu activity and output limits remain. Static guide_title and
+guide_notes allow only bounded inert ASCII/LF in base/season themes. Keep classic
+fallback and raw-control quarantine. Snapshot 48 freezes 335 prior passport inputs
+and its whole result; never rewrite historical hashes. Hardening stays later.
+
+Guide software validation: snapshot 48/passport-baseline-manifest preserves all
+335 prior inputs and the immutable result. Guard 62 checks 369 Rust tests per OS,
+17 guide PTYs per OS, 10 actual shared SSH/native controls and 340 guest source
+matches. Keep all 72 offline/archive checks and saved-playground teardown proof;
+normal resource/schema defaults and deferred hardening remain unchanged.

@@ -69,7 +69,7 @@ fn malicious_sequence_tails_never_activate() {
     for input in [
         b"\x1b[99999999999999999999999999999DP\r\nP".as_slice(),
         b"\x1b[?25lDP\r\nP",
-        b"\x1bOPP\r\nP",
+        b"\x1bORP\r\nP", // F3 is still unknown; F1 now has a read-only guide key.
         b"\x1b]52;c;P\nDP\x1b\\P",
         b"\x1bPpayload\x07P\nDP\x1b\\P",
         b"\x1b^privateP\x1b\\P",

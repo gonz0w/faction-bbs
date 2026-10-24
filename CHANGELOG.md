@@ -4,6 +4,10 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add a themed read-only board guide through main-menu F1/plain `help`, using
+  current enabled keys and role-aware topics. Sysop/season house notes are inert;
+  `?` refresh, existing hotkeys, classic fallback and server defaults remain.
+
 - Add an opt-in device-local board passport with explicit notes, inert original
   ASCII seals, profile-change review, removed-contact management and selective
   share previews; no automatic travel log or server/mail/default changes.

@@ -14,7 +14,7 @@ from smoke_local_console import Console
 
 
 class Worker(Console):
-    def __init__(self, binary, state, extra=(), columns=80, rows=24):
+    def __init__(self, binary, state, extra=(), columns=80, rows=24, term="xterm"):
         master, slave = pty.openpty()
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', rows, columns, 0, 0))
         self.pid = os.fork()
@@ -24,7 +24,7 @@ class Worker(Console):
                 os.dup2(slave, number)
             os.closerange(3, os.sysconf('SC_OPEN_MAX'))
             # Opening no terminal after setsid means no controlling terminal.
-            os.execve(str(binary), [str(binary), '--state-dir', str(state), *extra], {'TERM': 'xterm'})
+            os.execve(str(binary), [str(binary), '--state-dir', str(state), *extra], {'TERM': term})
         os.close(slave)
         self.fd, self.buffer, self.transcript, self.done = master, b'', b'', False
 

@@ -14,6 +14,7 @@ mod file_ui;
 mod find_ui;
 mod gallery_ui;
 mod gatherings_ui;
+mod guide_ui;
 mod library_ui;
 mod native_files;
 mod operator;
@@ -61,6 +62,7 @@ enum State {
     Identity,
     IdentityArt(usize),
     Menu,
+    Guide(faction_terminal::guide::View),
     Lounge(Box<faction_pages::social::Desk>),
     Who(Box<faction_pages::who::Desk>),
     Terminal,

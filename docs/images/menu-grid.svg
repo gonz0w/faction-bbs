@@ -32,7 +32,7 @@
 <text x="432" y="205" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[Q]</text>
 <text x="462" y="205" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="350" lengthAdjust="spacingAndGlyphs"> Log out                        |  </text>
 <text x="32" y="227" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">+--------------------------------------------------------------------------+</text>
-<text x="12" y="249" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Tab advances; -- unavailable.                                                 </text>
+<text x="12" y="249" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  F1 guide; Tab next; -- unavailable.                                           </text>
 <text x="12" y="271" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Ctrl-C exits; Esc: Enter to recover.                                          </text>
 <text x="12" y="293" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Find a room; follow the talk                                                  </text>
 </svg>

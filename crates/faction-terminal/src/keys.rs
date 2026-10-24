@@ -7,6 +7,7 @@ pub enum Key {
     Right,
     Next,
     Enter,
+    Guide,
     Hotkey(u8),
     Cancel,
 }
@@ -136,10 +137,16 @@ impl Decoder {
                     }
                     return None;
                 }
+                let guide = (matches!(self.state, State::Ss3)
+                    && self.sequence.is_empty()
+                    && byte == b'P')
+                    || (matches!(self.state, State::Csi) && self.sequence == b"11" && byte == b'~');
                 let simple = self.sequence.is_empty() || self.sequence == b"1";
                 self.sequence.clear();
                 self.started = None;
-                let key = if simple {
+                let key = if guide {
+                    Some(Key::Guide)
+                } else if simple {
                     match byte {
                         b'A' => Some(Key::Up),
                         b'B' => Some(Key::Down),
@@ -178,6 +185,31 @@ impl Decoder {
                 }
                 None
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod guide_tests {
+    use super::*;
+    #[test]
+    fn f1_is_bounded_fragmented_and_unknown_variants_stay_quarantined() {
+        let now = Instant::now();
+        for bytes in [b"\x1bOP".as_slice(), b"\x1b[11~"] {
+            let mut d = Decoder::new();
+            for b in &bytes[..bytes.len() - 1] {
+                assert_eq!(d.feed(*b, now), None);
+            }
+            assert_eq!(d.feed(*bytes.last().unwrap(), now), Some(Key::Guide));
+            assert!(d.idle());
+        }
+        for bytes in [b"\x1b[PQ".as_slice(), b"\x1b[11;2~Q", b"\x1bO1PQ"] {
+            let mut d = Decoder::new();
+            for b in bytes {
+                assert_eq!(d.feed(*b, now), None);
+            }
+            assert_eq!(d.feed(b'\r', now), None);
+            assert_eq!(d.feed(b'Q', now), Some(Key::Hotkey(b'Q')));
         }
     }
 }

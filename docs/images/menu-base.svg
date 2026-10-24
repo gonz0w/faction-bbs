@@ -36,6 +36,6 @@
 <text x="62" y="315" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[Q]</text>
 <text x="92" y="315" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="720" lengthAdjust="spacingAndGlyphs"> Log out                    | Drop carrier; come back soon           |  </text>
 <text x="32" y="337" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">+--------------------------------------------------------------------------+</text>
-<text x="12" y="359" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Tab advances; -- unavailable.                                                 </text>
+<text x="12" y="359" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  F1 guide; Tab next; -- unavailable.                                           </text>
 <text x="12" y="381" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Ctrl-C exits; Esc: Enter to recover.                                          </text>
 </svg>

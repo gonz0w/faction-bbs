@@ -322,3 +322,13 @@ souvenirs, no automatic visits or remote authority. Snapshot 47 and
 [connection-desk-baseline-manifest.json](connection-desk-baseline-manifest.json)
 preserve 330 prior input bytes and the entire immutable connection-desk result.
 Keep all 71 offline/archive commands and owned-clone teardown; saved playground off.
+
+
+Snapshot 48 and [passport-baseline-manifest.json](passport-baseline-manifest.json)
+preserve 335 prior inputs and the complete passport result. All 61 historical
+identities stay fixed. [Board-guide evidence](board-guide-netbsd/README.md) records
+369 Rust tests per OS, 17 local/worker ANSI/plain controls per OS and 10 actual
+shared SSH/native controls. Guard 62 checks 340 exact guest inputs, current keys,
+feature/role filtering, inert house notes, read-only navigation and classic fallback.
+There are 72 offline/archive checks. Normal resource/schema defaults remain;
+only an owned clone is used and the saved playground stays stopped and unchanged.

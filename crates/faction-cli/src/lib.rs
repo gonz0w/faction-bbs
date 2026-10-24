@@ -6,6 +6,7 @@ mod directory;
 mod find;
 mod gallery;
 mod gatherings;
+mod guide;
 mod library;
 pub mod operator;
 mod pages;
@@ -719,6 +720,7 @@ fn menu_with_library(
         );
         return Ok(());
     }
+    let guide_base = theme;
     let mut caps = faction_terminal::capabilities::Capabilities::default();
     let mut last_graphics = None;
     terminal::identity(theme, ansi, || {
@@ -756,6 +758,10 @@ fn menu_with_library(
             } else {
                 terminal::Selection::Plain
             };
+            if matches!(selected, terminal::Selection::Guide) {
+                guide::run(board, s, guide_base, true)?;
+                continue;
+            }
             if matches!(selected, terminal::Selection::Refresh) {
                 continue;
             }
@@ -765,6 +771,10 @@ fn menu_with_library(
             } else {
                 print!("{}", theme.plain_menu(member.role == Role::Sysop));
                 let command = board.menu_line("Command (then Enter): ", 8)?;
+                if command.eq_ignore_ascii_case("help") {
+                    guide::run(board, s, guide_base, false)?;
+                    continue;
+                }
                 if command == "?" {
                     continue;
                 }

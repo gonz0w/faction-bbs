@@ -26,3 +26,5 @@ pub mod directory;
 pub mod rooms;
 
 pub mod composer;
+
+pub mod guide;

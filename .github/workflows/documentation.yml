@@ -85,6 +85,7 @@ jobs:
           python3 tools/check_who_evidence.py
           python3 tools/check_connection_desk_evidence.py
           python3 tools/check_passport_evidence.py
+          python3 tools/check_board_guide_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
@@ -185,6 +186,7 @@ jobs:
           python3 tools/smoke_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_standalone_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_idle_notifications.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_board_guide.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_who.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_editorial.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_magazine.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"

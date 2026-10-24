@@ -109,3 +109,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0074: Local connection readiness](0074-local-connection-readiness.md) — device checks before live probing.
 
 - [0075: Device-local passport](0075-device-local-passport.md) — unverified souvenirs without travel tracking.
+
+- [0076: Read-only board guide](0076-read-only-board-guide.md) — F1/plain help without new menu slots.

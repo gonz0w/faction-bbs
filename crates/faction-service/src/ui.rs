@@ -204,6 +204,10 @@ impl Client {
     }
     fn action(&mut self, key: Key, board: &mut Board, theme: &Theme) -> faction_core::Result<bool> {
         // Cached presentation never grants an action; open/core recheck authority.
+        if key == Key::Guide {
+            self.guide_open(board, theme)?;
+            return Ok(true);
+        }
         if key == Key::Hotkey(b'?') {
             self.menu(theme, board)?;
             return Ok(true);
@@ -592,6 +596,17 @@ impl Client {
                 }
             }
             State::Identity | State::Pause => self.menu(theme, board)?,
+            State::Guide(view) => {
+                self.state = State::Guide(view);
+                let key = if text.is_empty() {
+                    Key::Enter
+                } else if text.len() == 1 {
+                    Key::Hotkey(text.as_bytes()[0].to_ascii_uppercase())
+                } else {
+                    return Err(Error::Invalid("guide command"));
+                };
+                self.guide_key(key, board, theme)?;
+            }
             State::Directory(view) => {
                 self.state = State::Directory(view);
                 let key = if text.is_empty() {
@@ -657,7 +672,9 @@ impl Client {
                 let find_theme = faction_find::menu_theme(board, self.session()?, theme)?;
                 let theme = find_theme.as_ref().unwrap_or(theme);
                 let sysop = board.whoami(self.session()?)?.role == faction_core::Role::Sysop;
-                if text.eq_ignore_ascii_case("who")
+                if text.eq_ignore_ascii_case("help") {
+                    self.guide_open(board, theme)?;
+                } else if text.eq_ignore_ascii_case("who")
                     && board.social_session_config(self.session()?)?.enabled
                 {
                     self.open(Action::Who, board, theme)?;
@@ -1397,8 +1414,10 @@ impl Client {
                 .map_err(|_| Error::Invalid("wall input flush"))?;
             return self.wall_show(board, theme);
         }
-        if matches!(self.state, State::Directory(_) | State::RoomBrowse(_))
-            && self.size() != self.dimensions
+        if matches!(
+            self.state,
+            State::Guide(_) | State::Directory(_) | State::RoomBrowse(_)
+        ) && self.size() != self.dimensions
             && self.output.is_empty()
         {
             self.queue("Terminal resized; returning to main menu.\n");
@@ -1639,6 +1658,24 @@ impl Client {
             if matches!(self.state, State::RoomBrowse(_)) && self.ansi {
                 if let Some(key) = self.decoder.feed(byte, Instant::now()) {
                     match self.rooms_key(key, board, theme) {
+                        Ok(true) => {
+                            self.input.clear();
+                            self.decoder = Decoder::new();
+                            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)?;
+                            break;
+                        }
+                        Ok(false) => (),
+                        Err(e) => {
+                            self.recover(e, board, theme);
+                            break;
+                        }
+                    }
+                }
+                continue;
+            }
+            if matches!(self.state, State::Guide(_)) && self.ansi {
+                if let Some(key) = self.decoder.feed(byte, Instant::now()) {
+                    match self.guide_key(key, board, theme) {
                         Ok(true) => {
                             self.input.clear();
                             self.decoder = Decoder::new();
