@@ -24,7 +24,7 @@ def substantive(text):
     return len(text.strip())>=30 and not re.search(r'\b(?:TODO|TBD|PLACEHOLDER)\b|Replace with|Map every closing issue',text,re.I)
 
 def doc_file(name):
-    return name.endswith(('.md','.rst','.txt','.svg','.png','.jpg','.jpeg','.webp')) or name in {'.gitignore','.gitattributes','.editorconfig','LICENSE'} or (name.startswith('.github/ISSUE_TEMPLATE/') and name.endswith(('.yml','.yaml')))
+    return name.endswith(('.md','.rst','.txt','.svg','.png','.jpg','.jpeg','.webp')) or name in {'.gitignore','.gitattributes','.editorconfig','LICENSE','.agent-temper/LICENSE','.agent-temper/SHA256SUMS'} or (name.startswith('.github/ISSUE_TEMPLATE/') and name.endswith(('.yml','.yaml')))
 
 def validate(pr,issues,files,repository):
     errors=[];base=pr.get('base',{});repo=base.get('repo',{})

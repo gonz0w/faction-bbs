@@ -1,7 +1,8 @@
 # Contributing to Faction BBS
 
 All work starts in [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues).
-Read [the issue-only workflow](dev-docs/workflow.md), [product contracts](docs/project.md)
+Read [the engineering policy](PROJECT.md), [pinned method](.agent-temper/METHOD.md),
+[the issue-only workflow](dev-docs/workflow.md), [product contracts](docs/project.md)
 and [privacy/security](docs/security-privacy.md). Research and feature requests are
 not promises of support or authorization to expose a board publicly.
 
@@ -21,6 +22,7 @@ not promises of support or authorization to expose a board publicly.
 
 Product/member/sysop documentation lives in `docs/`; technical contracts, decisions,
 research and validation live in `dev-docs/`. These are documentation, not task state.
+Follow the [documentation method](.agent-temper/docs/reference/documentation.md).
 Use plain Markdown, relative technical links and dated primary sources. Historical
 archives/measurements stay immutable and are not current work instructions.
 

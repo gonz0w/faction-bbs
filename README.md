@@ -294,8 +294,8 @@ Privacy, security, lightweight operation, and efficient text interaction are cor
 | Understand privacy and access | [Security and privacy requirements](docs/security-privacy.md) |
 | Explore the BBS look and feel | [Customization direction](docs/customization.md) |
 | Contribute research or implementation | [Contributing](CONTRIBUTING.md) and [development guide](dev-docs/README.md) |
-| Work with Codex | [Agent instructions](AGENTS.md) and [workflow](dev-docs/workflow.md) |
-| Find work and dependencies | [GitHub issue](https://github.com/gonz0w/faction-bbs/issues) and [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) |
+| Work with an agent | [Agent instructions](AGENTS.md), [engineering policy](PROJECT.md), and [workflow](dev-docs/workflow.md) |
+| Find work and dependencies | [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) |
 | Review architecture decisions | [Decision records](dev-docs/decisions/README.md) |
 | Report a vulnerability | [Security policy](SECURITY.md) |
 
@@ -319,5 +319,9 @@ See [local development](docs/local-development.md) for member registration, syso
 Faction BBS is licensed under [BSD-3-Clause](LICENSE). Third-party games, source, fonts, and artwork retain their own licenses; nothing in this repository grants rights to redistribute them. The historical names above describe the founder's inspiration, not affiliation or a claim that their code is included.
 
 Earlier planning used the working name Citadel IRC. Its records are preserved in the [historical archive](dev-docs/archive/README.md); they do not govern current work.
+
+Faction adopts a pinned [Agent Temper method](.agent-temper/METHOD.md) with explicit
+[local engineering policy](PROJECT.md). The [source record](.agent-temper/SOURCE.md)
+identifies the reviewed revision; upstream changes require deliberate adoption.
 
 Work is **100% [GitHub issue-driven](dev-docs/workflow.md)**: finite acceptance, test-first behavior changes, and PRs that close completed issues. Plans/handoffs live in issues; there is no repository task tracker.
