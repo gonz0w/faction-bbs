@@ -5,6 +5,9 @@ mod launcher;
 mod mail_data;
 mod mail_ui;
 mod mail_vault;
+mod passport;
+mod passport_data;
+mod passport_store;
 mod profile;
 mod sftp;
 mod stream;
@@ -436,6 +439,9 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile, travel: &Travel) -> 
 }
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if args.first().is_some_and(|s| s == "--passport-store") {
+        return passport::cli(&args);
+    }
     if args.len() == 2 && args[0] == "--check-profile" {
         let report = connection::Report::load(Path::new(&args[1]));
         print!("{}", report.share_summary());
@@ -452,7 +458,7 @@ fn run() -> io::Result<()> {
     }
     if args.len() < 2 || !matches!(args[0].as_str(), "--profile" | "--boards") {
         return Err(io::Error::other(
-            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty | --compact] [--file-budget BYTES] | --check-profile PRIVATE_TOML | --mail-store PRIVATE_DIR init|open|recover",
+            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty | --compact] [--file-budget BYTES] | --passport-store PRIVATE_DIR init|list|export [ID] | --check-profile PRIVATE_TOML | --mail-store PRIVATE_DIR init|open|recover",
         ));
     }
     let mut travel = Travel::default();
@@ -510,6 +516,18 @@ fn run() -> io::Result<()> {
                     && e.kind() != io::ErrorKind::Interrupted
                 {
                     return Err(e);
+                }
+                continue;
+            }
+            launcher::Destination::Passport(selected) => {
+                last = selected;
+                let store = catalog.passport_store.as_deref().ok_or_else(invalid)?;
+                if let Err(e) = passport::run(&mut t, store, &catalog, selected) {
+                    if e.kind() == io::ErrorKind::Interrupted {
+                        continue;
+                    }
+                    t.print("Local passport unavailable; initialize/check its private store.\r\n")?;
+                    t.line("Enter to return to local Boards: ", 0)?;
                 }
                 continue;
             }

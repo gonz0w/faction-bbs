@@ -1,0 +1,734 @@
+//! Local terminal companion. Remote output never selects local paths or endpoints.
+#![forbid(unsafe_code)]
+mod connection;
+mod launcher;
+mod mail_data;
+mod mail_ui;
+mod mail_vault;
+mod profile;
+mod sftp;
+mod stream;
+mod transport;
+mod travel;
+use faction_files::invalid;
+use faction_terminal::{Decoder, Key};
+use profile::Profile;
+use rustix::{
+    event::{PollFd, PollFlags, Timespec, poll},
+    termios::{self, OptionalActions, Termios},
+};
+use std::{
+    fs::File,
+    io::{self, Read, Write},
+    path::{Path, PathBuf},
+    time::{Duration, Instant},
+};
+use transport::Remote;
+use travel::Travel;
+struct Terminal {
+    input: File,
+    output: File,
+    saved: Termios,
+    graphics: bool,
+}
+impl Drop for Terminal {
+    fn drop(&mut self) {
+        if self.graphics {
+            faction_terminal::graphics::cleanup(&mut self.output);
+        }
+        let _ = termios::tcsetattr(&self.input, OptionalActions::Now, &self.saved);
+        let _ = faction_terminal::graphics::write_tty(
+            &mut self.output,
+            b"\x1b[0m\x1b[?25h\r\n",
+            Instant::now() + Duration::from_millis(20),
+        );
+    }
+}
+fn safe(s: &str) -> String {
+    s.chars()
+        .flat_map(|c| {
+            if c.is_ascii_graphic() || c == ' ' {
+                vec![c]
+            } else {
+                c.escape_unicode().collect()
+            }
+        })
+        .collect()
+}
+impl Terminal {
+    fn start() -> io::Result<Self> {
+        let input = File::from(rustix::io::fcntl_dupfd_cloexec(io::stdin(), 3)?);
+        let output = File::from(rustix::io::fcntl_dupfd_cloexec(io::stdout(), 3)?);
+        let saved = termios::tcgetattr(&input)?;
+        termios::tcgetattr(&output)?;
+        let mut raw = saved.clone();
+        raw.make_raw();
+        termios::tcsetattr(&input, OptionalActions::Now, &raw)?;
+        Ok(Self {
+            input,
+            output,
+            saved,
+            graphics: false,
+        })
+    }
+    fn probe_graphics(&mut self) -> io::Result<bool> {
+        use faction_terminal::graphics::{Probe, QUERY};
+        self.print("Opt-in Kitty graphics: checking this local terminal. Stay idle briefly.\r\n")?;
+        self.print(QUERY)?;
+        self.output.flush()?;
+        let mut probe = Probe::default();
+        probe.begin(Instant::now());
+        while !probe.expired(Instant::now()) {
+            let ready = self.ready(20)?;
+            if probe.expired(Instant::now()) {
+                break;
+            }
+            if ready {
+                probe.feed(self.byte()?).map_err(io::Error::other)?;
+            }
+        }
+        termios::tcflush(&self.input, termios::QueueSelector::IFlush)?;
+        let supported = probe.result().map_err(io::Error::other)?;
+        self.print(if supported {
+            "Kitty gate ready; choose T then G on the board.\r\n"
+        } else {
+            "Kitty unavailable; classic fallback.\r\n"
+        })?;
+        self.graphics = supported;
+        Ok(supported)
+    }
+    fn print(&mut self, s: &str) -> io::Result<()> {
+        self.output.write_all(s.as_bytes())
+    }
+    fn ready(&self, timeout_ms: i64) -> io::Result<bool> {
+        let mut p = [PollFd::new(&self.input, PollFlags::IN)];
+        let ts = Timespec {
+            tv_sec: timeout_ms / 1000,
+            tv_nsec: (timeout_ms % 1000) * 1000000,
+        };
+        Ok(poll(&mut p, Some(&ts))? > 0 && p[0].revents().contains(PollFlags::IN))
+    }
+    fn byte(&mut self) -> io::Result<u8> {
+        let mut b = [0];
+        self.input.read_exact(&mut b)?;
+        Ok(b[0])
+    }
+    fn line(&mut self, label: &str, cap: usize) -> io::Result<String> {
+        self.print(label)?;
+        let mut bytes = Vec::new();
+        loop {
+            if !self.ready(100)? {
+                continue;
+            }
+            match self.byte()? {
+                3 | 4 => return Err(io::Error::new(io::ErrorKind::Interrupted, "cancelled")),
+                b'\r' | b'\n' => {
+                    self.print("\r\n")?;
+                    return String::from_utf8(bytes).map_err(|_| invalid());
+                }
+                8 | 127 => {
+                    if !bytes.is_empty() {
+                        bytes.pop();
+                        while !bytes.is_empty() && std::str::from_utf8(&bytes).is_err() {
+                            bytes.pop();
+                        }
+                        self.print("\x08 \x08")?;
+                    }
+                }
+                b if (32..=126).contains(&b) && bytes.len() < cap => {
+                    bytes.push(b);
+                    self.output.write_all(&[b])?;
+                }
+                _ => (),
+            }
+        }
+    }
+    fn choice(&mut self) -> io::Result<u8> {
+        const ENTRIES: [(u8, &str); 6] = [
+            (b'A', "File areas"),
+            (b'L', "List area / next page"),
+            (b'U', "Upload local file"),
+            (b'D', "Download file / link"),
+            (b'I', "Inspect file link"),
+            (b'B', "Back to the BBS"),
+        ];
+        let mut focus = 0;
+        let mut decoder = Decoder::new();
+        loop {
+            self.print("\x1b[2J\x1b[H\x1b[1;36mFaction // Files on your device\x1b[0m\r\nArrows / Enter or hotkeys. Files and keys stay under your control.\r\n\r\n")?;
+            for (i, (key, label)) in ENTRIES.iter().enumerate() {
+                self.print(&format!(
+                    "{} [{}] {}\r\n",
+                    if i == focus { ">" } else { " " },
+                    *key as char,
+                    label
+                ))?;
+            }
+            loop {
+                if !self.ready(100)? {
+                    decoder.expire(Instant::now());
+                    continue;
+                }
+                if let Some(k) = decoder.feed(self.byte()?, Instant::now()) {
+                    match k {
+                        Key::Enter => return Ok(ENTRIES[focus].0),
+                        Key::Hotkey(b)
+                            if ENTRIES.iter().any(|(k, _)| *k == b.to_ascii_uppercase()) =>
+                        {
+                            return Ok(b.to_ascii_uppercase());
+                        }
+                        Key::Up | Key::Left => {
+                            focus = (focus + ENTRIES.len() - 1) % ENTRIES.len();
+                            break;
+                        }
+                        Key::Down | Key::Right | Key::Next => {
+                            focus = (focus + 1) % ENTRIES.len();
+                            break;
+                        }
+                        Key::Cancel => return Ok(b'B'),
+                        _ => (),
+                    }
+                }
+            }
+        }
+    }
+}
+fn reference(remote: &Remote, s: &str) -> io::Result<String> {
+    if faction_files::id(s) {
+        return Ok(format!("faction-file:{}/{s}", remote.namespace));
+    }
+    let prefix = format!("faction-file:{}/", remote.namespace);
+    if let Some(id) = s.strip_prefix(&prefix)
+        && faction_files::id(id)
+    {
+        return Ok(s.into());
+    }
+    Err(invalid())
+}
+fn transfer(
+    t: &mut Terminal,
+    r: &mut Remote,
+    p: &Profile,
+    sending: bool,
+    travel: &Travel,
+) -> io::Result<()> {
+    let (row, path, source) = if sending {
+        let local = PathBuf::from(t.line("Local file to upload: ", 512)?);
+        let file = sftp::source(&local)?;
+        let size = file.metadata()?.len().to_string();
+        travel.check_file(&size)?;
+        let area = t.line("Area ID: ", 10)?;
+        let default = local
+            .file_name()
+            .and_then(|s| s.to_str())
+            .filter(|s| sftp::filename(s))
+            .unwrap_or("");
+        let name = t.line(&format!("Remote filename [{}]: ", safe(default)), 64)?;
+        let name = if name.is_empty() {
+            default.to_owned()
+        } else {
+            name
+        };
+        if !sftp::filename(&name) {
+            return Err(invalid());
+        }
+        let description = t.line("Description (max 256 bytes): ", 256)?;
+        if !t
+            .line(
+                &format!("Upload {} bytes as {}? [y/N]: ", size, safe(&name)),
+                1,
+            )?
+            .eq_ignore_ascii_case("y")
+        {
+            return Err(io::ErrorKind::Interrupted.into());
+        }
+        let rows = r.rpc(&["upload", &area, &name, &size, &description])?;
+        if rows.len() != 1
+            || rows[0].get(1).map(String::as_str) != Some("upload")
+            || rows[0].get(2) != Some(&name)
+            || rows[0].get(3) != Some(&size)
+        {
+            return Err(invalid());
+        }
+        (
+            rows.into_iter().next().ok_or_else(invalid)?,
+            local,
+            Some(file),
+        )
+    } else {
+        for (i, link) in r.recent.items.iter().enumerate() {
+            t.print(&format!("#{} {}\r\n", i + 1, link))?;
+        }
+        let item = t.line("File ID, faction-file link or recent #number: ", 128)?;
+        let item = if let Some(n) = item.strip_prefix('#') {
+            r.recent
+                .items
+                .get(
+                    n.parse::<usize>()
+                        .ok()
+                        .and_then(|n| n.checked_sub(1))
+                        .ok_or_else(invalid)?,
+                )
+                .ok_or_else(invalid)?
+                .clone()
+        } else {
+            item
+        };
+        let item = reference(r, &item)?;
+        let metadata = r.rpc(&["info", &item])?;
+        if metadata.len() != 1 || metadata[0].len() != 5 || metadata[0][0] != "info" {
+            return Err(invalid());
+        }
+        t.print(&format!(
+            "{} // {} bytes // SHA256 {}\r\n",
+            safe(&metadata[0][2]),
+            safe(&metadata[0][3]),
+            safe(&metadata[0][4])
+        ))?;
+        travel.check_file(&metadata[0][3])?;
+        let path = PathBuf::from(t.line("Save as (new local filename): ", 512)?);
+        if !t
+            .line("Download to this local path? [y/N]: ", 1)?
+            .eq_ignore_ascii_case("y")
+        {
+            return Err(io::ErrorKind::Interrupted.into());
+        }
+        let rows = r.rpc(&["download", &item])?;
+        if rows.len() != 1 {
+            return Err(invalid());
+        }
+        let row = rows.into_iter().next().ok_or_else(invalid)?;
+        if row.get(2) != metadata[0].get(2)
+            || row.get(3) != metadata[0].get(3)
+            || row.get(4) != metadata[0].get(4)
+        {
+            return Err(invalid());
+        }
+        (row, path, None)
+    };
+    // Validate before either streaming or cancellation indexes the grant. A
+    // malformed remote response must never panic or become local authority.
+    if row.len() != 6
+        || row[0] != "grant"
+        || row[1] != if sending { "upload" } else { "download" }
+        || !faction_files::id(&row[5])
+    {
+        return Err(invalid());
+    }
+    let result = sftp::transfer(p, &row, &path, source, |done, total| {
+        if t.ready(0)? {
+            let b = t.byte()?;
+            if b == 3 || b == 4 {
+                return Err(io::ErrorKind::Interrupted.into());
+            }
+        }
+        t.print(&format!(
+            "\rTransferring: {done}/{total} bytes (Ctrl-C cancels)"
+        ))
+    });
+    let _ = termios::tcflush(&t.input, termios::QueueSelector::IFlush);
+    if result.is_err() && r.native {
+        let _ = r.rpc(&["cancel", &row[5]]);
+    }
+    let digest = result?;
+    t.print(&format!("\r\nTransfer complete. SHA256 {digest}\r\n"))?;
+    if sending {
+        t.print("Upload awaits sysop review; it is not published yet.\r\n")?;
+    }
+    Ok(())
+}
+fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile, travel: &Travel) -> io::Result<()> {
+    let mut after = String::new();
+    let mut last_area = String::new();
+    while r.native {
+        let choice = t.choice()?;
+        if choice == b'B' {
+            r.rpc(&["back"])?;
+            break;
+        }
+        t.print("\r\n")?;
+        let result: io::Result<()> = (|| {
+            match choice {
+                b'A' => {
+                    let cursor = t.line("After area ID [0]: ", 10)?;
+                    let cursor = if cursor.is_empty() { "0" } else { &cursor };
+                    for a in r.rpc(&["areas", cursor])? {
+                        if a.len() != 6 || a[0] != "area" {
+                            return Err(invalid());
+                        }
+                        t.print(&format!(
+                            "{} // {} // {} // private={} // quota={}\r\n",
+                            safe(&a[1]),
+                            safe(&a[2]),
+                            safe(&a[3]),
+                            safe(&a[4]),
+                            safe(&a[5])
+                        ))?;
+                    }
+                }
+                b'L' => {
+                    let area = t.line(&format!("Area ID [{}]: ", safe(&last_area)), 10)?;
+                    let area = if area.is_empty() {
+                        last_area.clone()
+                    } else {
+                        area
+                    };
+                    let cursor = t.line(
+                        &format!("After object ID [{}] (- starts over): ", safe(&after)),
+                        32,
+                    )?;
+                    let cursor = if cursor == "-" || area != last_area {
+                        String::new()
+                    } else if cursor.is_empty() {
+                        after.clone()
+                    } else {
+                        cursor
+                    };
+                    let rows = r.rpc(&["list", &area, &cursor])?;
+                    last_area = area;
+                    after.clear();
+                    for f in rows {
+                        if f.len() != 7 || f[0] != "file" || !faction_files::id(&f[1]) {
+                            return Err(invalid());
+                        }
+                        t.print(&format!(
+                            "{} // {} // {} bytes // by {}\r\n  {}\r\n  faction-file:{}/{}\r\n",
+                            safe(&f[1]),
+                            safe(&f[2]),
+                            safe(&f[3]),
+                            safe(&f[5]),
+                            safe(&f[6]),
+                            r.namespace,
+                            f[1]
+                        ))?;
+                        r.recent
+                            .feed(format!("faction-file:{}/{}", r.namespace, f[1]).as_bytes());
+                        after = f[1].clone();
+                    }
+                }
+                b'U' => transfer(t, r, p, true, travel)?,
+                b'D' => transfer(t, r, p, false, travel)?,
+                b'I' => {
+                    let item = t.line("File ID or faction-file link: ", 128)?;
+                    for f in r.rpc(&["info", &reference(r, &item)?])? {
+                        t.print(&format!(
+                            "{}\r\n",
+                            f.iter().map(|s| safe(s)).collect::<Vec<_>>().join(" // ")
+                        ))?;
+                    }
+                }
+                _ => return Err(invalid()),
+            }
+            Ok(())
+        })();
+        if let Err(e) = result {
+            if !r.native {
+                return Err(e);
+            }
+            t.print(&format!(
+                "\r\nOperation stopped: {}\r\n",
+                safe(&e.to_string())
+            ))?;
+        }
+        t.line("Enter to return to Files: ", 0)?;
+    }
+    Ok(())
+}
+fn run() -> io::Result<()> {
+    let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if args.len() == 2 && args[0] == "--check-profile" {
+        let report = connection::Report::load(Path::new(&args[1]));
+        print!("{}", report.share_summary());
+        return if report.ready() {
+            Ok(())
+        } else {
+            Err(io::Error::other(
+                "Local profile needs attention; see the redacted report.",
+            ))
+        };
+    }
+    if args.len() == 3 && args[0] == "--mail-store" {
+        return mail_ui::run(Path::new(&args[1]), &args[2]);
+    }
+    if args.len() < 2 || !matches!(args[0].as_str(), "--profile" | "--boards") {
+        return Err(io::Error::other(
+            "Usage: faction-client --profile PRIVATE_TOML | --boards PRIVATE_CATALOG [--kitty | --compact] [--file-budget BYTES] | --check-profile PRIVATE_TOML | --mail-store PRIVATE_DIR init|open|recover",
+        ));
+    }
+    let mut travel = Travel::default();
+    let (mut kitty, mut compact_seen, mut budget_seen) = (false, false, false);
+    let mut i = 2;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--kitty" if !kitty => kitty = true,
+            "--compact" if !compact_seen => {
+                travel.compact = true;
+                compact_seen = true;
+            }
+            "--file-budget" if !budget_seen => {
+                i += 1;
+                travel.budget(args.get(i).ok_or_else(invalid)?)?;
+                budget_seen = true;
+            }
+            _ => return Err(invalid()),
+        }
+        i += 1;
+    }
+    if kitty && travel.compact {
+        return Err(io::Error::other(
+            "choose --kitty or --compact for this visit",
+        ));
+    }
+    let catalog = if args[0] == "--boards" {
+        Some(launcher::Catalog::load(Path::new(&args[1]))?)
+    } else {
+        None
+    };
+    let profile = if catalog.is_none() {
+        Some(Profile::load(Path::new(&args[1]))?)
+    } else {
+        None
+    };
+    let mut t = Terminal::start()?;
+    let size = termios::tcgetwinsize(&t.input)?;
+    if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
+        return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
+    }
+    let graphics = kitty && t.probe_graphics()?;
+    if let Some(p) = profile {
+        return session(&mut t, &p, graphics, false, &travel).map(|_| ());
+    }
+    let catalog = catalog.ok_or_else(invalid)?;
+    let mut last = 0;
+    loop {
+        let i = match launcher::choose(&mut t, &catalog, last)? {
+            launcher::Destination::Quit => break,
+            launcher::Destination::Board(i) => i,
+            launcher::Destination::Travel(selected) => {
+                last = selected;
+                if let Err(e) = travel.panel(&mut t)
+                    && e.kind() != io::ErrorKind::Interrupted
+                {
+                    return Err(e);
+                }
+                continue;
+            }
+            launcher::Destination::Inspect(selected) => {
+                last = selected;
+                let board = &catalog.boards[selected];
+                if let Err(e) = connection::panel(&mut t, &board.label, &board.profile)
+                    && e.kind() != io::ErrorKind::Interrupted
+                {
+                    return Err(e);
+                }
+                continue;
+            }
+            launcher::Destination::Mail(selected) => {
+                last = selected;
+                // This branch exists only in the local picker, with no Remote/SSH child.
+                // Store selection comes from the private member catalog, never the board.
+                let store = catalog.mail_store.as_deref().ok_or_else(invalid)?;
+                if let Err(e) = mail_ui::run(store, "open") {
+                    t.print(&format!(
+                        "\r\nLocal vault closed: {}\r\n",
+                        safe(&e.to_string())
+                    ))?;
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    t.line("Enter to return to local Boards: ", 0)?;
+                }
+                continue;
+            }
+        };
+        last = i;
+        let b = &catalog.boards[i];
+        let result: io::Result<()> = (|| {
+            // Reload only after local selection, retaining all existing SSH/key checks.
+            let p = Profile::load(&b.profile)?;
+            t.print(&format!("\x1b[2J\x1b[HLOCAL CONNECTION / {}\r\nSSH: {} port {}\r\nFiles: {} port {}\r\nLocal profile parsed; independent login/approval.\r\nNo account, agent or device keys forwarded.\r\n", b.label, safe(&p.host), p.port, safe(&p.file_host), p.file_port))?;
+            t.print(&format!(
+                "Travel: {}\r\nPayload bytes only; SSH overhead/retries extra.\r\n",
+                travel.summary()
+            ))?;
+            termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+            if !t
+                .line("Connect using this local profile? [y/N]: ", 1)?
+                .eq_ignore_ascii_case("y")
+            {
+                return Ok(());
+            }
+            t.print("Ctrl-] then B: local boards. Ctrl-] twice: send Ctrl-].\r\n")?;
+            let result = session(&mut t, &p, graphics && !travel.compact, true, &travel);
+            if graphics {
+                faction_terminal::graphics::cleanup(&mut t.output);
+            }
+            result?;
+            t.print("\r\nBoard disconnected. Local profiles and keys stay on your device.\r\n")?;
+            Ok(())
+        })();
+        if let Err(e) = result {
+            if e.kind() == io::ErrorKind::Interrupted {
+                continue;
+            }
+            t.print(&format!(
+                "\r\nConnection stopped: {}\r\n",
+                safe(&e.to_string())
+            ))?;
+        }
+        termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+        t.line("Enter to return to local Boards: ", 0)?;
+    }
+    Ok(())
+}
+fn session(
+    t: &mut Terminal,
+    p: &Profile,
+    graphics: bool,
+    boards: bool,
+    travel: &Travel,
+) -> io::Result<()> {
+    let mut size = termios::tcgetwinsize(&t.input)?;
+    if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
+        return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
+    }
+    let mut local_keys = launcher::Keys::default();
+    t.print(&format!("LOCAL TRAVEL: {}\r\n", travel.summary()))?;
+    let mut r = Remote::start(p, size.ws_row, size.ws_col, travel.compact)?;
+    r.filter.graphics.enabled = graphics;
+    let mut handshake = None;
+    loop {
+        if boards && let Some(byte) = local_keys.expired(Instant::now()) {
+            r.send(&[byte])?;
+        }
+        if r.filter.graphics.expired(Instant::now()) {
+            return Err(io::Error::other("graphics transfer timeout"));
+        }
+        if r.native {
+            file_menu(t, &mut r, p, travel)?;
+        }
+        if !r.output.is_empty() {
+            faction_terminal::graphics::write_tty(
+                &mut t.output,
+                &std::mem::take(&mut r.output),
+                Instant::now() + Duration::from_secs(5),
+            )?;
+        }
+        let mut fds = [
+            PollFd::new(&r.pty, PollFlags::IN),
+            PollFd::new(&t.input, PollFlags::IN),
+        ];
+        let ts = Timespec {
+            tv_sec: 0,
+            tv_nsec: 100_000_000,
+        };
+        poll(&mut fds, Some(&ts))?;
+        let peer = fds[0].revents();
+        let keyboard = fds[1].revents();
+        if peer.intersects(PollFlags::IN | PollFlags::HUP | PollFlags::ERR) {
+            match r.pump() {
+                Ok(()) => (),
+                Err(e) => {
+                    // PTY EOF can arrive just before waitpid observes SSH exit.
+                    let until = Instant::now() + Duration::from_secs(1);
+                    let status = loop {
+                        if let Some(status) = r.child.try_wait()? {
+                            break Some(status);
+                        }
+                        if Instant::now() >= until {
+                            break None;
+                        }
+                        std::thread::sleep(Duration::from_millis(10));
+                    };
+                    if status.is_some_and(|s| s.success()) {
+                        break;
+                    }
+                    return Err(e);
+                }
+            }
+            for f in std::mem::take(&mut r.frames) {
+                if f.as_slice() == ["ready"] && handshake.is_none() {
+                    let mut random = [0; 16];
+                    getrandom::fill(&mut random).map_err(|_| invalid())?;
+                    r.nonce = random.iter().map(|b| format!("{b:02x}")).collect();
+                    r.sequence = 0;
+                    r.send(format!("native-v1 {} {}\r", p.public_key, r.nonce).as_bytes())?;
+                    handshake = Some(Instant::now());
+                } else if f.len() == 3
+                    && f[0] == "hello"
+                    && f[1] == r.nonce
+                    && faction_files::id(&f[2])
+                    && handshake.is_some()
+                {
+                    r.namespace = f[2].clone();
+                    r.native = true;
+                    r.output.clear();
+                    handshake = None;
+                } else {
+                    return Err(invalid());
+                }
+            }
+        }
+        if handshake.is_some_and(|s: Instant| s.elapsed() > Duration::from_secs(5)) {
+            return Err(io::Error::other("native Files handshake timed out"));
+        }
+        if keyboard.contains(PollFlags::IN) && !r.native && handshake.is_none() {
+            let mut b = [0; 64];
+            let n = t.input.read(&mut b)?;
+            if n == 0 {
+                break;
+            }
+            if boards {
+                let (forward, requested) = local_keys.feed(&b[..n], Instant::now());
+                if !forward.is_empty() {
+                    r.send(&forward)?;
+                }
+                if requested {
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    let answer = t.line(
+                        "\r\nLOCAL: disconnect board (drafts lost), return to Boards? [y/N]: ",
+                        1,
+                    );
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    match answer {
+                        Ok(value) if value.eq_ignore_ascii_case("y") => break,
+                        Ok(_) => t.print("Staying on this board.\r\n")?,
+                        Err(e) if e.kind() == io::ErrorKind::Interrupted => {
+                            t.print("Staying on this board.\r\n")?
+                        }
+                        Err(e) => return Err(e),
+                    }
+                }
+            } else {
+                r.send(&b[..n])?;
+            }
+        }
+        let next = termios::tcgetwinsize(&t.input)?;
+        if (next.ws_row, next.ws_col) != (size.ws_row, size.ws_col) {
+            size = next;
+            termios::tcsetwinsize(&r.pty, size)?;
+            let pid = rustix::process::Pid::from_raw(r.child.id() as i32).ok_or_else(invalid)?;
+            rustix::process::kill_process(pid, rustix::process::Signal::WINCH)?;
+        }
+    }
+    Ok(())
+}
+fn main() {
+    if let Err(e) = run() {
+        eprintln!("Faction client: {e}");
+        std::process::exit(1)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn client_pty_preserves_geometry_and_owns_cloexec_descriptors() {
+        use rustix::io::{FdFlags, fcntl_getfd};
+        let (master, slave) = faction_client_pty::open(24, 80).unwrap();
+        assert_eq!(termios::tcgetwinsize(&slave).unwrap().ws_col, 80);
+        assert_eq!(termios::tcgetwinsize(&slave).unwrap().ws_row, 24);
+        assert!(fcntl_getfd(&master).unwrap().contains(FdFlags::CLOEXEC));
+        assert!(fcntl_getfd(&slave).unwrap().contains(FdFlags::CLOEXEC));
+        assert!(faction_client_pty::open(0, 80).is_err());
+    }
+}

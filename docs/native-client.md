@@ -135,3 +135,9 @@ Preferences are memory-only; no route, account, vault or profile changes.
 The Boards picker I action opens [local readiness and stored-pin diagnostics](connection-desk.md);
 `--check-profile FILE` prints a redacted plain-text summary without a TTY or network.
 Actual SSH admission and BBS approval remain separate, untested stages.
+
+## Local board passport
+
+An optional catalog `passport_store` enables J between visits for the
+[device-local passport](local-passport.md): explicit plaintext notes, original
+ASCII calling cards and selective share previews. No automatic visit tracking.

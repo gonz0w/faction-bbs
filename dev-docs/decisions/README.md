@@ -107,3 +107,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0073: Universal presence and distinct Who](0073-universal-presence-and-who.md)
 
 - [0074: Local connection readiness](0074-local-connection-readiness.md) — device checks before live probing.
+
+- [0075: Device-local passport](0075-device-local-passport.md) — unverified souvenirs without travel tracking.

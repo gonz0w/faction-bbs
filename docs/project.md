@@ -58,6 +58,10 @@ The native [connection desk](connection-desk.md) adds deliberate local profile/f
 readiness, stored host-pin lookup and redacted sharing. Live route/identity/admission
 and verified-contact diagnostics remain follow-on work; no new network activity.
 
+The optional [device-local passport](local-passport.md) adds explicit board notes,
+original ASCII souvenirs and selective share previews. There is no automatic
+travel history or verified identity claim; private mail stays separate.
+
 ## Confirmed requirements
 
 | Area | Requirement |

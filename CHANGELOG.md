@@ -4,6 +4,10 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an opt-in device-local board passport with explicit notes, inert original
+  ASCII seals, profile-change review, removed-contact management and selective
+  share previews; no automatic travel log or server/mail/default changes.
+
 - Add a local native connection desk, bounded stored-host-pin lookup and redacted plain-text profile checks; SSH/plain fallback and server defaults stay unchanged.
 
 

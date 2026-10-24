@@ -13,12 +13,13 @@ const LIMIT: usize = 16;
 const PAGE: usize = 4;
 pub(super) struct Board {
     pub label: String,
-    id: String,
+    pub id: String,
     pub profile: PathBuf,
 }
 pub(super) struct Catalog {
     pub boards: Vec<Board>,
     pub mail_store: Option<PathBuf>,
+    pub passport_store: Option<PathBuf>,
 }
 impl Catalog {
     pub fn load(path: &Path) -> io::Result<Self> {
@@ -37,6 +38,11 @@ impl Catalog {
             return Err(invalid());
         }
         let mail_store = match t.remove("mail_store") {
+            None => None,
+            Some(toml::Value::String(path)) => Some(profile::path(path)?),
+            _ => return Err(invalid()),
+        };
+        let passport_store = match t.remove("passport_store") {
             None => None,
             Some(toml::Value::String(path)) => Some(profile::path(path)?),
             _ => return Err(invalid()),
@@ -78,7 +84,11 @@ impl Catalog {
             }
             boards.push(Board { id, label, profile });
         }
-        Ok(Self { boards, mail_store })
+        Ok(Self {
+            boards,
+            mail_store,
+            passport_store,
+        })
     }
 }
 #[derive(Default)]
@@ -92,22 +102,25 @@ enum Choice {
     Mail,
     Travel,
     Inspect,
+    Passport,
 }
 pub(super) enum Destination {
     Board(usize),
     Mail(usize),
     Travel(usize),
     Inspect(usize),
+    Passport(usize),
     Quit,
 }
 impl View {
-    fn feed(&mut self, key: Key, count: usize, mail: bool) -> Choice {
+    fn feed(&mut self, key: Key, count: usize, mail: bool, passport: bool) -> Choice {
         match key {
             Key::Cancel | Key::Hotkey(b'Q') => Choice::Quit,
             Key::Enter => Choice::Open(self.selected),
             Key::Hotkey(b'M') if mail => Choice::Mail,
             Key::Hotkey(b'T') => Choice::Travel,
             Key::Hotkey(b'I') => Choice::Inspect,
+            Key::Hotkey(b'J') if passport => Choice::Passport,
             Key::Hotkey(k @ b'A'..=b'D') => {
                 let i = self.selected / PAGE * PAGE + usize::from(k - b'A');
                 if i < count {
@@ -160,7 +173,11 @@ impl View {
             ));
         }
         out.push_str("\r\nArrows/Tab: select  N/P: page\r\nA-D/Enter: choose  Q: quit\r\n");
-        out.push_str("T: travel  I: connection desk\r\n");
+        out.push_str(if catalog.passport_store.is_some() {
+            "T:travel I:check J:passport\r\n"
+        } else {
+            "T: travel  I: connection desk\r\n"
+        });
         out.push_str(if catalog.mail_store.is_some() {
             "M: local offline vault (no SSH)\r\n"
         } else {
@@ -186,12 +203,18 @@ pub(super) fn choose(t: &mut Terminal, catalog: &Catalog, last: usize) -> io::Re
             let Some(key) = decoder.feed(t.byte()?, Instant::now()) else {
                 continue;
             };
-            match view.feed(key, catalog.boards.len(), catalog.mail_store.is_some()) {
+            match view.feed(
+                key,
+                catalog.boards.len(),
+                catalog.mail_store.is_some(),
+                catalog.passport_store.is_some(),
+            ) {
                 Choice::Quit => return Ok(Destination::Quit),
                 Choice::Open(i) => return Ok(Destination::Board(i)),
                 Choice::Mail => return Ok(Destination::Mail(view.selected)),
                 Choice::Travel => return Ok(Destination::Travel(view.selected)),
                 Choice::Inspect => return Ok(Destination::Inspect(view.selected)),
+                Choice::Passport => return Ok(Destination::Passport(view.selected)),
                 Choice::Stay => break,
             }
         }
@@ -275,15 +298,18 @@ mod tests {
         }
         let c = Catalog::parse(&source).unwrap();
         let mut v = View::default();
-        assert!(matches!(v.feed(Key::Right, 16, false), Choice::Stay));
+        assert!(matches!(v.feed(Key::Right, 16, false, false), Choice::Stay));
         assert!(v.render(&c).contains("Page 2 / 4"));
-        assert!(matches!(v.feed(Key::Enter, 16, false), Choice::Open(4)));
         assert!(matches!(
-            v.feed(Key::Hotkey(b'D'), 16, false),
+            v.feed(Key::Enter, 16, false, false),
+            Choice::Open(4)
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'D'), 16, false, false),
             Choice::Open(7)
         ));
         assert!(matches!(
-            v.feed(Key::Hotkey(b'T'), 16, false),
+            v.feed(Key::Hotkey(b'T'), 16, false, false),
             Choice::Travel
         ));
         assert_eq!(v.selected, 4);
@@ -297,17 +323,52 @@ mod tests {
         assert_eq!(c.mail_store.as_deref(), Some(Path::new("/private/mail")));
         let mut view = View::default();
         assert!(matches!(
-            view.feed(Key::Hotkey(b'M'), 1, false),
+            view.feed(Key::Hotkey(b'M'), 1, false, false),
             Choice::Stay
         ));
         assert!(matches!(
-            view.feed(Key::Hotkey(b'M'), 1, true),
+            view.feed(Key::Hotkey(b'M'), 1, true, false),
             Choice::Mail
         ));
         assert!(view.render(&c).contains("M: local offline vault (no SSH)"));
         assert!(view.render(&c).lines().count() <= 18);
         for value in ["'../mail'", "12", "[]", "'/a/../mail'"] {
             assert!(Catalog::parse(&source.replace("'/private/mail'", value)).is_err());
+        }
+    }
+    #[test]
+    fn passport_catalog_is_local_optional_and_does_not_replace_navigation() {
+        let c = Catalog::parse(&ONE.replace(
+            "version=1\n",
+            "version=1\npassport_store='/private/passport'\n",
+        ))
+        .unwrap();
+        assert_eq!(
+            c.passport_store.as_deref(),
+            Some(Path::new("/private/passport"))
+        );
+        let mut v = View::default();
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'J'), 1, false, false),
+            Choice::Stay
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'J'), 1, false, true),
+            Choice::Passport
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'P'), 1, false, true),
+            Choice::Stay
+        ));
+        assert!(v.render(&c).contains("J:passport"));
+        for value in ["12", "'/a/../passport'", "'relative'"] {
+            assert!(
+                Catalog::parse(&ONE.replace(
+                    "version=1\n",
+                    &format!("version=1\npassport_store={value}\n")
+                ))
+                .is_err()
+            );
         }
     }
     #[test]

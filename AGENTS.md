@@ -1711,3 +1711,22 @@ records 21 client tests/14 local PTYs per OS, 361 host workspace tests/130 Pytho
 and 317 prior non-client sources unchanged. Guard 60/all 70 offline/archive
 commands preserve scope; no new server capacity/hardware/authentication claim.
 Owned clone/cache removed and saved playground stopped/intact.
+
+## Local passport (#161)
+
+Read docs/local-passport.md, ADR 0075 and plan 0080. Optional catalog passport_store
+opens the device notebook only between sessions. Notes are explicit plaintext
+local data, separate from private mail; no automatic visits/timestamps/beacons.
+Seals are bounded inert ASCII with rights metadata, manually imported from local
+files and unverified. Local configuration hashes are not board identity/admission.
+Keep private share fields off by default, removed-contact management, current
+profile review/rebind and private atomic locked storage. No server/schema/default
+or dependency change. Snapshot 47 preserves 330 prior input bytes and the exact
+connection-desk result; keep old records immutable. Hardening remains later.
+
+The passport record pins 65 client/dependency/original-pack inputs plus seven
+harnesses (72 exact native matches), 25 client tests/16 PTYs per OS and 365 host
+Rust/130 Python. Prior 317 non-client source identities remain unchanged. Guard
+61/all 71 offline/archive commands retain historical evidence. No new server
+capacity/physical hardware or verified-souvenir claim. Only owned test clones;
+saved playground stays stopped with disk/login/key material preserved.

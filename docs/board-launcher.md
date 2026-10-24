@@ -147,3 +147,9 @@ deliberately look up stored host pins and preview a redacted support summary.
 See [the connection desk](connection-desk.md). Nothing connects or changes your
 profile; Q/Ctrl-C returns with selection retained. Plain `--check-profile` also
 works without a TTY.
+
+## Local board passport
+
+An optional catalog `passport_store` enables J between visits for the
+[device-local passport](local-passport.md): explicit plaintext notes, original
+ASCII calling cards and selective share previews. No automatic visit tracking.
