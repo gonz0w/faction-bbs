@@ -1,5 +1,7 @@
 //! Local terminal companion. Remote output never selects local paths or endpoints.
 #![forbid(unsafe_code)]
+#[cfg(feature = "native-mail")]
+mod checkpoint_ui;
 mod connection;
 mod launcher;
 mod mail_ui;
@@ -451,6 +453,13 @@ fn run() -> io::Result<()> {
                 "Local profile needs attention; see the redacted report.",
             ))
         };
+    }
+    #[cfg(feature = "native-mail")]
+    if args.first().is_some_and(|s| s == "--mail-checkpoints") {
+        if !(args.len() == 3 || (args.len() == 4 && args[3] == "--unicode")) {
+            return Err(invalid());
+        }
+        return checkpoint_ui::run(Path::new(&args[1]), &args[2], args.len() == 4);
     }
     if args.len() == 3 && args[0] == "--mail-store" {
         return mail_ui::run(Path::new(&args[1]), &args[2]);

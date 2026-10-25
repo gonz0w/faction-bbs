@@ -148,7 +148,8 @@ reads member mail/keys, and no home password reset recovers them.
 Home addresses remain locally claimed labels until the separate home-authentication
 work proves account/device authority. This adapter supplies no BBS role, approval
 or roaming identity. [#205](https://github.com/gonz0w/faction-bbs/issues/205) tracks
-trusted local setup/history/outbox screens before live transport integration.
+the [trusted local checkpoint console](../docs/checkpoint-console.md); live transport
+integration remains separate.
 
 Linux C11 builds explicitly enable `_DEFAULT_SOURCE` for the system endian macros;
 NetBSD retains `_NETBSD_SOURCE` and Darwin adds neither definition. The saved VM

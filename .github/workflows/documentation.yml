@@ -38,6 +38,8 @@ jobs:
           python3 tools/check_omemo_dependencies.py
           cargo clippy -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- -D warnings
           cargo test -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- --test-threads=1
+          cargo build -p faction-client --features native-mail --bin faction-client --example checkpoint_ui_fixture --release --locked
+          python3 tools/probe_checkpoint_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture"
   documentation:
     name: Documentation and policy
     needs: native_mail
@@ -119,6 +121,7 @@ jobs:
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_omemo_interop_evidence.py
           python3 tools/check_checkpoint_evidence.py
+          python3 tools/check_checkpoint_console_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

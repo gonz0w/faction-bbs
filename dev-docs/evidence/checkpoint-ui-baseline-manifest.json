@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "origin_commit": "af7d681dd1297c752286dda98cf1b25de09b1e0c",
+  "source_root": "sources/pre205-checkpoint-ui",
+  "files": {
+    "crates/faction-client/src/main.rs": "a303dfd03d2ae2130b8bb33af388fb81ef0bfc7f59e2d91e14146b2e3bd3f0d7",
+    "crates/faction-client/src/mail_checkpoint.rs": "abfe2c5d0f9e6c47765da760f3864c434151751a96178b42c2b72a5dbd3f8587",
+    "crates/faction-client/src/mail_ui.rs": "b539a9e47e970afbfbebba14cee552a83736e76bacb1f0880caa76227ff33858",
+    "crates/faction-client/src/mail_vault.rs": "b1874a3aaf37364b91bea1bc70a01a692db0ac037c66ff4a662810347ab46934",
+    "crates/faction-client/src/lib.rs": "1d86c910d7c632dcce848fa8142e6a2bd23917fc2a06ff684f21caf8065869ea",
+    ".github/workflows/documentation.yml": "0877365c7854592c59982eeb2629a83eb9848da2084216be5347f083d657abe3",
+    "crates/faction-client/Cargo.toml": "05494daf7d6a50a960df0b661187e7eaa9615145300d2f46e6b6e064f1df55ad"
+  },
+  "records": {
+    "dev-docs/evidence/mail-checkpoints/results.json": "d93af1e39174b1382b1b261acd105ca25075267f1dcbb7b357c8a410f94acd79",
+    "dev-docs/evidence/mail-checkpoints/initial-capture-record.json": "6cf72b811e55c1fdaa73a4facd33af37c81540a0c7d28155759a22316eb13fbe",
+    "dev-docs/evidence/mail-checkpoints/linux-build-followup.json": "947bc169e9feecbcd12cfcc7bf4c23c72a446f5406629a867b943c4cbb01fd3e"
+  }
+}
