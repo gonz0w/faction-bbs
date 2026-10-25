@@ -16,10 +16,17 @@ pub(super) struct Board {
     pub id: String,
     pub profile: PathBuf,
 }
+#[cfg(feature = "network-mail")]
+pub(super) struct HomeMail {
+    pub store: PathBuf,
+    pub config: PathBuf,
+}
 pub(super) struct Catalog {
     pub boards: Vec<Board>,
     pub mail_store: Option<PathBuf>,
     pub passport_store: Option<PathBuf>,
+    #[cfg(feature = "network-mail")]
+    pub home_mail: Option<HomeMail>,
 }
 impl Catalog {
     pub fn load(path: &Path) -> io::Result<Self> {
@@ -29,6 +36,16 @@ impl Catalog {
             .read_to_string(&mut text)?;
         Self::parse(&text)
     }
+    fn home_mail_configured(&self) -> bool {
+        #[cfg(feature = "network-mail")]
+        {
+            self.home_mail.is_some()
+        }
+        #[cfg(not(feature = "network-mail"))]
+        {
+            false
+        }
+    }
     fn parse(text: &str) -> io::Result<Self> {
         if text.len() > BYTES || text.bytes().filter(|b| *b == b'[').count() > 128 {
             return Err(invalid());
@@ -37,6 +54,34 @@ impl Catalog {
         if t.remove("version").and_then(|v| v.as_integer()) != Some(1) {
             return Err(invalid());
         }
+        #[cfg(not(feature = "network-mail"))]
+        if t.contains_key("home_mail") {
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "home_mail requires a network-mail build",
+            ));
+        }
+        #[cfg(feature = "network-mail")]
+        let home_mail = match t.remove("home_mail") {
+            None => None,
+            Some(toml::Value::Table(mut entry)) => {
+                let mut path = |key: &str| {
+                    profile::path(
+                        entry
+                            .remove(key)
+                            .and_then(|v| v.as_str().map(str::to_owned))
+                            .ok_or_else(invalid)?,
+                    )
+                };
+                let store = path("store")?;
+                let config = path("config")?;
+                if !entry.is_empty() {
+                    return Err(invalid());
+                }
+                Some(HomeMail { store, config })
+            }
+            _ => return Err(invalid()),
+        };
         let mail_store = match t.remove("mail_store") {
             None => None,
             Some(toml::Value::String(path)) => Some(profile::path(path)?),
@@ -88,6 +133,8 @@ impl Catalog {
             boards,
             mail_store,
             passport_store,
+            #[cfg(feature = "network-mail")]
+            home_mail,
         })
     }
 }
@@ -100,6 +147,7 @@ enum Choice {
     Open(usize),
     Quit,
     Mail,
+    HomeMail,
     Travel,
     Inspect,
     Passport,
@@ -107,17 +155,19 @@ enum Choice {
 pub(super) enum Destination {
     Board(usize),
     Mail(usize),
+    HomeMail(usize),
     Travel(usize),
     Inspect(usize),
     Passport(usize),
     Quit,
 }
 impl View {
-    fn feed(&mut self, key: Key, count: usize, mail: bool, passport: bool) -> Choice {
+    fn feed(&mut self, key: Key, count: usize, mail: bool, passport: bool, home: bool) -> Choice {
         match key {
             Key::Cancel | Key::Hotkey(b'Q') => Choice::Quit,
             Key::Enter => Choice::Open(self.selected),
             Key::Hotkey(b'M') if mail => Choice::Mail,
+            Key::Hotkey(b'E') if home && cfg!(feature = "network-mail") => Choice::HomeMail,
             Key::Hotkey(b'T') => Choice::Travel,
             Key::Hotkey(b'I') => Choice::Inspect,
             Key::Hotkey(b'J') if passport => Choice::Passport,
@@ -178,7 +228,13 @@ impl View {
         } else {
             "T: travel  I: connection desk\r\n"
         });
-        out.push_str(if catalog.mail_store.is_some() {
+        out.push_str(if catalog.home_mail_configured() {
+            if catalog.mail_store.is_some() {
+                "M:v1 vault E:home mail (local; no SSH)\r\n"
+            } else {
+                "E:home mail (local; manual network)\r\n"
+            }
+        } else if catalog.mail_store.is_some() {
             "M: local offline vault (no SSH)\r\n"
         } else {
             "Each board needs its own approval.\r\n"
@@ -208,10 +264,12 @@ pub(super) fn choose(t: &mut Terminal, catalog: &Catalog, last: usize) -> io::Re
                 catalog.boards.len(),
                 catalog.mail_store.is_some(),
                 catalog.passport_store.is_some(),
+                catalog.home_mail_configured(),
             ) {
                 Choice::Quit => return Ok(Destination::Quit),
                 Choice::Open(i) => return Ok(Destination::Board(i)),
                 Choice::Mail => return Ok(Destination::Mail(view.selected)),
+                Choice::HomeMail => return Ok(Destination::HomeMail(view.selected)),
                 Choice::Travel => return Ok(Destination::Travel(view.selected)),
                 Choice::Inspect => return Ok(Destination::Inspect(view.selected)),
                 Choice::Passport => return Ok(Destination::Passport(view.selected)),
@@ -264,6 +322,124 @@ mod tests {
     use super::*;
     const ONE: &str =
         "version=1\n[[boards]]\nid='radio'\nlabel='Night Radio'\nprofile='/private/radio.toml'\n";
+    const HOME: &str = "home_mail={store='/private/checkpoint',config='/private/home.toml'}\n";
+    #[test]
+    fn home_mail_catalog_requires_supported_complete_private_references() {
+        let configured = ONE.replace("version=1\n", &format!("version=1\n{HOME}"));
+        #[cfg(feature = "network-mail")]
+        assert!(Catalog::parse(&configured).is_ok());
+        #[cfg(not(feature = "network-mail"))]
+        assert_eq!(
+            Catalog::parse(&configured).err().unwrap().kind(),
+            io::ErrorKind::Unsupported
+        );
+        for entry in [
+            "home_mail={store='/private/checkpoint'}\n",
+            "home_mail={config='/private/home.toml'}\n",
+            "home_mail={store='/private/checkpoint',config='/private/home.toml',password='forbidden'}\n",
+            "home_mail={store='relative',config='/private/home.toml'}\n",
+            "home_mail={store='/private/checkpoint',config='/a/../home.toml'}\n",
+            "home_mail={store=12,config='/private/home.toml'}\n",
+            "home_mail=[]\n",
+        ] {
+            assert!(
+                Catalog::parse(&ONE.replace("version=1\n", &format!("version=1\n{entry}")))
+                    .is_err()
+            );
+        }
+    }
+    #[cfg(feature = "network-mail")]
+    #[test]
+    fn home_mail_is_visible_local_explicit_and_fits_with_existing_entries() {
+        let source = ONE.replace(
+            "version=1\n",
+            &format!(
+                "version=1\n{HOME}mail_store='/private/v1'\npassport_store='/private/passport'\n"
+            ),
+        );
+        let c = Catalog::parse(&source).unwrap();
+        let frame = View::default().render(&c);
+        assert!(frame.contains("E:home mail"));
+        assert!(frame.contains("M:"));
+        assert!(frame.lines().count() <= 18);
+        assert!(
+            frame
+                .lines()
+                .all(|line| line.len() <= 40 || line.starts_with("\x1b"))
+        );
+        assert!(
+            !View::default()
+                .render(&Catalog::parse(ONE).unwrap())
+                .contains("E:")
+        );
+    }
+    #[test]
+    fn home_mail_key_is_explicit_and_preserves_existing_picker_keys() {
+        let mut v = View::default();
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'E'), 16, true, true, false),
+            Choice::Stay
+        ));
+        #[cfg(feature = "network-mail")]
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'E'), 16, true, true, true),
+            Choice::HomeMail
+        ));
+        #[cfg(not(feature = "network-mail"))]
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'E'), 16, true, true, true),
+            Choice::Stay
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'M'), 16, true, true, true),
+            Choice::Mail
+        ));
+        for (key, index) in [(b'A', 0), (b'B', 1), (b'C', 2), (b'D', 3)] {
+            assert!(
+                matches!(v.feed(Key::Hotkey(key), 16, true, true, true), Choice::Open(i) if i == index)
+            );
+        }
+        assert!(matches!(
+            v.feed(Key::Down, 16, true, true, true),
+            Choice::Stay
+        ));
+        assert_eq!(v.selected, 1);
+        assert!(matches!(
+            v.feed(Key::Up, 16, true, true, true),
+            Choice::Stay
+        ));
+        assert_eq!(v.selected, 0);
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'N'), 16, true, true, true),
+            Choice::Stay
+        ));
+        assert_eq!(v.selected, 4);
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'P'), 16, true, true, true),
+            Choice::Stay
+        ));
+        assert_eq!(v.selected, 0);
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'T'), 16, true, true, true),
+            Choice::Travel
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'I'), 16, true, true, true),
+            Choice::Inspect
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'J'), 16, true, true, true),
+            Choice::Passport
+        ));
+        assert!(matches!(
+            v.feed(Key::Hotkey(b'Q'), 16, true, true, true),
+            Choice::Quit
+        ));
+        assert!(matches!(
+            v.feed(Key::Cancel, 16, true, true, true),
+            Choice::Quit
+        ));
+    }
     #[test]
     fn catalog_is_private_bounded_and_never_contains_remote_endpoint_options() {
         assert_eq!(Catalog::parse(ONE).unwrap().boards.len(), 1);
@@ -298,18 +474,21 @@ mod tests {
         }
         let c = Catalog::parse(&source).unwrap();
         let mut v = View::default();
-        assert!(matches!(v.feed(Key::Right, 16, false, false), Choice::Stay));
+        assert!(matches!(
+            v.feed(Key::Right, 16, false, false, false),
+            Choice::Stay
+        ));
         assert!(v.render(&c).contains("Page 2 / 4"));
         assert!(matches!(
-            v.feed(Key::Enter, 16, false, false),
+            v.feed(Key::Enter, 16, false, false, false),
             Choice::Open(4)
         ));
         assert!(matches!(
-            v.feed(Key::Hotkey(b'D'), 16, false, false),
+            v.feed(Key::Hotkey(b'D'), 16, false, false, false),
             Choice::Open(7)
         ));
         assert!(matches!(
-            v.feed(Key::Hotkey(b'T'), 16, false, false),
+            v.feed(Key::Hotkey(b'T'), 16, false, false, false),
             Choice::Travel
         ));
         assert_eq!(v.selected, 4);
@@ -323,11 +502,11 @@ mod tests {
         assert_eq!(c.mail_store.as_deref(), Some(Path::new("/private/mail")));
         let mut view = View::default();
         assert!(matches!(
-            view.feed(Key::Hotkey(b'M'), 1, false, false),
+            view.feed(Key::Hotkey(b'M'), 1, false, false, false),
             Choice::Stay
         ));
         assert!(matches!(
-            view.feed(Key::Hotkey(b'M'), 1, true, false),
+            view.feed(Key::Hotkey(b'M'), 1, true, false, false),
             Choice::Mail
         ));
         assert!(view.render(&c).contains("M: local offline vault (no SSH)"));
@@ -349,15 +528,15 @@ mod tests {
         );
         let mut v = View::default();
         assert!(matches!(
-            v.feed(Key::Hotkey(b'J'), 1, false, false),
+            v.feed(Key::Hotkey(b'J'), 1, false, false, false),
             Choice::Stay
         ));
         assert!(matches!(
-            v.feed(Key::Hotkey(b'J'), 1, false, true),
+            v.feed(Key::Hotkey(b'J'), 1, false, true, false),
             Choice::Passport
         ));
         assert!(matches!(
-            v.feed(Key::Hotkey(b'P'), 1, false, true),
+            v.feed(Key::Hotkey(b'P'), 1, false, true, false),
             Choice::Stay
         ));
         assert!(v.render(&c).contains("J:passport"));

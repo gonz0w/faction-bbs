@@ -34,7 +34,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [manual home-mail client](docs/online-mail.md) adds verified XMPP access,
   encrypted subject/body exchange and durable pending ciphertext. Keys and
   decryption stay on the member's device. Opt-in [archive catch-up](docs/archive-mail.md)
-  saves bounded offline pages with an encrypted cursor. Background notifications,
+  saves bounded offline pages with an encrypted cursor. An explicit
+  [picker E entry](docs/picker-home-mail.md) opens native mail between board visits. Background notifications,
   encrypted attachments and roaming remain incomplete.
 
 ## What you can do

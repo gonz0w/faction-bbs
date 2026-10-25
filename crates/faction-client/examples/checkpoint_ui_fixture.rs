@@ -113,6 +113,13 @@ fn main() -> std::io::Result<()> {
         created,
         created,
     )?;
+    if mode == "archive-pending" {
+        a.enable_archive(created)?;
+        let token = a.archive_checkpoint(created)?;
+        let mut echo = outgoing.clone();
+        echo.sent_at = 0;
+        a.receive_archive(&token, "synthetic-private-archive-id", &echo, created)?;
+    }
     let decoded = b
         .open_pending(&Message {
             key: outgoing.key,

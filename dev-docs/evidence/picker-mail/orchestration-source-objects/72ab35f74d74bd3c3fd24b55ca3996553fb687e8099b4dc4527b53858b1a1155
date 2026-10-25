@@ -1,0 +1,15 @@
+from lab import *
+import hashlib,time
+compiled=json.loads((P/'source-client-final.json').read_text());previous=json.loads((P/'runtime-source-final.json').read_text());previous_changes=json.loads((P/'runtime-source-overrides.json').read_text());tag=str(time.time_ns())
+(P/('runtime-source-stage-'+tag+'.json')).write_text(json.dumps(dict(source_sha256=previous,changes=previous_changes),indent=2))
+objects=P/'executed-helpers';objects.mkdir(exist_ok=True)
+for entry in previous_changes:
+ f=P/'runtime-overrides'/entry['name']
+ if f.exists():data=f.read_bytes();(objects/hashlib.sha256(data).hexdigest()).write_bytes(data)
+runtime=dict(compiled);changes=[]
+for name in ['tools/probe_picker_home_mail.py','tools/test_picker_home_mail.py','tools/probe_picker_mail_outage.py','tools/test_probe_picker_mail_outage.py']:
+ data=(R/name).read_bytes();digest=hashlib.sha256(data).hexdigest();before=compiled.get(name);dest=P/'runtime-overrides'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data);(objects/digest).write_bytes(data)
+ changes.append(dict(name=name,compiled_sha256=before,runtime_sha256=digest));runtime[name]=digest
+ remote('cat > /home/factionbuild/source214-client/'+name+'; chown factionbuild:factionbuild /home/factionbuild/source214-client/'+name,data)
+(P/'runtime-source-overrides.json').write_text(json.dumps(changes,indent=2));(P/'runtime-source-final.json').write_text(json.dumps(runtime,indent=2))
+print('Composed final Python runtime helper/test sources; all previous executed variants preserved by digest.')

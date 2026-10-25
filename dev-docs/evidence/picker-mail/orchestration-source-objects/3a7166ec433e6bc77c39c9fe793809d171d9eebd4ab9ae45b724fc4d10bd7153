@@ -1,0 +1,30 @@
+from lab import *
+import tarfile,hashlib
+source=P/'source-client-final';source.mkdir(mode=0o700)
+files=[R/'Cargo.toml',R/'Cargo.lock',R/'LICENSE']
+for d in ['crates','tools','native','deploy','themes','gallery','library']:
+ files.extend(f for f in (R/d).rglob('*') if f.is_file() and '__pycache__' not in f.parts and f.name!='.DS_Store')
+manifest={};archive=P/'source-client-final.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for f in sorted(files):
+  name=str(f.relative_to(R));data=f.read_bytes();manifest[name]=hashlib.sha256(data).hexdigest();dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data);t.add(dest,arcname=name,recursive=False)
+(P/'source-client-final.json').write_text(json.dumps(manifest,indent=2))
+remote('test ! -e /home/factionbuild/source214-client; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source214-client; tar -xzf - -C /home/factionbuild/source214-client; chown -R factionbuild:factionbuild /home/factionbuild/source214-client',archive.read_bytes(),180)
+runner='''from pathlib import Path
+import os,subprocess,json,hashlib,shutil
+p=Path('/home/factionbuild/proof214');root=Path('/home/factionbuild/source214-client');target=Path('/home/factionbuild/target214');env=os.environ.copy();env.update(CARGO_HOME='/home/factionbuild/cargo214',CARGO_TARGET_DIR=str(target),CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+result={'result':'running','scope':'two-core-2GiB-compile-only','stages':[]}
+base=['cargo','build','--release','--locked','--offline','-j','1','-p','faction-client','--bin','faction-client']
+steps=[('default',base,'faction-client-default'),('native',base+['--features','native-mail'],'faction-client-native'),('network',base+['--features','network-mail'],'faction-client-network'),('fixtures',['cargo','build','--release','--locked','--offline','-j','1','-p','faction-client','--features','network-mail','--example','checkpoint_ui_fixture','--example','home_mail_fixture'],None),('tests',['cargo','test','--release','--locked','--offline','-j','1','-p','faction-client','-p','faction-omemo','--features','faction-client/network-mail,faction-omemo/native','--all-targets','--no-run'],None)]
+for name,cmd,copy in steps:
+ with (p/('client-'+name+'.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+ result['stages'].append(dict(name=name,command=cmd,returncode=r.returncode))
+ if r.returncode:result['result']='fail';(p/'client-build.json').write_text(json.dumps(result,indent=2));raise SystemExit(1)
+ if copy:shutil.copyfile(target/'release/faction-client',target/'release'/copy);(target/'release'/copy).chmod(0o755)
+ (p/'client-build.json').write_text(json.dumps(result,indent=2))
+result['result']='pass';result['artifacts_sha256']={n:hashlib.sha256((target/'release'/n).read_bytes()).hexdigest() for n in ['faction-client-default','faction-client-native','faction-client-network','examples/checkpoint_ui_fixture','examples/home_mail_fixture']};(p/'client-build.json').write_text(json.dumps(result,indent=2))
+'''
+(P/'native-client-build-runner.py').write_text(runner)
+remote('cat > /home/factionbuild/proof214/build-client.py; chown factionbuild:factionbuild /home/factionbuild/proof214/build-client.py',runner.encode())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof214/build-client.py > /home/factionbuild/proof214/client-launch.log 2>&1 < /dev/null &'")
+print('Final stable source captured:',len(manifest),'members; native default/native/network graphs, examples and all-target client/OMEMO tests compiling sequentially at 2GiB.')

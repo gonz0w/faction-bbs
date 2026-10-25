@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "platform": "Darwin",
+  "machine": "arm64",
+  "packages": [
+    "faction-client",
+    "faction-omemo"
+  ],
+  "feature": "faction-client/network-mail",
+  "all_targets": true,
+  "test_threads": 1,
+  "release": {
+    "original_artifact": "green-network-release-alltargets-03.log",
+    "sha256": "5064b541ef47281261796b5f193033e2a25b78bca9ddbb50bcc35bec1031c2d9",
+    "passed": 142,
+    "failed": 0,
+    "ignored": 2,
+    "suites": 13
+  },
+  "debug": {
+    "original_artifact": "green-network-alltargets-03.log",
+    "sha256": "dd9de33462ca18018fb35efcbd3eee9dae2ee44bb383aa3ca44ed6cc473f3b9e",
+    "passed": 142,
+    "failed": 0,
+    "ignored": 2,
+    "suites": 13
+  },
+  "release_clippy": {
+    "result": "pass",
+    "deny_warnings": true,
+    "sha256": "d47be070b0618949f633dd7c7f6ee753584847ffa11324a9fa339c94767303f8"
+  },
+  "host_pty_build_profile": "debug",
+  "host_pty_release_claim": false,
+  "executable_artifacts": [
+    {
+      "role": "host-network-client",
+      "sha256": "90123032e1762bf9f61978a192e06260da8fc1a7c166c6204f7f0c4a5d00564c"
+    },
+    {
+      "role": "host-checkpoint-fixture",
+      "sha256": "2a93f0bf950ef4bb8f82fbed16f53b5fd5dcea3ddc4388a7a3276e3e4d0ae360"
+    },
+    {
+      "role": "host-home-inspector",
+      "sha256": "72fc5dc43c5486d695305e15de60716056245151bd56d670a9d435e27795abf5"
+    },
+    {
+      "role": "host-default-client",
+      "sha256": "e349afbbd41e78b98b7efe1f72b6e5b6be35465e7f5ffe9fb36628d669fdc425"
+    },
+    {
+      "role": "host-native-only-client",
+      "sha256": "8c84bbfea2529b21acdb5f256457980d3e4931410638cb39a6505b3120044f03"
+    }
+  ],
+  "final_owned_sources": {
+    "crates/faction-client/src/launcher.rs": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+    "crates/faction-client/src/main.rs": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+    "crates/faction-client/src/checkpoint_ui.rs": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+    "tools/probe_picker_home_mail.py": "2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81",
+    "tools/test_picker_home_mail.py": "e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0"
+  }
+}

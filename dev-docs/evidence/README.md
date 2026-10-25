@@ -378,3 +378,9 @@ member-device catch-up, explicit encrypted cursor migration and atomic recovery
 observations separately. Its [baseline manifest](home-mail-archive-baseline-manifest.json)
 keeps 295 prior executed inputs and four whole records unchanged. Compiler and
 runtime scope remain distinct; no complete-server-history or capacity claim.
+
+[Native picker mail evidence](picker-mail/README.md) records explicit local entry,
+locked return and the combined unavailable-home/approved-BBS/restricted-SFTP
+journey on host/NetBSD. Its baseline reuses 644 exact prior objects; the whole
+previous archive result stays unchanged. Source-only and structured public exports
+exclude runtime private data; compiler/runtime budgets and teardown stay explicit.

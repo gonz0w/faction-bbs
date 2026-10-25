@@ -1,0 +1,19 @@
+from lab import *
+import hashlib,re
+names=['native-runtime','native-default-off','native-native-only','native-picker-vault','native-online-ui','native-archive-ui','native-checkpoint-ui','native-v1-vault','native-picker','native-combined']
+for name in names:
+ r=remote('cat /home/factionbuild/proof214/'+name+'.json');value=json.loads(r.stdout);assert value['result']=='pass';(P/(name+'.json')).write_bytes(r.stdout)
+for name in ['default-off','native-only','picker-vault','online-ui','archive-ui','checkpoint-ui','v1-vault','picker','combined']:(P/('native-'+name+'.log')).write_bytes(remote('cat /home/factionbuild/proof214/native-'+name+'.log').stdout)
+expected=json.loads((P/'runtime-source-final.json').read_text());artifacts=json.loads((P/'native-client-build-proof.json').read_text())['artifacts_sha256']
+code='''from pathlib import Path
+import json,sys,hashlib,subprocess
+s=json.load(sys.stdin);root=Path('/home/factionbuild/source214-client');actual={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts};assert actual==s['sources']
+target=Path('/home/factionbuild/target214/release');artifacts={n:hashlib.sha256((target/n).read_bytes()).hexdigest() for n in s['artifacts']};assert artifacts==s['artifacts']
+processes=subprocess.check_output(['ps','-ax','-o','comm='],text=True).splitlines();active=[v for v in processes if any(n in v for n in ['faction-client','home_mail_fixture','checkpoint_ui_fixture','rustc','cargo','native-runtime'])];assert not active
+print(json.dumps(dict(result='pass',source_sha256=actual,source_membership_matches=True,artifacts_sha256=artifacts,artifacts_unchanged_after_runtime=True,matched_sources=len(actual),no_active_client_compiler_or_test_children=True,cores=int(subprocess.check_output(['/sbin/sysctl','-n','hw.ncpu'])),physmem_bytes=int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem64'])),owned_vm_and_board_kept_live_for_lead=True),indent=2))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(dict(sources=expected,artifacts=artifacts)).encode());(P/'native-final-proof.json').write_bytes(r.stdout)
+compiled=json.loads((P/'source-client-final.json').read_text());actual={str(f.relative_to(P/'source-client-final')):hashlib.sha256(f.read_bytes()).hexdigest() for f in (P/'source-client-final').rglob('*') if f.is_file() and '__pycache__' not in f.parts};assert actual==compiled
+host_artifacts=json.loads((P/'host-final-build.json').read_text())['artifacts_sha256'];assert all(hashlib.sha256((P/'host-final-target/release'/n).read_bytes()).hexdigest()==h for n,h in host_artifacts.items())
+(P/'host-final-proof.json').write_text(json.dumps(dict(result='pass',compiled_source_sha256=compiled,artifacts_sha256=host_artifacts,artifacts_unchanged_after_runtime=True,runtime_overrides_sha256={e['name']:e['runtime_sha256'] for e in json.loads((P/'runtime-source-overrides.json').read_text())},owned_private_inputs_kept_for_lead=True),indent=2))
+print('Collected native17 + combined8, all regressions, exact680 runtime source matches and36 unchanged native artifacts; no client/compiler/test children. VM and fresh services remain live for lead audit.')

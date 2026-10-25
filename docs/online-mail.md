@@ -3,8 +3,8 @@
 The optional native client connects from your device to your own home server for
 an explicit encrypted-mail cycle with one independently verified peer. Compose,
 keys, decryption and accepted history stay on your device. Run this console in a
-trusted local terminal. It is separate from a remote BBS session and the board
-picker.
+trusted local terminal. It is separate from a remote BBS session. An explicit
+[local picker E entry](picker-home-mail.md) can open the same console between visits.
 
 The experimental client supports live v2 exchange and an explicit opt-in
 [archive mode](archive-mail.md). Archive mode saves one page of retained encrypted

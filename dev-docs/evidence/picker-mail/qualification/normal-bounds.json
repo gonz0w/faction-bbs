@@ -1,0 +1,19 @@
+{
+  "argon2_unchanged": true,
+  "credential_permits": 2,
+  "experimental_capacity": false,
+  "file_chunk_bytes": 32768,
+  "file_streams": 2,
+  "fresh_board_and_file_store": true,
+  "grant_seconds": 300,
+  "kernel_credential_slots": 2,
+  "launch_ms": 5000,
+  "loopback_host_forwards_only": true,
+  "max_file_bytes": 16777216,
+  "max_sessions": 8,
+  "no_public_listener": true,
+  "output_drain_seconds": 5,
+  "owner_helper_budget": 3,
+  "result": "pass",
+  "scope": "current service configuration and unchanged source bounds; no capacity claim"
+}

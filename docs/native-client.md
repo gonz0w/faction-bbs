@@ -122,7 +122,8 @@ filtered. This adds no mail, image-import or universal visual certification.
 The member-owned [board launcher](board-launcher.md) optionally opens the existing
 [local offline vault](local-mail-vault.md) with M between board visits. Its store
 path is an explicit private catalog setting. No SSH child exists during unlock;
-the separate [manual home-mail entry](online-mail.md) provides online exchange.
+an optional [E home-mail entry](picker-home-mail.md) reuses the native console for
+manual online exchange.
 Roaming authentication and automatic mailbox catch-up remain separate.
 
 
@@ -154,8 +155,9 @@ durable pending-operation inspection. It is separate from the v1 picker entry,
 opens no connection and claims no live network inbox/send or roaming identity.
 
 The optional [manual encrypted home-mail guide](online-mail.md) covers the separate
-`--mail-online` entry and `network-mail` build feature. It does not change Files,
-board visits, the picker's v1 M entry or the offline checkpoint console.
+`--mail-online` entry and `network-mail` build feature. The optional
+[picker E entry](picker-home-mail.md) opens that same console between visits; M
+retains its v1 vault. Files and the offline checkpoint console remain separate.
 
 Opt-in [archive mode](archive-mail.md) adds an explicit local schema upgrade and
 one-page retained-mail catch-up. N sends pending ciphertext; A reads a bounded

@@ -1,0 +1,60 @@
+"""Stop and remove only ownership-verified disposable #214 fixtures."""
+from pathlib import Path
+import hashlib,json,os,signal,shutil,socket,subprocess,sys,time
+R=Path('/Users/cam/DEV/faction-bbs');L=Path('/private/tmp/faction214-lab-OWNED');I=Path('/private/tmp/faction214-impl-OWNED');C=Path('/private/tmp/faction214-lead-OWNED');V=Path((L/'vm-path').read_text().strip());D=R/'local/demo';before=json.loads((L/'saved-before.json').read_text())
+roots=[(L,'OWNED'),(I,'OWNERSHIP'),(C,'OWNED'),(V,'OWNED')]
+assert V.parent==Path('/private/tmp') and V.name.startswith('faction214-vm-')
+def ownership():
+ for root,marker in roots:
+  assert root.is_dir() and not root.is_symlink() and root.stat().st_uid==os.getuid()
+  assert b'214' in (root/marker).read_bytes()
+def saved():
+ for name in ['CURRENT_PREVIEW','saved/LATEST','known_hosts','ssh-admin.json']:
+  assert hashlib.sha256((D/name).read_bytes()).hexdigest()==before[name]
+ p,size,mtime=before['disk'];s=Path(p).stat();assert (s.st_size,s.st_mtime_ns)==(size,mtime)
+ for row in subprocess.check_output(['ps','-axo','command='],text=True).splitlines():
+  if row.split() and ('qemu-system' in row.split()[0] or ('serial-controller.py' in row and 'python' in row.split()[0].lower())):assert str(D)+'/' not in row
+
+def owned_pid(name,needle):
+ path=V/name
+ if not path.exists():return None
+ pid=int(path.read_text());x=subprocess.run(['ps','-p',str(pid),'-o','command='],capture_output=True,text=True)
+ if x.returncode or needle not in x.stdout:return None
+ assert str(V) in x.stdout
+ return pid
+ownership();saved()
+pids=[owned_pid('runtime-qemu.pid','qemu-system-aarch64'),owned_pid('runtime-controller.pid','serial-controller.py')]
+ports=list(json.loads((V/'ports.json').read_text()).values());assert len(ports)==3 and all(type(x) is int and 1<=x<=65535 for x in ports)
+if sys.argv[1]=='--inspect':
+ print(json.dumps(dict(result='owned-only',marked_roots=4,owned_processes=sum(x is not None for x in pids),saved_stopped_unchanged=True,public_proof_preserved=True)));raise SystemExit()
+assert sys.argv[1]=='--stop-and-remove'
+a=json.loads((V/'ssh-admin.json').read_text())
+cmd='''set -e
+PATH=/usr/pkg/bin:/usr/bin:/bin:/sbin:/usr/sbin
+export PATH
+grep -q 214 /etc/faction-disposable-test
+grep -q /var/db/faction214-board /etc/faction/service.toml
+grep -q /var/db/faction214-files /etc/faction/files.toml
+/etc/rc.d/faction_sshd onestop
+/etc/rc.d/faction_files_sshd onestop
+/etc/rc.d/faction_broker onestop
+'''
+x=subprocess.run(a+[cmd],capture_output=True,timeout=45)
+if x.returncode:(C/'teardown-error.private').write_bytes(x.stdout+x.stderr);raise RuntimeError('owned service shutdown failed; private diagnostics retained')
+subprocess.run(a+['/sbin/shutdown -p now'],capture_output=True,timeout=15)
+for name,needle in [('runtime-qemu.pid','qemu-system-aarch64'),('runtime-controller.pid','serial-controller.py')]:
+ deadline=time.monotonic()+(10 if 'qemu' in name else 1)
+ while owned_pid(name,needle) is not None and time.monotonic()<deadline:time.sleep(.1)
+ pid=owned_pid(name,needle)
+ if pid is not None:
+  os.kill(pid,signal.SIGTERM);deadline=time.monotonic()+5
+  while owned_pid(name,needle) is not None and time.monotonic()<deadline:time.sleep(.1)
+ assert owned_pid(name,needle) is None,'owned process did not stop'
+for port in ports:
+ with socket.socket() as sock:sock.settimeout(.25);assert sock.connect_ex(('127.0.0.1',port))!=0,'owned listener remains open'
+ownership();saved()
+for root,marker in reversed(roots):shutil.rmtree(root)
+assert not any(root.exists() for root,marker in roots)
+saved()
+proof=dict(owned_vm_removed=True,owned_private_inputs_removed=True,ports_closed=True,saved_playground_stopped=True,saved_playground_unchanged=True)
+Path('/private/tmp/faction214-teardown-proof.json').write_text(json.dumps(proof,indent=2)+'\n');print('Owned fixtures removed, all forwards closed, saved playground stopped and unchanged.')

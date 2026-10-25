@@ -1,0 +1,31 @@
+from lab import *
+import tarfile,hashlib
+source=P/'source-server-stage';source.mkdir(mode=0o700)
+files=[R/'Cargo.toml',R/'Cargo.lock',R/'LICENSE']
+for d in ['crates','tools','native','deploy','themes','gallery','library']:
+ files.extend(f for f in (R/d).rglob('*') if f.is_file() and '__pycache__' not in f.parts and f.name!='.DS_Store')
+manifest={}
+archive=P/'source-server-stage.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for f in sorted(files):
+  name=str(f.relative_to(R));data=f.read_bytes();manifest[name]=hashlib.sha256(data).hexdigest();dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data);t.add(dest,arcname=name,recursive=False)
+(P/'source-server-stage.json').write_text(json.dumps(manifest,indent=2))
+cache=Path('/private/tmp/faction209-public-cargo/registry');assert (cache.parent/'FACTION209_PUBLIC_ONLY').is_file()
+for f in cache.rglob('*'):
+ if f.is_file():assert f.suffix.lower() not in {'.js','.ts','.mjs','.cjs','.jsx','.tsx'} and 'node_modules' not in f.parts
+cargo_archive=P/'public-registry.tar.gz'
+with tarfile.open(cargo_archive,'w:gz') as t:t.add(cache,arcname='registry')
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source214; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source214 /home/factionbuild/cargo214 /home/factionbuild/target214 /home/factionbuild/proof214; tar -xzf - -C /home/factionbuild/source214',archive.read_bytes(),180)
+remote('tar -xzf - -C /home/factionbuild/cargo214; chown -R factionbuild:factionbuild /home/factionbuild/source214 /home/factionbuild/cargo214',cargo_archive.read_bytes(),180)
+# The Python runner retains phase logs and runs sequential bounded builds.
+script='''from pathlib import Path
+import os,subprocess,json,hashlib,time
+p=Path('/home/factionbuild/proof214');env=os.environ.copy();env.update(CARGO_HOME='/home/factionbuild/cargo214',CARGO_TARGET_DIR='/home/factionbuild/target214',CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib')
+cmd=['cargo','build','--release','--locked','--offline','-j','1','-p','faction-cli','-p','faction-service','-p','faction-files']
+with (p/'server-build.log').open('wb') as log:r=subprocess.run(cmd,cwd='/home/factionbuild/source214',env=env,stdout=log,stderr=log)
+result={'result':'pass' if r.returncode==0 else 'fail','returncode':r.returncode,'command':cmd,'scope':'two-core-2GiB-compile-only'}
+(p/'server-build.json').write_text(json.dumps(result,indent=2))
+'''
+remote('cat > /home/factionbuild/proof214/build-server.py; chown factionbuild:factionbuild /home/factionbuild/proof214/build-server.py',script.encode())
+remote("su - factionbuild -c 'cd /home/factionbuild/source214 && nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof214/build-server.py > /home/factionbuild/proof214/build-server-launch.log 2>&1 < /dev/null &'")
+print('Captured',len(manifest),'public source hashes; selected no-JS public Cargo cache uploaded; current native server build launched.')

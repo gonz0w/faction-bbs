@@ -1,0 +1,59 @@
+{
+  "cores": 2,
+  "physmem_bytes": 1054990336,
+  "result": "pass",
+  "resumed_after_preserved_fixture_failure": true,
+  "scope": "two-core-1GiB-native-runtime",
+  "stages": [
+    {
+      "elapsed_seconds": 0.036,
+      "name": "default-off",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 0.058,
+      "name": "native-only",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 0.946,
+      "name": "picker-vault",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 0.822,
+      "name": "online-ui",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 0.663,
+      "name": "archive-ui",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 3.069,
+      "name": "checkpoint-ui",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 0.924,
+      "name": "v1-vault",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 44.974,
+      "name": "client-omemo-tests",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 2.658,
+      "name": "picker",
+      "returncode": 0
+    },
+    {
+      "elapsed_seconds": 7.172,
+      "name": "combined",
+      "returncode": 0
+    }
+  ]
+}

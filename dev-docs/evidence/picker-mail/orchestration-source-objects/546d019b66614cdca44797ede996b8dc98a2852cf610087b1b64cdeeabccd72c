@@ -1,0 +1,13 @@
+from lab import *
+import hashlib
+manifest=json.loads((P/'source-client-final.json').read_text())
+code='''import json,sys,hashlib,os
+from pathlib import Path
+expected=json.load(sys.stdin);root=Path('/home/factionbuild/source214-client');actual={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts};assert actual==expected
+build=json.loads(Path('/home/factionbuild/proof214/client-build.json').read_text());assert build['result']=='pass'
+target=Path('/home/factionbuild/target214/release');artifacts={str(p.relative_to(target)):hashlib.sha256(p.read_bytes()).hexdigest() for directory in [target,target/'deps',target/'examples'] for p in directory.iterdir() if p.is_file() and not p.suffix and os.access(p,os.X_OK)}
+print(json.dumps(dict(result='pass',scope='final-client-two-core-2GiB-compile-only',source_sha256=actual,source_membership_matches=True,artifacts_sha256=artifacts,build=build),indent=2))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(manifest).encode());(P/'native-client-build-proof.json').write_bytes(r.stdout)
+for name in ['default','native','network','fixtures','tests']:(P/('native-client-'+name+'.log')).write_bytes(remote('cat /home/factionbuild/proof214/client-'+name+'.log').stdout)
+print('All final native client source members and executable artifacts captured before runtime.')

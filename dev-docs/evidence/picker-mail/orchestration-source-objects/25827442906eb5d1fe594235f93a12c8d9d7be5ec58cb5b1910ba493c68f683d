@@ -1,0 +1,29 @@
+from pathlib import Path
+import hashlib,json,os,socket,subprocess,tempfile,shutil
+R=Path('/Users/cam/DEV/faction-bbs');demo=R/'local/demo';base=demo/'saved/20261022T005925Z';owned=Path('/private/tmp/faction214-lab-OWNED')
+os.umask(0o077)
+before={n:hashlib.sha256((demo/n).read_bytes()).hexdigest() for n in ['CURRENT_PREVIEW','saved/LATEST','known_hosts','ssh-admin.json']};st=(base/'playground.qcow2').stat();before['disk']=[str(base/'playground.qcow2'),st.st_size,st.st_mtime_ns]
+commands=subprocess.check_output(['ps','-axo','command='],text=True).splitlines();assert not any(str(demo)+'/' in x and ('qemu-system' in x or 'serial-controller.py' in x) for x in commands)
+before['saved_stopped']=True;(owned/'saved-before.json').write_text(json.dumps(before))
+assert not (owned/'vm-path').exists()
+v=Path(tempfile.mkdtemp(prefix='faction214-vm-',dir='/private/tmp'));os.chmod(v,0o700);(v/'OWNED').write_text('Issue214 disposable VM; saved image backing read-only; generated private state removed by lead\n');(owned/'vm-path').write_text(str(v))
+subprocess.run(['qemu-img','create','-f','qcow2','-F','qcow2','-b',str(base/'playground.qcow2'),str(v/'disk.qcow2')],check=True,stdout=subprocess.DEVNULL)
+shutil.copyfile(base/'kernel.img',v/'kernel.img');shutil.copyfile(demo/'serial-controller.py',v/'serial-controller.py')
+def port():
+ with socket.socket() as s:s.bind(('127.0.0.1',0));return s.getsockname()[1]
+ports={n:port() for n in ['admin','member','files']};assert len(set(ports.values()))==3
+(v/'ports.json').write_text(json.dumps(ports))
+args=json.loads((demo/'ssh-admin.json').read_text());args[args.index('-p')+1]=str(ports['admin'])
+for i,x in enumerate(args):
+ if x.startswith('UserKnownHostsFile='):args[i]='UserKnownHostsFile='+str(v/'known_hosts')
+lines=[]
+for line in (demo/'known_hosts').read_text().splitlines():
+ fields=line.split()
+ if len(fields)>=3:lines.append(f'[127.0.0.1]:{ports["admin"]} '+' '.join(fields[1:]))
+(v/'known_hosts').write_text('\n'.join(lines)+'\n');(v/'ssh-admin.json').write_text(json.dumps(args))
+net='user,id=net0,'+','.join('hostfwd=tcp:127.0.0.1:'+str(ports[n])+'-:'+str(p) for n,p in [('admin',22),('member',2222),('files',2223)])
+q=['qemu-system-aarch64','-M','virt','-accel','hvf','-cpu','host','-smp','2','-m','2048','-kernel',str(v/'kernel.img'),'-append','root=NAME=netbsd-root -c','-drive',f'file={v}/disk.qcow2,if=none,format=qcow2,id=hd0','-device','virtio-blk-device,drive=hd0','-netdev',net,'-device','virtio-net-device,netdev=net0','-device','virtio-rng-device','-display','none','-monitor','none','-serial',f'unix:{v}/serial.sock,server=on,wait=off']
+with (v/'qemu.log').open('wb') as log:p=subprocess.Popen(q,stdout=log,stderr=log,start_new_session=True)
+(v/'qemu.pid').write_text(str(p.pid));(v/'qemu-command.json').write_text(json.dumps(q))
+with (v/'controller.log').open('wb') as log:c=subprocess.Popen(['python3',str(v/'serial-controller.py')],stdout=log,stderr=log,start_new_session=True)
+(v/'controller.pid').write_text(str(c.pid));print('Marked owned clone started: two cores/2GiB compile budget; only loopback forwards; saved playground remains stopped.')

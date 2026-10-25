@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "unsupported_home_mail_catalog_rejects_before_terminal_store_or_network"
+  ],
+  "count": 1,
+  "private_fixture_removed": true,
+  "result": "pass"
+}

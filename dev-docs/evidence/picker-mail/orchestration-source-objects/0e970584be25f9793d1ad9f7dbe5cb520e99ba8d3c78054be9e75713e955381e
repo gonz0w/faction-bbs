@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,subprocess,tempfile,sys
+root=Path('/private/tmp/faction214-lab-OWNED')
+seed=Path(sys.argv[1]); driver=Path(sys.argv[2])
+p=Path(tempfile.mkdtemp(prefix='seed-',dir=root));p.chmod(0o700)
+r=subprocess.run([str(seed),str(p/'store'),'archive-pending'],capture_output=True)
+assert r.returncode==0,'fixture seed failed'
+r=subprocess.run([str(driver),'archive-status',str(p/'store')],input=b'checkpoint synthetic fixture password\n',capture_output=True)
+assert r.returncode==0,'status failed'
+s=json.loads(r.stdout); assert s['enabled'] and s['ready'] and s['cursor_present'], 'archive-pending must seed a usable nonempty encrypted archive cursor'
+assert s['checkpoint']['after']=='synthetic-private-archive-id'
+r=subprocess.run([str(driver),'inspect',str(p/'store')],input=b'checkpoint synthetic fixture password\n',capture_output=True)
+s=json.loads(r.stdout);assert len(s['history'])==2 and len(s['pending'])==1 and s['pending'][0]['operation']=='01'*16
+print('archive-pending retains two history records, exact pending ID and real nonempty cursor')

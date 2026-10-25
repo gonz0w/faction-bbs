@@ -1,0 +1,33 @@
+{
+  "checks": [
+    "explicit_local_create_hidden_secret_and_new_recovery",
+    "public_device_inspection_and_exclusive_lock",
+    "typed_ed25519_peer_enrollment_survives_reopen",
+    "changed_or_server_added_peer_is_never_silently_accepted",
+    "authentication_failure_never_renders_private_state",
+    "cancel_relocks_and_restores_terminal",
+    "oversize_hidden_secret_rejected_and_queued_secret_flushed_before_shell",
+    "typeahead_before_hidden_passphrase_is_discarded",
+    "legacy_curve_or_partial_ed_identity_cannot_enroll",
+    "confirmation_typeahead_and_control_splicing_cannot_change_trust",
+    "bounded_authenticated_history_ids_and_classic_inert_unicode",
+    "reopened_outbox_persisted_ids_pending_and_fresh_device_guard",
+    "explicit_retirement_preserves_history_without_fake_delivery_claim",
+    "explicit_unicode_override_keeps_control_and_bidi_text_inert",
+    "official_backup_is_history_only_and_fresh_device_needs_reverification",
+    "expired_state_is_visible_without_silent_restart",
+    "revoked_state_is_visible_without_silent_restart",
+    "full_state_is_visible_without_silent_restart",
+    "poisoned_write_exits_and_canonical_reopen_resolves_handle",
+    "recovery_and_password_reset_cannot_unquarantine_old_ratchets",
+    "hostile_remote_filter_pty_has_no_unlock_upgrade_or_store_authority",
+    "profile_metadata_cannot_select_or_open_checkpoint_store",
+    "deliberate_upgrade_preserves_legacy_records_and_rotates_recovery"
+  ],
+  "count": 23,
+  "fixture_children_removed": true,
+  "hardware_claim": false,
+  "network_mail": false,
+  "platform": "NetBSD",
+  "result": "pass"
+}

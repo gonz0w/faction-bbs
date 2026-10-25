@@ -1,0 +1,15 @@
+{
+  "all_targets": true,
+  "failed": 0,
+  "harnesses": 13,
+  "ignored_subprocess_helpers": 2,
+  "log_sha256": "028058ccd2ca7f16a6f8c9a251956d7a92fec2429f9966a3471ba2bab1339da4",
+  "network_mail": true,
+  "packages": [
+    "faction-client",
+    "faction-omemo"
+  ],
+  "passed": 142,
+  "result": "pass",
+  "test_threads": 1
+}

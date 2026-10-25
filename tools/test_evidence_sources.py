@@ -11,11 +11,43 @@ def isolated_history(digest):
     # ExitStack avoids Python 3.12's static block limit as snapshots accumulate.
     with ExitStack() as mocks:
         mocks.enter_context(patch.object(evidence,'MANIFEST_SHA256',digest))
-        for name in ('key_manifest', 'global_manifest', 'file_baseline_manifest', 'native_client_baseline_manifest', 'mail_client_baseline_manifest', 'room_reader_baseline_manifest', 'post_metadata_baseline_manifest', 'authored_articles_baseline_manifest', 'broader_articles_baseline_manifest', 'unicode_subjects_baseline_manifest', 'modern_terminals_baseline_manifest', 'kitty_graphics_baseline_manifest', 'terminal_compatibility_baseline_manifest', 'menu_themes_baseline_manifest', 'seasonal_themes_baseline_manifest', 'custom_menus_baseline_manifest', 'nightwire_baseline_manifest', 'operator_baseline_manifest', 'operator_host_baseline_manifest', 'operator_recovery_baseline_manifest', 'directory_baseline_manifest', 'board_launcher_baseline_manifest', 'room_browser_baseline_manifest', 'writing_desk_baseline_manifest', 'full_screen_baseline_manifest', 'community_wall_baseline_manifest', 'member_pages_baseline_manifest', 'local_mail_vault_baseline_manifest', 'client_vault_integration_baseline_manifest', 'gatherings_baseline_manifest', 'polls_baseline_manifest', 'catchup_baseline_manifest', 'discussion_baseline_manifest', 'gallery_baseline_manifest', 'travel_baseline_manifest', 'library_baseline_manifest', 'file_requests_baseline_manifest', 'magazine_baseline_manifest', 'editorial_baseline_manifest', 'social_baseline_manifest', 'boardwide_social_baseline_manifest', 'standalone_social_baseline_manifest', 'idle_notifications_baseline_manifest', 'who_baseline_manifest', 'connection_desk_baseline_manifest', 'passport_baseline_manifest', 'nightwire_refresh_baseline_manifest', 'checkpoint_ui_baseline_manifest', 'native_network_baseline_manifest', 'network_prekeys_baseline_manifest', 'network_dependency_baseline_manifest', 'home_mail_archive_baseline_manifest'):
+        for name in ('key_manifest', 'global_manifest', 'file_baseline_manifest', 'native_client_baseline_manifest', 'mail_client_baseline_manifest', 'room_reader_baseline_manifest', 'post_metadata_baseline_manifest', 'authored_articles_baseline_manifest', 'broader_articles_baseline_manifest', 'unicode_subjects_baseline_manifest', 'modern_terminals_baseline_manifest', 'kitty_graphics_baseline_manifest', 'terminal_compatibility_baseline_manifest', 'menu_themes_baseline_manifest', 'seasonal_themes_baseline_manifest', 'custom_menus_baseline_manifest', 'nightwire_baseline_manifest', 'operator_baseline_manifest', 'operator_host_baseline_manifest', 'operator_recovery_baseline_manifest', 'directory_baseline_manifest', 'board_launcher_baseline_manifest', 'room_browser_baseline_manifest', 'writing_desk_baseline_manifest', 'full_screen_baseline_manifest', 'community_wall_baseline_manifest', 'member_pages_baseline_manifest', 'local_mail_vault_baseline_manifest', 'client_vault_integration_baseline_manifest', 'gatherings_baseline_manifest', 'polls_baseline_manifest', 'catchup_baseline_manifest', 'discussion_baseline_manifest', 'gallery_baseline_manifest', 'travel_baseline_manifest', 'library_baseline_manifest', 'file_requests_baseline_manifest', 'magazine_baseline_manifest', 'editorial_baseline_manifest', 'social_baseline_manifest', 'boardwide_social_baseline_manifest', 'standalone_social_baseline_manifest', 'idle_notifications_baseline_manifest', 'who_baseline_manifest', 'connection_desk_baseline_manifest', 'passport_baseline_manifest', 'nightwire_refresh_baseline_manifest', 'checkpoint_ui_baseline_manifest', 'native_network_baseline_manifest', 'network_prekeys_baseline_manifest', 'network_dependency_baseline_manifest', 'home_mail_archive_baseline_manifest', 'archive_mail_picker_baseline_manifest'):
             mocks.enter_context(patch.object(evidence,name,return_value={'files':{}}))
         yield
 
 class ExecutedSources(unittest.TestCase):
+    def test_archive_mail_picker_baseline_preserves_existing_objects_and_record(self):
+        manifest=evidence.archive_mail_picker_baseline_manifest()
+        self.assertEqual(len(manifest['files']),644)
+        self.assertEqual(set(manifest['files']),set(manifest['source_paths']))
+        for name,digest in manifest['files'].items():
+            self.assertEqual(hashlib.sha256(evidence.source_bytes(name,digest)).hexdigest(),digest)
+        for name,digest in manifest['records'].items():
+            self.assertEqual(hashlib.sha256((evidence.ROOT/name).read_bytes()).hexdigest(),digest)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);base=root/'dev-docs/evidence';base.mkdir(parents=True)
+            (base/'archive-mail-picker-baseline-manifest.json').write_bytes(b'{}')
+            with self.assertRaisesRegex(AssertionError,'frozen archive-mail picker baseline changed'):
+                evidence.archive_mail_picker_baseline_manifest(root)
+
+    def test_explicit_historical_object_binding_survives_edit_and_rejects_escape(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);base=root/'dev-docs/evidence';base.mkdir(parents=True)
+            old=b'exact executed object';digest=hashlib.sha256(old).hexdigest()
+            (base/'object').write_bytes(old);(root/'same.rs').write_bytes(b'new current')
+            data=dict(files={'same.rs':digest},source_root='unused',source_paths={'same.rs':'dev-docs/evidence/object'})
+            raw=json.dumps(data).encode();(base/'manifest.json').write_bytes(raw)
+            with isolated_history(hashlib.sha256(raw).hexdigest()):
+                self.assertEqual(evidence.source_bytes('same.rs',digest,root),old)
+                (base/'object').write_bytes(b'changed object')
+                with self.assertRaisesRegex(AssertionError,'executed source bytes changed'):
+                    evidence.source_bytes('same.rs',digest,root)
+            data['source_paths']['same.rs']='../outside'
+            raw=json.dumps(data).encode();(base/'manifest.json').write_bytes(raw)
+            with isolated_history(hashlib.sha256(raw).hexdigest()):
+                with self.assertRaisesRegex(AssertionError,'source path escaped repository'):
+                    evidence.source_bytes('same.rs',digest,root)
+
     def test_home_mail_archive_baseline_preserves_prior_sources_and_records(self):
         manifest=evidence.home_mail_archive_baseline_manifest()
         self.assertEqual(len(manifest['files']),295)

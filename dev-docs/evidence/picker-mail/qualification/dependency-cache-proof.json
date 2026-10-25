@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "check": "tools/check_network_mail_dependencies.py --check",
+  "selected_platforms": [
+    "Linux",
+    "NetBSD",
+    "macOS"
+  ],
+  "root_lock_sha256": "a538c752e61279ce640542470e9efbe2899ff862c96c258bbc5d02baeffe7059",
+  "exact_archive_and_extracted_source_checks": true,
+  "reviewed_license_and_feature_graph": true,
+  "no_javascript_or_typescript": true,
+  "public_registry_transfer_archive_sha256": "cbb075b00841f51560e192e218884ece40396d71b91990356bb06bfb91b71c47",
+  "public_registry_transfer_archive_bytes": 48015070,
+  "no_credentials_in_registry_archive": true,
+  "security_audit_claim": false
+}

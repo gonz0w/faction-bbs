@@ -1,0 +1,294 @@
+#!/usr/bin/env python3
+"""Real trusted-local picker/home-mail PTYs using disposable synthetic mail only."""
+import argparse
+import fcntl
+import json
+import os
+import platform
+import re
+import secrets
+import select
+import socket
+import subprocess
+import tempfile
+import termios
+import time
+from pathlib import Path
+
+from smoke_board_launcher import LauncherConsole, PICK, catalog
+
+PASS = 'checkpoint synthetic fixture password'
+UNLOCK = 'LOCAL checkpoint passphrase (hidden): '
+HOME = 'HOME account password (hidden; never sent to a BBS): '
+LOCK = '[L] Lock and exit'
+
+
+def private(path, text):
+    path.write_text(text)
+    path.chmod(0o600)
+
+
+def probe(client, checkpoint_fixture, mail_fixture=None, ca_path=None):
+    checks, children = [], []
+    # Reserving, but never listening on, this socket makes the unavailable-home
+    # endpoint deterministic without contacting a provider or opening a listener.
+    with tempfile.TemporaryDirectory(prefix='faction214-picker-OWNED-') as temp, socket.socket() as closed:
+        root = Path(temp).resolve()
+        root.chmod(0o700)
+        (root / 'OWNERSHIP').write_text('Owned disposable #214 synthetic picker fixture.\n')
+        closed.bind(('127.0.0.1', 0))
+        store, config, pack = root / 'store', root / 'home.toml', root / 'boards.toml'
+        subprocess.run([str(checkpoint_fixture), str(store), 'pending'], check=True, capture_output=True)
+        ca = root / 'ca.pem'
+        ca_source = ca_path or Path(__file__).resolve().parents[1] / 'crates/faction-xmpp/tests/fixtures/local-ca.pem'
+        private(ca, ca_source.read_text())
+        private(config, 'version=1\naccount="alice@home.test"\nendpoint="127.0.0.1:' + str(closed.getsockname()[1]) + '"\ndomain="home.test"\nca=' + json.dumps(str(ca)) + '\npin="' + 'ab' * 32 + '"\n')
+        paths = [root / ('board-' + str(n) + '.toml') for n in range(16)]
+        # Missing/invalid board files must not be read by picker navigation/mail.
+        def configure(store_path=store, config_path=config, enabled=True, extra=''):
+            entry = 'home_mail={store=' + json.dumps(str(store_path)) + ',config=' + json.dumps(str(config_path)) + '}\n' if enabled else ''
+            private(pack, catalog(paths).replace('version=1\n', 'version=1\n' + entry + extra))
+        def start(unicode=False, compact=False):
+            c = LauncherConsole([client, '--boards', pack] + (['--unicode'] if unicode else []),
+                                columns=40 if compact else 80, rows=18 if compact else 24)
+            children.append(c)
+            c.expect(PICK)
+            c.expect('E:home mail')
+            return c
+        def enter(c):
+            c.raw(b'e')
+            c.password(PASS, UNLOCK)
+            c.expect(LOCK)
+        def pause(c):
+            c.expect('Enter to return: ')
+            c.send('')
+            c.expect(LOCK)
+        def lock(c):
+            c.raw(b'l')
+            c.expect(PICK)
+        def quit(c):
+            c.raw(b'q')
+            c.finish()
+        def unchanged(before):
+            assert (store / 'mail.fkv').read_bytes() == before, 'refusal changed canonical checkpoint'
+        def inspect():
+            if mail_fixture is None:
+                return None
+            result = subprocess.run([str(mail_fixture), 'inspect', str(store)], input=(PASS + '\n').encode(), capture_output=True, check=True)
+            return json.loads(result.stdout)
+        def history(c, count=2):
+            c.raw(b'h')
+            for _ in range(count):
+                c.expect('Enter for next record: ')
+                c.send('')
+            pause(c)
+        def returned(c, error=True):
+            if error:
+                c.expect('Home mail locked; local operation stopped.')
+                c.expect('Enter to return to local Boards: ')
+                c.send('')
+            c.expect(PICK)
+            # Picker remains raw, so echo must stay off until final quit.
+            assert not termios.tcgetattr(c.fd)[3] & termios.ECHO
+            quit(c)
+        try:
+            configure(extra="mail_store='" + str(root / 'v1') + "'\npassport_store='" + str(root / 'passport') + "'\n")
+            original = (store / 'mail.fkv').read_bytes()
+            initial = inspect()
+            c = start(compact=True)
+            screen = re.sub(rb'\x1b\[[0-9;?]*[ -/]*[@-~]', b'', c.transcript).decode()
+            assert len(screen.splitlines()) <= 18 and all(len(row) <= 39 for row in screen.splitlines())
+            c.raw(b'\x1b[B'); c.expect('> [B] Local Board 2')
+            c.raw(b'n'); c.expect('Page 2 / 4')
+            c.raw(b'p'); c.expect('Page 1 / 4')
+            assert b'LOCAL checkpoint' not in c.transcript and b'MANUAL ONLINE' not in c.transcript
+            unchanged(original)
+            enter(c)
+            processes = subprocess.check_output(['ps', '-ax', '-o', 'pid,ppid,comm'], text=True)
+            assert not any(row.split()[1:2] == [str(c.pid)] for row in processes.splitlines()[1:] if row.strip()), 'mail entry launched child process'
+            history(c)
+            assert b'Subject: synthetic subject \\u{3bb}' in c.transcript
+            mark = len(c.transcript)
+            lock(c)
+            assert b'> [A] Local Board 1' in c.transcript[mark:]
+            assert b'\x1b[2J\x1b[H' in c.transcript[mark:]
+            enter(c); lock(c); quit(c)
+            unchanged(original)
+            checks.append('compact_40x18_local_entry_history_lock_reopen_and_navigation_without_children')
+
+            configure()
+            c = start(); c.raw(b'\x1b[B'); c.expect('> [B] Local Board 2'); enter(c)
+            mark = len(c.transcript); lock(c)
+            assert b'> [B] Local Board 2' in c.transcript[mark:]
+            quit(c); unchanged(original)
+            checks.append('mail_return_preserves_exact_board_selection_and_canonical_checkpoint')
+
+            c = start(unicode=True); enter(c); history(c)
+            assert 'Subject: synthetic subject λ'.encode() in c.transcript
+            lock(c); quit(c); unchanged(original)
+            checks.append('explicit_unicode_override_reaches_existing_authenticated_history')
+
+            c = start(); enter(c)
+            c.raw(b'a'); c.expect('Enable archive checkpoints with G before catch-up.'); pause(c)
+            c.raw(b'g'); c.expect('Type upgrade to enable encrypted archive checkpoints: '); c.send('no')
+            returned(c); unchanged(original)
+            checks.append('archive_catchup_and_declined_upgrade_are_explicit_and_nonmutating')
+
+            c = start(); c.raw(b'e'); c.password('wrong local synthetic passphrase', UNLOCK)
+            returned(c); unchanged(original)
+            assert b'synthetic subject' not in c.transcript
+            checks.append('wrong_local_secret_locks_and_returns_without_private_history')
+
+            c = start(); c.raw(b'e'); c.expect(UNLOCK); c.raw(b'\x03'); returned(c, error=False); unchanged(original)
+            checks.append('hidden_local_prompt_cancel_locks_and_restores_picker')
+
+            c = start(); enter(c); c.raw(b'u'); c.expect(HOME); c.raw(b'\x03'); returned(c, error=False); unchanged(original)
+            checks.append('hidden_home_prompt_cancel_locks_and_restores_picker')
+
+            c = start(); enter(c); c.raw(b'u'); oversized = secrets.token_hex(65); c.password(oversized, HOME)
+            returned(c); unchanged(original)
+            assert oversized.encode() not in c.transcript
+            checks.append('oversized_hidden_home_input_locks_flushes_and_returns')
+
+            c = start(); enter(c)
+            queued = secrets.token_hex(24); c.raw(b'u' + queued.encode()); c.expect(HOME)
+            deadline = time.monotonic() + .2
+            while time.monotonic() < deadline and select.select([c.fd], [], [], .02)[0]:
+                chunk = os.read(c.fd, 8192); c.buffer += chunk; c.transcript += chunk
+            assert queued.encode() not in c.transcript and b'Connecting directly' not in c.buffer
+            c.raw(b'\x03'); returned(c, error=False); unchanged(original)
+            checks.append('queued_picker_or_menu_input_cannot_supply_hidden_home_credentials')
+
+            if mail_fixture is not None:
+                failure = subprocess.run([str(mail_fixture), 'sync', str(store), str(config)],
+                                         input=(PASS + '\n' + secrets.token_hex(24) + '\n').encode(), capture_output=True)
+                assert failure.returncode == 1 and b'Transport(Connect)' in failure.stderr, 'outage must reach refused TCP connection with valid CA'
+                unchanged(original)
+            c = start(); enter(c); c.raw(b'u'); home_password = secrets.token_hex(24); c.password(home_password, HOME)
+            c.expect('Home cycle stopped; pending ciphertext retained.'); pause(c)
+            history(c); lock(c); quit(c); unchanged(original)
+            assert home_password.encode() not in c.transcript
+            checks.append('unavailable_home_keeps_history_pending_and_manual_locked_return')
+
+            # Lock held through descriptor-relative Store's existing flock boundary.
+            with (store / 'mail.lock').open('rb') as busy:
+                fcntl.flock(busy, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                c = start(); c.raw(b'e'); returned(c)
+            unchanged(original)
+            checks.append('busy_checkpoint_is_not_unlocked_or_replaced')
+
+            c = start(); enter(c)
+            store.chmod(0o500)
+            try:
+                c.raw(b'c'); c.expect('Subject (128 UTF-8 bytes): '); c.send('synthetic failed write')
+                c.expect('Body (1024 UTF-8 bytes, one line): '); c.send('synthetic failed write body')
+                c.expect('Type queue to persist encrypted ciphertext: '); c.send('queue')
+                returned(c)
+            finally:
+                store.chmod(0o700)
+            unchanged(original)
+            c = start(); enter(c); lock(c); quit(c)
+            unchanged(original)
+            checks.append('ambiguous_local_write_poison_drops_handle_then_canonical_reopen_succeeds')
+
+            for kind in ('missing-store', 'missing-config', 'loose-config', 'symlink-config', 'symlink-store'):
+                bad = root / kind
+                if kind == 'loose-config':
+                    private(bad, config.read_text()); bad.chmod(0o644)
+                if kind == 'symlink-config': bad.symlink_to(config)
+                if kind == 'symlink-store': bad.symlink_to(store, target_is_directory=True)
+                configure(store_path=bad if kind.endswith('store') else store,
+                          config_path=bad if kind.endswith('config') else config)
+                c = start(); c.raw(b'e'); returned(c); unchanged(original)
+                assert b'synthetic subject' not in c.transcript
+                if kind.startswith('missing'): assert not bad.exists()
+            checks.append('missing_loose_or_symlink_local_references_refuse_without_creation_or_state_change')
+
+            configure(enabled=False)
+            c = LauncherConsole([client, '--boards', pack]); children.append(c); c.expect(PICK)
+            c.raw(b'e'); c.expect(PICK)
+            assert b'LOCAL checkpoint' not in c.transcript and b'E:home mail' not in c.transcript
+            quit(c); unchanged(original)
+            checks.append('unconfigured_E_has_no_unlock_or_connection_authority')
+
+            configure()
+            c = start(); enter(c)
+            c.raw(b'c'); c.expect('Subject (128 UTF-8 bytes): '); c.send('picker synthetic λ')
+            c.expect('Body (1024 UTF-8 bytes, one line): '); c.send('picker synthetic private body')
+            c.expect('Type queue to persist encrypted ciphertext: '); c.send('queue')
+            c.expect('Queued durably; no delivery or read receipt.'); pause(c); lock(c); quit(c)
+            after_queue = (store / 'mail.fkv').read_bytes()
+            assert after_queue != original
+            queued_state = inspect()
+            if initial is not None:
+                assert len(queued_state['pending']) == len(initial['pending']) + 1
+                assert all(item in queued_state['pending'] for item in initial['pending'])
+                assert len(queued_state['history']) == len(initial['history']) + 1
+            checks.append('explicit_compose_reuses_durable_queue_and_preserves_existing_pending_ids')
+
+            c = start(); enter(c); c.raw(b'g'); c.expect('Type upgrade to enable encrypted archive checkpoints: '); c.send('upgrade')
+            c.expect('Archive checkpoints enabled; existing messages, keys and pending ciphertext kept.'); pause(c)
+            c.raw(b'g'); c.expect('Archive checkpoints already enabled; existing cursor kept.'); pause(c)
+            lock(c); quit(c)
+            archive_bytes = (store / 'mail.fkv').read_bytes(); assert archive_bytes != after_queue
+            archive_state = inspect()
+            if queued_state is not None:
+                assert archive_state['pending'] == queued_state['pending'] and archive_state['history'] == queued_state['history']
+            c = start(); enter(c); c.raw(b'a'); c.password(secrets.token_hex(24), HOME)
+            c.expect('Catch-up stopped; earlier accepted entries may already be saved.'); pause(c); lock(c); quit(c)
+            unchanged(archive_bytes)
+            if archive_state is not None: assert inspect() == archive_state
+            checks.append('explicit_G_then_A_reuses_existing_archive_path_and_outage_preserves_cursor_and_pending')
+            cursor_store = root / 'cursor-store'
+            subprocess.run([str(checkpoint_fixture), str(cursor_store), 'archive-pending'], check=True, capture_output=True)
+            store = cursor_store
+            configure(store_path=store)
+            cursor_bytes = (store / 'mail.fkv').read_bytes()
+            cursor_state = inspect()
+            def archive_status():
+                if mail_fixture is None: return None
+                result = subprocess.run([str(mail_fixture), 'archive-status', str(store)], input=(PASS + '\n').encode(), capture_output=True, check=True)
+                return json.loads(result.stdout)
+            cursor = archive_status()
+            if cursor is not None: assert cursor['enabled'] and cursor['cursor_present'] and cursor['checkpoint']['after']
+            c = start(); enter(c); c.raw(b'a'); c.password(secrets.token_hex(24), HOME)
+            c.expect('Catch-up stopped; earlier accepted entries may already be saved.'); pause(c); lock(c); quit(c)
+            unchanged(cursor_bytes)
+            c = start(); c.raw(b'e'); c.password('wrong local synthetic password', UNLOCK); returned(c)
+            unchanged(cursor_bytes)
+            if cursor is not None: assert archive_status() == cursor and inspect() == cursor_state
+            checks.append('nonempty_archive_cursor_epoch_history_and_pending_survive_outage_and_wrong_unlock')
+            assert all(PASS.encode() not in c.transcript for c in children)
+        finally:
+            for c in children: c.close()
+    return dict(result='pass', platform=platform.system(), count=len(checks), checks=checks,
+                private_fixture_removed=True, provider_contact=False, listener_opened=False)
+
+
+def unsupported(client):
+    with tempfile.TemporaryDirectory(prefix='faction214-picker-unsupported-OWNED-') as temp:
+        root = Path(temp).resolve(); root.chmod(0o700)
+        pack = root / 'boards.toml'; store = root / 'missing-store'
+        private(pack, catalog([root / 'board.toml']).replace('version=1\n', 'version=1\nhome_mail={store=' + json.dumps(str(store)) + ',config=' + json.dumps(str(root / 'missing-home.toml')) + '}\n'))
+        result = subprocess.run([str(client), '--boards', str(pack)], capture_output=True, timeout=10)
+        assert result.returncode == 1 and b'network-mail' in result.stderr
+        assert not store.exists()
+    return dict(result='pass', count=1, checks=['unsupported_home_mail_catalog_rejects_before_terminal_store_or_network'], private_fixture_removed=True)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--client', type=Path, required=True)
+    parser.add_argument('--checkpoint-fixture', type=Path)
+    parser.add_argument('--mail-fixture', type=Path)
+    parser.add_argument('--unsupported', action='store_true')
+    parser.add_argument('--ca', type=Path, help='public synthetic test CA (default: repository fixture)')
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    if args.unsupported:
+        result = unsupported(args.client.resolve())
+    else:
+        if args.checkpoint_fixture is None: parser.error('--checkpoint-fixture is required for supported builds')
+        result = probe(args.client.resolve(), args.checkpoint_fixture.resolve(), args.mail_fixture.resolve() if args.mail_fixture else None, args.ca.resolve() if args.ca else None)
+    args.output.write_text(json.dumps(result, indent=2) + '\n')
+    print('Picker home-mail terminal controls passed:', result['count'])

@@ -153,3 +153,10 @@ works without a TTY.
 An optional catalog `passport_store` enables J between visits for the
 [device-local passport](local-passport.md): explicit plaintext notes, original
 ASCII calling cards and selective share previews. No automatic visit tracking.
+
+## Open native home mail between visits
+
+A `network-mail` build can opt into a separate **E** entry using a private
+`home_mail` store/config pair. See [picker home mail](picker-home-mail.md) for
+configuration, locked return, Unicode and outage behavior. M retains the v1 vault;
+board selection never unlocks or connects to mail automatically.

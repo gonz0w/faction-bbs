@@ -76,8 +76,8 @@ client/board operation and the v1 local vault do not enable this adapter.
 
 The explicit optional [checkpoint console](../docs/checkpoint-console.md) renders
 authenticated device-local v2 metadata/history/outbox and manages deliberate
-upgrade/recovery. It is a standalone entry, outside remote stream and picker
-routing. Read-only status/operation inspection does not relax protocol delivery
+upgrade/recovery. It is outside remote stream routing. The optional native-home picker entry
+reuses the separate online console; it does not replace the offline console. Read-only status/operation inspection does not relax protocol delivery
 gates for expired, revoked or history-only stores.
 
 The separate [native XMPP experiment](native-xmpp-transport.md) qualifies a bounded
@@ -91,6 +91,8 @@ entry. It publishes existing public prekeys, verifies one already enrolled peer,
 releases only persisted ciphertext and commits authenticated incoming SCE/history.
 Only the first sender explicitly starts a session; the recipient accepts the first
 authenticated prekey message. No network write retires the outbox. This adapter
-adds neither BBS authority nor reliable archive synchronization, background mail,
-roaming or attachments. The research transport's earlier observations remain
+adds no BBS authority. Its optional [archive path](native-mail-archive.md)
+provides bounded manual pages with an encrypted atomic cursor. A private local
+[picker entry](../docs/picker-home-mail.md) reuses the console between visits.
+Background mail, roaming and attachments remain separate. The research transport's earlier observations remain
 separate from this integrated implementation.
