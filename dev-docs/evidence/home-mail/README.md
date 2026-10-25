@@ -138,3 +138,12 @@ changed the checker after a placeholder-stage source capture. The correction
 restores the exact earlier bytes by their already-recorded digest and points that
 stage to a frozen object. Product bytes, measurements and test outcomes are
 unchanged; the corrected complete record is independently pinned.
+
+The first complete remote run passed native mail, saved evidence, Python and Lua
+checks, then rejected historical experiment dependencies because their checkers
+used the moving product inventory. The [four original checker inputs](ci-research-inventory-baseline.json)
+are preserved separately. Their fix selects the already-pinned pre-209 inventory;
+experiment locks, dependency/feature/license assertions and no-JS source checks
+remain unchanged. This CI-only correction does not change the native execution
+record, product bytes or measured results. The [supplementary result](ci-research-inventory-results.json)
+records five new negative/positive unit tests and all four real offline guards.

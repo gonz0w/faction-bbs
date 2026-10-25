@@ -1,0 +1,43 @@
+2026-10-25T19:21:45.6643292Z   Downloaded serde_spanned v1.1.2
+2026-10-25T19:21:45.6704795Z   Downloaded cfg-if v1.0.5
+2026-10-25T19:21:45.6716290Z   Downloaded zeroize v1.9.1
+2026-10-25T19:21:45.6728671Z   Downloaded digest v0.11.3
+2026-10-25T19:21:45.6747259Z   Downloaded pkg-config v0.3.34
+2026-10-25T19:21:45.6759708Z   Downloaded find-msvc-tools v0.1.15
+2026-10-25T19:21:45.6772560Z   Downloaded errno v0.3.14
+2026-10-25T19:21:45.6786156Z   Downloaded shlex v2.0.1
+2026-10-25T19:21:45.6796680Z   Downloaded fallible-iterator v0.3.0
+2026-10-25T19:21:45.6807269Z   Downloaded toml_parser v1.1.5+spec-1.1.0
+2026-10-25T19:21:45.6824990Z   Downloaded hybrid-array v0.4.15
+2026-10-25T19:21:45.6842094Z   Downloaded cmov v0.5.4
+2026-10-25T19:21:45.6856239Z   Downloaded smallvec v1.16.3
+2026-10-25T19:21:45.6866741Z   Downloaded toml_datetime v1.1.2+spec-1.1.0
+2026-10-25T19:21:45.6879369Z   Downloaded toml v1.1.8+spec-1.1.0
+2026-10-25T19:21:45.6911328Z   Downloaded serde_core v1.0.229
+2026-10-25T19:21:45.6932471Z   Downloaded getrandom v0.4.3
+2026-10-25T19:21:45.6962953Z   Downloaded ctutils v0.4.3
+2026-10-25T19:21:45.6979807Z   Downloaded typenum v1.20.1
+2026-10-25T19:21:45.7009383Z   Downloaded indexmap v2.14.2
+2026-10-25T19:21:45.7043316Z   Downloaded toml_writer v1.1.3+spec-1.1.0
+2026-10-25T19:21:45.7054738Z   Downloaded rusqlite v0.40.1
+2026-10-25T19:21:45.7106905Z   Downloaded winnow v1.0.4
+2026-10-25T19:21:45.7184663Z   Downloaded hashbrown v0.17.1
+2026-10-25T19:21:45.7227966Z   Downloaded cc v1.9.0
+2026-10-25T19:21:45.7262340Z   Downloaded vcpkg v0.2.15
+2026-10-25T19:21:45.7701758Z   Downloaded unicode-width v0.2.2
+2026-10-25T19:21:45.7744649Z   Downloaded phc v0.6.1
+2026-10-25T19:21:45.7757437Z   Downloaded bitflags v2.13.2
+2026-10-25T19:21:45.7792477Z   Downloaded rustix v1.1.5
+2026-10-25T19:21:45.8165602Z   Downloaded libc v0.2.191
+2026-10-25T19:21:45.8731996Z   Downloaded linux-raw-sys v0.12.1
+2026-10-25T19:21:45.9224277Z   Downloaded libsqlite3-sys v0.38.2
+2026-10-25T19:21:46.0980050Z Traceback (most recent call last):
+2026-10-25T19:21:46.0980834Z   File "/home/runner/work/faction-bbs/faction-bbs/tools/check_ui_dependencies.py", line 28, in <module>
+2026-10-25T19:21:46.0981142Z     if __name__=='__main__':check()
+2026-10-25T19:21:46.0981287Z                             ^^^^^^^
+2026-10-25T19:21:46.0981541Z   File "/home/runner/work/faction-bbs/faction-bbs/tools/check_ui_dependencies.py", line 20, in check
+2026-10-25T19:21:46.0981949Z     assert reviewed_subset(row,expected.get((p['name'],p['version']))),'unreviewed experiment dependency/features'
+2026-10-25T19:21:46.0982234Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-25T19:21:46.0982439Z AssertionError: unreviewed experiment dependency/features
+2026-10-25T19:21:46.1094299Z ##[error]Process completed with exit code 1.
+2026-10-25T19:21:46.1166805Z Cleaning up orphan processes

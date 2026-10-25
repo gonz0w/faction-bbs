@@ -1,0 +1,50 @@
+{
+  "issue": 209,
+  "result": "pass-offline-historical-research-inventory",
+  "unit_tests": 5,
+  "real_guards": {
+    "ui": {
+      "result": "pass",
+      "aarch64-unknown-netbsd": 41,
+      "x86_64-unknown-linux-gnu": 43
+    },
+    "shared": {
+      "result": "pass",
+      "aarch64-unknown-netbsd": 41,
+      "x86_64-unknown-linux-gnu": 43
+    },
+    "headroom": {
+      "result": "pass",
+      "aarch64-unknown-netbsd": 41,
+      "x86_64-unknown-linux-gnu": 43
+    },
+    "transport": {
+      "result": "pass",
+      "aarch64-unknown-netbsd": 41,
+      "x86_64-unknown-linux-gnu": 43
+    }
+  },
+  "checks_unchanged": [
+    "reviewed_subset",
+    "license",
+    "features",
+    "no-JS source filenames",
+    "locked metadata",
+    "selected platform graphs"
+  ],
+  "native_record_sha256_unchanged": "0014dd57c04fb75971bfda9c510cb1cfffc8ec9db0fb710b9764596a0a1f259e",
+  "actual_final_sources": {
+    "tools/check_ui_dependencies.py": "0b51cd6107f0f68f3c06f5ac72cc3f7ffe674e3f871929aa3c35575985aaab93",
+    "tools/check_shared_dependencies.py": "ab1307bc0a54f45480558de388da0d27b0ee7861c19c7c1fbf3243b562aa3e53",
+    "tools/check_headroom_dependencies.py": "5a78e411903122b093a7eb52195a975cd02ab4b3eb6000530fdcf287df5bd99a",
+    "tools/check_transport_dependencies.py": "b169d2334dd87dbdc8438ac4c68e990c174cb2dc693349092c3ec1117a9f9379",
+    "tools/research_dependency_inventory.py": "4652c14a1d1599c237a41591cc07a713b6cde0060df567267608f98ac2bb0c63",
+    "tools/test_research_dependency_inventory.py": "39443016eaf24ae7fa19572aad9afb400152a65c875413a596896d9df1c73ad1"
+  },
+  "frozen_source_root": "dev-docs/evidence/sources/209-research-guards/after",
+  "new_registry_allowance": false,
+  "product_source_or_lock_change": false,
+  "new_vm_or_native_rerun": false,
+  "full_python_tests": 259,
+  "full_python_result": "pass"
+}

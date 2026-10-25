@@ -1,0 +1,10 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/check_headroom_dependencies.py", line 28, in <module>
+    if __name__=='__main__':check()
+                            ~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_headroom_dependencies.py", line 20, in check
+    assert reviewed_subset(row,expected.get((p['name'],p['version']))),'unreviewed experiment dependency/features'
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unreviewed experiment dependency/features

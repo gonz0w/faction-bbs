@@ -3,11 +3,13 @@
 import json
 import subprocess
 from pathlib import Path
-from check_rust_dependencies import ROOT,INVENTORY,TARGETS,SUFFIXES,MANIFESTS,reviewed_subset
+from check_rust_dependencies import ROOT,TARGETS,SUFFIXES,MANIFESTS,reviewed_subset
+
+from research_dependency_inventory import reviewed_research_inventory
 
 
 def check():
-    reviewed=json.loads(INVENTORY.read_text())
+    reviewed=reviewed_research_inventory()
     for target in TARGETS:
         data=json.loads(subprocess.check_output(['cargo','metadata','--locked','--format-version','1','--filter-platform',target,
             '--manifest-path',str(ROOT/'experiments/058-headroom/Cargo.toml')],text=True))
