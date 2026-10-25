@@ -76,6 +76,12 @@ home server must not quietly add a device that receives future messages. Pin and
 interoperate a concrete OMEMO namespace/version before adoption. See
 [research 0044](../dev-docs/research/0044-home-identities-and-encrypted-mail.md).
 
+The [native reuse qualification](../dev-docs/research/0053-native-omemo-reuse.md)
+identifies Picomemo 1.3.1 as a candidate for further testing. Host library tests
+passed, including a reference-origin first-message decrypt; no native network
+mail adapter is adopted. Two-way interoperability, typed device-pin mapping,
+transactional encrypted persistence and native NetBSD qualification remain required.
+
 Servers still see necessary addressing, timing, sizes and delivery information.
 Encryption does not guarantee anonymity or prevent a recipient retaining a copy.
 A new device cannot necessarily decrypt old ratcheted history without its own
