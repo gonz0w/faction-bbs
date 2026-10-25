@@ -1,0 +1,8 @@
+{
+  "result": "expected-rejection",
+  "exit": 1,
+  "old209_marker_rejected211": true,
+  "canonical_unchanged": true,
+  "no_usage_claim": true,
+  "source_sha256": "5f966fe389570df66bfd740ab90a6080f1a5713cd14f21ae66891889a32db221"
+}

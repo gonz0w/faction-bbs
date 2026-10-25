@@ -1,0 +1,45 @@
+from pathlib import Path
+import json,sys,time,subprocess,re,hashlib
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction211-owned');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text());sys.path.insert(0,str(R/'tools'));import probe_archive_mail as probe
+binary=P/'target/release/examples/home_mail_fixture';profile=probe.load_profile(P/'faction211-host-barrier/profile.json');original=subprocess.run;steps=[];private=P/'host-barrier-private-actions';private.mkdir(mode=0o700)
+# Read-only controlled-fixture barrier: retained rows, not a delivery/read receipt.
+code='''from pathlib import Path
+import re,sys,time
+username,domain,minimum=sys.argv[1],sys.argv[2],int(sys.argv[3])
+assert domain in ['homea.test','homeb.test'] and re.fullmatch('[a-z0-9]+',username) and 0<=minimum<=100
+enc=lambda s:re.sub('[^a-zA-Z0-9]',lambda m:'%'+format(ord(m[0]),'02x'),s)
+p=Path('/home/mail'+('a' if domain=='homea.test' else 'b')+'/data')/enc(domain)/'archive'/(enc(username)+'.list')
+for _ in range(100):
+ data=p.read_bytes() if p.exists() else b''
+ assert len(data)<=16777216
+ count=data.count(b'item(')
+ if count>=minimum: print(count);break
+ time.sleep(.05)
+else:raise SystemExit(1)
+'''
+def retained(home,minimum):
+ user,domain=home['jid'].split('@');import shlex
+ r=original(A+['/usr/pkg/bin/python3.13 -c '+shlex.quote(code)+' '+shlex.quote(user)+' '+shlex.quote(domain)+' '+str(minimum)],capture_output=True,timeout=10)
+ if r.returncode or not r.stdout.strip().isdigit():raise RuntimeError('owned server retention barrier failed')
+ return int(r.stdout)
+def observed(argv,*args,**kwargs):
+ sender=next((h for h in [profile['alice'],profile['bob']] if len(argv)>2 and argv[2]==h['store']),None)
+ baseline=None;recipient=None;pending=None
+ if argv and str(argv[0])==str(binary) and argv[1]=='sync':
+  recipient=profile['bob'] if sender is profile['alice'] else profile['alice'];baseline=retained(recipient,0)
+  command,options=probe.base._invocation(binary,'inspect',sender,(),False,());raw=original(command,**options);assert raw.returncode==0;pending=len(probe.base.inspection(raw.stdout)['pending'])
+ result=original(argv,*args,**kwargs)
+ if argv and str(argv[0])==str(binary):
+  n=len(steps)+1;row=dict(step=n,action=argv[1],exit=result.returncode);steps.append(row)
+  for suffix,value in [('stdout',result.stdout),('stderr',result.stderr)]:
+   if value is not None:
+    f=private/(str(n)+'.'+suffix);f.write_bytes(value if isinstance(value,bytes) else value.encode());f.chmod(0o600)
+  (P/'host-barrier-steps.json').write_text(json.dumps(steps,indent=2))
+ if result.returncode==0 and baseline is not None:
+  actual=retained(recipient,baseline+pending);(P/'host-retention-barriers.txt').open('a').write(json.dumps(dict(required=baseline+pending,observed=actual))+'\n')
+ return result
+subprocess.run=observed
+try:
+ result=probe.probe(binary,profile);(P/'host-barrier-archive-result.json').write_text(json.dumps(result,indent=2)+'\n');print('Actual host offline archive gate passed:',result['count'])
+except Exception as e:
+ d=dict(result='fail',stage=steps[-1] if steps else None,error=type(e).__name__);(P/'host-barrier-archive-failure.json').write_text(json.dumps(d,indent=2)+'\n');print('Actual host archive gate failed:',d);raise SystemExit(1) from None

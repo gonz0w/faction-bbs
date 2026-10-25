@@ -1,0 +1,15 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.86s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 7 tests
+test mail_archive::tests::request_is_own_archive_peer_filtered_and_four_bounded ... ok
+test mail_archive::tests::opaque_cursor_and_query_inputs_are_bounded ... ok
+test mail_archive::tests::own_sent_echo_uses_swapped_trusted_binding_without_decryption ... ok
+test mail_archive::tests::incoming_uses_enrolled_identity_and_ignores_server_time ... ok
+test mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count ... ok
+test mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four ... ok
+test mail_archive::tests::wrong_owner_query_shape_namespace_addresses_and_delay_are_rejected ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.00s
+

@@ -49,6 +49,7 @@ jobs:
           cargo test -p faction-client -p faction-omemo --features faction-client/network-mail --all-targets --release --locked -- --test-threads=1
           cargo build -p faction-client --features network-mail --bin faction-client --example checkpoint_ui_fixture --example home_mail_fixture --release --locked
           python3 tools/probe_home_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --checkpoint-fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --mail-fixture "$CARGO_TARGET_DIR/release/examples/home_mail_fixture"
+          python3 tools/probe_home_archive_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --output "$RUNNER_TEMP/archive-ui.json"
           cargo fmt --manifest-path crates/faction-xmpp/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-xmpp/Cargo.toml --all-targets --release --locked -- -D warnings
           cargo test --manifest-path crates/faction-xmpp/Cargo.toml --all-targets --release --locked
@@ -143,6 +144,7 @@ jobs:
           python3 tools/check_checkpoint_console_evidence.py
           python3 tools/check_xmpp_transport_evidence.py
           python3 tools/check_home_mail_evidence.py
+          python3 tools/check_archive_mail_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

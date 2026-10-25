@@ -1,6 +1,6 @@
 # Faction BBS: product direction
 
-Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-23. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
+Status: confirmed product intent, early local core implemented; complete technical design remains under validation. Updated 2026-10-25. Authority: the founder's project conversations on 2026-10-19; preserved earlier context is in the [archive](../dev-docs/archive/README.md).
 
 ## Purpose and character
 
@@ -73,7 +73,7 @@ ANSI F1/plain help and themed house notes without new menu slots or content acti
 | Session | WWIV-inspired flow: approved login, BBS-specific ANSI identity art, sysop-defined welcome/broadcast/quote, main menu. |
 | Boards | Citadel-style chronological rooms: discover/enter, read new messages, post and reply, with formatted headers/wrapping/pagination and clean section transitions. Local by default; Shared wrapped/paged room presentation and an offline Netnews text codec exist; schema-6 metadata now adds local article IDs, authored/default subjects and new-post UTC times; local proto-article projection exists, while bounded v2 MIME/UTF-8 wire support and offline original INN checks exist (#103); live NNTP peering/providers (#101/#104) remain planned; schema-7 Unicode composing and optional [native text rendering](terminal-capabilities.md) now exist. |
 | Chat | Local IRC-style commands/channels and bounded history exist ([guide](local-chat.md)). #100 now compares actual IRC/IRCv3 and invited server links for public/shared chat; private XMPP conversations/unread UX are #99. No IRC wire support is claimed. |
-| Files/mail | [Local file areas](file-areas.md) with separate restricted SFTP first; later classic transfer adapters. [Private mail](private-mail.md) requires member-side encryption and a native local terminal client; no BBS/home server reads plaintext. File areas/SFTP and the [native transfer client](native-client.md) are optional working previews, including permission-checked room/chat file links; encrypted mail/attachments and roaming identity remain outside the product, with a [two-home protocol proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md) and native integration tracked in #90/#91. |
+| Files/mail | [Local file areas](file-areas.md) with separate restricted SFTP first; later classic transfer adapters. [Private mail](private-mail.md) requires member-side encryption and a native local terminal client; no BBS/home server reads plaintext. File areas/SFTP and the [native transfer client](native-client.md) are optional working previews, including permission-checked room/chat file links; manual encrypted home mail and bounded archive pages are optional previews; attachments and roaming identity remain incomplete, with a [two-home protocol proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md) and native integration tracked in #90/#91. |
 | Doors | Optional ANSI game doors. Prefer original games/binaries/servers where feasible; evaluate isolated compatibility hosts before future ports. |
 | Other systems | Local Contacts / Other BBSes directory with submitted registrations, discovery, and visits subject to destination approval. |
 | Federation | Optional shared chat plus explicit device-encrypted private mail and scoped home-identity proofs. Independent invited home servers; local approval, local rooms/community files, directories and local-only chat remain local. #101 prioritizes NNTP-first opt-in discussion rooms; article format #103 is implemented; optional providers #104 remain future work. See [home identities/mail](private-mail.md); protocols remain gated. |
@@ -181,7 +181,7 @@ BBS approval and current rooms/chat/files remain independent.
 The separate default-off [native checkpoint](../dev-docs/native-mail-checkpoints.md)
 now stores protocol/history/outbox state. [Manual home mail](online-mail.md) uses
 it for device-local encrypted online exchange, without changing the v1 picker or
-automatically connecting from a board visit. Reliable archive catch-up is #211;
+automatically connecting from a board visit. Opt-in [bounded archive catch-up](archive-mail.md) now uses an encrypted atomic cursor;
 roaming, background notifications and attachments remain separately scoped.
 
 

@@ -1,0 +1,31 @@
+from pathlib import Path
+import subprocess,json,shlex,os
+D=Path('/private/tmp/faction211-native-OWNED/runtime-02');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+code="""from pathlib import Path
+import os,json,secrets,subprocess,shlex,tomllib,hashlib,pwd
+assert '211' in Path('/etc/faction-disposable-test').read_text()
+assert int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem']))==1054990336
+old=Path('/root/faction211-setup/profile.json');old_digest=hashlib.sha256(old.read_bytes()).digest();original=json.loads(old.read_text())
+root=Path('/home/factionbuild/native-mail211-runtime02');assert not root.exists();root.mkdir(mode=0o700);(root/'settings').mkdir(mode=0o700)
+uid=pwd.getpwnam('factionbuild').pw_uid;gid=pwd.getpwnam('factionbuild').pw_gid
+for p in [root,root/'settings']:os.chown(p,uid,gid)
+profile={'marker':secrets.token_hex(16),'fixture_marker':'/root/faction211-setup/fixture-marker-runtime02','server_roots':list(original['server_roots'])}
+ca=Path('/home/factionbuild/native-mail211/settings/ca.pem').read_bytes();p=root/'settings/ca.pem';p.write_bytes(ca);p.chmod(0o600);os.chown(p,uid,gid)
+for index,side in enumerate(['alice','bob']):
+ server='mail'+('a' if side=='alice' else 'b');domain='home'+('a' if side=='alice' else 'b')+'.test';name=('alice' if side=='alice' else 'bob')+'native2'
+ enc=domain.replace('.','%2e');assert not (Path('/home/'+server+'/data')/enc/'accounts'/(name+'.dat')).exists()
+ password=secrets.token_hex(24)
+ lua='arg={"--config",'+json.dumps('/home/'+server+'/prosody.cfg.lua')+',"register",'+json.dumps(name)+','+json.dumps(domain)+',io.read("*l")};arg[0]="./prosodyctl";dofile("./prosodyctl")'
+ cmd='cd /usr/local/faction-mail-probe; /usr/pkg/bin/lua5.4 -e '+shlex.quote(lua)
+ x=subprocess.run(['su','-m',server,'-c',cmd],input=(password+'\\n').encode(),capture_output=True)
+ if x.returncode:Path('/root/faction211-setup/runtime-02/private-register-error.log').write_bytes(x.stdout+x.stderr);raise RuntimeError('fresh owned registration failed')
+ settings=tomllib.loads(Path(original[side]['config']).read_text());settings['account']=name+'@'+domain;settings['ca']=str(root/'settings/ca.pem')
+ p=root/'settings'/(side+'.toml');p.write_text('\\n'.join(k+'='+ (str(v) if type(v)==int else json.dumps(v)) for k,v in settings.items())+'\\n');p.chmod(0o600);os.chown(p,uid,gid)
+ profile[side]=dict(jid=settings['account'],password=password,local_password=secrets.token_hex(24),device=5611+index,pin=settings['pin'],domain=domain,store=str(root/side),config=str(p),run_as='factionbuild')
+p=Path(profile['fixture_marker']);assert not p.exists();p.write_text('owned disposable issue211 runtime02\\n');p.chmod(0o600)
+p=Path('/root/faction211-setup/profile-runtime-02.json');assert not p.exists();p.write_text(json.dumps(profile));p.chmod(0o600)
+assert hashlib.sha256(old.read_bytes()).digest()==old_digest
+print(json.dumps({'result':'fresh-runtime02-profile-ready','new_accounts':2,'new_stores_absent':all(not Path(profile[k]['store']).exists() for k in ['alice','bob']),'old_profile_bytes_unchanged':True,'old_stores_retained':all(Path(original[k]['store']).exists() for k in ['alice','bob']),'runtime_physmem_bytes':1054990336}))"""
+p=subprocess.run(A+['PATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n/usr/pkg/bin/python3.13 -B -c '+shlex.quote(code)],capture_output=True,timeout=60)
+if p.returncode:(D/'private-preparation-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Fresh native fixture preparation failed; private diagnostics retained')
+(D/'fresh-profile-setup.json').write_bytes(p.stdout);print(p.stdout.decode())

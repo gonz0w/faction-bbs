@@ -1,0 +1,44 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 5 tests
+test mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait ... FAILED
+test mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry ... FAILED
+test mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens ... FAILED
+test mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial ... FAILED
+test mail_network::tests::catch_up_lost_idle_or_invalid_fin_commits_nothing ... ok
+
+failures:
+
+---- mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait stdout ----
+
+thread 'mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait' (6438794) panicked at crates/faction-client/src/mail_network.rs:954:9:
+assertion failed: matches!(preflight(&bob,&settings,Mode::CatchUp,NOW),Err(Error::State))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry stdout ----
+
+thread 'mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry' (6438791) panicked at crates/faction-client/src/mail_network.rs:899:88:
+called `Result::unwrap()` on an `Err` value: Transport(Lost)
+
+---- mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens stdout ----
+
+thread 'mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens' (6438795) panicked at crates/faction-client/src/mail_network.rs:939:9:
+assertion failed: matches!(exchange(&mut bob,&settings,&mut
+    channel,Mode::CatchUp,ready).await,Err(Error::State))
+
+---- mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial stdout ----
+
+thread 'mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial' (6438793) panicked at crates/faction-client/src/mail_network.rs:929:88:
+called `Result::unwrap()` on an `Err` value: Transport(Lost)
+
+
+failures:
+    mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry
+    mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial
+    mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait
+    mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens
+
+test result: FAILED. 1 passed; 4 failed; 0 ignored; 0 measured; 63 filtered out; finished in 6.81s
+
+error: test failed, to rerun pass `-p faction-client --lib`

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/probe_home_archive_ui.py", line 44, in <module>
+    result=probe(a.client.resolve(),a.fixture.resolve());a.output.write_text(json.dumps(result,indent=2)+'\n');print('Archive local terminal controls passed:',result['count'])
+  File "/Users/cam/DEV/faction-bbs/tools/probe_home_archive_ui.py", line 22, in probe
+    original=(store/'mail.fkv').read_bytes();c=start()
+                                               ~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/probe_home_archive_ui.py", line 18, in start
+    c.password(password,'LOCAL checkpoint passphrase (hidden): ');c.expect('[G] Enable archive checkpoints');c.expect('[A] Catch up one archive page');c.expect('[L] Lock and exit');return c
+                                                                  ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_local_console.py", line 41, in expect
+    raise AssertionError(f'console timeout waiting for {text!r}')
+AssertionError: console timeout waiting for '[G] Enable archive checkpoints'

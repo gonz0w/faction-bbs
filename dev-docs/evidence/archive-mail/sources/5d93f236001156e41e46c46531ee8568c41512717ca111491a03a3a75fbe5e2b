@@ -1,0 +1,1 @@
+Disposable TLS leaf extensions now exactly match the qualified serverAuth/CA:false/keyUsage/SAN profile; all trust checks retained.

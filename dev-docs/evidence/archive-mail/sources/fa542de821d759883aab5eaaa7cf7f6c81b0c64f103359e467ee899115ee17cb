@@ -1,0 +1,26 @@
+from pathlib import Path
+import json,subprocess,shlex,tomllib
+P=Path('/private/tmp/faction211-owned');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text())
+def remote(c,d=None):
+ x=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/sbin:/usr/sbin\nexport PATH\n'+c],input=d,capture_output=True,timeout=45)
+ if x.returncode:(P/'tls-extension-private-error.txt').write_bytes(x.stdout+x.stderr);raise RuntimeError('Owned certificate-extension fixture failed')
+ return x.stdout
+for side in ['a','b']:
+ u='mail'+side;domain='home'+side+'.test';(P/'iterations/tls-ed25519-host-rejected'/f'{u}-rsa-noeku.crt').write_bytes(remote('cat /home/'+u+'/tls.crt'))
+ remote('pid=$(cat /home/'+u+'/prosody.pid)\ntest "$(ps -p "$pid" -o uid= | tr -d " ")" = "$(id -u '+u+')"\nkill "$pid"')
+ ext='basicConstraints=critical,CA:FALSE\nsubjectAltName=DNS:'+domain+'\nextendedKeyUsage=serverAuth\nkeyUsage=critical,digitalSignature,keyEncipherment\n';remote('cat > /root/faction211-setup/rsa-ca/'+u+'.ext',ext.encode())
+ remote('cd /root/faction211-setup/rsa-ca\nopenssl x509 -req -in '+u+'.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days 2 -sha256 -extfile '+u+'.ext -out '+u+'.crt\ninstall -o '+u+' -g '+u+' -m 600 '+u+'.crt /home/'+u+'/tls.crt')
+profiles=json.loads((P/'profiles-rsa-private.json').read_text());host=P/'faction211-host-tls2';host.mkdir(mode=0o700);(host/'fixture-marker').write_text('owned issue211 fixture\n');(host/'fixture-marker').chmod(0o600);(host/'ca.pem').write_bytes((P/'public/fixture-rsa-ca.crt').read_bytes());(host/'ca.pem').chmod(0o600)
+for route,profile in profiles.items():
+ for label,side in [('alice','a'),('bob','b')]:
+  pin=remote('openssl x509 -in /home/mail'+side+'/tls.crt -outform DER | openssl dgst -sha256').decode().strip().split()[-1];row=profile[label];row['pin']=pin
+  if route=='host':
+   config=tomllib.loads(Path(row['config']).read_text());config.update(ca=str(host/'ca.pem'),pin=pin);q=host/(label+'.toml');q.write_text('\n'.join(k+'='+(str(v) if type(v)==int else json.dumps(v)) for k,v in config.items())+'\n');q.chmod(0o600);row.update(store=str(host/label),config=str(q))
+  else:
+   data=remote('cat '+shlex.quote(row['config'])).decode();config=tomllib.loads(data);config['pin']=pin;data='\n'.join(k+'='+(str(v) if type(v)==int else json.dumps(v)) for k,v in config.items())+'\n';remote('cat > '+shlex.quote(row['config'])+'\nchown factionbuild:factionbuild '+shlex.quote(row['config'])+'\nchmod 600 '+shlex.quote(row['config']),data.encode())
+ if route=='host':profile['fixture_marker']=str(host/'fixture-marker');q=host/'profile.json';q.write_text(json.dumps(profile));q.chmod(0o600)
+ else:remote('cat > /root/faction211-setup/profile.json\nchmod 600 /root/faction211-setup/profile.json',json.dumps(profile).encode())
+for u in ['maila','mailb']:
+ c='cd /usr/local/faction-mail-probe; nohup /usr/pkg/bin/lua5.4 ./prosody --config /home/'+u+'/prosody.cfg.lua > /home/'+u+'/startup-eku.log 2>&1 < /dev/null &';remote('su -m '+u+' -c '+shlex.quote(c))
+(P/'profiles-final-private.json').write_text(json.dumps(profiles));(P/'profiles-final-private.json').chmod(0o600)
+print('Disposable TLS leaf extensions now exactly match the qualified serverAuth/CA:false/keyUsage/SAN profile; all trust checks retained.')

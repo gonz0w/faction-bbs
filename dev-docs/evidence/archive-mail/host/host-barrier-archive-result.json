@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "checks": [
+    "explicit_archive_enable_preserves_private_history_and_outbox",
+    "five_offline_ciphertexts_recovered_in_pages_of_four_and_one",
+    "authenticated_sce_content_and_time_survive_reopen",
+    "offline_reply_follows_known_own_ciphertext_archive_echoes",
+    "outbox_operation_ids_preserved_without_automatic_retirement",
+    "empty_archive_page_keeps_exact_checkpoint",
+    "wrong_pin_and_home_password_preserve_message_and_cursor"
+  ],
+  "count": 7,
+  "native_product_client": true,
+  "configured_homes": 2,
+  "server_plaintext_audit": "requires-separate-remote-proof",
+  "marker_sha256": "4abde8cdc73d26bd29afeb37a236ac08e663439019efb4133e5923e062466804",
+  "live_provider_contact": false,
+  "no_complete_archive_or_read_receipt_claim": true
+}

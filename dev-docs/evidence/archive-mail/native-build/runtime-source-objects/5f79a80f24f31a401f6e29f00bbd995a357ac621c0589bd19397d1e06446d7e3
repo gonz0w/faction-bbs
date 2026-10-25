@@ -1,0 +1,10 @@
+from pathlib import Path
+import ast,subprocess,json,os
+D=Path('/private/tmp/faction211-native-OWNED/runtime-01');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+s=ast.parse((D/'reboot-executed.py').read_text());xs=[ast.literal_eval(n.value) for n in s.body if isinstance(n,ast.Assign) and any(isinstance(x,ast.Name) and x.id=='script' for x in n.targets)];cmd=xs[-1].replace("r'\\\\s'", "r'\\s'")
+p=subprocess.run(A+['PATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n'+cmd],capture_output=True,timeout=30)
+if p.returncode:(D/'private-verify-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Owned runtime readback failed; private diagnostics retained')
+x=json.loads(p.stdout);assert x['physmem_bytes']==1054990336 and x['cores']==2
+qpid=int((V/'qemu.pid').read_text());args=json.loads((V/'qemu-command.json').read_text());old=json.loads((V/'qemu-command-before-runtime.json').read_text());assert [i for i,(a,b) in enumerate(zip(old,args)) if a!=b]==[old.index('-m')+1] and args[args.index('-m')+1]=='1024'
+port=int((V/'admin-port').read_text());listeners=subprocess.check_output(['lsof','-nP','-a','-p',str(qpid),'-iTCP','-sTCP:LISTEN'],text=True);assert '127.0.0.1:'+str(port) in listeners and '*:'+str(port) not in listeners
+x['administrative_forward_loopback_only']=True;(D/'runtime-environment.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x))

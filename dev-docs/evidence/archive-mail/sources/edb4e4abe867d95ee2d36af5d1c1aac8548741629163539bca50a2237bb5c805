@@ -1,0 +1,49 @@
+from pathlib import Path
+import ast,hashlib,json,os,secrets,shlex,socket,subprocess,sys,urllib.request
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction211-owned');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text());sys.path.insert(0,str(R/'tools'));from probe_home_mail import server_configuration
+
+def remote(cmd,data=None,timeout=60):
+ x=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/sbin:/usr/sbin\nexport PATH\n'+cmd],input=data,capture_output=True,timeout=timeout)
+ if x.returncode:(P/'home-private-error.txt').write_bytes(x.stdout+x.stderr);raise RuntimeError('Owned home preparation failed')
+ return x.stdout
+module=urllib.request.urlopen('https://hg.prosody.im/prosody-modules/raw-file/tip/mod_s2sout_override/mod_s2sout_override.lua',timeout=60).read();assert hashlib.sha256(module).hexdigest()=='88fed46b5095a8f589e429d68aae238a91deea011025e6aa8702ed9fd079d281';(P/'public/mod_s2sout_override.lua').write_bytes(module)
+remote('test -f /etc/faction-disposable-test\ntest ! -e /home/maila\ninstall -d -m 755 /usr/local/faction-mail-modules\ninstall -d -m 700 /root/faction211-setup/ca\ninstall -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/native-mail211/settings')
+remote('cat > /usr/local/faction-mail-modules/mod_s2sout_override.lua',module)
+source=ast.parse((R/'experiments/084-mail-proof/prepare_homes.py').read_text());policy=next(ast.literal_eval(n.value) for n in source.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='policy' for t in n.targets));remote('cat > /usr/local/faction-mail-modules/mod_faction_probe_peers.lua',policy.encode())
+remote('cd /root/faction211-setup/ca\numask 077\nopenssl req -new -x509 -newkey ed25519 -nodes -keyout ca.key -out ca.crt -days 2 -config /dev/null -subj /CN=Faction211-test-CA -addext basicConstraints=critical,CA:TRUE -addext keyUsage=critical,keyCertSign,cRLSign')
+profiles={route:dict(marker=secrets.token_hex(16)) for route in ['host','native']}
+for side in ['a','b']:
+ user='mail'+side;domain='home'+side+'.test';remote('groupadd '+user+'\nuseradd -g '+user+' -d /home/'+user+' -s /bin/sh '+user+'\ninstall -d -o '+user+' -g '+user+' -m 700 /home/'+user+' /home/'+user+'/data')
+ remote('cd /root/faction211-setup/ca\nopenssl req -new -newkey ed25519 -nodes -keyout '+user+'.key -out '+user+'.csr -config /dev/null -subj /CN='+domain+' -addext subjectAltName=DNS:'+domain+'\nopenssl x509 -req -in '+user+'.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days 2 -out '+user+'.crt -copy_extensions copy\ninstall -o '+user+' -g '+user+' -m 600 '+user+'.key /home/'+user+'/tls.key\ninstall -o '+user+' -g '+user+' -m 600 '+user+'.crt /home/'+user+'/tls.crt\ninstall -o '+user+' -g '+user+' -m 600 ca.crt /home/'+user+'/ca.crt')
+ cfg=server_configuration(side);(P/'public'/('home'+side+'.cfg.lua')).write_text(cfg);remote('cat > /home/'+user+'/prosody.cfg.lua\nchown '+user+':'+user+' /home/'+user+'/prosody.cfg.lua\nchmod 600 /home/'+user+'/prosody.cfg.lua',cfg.encode())
+ pin=remote('openssl x509 -in /home/'+user+'/tls.crt -outform DER | openssl dgst -sha256').decode().strip().split()[-1];assert len(pin)==64
+ for route in ['host','native']:
+  name=('alice' if side=='a' else 'bob')+route;password=secrets.token_hex(24);jid=name+'@'+domain
+  code='arg={"--config",'+json.dumps('/home/'+user+'/prosody.cfg.lua')+',"register",'+json.dumps(name)+','+json.dumps(domain)+',io.read("*l")};arg[0]="./prosodyctl";dofile("./prosodyctl")'
+  remote('cd /usr/local/faction-mail-probe\n/usr/pkg/bin/lua5.4 -e '+shlex.quote(code),(password+'\n').encode())
+  profiles[route]['alice' if side=='a' else 'bob']=dict(jid=jid,password=password,local_password=secrets.token_hex(24),device=(5511 if side=='a' else 5512) if route=='native' else (5521 if side=='a' else 5522),pin=pin,domain=domain)
+ code='cd /usr/local/faction-mail-probe; nohup /usr/pkg/bin/lua5.4 ./prosody --config /home/'+user+'/prosody.cfg.lua > /home/'+user+'/startup.log 2>&1 < /dev/null &';remote('su -m '+user+' -c '+shlex.quote(code))
+ca=remote('cat /root/faction211-setup/ca/ca.crt');(P/'public/fixture-ca.crt').write_bytes(ca)
+# One loopback tunnel process for both host-client endpoints, not a public service.
+def port():
+ with socket.socket() as s:s.bind(('127.0.0.1',0));return s.getsockname()[1]
+ports=[port(),port()];tunnel=A[:-1]+['-N','-o','ExitOnForwardFailure=yes','-L',f'127.0.0.1:{ports[0]}:127.0.0.1:32222','-L',f'127.0.0.1:{ports[1]}:127.0.0.1:32223',A[-1]]
+with (V/'tunnel-private.log').open('wb') as log:t=subprocess.Popen(tunnel,cwd=R,stdout=log,stderr=log,start_new_session=True)
+(V/'tunnel.pid').write_text(str(t.pid));(V/'tunnel-ports.json').write_text(json.dumps(ports))
+host=P/'faction211-host';host.mkdir(mode=0o700);(host/'fixture-marker').write_text('owned disposable issue211\n');(host/'fixture-marker').chmod(0o600);(host/'ca.pem').write_bytes(ca);(host/'ca.pem').chmod(0o600)
+for route,profile in profiles.items():
+ for i,side in enumerate(['alice','bob']):
+  row=profile[side]
+  settings=dict(version=1,account=row['jid'],endpoint='127.0.0.1:'+str(ports[i] if route=='host' else 32222+i),domain=row['domain'],ca=str(host/'ca.pem') if route=='host' else '/home/factionbuild/native-mail211/settings/ca.pem',pin=row['pin'])
+  body='\n'.join(k+'='+ (str(v) if type(v)==int else json.dumps(v)) for k,v in settings.items())+'\n'
+  if route=='host':
+   q=host/(side+'.toml');q.write_text(body);q.chmod(0o600);row.update(store=str(host/side),config=str(q))
+  else:
+   q='/home/factionbuild/native-mail211/settings/'+side+'.toml';remote('cat > '+q+'\nchown factionbuild:factionbuild '+q+'\nchmod 600 '+q,body.encode());row.update(store='/home/factionbuild/native-mail211/'+side,config=q,run_as='factionbuild')
+ if route=='host':
+  profile['fixture_marker']=str(host/'fixture-marker');q=host/'profile.json';q.write_text(json.dumps(profile));q.chmod(0o600)
+ else:
+  profile['fixture_marker']='/root/faction211-setup/fixture-marker';profile['server_roots']=['/home/maila/data','/home/mailb/data','/home/maila/prosody.log','/home/mailb/prosody.log','/home/maila/startup.log','/home/mailb/startup.log'];remote('cat > /root/faction211-setup/profile.json\nchmod 600 /root/faction211-setup/profile.json',json.dumps(profile).encode());remote('umask 077\nprintf "%s\\n" "owned disposable issue211" > /root/faction211-setup/fixture-marker')
+remote('cat > /home/factionbuild/native-mail211/settings/ca.pem\nchown factionbuild:factionbuild /home/factionbuild/native-mail211/settings/ca.pem\nchmod 600 /home/factionbuild/native-mail211/settings/ca.pem',ca)
+(P/'profiles-private.json').write_text(json.dumps(profiles));(P/'profiles-private.json').chmod(0o600)
+print('Two independently owned invited loopback homes started; generated host/native accounts and private profiles ready. No secrets emitted.')

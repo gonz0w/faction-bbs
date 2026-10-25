@@ -115,12 +115,16 @@ applies to peer ownership checks.
 
 Messages contain one `encrypted/header` with sender `sid`, one recipient
 `keys jid` and one `key rid` with canonical `kex`, plus encrypted `payload`.
-The only optional outer extension is an empty standard storage hint. The key is
+Every outgoing message includes one empty standard storage hint; it requests
+retention without guaranteeing it. Incoming live messages permit that optional
+hint. The serialized outer XML changes compatibly; persisted Wire, operation IDs
+and ciphertext are unchanged. The key is
 1–256 bytes; payload is 16–8208 bytes. Base64 is canonical. Wrong namespaces,
 unknown fields, duplicate children, wrong account/device routing and oversized
 values are rejected. There is no clear identity/time extension or plaintext body
 fallback. Labels, multiple recipient devices, empty session-management messages,
-carbons, archive envelopes and group chats are outside this profile.
+carbons and group chats are outside this live profile. The separate
+[archive adapter](native-mail-archive.md) unwraps only a matching own-home MAM2 page.
 
 ## Checkpoints, time and retry
 
@@ -173,9 +177,12 @@ research transport and synthetic payload, not acceptance of this integrated
 mailbox. Its 2 GiB fresh-build qualification and 1 GiB runtime observations must
 not be represented as a fresh 1 GiB compiler or product-capacity result.
 
-[#90](https://github.com/gonz0w/faction-bbs/issues/90) remains open for reliable
-offline/archive and remaining mail requirements. [#211](https://github.com/gonz0w/faction-bbs/issues/211) scopes durable manual catch-up.
-This adapter has no MAM/RSM
-cursor, background notification/reconnect, attachment, roaming or multi-device
-promise. Source checks and the prior qualified primitives do not establish a
+[#90](https://github.com/gonz0w/faction-bbs/issues/90) remains open for the remaining
+mailbox, trust and recovery requirements. [#211](https://github.com/gonz0w/faction-bbs/issues/211) scopes durable manual catch-up.
+The opt-in [archive adapter](native-mail-archive.md) adds one bounded MAM/RSM
+page and an encrypted atomic cursor. Archive-enabled U/K/N omit initial presence
+and reject live encrypted frames before checkpoint mutation; N returns after
+persisted writes. A is the explicit archive receive path. Schema 2 keeps live
+synchronization. Neither mode promises background notification/reconnect,
+attachments, roaming or multi-device operation. Source checks and the prior qualified primitives do not establish a
 security audit, full protocol conformance, physical hardware support or capacity.

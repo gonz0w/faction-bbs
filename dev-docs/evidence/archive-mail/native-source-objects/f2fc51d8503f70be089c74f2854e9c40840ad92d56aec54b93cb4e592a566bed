@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""Kill only an owned live catch-up child after observing checkpoint publication.
+
+Requires an already successful fresh #211 two-home fixture. This does not start
+servers or identify an exact fsync boundary. Rust storage tests provide those
+separate before/after-publication controls. Run only after the positive gate.
+"""
+import argparse
+import json
+import platform
+import signal
+import stat
+import subprocess
+import time
+from pathlib import Path
+import probe_archive_mail as archive
+import probe_home_mail as base
+
+FixtureFailure = base.FixtureFailure
+CHECKS = [
+    'owned_live_archive_child_killed_after_observed_checkpoint_publication',
+    'reopened_history_cursor_and_pending_ids_are_consistent_after_process_death',
+    'one_bounded_resume_recovers_all_three_authenticated_new_messages',
+    'archive_recovery_preserves_existing_outbox_operation_ids',
+]
+
+
+def canonical_inode(home):
+    info = (Path(home['store']) / 'mail.fkv').lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_mode & 0o777 != 0o600 or info.st_nlink != 1 or not 0 < info.st_size <= 524512:
+        raise FixtureFailure('private canonical checkpoint required')
+    return info.st_dev, info.st_ino
+
+
+def close_input(child):
+    if child.stdin is not None:
+        try:
+            child.stdin.close()
+        except OSError:
+            pass
+        child.stdin = None
+
+
+def kill_after_publication(binary, home):
+    before = canonical_inode(home)
+    argv, options = base._invocation(binary, 'catchup', home, [home['config']], True, ())
+    private_input = options.pop('input')
+    options.pop('capture_output')
+    options.pop('timeout')
+    child = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options)
+    reaped = False
+    try:
+        child.stdin.write(private_input)
+        close_input(child)
+        deadline = time.monotonic() + 15
+        while time.monotonic() < deadline:
+            if child.poll() is not None:
+                raise FixtureFailure('archive child finished before a live publication kill')
+            if canonical_inode(home) != before:
+                if child.poll() is not None:
+                    raise FixtureFailure('archive child finished before the publication kill')
+                # Popen owns this exact PID; never kill a process group or a
+                # process discovered through a name, listener or external PID.
+                child.kill()
+                child.communicate(timeout=5)  # capture privately, never print
+                reaped = True
+                if child.returncode != -signal.SIGKILL:
+                    raise FixtureFailure('archive child was not killed by SIGKILL')
+                return dict(signal='SIGKILL', publication_observed=True)
+            time.sleep(0.001)  # fixture-only observation, no product retry loop
+        raise FixtureFailure('no live checkpoint publication observed within fixture bound')
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise FixtureFailure('owned archive process control failed') from error
+    finally:
+        close_input(child)
+        if not reaped:
+            if child.poll() is None:
+                child.kill()
+            try:
+                child.communicate(timeout=5)
+            except (OSError, subprocess.TimeoutExpired) as error:
+                raise FixtureFailure('owned archive child cleanup failed') from error
+
+
+def recovered_history(prior, current, expected):
+    if current['pending'] != prior['pending'] or current['history'][:len(prior['history'])] != prior['history']:
+        raise FixtureFailure('process death changed prior history or outbox IDs')
+    added = current['history'][len(prior['history']):]
+    if len(added) > 3 or len(expected) != 3:
+        raise FixtureFailure('unexpected archive recovery history size')
+    remaining = list(expected)
+    for record in added:
+        if record not in remaining:
+            raise FixtureFailure('unauthenticated duplicated or unknown recovered record')
+        remaining.remove(record)
+    return len(added)
+
+
+def public_result(killed, recovered, canonical_count):
+    if killed != dict(signal='SIGKILL', publication_observed=True) or type(recovered) is not int or recovered != 3 or type(canonical_count) is not int or canonical_count != 9:
+        raise FixtureFailure('incomplete real process-death control')
+    return dict(result='pass', platform=platform.system(), checks=list(CHECKS), count=len(CHECKS),
+                signal='SIGKILL', publication_observed=True, recovered_new_count=recovered,
+                canonical_history_count=canonical_count, exact_fsync_boundary_claim=False,
+                server_plaintext_audit='requires-separate-proof')
+
+
+def inspect(binary, home):
+    return base.inspection(base.command(binary, 'inspect', home, raw=True))
+
+
+def same_scope(previous, current):
+    if not previous['ready'] or not current['ready'] or any(previous['checkpoint'][key] != current['checkpoint'][key] for key in ['home', 'local_device', 'epoch']):
+        raise FixtureFailure('archive recovery scope changed')
+
+
+def probe(binary, profile):
+    a, b = profile['alice'], profile['bob']
+    marker = profile['marker']
+    # These exact contents and counts identify the already-completed positive
+    # fixture. Never initialize, reset or silently continue a partial earlier run.
+    original = [(f'{marker} incoming {index}', f'{marker} private body {index} λ <&>') for index in range(1, 6)]
+    reply = (f'{marker} reply', f'{marker} offline reply body λ')
+    prior_a, prior_b = inspect(binary, a), inspect(binary, b)
+    base.require_history(prior_a, [('sent', *message) for message in original] + [('received', *reply)], 5)
+    base.require_history(prior_b, [('received', *message) for message in original] + [('sent', *reply)], 1)
+    archive.require_authenticated_times(prior_a, prior_b, 'received')
+    archive.require_authenticated_times(prior_b, prior_a, 'received')
+    initial_cursor = archive.status(binary, a)
+    if not initial_cursor['ready'] or not initial_cursor['cursor_present']:
+        raise FixtureFailure('completed positive archive fixture required')
+    messages = [(f'{marker} crash {index}', f'{marker} crash body {index} λ') for index in range(1, 4)]
+    for subject, body in messages:
+        base.command(binary, 'queue', b, lines=[subject, body])
+    sender = inspect(binary, b)
+    base.require_history(sender, [('received', *message) for message in original] + [('sent', *reply)] + [('sent', *message) for message in messages], 4)
+    expected = []
+    for subject, body in messages:
+        rows = [row for row in sender['history'] if row['direction'] == 'sent' and row['subject'] == subject and row['body'] == body]
+        if len(rows) != 1:
+            raise FixtureFailure('unique durable sender record required')
+        expected.append(dict(rows[0], direction='received', address=b['jid']))
+    offline = base.checkpoint_digest(a)
+    # Alice has no client process; Bob sends the retained reply plus three new
+    # immutable pending ciphertexts, then exits before the catch-up child starts.
+    base.command(binary, 'sync', b, b['config'], home_password=True)
+    time.sleep(0.5)  # bounded disposable-server processing interval only
+    if base.checkpoint_digest(a) != offline:
+        raise FixtureFailure('offline member checkpoint changed without its client')
+    killed = kill_after_publication(binary, a)
+    reopened = inspect(binary, a)
+    recovered_before_resume = recovered_history(prior_a, reopened, expected)
+    cursor = archive.status(binary, a)
+    same_scope(initial_cursor, cursor)
+    if cursor['checkpoint']['after'] == initial_cursor['checkpoint']['after']:
+        raise FixtureFailure('observed publication did not persist an archive cursor')
+    page = archive.catchup(binary, a)
+    if not page['complete'] or page['accepted'] != 3 - recovered_before_resume:
+        raise FixtureFailure('one bounded resume did not recover the remaining messages')
+    after = archive.status(binary, a)
+    same_scope(cursor, after)
+    if page['entries']:
+        archive.cursor_progress(cursor, after)
+    elif cursor != after:
+        raise FixtureFailure('empty resume changed the archive cursor')
+    final = inspect(binary, a)
+    recovered = recovered_history(prior_a, final, expected)
+    # Alice's original five operation IDs and Bob's four remain pending; no
+    # archive metadata is interpreted as acknowledgement or a new send request.
+    if final['pending'] != prior_a['pending'] or inspect(binary, b)['pending'] != sender['pending']:
+        raise FixtureFailure('live recovery changed immutable outbox operation IDs')
+    return public_result(killed, recovered, len(final['history']))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--binary', type=Path, required=True)
+    parser.add_argument('--private-fixture', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--disposable-synthetic-fixture', action='store_true', required=True)
+    args = parser.parse_args()
+    try:
+        result = probe(args.binary.resolve(), archive.load_profile(args.private_fixture))
+        args.output.write_text(json.dumps(result, indent=2) + '\n')
+        print('Live archive process-death fixture passed:', result['count'], 'controls;', result['platform'])
+    except (FixtureFailure, OSError, ValueError, KeyError, TypeError):
+        raise SystemExit('Live archive process-death fixture failed or unavailable; private diagnostics withheld') from None

@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "checks": [
+    "owned_live_archive_child_killed_after_observed_checkpoint_publication",
+    "reopened_history_cursor_and_pending_ids_are_consistent_after_process_death",
+    "one_bounded_resume_recovers_all_three_authenticated_new_messages",
+    "archive_recovery_preserves_existing_outbox_operation_ids"
+  ],
+  "count": 4,
+  "signal": "SIGKILL",
+  "publication_observed": true,
+  "recovered_new_count": 3,
+  "canonical_history_count": 9,
+  "exact_fsync_boundary_claim": false,
+  "server_plaintext_audit": "requires-separate-proof",
+  "runtime_physmem_bytes": 1054990336,
+  "runtime_cores": 2,
+  "seconds": 4.207
+}

@@ -1,0 +1,19 @@
+from pathlib import Path
+import json,sys,time,subprocess,os
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction211-owned');sys.path.insert(0,str(R/'tools'));import probe_archive_mail as probe
+binary=P/'target/release/examples/home_mail_fixture';profile=probe.load_profile(P/'faction211-host-rsa/profile.json');original=subprocess.run;steps=[];private=P/'host-rsa-private-actions';private.mkdir(mode=0o700)
+def observed(argv,*args,**kwargs):
+ result=original(argv,*args,**kwargs)
+ if argv and str(argv[0])==str(binary):
+  n=len(steps)+1;row=dict(step=n,action=argv[1],exit=result.returncode);steps.append(row)
+  for suffix,value in [('stdout',result.stdout),('stderr',result.stderr)]:
+   if value is not None:
+    f=private/(str(n)+'.'+suffix);f.write_bytes(value if isinstance(value,bytes) else value.encode());f.chmod(0o600)
+  (P/'host-rsa-steps.json').write_text(json.dumps(steps,indent=2))
+ return result
+subprocess.run=observed
+start=time.monotonic()
+try:
+ result=probe.probe(binary,profile);(P/'host-rsa-archive-result.json').write_text(json.dumps(result,indent=2)+'\n');print('Actual host offline two-home acceptance passed:',result['count'])
+except Exception as e:
+ summary=dict(result='fail',stage=steps[-1] if steps else None,error=type(e).__name__,wall_seconds=round(time.monotonic()-start,3));(P/'host-rsa-archive-failure.json').write_text(json.dumps(summary,indent=2)+'\n');print('Actual host gate failed; sanitized stage:',summary);raise SystemExit(1) from None

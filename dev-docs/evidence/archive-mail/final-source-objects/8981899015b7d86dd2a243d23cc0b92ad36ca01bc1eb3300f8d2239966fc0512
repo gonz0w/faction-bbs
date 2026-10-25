@@ -1,0 +1,28 @@
+from pathlib import Path
+import subprocess,json,shlex,hashlib,os
+D=Path('/private/tmp/faction211-native-OWNED/runtime-02/cost');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+code="""from pathlib import Path
+import subprocess,json,hashlib,os
+os.umask(0o077);r=Path('/home/factionbuild/faction211-source');d=Path('/root/faction211-setup/runtime-02/cost');d.mkdir(mode=0o700,exist_ok=True)
+profile=Path('/root/faction211-setup/profile-runtime-02.json');home=json.loads(profile.read_text())['alice'];canonical=Path(home['store'])/'mail.fkv';before=hashlib.sha256(canonical.read_bytes()).hexdigest()
+command=['/usr/pkg/bin/python3.13','-B',str(r/'tools/measure_home_mail.py'),'--client','/home/factionbuild/target211/release/faction-client','--private-fixture',str(profile),'--output',str(d/'old-result.json')]
+x=subprocess.run(command,cwd=r,capture_output=True);(d/'old-marker-red-private.log').write_bytes(x.stdout+x.stderr)
+assert x.returncode==1 and not (d/'old-result.json').exists() and b'209' not in Path('/etc/faction-disposable-test').read_bytes()
+assert hashlib.sha256(canonical.read_bytes()).hexdigest()==before
+(d/'old-marker-red.json').write_text(json.dumps({'result':'expected-rejection','exit':x.returncode,'old209_marker_rejected211':True,'canonical_unchanged':True,'no_usage_claim':True,'source_sha256':hashlib.sha256((r/'tools/measure_home_mail.py').read_bytes()).hexdigest()},indent=2)+'\\n')
+print('Actual old209 resource collector marker rejection retained; no UI process measured.')"""
+p=subprocess.run(A+['PATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n/usr/pkg/bin/python3.13 -B -c '+shlex.quote(code)],capture_output=True,timeout=30)
+if p.returncode:(D/'private-marker-check-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Old collector expected rejection failed')
+print(p.stdout.decode().strip(),flush=True)
+p=subprocess.run(A+['cat > /root/faction211-setup/runtime-02/cost/measure_archive_mail.py\nchmod 600 /root/faction211-setup/runtime-02/cost/measure_archive_mail.py'],input=(D/'measure_archive_mail.py').read_bytes(),capture_output=True);assert p.returncode==0
+code="""from pathlib import Path
+import subprocess,json,hashlib,os
+r=Path('/home/factionbuild/faction211-source');d=Path('/root/faction211-setup/runtime-02/cost');profile=Path('/root/faction211-setup/profile-runtime-02.json');home=json.loads(profile.read_text())['alice'];canonical=Path(home['store'])/'mail.fkv';before=hashlib.sha256(canonical.read_bytes()).hexdigest();env=os.environ.copy();env.update(PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',PYTHONPATH=str(r/'tools'),PYTHONDONTWRITEBYTECODE='1')
+command=['/usr/pkg/bin/python3.13','-B',str(d/'measure_archive_mail.py'),'--client','/home/factionbuild/target211/release/faction-client','--private-fixture',str(profile),'--output',str(d/'result.json')]
+x=subprocess.run(command,cwd=r,env=env,capture_output=True);(d/'cost-private.log').write_bytes(x.stdout+x.stderr)
+assert x.returncode==0 and hashlib.sha256(canonical.read_bytes()).hexdigest()==before
+result=json.loads((d/'result.json').read_text());result.update(runtime_physmem_bytes=int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem'])),empty_archive_page=True,canonical_unchanged=True,collector_sha256=hashlib.sha256((d/'measure_archive_mail.py').read_bytes()).hexdigest())
+(d/'result.json').write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result))"""
+p=subprocess.run(A+['/usr/pkg/bin/python3.13 -B -c '+shlex.quote(code)],capture_output=True,timeout=45)
+if p.returncode:(D/'private-cost-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Manual archive client cost failed; private diagnostics retained')
+x=json.loads(p.stdout);(D/'result.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x),flush=True)

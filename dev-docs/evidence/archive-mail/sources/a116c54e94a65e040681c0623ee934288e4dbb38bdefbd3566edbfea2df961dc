@@ -1,0 +1,24 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.56s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 1 test
+test mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id ... FAILED
+
+failures:
+
+---- mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id stdout ----
+
+thread 'mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id' (6522636) panicked at crates/faction-client/src/mail_wire.rs:826:9:
+assertion `left == right` failed: bodyless encrypted mail must explicitly request home storage
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 77 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p faction-client --lib`

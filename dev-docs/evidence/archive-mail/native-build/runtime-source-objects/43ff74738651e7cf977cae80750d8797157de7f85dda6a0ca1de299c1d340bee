@@ -1,0 +1,25 @@
+from pathlib import Path
+import subprocess,json,shlex
+D=Path('/private/tmp/faction211-native-OWNED/runtime-01');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text())
+code="""from pathlib import Path
+import sys,json,subprocess,re,hashlib
+sys.dont_write_bytecode=True
+r=Path('/home/factionbuild/faction211-source');d=Path('/root/faction211-setup/runtime-01');sys.path.insert(0,str(r/'tools'));import probe_archive_mail as archive
+profile=archive.load_profile('/root/faction211-setup/profile.json');home=profile['alice'];b=Path('/home/factionbuild/target211/release/examples/home_mail_fixture')
+p=Path(home['store'])/'mail.fkv';before=hashlib.sha256(p.read_bytes()).hexdigest();private=d/'death-readonly-diagnosis';private.mkdir(mode=0o700)
+meta={}
+for action in ['inspect','archive-status']:
+ cmd,opt=archive.base._invocation(b,action,home,(),False,());x=subprocess.run(cmd,**opt);(private/(action+'.stdout')).write_bytes(x.stdout);(private/(action+'.stderr')).write_bytes(x.stderr);meta[action+'_exit']=x.returncode
+ assert x.returncode==0
+ value=json.loads(x.stdout)
+ if action=='inspect':meta.update(current_history_count=len(value['history']),current_pending_count=len(value['pending']))
+ else:
+  prior=json.loads((d/'death-private-actions/3.stdout').read_text());meta.update(cursor_changed=value['checkpoint']['after']!=prior['checkpoint']['after'],cursor_scope_same=all(value['checkpoint'][k]==prior['checkpoint'][k] for k in ['home','local_device','epoch']))
+assert hashlib.sha256(p.read_bytes()).hexdigest()==before
+prior=json.loads((d/'death-private-actions/1.stdout').read_text());meta['prior_history_count']=len(prior['history']);meta['prior_pending_count']=len(prior['pending']);meta['canonical_unchanged_by_diagnosis']=True
+meta['exact_exception_string_retained']=False;meta['live_child_exit_status_retained']=False
+meta['failure']=json.loads((d/'death-failure.json').read_text())
+print(json.dumps(meta))"""
+p=subprocess.run(A+['/usr/pkg/bin/python3.13 -B -c '+shlex.quote(code)],capture_output=True,timeout=30)
+if p.returncode:(D/'private-death-diagnosis-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Bounded readonly diagnosis failed')
+x=json.loads(p.stdout);(D/'death-readonly-diagnosis.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x))

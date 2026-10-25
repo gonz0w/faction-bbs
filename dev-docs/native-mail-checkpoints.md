@@ -173,3 +173,12 @@ received-history timestamps. It never substitutes arrival or server delay time.
 The original `receive` API and its enclosing-time comparison remain unchanged.
 Neither API changes the v2 envelope/payload schema or grants network trust.
 The caller samples its trusted cycle clock immediately before each operation.
+
+## Explicit archive payload schema
+
+The optional [archive contract](native-mail-archive.md) adds an explicit
+FACTCP02-to-FACTCP03 payload migration inside the unchanged FACTVLT2 encryption
+envelope. Schema 2 remains exact and has no cursor. Schema 3 atomically carries
+home/device/epoch-scoped cursor progress with protocol/history/outbox state;
+ordinary unlock never silently migrates. Recovery and official backups remain
+history-only, and local secret reset cannot restore live ratchets.

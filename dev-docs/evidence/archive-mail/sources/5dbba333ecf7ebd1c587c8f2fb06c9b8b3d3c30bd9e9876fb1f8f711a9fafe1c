@@ -1,0 +1,10 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.89s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 2 tests
+test mail_archive::tests::saved_cursor_unavailable_requires_exact_own_error_and_optional_query_echo ... ok
+test mail_network::tests::catch_up_saved_cursor_error_is_actionable_without_reset_or_retry ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 75 filtered out; finished in 10.82s
+

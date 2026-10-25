@@ -25,3 +25,5 @@ software and support limits are in [README](../README.md), the
 [AGENTS.md](../AGENTS.md) contains concise durable instructions, not a backlog.
 
 [Native home-mail contract](native-home-mail.md) describes the optional direct-TLS transport, verified device codec and checkpoint boundary.
+
+- [Native archive cursor and migration contract](native-mail-archive.md)

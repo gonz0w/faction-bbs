@@ -1,0 +1,56 @@
+from pathlib import Path
+import os,json,subprocess,time,re,hashlib
+R=Path('/home/factionbuild/faction211-source');T=Path('/home/factionbuild/target211/release');D=Path('/root/faction211-setup/runtime-01/broad');D.mkdir(mode=0o700,exist_ok=True);os.umask(0o077)
+assert os.getuid()==0 and '211' in Path('/etc/faction-disposable-test').read_text()
+assert json.loads((D.parent/'positive-result.json').read_text())['count']==8
+assert int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem']))==1054990336
+E=os.environ.copy();E.update(PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',HOME='/home/factionbuild',USER='factionbuild',LOGNAME='factionbuild',CARGO_HOME='/home/factionbuild/cargo211',CARGO_TARGET_DIR='/home/factionbuild/target211',CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+P={'result':'running','scope':'1GiB-native-runtime-after-2GiB-cached-build','physmem_bytes':1054990336,'cores':2,'stages':[]}
+def save():
+ p=D/'progress.tmp';p.write_text(json.dumps(P,indent=2)+'\n');p.replace(D/'progress.json')
+def digest(p):
+ with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+save()
+stages=[
+ ('rust-product',['cargo','test','-p','faction-client','-p','faction-omemo','--features','faction-client/network-mail','--all-targets','--release','--locked','--offline','--','--test-threads=1'],'rust',139),
+ ('rust-transport',['cargo','test','--manifest-path','crates/faction-xmpp/Cargo.toml','--all-targets','--release','--locked','--offline','--','--test-threads=1'],'rust',25),
+ ('tls-transport',['python3.13','tools/probe_home_transport.py','--binary',str(T/'examples/transport_fixture'),'--openssl','/usr/bin/openssl','--output','/home/factionbuild/native211-build-02/runtime-tls.json'],'json',20),
+ ('archive-ui',['python3.13','tools/probe_home_archive_ui.py','--client',str(T/'faction-client'),'--fixture',str(T/'examples/checkpoint_ui_fixture'),'--output','/home/factionbuild/native211-build-02/runtime-archive-ui.json'],'json',6),
+ ('online-ui',['python3.13','tools/probe_home_ui.py','--client',str(T/'faction-client'),'--checkpoint-fixture',str(T/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(T/'examples/home_mail_fixture'),'--output','/home/factionbuild/native211-build-02/runtime-online-ui.json'],'json',9),
+ ('checkpoint-ui',['python3.13','tools/probe_checkpoint_ui.py','--client',str(T/'faction-client'),'--fixture',str(T/'examples/checkpoint_ui_fixture'),'--output','/home/factionbuild/native211-build-02/runtime-checkpoint-ui.json'],'json',23),
+ ('vault-v1',['python3.13','tools/probe_native_mail.py','--client',str(T/'faction-client'),'--output','/home/factionbuild/native211-build-02/runtime-vault-v1.json'],'json',13),
+ ('picker',['python3.13','tools/smoke_local_vault_launcher.py',str(T/'faction-client'),'--output','/home/factionbuild/native211-build-02/runtime-picker.json'],'json',8),
+]
+for name,cmd,kind,expected in stages:
+ assert int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem']))==1054990336
+ row={'name':name,'command':cmd,'status':'running','expected':expected};P['stages'].append(row);save();start=time.monotonic()
+ with (D/(name+'.log')).open('wb') as log:x=subprocess.run(cmd,cwd=R,env=E,user='factionbuild',group='factionbuild',extra_groups=[],stdout=log,stderr=subprocess.STDOUT)
+ row.update(exit=x.returncode,seconds=round(time.monotonic()-start,3));text=(D/(name+'.log')).read_text(errors='replace')
+ row['log_sha256']=digest(D/(name+'.log'))
+ if x.returncode:row['status']='fail';P['result']='fail';save();raise SystemExit(x.returncode)
+ if kind=='rust':
+  results=re.findall(r'test result: (\w+)\. (\d+) passed; (\d+) failed; (\d+) ignored;',text)
+  row.update(passed=sum(int(x[1]) for x in results),failed=sum(int(x[2]) for x in results),ignored=sum(int(x[3]) for x in results))
+  row['compiler_lines']=[line.strip() for line in text.splitlines() if line.lstrip().startswith(('Compiling ','Finished '))]
+  assert results and all(x[0]=='ok' and x[2]=='0' for x in results) and row['passed']==expected
+ else:
+  output=Path(cmd[cmd.index('--output')+1]);result=json.loads(output.read_text());row['public_result']=result
+  count=result.get('count',len(result.get('checks',[])));assert result['result']=='pass' and count==expected
+ row['status']='pass';save()
+# Feature-off route must reject before creating any store or settings file.
+code="""from pathlib import Path
+import subprocess,tempfile,json
+with tempfile.TemporaryDirectory(prefix='faction211-default-off-') as t:
+ p=Path(t);store=p/'absent';config=p/'absent.toml'
+ x=subprocess.run(['BINARY','--mail-online',str(store),str(config)],capture_output=True)
+ assert x.returncode==1 and not store.exists() and not config.exists()
+ print(json.dumps({'result':'pass','count':1,'exit':x.returncode,'store_created':False,'config_created':False}))
+""".replace('BINARY',str(T/'faction-client-default'))
+start=time.monotonic();x=subprocess.run(['python3.13','-c',code],cwd=R,env=E,user='factionbuild',group='factionbuild',extra_groups=[],capture_output=True)
+(D/'default-off.log').write_bytes(x.stdout+x.stderr);assert x.returncode==0
+P['stages'].append({'name':'default-off','status':'pass','exit':0,'seconds':round(time.monotonic()-start,3),'public_result':json.loads(x.stdout)})
+manifest=json.loads((R/'source-sha256.json').read_text());assert all(digest(R/name)==h for name,h in manifest.items())
+actual={p.relative_to(R).as_posix() for p in R.rglob('*') if p.is_file()};extra=actual-set(manifest)-{'source-sha256.json'}
+assert all('__pycache__' in Path(p).parts and p.endswith('.pyc') for p in extra)
+P.update(result='pass',source_sha256=manifest,source_membership_matches=True,generated_python_cache_files_excluded=sorted(extra))
+P['artifacts']={str(p):digest(p) for p in [T/'faction-client',T/'faction-client-default',T/'examples/home_mail_fixture',T/'examples/checkpoint_ui_fixture',T/'examples/transport_fixture']};save()

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction211-fixture-OWNED/check_driver.py", line 18, in <module>
+    assert failures==0, 'old native fixture rejects new archive status/enable actions'
+           ^^^^^^^^^^^
+AssertionError: old native fixture rejects new archive status/enable actions

@@ -1,0 +1,20 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-a8b7dfff33525076)
+
+running 12 tests
+test mail_checkpoint::archive_checkpoint_tests::archive_checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by archive checkpoint crash controls
+test mail_checkpoint::archive_checkpoint_tests::schema02_stays_exact_and_schema03_rejects_malformed_or_foreign_scope ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_cas_binding_ids_and_tamper_stop_before_checkpoint_mutation ... ok
+test mail_checkpoint::archive_checkpoint_tests::known_own_archive_echo_advances_only_cursor_even_after_retirement ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_receive_commits_authenticated_time_cursor_and_reopen_duplicate_once ... ok
+test mail_checkpoint::archive_checkpoint_tests::inactive_revoked_expired_and_poisoned_archive_operations_refuse ... ok
+test mail_checkpoint::archive_checkpoint_tests::partial_archive_page_preserves_last_good_cursor_when_next_item_fails ... ok
+test mail_checkpoint::archive_checkpoint_tests::explicit_archive_migration_preserves_v2_state_wraps_and_recovery ... ok
+test mail_checkpoint::archive_checkpoint_tests::recovery_backup_and_reset_preserve_inert_cursor_and_fresh_device_rescopes ... ok
+test mail_checkpoint::archive_checkpoint_tests::full_history_or_outbox_blocks_archive_duplicates_and_echoes ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_write_failures_poison_and_preserve_atomic_candidate ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_process_death_couples_message_cursor_and_native_snapshot ... ok
+
+test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 21 filtered out; finished in 29.55s
+

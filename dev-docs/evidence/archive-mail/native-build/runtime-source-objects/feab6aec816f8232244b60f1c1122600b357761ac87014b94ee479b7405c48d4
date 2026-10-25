@@ -1,0 +1,14 @@
+from pathlib import Path
+import subprocess,json,sys,os
+D=Path('/private/tmp/faction211-native-OWNED/runtime-01');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077);phase=sys.argv[1];assert phase in {'positive','death'}
+if phase=='positive':
+ p=subprocess.run(A+['set -e\ninstall -d -m 700 /root/faction211-setup/runtime-01\ncat > /root/faction211-setup/runtime-01/archive-runner.py\nchmod 600 /root/faction211-setup/runtime-01/archive-runner.py'],input=(D/'archive-runner.py').read_bytes(),capture_output=True)
+ if p.returncode:(D/'private-upload-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Native archive helper upload failed')
+p=subprocess.run(A+['PATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n/usr/pkg/bin/python3.13 /root/faction211-setup/runtime-01/archive-runner.py '+phase],capture_output=True)
+(D/(phase+'-invocation-private.log')).write_bytes(p.stdout+p.stderr)
+# stdout is deliberately limited by the wrapper to aggregate safe result JSON.
+for line in p.stdout.decode().splitlines():
+ try:x=json.loads(line)
+ except json.JSONDecodeError:continue
+ print(json.dumps(x),flush=True)
+raise SystemExit(p.returncode)

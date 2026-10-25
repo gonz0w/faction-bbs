@@ -1,0 +1,11 @@
+{
+  "changed": [
+    "crates/faction-client/src/checkpoint_ui.rs",
+    "crates/faction-client/src/mail_network.rs",
+    "crates/faction-client/src/mail_wire.rs",
+    "tools/probe_archive_process_death.py",
+    "tools/probe_home_archive_ui.py",
+    "tools/test_archive_process_death.py"
+  ],
+  "removed": []
+}

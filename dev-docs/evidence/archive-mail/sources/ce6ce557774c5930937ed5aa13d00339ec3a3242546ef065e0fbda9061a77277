@@ -1,0 +1,13 @@
+    Blocking waiting for file lock on build directory
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.67s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 5 tests
+test mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry ... ok
+test mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial ... ok
+test mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens ... ok
+test mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait ... ok
+test mail_network::tests::catch_up_lost_idle_or_invalid_fin_commits_nothing ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 65 filtered out; finished in 8.81s
+

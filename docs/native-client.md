@@ -156,3 +156,7 @@ opens no connection and claims no live network inbox/send or roaming identity.
 The optional [manual encrypted home-mail guide](online-mail.md) covers the separate
 `--mail-online` entry and `network-mail` build feature. It does not change Files,
 board visits, the picker's v1 M entry or the offline checkpoint console.
+
+Opt-in [archive mode](archive-mail.md) adds an explicit local schema upgrade and
+one-page retained-mail catch-up. N sends pending ciphertext; A reads a bounded
+archive page. It does not add background activity or a remote BBS unlock path.

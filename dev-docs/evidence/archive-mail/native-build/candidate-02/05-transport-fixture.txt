@@ -1,0 +1,2 @@
+   Compiling faction-xmpp v0.1.0-alpha.1 (/home/factionbuild/faction211-source/crates/faction-xmpp)
+    Finished `release` profile [optimized] target(s) in 4.68s

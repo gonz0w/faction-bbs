@@ -1,0 +1,23 @@
+{
+  "physmem_bytes": 1054990336,
+  "cores": 2,
+  "os": "NetBSD 11.0 evbarm",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)",
+  "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+  "homes": [
+    {
+      "user": "maila",
+      "uid": 1008
+    },
+    {
+      "user": "mailb",
+      "uid": 1009
+    }
+  ],
+  "custom_prosody_version": "13.0.7",
+  "four_owned_mail_ports_loopback_only": true,
+  "stock_services_inactive": true,
+  "host_tunnel_stopped": true,
+  "only_qemu_memory_argument_changed": true,
+  "administrative_forward_loopback_only": true
+}

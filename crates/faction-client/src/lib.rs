@@ -14,3 +14,6 @@ mod network_checkpoint_tests;
 
 #[cfg(feature = "network-mail")]
 pub mod mail_network;
+
+#[cfg(feature = "network-mail")]
+pub mod mail_archive;

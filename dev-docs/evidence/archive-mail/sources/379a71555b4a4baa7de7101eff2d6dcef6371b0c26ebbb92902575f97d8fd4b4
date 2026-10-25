@@ -1,0 +1,34 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.15s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 7 tests
+test mail_archive::tests::opaque_cursor_and_query_inputs_are_bounded ... ok
+test mail_archive::tests::request_is_own_archive_peer_filtered_and_four_bounded ... ok
+test mail_archive::tests::own_sent_echo_uses_swapped_trusted_binding_without_decryption ... ok
+test mail_archive::tests::incoming_uses_enrolled_identity_and_ignores_server_time ... ok
+test mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count ... FAILED
+test mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four ... FAILED
+test mail_archive::tests::wrong_owner_query_shape_namespace_addresses_and_delay_are_rejected ... ok
+
+failures:
+
+---- mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count stdout ----
+
+thread 'mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count' (6434259) panicked at crates/faction-client/src/mail_archive.rs:199:9:
+assertion failed: !fin(&without.parse().unwrap(), &q(), &entries(&["a"])).unwrap()
+
+---- mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four stdout ----
+
+thread 'mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four' (6434260) panicked at crates/faction-client/src/mail_archive.rs:205:13:
+accepted <iq xmlns='jabber:client' id='iq-random' type='result'><fin xmlns='urn:xmpp:mam:2' complete='true'><set xmlns='http://jabber.org/protocol/rsm'><first index='0'>a</first><last>b</last></set></fin></iq>
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count
+    mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four
+
+test result: FAILED. 5 passed; 2 failed; 0 ignored; 0 measured; 61 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p faction-client --lib`

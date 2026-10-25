@@ -1,0 +1,46 @@
+    Checking typenum v1.20.1
+    Checking libc v0.2.191
+    Checking cmov v0.5.4
+    Checking hybrid-array v0.4.15
+    Checking ctutils v0.4.3
+    Checking cfg-if v1.0.5
+    Checking serde_core v1.0.229
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.1
+    Checking const-oid v0.10.2
+    Checking digest v0.11.3
+    Checking inout v0.2.5
+    Checking getrandom v0.4.3
+   Compiling faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+    Checking winnow v1.0.4
+    Checking zeroize v1.9.1
+    Checking toml_parser v1.1.5+spec-1.1.0
+    Checking serde_spanned v1.1.2
+    Checking toml_datetime v1.1.2+spec-1.1.0
+    Checking errno v0.3.14
+    Checking base64ct v1.8.3
+    Checking bitflags v2.13.2
+    Checking rustix v1.1.5
+    Checking phc v0.6.1
+    Checking toml v1.1.8+spec-1.1.0
+    Checking cipher v0.5.2
+    Checking universal-hash v0.6.1
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+    Checking cpufeatures v0.3.1
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Checking memchr v2.8.3
+    Checking roxmltree v0.21.1
+    Checking sha2 v0.11.1
+    Checking poly1305 v0.9.1
+    Checking chacha20 v0.10.2
+    Checking password-hash v0.6.1
+    Checking aead v0.6.1
+    Checking blake2 v0.11.0
+    Checking base64 v0.23.1
+    Checking unicode-width v0.2.2
+    Checking faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Checking faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+    Checking argon2 v0.6.0
+    Checking chacha20poly1305 v0.11.0
+    Checking faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.22s

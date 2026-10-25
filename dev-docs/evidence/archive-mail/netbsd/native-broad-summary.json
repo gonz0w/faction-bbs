@@ -1,0 +1,174 @@
+{
+  "result": "pass",
+  "physmem_bytes": 1054990336,
+  "cores": 2,
+  "stages": [
+    {
+      "name": "rust-product",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "faction-client",
+        "-p",
+        "faction-omemo",
+        "--features",
+        "faction-client/network-mail",
+        "--all-targets",
+        "--release",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=1"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 43.81,
+      "passed": 139,
+      "failed": 0,
+      "ignored": 2,
+      "expected": 139,
+      "compiler_lines": [
+        "Finished `release` profile [optimized] target(s) in 0.13s"
+      ],
+      "log_sha256": "f230da86581afc49a6afb297663153c3409b0d908d2b178cd2a128a8f3600540"
+    },
+    {
+      "name": "rust-transport",
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-xmpp/Cargo.toml",
+        "--all-targets",
+        "--release",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=1"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.242,
+      "passed": 25,
+      "failed": 0,
+      "ignored": 0,
+      "expected": 25,
+      "compiler_lines": [
+        "Finished `release` profile [optimized] target(s) in 0.05s"
+      ],
+      "log_sha256": "2e7c75360ca628d29c95feeb04b2e24df3ba89a6fe92b86327adac94239b3fe6"
+    },
+    {
+      "name": "tls-transport",
+      "command": [
+        "python3.13",
+        "tools/probe_home_transport.py",
+        "--binary",
+        "/home/factionbuild/target211/release/examples/transport_fixture",
+        "--openssl",
+        "/usr/bin/openssl",
+        "--output",
+        "/home/factionbuild/native211-build-02/runtime-tls.json"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 16.308,
+      "expected": 20,
+      "log_sha256": "b1bd124b17ae4e5136545786260a3a90dab0c5912c1957448b17b2046cc5d18b"
+    },
+    {
+      "name": "archive-ui",
+      "command": [
+        "python3.13",
+        "tools/probe_home_archive_ui.py",
+        "--client",
+        "/home/factionbuild/target211/release/faction-client",
+        "--fixture",
+        "/home/factionbuild/target211/release/examples/checkpoint_ui_fixture",
+        "--output",
+        "/home/factionbuild/native211-build-02/runtime-archive-ui.json"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.681,
+      "expected": 6,
+      "log_sha256": "10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a"
+    },
+    {
+      "name": "online-ui",
+      "command": [
+        "python3.13",
+        "tools/probe_home_ui.py",
+        "--client",
+        "/home/factionbuild/target211/release/faction-client",
+        "--checkpoint-fixture",
+        "/home/factionbuild/target211/release/examples/checkpoint_ui_fixture",
+        "--mail-fixture",
+        "/home/factionbuild/target211/release/examples/home_mail_fixture",
+        "--output",
+        "/home/factionbuild/native211-build-02/runtime-online-ui.json"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.728,
+      "expected": 9,
+      "log_sha256": "7f2a23db76d683a26c61e983b0bedbf0dfe421279eb24e3424ebcae3d01f0cfd"
+    },
+    {
+      "name": "checkpoint-ui",
+      "command": [
+        "python3.13",
+        "tools/probe_checkpoint_ui.py",
+        "--client",
+        "/home/factionbuild/target211/release/faction-client",
+        "--fixture",
+        "/home/factionbuild/target211/release/examples/checkpoint_ui_fixture",
+        "--output",
+        "/home/factionbuild/native211-build-02/runtime-checkpoint-ui.json"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 2.967,
+      "expected": 23,
+      "log_sha256": "04c1eefa7376b7e66b9af3a4eb5210e88309cc57598679d3a62c3cf97da7ac78"
+    },
+    {
+      "name": "vault-v1",
+      "command": [
+        "python3.13",
+        "tools/probe_native_mail.py",
+        "--client",
+        "/home/factionbuild/target211/release/faction-client",
+        "--output",
+        "/home/factionbuild/native211-build-02/runtime-vault-v1.json"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.892,
+      "expected": 13,
+      "log_sha256": "e7a5d284eed49077d4ab4f5bf7dd648e5ac3af59ddb182cc2dcbed5543d08143"
+    },
+    {
+      "name": "picker",
+      "command": [
+        "python3.13",
+        "tools/smoke_local_vault_launcher.py",
+        "/home/factionbuild/target211/release/faction-client",
+        "--output",
+        "/home/factionbuild/native211-build-02/runtime-picker.json"
+      ],
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.895,
+      "expected": 8,
+      "log_sha256": "fd6042cce488cfda8b5d957ad3f3aff4bcd81d530a33c81183af5f15f644fe59"
+    },
+    {
+      "name": "default-off",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.023
+    }
+  ]
+}

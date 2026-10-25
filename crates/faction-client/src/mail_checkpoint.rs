@@ -12,6 +12,7 @@ use std::{
 use zeroize::Zeroizing;
 const MAGIC: &[u8; 8] = b"FACTVLT2";
 const SCHEMA: &[u8; 8] = b"FACTCP02";
+const ARCHIVE_SCHEMA: &[u8; 8] = b"FACTCP03";
 const NAME: &str = "mail.fkv";
 const HEADER: usize = 184;
 const PREFIX: usize = 208;
@@ -119,6 +120,8 @@ pub struct Inspection<'a> {
     pub expires: u64,
     pub history_only: bool,
     pub started: bool,
+    pub archive_enabled: bool,
+    pub archive_cursor_present: bool,
     pub peer: Option<PeerInspection<'a>>,
 }
 pub struct PeerInspection<'a> {
@@ -149,6 +152,32 @@ struct Pending {
     operation: [u8; 16],
     wire: Wire,
 }
+/// Member-only archive continuation token. Server IDs carry no device trust,
+/// ordering proof, delivery acknowledgement or permission to skip an item.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ArchiveCheckpoint {
+    pub home: String,
+    pub local_device: u32,
+    pub epoch: [u8; 16],
+    pub after: Option<String>,
+}
+fn archive_id(id: &str) -> bool {
+    !id.is_empty() && id.len() <= 256 && id.bytes().all(|byte| byte.is_ascii_graphic())
+}
+impl ArchiveCheckpoint {
+    fn fresh(home: &str, local_device: u32) -> io::Result<Self> {
+        let epoch = random::<16>()?;
+        if epoch == [0; 16] {
+            return Err(invalid());
+        }
+        Ok(Self {
+            home: home.into(),
+            local_device,
+            epoch,
+            after: None,
+        })
+    }
+}
 struct State {
     revision: u64,
     legacy: Data,
@@ -162,6 +191,7 @@ struct State {
     history_only: bool,
     history: Vec<Record>,
     outbox: Vec<Pending>,
+    archive: Option<ArchiveCheckpoint>,
 }
 struct Reader<'a>(&'a [u8]);
 impl<'a> Reader<'a> {
@@ -240,6 +270,7 @@ impl State {
             history_only: false,
             history: vec![],
             outbox: vec![],
+            archive: None,
         })
     }
     fn active(&self, now: u64) -> io::Result<&Peer> {
@@ -263,7 +294,14 @@ impl State {
     }
     fn encode(&self) -> io::Result<Zeroizing<Vec<u8>>> {
         self.validate()?;
-        let mut out = Zeroizing::new(SCHEMA.to_vec());
+        let mut out = Zeroizing::new(
+            if self.archive.is_some() {
+                ARCHIVE_SCHEMA
+            } else {
+                SCHEMA
+            }
+            .to_vec(),
+        );
         out.extend_from_slice(&self.revision.to_be_bytes());
         field(&mut out, &self.legacy.encode()?);
         num(&mut out, self.local_device);
@@ -298,6 +336,15 @@ impl State {
             out.extend_from_slice(&p.operation);
             p.wire.encode_into(&mut out)?;
         }
+        if let Some(archive) = &self.archive {
+            field(&mut out, archive.home.as_bytes());
+            num(&mut out, archive.local_device);
+            out.extend_from_slice(&archive.epoch);
+            out.push(u8::from(archive.after.is_some()));
+            if let Some(after) = &archive.after {
+                field(&mut out, after.as_bytes());
+            }
+        }
         if out.len() > MAX_PLAIN {
             return Err(invalid());
         }
@@ -308,7 +355,8 @@ impl State {
             return Err(invalid());
         }
         let mut r = Reader(raw);
-        if r.take(8)? != SCHEMA {
+        let schema = r.take(8)?;
+        if schema != SCHEMA && schema != ARCHIVE_SCHEMA {
             return Err(invalid());
         }
         let revision = r.big()?;
@@ -365,6 +413,20 @@ impl State {
                 wire: r.wire()?,
             });
         }
+        let archive = if schema == ARCHIVE_SCHEMA {
+            Some(ArchiveCheckpoint {
+                home: r.string(254)?,
+                local_device: r.number()?,
+                epoch: r.array()?,
+                after: if r.boolean()? {
+                    Some(r.string(256)?)
+                } else {
+                    None
+                },
+            })
+        } else {
+            None
+        };
         if !r.0.is_empty() {
             return Err(invalid());
         }
@@ -381,6 +443,7 @@ impl State {
             history_only,
             history,
             outbox,
+            archive,
         };
         s.validate()?;
         s.device()?;
@@ -403,6 +466,14 @@ impl State {
             return Err(invalid());
         }
         Data::decode(&self.legacy.encode()?)?;
+        if let Some(archive) = &self.archive
+            && (archive.home != self.legacy.home
+                || archive.local_device != self.local_device
+                || archive.epoch == [0; 16]
+                || archive.after.as_ref().is_some_and(|id| !archive_id(id)))
+        {
+            return Err(invalid());
+        }
         if let Some(p) = &self.peer
             && (!address(&p.address) || !device_id(p.device))
         {
@@ -738,6 +809,12 @@ impl CheckpointVault {
             expires: self.state.expires,
             history_only: self.state.history_only,
             started: self.state.started,
+            archive_enabled: self.state.archive.is_some(),
+            archive_cursor_present: self
+                .state
+                .archive
+                .as_ref()
+                .is_some_and(|archive| archive.after.is_some()),
             peer: self.state.peer.as_ref().map(|p| PeerInspection {
                 address: &p.address,
                 device: p.device,
@@ -937,6 +1014,20 @@ impl CheckpointVault {
         self.receive_inner(wire, now, true)
     }
     fn receive_inner(&mut self, wire: &Wire, now: u64, network: bool) -> io::Result<Receipt> {
+        let (candidate, receipt) = self.receive_candidate(wire, now, network)?;
+        if let Some(candidate) = candidate {
+            self.commit(candidate)?;
+        }
+        Ok(receipt)
+    }
+    // Construct authenticated receive state without publication. The archive
+    // path adds its cursor to this same candidate before the one durable commit.
+    fn receive_candidate(
+        &self,
+        wire: &Wire,
+        now: u64,
+        network: bool,
+    ) -> io::Result<(Option<State>, Receipt)> {
         self.healthy()?;
         let peer = self.state.active(now)?;
         wire.validate()?;
@@ -963,10 +1054,13 @@ impl CheckpointVault {
                 frame
             };
             if r.frame == expected {
-                return Ok(Receipt {
-                    frame: expected,
-                    duplicate: true,
-                });
+                return Ok((
+                    None,
+                    Receipt {
+                        frame: expected,
+                        duplicate: true,
+                    },
+                ));
             }
         }
         if self.state.history.len() == MAX_HISTORY {
@@ -1014,11 +1108,99 @@ impl CheckpointVault {
             frame,
             intent: [0; 32],
         });
+        Ok((
+            Some(candidate),
+            Receipt {
+                frame,
+                duplicate: false,
+            },
+        ))
+    }
+    fn archive_ready(&self, now: u64) -> io::Result<()> {
+        self.healthy()?;
+        self.state.active(now)?;
+        if self.state.history.len() >= MAX_HISTORY || self.state.outbox.len() >= MAX_OUTBOX {
+            return Err(invalid());
+        }
+        Ok(())
+    }
+    /// Explicitly opt in to FACTCP03 inside the unchanged FACTVLT2 envelope.
+    /// Repeated consent never resets the epoch/cursor or writes another checkpoint.
+    pub fn enable_archive(&mut self, now: u64) -> io::Result<()> {
+        self.archive_ready(now)?;
+        if self.state.archive.is_some() {
+            return Ok(());
+        }
+        let mut candidate = self.state.duplicate()?;
+        candidate.archive = Some(ArchiveCheckpoint::fresh(
+            &candidate.legacy.home,
+            candidate.local_device,
+        )?);
+        self.commit(candidate)
+    }
+    /// Preflight before any archive network operation. Full or quarantined state
+    /// blocks even duplicate/own-echo cursor advancement; history remains readable.
+    pub fn archive_checkpoint(&self, now: u64) -> io::Result<ArchiveCheckpoint> {
+        self.archive_ready(now)?;
+        self.state.archive.clone().ok_or_else(invalid)
+    }
+    /// Accept one checked archive item with an exact compare-and-swap token.
+    /// The message and cursor share a single commit. Only authenticated incoming
+    /// content or an exact already-durable own ciphertext can advance the cursor.
+    pub fn receive_archive(
+        &mut self,
+        expected: &ArchiveCheckpoint,
+        id: &str,
+        wire: &Wire,
+        now: u64,
+    ) -> io::Result<Receipt> {
+        let current = self.archive_checkpoint(now)?;
+        if current != *expected
+            || !archive_id(id)
+            || current.after.as_deref() == Some(id)
+            || wire.sent_at != 0
+        {
+            return Err(invalid());
+        }
+        wire.validate()?;
+        let (candidate, receipt) = if wire.from == self.state.legacy.home {
+            let peer = self.state.active(now)?;
+            if wire.device != self.state.local_device
+                || wire.identity != self.state.identity
+                || wire.to != peer.address
+                || wire.to_device != peer.device
+            {
+                return Err(invalid());
+            }
+            let mut found = None;
+            for record in self.state.history.iter().filter(|record| {
+                record.direction == Direction::Sent
+                    && record.address == peer.address
+                    && record.device == peer.device
+                    && record.identity == peer.identity
+            }) {
+                let mut canonical = wire.clone();
+                canonical.sent_at = record.sent_at;
+                let frame = canonical.digest()?;
+                if frame == record.frame {
+                    found = Some(Receipt {
+                        frame,
+                        duplicate: true,
+                    });
+                    break;
+                }
+            }
+            (None, found.ok_or_else(invalid)?)
+        } else {
+            self.receive_candidate(wire, now, true)?
+        };
+        let mut candidate = match candidate {
+            Some(candidate) => candidate,
+            None => self.state.duplicate()?,
+        };
+        candidate.archive.as_mut().ok_or_else(invalid)?.after = Some(id.into());
         self.commit(candidate)?;
-        Ok(Receipt {
-            frame,
-            duplicate: false,
-        })
+        Ok(receipt)
     }
     pub fn pending(&self, now: u64) -> io::Result<Vec<Wire>> {
         self.healthy()?;
@@ -1065,6 +1247,13 @@ impl CheckpointVault {
         }
         let mut candidate = State::fresh(Data::decode(&self.state.legacy.encode()?)?, new_id, now)?;
         let old = self.state.duplicate()?;
+        if let Some(archive) = old.archive {
+            let fresh = ArchiveCheckpoint::fresh(&candidate.legacy.home, new_id)?;
+            if fresh.epoch == archive.epoch {
+                return Err(invalid());
+            }
+            candidate.archive = Some(fresh);
+        }
         candidate.history = old.history;
         self.commit(candidate)
     }
@@ -1118,3 +1307,7 @@ impl CheckpointVault {
             .collect())
     }
 }
+
+#[cfg(test)]
+#[path = "archive_checkpoint_tests.rs"]
+mod archive_checkpoint_tests;

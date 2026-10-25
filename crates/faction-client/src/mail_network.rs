@@ -131,6 +131,7 @@ pub enum Mode {
     Publish,
     Prepare,
     Sync,
+    CatchUp,
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
@@ -139,10 +140,18 @@ pub enum Error {
     State,
     Protocol,
     PeerUnavailable,
+    ArchiveCursorUnavailable,
     Transport(faction_xmpp::Error),
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+/// One validated page; `complete` is only the home's claim for this query.
+pub struct ArchiveReport {
+    pub entries: usize,
+    pub complete: bool,
 }
 #[derive(Default, Debug)]
 pub struct Report {
+    pub archive: Option<ArchiveReport>,
     pub sent: usize,
     pub accepted: usize,
     pub duplicates: usize,
@@ -203,6 +212,11 @@ fn accept(
         return Ok(());
     }
     let state = backend(vault.inspection())?;
+    if state.archive_enabled {
+        // Explicit archive receive requires the matching own MAM query and fin.
+        // Unsolicited live frames must not advance native keys without a cursor.
+        return Err(Error::Protocol);
+    }
     let peer = state.peer.ok_or(Error::State)?;
     let binding = crate::mail_wire::Binding {
         peer: peer.address,
@@ -235,6 +249,7 @@ impl Channel for faction_xmpp::Session {
     }
 }
 struct Ready {
+    archive: Option<crate::mail_checkpoint::ArchiveCheckpoint>,
     device: u32,
     peer: Option<(String, u32, [u8; 32])>,
     clock: CycleClock,
@@ -299,10 +314,20 @@ fn preflight(
     if mode != Mode::Publish && peer.is_none() || mode == Mode::Prepare && started {
         return Err(Error::State);
     }
+    if mode == Mode::CatchUp {
+        let archive = backend(vault.archive_checkpoint(clock.now()))?;
+        return Ok(Ready {
+            device,
+            peer,
+            clock,
+            archive: Some(archive),
+        });
+    }
     // Preserve the pre-connection native-state validation, but never retain its
     // public keys across an await which may durably accept a prekey message.
     backend(vault.publication(clock.now()))?;
     Ok(Ready {
+        archive: None,
         device,
         peer,
         clock,
@@ -324,6 +349,97 @@ pub async fn cycle(
         .map_err(Error::Transport)?;
     exchange(vault, settings, &mut session, mode, ready).await
 }
+async fn catch_up<C: Channel>(
+    vault: &mut CheckpointVault,
+    settings: &Settings,
+    session: &mut C,
+    ready: Ready,
+) -> Result<Report, Error> {
+    let mut checkpoint = ready.archive.ok_or(Error::State)?;
+    if backend(vault.archive_checkpoint(ready.clock.now()))? != checkpoint {
+        return Err(Error::State);
+    }
+    let (peer, peer_device, peer_identity) = ready.peer.ok_or(Error::State)?;
+    let own_identity = *backend(vault.inspection())?.identity;
+    let mut random = [0; 32];
+    getrandom::fill(&mut random).map_err(|_| Error::State)?;
+    let iq_id = format!("mam-iq-{}", crate::mail_data::hex(&random[..16]));
+    let query_id = format!("mam-q-{}", crate::mail_data::hex(&random[16..]));
+    let full = format!("{}/faction{}", settings.account, ready.device);
+    let q = crate::mail_archive::Query {
+        iq_id: &iq_id,
+        query_id: &query_id,
+        own: &settings.account,
+        full: &full,
+        peer: &peer,
+        after: checkpoint.after.as_deref(),
+    };
+    let query = protocol(crate::mail_archive::query(&q))?;
+    session.send(&query).await.map_err(Error::Transport)?;
+    let mut entries = Vec::new();
+    for _ in 0..32 {
+        let xml = tokio::time::timeout(std::time::Duration::from_secs(2), session.next())
+            .await
+            .map_err(|_| Error::Transport(faction_xmpp::Error::Timeout))?
+            .map_err(Error::Transport)?;
+        if xml.is("iq", "jabber:client") {
+            if xml.attr("type") == Some("error") {
+                protocol(crate::mail_archive::cursor_unavailable(&xml, &q))?;
+                return Err(Error::ArchiveCursorUnavailable);
+            }
+            // A finishing IQ must match exactly; errors (including a stale RSM
+            // cursor) cannot be normalized into an empty or completed page.
+            if xml.attr("id") == Some(iq_id.as_str())
+                || xml.get_child("fin", crate::mail_archive::MAM).is_some()
+            {
+                let complete = protocol(crate::mail_archive::fin(&xml, &q, &entries))?;
+                backend(vault.archive_checkpoint(ready.clock.now()))?;
+                let mut report = Report::default();
+                for entry in entries {
+                    let receipt = backend(vault.receive_archive(
+                        &checkpoint,
+                        &entry.id,
+                        &entry.wire,
+                        ready.clock.now(),
+                    ))?;
+                    checkpoint.after = Some(entry.id);
+                    if receipt.duplicate {
+                        report.duplicates += 1;
+                    } else {
+                        report.accepted += 1;
+                    }
+                }
+                report.archive = Some(ArchiveReport {
+                    entries: report.accepted + report.duplicates,
+                    complete,
+                });
+                return Ok(report);
+            }
+        } else if xml.is("message", "jabber:client") {
+            if entries.len() == 4 {
+                return Err(Error::Protocol);
+            }
+            let binding = crate::mail_wire::Binding {
+                peer: &peer,
+                peer_device,
+                peer_identity,
+                own: &settings.account,
+                own_device: ready.device,
+            };
+            let entry = protocol(crate::mail_archive::result(&xml, &q, binding, own_identity))?;
+            if entries
+                .iter()
+                .any(|old: &crate::mail_archive::Entry| old.id == entry.id)
+            {
+                return Err(Error::Protocol);
+            }
+            entries.push(entry);
+        } else if !xml.is("presence", "jabber:client") {
+            return Err(Error::Protocol);
+        }
+    }
+    Err(Error::Protocol)
+}
 async fn exchange<C: Channel>(
     vault: &mut CheckpointVault,
     settings: &Settings,
@@ -331,7 +447,11 @@ async fn exchange<C: Channel>(
     mode: Mode,
     ready: Ready,
 ) -> Result<Report, Error> {
+    if mode == Mode::CatchUp {
+        return catch_up(vault, settings, session, ready).await;
+    }
     let Ready {
+        archive: _,
         device,
         peer,
         clock,
@@ -399,10 +519,21 @@ async fn exchange<C: Channel>(
             return Err(Error::Protocol);
         }
     }
-    session
-        .send(&faction_xmpp::Element::builder("presence", "jabber:client").build())
-        .await
-        .map_err(Error::Transport)?;
+    let current = backend(vault.inspection())?;
+    let now = clock.now();
+    if current.history_only
+        || now < current.created
+        || now > current.expires
+        || current.peer.as_ref().is_some_and(|peer| peer.revoked)
+    {
+        return Err(Error::State);
+    }
+    if !current.archive_enabled {
+        session
+            .send(&faction_xmpp::Element::builder("presence", "jabber:client").build())
+            .await
+            .map_err(Error::Transport)?;
+    }
     if mode == Mode::Publish {
         return Ok(report);
     }
@@ -445,6 +576,9 @@ async fn exchange<C: Channel>(
         ))?;
         session.send(&xml).await.map_err(Error::Transport)?;
         report.sent += 1;
+    }
+    if backend(vault.inspection())?.archive_enabled {
+        return Ok(report);
     }
     for _ in 0..32 {
         match tokio::time::timeout(std::time::Duration::from_secs(2), session.next()).await {
@@ -850,5 +984,803 @@ mod tests {
             )),
             Err(Error::State)
         ));
+    }
+    enum MamEnd {
+        Good,
+        WrongId,
+        Lost,
+        Idle,
+    }
+    struct MamScript {
+        offset: usize,
+        presence: usize,
+        wires: Vec<crate::mail_checkpoint::Wire>,
+        sent: Vec<faction_xmpp::Element>,
+        index: usize,
+        end: MamEnd,
+        complete: bool,
+        delay: std::time::Duration,
+    }
+    impl MamScript {
+        fn new(wires: Vec<crate::mail_checkpoint::Wire>) -> Self {
+            Self {
+                offset: 0,
+                presence: 0,
+                wires,
+                sent: vec![],
+                index: 0,
+                end: MamEnd::Good,
+                complete: true,
+                delay: std::time::Duration::ZERO,
+            }
+        }
+    }
+    impl Channel for MamScript {
+        async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {
+            self.sent.push(xml.clone());
+            Ok(())
+        }
+        async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error> {
+            if self.presence > 0 {
+                self.presence -= 1;
+                return Ok(faction_xmpp::Element::builder("presence", "jabber:client").build());
+            }
+            if !self.delay.is_zero() {
+                tokio::time::sleep(self.delay).await;
+            }
+            let request = self.sent.first().ok_or(faction_xmpp::Error::Lost)?;
+            let query = request
+                .get_child("query", crate::mail_archive::MAM)
+                .ok_or(faction_xmpp::Error::Lost)?;
+            if self.index < self.wires.len() {
+                let wire = &self.wires[self.index];
+                self.index += 1;
+                let delay = faction_xmpp::Element::builder("delay", "urn:xmpp:delay").build();
+                let mut delay = delay;
+                delay.set_attr(
+                    "".into(),
+                    "stamp".try_into().unwrap(),
+                    "1999-01-01T00:00:00Z",
+                );
+                let forwarded = faction_xmpp::Element::builder("forwarded", "urn:xmpp:forward:0")
+                    .append(delay)
+                    .append(crate::mail_wire::message(wire, [1; 16]).unwrap())
+                    .build();
+                let mut result = faction_xmpp::Element::builder("result", crate::mail_archive::MAM)
+                    .append(forwarded)
+                    .build();
+                result.set_attr(
+                    "".into(),
+                    "queryid".try_into().unwrap(),
+                    query.attr("queryid").unwrap(),
+                );
+                result.set_attr(
+                    "".into(),
+                    "id".try_into().unwrap(),
+                    format!("item{}", self.index + self.offset),
+                );
+                let mut message = faction_xmpp::Element::builder("message", "jabber:client")
+                    .append(result)
+                    .build();
+                message.set_attr(
+                    "".into(),
+                    "to".try_into().unwrap(),
+                    request.attr("to").unwrap(),
+                );
+                return Ok(message);
+            }
+            match self.end {
+                MamEnd::Lost => return Err(faction_xmpp::Error::Lost),
+                MamEnd::Idle => {
+                    std::future::pending::<()>().await;
+                }
+                _ => {}
+            }
+            let bounds = if self.wires.is_empty() {
+                String::new()
+            } else {
+                format!(
+                    "<first>item{}</first><last>item{}</last>",
+                    self.offset + 1,
+                    self.wires.len() + self.offset
+                )
+            };
+            let id = if matches!(self.end, MamEnd::WrongId) {
+                "wrong"
+            } else {
+                request.attr("id").unwrap()
+            };
+            Ok(format!("<iq xmlns='jabber:client' type='result' id='{id}'><fin xmlns='urn:xmpp:mam:2' complete='{}'><set xmlns='http://jabber.org/protocol/rsm'>{bounds}<count>999</count></set></fin></iq>",self.complete).parse().unwrap())
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_commits_native_page_without_presence_pep_or_retry() {
+        let (_owned, mut alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let wire = alice
+            .queue([31; 16], "offline subject", "offline body", NOW, NOW)
+            .unwrap();
+        let mut channel = MamScript::new(vec![wire]);
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        let report = exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.accepted, 1);
+        assert_eq!(report.sent, 0);
+        assert_eq!(report.duplicates, 0);
+        let page = report.archive.unwrap();
+        assert_eq!(page.entries, 1);
+        assert!(page.complete);
+        assert_eq!(
+            bob.history().unwrap()[0].subject.as_str(),
+            "offline subject"
+        );
+        assert_eq!(
+            bob.archive_checkpoint(NOW).unwrap().after.as_deref(),
+            Some("item1")
+        );
+        assert_eq!(channel.sent.len(), 1);
+        assert!(
+            channel.sent[0]
+                .get_child("query", crate::mail_archive::MAM)
+                .is_some()
+        );
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_lost_idle_or_invalid_fin_commits_nothing() {
+        for end in [MamEnd::WrongId, MamEnd::Lost, MamEnd::Idle] {
+            let (owned, mut alice, mut bob, settings) = pair();
+            bob.enable_archive(NOW).unwrap();
+            let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+            let wire = alice
+                .queue(
+                    [32; 16],
+                    "uncommitted subject",
+                    "uncommitted body",
+                    NOW,
+                    NOW,
+                )
+                .unwrap();
+            let mut channel = MamScript::new(vec![wire]);
+            channel.end = end;
+            let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+            assert!(
+                exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+                    .await
+                    .is_err()
+            );
+            assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+            assert!(bob.history().unwrap().is_empty());
+            assert_eq!(channel.sent.len(), 1);
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial() {
+        let (owned, mut alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let mut wires = vec![];
+        for id in 40..45 {
+            wires.push(
+                alice
+                    .queue([id; 16], "bounded subject", "bounded body", NOW, NOW)
+                    .unwrap(),
+            );
+        }
+        let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+        let mut channel = MamScript::new(wires);
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        assert!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+                .await
+                .is_err()
+        );
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+        let mut channel = MamScript::new(vec![]);
+        channel.complete = false;
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        let report = exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.archive.unwrap().entries, 0);
+        assert!(!report.archive.unwrap().complete);
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_tampered_second_stops_at_last_good_cursor_and_reopens() {
+        let (owned, mut alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let first = alice
+            .queue([51; 16], "first", "authenticated first body", NOW, NOW)
+            .unwrap();
+        let mut second = alice
+            .queue([52; 16], "second", "authenticated second body", NOW, NOW)
+            .unwrap();
+        second.payload[0] ^= 1;
+        let mut channel = MamScript::new(vec![first.clone(), second]);
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        assert!(matches!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready).await,
+            Err(Error::State)
+        ));
+        assert_eq!(bob.history().unwrap().len(), 1);
+        assert_eq!(
+            bob.archive_checkpoint(NOW).unwrap().after.as_deref(),
+            Some("item1")
+        );
+        drop(bob);
+        let mut bob = CheckpointVault::unlock(
+            crate::mail_vault::Store::at(&owned.0.join("bob"), false).unwrap(),
+            PASS,
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            bob.archive_checkpoint(NOW).unwrap().after.as_deref(),
+            Some("item1")
+        );
+        let mut channel = MamScript::new(vec![first.clone()]);
+        // A repeated ciphertext may have another opaque archive id; history and
+        // native keys must deduplicate while the later archive position commits.
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        // Reuse starts at item1 here, so the same cursor itself is rejected.
+        assert!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+                .await
+                .is_err()
+        );
+        assert_eq!(bob.history().unwrap().len(), 1);
+        let mut channel = MamScript::new(vec![first]);
+        channel.offset = 1;
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        let report = exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.accepted, 0);
+        assert_eq!(report.duplicates, 1);
+        assert_eq!(bob.history().unwrap().len(), 1);
+        assert_eq!(
+            bob.archive_checkpoint(NOW).unwrap().after.as_deref(),
+            Some("item2")
+        );
+        assert_eq!(
+            channel.sent[0]
+                .get_child("query", crate::mail_archive::MAM)
+                .unwrap()
+                .get_child("set", crate::mail_archive::RSM)
+                .unwrap()
+                .get_child("after", crate::mail_archive::RSM)
+                .unwrap()
+                .text(),
+            "item1"
+        );
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_preflight_rejects_disabled_and_expiry_after_wait() {
+        let (_owned, mut alice, mut bob, settings) = pair();
+        assert!(matches!(
+            preflight(&bob, &settings, Mode::CatchUp, NOW),
+            Err(Error::State)
+        ));
+        bob.enable_archive(NOW).unwrap();
+        let wire = alice
+            .queue([61; 16], "late", "authenticated late body", NOW, NOW)
+            .unwrap();
+        let mut channel = MamScript::new(vec![wire]);
+        channel.delay = std::time::Duration::from_millis(1200);
+        let ready = preflight(
+            &bob,
+            &settings,
+            Mode::CatchUp,
+            bob.inspection().unwrap().expires,
+        )
+        .unwrap();
+        assert!(matches!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready).await,
+            Err(Error::State)
+        ));
+        assert!(bob.history().unwrap().is_empty());
+        assert_eq!(bob.archive_checkpoint(NOW).unwrap().after, None);
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_expired_during_connect_sends_no_query() {
+        let (_owned, _alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let ready = preflight(
+            &bob,
+            &settings,
+            Mode::CatchUp,
+            bob.inspection().unwrap().expires,
+        )
+        .unwrap();
+        tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
+        let mut channel = MamScript::new(vec![]);
+        assert!(matches!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready).await,
+            Err(Error::State)
+        ));
+        assert!(
+            channel.sent.is_empty(),
+            "a local expiry after connect must precede query transmission"
+        );
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_cancellation_after_result_preserves_checkpoint() {
+        let (owned, mut alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let wire = alice
+            .queue([71; 16], "cancelled page", "authenticated body", NOW, NOW)
+            .unwrap();
+        let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        let mut channel = MamScript::new(vec![wire]);
+        channel.end = MamEnd::Idle;
+        assert!(
+            tokio::time::timeout(
+                std::time::Duration::from_millis(50),
+                exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+            )
+            .await
+            .is_err()
+        );
+        assert_eq!(channel.index, 1);
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+        assert!(bob.history().unwrap().is_empty());
+        assert_eq!(bob.archive_checkpoint(NOW).unwrap().after, None);
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_own_sent_echo_matches_durable_history_without_retiring_outbox() {
+        let (owned, mut alice, _bob, _settings) = pair();
+        alice.enable_archive(NOW).unwrap();
+        let wire = alice
+            .queue(
+                [72; 16],
+                "own archived send",
+                "retained immutable ciphertext",
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        let settings = Settings {
+            account: "alice@home.test".into(),
+            endpoint: "127.0.0.1:9".parse().unwrap(),
+            domain: "home.test".into(),
+            ca: vec![],
+            pin: [0; 32],
+        };
+        let pending = alice.pending_deliveries(NOW).unwrap();
+        let mut channel = MamScript::new(vec![wire.clone()]);
+        let ready = preflight(&alice, &settings, Mode::CatchUp, NOW).unwrap();
+        let report = exchange(&mut alice, &settings, &mut channel, Mode::CatchUp, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.accepted, 0);
+        assert_eq!(report.duplicates, 1);
+        assert_eq!(report.sent, 0);
+        assert_eq!(alice.history().unwrap().len(), 1);
+        assert_eq!(alice.pending_deliveries(NOW).unwrap()[0].wire, wire);
+        assert_eq!(
+            alice.pending_deliveries(NOW).unwrap()[0].operation,
+            pending[0].operation
+        );
+        drop(alice);
+        let alice = CheckpointVault::unlock(
+            crate::mail_vault::Store::at(&owned.0.join("alice"), false).unwrap(),
+            PASS,
+            false,
+        )
+        .unwrap();
+        assert_eq!(alice.history().unwrap().len(), 1);
+        assert_eq!(
+            alice.archive_checkpoint(NOW).unwrap().after.as_deref(),
+            Some("item1")
+        );
+    }
+    #[test]
+    fn catch_up_full_outbox_and_foreign_settings_stop_before_transport() {
+        let (_owned, mut alice, mut bob, mut settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let mut first = alice
+            .queue([80; 16], "start passive", "authenticated body", NOW, NOW)
+            .unwrap();
+        first.sent_at = 0; // The selected network codec supplies this marker.
+        bob.receive_network(&first, NOW).unwrap();
+        for id in 81..89 {
+            bob.queue([id; 16], "pending", "immutable body", NOW, NOW)
+                .unwrap();
+        }
+        assert_eq!(bob.pending_deliveries(NOW).unwrap().len(), 8);
+        assert!(matches!(
+            preflight(&bob, &settings, Mode::CatchUp, NOW),
+            Err(Error::State)
+        ));
+        settings.account = "mallory@away.test".into();
+        assert!(matches!(
+            preflight(&bob, &settings, Mode::CatchUp, NOW),
+            Err(Error::Account)
+        ));
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_total_stanza_budget_and_stale_local_token_stop() {
+        let (owned, mut alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+        let mut channel = MamScript::new(vec![]);
+        channel.presence = 32;
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        assert!(matches!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready).await,
+            Err(Error::Protocol)
+        ));
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        let mut wire = alice
+            .queue(
+                [91; 16],
+                "intervening commit",
+                "authenticated body",
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        wire.sent_at = 0;
+        bob.receive_archive(
+            &bob.archive_checkpoint(NOW).unwrap(),
+            "intervening",
+            &wire,
+            NOW,
+        )
+        .unwrap();
+        let mut channel = MamScript::new(vec![]);
+        assert!(matches!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready).await,
+            Err(Error::State)
+        ));
+        assert!(channel.sent.is_empty());
+    }
+    struct UnavailableCursor {
+        buffered: Option<crate::mail_checkpoint::Wire>,
+        sent: Vec<faction_xmpp::Element>,
+        foreign: bool,
+        wrong_id: bool,
+        echo: bool,
+    }
+    impl Channel for UnavailableCursor {
+        async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {
+            self.sent.push(xml.clone());
+            Ok(())
+        }
+        async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error> {
+            if let Some(wire) = self.buffered.take() {
+                let mut scripted = MamScript::new(vec![wire]);
+                scripted.sent = self.sent.clone();
+                scripted.offset = 1;
+                return scripted.next().await;
+            }
+            let request = &self.sent[0];
+            let mut children = vec![];
+            if self.echo {
+                children.push(request.children().next().unwrap().clone());
+            }
+            let condition = faction_xmpp::Element::builder(
+                "item-not-found",
+                "urn:ietf:params:xml:ns:xmpp-stanzas",
+            )
+            .build();
+            children.push(
+                faction_xmpp::Element::builder("error", "jabber:client")
+                    .attr("type".try_into().unwrap(), "cancel")
+                    .append(condition)
+                    .build(),
+            );
+            Ok(faction_xmpp::Element::builder("iq", "jabber:client")
+                .attr("type".try_into().unwrap(), "error")
+                .attr(
+                    "id".try_into().unwrap(),
+                    if self.wrong_id {
+                        "wrong"
+                    } else {
+                        request.attr("id").unwrap()
+                    },
+                )
+                .attr(
+                    "from".try_into().unwrap(),
+                    if self.foreign {
+                        "mallory@away.test"
+                    } else {
+                        request.attr("to").unwrap()
+                    },
+                )
+                .attr("to".try_into().unwrap(), request.attr("to").unwrap())
+                .append_all(children)
+                .build())
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn catch_up_saved_cursor_error_is_actionable_without_reset_or_retry() {
+        for (foreign, wrong_id, echo) in [
+            (false, false, false),
+            (false, false, true),
+            (true, false, false),
+            (false, true, false),
+        ] {
+            let (owned, mut alice, mut bob, settings) = pair();
+            bob.enable_archive(NOW).unwrap();
+            let mut wire = alice
+                .queue(
+                    [101; 16],
+                    "already retained",
+                    "authenticated body",
+                    NOW,
+                    NOW,
+                )
+                .unwrap();
+            wire.sent_at = 0;
+            let token = bob.archive_checkpoint(NOW).unwrap();
+            bob.receive_archive(&token, "saved-position", &wire, NOW)
+                .unwrap();
+            let token = bob.archive_checkpoint(NOW).unwrap();
+            let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+            let next = alice
+                .queue(
+                    [102; 16],
+                    "buffered but uncommitted",
+                    "authenticated body",
+                    NOW,
+                    NOW,
+                )
+                .unwrap();
+            let mut channel = UnavailableCursor {
+                buffered: Some(next),
+                sent: vec![],
+                foreign,
+                wrong_id,
+                echo,
+            };
+            let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+            let actual = exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+                .await
+                .unwrap_err();
+            assert_eq!(
+                actual,
+                if foreign || wrong_id {
+                    Error::Protocol
+                } else {
+                    Error::ArchiveCursorUnavailable
+                }
+            );
+            assert_eq!(channel.sent.len(), 1);
+            assert_eq!(bob.archive_checkpoint(NOW).unwrap(), token);
+            assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+            assert_eq!(
+                channel.sent[0]
+                    .get_child("query", crate::mail_archive::MAM)
+                    .unwrap()
+                    .get_child("set", crate::mail_archive::RSM)
+                    .unwrap()
+                    .get_child("after", crate::mail_archive::RSM)
+                    .unwrap()
+                    .text(),
+                "saved-position"
+            );
+        }
+        let (owned, _alice, mut bob, settings) = pair();
+        bob.enable_archive(NOW).unwrap();
+        let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+        let mut channel = UnavailableCursor {
+            buffered: None,
+            sent: vec![],
+            foreign: false,
+            wrong_id: false,
+            echo: false,
+        };
+        let ready = preflight(&bob, &settings, Mode::CatchUp, NOW).unwrap();
+        assert_eq!(
+            exchange(&mut bob, &settings, &mut channel, Mode::CatchUp, ready)
+                .await
+                .unwrap_err(),
+            Error::Protocol
+        );
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+        assert_eq!(channel.sent.len(), 1);
+    }
+    struct PresenceScript {
+        read_after_pending: bool,
+        sent: Vec<faction_xmpp::Element>,
+        peer: String,
+        device: u32,
+        bundle: faction_omemo::Bundle,
+        prekeys: Vec<(u32, [u8; 32])>,
+    }
+    impl Channel for PresenceScript {
+        async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {
+            self.sent.push(xml.clone());
+            Ok(())
+        }
+        async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error> {
+            let request = self.sent.last().unwrap();
+            if request.is("message", "jabber:client") {
+                self.read_after_pending = true;
+            }
+            let id = request.attr("id").unwrap_or("");
+            if id == "own-devices" {
+                return Ok("<iq xmlns='jabber:client' type='error' id='own-devices'><error><item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>".parse().unwrap());
+            }
+            if id == "pub-bundle" || id == "pub-devices" {
+                return Ok(
+                    format!("<iq xmlns='jabber:client' type='result' id='{id}'/>")
+                        .parse()
+                        .unwrap(),
+                );
+            }
+            let publication = if id == "peer-devices" {
+                crate::mail_wire::devices_publish(id, &self.peer, &[self.device]).unwrap()
+            } else if id == "peer-bundle" {
+                crate::mail_wire::bundle_publish(
+                    id,
+                    &self.peer,
+                    self.device,
+                    &self.bundle,
+                    &self.prekeys,
+                )
+                .unwrap()
+            } else {
+                return std::future::pending().await;
+            };
+            let publish = publication
+                .get_child("pubsub", "http://jabber.org/protocol/pubsub")
+                .unwrap()
+                .get_child("publish", "http://jabber.org/protocol/pubsub")
+                .unwrap();
+            let items =
+                faction_xmpp::Element::builder("items", "http://jabber.org/protocol/pubsub")
+                    .attr("node".try_into().unwrap(), publish.attr("node").unwrap())
+                    .append_all(publish.children().cloned())
+                    .build();
+            let pubsub =
+                faction_xmpp::Element::builder("pubsub", "http://jabber.org/protocol/pubsub")
+                    .append(items)
+                    .build();
+            Ok(faction_xmpp::Element::builder("iq", "jabber:client")
+                .attr("type".try_into().unwrap(), "result")
+                .attr("id".try_into().unwrap(), id)
+                .attr("from".try_into().unwrap(), self.peer.as_str())
+                .attr("to".try_into().unwrap(), request.attr("from").unwrap())
+                .append(pubsub)
+                .build())
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact()
+     {
+        for archive in [false, true] {
+            for mode in [Mode::Publish, Mode::Prepare, Mode::Sync] {
+                let (owned, mut alice, mut bob, mut settings) = pair();
+                let (vault, peer) = if mode == Mode::Prepare {
+                    (&mut bob, &mut alice)
+                } else {
+                    settings.account = "alice@home.test".into();
+                    settings.domain = "home.test".into();
+                    (&mut alice, &mut bob)
+                };
+                if archive {
+                    vault.enable_archive(NOW).unwrap();
+                }
+                let pending = if mode == Mode::Sync {
+                    Some(
+                        vault
+                            .queue(
+                                [111; 16],
+                                "pending encrypted subject",
+                                "retained immutable body",
+                                NOW,
+                                NOW,
+                            )
+                            .unwrap(),
+                    )
+                } else {
+                    None
+                };
+                let cursor = if archive {
+                    Some(vault.archive_checkpoint(NOW).unwrap())
+                } else {
+                    None
+                };
+                let before = fs::read(owned.0.join(if mode == Mode::Prepare {
+                    "bob/mail.fkv"
+                } else {
+                    "alice/mail.fkv"
+                }))
+                .unwrap();
+                let peer_state = peer.inspection().unwrap();
+                let peer_device = peer_state.local_device;
+                let peer_address = peer.legacy().unwrap().home.clone();
+                let (bundle, prekeys) = peer.publication(NOW).unwrap();
+                let mut channel = PresenceScript {
+                    read_after_pending: false,
+                    sent: vec![],
+                    peer: peer_address,
+                    device: peer_device,
+                    bundle,
+                    prekeys,
+                };
+                let ready = preflight(vault, &settings, mode, NOW).unwrap();
+                let report = exchange(vault, &settings, &mut channel, mode, ready)
+                    .await
+                    .unwrap();
+                assert_eq!(
+                    channel
+                        .sent
+                        .iter()
+                        .filter(|e| e.is("presence", "jabber:client"))
+                        .count(),
+                    usize::from(!archive),
+                    "archive-enabled explicit send/publication/preparation must avoid normal offline-queue release"
+                );
+                let messages: Vec<_> = channel
+                    .sent
+                    .iter()
+                    .filter(|e| e.is("message", "jabber:client"))
+                    .collect();
+                if let Some(wire) = pending {
+                    assert_eq!(messages.len(), 1);
+                    assert_eq!(
+                        *messages[0],
+                        crate::mail_wire::message(&wire, [111; 16]).unwrap()
+                    );
+                    assert_eq!(vault.pending_deliveries(NOW).unwrap()[0].wire, wire);
+                    assert_eq!(report.sent, 1);
+                    assert_eq!(
+                        channel.read_after_pending, !archive,
+                        "archive-enabled send returns after persisted ciphertext writes without another live read"
+                    );
+                } else {
+                    assert!(messages.is_empty());
+                }
+                if let Some(cursor) = cursor {
+                    assert_eq!(vault.archive_checkpoint(NOW).unwrap(), cursor);
+                }
+                if mode != Mode::Prepare {
+                    assert_eq!(fs::read(owned.0.join("alice/mail.fkv")).unwrap(), before);
+                }
+            }
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit() {
+        for mode in [Mode::Publish, Mode::Prepare, Mode::Sync] {
+            let (owned, mut alice, mut bob, settings) = pair();
+            bob.enable_archive(NOW).unwrap();
+            let wire = alice
+                .queue(
+                    [112; 16],
+                    "unqueried live message",
+                    "authenticated body",
+                    NOW,
+                    NOW,
+                )
+                .unwrap();
+            let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+            let cursor = bob.archive_checkpoint(NOW).unwrap();
+            let mut channel = interleaved(
+                crate::mail_wire::message(&wire, [112; 16]).unwrap(),
+                std::time::Duration::ZERO,
+            );
+            let ready = preflight(&bob, &settings, mode, NOW).unwrap();
+            assert!(
+                matches!(
+                    exchange(&mut bob, &settings, &mut channel, mode, ready).await,
+                    Err(Error::Protocol)
+                ),
+                "opted-in archive receive requires matched MAM forwarding and fin"
+            );
+            assert!(bob.history().unwrap().is_empty());
+            assert_eq!(bob.archive_checkpoint(NOW).unwrap(), cursor);
+            assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+            assert_eq!(
+                channel.sent.len(),
+                1,
+                "reject before later publication or pending writes"
+            );
+        }
     }
 }

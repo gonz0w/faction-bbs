@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "issue": 211,
+  "kind": "supplemental-final-executed-source-observations",
+  "source_stages": [
+    {
+      "label": "publication-observer-before",
+      "files": [
+        {
+          "name": "tools/probe_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/f2fc51d8503f70be089c74f2854e9c40840ad92d56aec54b93cb4e592a566bed",
+          "sha256": "f2fc51d8503f70be089c74f2854e9c40840ad92d56aec54b93cb4e592a566bed"
+        },
+        {
+          "name": "tools/test_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/1edbf6a44b3db2a211f284ae9f0fcdb880ce0c365f37ed361d75c43a66024538",
+          "sha256": "1edbf6a44b3db2a211f284ae9f0fcdb880ce0c365f37ed361d75c43a66024538"
+        }
+      ]
+    },
+    {
+      "label": "netbsd-publication-observer-red",
+      "files": [
+        {
+          "name": "tools/probe_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/f2fc51d8503f70be089c74f2854e9c40840ad92d56aec54b93cb4e592a566bed",
+          "sha256": "f2fc51d8503f70be089c74f2854e9c40840ad92d56aec54b93cb4e592a566bed"
+        },
+        {
+          "name": "tools/test_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/38529379fe0aa169c8c36cebbabbd156b87aff284126fb30d8cf5878f4aa7626",
+          "sha256": "38529379fe0aa169c8c36cebbabbd156b87aff284126fb30d8cf5878f4aa7626"
+        },
+        {
+          "name": "observations/kqueue-observer-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/7ae8c749e8541bc4942a516beb83b894aefa52e391d340fbe0e6b84a5d6b0eb8",
+          "sha256": "7ae8c749e8541bc4942a516beb83b894aefa52e391d340fbe0e6b84a5d6b0eb8"
+        }
+      ]
+    },
+    {
+      "label": "netbsd-publication-observer-green",
+      "files": [
+        {
+          "name": "tools/probe_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/1df60a28069015b3126c4166357b85630064f9320c125f5b6293f5b8bf85df15",
+          "sha256": "1df60a28069015b3126c4166357b85630064f9320c125f5b6293f5b8bf85df15"
+        },
+        {
+          "name": "tools/test_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/38529379fe0aa169c8c36cebbabbd156b87aff284126fb30d8cf5878f4aa7626",
+          "sha256": "38529379fe0aa169c8c36cebbabbd156b87aff284126fb30d8cf5878f4aa7626"
+        },
+        {
+          "name": "observations/kqueue-observer-host-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/ce895947b8ffcb2e77addf8382970fd1c07ecab9486fbbfca209319a47c37f4f",
+          "sha256": "ce895947b8ffcb2e77addf8382970fd1c07ecab9486fbbfca209319a47c37f4f"
+        },
+        {
+          "name": "observations/kqueue-observer-native-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/770a5a7cfd5ed30408387c611037fc3fb16dc0c5873dba409dd6aae6c67d7bb1",
+          "sha256": "770a5a7cfd5ed30408387c611037fc3fb16dc0c5873dba409dd6aae6c67d7bb1"
+        }
+      ]
+    },
+    {
+      "label": "eight-root-server-audit-executed",
+      "files": [
+        {
+          "name": "fixture/audit-server-plaintext.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/f553dfc89ef4d535b5c4c2bd91ee6667dc6b33a36b6210b1beeb822c98cf3be3",
+          "sha256": "f553dfc89ef4d535b5c4c2bd91ee6667dc6b33a36b6210b1beeb822c98cf3be3"
+        },
+        {
+          "name": "fixture/audit-native-run.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/2ebcfd42ab7bcc0dccc8cd561f58b634fe571dfb72cc25a195ed0c2e01baa7f6",
+          "sha256": "2ebcfd42ab7bcc0dccc8cd561f58b634fe571dfb72cc25a195ed0c2e01baa7f6"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime02-executed-archive-runner",
+      "files": [
+        {
+          "name": "fixture/runtime-02/archive-runner.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/1a2037fd31fe8d9a2012ed9908c2140a0b128f04f95b537736e5869a53613324",
+          "sha256": "1a2037fd31fe8d9a2012ed9908c2140a0b128f04f95b537736e5869a53613324"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime02-executed-invoke-archive",
+      "files": [
+        {
+          "name": "fixture/runtime-02/invoke-archive.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/9153bbb05f9f028a9095ad62c4243c8cd5ca5bc99d955fb526e1e12d3b33f32f",
+          "sha256": "9153bbb05f9f028a9095ad62c4243c8cd5ca5bc99d955fb526e1e12d3b33f32f"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime02-executed-prepare-fresh",
+      "files": [
+        {
+          "name": "fixture/runtime-02/prepare-fresh.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/306ac58a671df472c32727a2922be51b22273ec712b19d72451b1a55fb8f6997",
+          "sha256": "306ac58a671df472c32727a2922be51b22273ec712b19d72451b1a55fb8f6997"
+        }
+      ]
+    },
+    {
+      "label": "native-cost-export-executed-before-measure_home_mail",
+      "files": [
+        {
+          "name": "fixture/cost-export/before-measure_home_mail.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/5f966fe389570df66bfd740ab90a6080f1a5713cd14f21ae66891889a32db221",
+          "sha256": "5f966fe389570df66bfd740ab90a6080f1a5713cd14f21ae66891889a32db221"
+        }
+      ]
+    },
+    {
+      "label": "native-cost-export-executed-measure_archive_mail",
+      "files": [
+        {
+          "name": "fixture/cost-export/measure_archive_mail.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/d3238563a0047b5246c78240f1f430eefa886fa96b40d888fff228cf94b1ec9d",
+          "sha256": "d3238563a0047b5246c78240f1f430eefa886fa96b40d888fff228cf94b1ec9d"
+        }
+      ]
+    },
+    {
+      "label": "native-cost-export-executed-run-cost",
+      "files": [
+        {
+          "name": "fixture/cost-export/run-cost.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/8981899015b7d86dd2a243d23cc0b92ad36ca01bc1eb3300f8d2239966fc0512",
+          "sha256": "8981899015b7d86dd2a243d23cc0b92ad36ca01bc1eb3300f8d2239966fc0512"
+        }
+      ]
+    },
+    {
+      "label": "native-observed-empty-archive-ui-cost",
+      "files": [
+        {
+          "name": "observations/native-empty-archive-ui-cost.json",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/f8d97a87b9d2158117ce7605140f4640a1327c2e393249ef0020cbadd22b2141",
+          "sha256": "f8d97a87b9d2158117ce7605140f4640a1327c2e393249ef0020cbadd22b2141"
+        }
+      ]
+    },
+    {
+      "label": "evidence-cost-schema-before",
+      "files": [
+        {
+          "name": "tools/check_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/e9c21cfa4c1381efc01c2f2ac37bf3eb693acf5b42aa731ab234519d446098aa",
+          "sha256": "e9c21cfa4c1381efc01c2f2ac37bf3eb693acf5b42aa731ab234519d446098aa"
+        },
+        {
+          "name": "tools/test_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/e9bd1ada93d8c87510867035406cfc2c31eaf158e20ec7f748bad37abac2c59b",
+          "sha256": "e9bd1ada93d8c87510867035406cfc2c31eaf158e20ec7f748bad37abac2c59b"
+        }
+      ]
+    },
+    {
+      "label": "evidence-cost-schema-red",
+      "files": [
+        {
+          "name": "tools/check_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/e9c21cfa4c1381efc01c2f2ac37bf3eb693acf5b42aa731ab234519d446098aa",
+          "sha256": "e9c21cfa4c1381efc01c2f2ac37bf3eb693acf5b42aa731ab234519d446098aa"
+        },
+        {
+          "name": "tools/test_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/67f4b903a1d7e198b9df0c38fd6ed386cce247f69fd48a69b0d060833b636cfb",
+          "sha256": "67f4b903a1d7e198b9df0c38fd6ed386cce247f69fd48a69b0d060833b636cfb"
+        },
+        {
+          "name": "observations/cost-schema-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/618f632485751c9fefcf8fc0eff0399b1ae5c60db0d976d0ecaa934c23fd2c13",
+          "sha256": "618f632485751c9fefcf8fc0eff0399b1ae5c60db0d976d0ecaa934c23fd2c13"
+        }
+      ]
+    },
+    {
+      "label": "evidence-cost-schema-green",
+      "files": [
+        {
+          "name": "tools/check_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/5db4bd7b4f2492c35c0a8b373d76b1265486cbba66f8ed6b7cf4b466ea9ecbdc",
+          "sha256": "5db4bd7b4f2492c35c0a8b373d76b1265486cbba66f8ed6b7cf4b466ea9ecbdc"
+        },
+        {
+          "name": "tools/test_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/67f4b903a1d7e198b9df0c38fd6ed386cce247f69fd48a69b0d060833b636cfb",
+          "sha256": "67f4b903a1d7e198b9df0c38fd6ed386cce247f69fd48a69b0d060833b636cfb"
+        },
+        {
+          "name": "observations/cost-schema-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/final-source-objects/643c7cfc3921e5830e047bed28578bc933677c101c9c5a9f6610b6207052d03c",
+          "sha256": "643c7cfc3921e5830e047bed28578bc933677c101c9c5a9f6610b6207052d03c"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,713 @@
+//! Selected bounded own-archive MAM2 page; metadata grants no device trust.
+use crate::{mail_checkpoint::Wire, mail_wire::Binding};
+use faction_xmpp::Element;
+use std::io;
+pub const MAM: &str = "urn:xmpp:mam:2";
+pub const RSM: &str = "http://jabber.org/protocol/rsm";
+pub struct Query<'a> {
+    pub iq_id: &'a str,
+    pub query_id: &'a str,
+    pub own: &'a str,
+    pub full: &'a str,
+    pub peer: &'a str,
+    pub after: Option<&'a str>,
+}
+#[derive(Debug)]
+pub struct Entry {
+    pub id: String,
+    pub wire: Wire,
+}
+// Exercised profiles: XEP-0313 1.1.3 (2025-04-09), MAM2;
+// https://xmpp.org/extensions/attic/xep-0313-1.1.3.html
+// XEP-0059 1.0 (2006-09-20), https://xmpp.org/extensions/xep-0059.html
+// XEP-0297 1.0 (2013-10-02), https://xmpp.org/extensions/xep-0297.html
+// XEP-0203 2.0 (2009-09-15), https://xmpp.org/extensions/xep-0203.html
+// Only guarded own-archive responses to this explicit page are unwrapped. Server
+// chronology, delay metadata and a claimed complete page are not authentication.
+const CLIENT: &str = "jabber:client";
+const FORWARD: &str = "urn:xmpp:forward:0";
+const DELAY: &str = "urn:xmpp:delay";
+fn bad() -> io::Error {
+    crate::mail_data::invalid()
+}
+fn opaque(s: &str) -> bool {
+    (1..=256).contains(&s.len()) && s.bytes().all(|b| b.is_ascii_graphic())
+}
+fn context(q: &Query<'_>) -> io::Result<()> {
+    let suffix = q
+        .full
+        .strip_prefix(q.own)
+        .and_then(|s| s.strip_prefix('/'))
+        .ok_or_else(bad)?;
+    if !crate::mail_data::address(q.own)
+        || !crate::mail_data::address(q.peer)
+        || q.own == q.peer
+        || suffix.is_empty()
+        || suffix.len() > 64
+        || !suffix
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))
+        || !opaque(q.iq_id)
+        || !opaque(q.query_id)
+        || q.after.is_some_and(|s| !opaque(s))
+    {
+        return Err(bad());
+    }
+    Ok(())
+}
+fn attributes(e: &Element, required: &[&str], optional: &[&str]) -> io::Result<()> {
+    if required.iter().any(|k| e.attr(*k).is_none())
+        || e.attrs().len()
+            != required.len() + optional.iter().filter(|k| e.attr(**k).is_some()).count()
+    {
+        return Err(bad());
+    }
+    Ok(())
+}
+fn whitespace(e: &Element) -> bool {
+    e.texts()
+        .all(|s| s.bytes().all(|b| b" \t\r\n".contains(&b)))
+}
+fn container(
+    e: &Element,
+    name: &str,
+    ns: &str,
+    required: &[&str],
+    optional: &[&str],
+) -> io::Result<()> {
+    if !e.is(name, ns) || !whitespace(e) {
+        return Err(bad());
+    }
+    attributes(e, required, optional)
+}
+fn root(e: &Element, name: &str, required: &[&str], optional: &[&str]) -> io::Result<()> {
+    let lang = e.attr_ns("http://www.w3.org/XML/1998/namespace", "lang");
+    if !e.is(name, CLIENT)
+        || !whitespace(e)
+        || lang.is_some_and(|s| {
+            s.len() > 64 || !s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-')
+        })
+        || required.iter().any(|k| e.attr(*k).is_none())
+        || e.attrs().len()
+            != required.len()
+                + optional.iter().filter(|k| e.attr(**k).is_some()).count()
+                + usize::from(lang.is_some())
+    {
+        return Err(bad());
+    }
+    Ok(())
+}
+fn owner(e: &Element, q: &Query<'_>, require_to: bool) -> io::Result<()> {
+    if e.attr("from").is_some_and(|s| s != q.own)
+        || e.attr("to").is_some_and(|s| s != q.own && s != q.full)
+        || require_to && e.attr("to").is_none()
+    {
+        return Err(bad());
+    }
+    Ok(())
+}
+fn only<'a>(e: &'a Element, name: &str, ns: &str) -> io::Result<&'a Element> {
+    let mut children = e.children();
+    let c = children.next().ok_or_else(bad)?;
+    if children.next().is_some() || !c.is(name, ns) {
+        return Err(bad());
+    }
+    Ok(c)
+}
+fn budget(e: &Element) -> io::Result<()> {
+    fn visit(e: &Element, depth: usize, nodes: &mut usize, bytes: &mut usize) -> io::Result<()> {
+        *nodes += 1;
+        if depth > 32 || *nodes >= 256 || e.attrs().len() > 8 {
+            return Err(bad());
+        }
+        *bytes = bytes
+            .checked_add(e.name().len() + e.ns().len())
+            .ok_or_else(bad)?;
+        for ((ns, key), value) in e.attrs().iter() {
+            if value.len() > 512 || value.chars().any(char::is_control) {
+                return Err(bad());
+            }
+            *bytes = bytes
+                .checked_add(ns.to_string().len() + key.as_str().len() + value.len())
+                .ok_or_else(bad)?;
+        }
+        for text in e.texts() {
+            *bytes = bytes.checked_add(text.len()).ok_or_else(bad)?;
+        }
+        if *bytes > 16384 {
+            return Err(bad());
+        }
+        for child in e.children() {
+            visit(child, depth + 1, nodes, bytes)?;
+        }
+        Ok(())
+    }
+    visit(e, 1, &mut 0, &mut 0)
+}
+fn element(
+    name: &str,
+    ns: &str,
+    attrs: &[(&str, &str)],
+    children: Vec<Element>,
+) -> io::Result<Element> {
+    let mut e = Element::builder(name, ns).append_all(children).build();
+    for (k, v) in attrs {
+        e.set_attr("".into(), (*k).try_into().map_err(|_| bad())?, *v);
+    }
+    Ok(e)
+}
+fn value(name: &str, ns: &str, text: &str) -> Element {
+    Element::builder(name, ns).append(text).build()
+}
+pub fn query(q: &Query<'_>) -> io::Result<Element> {
+    context(q)?;
+    let form = element(
+        "x",
+        "jabber:x:data",
+        &[("type", "submit")],
+        vec![
+            element(
+                "field",
+                "jabber:x:data",
+                &[("var", "FORM_TYPE"), ("type", "hidden")],
+                vec![value("value", "jabber:x:data", MAM)],
+            )?,
+            element(
+                "field",
+                "jabber:x:data",
+                &[("var", "with")],
+                vec![value("value", "jabber:x:data", q.peer)],
+            )?,
+        ],
+    )?;
+    let mut page = vec![value("max", RSM, "4")];
+    if let Some(after) = q.after {
+        page.push(value("after", RSM, after));
+    }
+    element(
+        "iq",
+        CLIENT,
+        &[("type", "set"), ("id", q.iq_id), ("to", q.own)],
+        vec![element(
+            "query",
+            MAM,
+            &[("queryid", q.query_id)],
+            vec![form, element("set", RSM, &[], page)?],
+        )?],
+    )
+}
+fn timestamp(s: &str) -> bool {
+    if !(20..=64).contains(&s.len()) || !s.is_ascii() {
+        return false;
+    }
+    let b = s.as_bytes();
+    if b[4] != b'-'
+        || b[7] != b'-'
+        || b[10] != b'T'
+        || b[13] != b':'
+        || b[16] != b':'
+        || b[b.len() - 1] != b'Z'
+    {
+        return false;
+    }
+    let num = |a: usize, z: usize| -> Option<u32> {
+        if b[a..z].iter().all(u8::is_ascii_digit) {
+            s[a..z].parse().ok()
+        } else {
+            None
+        }
+    };
+    let (Some(y), Some(m), Some(d), Some(h), Some(min), Some(sec)) = (
+        num(0, 4),
+        num(5, 7),
+        num(8, 10),
+        num(11, 13),
+        num(14, 16),
+        num(17, 19),
+    ) else {
+        return false;
+    };
+    let days = match m {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) => 29,
+        2 => 28,
+        _ => 0,
+    };
+    y > 0
+        && d > 0
+        && d <= days
+        && h < 24
+        && min < 60
+        && sec < 60
+        && (b.len() == 20
+            || b.len() > 21 && b[19] == b'.' && b[20..b.len() - 1].iter().all(u8::is_ascii_digit))
+}
+pub fn result(
+    xml: &Element,
+    q: &Query<'_>,
+    binding: Binding<'_>,
+    identity: [u8; 32],
+) -> io::Result<Entry> {
+    context(q)?;
+    budget(xml)?;
+    root(xml, "message", &["to"], &["from", "id", "type"])?;
+    owner(xml, q, true)?;
+    if xml.attr("type").is_some_and(|s| s != "normal")
+        || xml.attr("id").is_some_and(|s| !opaque(s))
+        || binding.own != q.own
+        || binding.peer != q.peer
+    {
+        return Err(bad());
+    }
+    let result = only(xml, "result", MAM)?;
+    container(result, "result", MAM, &["id", "queryid"], &[])?;
+    let id = result.attr("id").ok_or_else(bad)?;
+    if !opaque(id) || q.after == Some(id) || result.attr("queryid") != Some(q.query_id) {
+        return Err(bad());
+    }
+    let forwarded = only(result, "forwarded", FORWARD)?;
+    container(forwarded, "forwarded", FORWARD, &[], &[])?;
+    if forwarded.children().count() != 2 {
+        return Err(bad());
+    }
+    let mut children = forwarded.children();
+    let delay = children.next().ok_or_else(bad)?;
+    let inner = children.next().ok_or_else(bad)?;
+    container(delay, "delay", DELAY, &["stamp"], &["from"])?;
+    if delay.children().next().is_some()
+        || !timestamp(delay.attr("stamp").ok_or_else(bad)?)
+        || delay.attr("from").is_some_and(|s| {
+            s.is_empty() || s.len() > 256 || !s.bytes().all(|b| b.is_ascii_graphic())
+        })
+        || !inner.is("message", CLIENT)
+        || inner.attr("type") != Some("chat")
+    {
+        return Err(bad());
+    }
+    let own_sent = inner.attr("from").and_then(|s| s.split('/').next()) == Some(q.own);
+    let selected = if own_sent {
+        Binding {
+            peer: binding.own,
+            peer_device: binding.own_device,
+            peer_identity: identity,
+            own: binding.peer,
+            own_device: binding.peer_device,
+        }
+    } else {
+        binding
+    };
+    Ok(Entry {
+        id: id.into(),
+        wire: crate::mail_wire::decode_message(inner, selected)?,
+    })
+}
+fn decimal(e: &Element, name: &str) -> io::Result<u64> {
+    if !e.is(name, RSM) || e.children().next().is_some() {
+        return Err(bad());
+    }
+    attributes(e, &[], &[])?;
+    let s = e.text();
+    let n: u64 = s.parse().map_err(|_| bad())?;
+    if n.to_string() != s {
+        return Err(bad());
+    }
+    Ok(n)
+}
+fn opaque_leaf(e: &Element, name: &str) -> io::Result<String> {
+    if !e.is(name, RSM) || e.children().next().is_some() {
+        return Err(bad());
+    }
+    let s = e.text();
+    if !opaque(&s) {
+        return Err(bad());
+    }
+    Ok(s)
+}
+pub fn fin(xml: &Element, q: &Query<'_>, entries: &[Entry]) -> io::Result<bool> {
+    context(q)?;
+    budget(xml)?;
+    root(xml, "iq", &["type", "id"], &["from", "to"])?;
+    owner(xml, q, false)?;
+    if xml.attr("type") != Some("result")
+        || xml.attr("id") != Some(q.iq_id)
+        || entries.len() > 4
+        || entries.iter().enumerate().any(|(i, e)| {
+            !opaque(&e.id)
+                || q.after == Some(e.id.as_str())
+                || entries[..i].iter().any(|p| p.id == e.id)
+        })
+    {
+        return Err(bad());
+    }
+    let fin = only(xml, "fin", MAM)?;
+    container(fin, "fin", MAM, &[], &["complete", "stable"])?;
+    if !matches!(fin.attr("stable"), None | Some("true")) {
+        return Err(bad());
+    }
+    let complete = match fin.attr("complete") {
+        None | Some("false") => false,
+        Some("true") => true,
+        _ => return Err(bad()),
+    };
+    let set = only(fin, "set", RSM)?;
+    container(set, "set", RSM, &[], &[])?;
+    let mut first = None;
+    let mut last = None;
+    let mut count = false;
+    for child in set.children() {
+        match child.name() {
+            "first" if first.is_none() => {
+                attributes(child, &[], &["index"])?;
+                if let Some(index) = child.attr("index") {
+                    let n: u64 = index.parse().map_err(|_| bad())?;
+                    if n.to_string() != index {
+                        return Err(bad());
+                    }
+                }
+                first = Some(opaque_leaf(child, "first")?);
+            }
+            "last" if last.is_none() => {
+                attributes(child, &[], &[])?;
+                last = Some(opaque_leaf(child, "last")?);
+            }
+            "count" if !count => {
+                decimal(child, "count")?;
+                count = true;
+            }
+            _ => return Err(bad()),
+        }
+    }
+    if first.as_deref() != entries.first().map(|e| e.id.as_str())
+        || last.as_deref() != entries.last().map(|e| e.id.as_str())
+    {
+        return Err(bad());
+    }
+    Ok(complete)
+}
+
+/// Recognize only an own-archive refusal of the exact saved RSM position.
+/// Other errors remain unsupported protocol outcomes. No cursor is reset here.
+pub fn cursor_unavailable(xml: &Element, q: &Query<'_>) -> io::Result<()> {
+    context(q)?;
+    budget(xml)?;
+    root(xml, "iq", &["type", "id"], &["from", "to"])?;
+    owner(xml, q, false)?;
+    if q.after.is_none() || xml.attr("type") != Some("error") || xml.attr("id") != Some(q.iq_id) {
+        return Err(bad());
+    }
+    let mut children = xml.children();
+    let first = children.next().ok_or_else(bad)?;
+    let error = if first.is("query", MAM) {
+        // RFC IQ errors may echo their request payload. Only this exact
+        // selected MAM2/with/max/after/queryid shape is admitted.
+        let request = query(q)?;
+        if request.children().next() != Some(first) {
+            return Err(bad());
+        }
+        children.next().ok_or_else(bad)?
+    } else {
+        first
+    };
+    if children.next().is_some() {
+        return Err(bad());
+    }
+    container(error, "error", CLIENT, &["type"], &[])?;
+    if error.attr("type") != Some("cancel") {
+        return Err(bad());
+    }
+    let condition = only(
+        error,
+        "item-not-found",
+        "urn:ietf:params:xml:ns:xmpp-stanzas",
+    )?;
+    container(
+        condition,
+        "item-not-found",
+        "urn:ietf:params:xml:ns:xmpp-stanzas",
+        &[],
+        &[],
+    )?;
+    if condition.children().next().is_some() {
+        return Err(bad());
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn q() -> Query<'static> {
+        Query {
+            iq_id: "iq-random",
+            query_id: "query-random",
+            own: "bob@home.test",
+            full: "bob@home.test/faction202",
+            peer: "alice@away.test",
+            after: Some("opaque:previous"),
+        }
+    }
+    fn binding() -> Binding<'static> {
+        Binding {
+            peer: "alice@away.test",
+            peer_device: 101,
+            peer_identity: [11; 32],
+            own: "bob@home.test",
+            own_device: 202,
+        }
+    }
+    fn wire() -> Wire {
+        Wire {
+            namespace: crate::mail_wire::OMEMO.into(),
+            from: "alice@away.test".into(),
+            to: "bob@home.test".into(),
+            device: 101,
+            to_device: 202,
+            identity: [11; 32],
+            sent_at: 0,
+            key: vec![1],
+            prekey: true,
+            payload: vec![0; 16],
+        }
+    }
+    fn wrapper(wire: &Wire, id: &str) -> Element {
+        Element::builder("message", "jabber:client")
+            .attr("to".try_into().unwrap(), q().full)
+            .append(
+                Element::builder("result", MAM)
+                    .attr("queryid".try_into().unwrap(), q().query_id)
+                    .attr("id".try_into().unwrap(), id)
+                    .append(
+                        Element::builder("forwarded", "urn:xmpp:forward:0")
+                            .append(
+                                Element::builder("delay", "urn:xmpp:delay")
+                                    .attr("stamp".try_into().unwrap(), "2026-10-25T12:00:00.123Z")
+                                    .build(),
+                            )
+                            .append(crate::mail_wire::message(wire, [1; 16]).unwrap())
+                            .build(),
+                    )
+                    .build(),
+            )
+            .build()
+    }
+    fn finish(ids: &[&str], complete: &str, extra: &str) -> Element {
+        let bounds = if ids.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "<first index='0'>{}</first><last>{}</last>",
+                ids[0],
+                ids[ids.len() - 1]
+            )
+        };
+        format!("<iq xmlns='jabber:client' type='result' id='iq-random'><fin xmlns='{MAM}' complete='{complete}'><set xmlns='{RSM}'>{bounds}{extra}</set></fin></iq>").parse().unwrap()
+    }
+    fn entries(ids: &[&str]) -> Vec<Entry> {
+        ids.iter()
+            .map(|id| Entry {
+                id: (*id).into(),
+                wire: wire(),
+            })
+            .collect()
+    }
+    fn text(e: &Element) -> String {
+        let mut out = Vec::new();
+        e.write_to(&mut out).unwrap();
+        String::from_utf8(out).unwrap()
+    }
+    #[test]
+    fn request_is_own_archive_peer_filtered_and_four_bounded() {
+        let xml = query(&q()).unwrap();
+        assert_eq!(xml.attr("to"), Some(q().own));
+        assert_eq!(xml.attr("id"), Some(q().iq_id));
+        let query = xml.get_child("query", MAM).unwrap();
+        assert_eq!(query.attr("queryid"), Some(q().query_id));
+        let set = query.get_child("set", RSM).unwrap();
+        assert_eq!(set.get_child("max", RSM).unwrap().text(), "4");
+        assert_eq!(
+            set.get_child("after", RSM).unwrap().text(),
+            "opaque:previous"
+        );
+        let x = query.get_child("x", "jabber:x:data").unwrap();
+        assert!(
+            x.children().any(|e| e.attr("var") == Some("with")
+                && e.children().next().unwrap().text() == q().peer)
+        );
+        assert!(
+            x.children().any(|e| e.attr("var") == Some("FORM_TYPE")
+                && e.children().next().unwrap().text() == MAM)
+        );
+    }
+    #[test]
+    fn opaque_cursor_and_query_inputs_are_bounded() {
+        for bad in ["", "contains space", "control\n", &"x".repeat(257)] {
+            let mut context = q();
+            context.after = Some(bad);
+            assert!(query(&context).is_err());
+        }
+        let mut context = q();
+        context.after = Some("!~<>:&'\"");
+        assert!(query(&context).is_ok());
+        context.after = None;
+        assert!(
+            query(&context)
+                .unwrap()
+                .get_child("query", MAM)
+                .unwrap()
+                .get_child("set", RSM)
+                .unwrap()
+                .get_child("after", RSM)
+                .is_none()
+        );
+        context.full = "bob@home.test/other/extra";
+        assert!(query(&context).is_err());
+    }
+    #[test]
+    fn incoming_uses_enrolled_identity_and_ignores_server_time() {
+        let got = result(
+            &wrapper(&wire(), "archive:first"),
+            &q(),
+            binding(),
+            [22; 32],
+        )
+        .unwrap();
+        assert_eq!(got.id, "archive:first");
+        assert_eq!(got.wire, wire());
+        assert_eq!(got.wire.sent_at, 0);
+    }
+    #[test]
+    fn own_sent_echo_uses_swapped_trusted_binding_without_decryption() {
+        let mut own = wire();
+        own.from = q().own.into();
+        own.to = q().peer.into();
+        own.device = 202;
+        own.to_device = 101;
+        own.identity = [22; 32];
+        let got = result(&wrapper(&own, "own:sent"), &q(), binding(), [22; 32]).unwrap();
+        assert_eq!(got.wire, own);
+    }
+    #[test]
+    fn wrong_owner_query_shape_namespace_addresses_and_delay_are_rejected() {
+        let original = text(&wrapper(&wire(), "archive:first"));
+        for bad in [
+            original.replacen("<message ", "<message from='mallory@home.test' ", 1),
+            original.replace("bob@home.test/faction202", "bob@home.test/faction999"),
+            original.replace("query-random", "wrong-query"),
+            original.replace("urn:xmpp:forward:0", "urn:wrong:forward"),
+            original.replace("2026-10-25T12:00:00.123Z", "2026-02-30T25:00:00Z"),
+            original.replace("2026-10-25T12:00:00.123Z", "2026-10-25T12:00:00+00:00"),
+            original.replace("archive:first", &"x".repeat(257)),
+            original.replace(
+                "</result>",
+                "<forwarded xmlns='urn:xmpp:forward:0'/></result>",
+            ),
+            original.replace("</message>", "<body>plaintext</body></message>"),
+        ] {
+            assert!(
+                result(&bad.parse().unwrap(), &q(), binding(), [22; 32]).is_err(),
+                "accepted {bad}"
+            );
+        }
+    }
+    #[test]
+    fn fin_matches_only_iq_and_actual_first_last_not_total_count() {
+        assert!(
+            fin(
+                &finish(&["a", "b"], "true", "<count>999</count>"),
+                &q(),
+                &entries(&["a", "b"])
+            )
+            .unwrap()
+        );
+        assert!(!fin(&finish(&["a"], "false", ""), &q(), &entries(&["a"])).unwrap());
+        assert!(fin(&finish(&[], "true", "<count>0</count>"), &q(), &[]).unwrap());
+        assert!(!fin(&finish(&[], "false", ""), &q(), &[]).unwrap());
+        let without = text(&finish(&["a"], "true", "")).replace("complete='true'", "");
+        assert!(!fin(&without.parse().unwrap(), &q(), &entries(&["a"])).unwrap());
+    }
+    #[test]
+    fn fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four() {
+        let original = text(&finish(&["a", "b"], "true", ""));
+        for bad in [
+            original.replace("iq-random", "other"),
+            original.replace(">b<", ">c<"),
+            original.replace("<iq ", "<iq from='home.test' "),
+            original.replace("complete='true'", "complete='true' stable='false'"),
+            original.replace("</fin>", "<extra/></fin>"),
+            original.replace("</set>", "<first>a</first></set>"),
+        ] {
+            assert_ne!(bad, original, "a negative mutation must change the fixture");
+            assert!(
+                fin(&bad.parse().unwrap(), &q(), &entries(&["a", "b"])).is_err(),
+                "accepted {bad}"
+            );
+        }
+        assert!(
+            fin(
+                &finish(&["a", "a"], "true", ""),
+                &q(),
+                &entries(&["a", "a"])
+            )
+            .is_err()
+        );
+        assert!(
+            fin(
+                &finish(&["a", "b", "c", "d", "e"], "true", ""),
+                &q(),
+                &entries(&["a", "b", "c", "d", "e"])
+            )
+            .is_err()
+        );
+        assert!(fin(&finish(&["a"], "true", ""), &q(), &[]).is_err());
+    }
+    fn unavailable(echo: bool) -> Element {
+        let mut children = vec![];
+        if echo {
+            children.push(query(&q()).unwrap().children().next().unwrap().clone());
+        }
+        let condition =
+            Element::builder("item-not-found", "urn:ietf:params:xml:ns:xmpp-stanzas").build();
+        children.push(
+            Element::builder("error", CLIENT)
+                .attr("type".try_into().unwrap(), "cancel")
+                .append(condition)
+                .build(),
+        );
+        Element::builder("iq", CLIENT)
+            .attr("type".try_into().unwrap(), "error")
+            .attr("id".try_into().unwrap(), q().iq_id)
+            .attr("from".try_into().unwrap(), q().own)
+            .attr("to".try_into().unwrap(), q().full)
+            .append_all(children)
+            .build()
+    }
+    #[test]
+    fn saved_cursor_unavailable_requires_exact_own_error_and_optional_query_echo() {
+        assert!(cursor_unavailable(&unavailable(false), &q()).is_ok());
+        assert!(cursor_unavailable(&unavailable(true), &q()).is_ok());
+        let original = text(&unavailable(true));
+        for bad in [
+            original.replace("id='iq-random'", "id='wrong'"),
+            original.replace("from='bob@home.test'", "from='mallory@home.test'"),
+            original.replace(
+                "to='bob@home.test/faction202'",
+                "to='bob@home.test/faction999'",
+            ),
+            original.replace("item-not-found", "forbidden"),
+            original.replace("query-random", "other-query"),
+            original.replace("opaque:previous", "another-position"),
+            original.replace("type='cancel'", "type='auth'"),
+            original.replace(
+                "</error>",
+                "<text xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>untrusted</text></error>",
+            ),
+        ] {
+            assert_ne!(bad, original);
+            assert!(cursor_unavailable(&bad.parse().unwrap(), &q()).is_err());
+        }
+        let mut first = q();
+        first.after = None;
+        assert!(cursor_unavailable(&unavailable(false), &first).is_err());
+    }
+}
