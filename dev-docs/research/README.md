@@ -85,3 +85,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0046: Native local mail vault](0046-native-local-mail-vault.md).
 
 - [0052: NetBSD certificate-signing exit](0052-netbsd-signing-exit.md) — reproduced stale noreturn annotation, controlled source correction and unchanged installed-issuer boundary.
+
+- [0053: Native OMEMO-2 reuse qualification](0053-native-omemo-reuse.md) — pinned candidate comparison and host build/tests; no product adoption or NetBSD/complete-interop claim.

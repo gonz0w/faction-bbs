@@ -40,7 +40,9 @@ there are at most 32 drafts and 64 pins. Private subject/body display is ASCII i
 this preview. Unknown device IDs or changed fingerprints are never silently
 accepted: compare all 64 hex characters of the Curve25519-format public identity key with the member through an independent
 trusted channel, then explicitly confirm. These local records do not yet drive
-an encryption adapter. Removing one is not remote device revocation.
+an encryption adapter. The candidate OMEMO-2 library uses a different public-key
+representation; existing pins must not be silently reinterpreted or compared as
+raw wire keys. See [native qualification](../dev-docs/research/0053-native-omemo-reuse.md). Removing one is not remote device revocation.
 
 ## Backup and recovery
 
