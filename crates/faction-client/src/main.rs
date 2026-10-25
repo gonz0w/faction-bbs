@@ -2,9 +2,8 @@
 #![forbid(unsafe_code)]
 mod connection;
 mod launcher;
-mod mail_data;
 mod mail_ui;
-mod mail_vault;
+use faction_client::{mail_data, mail_vault};
 mod passport;
 mod passport_data;
 mod passport_store;

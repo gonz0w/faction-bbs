@@ -351,3 +351,11 @@ versions, are frozen under `sources/omemo200`; final proof/reference/patch hashe
 licenses, costs and owned-fixture teardown are in the new result. The offline
 guard verifies those saved claims, not fresh crypto/VM execution. No earlier
 record, product dependency, vault format or server budget is refreshed.
+
+[Native checkpoint evidence](mail-checkpoints/README.md) records actual host and
+NetBSD v2 durable state/history/outbox, process-death/recovery controls and fresh
+independent reciprocal interoperability. Its own digest-pinned guard verifies
+258 source-capture and 19 frozen prior input identities without rewriting earlier
+records. Feature-off v1 terminal flows remain separately tested. The result is
+an optional member-device backend, not network mail, a hardware/audit/capacity
+claim or another live task tracker.

@@ -97,3 +97,11 @@ No public file-area upload substitutes for a private attachment.
 The current combined client preserves the standalone `--mail-store` commands and
 adds the optional local picker entry. The earlier vault validation is immutable;
 current integration checks are recorded in [GitHub issue](https://github.com/gonz0w/faction-bbs/issues/90).
+
+
+The separate default-off [v2 checkpoint backend](../dev-docs/native-mail-checkpoints.md)
+now stores native protocol/history/outbox state through a trusted local library
+API. These v1 terminal commands do not initialize or open v2 vaults; explicit
+upgrade rotates local unlocking keys and preserves v1 drafts/pins. Existing Curve
+pins are not native Ed25519 enrollment. Terminal setup/inbox/send and live XMPP
+remain separate #90 work.

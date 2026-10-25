@@ -97,3 +97,8 @@ For #88, attachment blobs are encrypted on the member device before any upload.
 Private names/types/integrity/key material belong inside the authenticated E2EE
 message. Keep ciphertext retrieval/quotas/save checks distinct from public file
 references and do not unlock keys in the file service or a visited BBS.
+
+
+The optional [v2 checkpoint contract](native-mail-checkpoints.md) now defines the
+explicit native-state upgrade and durable outbox boundary. V1 tools/format remain
+separate; no automatic Curve-pin migration or mail transport is added.

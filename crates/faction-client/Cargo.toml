@@ -6,7 +6,12 @@ rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
+[features]
+default = []
+native-mail = ["dep:faction-omemo", "faction-omemo/native"]
+
 [dependencies]
+faction-omemo = { path = "../faction-omemo", optional = true, default-features = false }
 faction-client-pty = { path = "../faction-client-pty" }
 faction-files = { path = "../faction-files" }
 faction-terminal = { path = "../faction-terminal" }
