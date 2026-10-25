@@ -3,6 +3,7 @@
 import hashlib,json,re
 from pathlib import Path
 from evidence_sources import ROOT,source_bytes
+BUILD_FOLLOWUP_SHA256='947bc169e9feecbcd12cfcc7bf4c23c72a446f5406629a867b943c4cbb01fd3e'
 RECORD_SHA256='d93af1e39174b1382b1b261acd105ca25075267f1dcbb7b357c8a410f94acd79'
 FALSE_CLAIMS={'network_transport','terminal_network_mail','roaming','attachments','physical_hardware','capacity','full_conformance','security_audit','whole_client_cost'}
 TEARDOWN={'owned_vm_removed','owned_private_inputs_removed','ports_closed','saved_playground_stopped','saved_playground_unchanged'}
@@ -59,9 +60,32 @@ def verify_capture_correction(current,original_raw):
  assert {k:v for k,v in current.items() if k not in {'capture_correction','native_input_capture'}}=={k:v for k,v in original.items() if k!='native_input_capture'},'measured outcome changed during metadata correction'
 
 
+def validate_build_followup(follow,resolve):
+ assert follow['platform_flags']=={'linux':['-D_DEFAULT_SOURCE'],'netbsd':['-D_NETBSD_SOURCE'],'macos':[]}
+ for name in ['runtime_code_changed','netbsd_flags_changed','vm_replayed_after_change','observations_refreshed']:
+  assert follow[name] is False,name
+ assert follow['old_inputs'] and set(follow['old_inputs'])==set(follow['preserved_inputs'])==set(follow['current_inputs'])
+ for name,digest in follow['old_inputs'].items():
+  assert hashlib.sha256(resolve(follow['preserved_inputs'][name],digest)).hexdigest()==digest
+ for name,digest in follow['current_inputs'].items():
+  assert hashlib.sha256(resolve(name,digest)).hexdigest()==digest
+ for name,digest in follow.get('frozen_tdd_inputs',{}).items():
+  assert hashlib.sha256(resolve(name,digest)).hexdigest()==digest
+
+def resolve_followup_source(follow,name,digest,resolve):
+ if name in follow['preserved_inputs']:
+  assert follow['old_inputs'][name]==digest
+  return resolve(follow['preserved_inputs'][name],digest)
+ return resolve(name,digest)
+
+
 def check():
  d=load_record((ROOT/'dev-docs/evidence/mail-checkpoints/results.json').read_bytes())
  verify_capture_correction(d,(ROOT/'dev-docs/evidence/mail-checkpoints/initial-capture-record.json').read_bytes())
- validate(d,source_bytes)
+ raw=(ROOT/'dev-docs/evidence/mail-checkpoints/linux-build-followup.json').read_bytes()
+ assert hashlib.sha256(raw).hexdigest()==BUILD_FOLLOWUP_SHA256,'post-proof build follow-up changed'
+ follow=json.loads(raw);validate_build_followup(follow,source_bytes)
+ assert all(d['native_input_capture'][name]==digest for name,digest in follow['old_inputs'].items())
+ validate(d,lambda name,digest:resolve_followup_source(follow,name,digest,source_bytes))
  print('Saved checkpoint evidence verified: host/NetBSD atomic recovery, exact source capture, independent reciprocal controls and owned cleanup; no network/UI/audit/capacity claim.')
 if __name__=='__main__':check()

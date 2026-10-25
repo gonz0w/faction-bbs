@@ -106,6 +106,9 @@ fn main() {
     ] {
         let obj = out.join(format!("{name}.o"));
         let mut compiler = Command::new(env::var_os("CC").unwrap_or_else(|| "cc".into()));
+        if env::var("CARGO_CFG_TARGET_OS").unwrap() == "linux" {
+            compiler.arg("-D_DEFAULT_SOURCE");
+        }
         if env::var("CARGO_CFG_TARGET_OS").unwrap() == "netbsd" {
             compiler.arg("-D_NETBSD_SOURCE");
         }

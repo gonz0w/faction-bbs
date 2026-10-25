@@ -51,3 +51,13 @@ The corrected result excludes
 seven non-build Finder metadata paths; the guard verifies the original digest,
 that exact exclusion and unchanged runtime input hashes and measured outcomes.
 No Finder metadata bytes are distributed.
+
+The [post-proof Linux build follow-up](linux-build-followup.json) preserves the
+exact measured build script/test inputs and records the later Linux-only
+`_DEFAULT_SOURCE` compiler definition. Strict C11 had hidden glibc's endian macros
+and caused the first Linux CI link failure. The guard resolves those two original
+capture paths to their frozen bytes and separately checks the current build/test
+hashes. Vendor/runtime code and NetBSD/Darwin definitions are unchanged. Captured
+compiler-command regressions are not foreign compilation; genuine Linux linking
+is validated by the required current-head CI. No new VM run is claimed after this
+build-only follow-up.

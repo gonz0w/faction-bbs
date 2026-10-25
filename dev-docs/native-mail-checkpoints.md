@@ -149,3 +149,9 @@ Home addresses remain locally claimed labels until the separate home-authenticat
 work proves account/device authority. This adapter supplies no BBS role, approval
 or roaming identity. [#205](https://github.com/gonz0w/faction-bbs/issues/205) tracks
 trusted local setup/history/outbox screens before live transport integration.
+
+Linux C11 builds explicitly enable `_DEFAULT_SOURCE` for the system endian macros;
+NetBSD retains `_NETBSD_SOURCE` and Darwin adds neither definition. The saved VM
+record measured the earlier build-script bytes, retained through the
+[post-proof build follow-up](evidence/mail-checkpoints/linux-build-followup.json).
+Runtime/vendor sources and the BSD/Darwin compiler definitions did not change.

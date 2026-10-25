@@ -40,6 +40,15 @@ class CheckpointEvidence(unittest.TestCase):
   for mutate in [lambda d:d['native_input_capture'].update({'sample.rs':'b'*64}),lambda d:d['runs']['netbsd'].update(checkpoint_passed=99),lambda d:d['capture_correction'].update(excluded_non_build_metadata=['sample.rs'])]:
    d=copy.deepcopy(current);mutate(d)
    with self.assertRaises(AssertionError):guard.verify_capture_correction(d,raw)
+ def test_post_proof_build_fix_preserves_original_inputs_and_platform_scope(self):
+  old=hashlib.sha256(b'old build').hexdigest();new=hashlib.sha256(b'new build').hexdigest()
+  follow=dict(old_inputs={'build.rs':old},preserved_inputs={'build.rs':'frozen-build.rs'},current_inputs={'build.rs':new},platform_flags={'linux':['-D_DEFAULT_SOURCE'],'netbsd':['-D_NETBSD_SOURCE'],'macos':[]},runtime_code_changed=False,netbsd_flags_changed=False,vm_replayed_after_change=False,observations_refreshed=False)
+  def resolve_build(name,digest):return b'old build' if name=='frozen-build.rs' else b'new build'
+  guard.validate_build_followup(follow,resolve_build)
+  self.assertEqual(guard.resolve_followup_source(follow,'build.rs',old,resolve_build),b'old build')
+  for mutate in [lambda d:d.update(runtime_code_changed=True),lambda d:d.update(netbsd_flags_changed=True),lambda d:d.update(observations_refreshed=True),lambda d:d['preserved_inputs'].update({'build.rs':'wrong.rs'}),lambda d:d['current_inputs'].update({'build.rs':'a'*64})]:
+   d=copy.deepcopy(follow);mutate(d)
+   with self.assertRaises(AssertionError):guard.validate_build_followup(d,resolve_build)
  def test_immutable_record_rejects_even_valid_json_rewrites(self):
   raw=json.dumps(fixture()).encode()
   with patch.object(guard,'RECORD_SHA256',hashlib.sha256(raw).hexdigest()):
