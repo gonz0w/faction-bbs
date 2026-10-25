@@ -73,3 +73,9 @@ The default-off [native checkpoint backend](native-mail-checkpoints.md) owns
 member-device v2 encryption, protocol state, accepted history and durable outbound
 ciphertext. It cannot connect or decrypt through an SSH board stream. Ordinary
 client/board operation and the v1 local vault do not enable this adapter.
+
+The explicit optional [checkpoint console](../docs/checkpoint-console.md) renders
+authenticated device-local v2 metadata/history/outbox and manages deliberate
+upgrade/recovery. It is a standalone entry, outside remote stream and picker
+routing. Read-only status/operation inspection does not relax protocol delivery
+gates for expired, revoked or history-only stores.

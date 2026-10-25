@@ -1,0 +1,1007 @@
+//! Experimental member-only atomic OMEMO checkpoints. No transport or UI unlock authority.
+use crate::mail_data::{Data, address, hex, invalid, unhex};
+use crate::mail_vault::{Store, Vault, kdf, open, random, seal, valid};
+use faction_omemo::{Bundle, Device, Message, sce};
+use rustix::fs::{self, AtFlags, Mode, OFlags};
+use sha2::{Digest, Sha256};
+use std::{
+    fs::File,
+    io::{self, Read, Write},
+    path::Path,
+};
+use zeroize::Zeroizing;
+const MAGIC: &[u8; 8] = b"FACTVLT2";
+const SCHEMA: &[u8; 8] = b"FACTCP02";
+const NAME: &str = "mail.fkv";
+const HEADER: usize = 184;
+const PREFIX: usize = 208;
+const MAX_PLAIN: usize = 512 * 1024;
+const MAX_FILE: usize = PREFIX + MAX_PLAIN + 16;
+pub const MAX_HISTORY: usize = 64;
+pub const MAX_OUTBOX: usize = 8;
+pub const SESSION_AGE: u64 = 30 * 24 * 60 * 60;
+const LAST_SECOND: u64 = 253_402_300_799;
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Wire {
+    pub namespace: String,
+    pub from: String,
+    pub to: String,
+    pub device: u32,
+    pub to_device: u32,
+    pub identity: [u8; 32],
+    pub sent_at: u64,
+    pub key: Vec<u8>,
+    pub prekey: bool,
+    pub payload: Vec<u8>,
+}
+fn device_id(id: u32) -> bool {
+    (1..=i32::MAX as u32).contains(&id)
+}
+fn checked_time(t: u64) -> bool {
+    t <= LAST_SECOND
+}
+fn text(s: &str, cap: usize) -> bool {
+    !s.is_empty()
+        && s.len() <= cap
+        && s.chars()
+            .all(|c| !c.is_control() || matches!(c, '\t' | '\n' | '\r'))
+}
+fn native<T>(r: faction_omemo::Result<T>) -> io::Result<T> {
+    r.map_err(|_| invalid())
+}
+fn num(out: &mut Vec<u8>, n: u32) {
+    out.extend_from_slice(&n.to_be_bytes());
+}
+fn field(out: &mut Vec<u8>, raw: &[u8]) {
+    num(out, raw.len() as u32);
+    out.extend_from_slice(raw);
+}
+impl Wire {
+    fn validate(&self) -> io::Result<()> {
+        if self.namespace != "urn:xmpp:omemo:2"
+            || !address(&self.from)
+            || !address(&self.to)
+            || !device_id(self.device)
+            || !device_id(self.to_device)
+            || !checked_time(self.sent_at)
+            || self.key.is_empty()
+            || self.key.len() > 256
+            || !(16..=8208).contains(&self.payload.len())
+        {
+            return Err(invalid());
+        }
+        Ok(())
+    }
+    fn encode_into(&self, out: &mut Vec<u8>) -> io::Result<()> {
+        self.validate()?;
+        for s in [&self.namespace, &self.from, &self.to] {
+            field(out, s.as_bytes());
+        }
+        num(out, self.device);
+        num(out, self.to_device);
+        out.extend_from_slice(&self.identity);
+        out.extend_from_slice(&self.sent_at.to_be_bytes());
+        field(out, &self.key);
+        out.push(u8::from(self.prekey));
+        field(out, &self.payload);
+        Ok(())
+    }
+    fn digest(&self) -> io::Result<[u8; 32]> {
+        let mut bytes = b"Faction encrypted frame v2\0".to_vec();
+        self.encode_into(&mut bytes)?;
+        Ok(Sha256::digest(bytes).into())
+    }
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Direction {
+    Sent,
+    Received,
+}
+pub struct Record {
+    pub direction: Direction,
+    pub address: String,
+    pub device: u32,
+    pub identity: [u8; 32],
+    pub sent_at: u64,
+    pub subject: Zeroizing<String>,
+    pub body: Zeroizing<String>,
+    operation: [u8; 16],
+    frame: [u8; 32],
+    intent: [u8; 32],
+}
+struct Peer {
+    address: String,
+    device: u32,
+    identity: [u8; 32],
+    revoked: bool,
+}
+struct Pending {
+    operation: [u8; 16],
+    wire: Wire,
+}
+struct State {
+    revision: u64,
+    legacy: Data,
+    local_device: u32,
+    identity: [u8; 32],
+    snapshot: Zeroizing<Vec<u8>>,
+    peer: Option<Peer>,
+    started: bool,
+    created: u64,
+    expires: u64,
+    history_only: bool,
+    history: Vec<Record>,
+    outbox: Vec<Pending>,
+}
+struct Reader<'a>(&'a [u8]);
+impl<'a> Reader<'a> {
+    fn take(&mut self, n: usize) -> io::Result<&'a [u8]> {
+        if n > self.0.len() {
+            return Err(invalid());
+        }
+        let (a, b) = self.0.split_at(n);
+        self.0 = b;
+        Ok(a)
+    }
+    fn number(&mut self) -> io::Result<u32> {
+        Ok(u32::from_be_bytes(
+            self.take(4)?.try_into().map_err(|_| invalid())?,
+        ))
+    }
+    fn big(&mut self) -> io::Result<u64> {
+        Ok(u64::from_be_bytes(
+            self.take(8)?.try_into().map_err(|_| invalid())?,
+        ))
+    }
+    fn boolean(&mut self) -> io::Result<bool> {
+        match self.take(1)?[0] {
+            0 => Ok(false),
+            1 => Ok(true),
+            _ => Err(invalid()),
+        }
+    }
+    fn array<const N: usize>(&mut self) -> io::Result<[u8; N]> {
+        self.take(N)?.try_into().map_err(|_| invalid())
+    }
+    fn bytes(&mut self, cap: usize) -> io::Result<&'a [u8]> {
+        let n = self.number()? as usize;
+        if n > cap {
+            return Err(invalid());
+        }
+        self.take(n)
+    }
+    fn string(&mut self, cap: usize) -> io::Result<String> {
+        Ok(std::str::from_utf8(self.bytes(cap)?)
+            .map_err(|_| invalid())?
+            .into())
+    }
+    fn wire(&mut self) -> io::Result<Wire> {
+        Ok(Wire {
+            namespace: self.string(32)?,
+            from: self.string(254)?,
+            to: self.string(254)?,
+            device: self.number()?,
+            to_device: self.number()?,
+            identity: self.array()?,
+            sent_at: self.big()?,
+            key: self.bytes(256)?.to_vec(),
+            prekey: self.boolean()?,
+            payload: self.bytes(8208)?.to_vec(),
+        })
+    }
+}
+impl State {
+    fn fresh(legacy: Data, id: u32, now: u64) -> io::Result<Self> {
+        if !device_id(id) || now > LAST_SECOND - SESSION_AGE {
+            return Err(invalid());
+        }
+        let d = native(Device::fresh())?;
+        let identity = native(d.bundle())?.identity;
+        Ok(Self {
+            revision: 1,
+            legacy,
+            local_device: id,
+            identity,
+            snapshot: native(d.export())?,
+            peer: None,
+            started: false,
+            created: now,
+            expires: now + SESSION_AGE,
+            history_only: false,
+            history: vec![],
+            outbox: vec![],
+        })
+    }
+    fn active(&self, now: u64) -> io::Result<&Peer> {
+        if self.history_only || now < self.created || now > self.expires {
+            return Err(invalid());
+        }
+        self.peer
+            .as_ref()
+            .filter(|p| !p.revoked)
+            .ok_or_else(invalid)
+    }
+    fn device(&self) -> io::Result<Device> {
+        let mut d = native(Device::import(&self.snapshot))?;
+        if native(d.bundle())?.identity != self.identity {
+            return Err(invalid());
+        }
+        if let Some(p) = &self.peer {
+            native(d.trust(&format!("ed25519:{}", hex(&p.identity))))?;
+        }
+        Ok(d)
+    }
+    fn encode(&self) -> io::Result<Zeroizing<Vec<u8>>> {
+        self.validate()?;
+        let mut out = Zeroizing::new(SCHEMA.to_vec());
+        out.extend_from_slice(&self.revision.to_be_bytes());
+        field(&mut out, &self.legacy.encode()?);
+        num(&mut out, self.local_device);
+        out.extend_from_slice(&self.identity);
+        field(&mut out, &self.snapshot);
+        out.push(u8::from(self.peer.is_some()));
+        if let Some(p) = &self.peer {
+            field(&mut out, p.address.as_bytes());
+            num(&mut out, p.device);
+            out.extend_from_slice(&p.identity);
+            out.push(u8::from(p.revoked));
+        }
+        out.push(u8::from(self.started));
+        out.extend_from_slice(&self.created.to_be_bytes());
+        out.extend_from_slice(&self.expires.to_be_bytes());
+        out.push(u8::from(self.history_only));
+        num(&mut out, self.history.len() as u32);
+        for r in &self.history {
+            out.push(u8::from(r.direction == Direction::Received));
+            field(&mut out, r.address.as_bytes());
+            num(&mut out, r.device);
+            out.extend_from_slice(&r.identity);
+            out.extend_from_slice(&r.sent_at.to_be_bytes());
+            field(&mut out, r.subject.as_bytes());
+            field(&mut out, r.body.as_bytes());
+            out.extend_from_slice(&r.operation);
+            out.extend_from_slice(&r.frame);
+            out.extend_from_slice(&r.intent);
+        }
+        num(&mut out, self.outbox.len() as u32);
+        for p in &self.outbox {
+            out.extend_from_slice(&p.operation);
+            p.wire.encode_into(&mut out)?;
+        }
+        if out.len() > MAX_PLAIN {
+            return Err(invalid());
+        }
+        Ok(out)
+    }
+    fn decode(raw: &[u8]) -> io::Result<Self> {
+        if raw.len() > MAX_PLAIN {
+            return Err(invalid());
+        }
+        let mut r = Reader(raw);
+        if r.take(8)? != SCHEMA {
+            return Err(invalid());
+        }
+        let revision = r.big()?;
+        let legacy = Data::decode(r.bytes(crate::mail_data::MAX_PLAIN)?)?;
+        let local_device = r.number()?;
+        let identity = r.array()?;
+        let snapshot = Zeroizing::new(r.bytes(32768)?.to_vec());
+        let peer = if r.boolean()? {
+            Some(Peer {
+                address: r.string(254)?,
+                device: r.number()?,
+                identity: r.array()?,
+                revoked: r.boolean()?,
+            })
+        } else {
+            None
+        };
+        let started = r.boolean()?;
+        let created = r.big()?;
+        let expires = r.big()?;
+        let history_only = r.boolean()?;
+        let count = r.number()? as usize;
+        if count > MAX_HISTORY {
+            return Err(invalid());
+        }
+        let mut history = Vec::new();
+        for _ in 0..count {
+            let direction = if r.boolean()? {
+                Direction::Received
+            } else {
+                Direction::Sent
+            };
+            history.push(Record {
+                direction,
+                address: r.string(254)?,
+                device: r.number()?,
+                identity: r.array()?,
+                sent_at: r.big()?,
+                subject: Zeroizing::new(r.string(128)?),
+                body: Zeroizing::new(r.string(1024)?),
+                operation: r.array()?,
+                frame: r.array()?,
+                intent: r.array()?,
+            });
+        }
+        let count = r.number()? as usize;
+        if count > MAX_OUTBOX {
+            return Err(invalid());
+        }
+        let mut outbox = Vec::new();
+        for _ in 0..count {
+            outbox.push(Pending {
+                operation: r.array()?,
+                wire: r.wire()?,
+            });
+        }
+        if !r.0.is_empty() {
+            return Err(invalid());
+        }
+        let s = Self {
+            revision,
+            legacy,
+            local_device,
+            identity,
+            snapshot,
+            peer,
+            started,
+            created,
+            expires,
+            history_only,
+            history,
+            outbox,
+        };
+        s.validate()?;
+        s.device()?;
+        Ok(s)
+    }
+    fn duplicate(&self) -> io::Result<Self> {
+        Self::decode(&self.encode()?)
+    }
+    fn validate(&self) -> io::Result<()> {
+        if self.revision == 0
+            || !device_id(self.local_device)
+            || self.created > LAST_SECOND - SESSION_AGE
+            || self.expires != self.created + SESSION_AGE
+            || self.snapshot.is_empty()
+            || self.snapshot.len() > 32768
+            || self.history.len() > MAX_HISTORY
+            || self.outbox.len() > MAX_OUTBOX
+            || self.started && self.peer.is_none()
+        {
+            return Err(invalid());
+        }
+        Data::decode(&self.legacy.encode()?)?;
+        if let Some(p) = &self.peer
+            && (!address(&p.address) || !device_id(p.device))
+        {
+            return Err(invalid());
+        }
+        for (i, r) in self.history.iter().enumerate() {
+            if !address(&r.address)
+                || !device_id(r.device)
+                || !checked_time(r.sent_at)
+                || !text(&r.subject, 128)
+                || !text(&r.body, 1024)
+                || r.frame == [0; 32]
+            {
+                return Err(invalid());
+            }
+            if r.direction == Direction::Sent
+                && (r.operation == [0; 16]
+                    || self.history[..i]
+                        .iter()
+                        .any(|v| v.direction == Direction::Sent && v.operation == r.operation))
+            {
+                return Err(invalid());
+            }
+            if r.direction == Direction::Received
+                && (r.operation != [0; 16]
+                    || self.history[..i]
+                        .iter()
+                        .any(|v| v.direction == Direction::Received && v.frame == r.frame))
+            {
+                return Err(invalid());
+            }
+        }
+        for (i, p) in self.outbox.iter().enumerate() {
+            p.wire.validate()?;
+            let peer = self.peer.as_ref().ok_or_else(invalid)?;
+            if self.outbox[..i].iter().any(|v| v.operation == p.operation)
+                || p.wire.from != self.legacy.home
+                || p.wire.device != self.local_device
+                || p.wire.identity != self.identity
+                || p.wire.to != peer.address
+                || p.wire.to_device != peer.device
+            {
+                return Err(invalid());
+            }
+            let record = self
+                .history
+                .iter()
+                .find(|r| r.direction == Direction::Sent && r.operation == p.operation)
+                .ok_or_else(invalid)?;
+            if record.frame != p.wire.digest()?
+                || record.address != peer.address
+                || record.device != peer.device
+                || record.identity != peer.identity
+            {
+                return Err(invalid());
+            }
+        }
+        Ok(())
+    }
+}
+#[derive(Clone, Copy, Debug)]
+pub struct Receipt {
+    pub frame: [u8; 32],
+    pub duplicate: bool,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum Fault {
+    BeforeWrite,
+    BeforeFileSync,
+    BeforePublish,
+    AfterPublish,
+    DirectorySync,
+    CrashBeforePublish,
+    CrashAfterPublish,
+}
+/// Owns an exclusive local vault lock and its current authenticated checkpoint.
+/// Any write I/O error poisons this handle. Drop and durably reopen to resolve it.
+pub struct CheckpointVault {
+    store: Store,
+    header: Vec<u8>,
+    key: Zeroizing<[u8; 32]>,
+    state: State,
+    poisoned: bool,
+    #[cfg(test)]
+    fault: Option<Fault>,
+}
+fn wrap_aad(header: &[u8], purpose: &[u8]) -> Vec<u8> {
+    let mut out = b"Faction local mail vault v2\0".to_vec();
+    out.extend_from_slice(purpose);
+    out.extend_from_slice(&header[..40]);
+    out
+}
+type NewKeys = (Vec<u8>, Zeroizing<[u8; 32]>, Zeroizing<[u8; 32]>);
+fn keys(password: &[u8]) -> io::Result<NewKeys> {
+    let key = Zeroizing::new(random::<32>()?);
+    let recovery = Zeroizing::new(random::<32>()?);
+    let mut h = MAGIC.to_vec();
+    h.extend_from_slice(&random::<16>()?);
+    h.extend_from_slice(&random::<16>()?);
+    let pw = kdf(password, &h[24..40])?;
+    for (wrapping, purpose) in [
+        (&*pw, b"password".as_slice()),
+        (&*recovery, b"recovery".as_slice()),
+    ] {
+        let n = random::<24>()?;
+        let c = seal(wrapping, &n, &*key, &wrap_aad(&h, purpose))?;
+        h.extend_from_slice(&n);
+        h.extend_from_slice(&c);
+    }
+    Ok((h, key, recovery))
+}
+fn encrypted(header: &[u8], key: &[u8; 32], state: &State) -> io::Result<Vec<u8>> {
+    let mut p = header.to_vec();
+    let n = random::<24>()?;
+    p.extend_from_slice(&n);
+    let raw = state.encode()?;
+    let mut aad = b"Faction checkpoint payload v2\0".to_vec();
+    aad.extend_from_slice(&p);
+    p.extend_from_slice(&seal(key, &n, &raw, &aad)?);
+    Ok(p)
+}
+impl CheckpointVault {
+    fn healthy(&self) -> io::Result<()> {
+        if self.poisoned {
+            Err(invalid())
+        } else {
+            Ok(())
+        }
+    }
+    fn core_off() -> io::Result<()> {
+        rustix::process::setrlimit(
+            rustix::process::Resource::Core,
+            rustix::process::Rlimit {
+                current: Some(0),
+                maximum: Some(0),
+            },
+        )
+        .map_err(io::Error::from)
+    }
+    fn handle(store: Store, header: Vec<u8>, key: Zeroizing<[u8; 32]>, state: State) -> Self {
+        Self {
+            store,
+            header,
+            key,
+            state,
+            poisoned: false,
+            #[cfg(test)]
+            fault: None,
+        }
+    }
+    pub fn create(
+        store: Store,
+        legacy: Data,
+        password: &[u8],
+        local_device: u32,
+        now: u64,
+    ) -> io::Result<(Self, Zeroizing<[u8; 32]>)> {
+        Self::core_off()?;
+        let state = State::fresh(legacy, local_device, now)?;
+        let (header, key, recovery) = keys(password)?;
+        let mut v = Self::handle(store, header, key, state);
+        let raw = encrypted(&v.header, &v.key, &v.state)?;
+        v.publish(&raw, true, false)?;
+        Ok((v, recovery))
+    }
+    /// Explicitly replace an unlocked v1 vault. Rotates local key and both wrappers;
+    /// the caller must save the newly returned recovery secret after success.
+    pub fn upgrade(
+        vault: Vault,
+        password: &[u8],
+        local_device: u32,
+        now: u64,
+    ) -> io::Result<(Self, Zeroizing<[u8; 32]>)> {
+        Self::core_off()?;
+        let (store, legacy) = vault.into_checkpoint_parts();
+        let state = State::fresh(legacy, local_device, now)?;
+        let (header, key, recovery) = keys(password)?;
+        let mut v = Self::handle(store, header, key, state);
+        let raw = encrypted(&v.header, &v.key, &v.state)?;
+        v.publish(&raw, false, true)?;
+        Ok((v, recovery))
+    }
+    fn read(store: &Store, allow_v1: bool) -> io::Result<(File, Vec<u8>)> {
+        let mut f = File::from(fs::openat(
+            &store.dir,
+            NAME,
+            OFlags::RDWR | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK,
+            Mode::empty(),
+        )?);
+        valid(&f)?;
+        let len = f.metadata()?.len() as usize;
+        if !(PREFIX + 16..=MAX_FILE).contains(&len) {
+            return Err(invalid());
+        }
+        let mut raw = Vec::with_capacity(len);
+        Read::by_ref(&mut f)
+            .take(MAX_FILE as u64 + 1)
+            .read_to_end(&mut raw)?;
+        if raw.len() != len || (&raw[..8] != MAGIC && !(allow_v1 && &raw[..8] == b"FACTVLT1")) {
+            return Err(invalid());
+        }
+        Ok((f, raw))
+    }
+    /// Recovery secrets deliberately open history-only. Official backups also carry
+    /// that authenticated mode, including when opened with the normal password.
+    pub fn unlock(store: Store, secret: &[u8], recovery: bool) -> io::Result<Self> {
+        Self::core_off()?;
+        let (f, raw) = Self::read(&store, false)?;
+        let (wrapping, offset, purpose) = if recovery {
+            (
+                Zeroizing::new(<[u8; 32]>::try_from(secret).map_err(|_| invalid())?),
+                112,
+                b"recovery".as_slice(),
+            )
+        } else {
+            (kdf(secret, &raw[24..40])?, 40, b"password".as_slice())
+        };
+        let bytes = open(
+            &wrapping,
+            &raw[offset..offset + 24],
+            &raw[offset + 24..offset + 72],
+            &wrap_aad(&raw, purpose),
+        )?;
+        let key = Zeroizing::new(<[u8; 32]>::try_from(bytes.as_slice()).map_err(|_| invalid())?);
+        let mut aad = b"Faction checkpoint payload v2\0".to_vec();
+        aad.extend_from_slice(&raw[..PREFIX]);
+        let plain = open(&key, &raw[HEADER..PREFIX], &raw[PREFIX..], &aad)?;
+        // Make the authenticated canonical choice durable before importing or releasing
+        // any state, even following an ambiguous prior rename/directory-sync error.
+        f.sync_all()?;
+        store.dir.sync_all()?;
+        let state = State::decode(&plain)?;
+        let quarantine = recovery && !state.history_only;
+        let mut v = Self::handle(store, raw[..HEADER].to_vec(), key, state);
+        if quarantine {
+            let mut candidate = v.state.duplicate()?;
+            candidate.history_only = true;
+            v.commit(candidate)?;
+        }
+        Ok(v)
+    }
+    #[cfg(test)]
+    pub(crate) fn fail_once(&mut self, fault: Fault) {
+        self.fault = Some(fault);
+    }
+    #[cfg(test)]
+    fn point(&mut self, point: Fault) -> io::Result<()> {
+        if (point == Fault::BeforePublish && self.fault == Some(Fault::CrashBeforePublish))
+            || (point == Fault::AfterPublish && self.fault == Some(Fault::CrashAfterPublish))
+        {
+            std::process::exit(75);
+        }
+        if self.fault == Some(point)
+            || (point == Fault::BeforePublish && self.fault == Some(Fault::CrashBeforePublish))
+            || (point == Fault::AfterPublish && self.fault == Some(Fault::CrashAfterPublish))
+        {
+            self.fault = None;
+            Err(io::Error::other("injected checkpoint write failure"))
+        } else {
+            Ok(())
+        }
+    }
+    fn publish(&mut self, raw: &[u8], new: bool, allow_v1: bool) -> io::Result<()> {
+        self.healthy()?;
+        if raw.len() > MAX_FILE {
+            return Err(invalid());
+        }
+        let result = (|| {
+            if !new {
+                Self::read(&self.store, allow_v1)?;
+            }
+            #[cfg(test)]
+            self.point(Fault::BeforeWrite)?;
+            let temp = format!(".checkpoint-{}", hex(&random::<16>()?));
+            let mut file = File::from(fs::openat(
+                &self.store.dir,
+                temp.as_str(),
+                OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::from_raw_mode(0o600),
+            )?);
+            let written = (|| {
+                valid(&file)?;
+                file.write_all(raw)?;
+                #[cfg(test)]
+                self.point(Fault::BeforeFileSync)?;
+                file.sync_all()?;
+                #[cfg(test)]
+                self.point(Fault::BeforePublish)?;
+                if new {
+                    fs::linkat(
+                        &self.store.dir,
+                        temp.as_str(),
+                        &self.store.dir,
+                        NAME,
+                        AtFlags::empty(),
+                    )?;
+                    fs::unlinkat(&self.store.dir, temp.as_str(), AtFlags::empty())?;
+                } else {
+                    fs::renameat(&self.store.dir, temp.as_str(), &self.store.dir, NAME)?;
+                }
+                #[cfg(test)]
+                self.point(Fault::AfterPublish)?;
+                #[cfg(test)]
+                self.point(Fault::DirectorySync)?;
+                self.store.dir.sync_all()?;
+                Ok(())
+            })();
+            let _ = fs::unlinkat(&self.store.dir, temp.as_str(), AtFlags::empty());
+            written
+        })();
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
+    }
+    fn commit(&mut self, mut candidate: State) -> io::Result<()> {
+        self.healthy()?;
+        candidate.revision = self.state.revision.checked_add(1).ok_or_else(invalid)?;
+        let raw = encrypted(&self.header, &self.key, &candidate)?;
+        self.publish(&raw, false, false)?;
+        self.state = candidate;
+        Ok(())
+    }
+    pub fn legacy(&self) -> io::Result<&Data> {
+        self.healthy()?;
+        Ok(&self.state.legacy)
+    }
+    pub fn history(&self) -> io::Result<&[Record]> {
+        self.healthy()?;
+        Ok(&self.state.history)
+    }
+    pub fn bundle(&self) -> io::Result<Bundle> {
+        self.healthy()?;
+        if self.state.history_only {
+            return Err(invalid());
+        }
+        native(self.state.device()?.bundle())
+    }
+    pub fn enroll(&mut self, who: &str, id: u32, typed: &str, now: u64) -> io::Result<()> {
+        self.healthy()?;
+        if self.state.history_only
+            || self.state.peer.is_some()
+            || !address(who)
+            || !device_id(id)
+            || now < self.state.created
+            || now > self.state.expires
+        {
+            return Err(invalid());
+        }
+        let identity = unhex(typed.strip_prefix("ed25519:").ok_or_else(invalid)?)?;
+        let mut candidate = self.state.duplicate()?;
+        let mut d = candidate.device()?;
+        native(d.trust(typed))?;
+        candidate.peer = Some(Peer {
+            address: who.into(),
+            device: id,
+            identity,
+            revoked: false,
+        });
+        candidate.snapshot = native(d.export())?;
+        self.commit(candidate)
+    }
+    pub fn start(&mut self, bundle: &Bundle, now: u64) -> io::Result<()> {
+        self.healthy()?;
+        let peer = self.state.active(now)?;
+        if self.state.started || bundle.identity != peer.identity {
+            return Err(invalid());
+        }
+        let mut candidate = self.state.duplicate()?;
+        let mut d = candidate.device()?;
+        native(d.start(bundle))?;
+        candidate.snapshot = native(d.export())?;
+        candidate.started = true;
+        self.commit(candidate)
+    }
+    fn intent(&self, subject: &str, body: &str, sent_at: u64) -> io::Result<[u8; 32]> {
+        if !text(subject, 128) || !text(body, 1024) || !checked_time(sent_at) {
+            return Err(invalid());
+        }
+        let p = self.state.peer.as_ref().ok_or_else(invalid)?;
+        let mut raw = Zeroizing::new(b"Faction outbound intent v2\0".to_vec());
+        field(&mut raw, p.address.as_bytes());
+        num(&mut raw, p.device);
+        raw.extend_from_slice(&p.identity);
+        raw.extend_from_slice(&sent_at.to_be_bytes());
+        field(&mut raw, subject.as_bytes());
+        field(&mut raw, body.as_bytes());
+        Ok(Sha256::digest(&*raw).into())
+    }
+    /// Queue/send boundary: return ciphertext only after full-state durable commit.
+    /// Same ID+intent retries exact bytes; completed IDs never reseal a second time.
+    pub fn queue(
+        &mut self,
+        operation: [u8; 16],
+        subject: &str,
+        body: &str,
+        sent_at: u64,
+        now: u64,
+    ) -> io::Result<Wire> {
+        self.healthy()?;
+        let peer = self.state.active(now)?;
+        let intent = self.intent(subject, body, sent_at)?;
+        if operation == [0; 16] {
+            return Err(invalid());
+        }
+        if let Some(r) = self
+            .state
+            .history
+            .iter()
+            .find(|r| r.direction == Direction::Sent && r.operation == operation)
+        {
+            if r.intent != intent {
+                return Err(invalid());
+            }
+            return self
+                .state
+                .outbox
+                .iter()
+                .find(|p| p.operation == operation)
+                .map(|p| p.wire.clone())
+                .ok_or_else(invalid);
+        }
+        if self.state.outbox.len() == MAX_OUTBOX
+            || self.state.history.len() == MAX_HISTORY
+            || !self.state.started
+        {
+            return Err(invalid());
+        }
+        let plain = native(sce::encode(
+            &self.state.legacy.home,
+            &peer.address,
+            sent_at,
+            subject,
+            body,
+        ))?;
+        let mut candidate = self.state.duplicate()?;
+        let mut d = candidate.device()?;
+        let m = native(d.seal(&plain))?;
+        let wire = Wire {
+            namespace: "urn:xmpp:omemo:2".into(),
+            from: candidate.legacy.home.clone(),
+            to: peer.address.clone(),
+            device: candidate.local_device,
+            to_device: peer.device,
+            identity: candidate.identity,
+            sent_at,
+            key: m.key,
+            prekey: m.prekey,
+            payload: m.payload,
+        };
+        candidate.history.push(Record {
+            direction: Direction::Sent,
+            address: peer.address.clone(),
+            device: peer.device,
+            identity: peer.identity,
+            sent_at,
+            subject: Zeroizing::new(subject.into()),
+            body: Zeroizing::new(body.into()),
+            operation,
+            frame: wire.digest()?,
+            intent,
+        });
+        candidate.outbox.push(Pending {
+            operation,
+            wire: wire.clone(),
+        });
+        candidate.snapshot = native(d.export())?;
+        self.commit(candidate)?;
+        Ok(wire)
+    }
+    /// Accept ciphertext only. Native authentication and inner SCE validation run on
+    /// an isolated candidate; plaintext history is visible only after durable commit.
+    pub fn receive(&mut self, wire: &Wire, now: u64) -> io::Result<Receipt> {
+        self.healthy()?;
+        let peer = self.state.active(now)?;
+        wire.validate()?;
+        if wire.from != peer.address
+            || wire.device != peer.device
+            || wire.identity != peer.identity
+            || wire.to != self.state.legacy.home
+            || wire.to_device != self.state.local_device
+        {
+            return Err(invalid());
+        }
+        let frame = wire.digest()?;
+        if self
+            .state
+            .history
+            .iter()
+            .any(|r| r.direction == Direction::Received && r.frame == frame)
+        {
+            return Ok(Receipt {
+                frame,
+                duplicate: true,
+            });
+        }
+        if self.state.history.len() == MAX_HISTORY {
+            return Err(invalid());
+        }
+        let mut candidate = self.state.duplicate()?;
+        let mut d = candidate.device()?;
+        let plain = native(d.open_pending(&Message {
+            key: wire.key.clone(),
+            prekey: wire.prekey,
+            payload: wire.payload.clone(),
+        }))?;
+        let content = native(sce::decode(
+            &plain,
+            &peer.address,
+            &candidate.legacy.home,
+            wire.sent_at,
+        ))?;
+        native(d.commit())?;
+        candidate.snapshot = native(d.export())?;
+        candidate.started = true;
+        candidate.history.push(Record {
+            direction: Direction::Received,
+            address: peer.address.clone(),
+            device: peer.device,
+            identity: peer.identity,
+            sent_at: wire.sent_at,
+            subject: content.subject,
+            body: content.body,
+            operation: [0; 16],
+            frame,
+            intent: [0; 32],
+        });
+        self.commit(candidate)?;
+        Ok(Receipt {
+            frame,
+            duplicate: false,
+        })
+    }
+    pub fn pending(&self, now: u64) -> io::Result<Vec<Wire>> {
+        self.healthy()?;
+        self.state.active(now)?;
+        Ok(self.state.outbox.iter().map(|p| p.wire.clone()).collect())
+    }
+    /// Record the trusted local caller's delivery decision; not a remote read receipt.
+    pub fn acknowledge(&mut self, operation: [u8; 16]) -> io::Result<()> {
+        self.healthy()?;
+        if !self
+            .state
+            .history
+            .iter()
+            .any(|r| r.direction == Direction::Sent && r.operation == operation)
+        {
+            return Err(invalid());
+        }
+        if !self.state.outbox.iter().any(|p| p.operation == operation) {
+            return Ok(());
+        }
+        let mut candidate = self.state.duplicate()?;
+        candidate.outbox.retain(|p| p.operation != operation);
+        self.commit(candidate)
+    }
+    pub fn revoke(&mut self) -> io::Result<()> {
+        self.healthy()?;
+        let mut candidate = self.state.duplicate()?;
+        candidate.peer.as_mut().ok_or_else(invalid)?.revoked = true;
+        self.commit(candidate)
+    }
+    /// Explicitly retire pending ciphertext without re-encrypting or sending it.
+    pub fn discard_pending(&mut self) -> io::Result<()> {
+        self.healthy()?;
+        let mut candidate = self.state.duplicate()?;
+        candidate.outbox.clear();
+        self.commit(candidate)
+    }
+    /// Explicit fresh-device enrollment after recovery/revocation/expiry. Old history
+    /// survives; pending old ciphertext must first be deliberately retired.
+    pub fn fresh_device(&mut self, new_id: u32, now: u64) -> io::Result<()> {
+        self.healthy()?;
+        if !self.state.outbox.is_empty() || new_id == self.state.local_device {
+            return Err(invalid());
+        }
+        let mut candidate = State::fresh(Data::decode(&self.state.legacy.encode()?)?, new_id, now)?;
+        let old = self.state.duplicate()?;
+        candidate.history = old.history;
+        self.commit(candidate)
+    }
+    /// Official backups are authenticated history-only checkpoints, even with a
+    /// normal password. Copying arbitrary old active files cannot be detected.
+    pub fn backup(&self, path: &Path) -> io::Result<()> {
+        self.healthy()?;
+        let store = Store::at(path, true)?;
+        let mut candidate = self.state.duplicate()?;
+        candidate.history_only = true;
+        let mut dest = Self::handle(
+            store,
+            self.header.clone(),
+            Zeroizing::new(*self.key),
+            candidate,
+        );
+        let raw = encrypted(&dest.header, &dest.key, &dest.state)?;
+        dest.publish(&raw, true, false)
+    }
+    pub fn reset(&mut self, password: &[u8]) -> io::Result<Zeroizing<[u8; 32]>> {
+        self.healthy()?;
+        let (header, key, recovery) = keys(password)?;
+        let mut candidate = self.state.duplicate()?;
+        candidate.revision = self.state.revision.checked_add(1).ok_or_else(invalid)?;
+        let raw = encrypted(&header, &key, &candidate)?;
+        self.publish(&raw, false, false)?;
+        self.header = header;
+        self.key = key;
+        self.state = candidate;
+        Ok(recovery)
+    }
+}
+
+/// Durable outbox item with the operation ID needed after a process restart.
+pub struct Delivery {
+    pub operation: [u8; 16],
+    pub wire: Wire,
+}
+impl CheckpointVault {
+    pub fn pending_deliveries(&self, now: u64) -> io::Result<Vec<Delivery>> {
+        self.healthy()?;
+        self.state.active(now)?;
+        Ok(self
+            .state
+            .outbox
+            .iter()
+            .map(|p| Delivery {
+                operation: p.operation,
+                wire: p.wire.clone(),
+            })
+            .collect())
+    }
+}

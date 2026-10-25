@@ -141,3 +141,11 @@ Actual SSH admission and BBS approval remain separate, untested stages.
 An optional catalog `passport_store` enables J between visits for the
 [device-local passport](local-passport.md): explicit plaintext notes, original
 ASCII calling cards and selective share previews. No automatic visit tracking.
+
+
+## Experimental local checkpoint console
+
+An explicit feature build adds the [v2 checkpoint console](checkpoint-console.md)
+for member-local setup/upgrade, device verification, authenticated history and
+durable pending-operation inspection. It is separate from the v1 picker entry,
+opens no connection and claims no live network inbox/send or roaming identity.

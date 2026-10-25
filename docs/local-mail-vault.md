@@ -103,5 +103,6 @@ The separate default-off [v2 checkpoint backend](../dev-docs/native-mail-checkpo
 now stores native protocol/history/outbox state through a trusted local library
 API. These v1 terminal commands do not initialize or open v2 vaults; explicit
 upgrade rotates local unlocking keys and preserves v1 drafts/pins. Existing Curve
-pins are not native Ed25519 enrollment. Terminal setup/inbox/send and live XMPP
-remain separate #90 work.
+pins are not native Ed25519 enrollment. The optional [checkpoint console](checkpoint-console.md) now provides explicit
+v2 setup/upgrade, device verification, history/outbox inspection and recovery.
+Live inbox/send and XMPP remain separate #90 work.

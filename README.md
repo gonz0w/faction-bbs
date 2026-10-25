@@ -31,7 +31,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   250-member experiments are [research evidence](dev-docs/research/README.md),
   not supported capacity.
 - **Privacy:** a device-local offline vault is available. The optional
-  [native checkpoint backend](dev-docs/native-mail-checkpoints.md) adds encrypted
+  [native checkpoint backend](dev-docs/native-mail-checkpoints.md) and
+  [trusted local console](docs/checkpoint-console.md) add encrypted
   protocol state and outbox persistence behind a default-off feature. Terminal
   network inbox/send, encrypted attachments and roaming are not integrated yet.
 

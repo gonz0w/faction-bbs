@@ -359,3 +359,8 @@ independent reciprocal interoperability. Its own digest-pinned guard verifies
 records. Feature-off v1 terminal flows remain separately tested. The result is
 an optional member-device backend, not network mail, a hardware/audit/capacity
 claim or another live task tracker.
+
+The pre-205 [checkpoint UI baseline](checkpoint-ui-baseline-manifest.json) preserves
+seven actual pre-edit client/build/CI inputs and three complete immutable #203
+records. The resolver selects those bytes by recorded digest; later console
+changes do not refresh prior checkpoint or interoperability observations.

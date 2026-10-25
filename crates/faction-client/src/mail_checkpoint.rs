@@ -109,6 +109,34 @@ pub struct Record {
     frame: [u8; 32],
     intent: [u8; 32],
 }
+/// Authenticated local presentation metadata. No native private state or ciphertext.
+pub struct Inspection<'a> {
+    pub local_device: u32,
+    pub identity: &'a [u8; 32],
+    pub created: u64,
+    pub expires: u64,
+    pub history_only: bool,
+    pub started: bool,
+    pub peer: Option<PeerInspection<'a>>,
+}
+pub struct PeerInspection<'a> {
+    pub address: &'a str,
+    pub device: u32,
+    pub identity: &'a [u8; 32],
+    pub revoked: bool,
+}
+pub struct OutboxInspection<'a> {
+    pub operation: [u8; 16],
+    pub address: &'a str,
+    pub device: u32,
+    pub sent_at: u64,
+}
+impl Record {
+    /// A send operation is a local intent ID, never a delivery or read receipt.
+    pub fn operation(&self) -> [u8; 16] {
+        self.operation
+    }
+}
 struct Peer {
     address: String,
     device: u32,
@@ -696,6 +724,41 @@ impl CheckpointVault {
         self.publish(&raw, false, false)?;
         self.state = candidate;
         Ok(())
+    }
+    /// Read authenticated metadata even after expiry/revocation or recovery. This
+    /// does not authorize bundle export, ciphertext retry, or protocol resumption.
+    pub fn inspection(&self) -> io::Result<Inspection<'_>> {
+        self.healthy()?;
+        Ok(Inspection {
+            local_device: self.state.local_device,
+            identity: &self.state.identity,
+            created: self.state.created,
+            expires: self.state.expires,
+            history_only: self.state.history_only,
+            started: self.state.started,
+            peer: self.state.peer.as_ref().map(|p| PeerInspection {
+                address: &p.address,
+                device: p.device,
+                identity: &p.identity,
+                revoked: p.revoked,
+            }),
+        })
+    }
+    /// Inspect retained IDs without releasing deliverable ciphertext. Retirement
+    /// remains explicit when the protocol is expired, revoked or history-only.
+    pub fn inspect_outbox(&self) -> io::Result<Vec<OutboxInspection<'_>>> {
+        self.healthy()?;
+        Ok(self
+            .state
+            .outbox
+            .iter()
+            .map(|p| OutboxInspection {
+                operation: p.operation,
+                address: &p.wire.to,
+                device: p.wire.to_device,
+                sent_at: p.wire.sent_at,
+            })
+            .collect())
     }
     pub fn legacy(&self) -> io::Result<&Data> {
         self.healthy()?;
