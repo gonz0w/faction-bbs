@@ -115,3 +115,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0077: Issue-only test-first workflow](0077-issue-only-test-first-workflow.md) — sole GitHub task authority, finite acceptance and closing PRs.
 
 - [0078: Experimental encrypted native checkpoints](0078-encrypted-native-checkpoints.md) — default-off corrected native bytes and atomic member-only state/outbox.
+
+- [0079: Native XMPP research transport](0079-native-xmpp-research-transport.md) — bounded TLS/authentication qualification, separate from product adoption.

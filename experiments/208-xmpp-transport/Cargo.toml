@@ -1,0 +1,20 @@
+[package]
+name = "faction-xmpp-probe"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "BSD-3-Clause"
+
+[workspace]
+
+[dependencies]
+tokio-xmpp = { version = "=6.0.0", default-features = false, features = ["native-tls"] }
+native-tls = "=0.2.18"
+tokio-native-tls = "=0.3.1"
+tokio = { version = "=1.54.1", default-features = false, features = ["rt", "time", "net", "io-util", "macros"] }
+rxml = { version = "=0.14.0", default-features = false }
+sasl = "=0.5.2"
+futures-util = { version = "=0.3.34", default-features = false, features = ["sink"] }
+base64 = "=0.22.1"
+sha2 = "=0.10.9"
+log = { version = "=0.4.34", features = ["max_level_off", "release_max_level_off"] }

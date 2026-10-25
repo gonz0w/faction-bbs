@@ -35,6 +35,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [trusted local console](docs/checkpoint-console.md) add encrypted
   protocol state and outbox persistence behind a default-off feature. Terminal
   network inbox/send, encrypted attachments and roaming are not integrated yet.
+  A [native XMPP research transport](dev-docs/research/0055-native-xmpp-transport.md)
+  is qualified separately; its first product adapter is tracked in [#209](https://github.com/gonz0w/faction-bbs/issues/209).
 
 ## What you can do
 

@@ -364,3 +364,5 @@ The pre-205 [checkpoint UI baseline](checkpoint-ui-baseline-manifest.json) prese
 seven actual pre-edit client/build/CI inputs and three complete immutable #203
 records. The resolver selects those bytes by recorded digest; later console
 changes do not refresh prior checkpoint or interoperability observations.
+
+[Native XMPP transport evidence](xmpp-transport/README.md) preserves the host/NetBSD research profile, rejected intermediate observations and distinct compiler/runtime costs. Its digest-pinned guard verifies saved results; it does not rerun a VM or establish product mail support.

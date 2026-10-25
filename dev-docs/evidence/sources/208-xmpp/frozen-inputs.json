@@ -1,0 +1,414 @@
+{
+  "red-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/guard.rs": {
+      "sha256": "a2f98a422f66c9021d32be80cf5b8058bc55366b779505e9956c89996c6db926",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "d2c10615cb3db976753b0047995f0285b269d50b2a34c45503a716f868c489cb",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/src/lib.rs"
+    }
+  },
+  "driver-red-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "9bf439b48fe4dd12eaecf73d4d824351bbb8a18af672af08e032b607956ccdef",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "a2f98a422f66c9021d32be80cf5b8058bc55366b779505e9956c89996c6db926",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "bcdbfd3505388de6db800980a546491aeb09a4305e4ce1b11814fb05e995d110",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/guard.rs"
+    }
+  },
+  "driver-compile-failure-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "9bf439b48fe4dd12eaecf73d4d824351bbb8a18af672af08e032b607956ccdef",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "a2f98a422f66c9021d32be80cf5b8058bc55366b779505e9956c89996c6db926",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "1c8a97813ea1a5be01d90db322249ef51861106f886f91c7aefef46c1ceed9c4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "3b6fb4e9e3b9e2dbb01de93baa4cae9c961fe74c3fe988fa9895bf2cb000fd9b",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "41d02f80e9659be3b9b223f32828457f12bd00c0110f0ddaac4de7d37cbae246",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/guard.rs"
+    }
+  },
+  "pre-format-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "9bf439b48fe4dd12eaecf73d4d824351bbb8a18af672af08e032b607956ccdef",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "a2f98a422f66c9021d32be80cf5b8058bc55366b779505e9956c89996c6db926",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "1c8a97813ea1a5be01d90db322249ef51861106f886f91c7aefef46c1ceed9c4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "9eb23387c1e81767240f8c3720f41bf02743dd304d7aac54c9750312919cf042",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-format-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "41d02f80e9659be3b9b223f32828457f12bd00c0110f0ddaac4de7d37cbae246",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/guard.rs"
+    }
+  },
+  "pre-clippy-fix-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "05df362db02e1a5c86f17fd6b6780831a60eb1ec889f14f9a985d5a4553c9994",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "397b632338b132443478d415806ab750ff76d1baa743bd2dbf0845176a1c0c75",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "1f1a6fb355dc687991a5caa296b95c38a65234c0cf51068dfd8db05577178fd4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "560061d64fc0976f89284979333ed97a535e7de1bdaf75323b221760c00b1d84",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "3303ada43b56566848a1287d43277211f7a11e24739dc502fd5762e567d2b7a2",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/guard.rs"
+    }
+  },
+  "argv-red-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "15bf027177fa4841389c5fae3d76d5388d5423690dd340daa061bb15d34da573",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/argv-red-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "26b30c7de18a56a117bf3a1c783a59648b4cf8f519f7a0aab5434e350fdfca31",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/argv-red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "1f1a6fb355dc687991a5caa296b95c38a65234c0cf51068dfd8db05577178fd4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "560061d64fc0976f89284979333ed97a535e7de1bdaf75323b221760c00b1d84",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "3303ada43b56566848a1287d43277211f7a11e24739dc502fd5762e567d2b7a2",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/guard.rs"
+    }
+  },
+  "lookahead-red-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "3a31093d82963d68baabcb0460d76eb3c01f4dfdaae83a9c109d928f2e245b6c",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "533d8e3f911034c6ee963f0150358b4ebd363c6a37ca242e13c52ba0f515c7d1",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "560061d64fc0976f89284979333ed97a535e7de1bdaf75323b221760c00b1d84",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "3303ada43b56566848a1287d43277211f7a11e24739dc502fd5762e567d2b7a2",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/guard.rs"
+    }
+  },
+  "loss-red-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "ebab4892c54116cbb5ea50e75e61848d6315c2c4a3b150e7fc5128ce4b16e6f4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "406f504a708c5e38ef1ec01cf56c50a54c0ebefcb54fdc4499de22290adf38f0",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "560061d64fc0976f89284979333ed97a535e7de1bdaf75323b221760c00b1d84",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/src/guard.rs"
+    }
+  },
+  "pre-whitespace-fix-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "0130091deb60a7e631a66ecb193d6cb50a9bc8628f54320e5bef9106143d6e5c",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "406f504a708c5e38ef1ec01cf56c50a54c0ebefcb54fdc4499de22290adf38f0",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "99637e917379342df24e63a1f99ca83946a2ffdc291df6c572a18f9f7bb78e09",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/src/guard.rs"
+    }
+  },
+  "whitespace-red-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "0130091deb60a7e631a66ecb193d6cb50a9bc8628f54320e5bef9106143d6e5c",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "effca9bc9869dbaeb8bc1fd93d28391437d7e2238c22255dac04a63dd9c710a9",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/whitespace-red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "99637e917379342df24e63a1f99ca83946a2ffdc291df6c572a18f9f7bb78e09",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/src/guard.rs"
+    }
+  },
+  "final-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "0130091deb60a7e631a66ecb193d6cb50a9bc8628f54320e5bef9106143d6e5c",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "406f504a708c5e38ef1ec01cf56c50a54c0ebefcb54fdc4499de22290adf38f0",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "99637e917379342df24e63a1f99ca83946a2ffdc291df6c572a18f9f7bb78e09",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/loss-red-source/src/guard.rs"
+    }
+  },
+  "post-review-source": {
+    "Cargo.toml": {
+      "sha256": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml"
+    },
+    "Cargo.lock": {
+      "sha256": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock"
+    },
+    "tests/probe.rs": {
+      "sha256": "0130091deb60a7e631a66ecb193d6cb50a9bc8628f54320e5bef9106143d6e5c",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/tests/probe.rs"
+    },
+    "tests/guard.rs": {
+      "sha256": "bf41cb8da15ae8d7bd31317ea5cfc61feadeea38d84b3585767d36cee43ce1a0",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/post-review-source/tests/guard.rs"
+    },
+    "src/lib.rs": {
+      "sha256": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs"
+    },
+    "src/main.rs": {
+      "sha256": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs"
+    },
+    "src/probe.rs": {
+      "sha256": "99637e917379342df24e63a1f99ca83946a2ffdc291df6c572a18f9f7bb78e09",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/src/probe.rs"
+    },
+    "src/guard.rs": {
+      "sha256": "d86e630cb2b2537b46f341e9bf011cd424054047e1a4ff710c285e5ec06c7928",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/post-review-source/src/guard.rs"
+    }
+  },
+  "lead": {
+    "probe-before-coalesced.py": {
+      "sha256": "f769acb007e1b38575c3c2d7069ffc66963b363ad1af8ffa35200c7193efe8de",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lead/probe-before-coalesced.py"
+    },
+    "probe-before-netbsd-config.py": {
+      "sha256": "a8c038278ee497155a0e36f54941fcafe18e680911c2874433b49d74589149b4",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lead/probe-before-netbsd-config.py"
+    },
+    "probe-before-whitespace-case-rename.py": {
+      "sha256": "1be8366595725d8623d8046a5ac14865c885cae55092e2010228bd3a1b1a8c2a",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lead/probe-before-whitespace-case-rename.py"
+    },
+    "guard-before-whitespace-fix.rs": {
+      "sha256": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lead/guard-before-whitespace-fix.rs"
+    },
+    "run-build-jobs2.sh": {
+      "sha256": "d9f6573594b2bf44d7ba5f29a93e96c508808bc081b6343b828b4d89c96ea853",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/lead/run-build-jobs2.sh"
+    }
+  },
+  "reviewer": {
+    "stanza-red.rs": {
+      "sha256": "d182cce715f72a1c5f5e3be45f876f23a4bc6f8f8ebf4f74de36b2d3427cc222",
+      "preserved": "dev-docs/evidence/sources/208-xmpp/reviewer/stanza-red.rs"
+    }
+  }
+}

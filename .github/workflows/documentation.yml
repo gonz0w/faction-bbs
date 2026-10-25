@@ -40,6 +40,12 @@ jobs:
           cargo test -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- --test-threads=1
           cargo build -p faction-client --features native-mail --bin faction-client --example checkpoint_ui_fixture --release --locked
           python3 tools/probe_checkpoint_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture"
+          python3 tools/check_xmpp_transport_dependencies.py
+          cargo fmt --manifest-path experiments/208-xmpp-transport/Cargo.toml -- --check
+          cargo clippy --manifest-path experiments/208-xmpp-transport/Cargo.toml --all-targets --release --locked -- -D warnings
+          cargo test --manifest-path experiments/208-xmpp-transport/Cargo.toml --all-targets --release --locked
+          cargo build --manifest-path experiments/208-xmpp-transport/Cargo.toml --release --locked
+          python3 tools/probe_xmpp_transport.py --binary "$CARGO_TARGET_DIR/release/faction-xmpp-probe"
   documentation:
     name: Documentation and policy
     needs: native_mail
@@ -122,6 +128,7 @@ jobs:
           python3 tools/check_omemo_interop_evidence.py
           python3 tools/check_checkpoint_evidence.py
           python3 tools/check_checkpoint_console_evidence.py
+          python3 tools/check_xmpp_transport_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py
