@@ -1,0 +1,11 @@
+[package]
+name = "faction-omemo-proof"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+license = "BSD-3-Clause"
+publish = false
+
+[workspace]
+
+[dependencies]

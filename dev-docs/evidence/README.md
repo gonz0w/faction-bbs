@@ -341,3 +341,13 @@ older frozen previews at the same path. Its bytes and the complete original
 board-guide record are independently pinned. The dark artwork replacement does
 not refresh that measurement or claim a new emulator/font observation. All prior
 snapshots and result identities remain unchanged.
+
+
+[Two-way OMEMO qualification](omemo-interop/README.md) retains original baseline
+rejection and 92 corrected unchanged-reference controls on both host and NetBSD.
+The source-matched standalone generated-C/Rust proof has 17 tests per candidate
+per OS. Thirty intermediate inputs, including rejected/role-red/pre-refactor
+versions, are frozen under `sources/omemo200`; final proof/reference/patch hashes,
+licenses, costs and owned-fixture teardown are in the new result. The offline
+guard verifies those saved claims, not fresh crypto/VM execution. No earlier
+record, product dependency, vault format or server budget is refreshed.

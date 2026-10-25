@@ -87,3 +87,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0052: NetBSD certificate-signing exit](0052-netbsd-signing-exit.md) — reproduced stale noreturn annotation, controlled source correction and unchanged installed-issuer boundary.
 
 - [0053: Native OMEMO-2 reuse qualification](0053-native-omemo-reuse.md) — pinned candidate comparison and host build/tests; no product adoption or NetBSD/complete-interop claim.
+
+- [0054: Two-way native OMEMO-2 and NetBSD qualification](0054-omemo-interop-netbsd.md) — rejected original candidate, explicit corrected-source independent interoperability and typed-device/state controls; no product mail adoption.
