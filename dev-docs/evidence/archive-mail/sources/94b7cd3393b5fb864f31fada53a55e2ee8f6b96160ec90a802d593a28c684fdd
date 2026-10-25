@@ -1,0 +1,23 @@
+"""Read-only bounded scan of both owned #211 homes; private marker arrives on stdin."""
+import hashlib,json,os,re,stat,sys
+from pathlib import Path
+request=json.load(sys.stdin);marker=request['marker']
+assert isinstance(marker,str) and re.fullmatch('[a-f0-9]{32}',marker)
+assert b'211' in Path('/etc/faction-disposable-test').read_bytes()
+roots=[Path('/home')/user/tail for user in ['maila','mailb'] for tail in ['data','prosody.log','startup.log']]
+files=[]
+for root in roots:
+    mode=root.lstat().st_mode
+    assert not stat.S_ISLNK(mode)
+    if stat.S_ISREG(mode):files.append(root)
+    else:
+        assert stat.S_ISDIR(mode)
+        for parent,dirs,names in os.walk(root,followlinks=False):
+            for name in dirs:assert not (Path(parent)/name).is_symlink()
+            for name in names:
+                p=Path(parent)/name;assert stat.S_ISREG(p.lstat().st_mode);files.append(p)
+assert files
+for p in files:
+    assert p.stat().st_size<=16*1024*1024
+    assert marker.encode() not in p.read_bytes(),'private synthetic content found in server state'
+print(json.dumps(dict(result='pass',marker_sha256=hashlib.sha256(marker.encode()).hexdigest(),server_homes=2,files_scanned=len(files),script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()),sort_keys=True))

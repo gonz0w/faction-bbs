@@ -1,0 +1,80 @@
+"""Verify and remove only the marked disposable #211 fixture, never its backing image."""
+from pathlib import Path
+import hashlib,json,os,shutil,signal,socket,subprocess,sys,time
+R=Path('/Users/cam/DEV/faction-bbs');O=Path('/private/tmp/faction211-owned');N=Path('/private/tmp/faction211-native-OWNED');V=Path((O/'vm-path').read_text().strip());DEMO=R/'local/demo';BASELINE=json.loads((O/'saved-before.json').read_text());OUT=Path('/private/tmp/faction211-teardown-proof.json')
+assert V.parent==Path('/private/tmp') and V.name.startswith('faction211-vm-')
+for root in [O,N,V]:
+ assert root.is_dir() and not root.is_symlink() and root.stat().st_uid==os.getuid()
+ assert b'211' in (root/'OWNED').read_bytes()
+
+def command(pid):
+ p=subprocess.run(['ps','-p',str(pid),'-o','command='],capture_output=True,text=True)
+ return p.stdout.strip() if p.returncode==0 else ''
+
+def saved_unchanged():
+ for name in ['CURRENT_PREVIEW','saved/LATEST','known_hosts','ssh-admin.json']:
+  assert hashlib.sha256((DEMO/name).read_bytes()).hexdigest()==BASELINE[name]
+ path,size,mtime=BASELINE['disk'];s=Path(path).stat();assert (s.st_size,s.st_mtime_ns)==(size,mtime)
+
+def saved_stopped():
+ for row in subprocess.check_output(['ps','-axo','command='],text=True).splitlines():
+  if row.split() and ('qemu-system' in row.split()[0] or ('serial-controller.py' in row and row.split()[0].endswith('python3'))):
+   assert str(DEMO)+'/' not in row
+
+def owned_pid(name,needle):
+ path=V/(name+'.pid')
+ if not path.exists():return None
+ pid=int(path.read_text());line=command(pid)
+ if needle not in line:return None
+ assert str(V) in line
+ return pid
+
+saved_unchanged();saved_stopped()
+pids={name:owned_pid(name,needle) for name,needle in [('qemu','qemu-system-aarch64'),('controller','serial-controller.py'),('tunnel','ssh')]}
+ports=[int((V/'admin-port').read_text())]+json.loads((V/'tunnel-ports.json').read_text())
+assert all(type(port) is int and 1<=port<=65535 for port in ports)
+if sys.argv[1]=='--inspect':
+ print(json.dumps(dict(result='ownership-verified',marked_owned_roots=3,active_owned_processes=sum(pid is not None for pid in pids.values()),saved_playground_stopped=True,saved_playground_unchanged=True,only_generated_fixture_roots_selected=True)))
+ raise SystemExit()
+assert sys.argv[1]=='--stop-and-remove'
+admin=json.loads((V/'ssh-admin.json').read_text())
+# Kill only the two pidfile/UID/config-verified invited homes inside this VM.
+remote='''set -e
+PATH=/usr/pkg/bin:/usr/bin:/bin:/sbin:/usr/sbin
+export PATH
+python3.13 - <<'INNER'
+from pathlib import Path
+import os,signal,subprocess
+assert b'211' in Path('/etc/faction-disposable-test').read_bytes()
+for user,uid in [('maila',1008),('mailb',1009)]:
+ pid=int(Path('/home',user,'prosody.pid').read_text())
+ fields=subprocess.check_output(['ps','-p',str(pid),'-o','uid=','-o','args='],text=True).split(None,1)
+ assert int(fields[0])==uid and '/home/'+user+'/prosody.cfg.lua' in fields[1]
+ os.kill(pid,signal.SIGTERM)
+INNER
+'''
+x=subprocess.run(admin+[remote],capture_output=True,timeout=20);assert x.returncode==0,'owned home shutdown failed'
+# Guest shutdown is attempted first. The verified QEMU process is the fallback.
+subprocess.run(admin+['/sbin/shutdown -p now'],capture_output=True,timeout=15)
+for name,needle in [('qemu','qemu-system-aarch64'),('controller','serial-controller.py'),('tunnel','ssh')]:
+ deadline=time.monotonic()+(10 if name=='qemu' else 1)
+ while owned_pid(name,needle) is not None and time.monotonic()<deadline:time.sleep(.1)
+ pid=owned_pid(name,needle)
+ if pid is not None:
+  os.kill(pid,signal.SIGTERM);deadline=time.monotonic()+5
+  while owned_pid(name,needle) is not None and time.monotonic()<deadline:time.sleep(.1)
+ assert owned_pid(name,needle) is None,'owned fixture process did not stop'
+for port in ports:
+ with socket.socket() as s:
+  s.settimeout(.25);assert s.connect_ex(('127.0.0.1',port))!=0,'owned listener remains open'
+saved_unchanged();saved_stopped()
+# Markers, ownership and exact paths were checked before stopping. Never follow
+# a link, use a glob, unlink a live lock, or touch the saved backing image.
+for root in [V,N,O]:
+ assert root.is_dir() and not root.is_symlink() and root.stat().st_uid==os.getuid()
+ assert b'211' in (root/'OWNED').read_bytes()
+ shutil.rmtree(root)
+assert not any(root.exists() for root in [V,N,O])
+saved_unchanged();saved_stopped()
+proof=dict(owned_vm_removed=True,owned_private_inputs_removed=True,ports_closed=True,saved_playground_stopped=True,saved_playground_unchanged=True)
+OUT.write_text(json.dumps(proof,indent=2)+'\n');print('Owned fixture removed; listeners closed; saved playground stopped and unchanged.')

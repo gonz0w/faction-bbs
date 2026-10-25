@@ -33,8 +33,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
 - **Privacy:** the device-local offline vault remains available. The default-off
   [manual home-mail client](docs/online-mail.md) adds verified XMPP access,
   encrypted subject/body exchange and durable pending ciphertext. Keys and
-  decryption stay on the member's device. Reliable offline archive catch-up,
-  background notifications, encrypted attachments and roaming remain incomplete.
+  decryption stay on the member's device. Opt-in [archive catch-up](docs/archive-mail.md)
+  saves bounded offline pages with an encrypted cursor. Background notifications,
+  encrypted attachments and roaming remain incomplete.
 
 ## What you can do
 

@@ -1,0 +1,63 @@
+from pathlib import Path
+import json,sys,time,subprocess,re,os,hashlib
+R=Path('/home/factionbuild/faction211-source');B=Path('/home/factionbuild/target211/release/examples/home_mail_fixture');D=Path('/root/faction211-setup/runtime-01');D.mkdir(mode=0o700,exist_ok=True);os.umask(0o077)
+assert os.getuid()==0 and '211' in Path('/etc/faction-disposable-test').read_text()
+assert int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem']))==1054990336
+sys.path.insert(0,str(R/'tools'));import probe_archive_mail as archive;import probe_archive_process_death as death
+phase=sys.argv[1];assert phase in {'positive','death'}
+if phase=='death':assert json.loads((D/'positive-result.json').read_text())['count']==8
+profile=archive.load_profile('/root/faction211-setup/profile.json')
+# The restart's stdout logs are included in the in-memory audit boundary; the
+# private source profile and every existing server/client file remain intact.
+profile['server_roots']=list(profile['server_roots'])+['/home/maila/runtime-startup.log','/home/mailb/runtime-startup.log']
+original=subprocess.run;steps=[];private=D/(phase+'-private-actions');private.mkdir(mode=0o700)
+def retained(home,minimum):
+    user,domain=home['jid'].split('@');assert domain in ['homea.test','homeb.test'] and re.fullmatch('[a-z0-9]+',user) and 0<=minimum<=100
+    enc=lambda s:re.sub('[^a-zA-Z0-9]',lambda m:'%'+format(ord(m[0]),'02x'),s)
+    p=Path('/home/mail'+('a' if domain=='homea.test' else 'b')+'/data')/enc(domain)/'archive'/(enc(user)+'.list')
+    deadline=time.monotonic()+5
+    while True:
+        if p.exists():
+            assert p.is_file() and not p.is_symlink()
+            with p.open('rb') as f:data=f.read(16777217)
+        else:data=b''
+        assert len(data)<=16777216
+        count=data.count(b'item(')
+        if count>=minimum:return count
+        if time.monotonic()>=deadline:raise RuntimeError('owned retention barrier not reached')
+        time.sleep(min(.05,max(0,deadline-time.monotonic())))
+def observed(argv,*args,**kwargs):
+    is_action=argv and str(argv[0])==str(B);sender=None;baseline=None;recipient=None;pending=None
+    if is_action:
+        sender=next((h for h in [profile['alice'],profile['bob']] if len(argv)>2 and str(argv[2])==h['store']),None)
+        if sender is None:raise RuntimeError('unsupported native fixture store')
+    if is_action and argv[1]=='sync':
+        recipient=profile['bob'] if sender is profile['alice'] else profile['alice'];baseline=retained(recipient,0)
+        command,options=archive.base._invocation(B,'inspect',sender,(),False,());raw=original(command,**options);assert raw.returncode==0
+        (private/(str(len(steps)+1)+'.barrier-inspection')).write_bytes(raw.stdout)
+        pending=len(archive.base.inspection(raw.stdout)['pending'])
+    result=original(argv,*args,**kwargs)
+    if is_action:
+        row=dict(step=len(steps)+1,action=argv[1],exit=result.returncode);steps.append(row)
+        for suffix,value in [('stdout',result.stdout),('stderr',result.stderr)]:
+            if value is not None:(private/(str(row['step'])+'.'+suffix)).write_bytes(value if isinstance(value,bytes) else value.encode())
+        (D/(phase+'-steps.json')).write_text(json.dumps(steps,indent=2)+'\n')
+    if result.returncode==0 and baseline is not None:
+        actual=retained(recipient,baseline+pending)
+        with (D/(phase+'-retention-barriers.jsonl')).open('a') as f:f.write(json.dumps(dict(step=len(steps),required=baseline+pending,observed=actual,readonly=True,receipt_claim=False))+'\n')
+    return result
+subprocess.run=observed
+started=time.monotonic()
+try:
+    result=(archive if phase=='positive' else death).probe(B,profile)
+    result['runtime_physmem_bytes']=1054990336;result['runtime_cores']=2;result['seconds']=round(time.monotonic()-started,3)
+    (D/(phase+'-result.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'phase':phase,'result':result['result'],'count':result['count'],'seconds':result['seconds']}),flush=True)
+except Exception as e:
+    typed='unavailable'
+    if steps:
+        q=private/(str(steps[-1]['step'])+'.stderr')
+        if q.exists():
+            value=q.read_text(errors='replace').strip()
+            if re.fullmatch(r'[A-Za-z]+(?:\([A-Za-z]+\))?',value):typed=value
+    failure=dict(result='fail',phase=phase,stage=steps[-1] if steps else None,error=type(e).__name__,typed_error=typed,runtime_physmem_bytes=1054990336)
+    (D/(phase+'-failure.json')).write_text(json.dumps(failure,indent=2)+'\n');print(json.dumps(failure),flush=True);raise SystemExit(1) from None

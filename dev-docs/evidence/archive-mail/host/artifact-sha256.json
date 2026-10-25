@@ -1,0 +1,6 @@
+{
+  "target/release/faction-client": "e12392a1acc50bf8e034e3fbf537ae317e4d00ef944d8696be8194ed44408d0b",
+  "target/release/examples/home_mail_fixture": "d9a127625c5860684b1d732f2d31673b9d4f3d076c83f480462006ac6c670500",
+  "target/release/examples/checkpoint_ui_fixture": "c81457095755b9d0d72c011dc9136111f960d78790a3fd862d59a63595a88ff4",
+  "default-target/release/faction-client": "a0eeb6fcb8ccce5792a30b5c4b5ca54c9ebbec6ac6ab12e28f1eded3a7e6abde"
+}

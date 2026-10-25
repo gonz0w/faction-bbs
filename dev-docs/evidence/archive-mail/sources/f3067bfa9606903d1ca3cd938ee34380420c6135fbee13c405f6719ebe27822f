@@ -1,0 +1,43 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-a8b7dfff33525076)
+
+running 35 tests
+test checkpoint_tests::checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by checkpoint crash controls
+test mail_checkpoint::archive_checkpoint_tests::archive_checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by archive checkpoint crash controls
+test checkpoint_tests::checkpoint_review_parent_sync_failure_prevents_usable_initialization ... ok
+test checkpoint_tests::checkpoint_review_recovery_quarantine_survives_password_reopen ... ok
+test checkpoint_tests::validation_tamper_trust_and_duplicates_do_not_change_canonical_state ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_cas_binding_ids_and_tamper_stop_before_checkpoint_mutation ... ok
+test checkpoint_tests::explicit_upgrade_preserves_v1_drafts_pins_and_original_backup ... ok
+test checkpoint_tests::checkpoint_review_restart_outbox_recovers_acknowledgement_id ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_receive_commits_authenticated_time_cursor_and_reopen_duplicate_once ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_inspection_exposes_only_enabled_and_cursor_presence_even_when_inactive ... ok
+test mail_checkpoint::archive_checkpoint_tests::explicit_archive_migration_preserves_v2_state_wraps_and_recovery ... ok
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test checkpoint_tests::backup_is_history_only_until_explicit_fresh_device ... ok
+test checkpoint_tests::delayed_keys_and_reply_ratchets_commit_with_history ... ok
+test mail_checkpoint::archive_checkpoint_tests::original_recovery_secret_remains_valid_after_explicit_archive_migration ... ok
+test checkpoint_tests::encrypted_send_receive_retry_and_ack_survive_reopen ... ok
+test mail_checkpoint::archive_checkpoint_tests::schema02_stays_exact_and_schema03_rejects_malformed_or_foreign_scope ... ok
+test mail_checkpoint::archive_checkpoint_tests::inactive_revoked_expired_and_poisoned_archive_operations_refuse ... ok
+test mail_checkpoint::archive_checkpoint_tests::known_own_archive_echo_advances_only_cursor_even_after_retirement ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_checkpoint::archive_checkpoint_tests::partial_archive_page_preserves_last_good_cursor_when_next_item_fails ... ok
+test checkpoint_tests::process_death_after_delivery_before_ack_retries_identical_ciphertext ... ok
+test network_checkpoint_tests::published_prekeys_come_from_the_durable_current_identity_only ... ok
+test checkpoint_tests::locks_wrong_secrets_malformed_bytes_and_caps_fail_closed ... ok
+test network_checkpoint_tests::unauthenticated_timestamp_substitution_and_tampering_never_mutate_checkpoint ... ok
+test network_checkpoint_tests::authenticated_network_timestamp_and_delayed_duplicate_survive_reopen ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test mail_checkpoint::archive_checkpoint_tests::full_history_or_outbox_blocks_archive_duplicates_and_echoes ... ok
+test checkpoint_tests::process_death_before_and_after_publication_keeps_canonical_state ... ok
+test mail_checkpoint::archive_checkpoint_tests::recovery_backup_and_reset_preserve_inert_cursor_and_fresh_device_rescopes ... ok
+test checkpoint_tests::reset_write_ambiguity_never_rolls_back_into_a_live_handle ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_write_failures_poison_and_preserve_atomic_candidate ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+test checkpoint_tests::write_errors_poison_until_durable_reopen ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_process_death_couples_message_cursor_and_native_snapshot ... ok
+
+test result: ok. 33 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 34.88s
+

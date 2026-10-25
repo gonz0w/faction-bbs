@@ -1,0 +1,12 @@
+version=1
+id='nightwire-winter'
+welcome='WINTER / independent frequencies.'
+normal={fg=7,bg=0}
+focus={fg=15,bg=4,bold=true}
+hotkey={fg=4,bg=0,bold=true}
+disabled={fg=8,bg=0}
+identity_ascii='login.txt'
+identity_ansi_long='login.ans'
+creator='Faction contributors; Codex-assisted'
+source='Original Nightwire dark signal; tools/build_nightwire.py'
+permission='BSD-3-Clause; root LICENSE'

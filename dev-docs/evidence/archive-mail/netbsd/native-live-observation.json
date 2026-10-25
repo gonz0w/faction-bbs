@@ -1,0 +1,8 @@
+{
+  "observer": "NetBSD-kqueue",
+  "started": true,
+  "child_exit": -9,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "result": "pass"
+}

@@ -1,0 +1,13 @@
+{
+  "result": "failed-observer-attempt",
+  "error_category": "FixtureFailure",
+  "native_sync_exit": 0,
+  "history_before": 6,
+  "history_after": 9,
+  "pending_before": 5,
+  "pending_after": 5,
+  "cursor_scope_same": true,
+  "cursor_progressed": true,
+  "exact_child_exit_not_retained": true,
+  "old_attempt_not_relabelled_pass": true
+}

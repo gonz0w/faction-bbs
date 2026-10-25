@@ -1,0 +1,2 @@
+   Compiling faction-client v0.1.0-alpha.1 (/home/factionbuild/faction211-source/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 14.93s

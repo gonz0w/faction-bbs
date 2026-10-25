@@ -6,9 +6,10 @@ keys, decryption and accepted history stay on your device. Run this console in a
 trusted local terminal. It is separate from a remote BBS session and the board
 picker.
 
-This is an experimental online exchange, with no reliable offline inbox or archive
-synchronization. A completed cycle reports what that connection observed. It does
-not prove that your home has no other mail waiting.
+The experimental client supports live v2 exchange and an explicit opt-in
+[archive mode](archive-mail.md). Archive mode saves one page of retained encrypted
+mail at a time with a durable encrypted cursor. A completed cycle does not prove
+that the home retained every message or has no other mail waiting.
 
 ## Build and initialize
 
@@ -119,6 +120,21 @@ Use **T** only for an explicit local decision to retire one operation or all pen
 ciphertext. Retirement stops further retries from this store. It is not proof of
 peer delivery, reading or exactly-once processing. History remains available.
 
+## Opt in to retained offline mail
+
+After publishing and verifying the peer, choose **G** in the local console and
+confirm `upgrade`. This deliberately changes the encrypted checkpoint payload
+from schema 2 to schema 3; older clients reject it. Existing messages, private
+keys, trust, recovery wrappers and pending ciphertext remain. Repeating G keeps
+the existing cursor and epoch.
+
+In archive mode, **N** sends pending ciphertext without announcing availability
+or accepting live mail. **A** requests one own-home archive page with at most four
+entries. Use A again deliberately for another page. The home must support the
+selected MAM2/RSM profile and retain messages; the outgoing storage hint requests
+retention but cannot enforce it. See the [archive guide](archive-mail.md) for
+first use, full-store stops and stale-position recovery limits.
+
 ## Stop, recover or resolve a refusal
 
 Each connection has one attempt and a shared cooperative ten-second deadline.
@@ -141,8 +157,8 @@ another ID. Resolve that public-list state explicitly before publishing a new
 identity, and independently verify the new identity with the peer.
 
 Private content and counts do not enter BBS presence or sysop statistics. Reliable
-offline/archive catch-up is scoped in [#211](https://github.com/gonz0w/faction-bbs/issues/211)
-within [#90](https://github.com/gonz0w/faction-bbs/issues/90),
+bounded manual [archive catch-up](archive-mail.md) is optional; remaining mailbox
+requirements stay in [#90](https://github.com/gonz0w/faction-bbs/issues/90),
 background/private-chat UX under [#99](https://github.com/gonz0w/faction-bbs/issues/99),
 roaming under [#91](https://github.com/gonz0w/faction-bbs/issues/91), and attachments
 under [#88](https://github.com/gonz0w/faction-bbs/issues/88). Multi-device use, a full

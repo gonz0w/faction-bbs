@@ -1,0 +1,22 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 1 test
+test mail_network::tests::catch_up_expired_during_connect_sends_no_query ... FAILED
+
+failures:
+
+---- mail_network::tests::catch_up_expired_during_connect_sends_no_query stdout ----
+
+thread 'mail_network::tests::catch_up_expired_during_connect_sends_no_query' (6450139) panicked at crates/faction-client/src/mail_network.rs:1026:9:
+a local expiry after connect must precede query transmission
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_network::tests::catch_up_expired_during_connect_sends_no_query
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 70 filtered out; finished in 3.35s
+
+error: test failed, to rerun pass `-p faction-client --lib`

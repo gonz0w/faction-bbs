@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "issue": 211,
+  "kind": "supplemental-executed-runtime-helper-sources",
+  "source_stages": [
+    {
+      "label": "native-runtime-executed-archive-runner",
+      "files": [
+        {
+          "name": "fixture/runtime-01/archive-runner.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/748c3409b38bff3fda5e026f9610bde0a45083932379fdeaa4fc7752b3df799f",
+          "sha256": "748c3409b38bff3fda5e026f9610bde0a45083932379fdeaa4fc7752b3df799f"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-broad-runner",
+      "files": [
+        {
+          "name": "fixture/runtime-01/broad-runner.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/5cdaa36a6f06335acb1b069bb099d0c35420a417d1ef1579c001d410b3e52c40",
+          "sha256": "5cdaa36a6f06335acb1b069bb099d0c35420a417d1ef1579c001d410b3e52c40"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-diagnose-death",
+      "files": [
+        {
+          "name": "fixture/runtime-01/diagnose-death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/43ff74738651e7cf977cae80750d8797157de7f85dda6a0ca1de299c1d340bee",
+          "sha256": "43ff74738651e7cf977cae80750d8797157de7f85dda6a0ca1de299c1d340bee"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-invoke-archive",
+      "files": [
+        {
+          "name": "fixture/runtime-01/invoke-archive.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/feab6aec816f8232244b60f1c1122600b357761ac87014b94ee479b7405c48d4",
+          "sha256": "feab6aec816f8232244b60f1c1122600b357761ac87014b94ee479b7405c48d4"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-reboot",
+      "files": [
+        {
+          "name": "fixture/runtime-01/reboot.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/674f9b7ccb2934e474e39b658f6b5e57bafc4f2c8d673d5e98709e4b0e3267a8",
+          "sha256": "674f9b7ccb2934e474e39b658f6b5e57bafc4f2c8d673d5e98709e4b0e3267a8"
+        },
+        {
+          "name": "fixture/runtime-01/reboot-executed.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/674f9b7ccb2934e474e39b658f6b5e57bafc4f2c8d673d5e98709e4b0e3267a8",
+          "sha256": "674f9b7ccb2934e474e39b658f6b5e57bafc4f2c8d673d5e98709e4b0e3267a8"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-start-broad",
+      "files": [
+        {
+          "name": "fixture/runtime-01/start-broad.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/72e2d9f2b2cfa79e6f9c5a0a5c307d3cd7ceee389c8acf223cf3d1b5c59fe169",
+          "sha256": "72e2d9f2b2cfa79e6f9c5a0a5c307d3cd7ceee389c8acf223cf3d1b5c59fe169"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-verify-runtime-first",
+      "files": [
+        {
+          "name": "fixture/runtime-01/verify-runtime-first.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/5f79a80f24f31a401f6e29f00bbd995a357ac621c0589bd19397d1e06446d7e3",
+          "sha256": "5f79a80f24f31a401f6e29f00bbd995a357ac621c0589bd19397d1e06446d7e3"
+        }
+      ]
+    },
+    {
+      "label": "native-runtime-executed-verify-runtime",
+      "files": [
+        {
+          "name": "fixture/runtime-01/verify-runtime.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-source-objects/20f6a789273f96bb3aaf6f65b54107980ac9c4b61f4362623429855ce60f74f0",
+          "sha256": "20f6a789273f96bb3aaf6f65b54107980ac9c4b61f4362623429855ce60f74f0"
+        }
+      ]
+    }
+  ]
+}

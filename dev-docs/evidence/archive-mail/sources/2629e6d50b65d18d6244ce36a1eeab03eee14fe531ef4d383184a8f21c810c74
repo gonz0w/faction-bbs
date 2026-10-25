@@ -1,0 +1,1 @@
+Actual host gate failed; sanitized stage: {'result': 'fail', 'stage': {'step': 33, 'action': 'sync', 'exit': 1}, 'error': 'FixtureFailure', 'wall_seconds': 7.698}

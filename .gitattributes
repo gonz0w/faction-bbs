@@ -107,3 +107,10 @@ dev-docs/evidence/sources/pre161-passport/** -text
 
 # Exact passport software inputs before the board guide.
 dev-docs/evidence/sources/pre21-guide/** -text
+
+# #211 immutable evidence includes exact protocol CRLF and compiler output.
+dev-docs/evidence/archive-mail/** -text
+# Captured source objects are generated evidence, not current implementation.
+dev-docs/evidence/archive-mail/sources/** linguist-generated=true
+dev-docs/evidence/archive-mail/native-source-objects/** linguist-generated=true
+dev-docs/evidence/archive-mail/final-source-objects/** linguist-generated=true

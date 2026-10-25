@@ -73,21 +73,62 @@ fn run() -> io::Result<()> {
                 now,
             )?;
         }
-        "publish" | "prepare" | "sync" if args.len() == 3 && fields.len() == 2 => {
+        "enable-archive" if args.len() == 2 && fields.len() == 1 => {
+            vault.enable_archive(now)?;
+        }
+        "archive-status" if args.len() == 2 && fields.len() == 1 => {
+            let status = vault.inspection()?;
+            let token = vault.archive_checkpoint(now).ok();
+            let checkpoint = if let Some(token) = &token {
+                format!(
+                    "{{\"home\":{},\"local_device\":{},\"epoch\":{},\"after\":{}}}",
+                    json(&token.home),
+                    token.local_device,
+                    json(&hex(&token.epoch)),
+                    token
+                        .after
+                        .as_ref()
+                        .map(|id| json(id))
+                        .unwrap_or_else(|| "null".into())
+                )
+            } else {
+                "null".into()
+            };
+            println!(
+                "{{\"enabled\":{},\"cursor_present\":{},\"ready\":{},\"checkpoint\":{}}}",
+                status.archive_enabled,
+                status.archive_cursor_present,
+                token.is_some(),
+                checkpoint
+            );
+            return Ok(());
+        }
+        "publish" | "prepare" | "sync" | "catchup" if args.len() == 3 && fields.len() == 2 => {
             let settings = Settings::load(Path::new(&args[2]))?;
             let mode = match action {
                 "publish" => Mode::Publish,
                 "prepare" => Mode::Prepare,
+                "catchup" => Mode::CatchUp,
                 _ => Mode::Sync,
             };
             let rt = tokio::runtime::Builder::new_current_thread()
                 .enable_all()
                 .build()?;
-            if let Err(error) = rt.block_on(mail_network::cycle(
-                &mut vault, &settings, fields[1], mode, now,
-            )) {
-                eprintln!("{error:?}");
-                return Err(invalid());
+            let report = rt
+                .block_on(mail_network::cycle(
+                    &mut vault, &settings, fields[1], mode, now,
+                ))
+                .map_err(|error| {
+                    eprintln!("{error:?}");
+                    invalid()
+                })?;
+            if action == "catchup" {
+                let archive = report.archive.ok_or_else(invalid)?;
+                println!(
+                    "{{\"entries\":{},\"accepted\":{},\"duplicates\":{},\"complete\":{}}}",
+                    archive.entries, report.accepted, report.duplicates, archive.complete
+                );
+                return Ok(());
             }
         }
         "queue" if args.len() == 2 && fields.len() == 3 => {

@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "issue": 211,
+  "kind": "public-native-build-observations",
+  "files": [
+    {
+      "name": "builder-observation.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/builder-observation.json",
+      "sha256": "0fc8e258e6682b56301221b7ad086eedc10d8dfdd4d93e3ebece7d128d1679c2"
+    },
+    {
+      "name": "compile-progress.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/compile-progress.json",
+      "sha256": "0d4215c0d6944a187a0afcad0a01d4b18d1bc61732c9cf3382564c0683e34bcd"
+    },
+    {
+      "name": "compile-launch.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/compile-launch.json",
+      "sha256": "7ec293bd01a9fc66031e3f28f65c4576931e000a0aeecadccf5421cd89f6a64b"
+    },
+    {
+      "name": "dispatcher-paused.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/dispatcher-paused.json",
+      "sha256": "71ca9da55de4097311823c53f9b5237c66c60ee1c485afd23747d4eb8e535bea"
+    },
+    {
+      "name": "paused-capture-01-observation.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/paused-capture-01-observation.json",
+      "sha256": "e1f140a8a1532b58458f7e98c5c13e415dc9fdd340269f8c6a6bb4af8bcaba2e"
+    },
+    {
+      "name": "paused-old-candidate-proof.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/paused-old-candidate-proof.json",
+      "sha256": "c7961ac1d01e162c128db9449cd73bc70f2a3349a3f8b67bc5864746a7470f0b"
+    },
+    {
+      "name": "copied-source-verification.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/copied-source-verification.json",
+      "sha256": "695e5827efe8b5062bbe01fbf01574aaa9b0dfaee658adb75c38afdaf8f1775b"
+    },
+    {
+      "name": "source-sha256.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/source-sha256.json",
+      "sha256": "886e309e29ba2579764d020756f188e3ce6ba9d50a976a3cf8707846d22c6480"
+    },
+    {
+      "name": "old-candidate-final/proof.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01-final/proof.json",
+      "sha256": "579eed981654592099e56b2b5aadb5dc510ed74d8100bda2eafb7eb92fc7caf8"
+    },
+    {
+      "name": "runner-launch-01.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/runner-launch-01.txt",
+      "sha256": "4af2fd67080ad9ce681fd2d4eb289a3094c429cee4d98043c1b2dba79580264c"
+    },
+    {
+      "name": "01-default.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/01-default.txt",
+      "sha256": "8dedfba00a6d93a87b996bb7fefbab78cae06f5aac9ef908a9eb4fe4460d78a4"
+    },
+    {
+      "name": "02-network.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/02-network.txt",
+      "sha256": "3ac45654a20af4075cf6bba70cc991168a588718e883cdb9e4136c7497c6ed47"
+    },
+    {
+      "name": "03-product-tests-compile.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/03-product-tests-compile.txt",
+      "sha256": "767a9f10a2f42f38e61104ef7f7e605c9c3b4da72abe9f8cc0d487ee27821529"
+    },
+    {
+      "name": "04-transport-tests-compile.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/04-transport-tests-compile.txt",
+      "sha256": "5a0069eff41878b12fd8b34209edd8bd26271341a2ca4d73dd2fd0ac5ef52478"
+    },
+    {
+      "name": "candidate-02/compile-progress.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/compile-progress.json",
+      "sha256": "95533bbbf4447bbcfdbb4b5b9f543a9d1f582e0d60bafb554693b9f861af62ef"
+    },
+    {
+      "name": "candidate-02/compile-launch.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/compile-launch.json",
+      "sha256": "a4894bd847fad3be860aa4488c1a524e957dd07033f4c43b7aa969a5fb63a293"
+    },
+    {
+      "name": "candidate-02/source-sha256.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/source-sha256.json",
+      "sha256": "75dd59f5cb932931e3533b7ea3fc177eb889da8b72a72d4bf5f2f5577006b096"
+    },
+    {
+      "name": "candidate-02/artifact-sha256.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/artifact-sha256.json",
+      "sha256": "666de32c7a8ea52fd503bf2ba1424ad6fcf0a94f9e588893b418bbbcdda71957"
+    },
+    {
+      "name": "candidate-02/link-proof.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/link-proof.json",
+      "sha256": "175825699bef85b0331330292671158387a693ef31ccbb21a2725bbac87bfda3"
+    },
+    {
+      "name": "candidate-02/native-build-proof.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/native-build-proof.json",
+      "sha256": "7f99cfc7c9273926ac47801c4bd93090e499b713266d2a1a93338f55ce8205ff"
+    },
+    {
+      "name": "candidate-02/copied-source-verification.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/copied-source-verification.json",
+      "sha256": "25f243dc7eeb1a3bb205ed32a9b1ae5af4031e5601ff998a368144b63d9f076d"
+    },
+    {
+      "name": "candidate-02/source-delta.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/source-delta.json",
+      "sha256": "bb69525ee33445b830d5a7c2820b1267ecacb2c104c45edd2056b33b14506cad"
+    },
+    {
+      "name": "candidate-02/01-default.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/01-default.txt",
+      "sha256": "9576f1f7e73fc2bb1ec2336aae60cb485c591eadc60a1b998573411c34057e08"
+    },
+    {
+      "name": "candidate-02/02-network.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/02-network.txt",
+      "sha256": "28ceb3169d38f7c340b2397c53dc3b5b67918f7f33d5eb710a4d415c8c938ece"
+    },
+    {
+      "name": "candidate-02/03-product-tests-compile.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/03-product-tests-compile.txt",
+      "sha256": "19cdfceb0d90eee0d7a24e60371ae7c67b7a8bee8e7ab56c08e63167801d6bc4"
+    },
+    {
+      "name": "candidate-02/04-transport-tests-compile.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/04-transport-tests-compile.txt",
+      "sha256": "1e726b8b21cb80d8f4c526350d7ef495d18af26694c4fa713f9a4295aa751904"
+    },
+    {
+      "name": "candidate-02/05-transport-fixture.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-02/05-transport-fixture.txt",
+      "sha256": "cfebd32f182b6950e2eb3fb953ea2d909eb19abc02b762eb635d1f797584eaf6"
+    },
+    {
+      "name": "runtime-01/runtime-environment.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-01/runtime-environment.json",
+      "sha256": "e1c8c578d13331b72ff16825ebd616b95444d82135a64b007bf3b24374855fd5"
+    },
+    {
+      "name": "runtime-01/permission-repair.json",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/runtime-01/permission-repair.json",
+      "sha256": "814f257fc4ab84be81df000ccf3013367a13437ee38980707635c550c6e43e25"
+    },
+    {
+      "name": "old-candidate-final/01-default.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/01-default.txt",
+      "sha256": "8dedfba00a6d93a87b996bb7fefbab78cae06f5aac9ef908a9eb4fe4460d78a4"
+    },
+    {
+      "name": "old-candidate-final/02-network.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/02-network.txt",
+      "sha256": "3ac45654a20af4075cf6bba70cc991168a588718e883cdb9e4136c7497c6ed47"
+    },
+    {
+      "name": "old-candidate-final/03-product-tests-compile.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/03-product-tests-compile.txt",
+      "sha256": "767a9f10a2f42f38e61104ef7f7e605c9c3b4da72abe9f8cc0d487ee27821529"
+    },
+    {
+      "name": "old-candidate-final/04-transport-tests-compile.log",
+      "resolved_path": "dev-docs/evidence/archive-mail/native-build/candidate-01/04-transport-tests-compile.txt",
+      "sha256": "5a0069eff41878b12fd8b34209edd8bd26271341a2ca4d73dd2fd0ac5ef52478"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+from pathlib import Path
+import json,secrets,shlex,subprocess,tomllib
+P=Path('/private/tmp/faction211-owned');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text());old=json.loads((P/'faction211-host-tls2/profile.json').read_text());host=P/'faction211-host-barrier';host.mkdir(mode=0o700);ca=(P/'faction211-host-tls2/ca.pem').read_bytes();(host/'ca.pem').write_bytes(ca);(host/'ca.pem').chmod(0o600);(host/'fixture-marker').write_text('owned issue211 disposable fixture\n');(host/'fixture-marker').chmod(0o600)
+p=dict(marker=secrets.token_hex(16),fixture_marker=str(host/'fixture-marker'))
+for label,side,device in [('alice','a',5581),('bob','b',5582)]:
+ row=dict(old[label]);username=label+'barrier';domain='home'+side+'.test';password=secrets.token_hex(24)
+ code='arg={"--config",'+json.dumps('/home/mail'+side+'/prosody.cfg.lua')+',"register",'+json.dumps(username)+','+json.dumps(domain)+',io.read("*l")};arg[0]="./prosodyctl";dofile("./prosodyctl")'
+ command='su -m mail'+side+' -c '+shlex.quote('cd /usr/local/faction-mail-probe; /usr/pkg/bin/lua5.4 -e '+shlex.quote(code));r=subprocess.run(A+[command],input=(password+'\n').encode(),capture_output=True,timeout=20)
+ if r.returncode:(P/'final-host-private-error.txt').write_bytes(r.stdout+r.stderr);raise RuntimeError('Fresh synthetic registration failed')
+ cfg=tomllib.loads(Path(row['config']).read_text());cfg.update(account=username+'@'+domain,ca=str(host/'ca.pem'));q=host/(label+'.toml');q.write_text('\n'.join(k+'='+(str(v) if type(v)==int else json.dumps(v)) for k,v in cfg.items())+'\n');q.chmod(0o600)
+ row.update(jid=cfg['account'],password=password,local_password=secrets.token_hex(24),device=device,store=str(host/label),config=str(q));p[label]=row
+q=host/'profile.json';q.write_text(json.dumps(p));q.chmod(0o600);print('Fresh host identities/stores ready; previous failed candidates preserved.')

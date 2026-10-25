@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/probe_home_archive_ui.py", line 44, in <module>
+    result=probe(a.client.resolve(),a.fixture.resolve());a.output.write_text(json.dumps(result,indent=2)+'\n');print('Archive local terminal controls passed:',result['count'])
+  File "/Users/cam/DEV/faction-bbs/tools/probe_home_archive_ui.py", line 29, in probe
+    c=start();assert b'Archive checkpoints: enabled' in c.transcript;assert b'[N] Send pending' in c.transcript;c.raw(b'g');c.expect('Archive checkpoints already enabled; existing cursor kept.');pause(c);lock(c)
+                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -372,3 +372,9 @@ encrypted exchange, real terminal/transport controls, distinct compiler/runtime
 costs and source-matched owned teardown. Its three baseline manifests preserve
 prior checkpoint, console, transport and dependency evidence unchanged. Reliable
 archive catch-up remains a separate issue; saved checks are not fresh execution.
+
+[Durable manual archive evidence](archive-mail/README.md) preserves bounded
+member-device catch-up, explicit encrypted cursor migration and atomic recovery
+observations separately. Its [baseline manifest](home-mail-archive-baseline-manifest.json)
+keeps 295 prior executed inputs and four whole records unchanged. Compiler and
+runtime scope remain distinct; no complete-server-history or capacity claim.

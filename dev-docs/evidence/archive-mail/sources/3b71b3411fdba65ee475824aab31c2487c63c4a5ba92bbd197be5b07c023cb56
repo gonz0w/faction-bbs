@@ -1,0 +1,3 @@
+The config file is not readable by the 'prosody' user.
+Prosody will not be able to read it.
+Error was /home/maila/prosody.cfg.lua: Permission denied

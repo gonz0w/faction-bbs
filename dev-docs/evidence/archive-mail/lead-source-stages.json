@@ -1,0 +1,42 @@
+[
+  {
+    "label": "server-audit-with-original-and-restart-logs",
+    "files": [
+      {
+        "name": "audit-server-plaintext.py",
+        "resolved_path": "dev-docs/evidence/archive-mail/sources/f553dfc89ef4d535b5c4c2bd91ee6667dc6b33a36b6210b1beeb822c98cf3be3",
+        "sha256": "f553dfc89ef4d535b5c4c2bd91ee6667dc6b33a36b6210b1beeb822c98cf3be3"
+      }
+    ]
+  },
+  {
+    "label": "native-fixed-public-schema-export",
+    "files": [
+      {
+        "name": "export-public.py",
+        "resolved_path": "dev-docs/evidence/archive-mail/sources/b5e1a5e4f6e87a584029608cbb0494986a2eae472a896f412fda56f7342eaffd",
+        "sha256": "b5e1a5e4f6e87a584029608cbb0494986a2eae472a896f412fda56f7342eaffd"
+      }
+    ]
+  },
+  {
+    "label": "marked-owned-fixture-teardown",
+    "files": [
+      {
+        "name": "teardown.py",
+        "resolved_path": "dev-docs/evidence/archive-mail/sources/5ee7be2aeb53290b371ac0638ab50b4e8f11754ee83df9ba7d6b2e8069e6d3fb",
+        "sha256": "5ee7be2aeb53290b371ac0638ab50b4e8f11754ee83df9ba7d6b2e8069e6d3fb"
+      }
+    ]
+  },
+  {
+    "label": "actual-host-all-target-rust-success-log",
+    "files": [
+      {
+        "name": "observations/full-tests.log",
+        "resolved_path": "dev-docs/evidence/archive-mail/sources/ff33961fe2370aa68093c47cab2c62512d73d1ec2d50b17bafff341a49df2ef4",
+        "sha256": "ff33961fe2370aa68093c47cab2c62512d73d1ec2d50b17bafff341a49df2ef4"
+      }
+    ]
+  }
+]

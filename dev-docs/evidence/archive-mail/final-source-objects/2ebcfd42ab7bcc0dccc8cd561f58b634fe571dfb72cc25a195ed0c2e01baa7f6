@@ -1,0 +1,15 @@
+"""Run the retained read-only server audit without exporting private profile inputs."""
+from pathlib import Path
+import json,shlex,subprocess
+p=Path('/private/tmp/faction211-owned');v=Path((p/'vm-path').read_text());admin=json.loads((v/'ssh-admin.json').read_text())
+code='''from pathlib import Path
+import json,subprocess,sys
+profile=json.loads(Path('/root/faction211-setup/profile-runtime-02.json').read_text())
+x=subprocess.run(['/usr/pkg/bin/python3.13','/root/faction211-setup/audit-server-plaintext.py'],input=json.dumps(dict(marker=profile['marker'])).encode(),capture_output=True)
+assert x.returncode==0,'owned server audit failed; no private output exported'
+sys.stdout.buffer.write(x.stdout)
+'''
+x=subprocess.run(admin+['/usr/pkg/bin/python3.13 -c '+shlex.quote(code)],capture_output=True,timeout=30)
+if x.returncode:(p/'native-audit-private-failure.txt').write_bytes(x.stdout+x.stderr);raise RuntimeError('Native audit failed; private diagnostics retained')
+result=json.loads(x.stdout);assert set(result)=={'result','marker_sha256','server_homes','files_scanned','script_sha256'} and result['result']=='pass'
+(p/'native-server-plaintext.json').write_text(json.dumps(result,indent=2)+'\n');print('Native post-SIGKILL audit passed across',result['files_scanned'],'files in both home data trees and original/restarted logs.')

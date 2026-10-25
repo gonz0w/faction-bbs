@@ -1,0 +1,63 @@
+from pathlib import Path
+import subprocess,json,shlex,hashlib,os
+H=Path('/private/tmp/faction211-native-OWNED');D=H/'runtime-final-public';D.mkdir(mode=0o700,exist_ok=True);V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+code="""from pathlib import Path
+import json,re,math,hashlib,subprocess
+r=Path('/home/factionbuild/faction211-source');d=Path('/root/faction211-setup')
+files={
+ 'native-first-positive.json':d/'runtime-01/positive-result.json',
+ 'native-positive.json':d/'runtime-02/positive-result.json',
+ 'native-process-death.json':d/'runtime-02/death-result.json',
+ 'native-live-observation.json':d/'runtime-02/death-live-observation.json',
+ 'native-manual-archive-ui-cost.json':d/'runtime-02/cost/result.json',
+ 'native-cost-marker-red.json':d/'runtime-02/cost/old-marker-red.json',
+}
+for name,source in [('transport-tls','tls'),('archive-ui','archive-ui'),('online-ui','online-ui'),('checkpoint-ui','checkpoint-ui'),('vault-v1','vault-v1'),('picker','picker')]:files['native-'+name+'.json']=Path('/home/factionbuild/native211-build-02/runtime-'+source+'.json')
+forbidden={'password','local_password','private_key','subject','body','epoch','after','cursor','operation','jid','config','store','profile','stdout','stderr','transcript','history','pending','address','key','identity'}
+def validate(v,key=''):
+ if isinstance(v,dict):
+  assert not forbidden.intersection(v)
+  for k,x in v.items():assert isinstance(k,str) and len(k)<=100;validate(x,k)
+ elif isinstance(v,list):
+  assert len(v)<=100
+  for x in v:validate(x,key)
+ elif isinstance(v,str):
+  assert len(v)<=512 and all(32<=ord(c)<127 for c in v)
+  if key=='checks':assert re.fullmatch('[a-z][a-z0-9_]*',v)
+ elif v is None or isinstance(v,bool):pass
+ elif isinstance(v,(int,float)):assert math.isfinite(v) and -128<=v<=2**63
+ else:raise AssertionError('unexpected public schema')
+exports={}
+for name,p in files.items():
+ assert p.is_file() and not p.is_symlink() and p.stat().st_size<=65536
+ x=json.loads(p.read_text());validate(x);assert x.get('result') in {'pass','expected-rejection'};exports[name]=x
+broad=json.loads((d/'runtime-01/broad/progress.json').read_text());assert broad['result']=='pass'
+# Export only explicit public row fields; no runtime logs, steps, private actions,
+# profiles, terminal output or failure text are read by this exporter.
+rows=[]
+for row in broad['stages']:
+ out={k:row[k] for k in ['name','command','status','exit','seconds','passed','failed','ignored','expected','compiler_lines','log_sha256'] if k in row};rows.append(out)
+ if row['name']=='default-off':validate(row['public_result']);exports['native-default-off.json']=row['public_result']
+exports['native-broad-summary.json']={'result':'pass','physmem_bytes':1054990336,'cores':2,'stages':rows}
+manifest=json.loads((r/'source-sha256.json').read_text());overrides={name:hashlib.sha256((r/name).read_bytes()).hexdigest() for name in ['tools/probe_archive_process_death.py','tools/test_archive_process_death.py']}
+composed=dict(manifest);composed.update(overrides)
+assert all(hashlib.sha256((r/name).read_bytes()).hexdigest()==value for name,value in composed.items())
+compiled=json.loads(Path('/home/factionbuild/native211-build-02/progress.json').read_text());artifacts=compiled['artifacts']
+for name,value in artifacts.items():assert hashlib.sha256(Path(name).read_bytes()).hexdigest()==value
+actual={p.relative_to(r).as_posix() for p in r.rglob('*') if p.is_file()};extra=actual-set(composed)-{'source-sha256.json'};assert all('__pycache__' in Path(p).parts and p.endswith('.pyc') for p in extra)
+active={}
+for name in ['cargo','rustc']:
+ x=subprocess.run(['pgrep','-u','factionbuild','-x',name],capture_output=True,text=True);assert x.returncode in [0,1];active[name]=len(x.stdout.split())
+x=subprocess.run(['pgrep','-u','factionbuild','-f','/home/factionbuild/target211/release/'],capture_output=True,text=True);assert x.returncode in [0,1];active['owned_target_clients']=len(x.stdout.split());assert not any(active.values())
+exports['native-final-proof.json']={'result':'pass','physmem_bytes':int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem'])),'cores':2,'source_sha256':composed,'compiled_source_sha256':manifest,'python_only_overrides_sha256':overrides,'artifacts':artifacts,'rust_artifacts_unchanged_after_python_observer_repair':True,'canonical_source_membership_matches':True,'generated_python_cache_files_excluded':len(extra),'no_active_compiler_or_client_children':True,'homes_and_vm_kept_live_for_lead':True}
+exports['native-retention-barriers.json']={phase:[{k:row[k] for k in ['required','observed','readonly','receipt_claim']} for row in map(json.loads,(d/('runtime-02/'+phase+'-retention-barriers.jsonl')).read_text().splitlines())] for phase in ['positive','death']}
+print(json.dumps(exports))"""
+p=subprocess.run(A+['/usr/pkg/bin/python3.13 -B -c '+shlex.quote(code)],capture_output=True,timeout=45)
+if p.returncode:(H/'runtime-02/private-export-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Public fixed-schema export failed; no private payload exported')
+values=json.loads(p.stdout)
+for name,value in values.items():assert '/' not in name and name.endswith('.json');(D/name).write_text(json.dumps(value,indent=2)+'\n')
+# The already sanitized environment and read-only failure metadata are composed
+# into finite public proofs; actual exception text/actions remain private.
+(D/'native-environment.json').write_bytes((H/'runtime-01/runtime-environment.json').read_bytes())
+x=json.loads((H/'runtime-01/death-readonly-diagnosis.json').read_text());summary={'result':'failed-observer-attempt','error_category':'FixtureFailure','native_sync_exit':0,'history_before':x['prior_history_count'],'history_after':x['current_history_count'],'pending_before':x['prior_pending_count'],'pending_after':x['current_pending_count'],'cursor_scope_same':x['cursor_scope_same'],'cursor_progressed':x['cursor_changed'],'exact_child_exit_not_retained':True,'old_attempt_not_relabelled_pass':True};(D/'native-first-observer-failure-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+proof={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in D.glob('*.json') if p.name!='export-sha256.json'};(D/'export-sha256.json').write_text(json.dumps(proof,indent=2)+'\n');print(json.dumps({'result':'public-export-complete','fixed_public_json_files':len(proof),'source_files':len(values['native-final-proof.json']['source_sha256']),'compiled_artifact_hashes':len(values['native-final-proof.json']['artifacts']),'all_owned_compiler_and_client_actions_idle':True,'homes_vm_profiles_kept_live':True}))

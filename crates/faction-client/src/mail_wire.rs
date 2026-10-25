@@ -529,7 +529,10 @@ pub fn message(wire: &Wire, operation: [u8; 16]) -> io::Result<Element> {
             ("to", wire.to.clone()),
             ("type", "chat".into()),
         ],
-        vec![encrypted],
+        vec![
+            encrypted,
+            Element::builder("store", "urn:xmpp:hints").build(),
+        ],
     ))
 }
 /// Decode only the one enrolled peer and recipient device. `sent_at` is a zero
@@ -817,6 +820,37 @@ mod tests {
         let mut normalized = expected;
         normalized.sent_at = 0;
         assert_eq!(got, normalized);
+    }
+    #[test]
+    fn mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id() {
+        let expected = wire();
+        let encoded = message(&expected, [3; 16]).unwrap();
+        let hints: Vec<_> = encoded
+            .children()
+            .filter(|e| e.is("store", "urn:xmpp:hints"))
+            .collect();
+        assert_eq!(
+            hints.len(),
+            1,
+            "bodyless encrypted mail must explicitly request home storage"
+        );
+        assert_eq!(encoded.children().count(), 2);
+        assert!(hints[0].attrs().is_empty());
+        assert!(hints[0].children().next().is_none());
+        assert!(hints[0].texts().next().is_none());
+        assert!(encoded.get_child("body", CLIENT).is_none());
+        assert_eq!(
+            encoded.attr("id"),
+            Some(crate::mail_data::hex(&[3; 16]).as_str())
+        );
+        let mut normalized = expected.clone();
+        normalized.sent_at = 0;
+        assert_eq!(decode_message(&encoded, binding()).unwrap(), normalized);
+        assert_eq!(
+            message(&expected, [3; 16]).unwrap(),
+            encoded,
+            "retry serialization must keep its immutable ciphertext and operation id"
+        );
     }
     #[test]
     fn mail_wire_reads_independent_message_and_optional_false_kex() {

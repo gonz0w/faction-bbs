@@ -1,0 +1,31 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.60s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 2 tests
+test mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit ... FAILED
+test mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact ... FAILED
+
+failures:
+
+---- mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit stdout ----
+
+thread 'mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit' (6565887) panicked at crates/faction-client/src/mail_network.rs:1743:13:
+opted-in archive receive requires matched MAM forwarding and fin
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact stdout ----
+
+thread 'mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact' (6565886) panicked at crates/faction-client/src/mail_network.rs:1722:21:
+assertion `left == right` failed: archive-enabled send returns after persisted ciphertext writes without another live read
+  left: true
+ right: false
+
+
+failures:
+    mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact
+    mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 78 filtered out; finished in 16.59s
+
+error: test failed, to rerun pass `-p faction-client --lib`

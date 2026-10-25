@@ -1,0 +1,1022 @@
+{
+  "schema": 1,
+  "issue": 211,
+  "kind": "supplemental-executed-source-observations",
+  "source_stages": [
+    {
+      "label": "storage-before",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_checkpoint.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/471628c652d4b2355f1a94840085baa978c35203e7272e953a7cd0543ee03119",
+          "sha256": "471628c652d4b2355f1a94840085baa978c35203e7272e953a7cd0543ee03119"
+        }
+      ]
+    },
+    {
+      "label": "storage-red",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_checkpoint.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6737a6d413586b25be6b6d78d6eab79632ec60a9019d4be0b8d8dff1dd21eeb9",
+          "sha256": "6737a6d413586b25be6b6d78d6eab79632ec60a9019d4be0b8d8dff1dd21eeb9"
+        },
+        {
+          "name": "crates/faction-client/src/archive_checkpoint_tests.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/a3da523b79ceeb53a7d590414d46c55fba56ef96310659d3bc6097131b0f0539",
+          "sha256": "a3da523b79ceeb53a7d590414d46c55fba56ef96310659d3bc6097131b0f0539"
+        }
+      ]
+    },
+    {
+      "label": "storage-first-green",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_checkpoint.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/35a8bc1b22d87aec3425a8f7a87395dac85c8fbf14b5edb8805e32d82016426c",
+          "sha256": "35a8bc1b22d87aec3425a8f7a87395dac85c8fbf14b5edb8805e32d82016426c"
+        },
+        {
+          "name": "crates/faction-client/src/archive_checkpoint_tests.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/82344c42c0db5fbc66c8941bd359737fe50dd923f4d5e50f7b47d6974a42660d",
+          "sha256": "82344c42c0db5fbc66c8941bd359737fe50dd923f4d5e50f7b47d6974a42660d"
+        }
+      ]
+    },
+    {
+      "label": "storage-inspection-red",
+      "files": [
+        {
+          "name": "crates/faction-client/src/archive_checkpoint_tests.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e8cf52b5520e0312b6883b9c939047d1411b2b0dd57ab5bb88de00e796b0779a",
+          "sha256": "e8cf52b5520e0312b6883b9c939047d1411b2b0dd57ab5bb88de00e796b0779a"
+        }
+      ]
+    },
+    {
+      "label": "storage-final",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_checkpoint.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/15a511034ba6531447458ccb8c8d16f021846a60879de94fcdd8ce31c6ebd3a9",
+          "sha256": "15a511034ba6531447458ccb8c8d16f021846a60879de94fcdd8ce31c6ebd3a9"
+        },
+        {
+          "name": "crates/faction-client/src/archive_checkpoint_tests.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5",
+          "sha256": "44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5"
+        }
+      ]
+    },
+    {
+      "label": "storage-observed-tests",
+      "files": [
+        {
+          "name": "observations/storage-observed-tests/first-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8a46444805021d0bcf3ac021ed108e4e3fd420733110dee90b20323f8693af1c",
+          "sha256": "8a46444805021d0bcf3ac021ed108e4e3fd420733110dee90b20323f8693af1c"
+        },
+        {
+          "name": "observations/storage-observed-tests/inspection-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/720fffd71b0373f8acf945a63f7a7782b7d7f3654e4fcd4afc1f079a416b5bc4",
+          "sha256": "720fffd71b0373f8acf945a63f7a7782b7d7f3654e4fcd4afc1f079a416b5bc4"
+        },
+        {
+          "name": "observations/storage-observed-tests/native-mail-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/f3067bfa9606903d1ca3cd938ee34380420c6135fbee13c405f6719ebe27822f",
+          "sha256": "f3067bfa9606903d1ca3cd938ee34380420c6135fbee13c405f6719ebe27822f"
+        },
+        {
+          "name": "observations/storage-observed-tests/clippy.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6c00dcf7dc2736367f9c08ce815eb0e021d3437fd1a967c97f6ca94055b13512",
+          "sha256": "6c00dcf7dc2736367f9c08ce815eb0e021d3437fd1a967c97f6ca94055b13512"
+        }
+      ]
+    },
+    {
+      "label": "fixture-cli-before",
+      "files": [
+        {
+          "name": "examples/home_mail_fixture.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/a69c644deb2aae7e4bb0256ab11ba454f7a5c9fcd439cee56acf7aac09ef09ae",
+          "sha256": "a69c644deb2aae7e4bb0256ab11ba454f7a5c9fcd439cee56acf7aac09ef09ae"
+        },
+        {
+          "name": "fixture/check_driver.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/11b73f2b09e64672aa957021b1054a8c6d777ca2022cb1221ca050bfd929a00b",
+          "sha256": "11b73f2b09e64672aa957021b1054a8c6d777ca2022cb1221ca050bfd929a00b"
+        }
+      ]
+    },
+    {
+      "label": "fixture-retained-final",
+      "files": [
+        {
+          "name": "examples/home_mail_fixture.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/d893a2750b9fc4b83ae1dc59de2d2e2c37d9430c7d00aeb6f9ab84dca59aa9f1",
+          "sha256": "d893a2750b9fc4b83ae1dc59de2d2e2c37d9430c7d00aeb6f9ab84dca59aa9f1"
+        },
+        {
+          "name": "tools/probe_archive_mail.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/0aefa752baba551cd37f48053a4d2af767249cbcf7380f9163620913f5a72cd9",
+          "sha256": "0aefa752baba551cd37f48053a4d2af767249cbcf7380f9163620913f5a72cd9"
+        },
+        {
+          "name": "tools/test_archive_mail_fixture.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/4a75c3b207b66e3b557baac46bf0ae19e2a5032eb41e69d5df0efe07862b03f0",
+          "sha256": "4a75c3b207b66e3b557baac46bf0ae19e2a5032eb41e69d5df0efe07862b03f0"
+        }
+      ]
+    },
+    {
+      "label": "fixture-observed-tests",
+      "files": [
+        {
+          "name": "observations/fixture-observed-tests/cli-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/b1833a0269760247b235d1b703ab54d87e5ae8c99174be0bdb81446dbe495d20",
+          "sha256": "b1833a0269760247b235d1b703ab54d87e5ae8c99174be0bdb81446dbe495d20"
+        },
+        {
+          "name": "observations/fixture-observed-tests/cli-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/9719b38f6fd20fbde45c51affd783d9cbc22067b686bfda7b85f830e205fb01a",
+          "sha256": "9719b38f6fd20fbde45c51affd783d9cbc22067b686bfda7b85f830e205fb01a"
+        },
+        {
+          "name": "observations/fixture-observed-tests/unit-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/edfc544085b5065525ee1db8407bbef114002bbbd7b4dd87305d8031c8f7e357",
+          "sha256": "edfc544085b5065525ee1db8407bbef114002bbbd7b4dd87305d8031c8f7e357"
+        },
+        {
+          "name": "observations/fixture-observed-tests/unit-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/d03ce458f2a6cd2b4f27522f3aacad03ce1872c028853507c3ad02ca621bdcad",
+          "sha256": "d03ce458f2a6cd2b4f27522f3aacad03ce1872c028853507c3ad02ca621bdcad"
+        },
+        {
+          "name": "observations/fixture-observed-tests/combined-tests.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/3efc3bd5f9b54b089f852ad6b401ee5c3dafa5c72c296e25c9c78023519d5286",
+          "sha256": "3efc3bd5f9b54b089f852ad6b401ee5c3dafa5c72c296e25c9c78023519d5286"
+        }
+      ]
+    },
+    {
+      "label": "process-death-retained-final",
+      "files": [
+        {
+          "name": "tools/probe_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/f2fc51d8503f70be089c74f2854e9c40840ad92d56aec54b93cb4e592a566bed",
+          "sha256": "f2fc51d8503f70be089c74f2854e9c40840ad92d56aec54b93cb4e592a566bed"
+        },
+        {
+          "name": "tools/test_archive_process_death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/1edbf6a44b3db2a211f284ae9f0fcdb880ce0c365f37ed361d75c43a66024538",
+          "sha256": "1edbf6a44b3db2a211f284ae9f0fcdb880ce0c365f37ed361d75c43a66024538"
+        }
+      ]
+    },
+    {
+      "label": "process-death-observed-tests",
+      "files": [
+        {
+          "name": "observations/process-death-observed-tests/red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/736295c638d82074fc95e6588574202e6ea07aa9004114f6ee3449342c0ce6a4",
+          "sha256": "736295c638d82074fc95e6588574202e6ea07aa9004114f6ee3449342c0ce6a4"
+        },
+        {
+          "name": "observations/process-death-observed-tests/green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371",
+          "sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371"
+        },
+        {
+          "name": "observations/process-death-observed-tests/combined-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/ce895947b8ffcb2e77addf8382970fd1c07ecab9486fbbfca209319a47c37f4f",
+          "sha256": "ce895947b8ffcb2e77addf8382970fd1c07ecab9486fbbfca209319a47c37f4f"
+        }
+      ]
+    },
+    {
+      "label": "evidence-missing-module-red",
+      "files": [
+        {
+          "name": "tools/test_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/9c48d63726b076ccaf275ff28a4a700aadd112713849d60f91cac84a1a9fd9fc",
+          "sha256": "9c48d63726b076ccaf275ff28a4a700aadd112713849d60f91cac84a1a9fd9fc"
+        }
+      ]
+    },
+    {
+      "label": "evidence-placeholder-and-doc-validation",
+      "files": [
+        {
+          "name": "dev-docs/decisions/0081-durable-mail-archive.md",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/1652f27962445c3a989ba14c2423e69fb6b21de7c6c90afdf716a8aab191401d",
+          "sha256": "1652f27962445c3a989ba14c2423e69fb6b21de7c6c90afdf716a8aab191401d"
+        },
+        {
+          "name": "dev-docs/native-mail-archive.md",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c2e5e2046e89ec2f3fd548364bfb63fd8fea3961838431c80d2015753347b337",
+          "sha256": "c2e5e2046e89ec2f3fd548364bfb63fd8fea3961838431c80d2015753347b337"
+        },
+        {
+          "name": "docs/archive-mail.md",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/86d3f558052e860463aa85698bca79205484d4f149ff9d0da66865aa52cbffc4",
+          "sha256": "86d3f558052e860463aa85698bca79205484d4f149ff9d0da66865aa52cbffc4"
+        },
+        {
+          "name": "tools/check_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e9c21cfa4c1381efc01c2f2ac37bf3eb693acf5b42aa731ab234519d446098aa",
+          "sha256": "e9c21cfa4c1381efc01c2f2ac37bf3eb693acf5b42aa731ab234519d446098aa"
+        },
+        {
+          "name": "tools/test_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/9c48d63726b076ccaf275ff28a4a700aadd112713849d60f91cac84a1a9fd9fc",
+          "sha256": "9c48d63726b076ccaf275ff28a4a700aadd112713849d60f91cac84a1a9fd9fc"
+        }
+      ]
+    },
+    {
+      "label": "evidence-observed-tests",
+      "files": [
+        {
+          "name": "observations/evidence-observed-tests/red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/ae48636cfc26d0ceb7284427dda0d19e2beba90e06ce1a97bbc5ba12d20fa103",
+          "sha256": "ae48636cfc26d0ceb7284427dda0d19e2beba90e06ce1a97bbc5ba12d20fa103"
+        },
+        {
+          "name": "observations/evidence-observed-tests/green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/d9d734ee1c2de67b748aeef1c4126433aa438ad8375ca953916f12b1df11414d",
+          "sha256": "d9d734ee1c2de67b748aeef1c4126433aa438ad8375ca953916f12b1df11414d"
+        },
+        {
+          "name": "observations/evidence-observed-tests/repository-check.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+          "sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063"
+        }
+      ]
+    },
+    {
+      "label": "protocol-01b-codec-red",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/a8175866bf34b27978a8e917085a366af6b1ba3c193dc43eccea5298be1a3405",
+          "sha256": "a8175866bf34b27978a8e917085a366af6b1ba3c193dc43eccea5298be1a3405"
+        }
+      ]
+    },
+    {
+      "label": "protocol-02b-codec-candidate",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/3a8f4e43e5ec76d047b08a24c2032f6d4ddc36caeefb72b32caaa288a1114b0e",
+          "sha256": "3a8f4e43e5ec76d047b08a24c2032f6d4ddc36caeefb72b32caaa288a1114b0e"
+        }
+      ]
+    },
+    {
+      "label": "protocol-03-network-original",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6c65fdeed81cd3ceb44e0a790e6ea1d29503abcf39f87164c904c09d71008d7f",
+          "sha256": "6c65fdeed81cd3ceb44e0a790e6ea1d29503abcf39f87164c904c09d71008d7f"
+        }
+      ]
+    },
+    {
+      "label": "protocol-03-network-red",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/97e46165bdba2d1e24234f4583bb1bf0f5a20401e28cbe9913cde95f56752340",
+          "sha256": "97e46165bdba2d1e24234f4583bb1bf0f5a20401e28cbe9913cde95f56752340"
+        }
+      ]
+    },
+    {
+      "label": "protocol-04-network-green",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/5c55fd7b17c3a0f9ebc1cbbd5cdc7a9eb7f492ed99813d26499ad5b4d67c1483",
+          "sha256": "5c55fd7b17c3a0f9ebc1cbbd5cdc7a9eb7f492ed99813d26499ad5b4d67c1483"
+        }
+      ]
+    },
+    {
+      "label": "protocol-05-expiry-red",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/ece96dd973ac650f3ccd0a6c275d0647b0fca08f8d7cc82166a82044b89c8ad8",
+          "sha256": "ece96dd973ac650f3ccd0a6c275d0647b0fca08f8d7cc82166a82044b89c8ad8"
+        }
+      ]
+    },
+    {
+      "label": "protocol-07-test-fixture-candidate",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/b550d6ee7258b95ab483a9540fe741793fafdbae676da7d5de089910537a4838",
+          "sha256": "b550d6ee7258b95ab483a9540fe741793fafdbae676da7d5de089910537a4838"
+        }
+      ]
+    },
+    {
+      "label": "protocol-09-network-green",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/339e8bb008b1b8a0930cb98138a97839121630e58179f34374915dcdf8294a1f",
+          "sha256": "339e8bb008b1b8a0930cb98138a97839121630e58179f34374915dcdf8294a1f"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-exclusive-final-mail_archive",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3",
+          "sha256": "c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-exclusive-final-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/1b2bab0d6459443ed6a28a8096cb9ca85b8ec6e70c0307b0d86c2107466eed84",
+          "sha256": "1b2bab0d6459443ed6a28a8096cb9ca85b8ec6e70c0307b0d86c2107466eed84"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-exclusive-final-mail_wire",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_wire.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/78adce3d7e51e95d9ebdac49f842a4e3db30b2627c3dafce1eb1c78ed74f960a",
+          "sha256": "78adce3d7e51e95d9ebdac49f842a4e3db30b2627c3dafce1eb1c78ed74f960a"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-exclusive-red-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8231a2a291703762b127e124ffe2512186f2821985d804f7030c4095da89d136",
+          "sha256": "8231a2a291703762b127e124ffe2512186f2821985d804f7030c4095da89d136"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-presence-before-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/42a9e71a401cdb90e32f424cad6403773c05022443293f13bc391ae502032635",
+          "sha256": "42a9e71a401cdb90e32f424cad6403773c05022443293f13bc391ae502032635"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-presence-green-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/cf92d984cb7d78f940ed010461dd9cd04df7eef9dab638d4866d4d9a05fdf9af",
+          "sha256": "cf92d984cb7d78f940ed010461dd9cd04df7eef9dab638d4866d4d9a05fdf9af"
+        }
+      ]
+    },
+    {
+      "label": "protocol-archive-presence-red-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c239cc12a941a334f3c595d433c2e67c66497fd0ed734f8b654b10ea578c7202",
+          "sha256": "c239cc12a941a334f3c595d433c2e67c66497fd0ed734f8b654b10ea578c7202"
+        }
+      ]
+    },
+    {
+      "label": "protocol-final-mail_archive",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/2c8751b46c61fe7123ecfb2370c1a3f598dbdad82fece41a6de52adc7f9d6777",
+          "sha256": "2c8751b46c61fe7123ecfb2370c1a3f598dbdad82fece41a6de52adc7f9d6777"
+        }
+      ]
+    },
+    {
+      "label": "protocol-final-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e1b2324dbce8e70e51c94aa31ab0dfb8c49c8b17711c2c337b48b7918537d64e",
+          "sha256": "e1b2324dbce8e70e51c94aa31ab0dfb8c49c8b17711c2c337b48b7918537d64e"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-before-mail_archive",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/2c8751b46c61fe7123ecfb2370c1a3f598dbdad82fece41a6de52adc7f9d6777",
+          "sha256": "2c8751b46c61fe7123ecfb2370c1a3f598dbdad82fece41a6de52adc7f9d6777"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-before-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e1b2324dbce8e70e51c94aa31ab0dfb8c49c8b17711c2c337b48b7918537d64e",
+          "sha256": "e1b2324dbce8e70e51c94aa31ab0dfb8c49c8b17711c2c337b48b7918537d64e"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-final-mail_archive",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3",
+          "sha256": "c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-final-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/42a9e71a401cdb90e32f424cad6403773c05022443293f13bc391ae502032635",
+          "sha256": "42a9e71a401cdb90e32f424cad6403773c05022443293f13bc391ae502032635"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-green-mail_archive",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3",
+          "sha256": "c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-green-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/63a73ed1ec35e586beabbf229f42a045e816f8c8c12cc2f013c7d5aaef906e95",
+          "sha256": "63a73ed1ec35e586beabbf229f42a045e816f8c8c12cc2f013c7d5aaef906e95"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-red-mail_archive",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/fe751fbe6ca89e58fbd11f8da4541fb8edfce5425dc5fbc2e60421934c5b1f44",
+          "sha256": "fe751fbe6ca89e58fbd11f8da4541fb8edfce5425dc5fbc2e60421934c5b1f44"
+        }
+      ]
+    },
+    {
+      "label": "protocol-stale-cursor-red-mail_network",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e2ae35bd78d18c548cc81a3c960cb53fd9e34fea14421442def5b612eb978357",
+          "sha256": "e2ae35bd78d18c548cc81a3c960cb53fd9e34fea14421442def5b612eb978357"
+        }
+      ]
+    },
+    {
+      "label": "protocol-store-hint-before-mail_wire",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_wire.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/2f68838331150cb43bb5446ed5bb4e9baa492eaeb644cc8e952f9cad7c2eac69",
+          "sha256": "2f68838331150cb43bb5446ed5bb4e9baa492eaeb644cc8e952f9cad7c2eac69"
+        }
+      ]
+    },
+    {
+      "label": "protocol-store-hint-final-mail_wire",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_wire.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/78adce3d7e51e95d9ebdac49f842a4e3db30b2627c3dafce1eb1c78ed74f960a",
+          "sha256": "78adce3d7e51e95d9ebdac49f842a4e3db30b2627c3dafce1eb1c78ed74f960a"
+        }
+      ]
+    },
+    {
+      "label": "protocol-store-hint-red-mail_wire",
+      "files": [
+        {
+          "name": "crates/faction-client/src/mail_wire.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/f577ecc84f49bc768771cfa333770614db8dbb74c3eefd0490af4df5fb549509",
+          "sha256": "f577ecc84f49bc768771cfa333770614db8dbb74c3eefd0490af4df5fb549509"
+        }
+      ]
+    },
+    {
+      "label": "protocol-observed-tests",
+      "files": [
+        {
+          "name": "observations/protocol-observed-tests/01b-codec-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/5f1ffae75e64c8d5211a92d097f534994d9ae06dcdb7c34c9c72c14fd53c4337",
+          "sha256": "5f1ffae75e64c8d5211a92d097f534994d9ae06dcdb7c34c9c72c14fd53c4337"
+        },
+        {
+          "name": "observations/protocol-observed-tests/02d-codec-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/65a33db55b3f5559cac9f6fb50c2398dff283c020cf8d7d7972c30974d7001a8",
+          "sha256": "65a33db55b3f5559cac9f6fb50c2398dff283c020cf8d7d7972c30974d7001a8"
+        },
+        {
+          "name": "observations/protocol-observed-tests/03-network-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8e4f9357a5f3eb3ffdd6cadfeaa61e8458bc54b8d6f501f85a76ad32ab0d092f",
+          "sha256": "8e4f9357a5f3eb3ffdd6cadfeaa61e8458bc54b8d6f501f85a76ad32ab0d092f"
+        },
+        {
+          "name": "observations/protocol-observed-tests/04-network-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/ce6ce557774c5930937ed5aa13d00339ec3a3242546ef065e0fbda9061a77277",
+          "sha256": "ce6ce557774c5930937ed5aa13d00339ec3a3242546ef065e0fbda9061a77277"
+        },
+        {
+          "name": "observations/protocol-observed-tests/05-expiry-red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/7354e42fe06a3d0e61d47aad6bd97e47f90324d8bdb2b74a89aac09b6b3e8563",
+          "sha256": "7354e42fe06a3d0e61d47aad6bd97e47f90324d8bdb2b74a89aac09b6b3e8563"
+        },
+        {
+          "name": "observations/protocol-observed-tests/06-expiry-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/496bc6e5b1894c9594cc6c15878b08237754b1bbb26370b32cf381ea43b65273",
+          "sha256": "496bc6e5b1894c9594cc6c15878b08237754b1bbb26370b32cf381ea43b65273"
+        },
+        {
+          "name": "observations/protocol-observed-tests/10-network-final.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8b19c3ac0702842b7aa8fae1e316fff06e8fc378d658bd88280dead3ad054536",
+          "sha256": "8b19c3ac0702842b7aa8fae1e316fff06e8fc378d658bd88280dead3ad054536"
+        },
+        {
+          "name": "observations/protocol-observed-tests/11-clippy-final.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/1f7bdbf3635510aa57fde9fd957f708f3ebed566e7fe2af2d3f253c591408018",
+          "sha256": "1f7bdbf3635510aa57fde9fd957f708f3ebed566e7fe2af2d3f253c591408018"
+        },
+        {
+          "name": "observations/protocol-observed-tests/stale-cursor/red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/4f65be85dafa657b80c3a49ff8a1341471a00bb8e3ec6b6c4af761c3ce39363e",
+          "sha256": "4f65be85dafa657b80c3a49ff8a1341471a00bb8e3ec6b6c4af761c3ce39363e"
+        },
+        {
+          "name": "observations/protocol-observed-tests/stale-cursor/green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/5dbba333ecf7ebd1c587c8f2fb06c9b8b3d3c30bd9e9876fb1f8f711a9fafe1c",
+          "sha256": "5dbba333ecf7ebd1c587c8f2fb06c9b8b3d3c30bd9e9876fb1f8f711a9fafe1c"
+        },
+        {
+          "name": "observations/protocol-observed-tests/store-hint/red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/a116c54e94a65e040681c0623ee934288e4dbb38bdefbd3566edbfea2df961dc",
+          "sha256": "a116c54e94a65e040681c0623ee934288e4dbb38bdefbd3566edbfea2df961dc"
+        },
+        {
+          "name": "observations/protocol-observed-tests/store-hint/green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/923c4364277bc40c3c3010489f81863a8fd9ac4e3feef1793d04b1f8681b95ff",
+          "sha256": "923c4364277bc40c3c3010489f81863a8fd9ac4e3feef1793d04b1f8681b95ff"
+        },
+        {
+          "name": "observations/protocol-observed-tests/archive-presence/red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/20424743ca02f771a38d541781efb37182b4760751425f0ad7b2c578a9e1f5f0",
+          "sha256": "20424743ca02f771a38d541781efb37182b4760751425f0ad7b2c578a9e1f5f0"
+        },
+        {
+          "name": "observations/protocol-observed-tests/archive-presence/green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/3574227dfb4d913688bd4b35275c2dba3b1813addba0a0f3c24337e3ee49f56b",
+          "sha256": "3574227dfb4d913688bd4b35275c2dba3b1813addba0a0f3c24337e3ee49f56b"
+        },
+        {
+          "name": "observations/protocol-observed-tests/archive-exclusive/red.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6bd269d8cee1aa7b203d30d940d83dbaea1ded658730accb5089672204417e29",
+          "sha256": "6bd269d8cee1aa7b203d30d940d83dbaea1ded658730accb5089672204417e29"
+        },
+        {
+          "name": "observations/protocol-observed-tests/archive-exclusive/green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/640a6636c239bd5880ac8498f6d2f64976c8aa051f55c53ff7d481d388125873",
+          "sha256": "640a6636c239bd5880ac8498f6d2f64976c8aa051f55c53ff7d481d388125873"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-start-vm",
+      "files": [
+        {
+          "name": "fixture/start-vm.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/0651062038eb04b2e4931a6e6f31ae1d07957405fda8553e1be31f5a9c3a7b79",
+          "sha256": "0651062038eb04b2e4931a6e6f31ae1d07957405fda8553e1be31f5a9c3a7b79"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-setup-lab",
+      "files": [
+        {
+          "name": "fixture/setup-lab.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/7d9b0b5fb974b805315d6deb8aef96da76a78dd7f85343c1663d02301e5fcecf",
+          "sha256": "7d9b0b5fb974b805315d6deb8aef96da76a78dd7f85343c1663d02301e5fcecf"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-prepare-homes",
+      "files": [
+        {
+          "name": "fixture/prepare-homes.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6071a2ba19f9e148084f8435280ed5e8daf28858b664741e86d9ac1c8913bfc7",
+          "sha256": "6071a2ba19f9e148084f8435280ed5e8daf28858b664741e86d9ac1c8913bfc7"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-rotate-fixture-tls",
+      "files": [
+        {
+          "name": "fixture/rotate-fixture-tls.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/ff4ae0db5ed55deec9ffc417cd8c85edcba99e32b5fe5f3dcf9603ea569a46e5",
+          "sha256": "ff4ae0db5ed55deec9ffc417cd8c85edcba99e32b5fe5f3dcf9603ea569a46e5"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-complete-fixture-tls",
+      "files": [
+        {
+          "name": "fixture/complete-fixture-tls.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/fa542de821d759883aab5eaaa7cf7f6c81b0c64f103359e467ee899115ee17cb",
+          "sha256": "fa542de821d759883aab5eaaa7cf7f6c81b0c64f103359e467ee899115ee17cb"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-prepare-final-host",
+      "files": [
+        {
+          "name": "fixture/prepare-final-host.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6e740159fbfc5104084af2c0317d6397b623515b781d699664b24093d2e81c00",
+          "sha256": "6e740159fbfc5104084af2c0317d6397b623515b781d699664b24093d2e81c00"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-prepare-complete-host",
+      "files": [
+        {
+          "name": "fixture/prepare-complete-host.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8ebb1e9ed32496552dfd1e98bd9d398e8feaa1d2f5fd390927ce39f798b2a80c",
+          "sha256": "8ebb1e9ed32496552dfd1e98bd9d398e8feaa1d2f5fd390927ce39f798b2a80c"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-prepare-barrier-host",
+      "files": [
+        {
+          "name": "fixture/prepare-barrier-host.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/18e037fd6516c1c63bbb6d6342d8eb9cc35d97eeaa89b8a4d3b7f761be3087a9",
+          "sha256": "18e037fd6516c1c63bbb6d6342d8eb9cc35d97eeaa89b8a4d3b7f761be3087a9"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-iterations-prepare-homes-before-own-uid",
+      "files": [
+        {
+          "name": "fixture/iterations/prepare-homes-before-own-uid.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/edb4e4abe867d95ee2d36af5d1c1aac8548741629163539bca50a2237bb5c805",
+          "sha256": "edb4e4abe867d95ee2d36af5d1c1aac8548741629163539bca50a2237bb5c805"
+        }
+      ]
+    },
+    {
+      "label": "lab-setup-iterations-tls-ed25519-host-rejected-prepare-homes",
+      "files": [
+        {
+          "name": "fixture/iterations/tls-ed25519-host-rejected/prepare-homes.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/6071a2ba19f9e148084f8435280ed5e8daf28858b664741e86d9ac1c8913bfc7",
+          "sha256": "6071a2ba19f9e148084f8435280ed5e8daf28858b664741e86d9ac1c8913bfc7"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host",
+      "files": [
+        {
+          "name": "fixture/run-host.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/f4819426eade8de53ec7ee1aefd766b94f05d0f0794a1374afda80a5d3864804",
+          "sha256": "f4819426eade8de53ec7ee1aefd766b94f05d0f0794a1374afda80a5d3864804"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host-tls2",
+      "files": [
+        {
+          "name": "fixture/run-host-tls2.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8d2af8ed97ba7df0a4160a2796c6c8095948c4ee63f37d2908874695022b70b8",
+          "sha256": "8d2af8ed97ba7df0a4160a2796c6c8095948c4ee63f37d2908874695022b70b8"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host-rsa",
+      "files": [
+        {
+          "name": "fixture/run-host-rsa.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/d547cd9d967ffb1deceb8a94937e94a6353cc576ed3fc495616987a1cfa2fad1",
+          "sha256": "d547cd9d967ffb1deceb8a94937e94a6353cc576ed3fc495616987a1cfa2fad1"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host-final",
+      "files": [
+        {
+          "name": "fixture/run-host-final.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/7307199f396410b95f8052ef3bdb5a901072d3b92106ede67151bd88ffccc668",
+          "sha256": "7307199f396410b95f8052ef3bdb5a901072d3b92106ede67151bd88ffccc668"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host-complete",
+      "files": [
+        {
+          "name": "fixture/run-host-complete.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c714f147c75f063e8f90b0ed42734fd968f72190c867a25ba5f459a3be8a51ce",
+          "sha256": "c714f147c75f063e8f90b0ed42734fd968f72190c867a25ba5f459a3be8a51ce"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host-with-barrier",
+      "files": [
+        {
+          "name": "fixture/run-host-with-barrier.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/3305abcc55a5ea36718a1710b414bc4f088b8a5b260fe498436dc992ccff659f",
+          "sha256": "3305abcc55a5ea36718a1710b414bc4f088b8a5b260fe498436dc992ccff659f"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-run-host-death",
+      "files": [
+        {
+          "name": "fixture/run-host-death.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/76f715281b78162f90497cdbeff91113aad97fa93b51de3ec1c5f05e86fb5402",
+          "sha256": "76f715281b78162f90497cdbeff91113aad97fa93b51de3ec1c5f05e86fb5402"
+        }
+      ]
+    },
+    {
+      "label": "host-wrapper-audit-server-plaintext",
+      "files": [
+        {
+          "name": "fixture/audit-server-plaintext.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/94b7cd3393b5fb864f31fada53a55e2ee8f6b96160ec90a802d593a28c684fdd",
+          "sha256": "94b7cd3393b5fb864f31fada53a55e2ee8f6b96160ec90a802d593a28c684fdd"
+        }
+      ]
+    },
+    {
+      "label": "ui-initial-red-source",
+      "files": [
+        {
+          "name": "tools/probe_home_archive_ui.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/072c612c0592104662880be521395bd6d3bf47e7075b79bbcd86f81f5438b71c",
+          "sha256": "072c612c0592104662880be521395bd6d3bf47e7075b79bbcd86f81f5438b71c"
+        }
+      ]
+    },
+    {
+      "label": "first-real-archive-retained-candidate",
+      "files": [
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/96a165f6b5806906bcd4097ec476203825288a3ff03fbfd8e781d2b87f628368",
+          "sha256": "96a165f6b5806906bcd4097ec476203825288a3ff03fbfd8e781d2b87f628368"
+        },
+        {
+          "name": "crates/faction-client/src/mail_archive.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3",
+          "sha256": "c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3"
+        },
+        {
+          "name": "crates/faction-client/src/mail_network.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/c239cc12a941a334f3c595d433c2e67c66497fd0ed734f8b654b10ea578c7202",
+          "sha256": "c239cc12a941a334f3c595d433c2e67c66497fd0ed734f8b654b10ea578c7202"
+        },
+        {
+          "name": "crates/faction-client/src/mail_wire.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/78adce3d7e51e95d9ebdac49f842a4e3db30b2627c3dafce1eb1c78ed74f960a",
+          "sha256": "78adce3d7e51e95d9ebdac49f842a4e3db30b2627c3dafce1eb1c78ed74f960a"
+        },
+        {
+          "name": "fixture/run-host-final.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/7307199f396410b95f8052ef3bdb5a901072d3b92106ede67151bd88ffccc668",
+          "sha256": "7307199f396410b95f8052ef3bdb5a901072d3b92106ede67151bd88ffccc668"
+        }
+      ]
+    },
+    {
+      "label": "ci-fixture-correction-and-ui-final",
+      "files": [
+        {
+          "name": ".github/workflows/documentation.yml",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/f8576ed933639d0d3e9cb5a86efc89bcb8da61b656f0e9286a195eec43a506e0",
+          "sha256": "f8576ed933639d0d3e9cb5a86efc89bcb8da61b656f0e9286a195eec43a506e0"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49",
+          "sha256": "bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49"
+        },
+        {
+          "name": "tools/probe_home_archive_ui.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e4e99091808b42e82d2ec9138160a099329413791df1b465cc9b892a9d688013",
+          "sha256": "e4e99091808b42e82d2ec9138160a099329413791df1b465cc9b892a9d688013"
+        },
+        {
+          "name": "tools/test_archive_mail_evidence.py",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e9bd1ada93d8c87510867035406cfc2c31eaf158e20ec7f748bad37abac2c59b",
+          "sha256": "e9bd1ada93d8c87510867035406cfc2c31eaf158e20ec7f748bad37abac2c59b"
+        }
+      ]
+    },
+    {
+      "label": "lead-observed-controls",
+      "files": [
+        {
+          "name": "observations/lead-observed-controls/evidence-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/71a101b80461db081d318cb0c0f0270dbeb9a57b6d7ed15fb241dd87012b6411",
+          "sha256": "71a101b80461db081d318cb0c0f0270dbeb9a57b6d7ed15fb241dd87012b6411"
+        },
+        {
+          "name": "observations/lead-observed-controls/evidence-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/31b28ffdc9e053c6d9e0afd997b331d33c5b7ef5ca9aa35c4f382f931fd11206",
+          "sha256": "31b28ffdc9e053c6d9e0afd997b331d33c5b7ef5ca9aa35c4f382f931fd11206"
+        },
+        {
+          "name": "observations/lead-observed-controls/home-setup-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8c9b860fb094f1f697668bbafdb57eafb0ba9c5f137a325828d71e169bc43dce",
+          "sha256": "8c9b860fb094f1f697668bbafdb57eafb0ba9c5f137a325828d71e169bc43dce"
+        },
+        {
+          "name": "observations/lead-observed-controls/home-setup-progress-2.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/e9f673ed5d401afb9f23cc85dbccf9e19067fa58b8e032de2e9de891c56aabf6",
+          "sha256": "e9f673ed5d401afb9f23cc85dbccf9e19067fa58b8e032de2e9de891c56aabf6"
+        },
+        {
+          "name": "observations/lead-observed-controls/lab-setup-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/da90778b824587c35b857c81af9d7bdd8abb5efdd8101084bd56d8c14484a8f8",
+          "sha256": "da90778b824587c35b857c81af9d7bdd8abb5efdd8101084bd56d8c14484a8f8"
+        },
+        {
+          "name": "observations/lead-observed-controls/complete-tls-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/5d93f236001156e41e46c46531ee8568c41512717ca111491a03a3a75fbe5e2b",
+          "sha256": "5d93f236001156e41e46c46531ee8568c41512717ca111491a03a3a75fbe5e2b"
+        },
+        {
+          "name": "observations/lead-observed-controls/rotate-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/876bfbcbe8bceec46f1ced9ac99104e51e535f68f5899e6b62100838af76a71b",
+          "sha256": "876bfbcbe8bceec46f1ced9ac99104e51e535f68f5899e6b62100838af76a71b"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-run-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/f4c588fb1bc75db9f51c0191688553f85bd576249564525f8f1155d2889b6e59",
+          "sha256": "f4c588fb1bc75db9f51c0191688553f85bd576249564525f8f1155d2889b6e59"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-tls2-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/68d9e0f5d03dc83bd5ee7d1e8f755c8d3ea7c6b5dd319a81091eb011052e9367",
+          "sha256": "68d9e0f5d03dc83bd5ee7d1e8f755c8d3ea7c6b5dd319a81091eb011052e9367"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-rsa-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/482ec4bcc67d0b4ff64ad41a47e367c17bcd13a05ef76f0f76e34aee698d7d20",
+          "sha256": "482ec4bcc67d0b4ff64ad41a47e367c17bcd13a05ef76f0f76e34aee698d7d20"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-final-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/2629e6d50b65d18d6244ce36a1eeab03eee14fe531ef4d383184a8f21c810c74",
+          "sha256": "2629e6d50b65d18d6244ce36a1eeab03eee14fe531ef4d383184a8f21c810c74"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-complete-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/5d1ca47f54e14e378a960aa9d0149a69a36adeaa227b7df75ba85e5243bb2946",
+          "sha256": "5d1ca47f54e14e378a960aa9d0149a69a36adeaa227b7df75ba85e5243bb2946"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-barrier-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/09f33e6c60ad617739dad2246f1de163475ff9cad834a6ffd94d2d7640153b6c",
+          "sha256": "09f33e6c60ad617739dad2246f1de163475ff9cad834a6ffd94d2d7640153b6c"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-death-progress.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/8514b3f190e1caf8aab3c2da4ab66a6a24e5d9639230034444743fd0a32f90bc",
+          "sha256": "8514b3f190e1caf8aab3c2da4ab66a6a24e5d9639230034444743fd0a32f90bc"
+        },
+        {
+          "name": "observations/lead-observed-controls/host-retention-barriers.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/d44cb3f1d2d60ee399cd089f56c8a000460b2fdd0a758316a4297dc81c4cbe21",
+          "sha256": "d44cb3f1d2d60ee399cd089f56c8a000460b2fdd0a758316a4297dc81c4cbe21"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/16d69ae6884bce0ee4ac3bd8658a8c06a4a387366eab2b7e2609fa019876036d",
+          "sha256": "16d69ae6884bce0ee4ac3bd8658a8c06a4a387366eab2b7e2609fa019876036d"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-red2.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/d627b1942fb169e13562d60bf52042623b3ae47f4c5e0cc5ebce9f4011c2535d",
+          "sha256": "d627b1942fb169e13562d60bf52042623b3ae47f4c5e0cc5ebce9f4011c2535d"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-banner-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/498a709edcc3b2941c423face5fa8c63cd080c7b7becd5505ef92065133705ed",
+          "sha256": "498a709edcc3b2941c423face5fa8c63cd080c7b7becd5505ef92065133705ed"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-send-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/29b0e81b655a6fc6125aaa0a6344ae4cafa67828366589bdbfb730de67ba605b",
+          "sha256": "29b0e81b655a6fc6125aaa0a6344ae4cafa67828366589bdbfb730de67ba605b"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a",
+          "sha256": "10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-banner-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a",
+          "sha256": "10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a"
+        },
+        {
+          "name": "observations/lead-observed-controls/ui-send-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a",
+          "sha256": "10dac18326f1630e134db284b2d1a59bd9f048911904c9e89a900da15fb7ea2a"
+        },
+        {
+          "name": "observations/lead-observed-controls/ci-archive-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/98c1b20e4312c28670438f7628dee7f7a77a3e6be675fa24c881c55d0927e790",
+          "sha256": "98c1b20e4312c28670438f7628dee7f7a77a3e6be675fa24c881c55d0927e790"
+        },
+        {
+          "name": "observations/lead-observed-controls/ci-archive-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/643c7cfc3921e5830e047bed28578bc933677c101c9c5a9f6610b6207052d03c",
+          "sha256": "643c7cfc3921e5830e047bed28578bc933677c101c9c5a9f6610b6207052d03c"
+        },
+        {
+          "name": "observations/lead-observed-controls/ci-fixture-red.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/149e4d9b3201c632e0e27668be50789fe708661c6115ed4ced20ffd282d7c533",
+          "sha256": "149e4d9b3201c632e0e27668be50789fe708661c6115ed4ced20ffd282d7c533"
+        },
+        {
+          "name": "observations/lead-observed-controls/ci-fixture-green.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/643c7cfc3921e5830e047bed28578bc933677c101c9c5a9f6610b6207052d03c",
+          "sha256": "643c7cfc3921e5830e047bed28578bc933677c101c9c5a9f6610b6207052d03c"
+        },
+        {
+          "name": "observations/lead-observed-controls/iterations/prepare-home-uid-failure.txt",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/3b71b3411fdba65ee475824aab31c2487c63c4a5ba92bbd197be5b07c023cb56",
+          "sha256": "3b71b3411fdba65ee475824aab31c2487c63c4a5ba92bbd197be5b07c023cb56"
+        }
+      ]
+    },
+    {
+      "label": "protocol-confirmed-executed-candidate-failures",
+      "files": [
+        {
+          "name": "observations/protocol-executed-candidate-failures/02b-codec-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/379a71555b4a4baa7de7101eff2d6dcef6371b0c26ebbb92902575f97d8fd4b4",
+          "sha256": "379a71555b4a4baa7de7101eff2d6dcef6371b0c26ebbb92902575f97d8fd4b4"
+        },
+        {
+          "name": "observations/protocol-executed-candidate-failures/07-lib-green.log",
+          "resolved_path": "dev-docs/evidence/archive-mail/sources/69c650a2bef79f9b53e193f720ce3946630d3d7d3e26731253d39bad0fa7c967",
+          "sha256": "69c650a2bef79f9b53e193f720ce3946630d3d7d3e26731253d39bad0fa7c967"
+        }
+      ]
+    }
+  ]
+}

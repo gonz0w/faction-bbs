@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "usage": {
+    "max_rss_kib": 70748,
+    "wall_seconds": 0.35,
+    "user_seconds": 0.07,
+    "system_seconds": 0.01,
+    "scope": "one complete faction-client manual UI process, including checkpoint unlock and one explicit empty MAM2 archive page over verified TLS/account; no pending writes"
+  },
+  "whole_client": true,
+  "includes_unlock": true,
+  "includes_network_cycle": true,
+  "compiler_included": false,
+  "server_fixture_included": false,
+  "capacity_claim": false,
+  "terminal_restored": true,
+  "runtime_physmem_bytes": 1054990336,
+  "empty_archive_page": true,
+  "canonical_unchanged": true,
+  "collector_sha256": "d3238563a0047b5246c78240f1f430eefa886fa96b40d888fff228cf94b1ec9d"
+}

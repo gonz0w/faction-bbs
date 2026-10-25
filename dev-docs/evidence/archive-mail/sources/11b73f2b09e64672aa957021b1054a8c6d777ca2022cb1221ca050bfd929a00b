@@ -1,0 +1,22 @@
+import json,subprocess,sys,tempfile
+from pathlib import Path
+binary=sys.argv[1]
+with tempfile.TemporaryDirectory(prefix='faction211-driver-') as temporary:
+ root=Path(temporary).resolve();root.chmod(0o700)
+ def call(action,side,*args):
+  return subprocess.run([binary,action,str(root/side),*args],input=b'synthetic local fixture password\n',capture_output=True,timeout=15)
+ a=call('init','a','alice@home.test','101');b=call('init','b','bob@away.test','202')
+ assert a.returncode==b.returncode==0
+ assert call('enroll','a','bob@away.test','202',b.stdout.decode().strip()).returncode==0
+ failures=0
+ for action in ['archive-status','enable-archive']:
+  result=call(action,'a')
+  if result.returncode:failures+=1
+  elif action=='archive-status':
+   assert json.loads(result.stdout)==dict(enabled=False,cursor_present=False,ready=False,checkpoint=None)
+  else:assert result.stdout==b'ok\n'
+ assert failures==0, 'old native fixture rejects new archive status/enable actions'
+ status=call('archive-status','a');assert status.returncode==0
+ value=json.loads(status.stdout);assert value['enabled'] and value['ready'] and not value['cursor_present']
+ assert value['checkpoint']['home']=='alice@home.test' and value['checkpoint']['local_device']==101 and value['checkpoint']['after'] is None
+ print('Native lab CLI archive enable/status checks passed; synthetic private stores removed')

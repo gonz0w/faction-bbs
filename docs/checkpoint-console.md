@@ -109,3 +109,7 @@ physical storage certification or supported-capacity claim. See the
 For deliberate direct home connections, use the separate default-off
 [manual encrypted mail entry](online-mail.md). This offline console retains its
 existing setup, recovery and inspection behavior.
+
+The online console offers a deliberate [archive schema upgrade](archive-mail.md).
+It retains the v2 encryption envelope and opts into payload schema 3. This offline
+console can read that authenticated history, but opens no archive connection.

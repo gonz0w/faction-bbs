@@ -1,0 +1,83 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0609]: no field `archive_enabled` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:581:21
+    |
+581 |     assert!(!status.archive_enabled && !status.archive_cursor_present);
+    |                     ^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_cursor_present` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:581:48
+    |
+581 |     assert!(!status.archive_enabled && !status.archive_cursor_present);
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_enabled` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:583:57
+    |
+583 |     let status=av.inspection().unwrap(); assert!(status.archive_enabled && !status.archive_cursor_present);
+    |                                                         ^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_cursor_present` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:583:84
+    |
+583 |     let status=av.inspection().unwrap(); assert!(status.archive_enabled && !status.archive_cursor_present);
+    |                                                                                    ^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_enabled` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:585:57
+    |
+585 |     let status=av.inspection().unwrap(); assert!(status.archive_enabled && status.archive_cursor_present);
+    |                                                         ^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_cursor_present` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:585:83
+    |
+585 |     let status=av.inspection().unwrap(); assert!(status.archive_enabled && status.archive_cursor_present);
+    |                                                                                   ^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_enabled` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:587:79
+    |
+587 |     av.revoke().unwrap(); let status=av.inspection().unwrap(); assert!(status.archive_enabled && status.archive_cursor_present);
+    |                                                                               ^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_cursor_present` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:587:105
+    |
+587 |     av.revoke().unwrap(); let status=av.inspection().unwrap(); assert!(status.archive_enabled && status.archive_cursor_present);
+    |                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_enabled` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:589:84
+    |
+589 |     let status=backed.inspection().unwrap(); assert!(status.history_only && status.archive_enabled && status.archive_cursor_present);
+    |                                                                                    ^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+error[E0609]: no field `archive_cursor_present` on type `Inspection<'_>`
+   --> crates/faction-client/src/archive_checkpoint_tests.rs:589:110
+    |
+589 |     let status=backed.inspection().unwrap(); assert!(status.history_only && status.archive_enabled && status.archive_cursor_present);
+    |                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `local_device`, `identity`, `created`, `expires`, `history_only` ... and 2 others
+
+For more information about this error, try `rustc --explain E0609`.
+error: could not compile `faction-client` (lib test) due to 10 previous errors

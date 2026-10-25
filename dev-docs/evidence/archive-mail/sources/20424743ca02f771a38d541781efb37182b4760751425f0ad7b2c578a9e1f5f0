@@ -1,0 +1,24 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.70s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 1 test
+test mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact ... FAILED
+
+failures:
+
+---- mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact stdout ----
+
+thread 'mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact' (6561829) panicked at crates/faction-client/src/mail_network.rs:1605:17:
+assertion `left == right` failed: archive-enabled explicit send/publication/preparation must avoid normal offline-queue release
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 78 filtered out; finished in 10.25s
+
+error: test failed, to rerun pass `-p faction-client --lib`

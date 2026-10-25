@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,subprocess,shlex,os
+P=Path('/private/tmp/faction211-owned');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text())
+def remote(c,d=None):
+ x=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/sbin:/usr/sbin\nexport PATH\n'+c],input=d,capture_output=True,timeout=60)
+ if x.returncode:(P/'rotate-private-error.txt').write_bytes(x.stdout+x.stderr);raise RuntimeError('Owned TLS fixture rotation failed')
+ return x.stdout
+for u in ['maila','mailb']:
+ remote('grep -q 211 /etc/faction-disposable-test\npid=$(cat /home/'+u+'/prosody.pid)\ntest "$(ps -p "$pid" -o uid= | tr -d " ")" = "$(id -u '+u+')"\nkill "$pid"')
+remote('install -d -m 700 /root/faction211-setup/rsa-ca\ncd /root/faction211-setup/rsa-ca\numask 077\nopenssl req -new -x509 -newkey rsa:2048 -nodes -sha256 -keyout ca.key -out ca.crt -days 2 -config /dev/null -subj /CN=Faction211-RSA-test-CA -addext basicConstraints=critical,CA:TRUE -addext keyUsage=critical,keyCertSign,cRLSign')
+for side in ['a','b']:
+ u='mail'+side;domain='home'+side+'.test';remote('cd /root/faction211-setup/rsa-ca\nopenssl req -new -newkey rsa:2048 -nodes -sha256 -keyout '+u+'.key -out '+u+'.csr -config /dev/null -subj /CN='+domain+' -addext subjectAltName=DNS:'+domain+'\nopenssl x509 -req -in '+u+'.csr -CA ca.crt -CAkey ca.key -CAcreateserial -sha256 -days 2 -out '+u+'.crt -copy_extensions copy\ninstall -o '+u+' -g '+u+' -m 600 '+u+'.key /home/'+u+'/tls.key\ninstall -o '+u+' -g '+u+' -m 600 '+u+'.crt /home/'+u+'/tls.crt\ninstall -o '+u+' -g '+u+' -m 600 ca.crt /home/'+u+'/ca.crt')
+ca=remote('cat /root/faction211-setup/rsa-ca/ca.crt');(P/'public/fixture-rsa-ca.crt').write_bytes(ca)
+profiles=json.loads((P/'profiles-private.json').read_text());host=P/'faction211-host-rsa';host.mkdir(mode=0o700);(host/'fixture-marker').write_text('owned issue211 fixture\n');(host/'fixture-marker').chmod(0o600);(host/'ca.pem').write_bytes(ca);(host/'ca.pem').chmod(0o600)
+for route,profile in profiles.items():
+ for side,label in [('a','alice'),('b','bob')]:
+  pin=remote('openssl x509 -in /home/mail'+side+'/tls.crt -outform DER | openssl dgst -sha256').decode().strip().split()[-1];row=profile[label];row['pin']=pin
+  if route=='host':
+   import tomllib
+   old=tomllib.loads(Path(row['config']).read_text());old.update(pin=pin,ca=str(host/'ca.pem'));q=host/(label+'.toml');q.write_text('\n'.join(k+'='+(str(v) if type(v)==int else json.dumps(v)) for k,v in old.items())+'\n');q.chmod(0o600);row.update(store=str(host/label),config=str(q))
+  else:
+   remote('python3.13 -c '+shlex.quote('from pathlib import Path;import sys;p=Path(sys.argv[1]);s=p.read_text();s="\\n".join("pin="+repr(sys.argv[2]) if line.startswith("pin=") else line for line in s.splitlines())+"\\n";p.write_text(s)')+' '+shlex.quote(row['config'])+' '+shlex.quote(pin))
+ if route=='host':profile['fixture_marker']=str(host/'fixture-marker');q=host/'profile.json';q.write_text(json.dumps(profile));q.chmod(0o600)
+ else:remote('cat > /root/faction211-setup/profile.json\nchmod 600 /root/faction211-setup/profile.json',json.dumps(profile).encode())
+remote('cat > /home/factionbuild/native-mail211/settings/ca.pem\nchown factionbuild:factionbuild /home/factionbuild/native-mail211/settings/ca.pem\nchmod 600 /home/factionbuild/native-mail211/settings/ca.pem',ca)
+for u in ['maila','mailb']:
+ cmd='cd /usr/local/faction-mail-probe; nohup /usr/pkg/bin/lua5.4 ./prosody --config /home/'+u+'/prosody.cfg.lua > /home/'+u+'/startup-rsa.log 2>&1 < /dev/null &';remote('su -m '+u+' -c '+shlex.quote(cmd))
+(P/'profiles-rsa-private.json').write_text(json.dumps(profiles));(P/'profiles-rsa-private.json').chmod(0o600)
+print('Owned homes use qualified RSA2048 TLS certificates; explicit private CA/pins updated, verification unchanged.')

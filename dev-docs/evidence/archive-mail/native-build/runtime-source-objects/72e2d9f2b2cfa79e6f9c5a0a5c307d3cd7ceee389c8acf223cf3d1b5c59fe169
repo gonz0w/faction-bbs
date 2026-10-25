@@ -1,0 +1,7 @@
+from pathlib import Path
+import subprocess,json,shlex,os
+D=Path('/private/tmp/faction211-native-OWNED/runtime-01');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+p=subprocess.run(A+['cat > /root/faction211-setup/runtime-01/broad-runner.py\nchmod 600 /root/faction211-setup/runtime-01/broad-runner.py'],input=(D/'broad-runner.py').read_bytes(),capture_output=True)
+if p.returncode:(D/'private-broad-upload-error.log').write_bytes(p.stdout+p.stderr);raise RuntimeError('Owned broad helper upload failed')
+cmd='PATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\nnohup /usr/pkg/bin/python3.13 -B /root/faction211-setup/runtime-01/broad-runner.py </dev/null >/root/faction211-setup/runtime-01/broad-runner.log 2>&1 & echo $!'
+p=subprocess.run(A+[cmd],capture_output=True,text=True);assert p.returncode==0 and p.stdout.strip().isdigit();(D/'broad-launch.json').write_text(json.dumps({'pid':int(p.stdout.strip()),'single_owned_broad_dispatcher':True})+'\n');print('Owned broad native tests started; all client/crypto/PTY children drop to factionbuild.')

@@ -1,0 +1,14 @@
+E
+======================================================================
+ERROR: test_home_mail_archive_baseline_preserves_prior_sources_and_records (test_evidence_sources.ExecutedSources.test_home_mail_archive_baseline_preserves_prior_sources_and_records)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_evidence_sources.py", line 20, in test_home_mail_archive_baseline_preserves_prior_sources_and_records
+    manifest=evidence.home_mail_archive_baseline_manifest()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'evidence_sources' has no attribute 'home_mail_archive_baseline_manifest'. Did you mean: 'local_mail_vault_baseline_manifest'?
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

@@ -7,7 +7,9 @@ and exchanges encrypted subject/body/replies. The local encrypted checkpoint
 keeps native protocol state, authenticated history and exact pending ciphertext.
 Ordinary SSH never decrypts or renders this mail.
 
-Reliable offline/archive catch-up is [#211](https://github.com/gonz0w/faction-bbs/issues/211).
+Opt-in [manual archive catch-up](archive-mail.md) requests bounded retained-mail
+pages and atomically stores their cursor with authenticated content. Server
+retention/completeness and recipient reading are not guaranteed.
 Integrated background/picker notifications remain #99, trusted visited-board
 membership binding #91 and attachments #88. Parent #90 stays open. The earlier
 [two-home reference proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)

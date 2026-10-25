@@ -74,3 +74,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Discussion search and bookmarks](discussion-search.md) — bounded filters, exact read-only sources and own reference export.
 
 - [Manual encrypted home mail](online-mail.md) — optional member-local connect, compose, sync and durable pending IDs.
+
+- [Bounded encrypted-mail archive catch-up](archive-mail.md)

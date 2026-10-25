@@ -1,0 +1,20 @@
+.......F..
+======================================================================
+FAIL: test_optional_cost_requires_actual_whole_ui_scope_and_finite_native_units (test_archive_mail_evidence.ArchiveEvidence.test_optional_cost_requires_actual_whole_ui_scope_and_finite_native_units)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_archive_mail_evidence.py", line 66, in test_optional_cost_requires_actual_whole_ui_scope_and_finite_native_units
+    self.validate(value)
+    ~~~~~~~~~~~~~^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_archive_mail_evidence.py", line 30, in validate
+    def validate(self,value):guard.validate(value,lambda name,digest:b'executed')
+                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_archive_mail_evidence.py", line 153, in validate
+    assert cost['usage']['scope'] == COST_SCOPE
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.002s
+
+FAILED (failures=1)

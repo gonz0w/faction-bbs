@@ -1,0 +1,108 @@
+from pathlib import Path
+import subprocess,json,os,time,signal,socket,shlex
+R=Path('/Users/cam/DEV/faction-bbs');D=Path('/private/tmp/faction211-native-OWNED/runtime-01');V=Path(Path('/private/tmp/faction211-owned/vm-path').read_text().strip());assert V.name.startswith('faction211-vm-') and (V/'OWNED').is_file();A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+def command(pid):
+ x=subprocess.run(['ps','-p',str(pid),'-o','command='],capture_output=True,text=True);return x.stdout.strip() if x.returncode==0 else ''
+def remote(cmd,data=None,timeout=45,check=True):
+ x=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n'+cmd],input=data,capture_output=True,timeout=timeout)
+ if check and x.returncode:(D/'private-reboot-error.log').write_bytes(x.stdout+x.stderr);raise RuntimeError('Owned runtime transition failed; private diagnostics retained')
+ return x
+# Stop exactly the validated generated server PIDs, leaving SSH and stock services.
+script='''python3.13 - <<'INNER'
+from pathlib import Path
+import os,signal,subprocess,time,json,socket
+assert '211' in Path('/etc/faction-disposable-test').read_text()
+assert int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem']))==2128732160
+def field(pid,key):return ''.join(subprocess.check_output(['ps','-p',str(pid),'-o',key],text=True).splitlines()[1:]).strip()
+rows=[]
+for user in ['maila','mailb']:
+ pid=int(Path('/home/'+user+'/prosody.pid').read_text());uid=int(subprocess.check_output(['id','-u',user]));cmd=field(pid,'command')
+ assert field(pid,'uid')==str(uid) and './prosody' in cmd and '--config /home/'+user+'/prosody.cfg.lua' in cmd
+ rows.append({'user':user,'uid':uid,'pid':pid});os.kill(pid,signal.SIGTERM)
+for row in rows:
+ for _ in range(100):
+  x=subprocess.run(['ps','-p',str(row['pid']),'-o','stat'],capture_output=True,text=True)
+  if x.returncode or len(x.stdout.splitlines())<2:break
+  time.sleep(.1)
+ else:raise RuntimeError('owned home PID did not stop')
+for port in [32222,32223,5269,5270]:
+ with socket.socket() as s:s.settimeout(.2);assert s.connect_ex(('127.0.0.1',port))!=0
+print(json.dumps({'homes':rows,'owned_homes_stopped':True,'four_owned_mail_ports_closed':True}))
+INNER'''
+x=remote(script);(D/'homes-stopped-private.json').write_bytes(x.stdout);print('Verified and stopped only the two owned homes; four mail ports closed.',flush=True)
+# The host forwarding process is separate from base SSH and belongs to this VM.
+tunnel=int((V/'tunnel.pid').read_text());cmd=command(tunnel)
+if cmd:
+ assert 'ssh' in cmd and str(V) in cmd and '-N' in cmd and '127.0.0.1:' in cmd
+ os.kill(tunnel,signal.SIGTERM)
+ for _ in range(100):
+  if not command(tunnel):break
+  time.sleep(.05)
+ else:raise RuntimeError('owned tunnel did not stop')
+for port in json.loads((V/'tunnel-ports.json').read_text()):
+ with socket.socket() as s:s.settimeout(.2);assert s.connect_ex(('127.0.0.1',port))!=0
+qpid=int((V/'qemu.pid').read_text());assert 'qemu-system-aarch64' in command(qpid) and str(V/'disk.qcow2') in command(qpid)
+args=json.loads((V/'qemu-command.json').read_text());assert args[args.index('-m')+1]=='2048' and args[args.index('-smp')+1]=='2'
+(V/'qemu-command-before-runtime.json').write_text(json.dumps(args));new=args.copy();new[new.index('-m')+1]='1024';assert [i for i,(a,b) in enumerate(zip(args,new)) if a!=b]==[args.index('-m')+1]
+remote('/sbin/shutdown -p now',timeout=20,check=False)
+for _ in range(200):
+ if not command(qpid):break
+ time.sleep(.1)
+else:
+ assert 'qemu-system-aarch64' in command(qpid) and str(V/'disk.qcow2') in command(qpid);os.kill(qpid,signal.SIGTERM)
+ for _ in range(100):
+  if not command(qpid):break
+  time.sleep(.1)
+ else:raise RuntimeError('owned QEMU failed to stop')
+cpid=int((V/'controller.pid').read_text());cmd=command(cpid)
+if cmd:
+ assert str(V/'serial-controller.py') in cmd;os.kill(cpid,signal.SIGTERM)
+ for _ in range(100):
+  if not command(cpid):break
+  time.sleep(.05)
+ else:raise RuntimeError('owned controller failed to stop')
+print('Verified owned VM/controller shutdown; restarting the same overlay with only -m 1024 changed.',flush=True)
+with (V/'qemu-runtime.log').open('wb') as f:q=subprocess.Popen(new,cwd=R,stdout=f,stderr=f,start_new_session=True)
+(V/'qemu.pid').write_text(str(q.pid));(V/'qemu-command.json').write_text(json.dumps(new))
+with (V/'controller-runtime.log').open('wb') as f:c=subprocess.Popen(['python3',str(V/'serial-controller.py')],cwd=R,stdout=f,stderr=f,start_new_session=True)
+(V/'controller.pid').write_text(str(c.pid))
+for _ in range(150):
+ try:
+  x=remote('test -f /etc/faction-disposable-test\nsysctl -n hw.physmem',timeout=5,check=False)
+  if x.returncode==0 and x.stdout.strip()==b'1054990336':break
+ except subprocess.TimeoutExpired:pass
+ time.sleep(1)
+else:raise RuntimeError('owned 1GiB runtime not ready')
+print('Owned administrative SSH ready; actual physical memory verified1054990336 bytes.',flush=True)
+# Start only the existing private configuration and keys under their separate UIDs.
+for user in ['maila','mailb']:
+ launch='cd /usr/local/faction-mail-probe; nohup /usr/pkg/bin/lua5.4 ./prosody --config /home/'+user+'/prosody.cfg.lua > /home/'+user+'/runtime-startup.log 2>&1 < /dev/null &'
+ remote('su -m '+user+' -c '+shlex.quote(launch))
+script='''python3.13 - <<'INNER'
+from pathlib import Path
+import subprocess,json,time,socket,re
+assert '211' in Path('/etc/faction-disposable-test').read_text()
+assert Path('/usr/local/faction-mail-probe/prosody.version').read_text().strip()=='13.0.7'
+for _ in range(100):
+ ready=True
+ for port in [32222,32223,5269,5270]:
+  with socket.socket() as s:s.settimeout(.1);ready=ready and s.connect_ex(('127.0.0.1',port))==0
+ if ready:break
+ time.sleep(.1)
+else:raise RuntimeError('owned home listeners not ready')
+def field(pid,key):return ''.join(subprocess.check_output(['ps','-p',str(pid),'-o',key],text=True).splitlines()[1:]).strip()
+users=[]
+for user in ['maila','mailb']:
+ pid=int(Path('/home/'+user+'/prosody.pid').read_text());uid=int(subprocess.check_output(['id','-u',user]));assert field(pid,'uid')==str(uid) and '--config /home/'+user+'/prosody.cfg.lua' in field(pid,'command');users.append({'user':user,'uid':uid})
+net=subprocess.check_output(['netstat','-an','-f','inet','-p','tcp'],text=True)
+for port in [32222,32223,5269,5270]:
+ rows=[line for line in net.splitlines() if 'LISTEN' in line and re.search(r'[.:]'+str(port)+r'\\s',line)]
+ assert len(rows)==1 and '127.0.0.1.'+str(port) in rows[0]
+for user in ['prosody','unbound']:
+ x=subprocess.run(['pgrep','-u',user],capture_output=True,text=True);assert x.returncode==1
+print(json.dumps({'physmem_bytes':int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem'])),'cores':int(subprocess.check_output(['/sbin/sysctl','-n','hw.ncpu'])),'os':subprocess.check_output(['uname','-srm'],text=True).strip(),'rustc':subprocess.check_output(['rustc','--version'],text=True).strip(),'openssl':subprocess.check_output(['/usr/bin/openssl','version'],text=True).strip(),'homes':users,'custom_prosody_version':'13.0.7','four_owned_mail_ports_loopback_only':True,'stock_services_inactive':True,'host_tunnel_stopped':True,'only_qemu_memory_argument_changed':True}))
+INNER'''
+x=remote(script);proof=json.loads(x.stdout);assert proof['physmem_bytes']==1054990336 and proof['cores']==2
+# The existing administrative listener remains bound only to loopback.
+port=int((V/'admin-port').read_text());listeners=subprocess.check_output(['lsof','-nP','-a','-p',str(q.pid),'-iTCP','-sTCP:LISTEN'],text=True);assert '127.0.0.1:'+str(port) in listeners and '*:'+str(port) not in listeners
+proof['administrative_forward_loopback_only']=True;(D/'runtime-environment.json').write_text(json.dumps(proof,indent=2)+'\n');print('Runtime ready: two owned loopback homes,2cores,1054990336 physical bytes; stock services inactive; host tunnel stopped.',flush=True)

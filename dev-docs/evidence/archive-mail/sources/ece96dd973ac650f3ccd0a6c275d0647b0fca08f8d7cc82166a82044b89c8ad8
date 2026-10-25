@@ -1,0 +1,1029 @@
+//! Explicit bounded member-to-home cycles. No background or remote unlock entry.
+use crate::{
+    mail_checkpoint::CheckpointVault,
+    mail_data::{address, invalid, unhex},
+};
+use rustix::fs::{self, Mode as FsMode, OFlags};
+use std::{
+    fs::File,
+    io::{self, Read},
+    net::SocketAddr,
+    os::unix::fs::MetadataExt,
+    path::{Component, Path},
+};
+/// Trusted local configuration. Home passwords and device secrets have no field.
+pub struct Settings {
+    pub account: String,
+    endpoint: SocketAddr,
+    domain: String,
+    ca: Vec<u8>,
+    pin: [u8; 32],
+}
+fn private_file(path: &Path, cap: u64) -> io::Result<Vec<u8>> {
+    if !path.is_absolute()
+        || path
+            .components()
+            .any(|p| matches!(p, Component::ParentDir | Component::CurDir))
+    {
+        return Err(invalid());
+    }
+    let mut dir = File::from(fs::open(
+        "/",
+        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::CLOEXEC,
+        FsMode::empty(),
+    )?);
+    let components: Vec<_> = path
+        .components()
+        .filter_map(|p| {
+            if let Component::Normal(n) = p {
+                Some(n)
+            } else {
+                None
+            }
+        })
+        .collect();
+    let (name, parents) = components.split_last().ok_or_else(invalid)?;
+    for parent in parents {
+        dir = File::from(fs::openat(
+            &dir,
+            *parent,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            FsMode::empty(),
+        )?);
+    }
+    let m = dir.metadata()?;
+    if m.uid() != rustix::process::geteuid().as_raw() || m.mode() & 0o7777 != 0o700 {
+        return Err(invalid());
+    }
+    let file = File::from(fs::openat(
+        &dir,
+        *name,
+        OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
+        FsMode::empty(),
+    )?);
+    let m = file.metadata()?;
+    if !m.is_file()
+        || m.nlink() != 1
+        || m.uid() != rustix::process::geteuid().as_raw()
+        || m.mode() & 0o7777 != 0o600
+        || m.len() > cap
+    {
+        return Err(invalid());
+    }
+    let mut bytes = Vec::new();
+    file.take(cap + 1).read_to_end(&mut bytes)?;
+    if bytes.is_empty() || bytes.len() as u64 > cap {
+        return Err(invalid());
+    }
+    Ok(bytes)
+}
+impl Settings {
+    pub fn load(path: &Path) -> io::Result<Self> {
+        let bytes = private_file(path, 8192)?;
+        let text = std::str::from_utf8(&bytes).map_err(|_| invalid())?;
+        let mut table = text.parse::<toml::Table>().map_err(|_| invalid())?;
+        if table.remove("version").and_then(|x| x.as_integer()) != Some(1) {
+            return Err(invalid());
+        }
+        let mut take = |name: &str| {
+            table
+                .remove(name)
+                .and_then(|x| x.as_str().map(str::to_owned))
+                .ok_or_else(invalid)
+        };
+        let account = take("account")?;
+        let endpoint = take("endpoint")?
+            .parse::<SocketAddr>()
+            .map_err(|_| invalid())?;
+        let domain = take("domain")?;
+        let ca = take("ca")?;
+        let pin = unhex(&take("pin")?)?;
+        if !table.is_empty()
+            || !address(&account)
+            || account.split_once('@').map(|x| x.1) != Some(domain.as_str())
+            || endpoint.port() == 0
+            || endpoint.ip().is_unspecified()
+            || endpoint.ip().is_multicast()
+        {
+            return Err(invalid());
+        }
+        let ca = private_file(Path::new(&ca), 65536)?;
+        Ok(Self {
+            account,
+            endpoint,
+            domain,
+            ca,
+            pin,
+        })
+    }
+    pub fn transport(&self, device: u32) -> Result<faction_xmpp::Home, faction_xmpp::Error> {
+        faction_xmpp::Home::new(
+            self.endpoint,
+            &self.domain,
+            &format!("{}/faction{}", self.account, device),
+            &self.ca,
+            self.pin,
+        )
+    }
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Mode {
+    Publish,
+    Prepare,
+    Sync,
+    CatchUp,
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Error {
+    Configuration,
+    Account,
+    State,
+    Protocol,
+    PeerUnavailable,
+    Transport(faction_xmpp::Error),
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ArchiveReport { pub entries: usize, pub complete: bool }
+#[derive(Default, Debug)]
+pub struct Report {
+    pub archive: Option<ArchiveReport>,
+    pub sent: usize,
+    pub accepted: usize,
+    pub duplicates: usize,
+}
+fn backend<T>(r: io::Result<T>) -> Result<T, Error> {
+    r.map_err(|_| Error::State)
+}
+fn protocol<T>(r: io::Result<T>) -> Result<T, Error> {
+    r.map_err(|_| Error::Protocol)
+}
+fn local_response(
+    xml: &faction_xmpp::Element,
+    id: &str,
+    settings: &Settings,
+) -> Result<faction_xmpp::Element, Error> {
+    if !xml.is("iq", "jabber:client") || xml.attr("id") != Some(id) {
+        return Err(Error::Protocol);
+    }
+    let own = |s: &str| s.split('/').next() == Some(settings.account.as_str());
+    if xml.attr("to").is_some_and(|s| !own(s))
+        || xml
+            .attr("from")
+            .is_some_and(|s| !own(s) && s != settings.domain)
+    {
+        return Err(Error::Protocol);
+    }
+    let mut result = xml.clone();
+    result.set_attr(
+        "".into(),
+        "from".try_into().map_err(|_| Error::Protocol)?,
+        settings.account.as_str(),
+    );
+    if result.attr("to").is_none() {
+        result.set_attr(
+            "".into(),
+            "to".try_into().map_err(|_| Error::Protocol)?,
+            settings.account.as_str(),
+        );
+    }
+    Ok(result)
+}
+fn accept(
+    vault: &mut CheckpointVault,
+    xml: &faction_xmpp::Element,
+    clock: &CycleClock,
+    report: &mut Report,
+) -> Result<(), Error> {
+    if xml.is("presence", "jabber:client") {
+        return Ok(());
+    }
+    if !xml.is("message", "jabber:client") {
+        return Ok(());
+    }
+    if xml
+        .get_child("event", "http://jabber.org/protocol/pubsub#event")
+        .is_some()
+    {
+        return Ok(());
+    }
+    let state = backend(vault.inspection())?;
+    let peer = state.peer.ok_or(Error::State)?;
+    let binding = crate::mail_wire::Binding {
+        peer: peer.address,
+        peer_device: peer.device,
+        peer_identity: *peer.identity,
+        own: backend(vault.legacy())?.home.as_str(),
+        own_device: state.local_device,
+    };
+    let wire = protocol(crate::mail_wire::decode_message(xml, binding))?;
+    let receipt = backend(vault.receive_network(&wire, clock.now()))?;
+    if receipt.duplicate {
+        report.duplicates += 1;
+    } else {
+        report.accepted += 1;
+    }
+    Ok(())
+}
+// Kept internal so deterministic tests can exercise real checkpoint mutations
+// interleaved with matching IQ replies without weakening the transport boundary.
+trait Channel {
+    async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error>;
+    async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error>;
+}
+impl Channel for faction_xmpp::Session {
+    async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {
+        faction_xmpp::Session::send(self, xml).await
+    }
+    async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error> {
+        faction_xmpp::Session::next(self).await
+    }
+}
+struct Ready {
+    archive: Option<crate::mail_checkpoint::ArchiveCheckpoint>,
+    device: u32,
+    peer: Option<(String, u32, [u8; 32])>,
+    clock: CycleClock,
+}
+struct CycleClock {
+    epoch: u64,
+    started: std::time::Instant,
+}
+impl CycleClock {
+    fn new(epoch: u64) -> Self {
+        Self {
+            epoch,
+            started: std::time::Instant::now(),
+        }
+    }
+    fn now(&self) -> u64 {
+        self.epoch.saturating_add(self.started.elapsed().as_secs())
+    }
+}
+async fn request<C: Channel>(
+    session: &mut C,
+    vault: &mut CheckpointVault,
+    xml: faction_xmpp::Element,
+    id: &str,
+    clock: &CycleClock,
+    report: &mut Report,
+) -> Result<faction_xmpp::Element, Error> {
+    session.send(&xml).await.map_err(Error::Transport)?;
+    for _ in 0..32 {
+        let response = session.next().await.map_err(Error::Transport)?;
+        if response.is("iq", "jabber:client") && response.attr("id") == Some(id) {
+            return Ok(response);
+        }
+        accept(vault, &response, clock, report)?;
+    }
+    Err(Error::Protocol)
+}
+fn preflight(
+    vault: &CheckpointVault,
+    settings: &Settings,
+    mode: Mode,
+    now: u64,
+) -> Result<Ready, Error> {
+    // This is the first operation in cycle, before TLS setup and connection.
+    let clock = CycleClock::new(now);
+    if backend(vault.legacy())?.home != settings.account {
+        return Err(Error::Account);
+    }
+    let state = backend(vault.inspection())?;
+    if state.history_only
+        || now < state.created
+        || now > state.expires
+        || state.peer.as_ref().is_some_and(|p| p.revoked)
+    {
+        return Err(Error::State);
+    }
+    let device = state.local_device;
+    let started = state.started;
+    let peer = state
+        .peer
+        .map(|p| (p.address.to_owned(), p.device, *p.identity));
+    if mode != Mode::Publish && peer.is_none() || mode == Mode::Prepare && started {
+        return Err(Error::State);
+    }
+    if mode == Mode::CatchUp {
+        let archive = backend(vault.archive_checkpoint(clock.now()))?;
+        return Ok(Ready { device, peer, clock, archive: Some(archive) });
+    }
+    // Preserve the pre-connection native-state validation, but never retain its
+    // public keys across an await which may durably accept a prekey message.
+    backend(vault.publication(clock.now()))?;
+    Ok(Ready {
+        archive: None,
+        device,
+        peer,
+        clock,
+    })
+}
+/// One deliberate connection/cycle. A write never retires pending ciphertext.
+/// All key generation and accepted plaintext remain in the member checkpoint.
+pub async fn cycle(
+    vault: &mut CheckpointVault,
+    settings: &Settings,
+    password: &str,
+    mode: Mode,
+    now: u64,
+) -> Result<Report, Error> {
+    let ready = preflight(vault, settings, mode, now)?;
+    let home = settings.transport(ready.device).map_err(Error::Transport)?;
+    let mut session = faction_xmpp::connect(&home, password)
+        .await
+        .map_err(Error::Transport)?;
+    exchange(vault, settings, &mut session, mode, ready).await
+}
+async fn catch_up<C: Channel>(
+    vault: &mut CheckpointVault,
+    settings: &Settings,
+    session: &mut C,
+    ready: Ready,
+) -> Result<Report, Error> {
+    let mut checkpoint=ready.archive.ok_or(Error::State)?;
+    let (peer,peer_device,peer_identity)=ready.peer.ok_or(Error::State)?;
+    let own_identity=*backend(vault.inspection())?.identity;
+    let mut random=[0;32];getrandom::fill(&mut random).map_err(|_|Error::State)?;
+    let iq_id=format!("mam-iq-{}",crate::mail_data::hex(&random[..16]));
+    let query_id=format!("mam-q-{}",crate::mail_data::hex(&random[16..]));
+    let full=format!("{}/faction{}",settings.account,ready.device);
+    let q=crate::mail_archive::Query { iq_id:&iq_id,query_id:&query_id,own:&settings.account,full:&full,peer:&peer,after:checkpoint.after.as_deref() };
+    let query=protocol(crate::mail_archive::query(&q))?;
+    session.send(&query).await.map_err(Error::Transport)?;
+    let mut entries=Vec::new();
+    for _ in 0..32 {
+        let xml=tokio::time::timeout(std::time::Duration::from_secs(2),session.next())
+            .await.map_err(|_|Error::Transport(faction_xmpp::Error::Timeout))?.map_err(Error::Transport)?;
+        if xml.is("iq","jabber:client") {
+            // A finishing IQ must match exactly; errors (including a stale RSM
+            // cursor) cannot be normalized into an empty or completed page.
+            if xml.attr("id")==Some(iq_id.as_str())||xml.get_child("fin",crate::mail_archive::MAM).is_some() {
+                let complete=protocol(crate::mail_archive::fin(&xml,&q,&entries))?;
+                backend(vault.archive_checkpoint(ready.clock.now()))?;
+                let mut report=Report::default();
+                for entry in entries {
+                    let receipt=backend(vault.receive_archive(&checkpoint,&entry.id,&entry.wire,ready.clock.now()))?;
+                    checkpoint.after=Some(entry.id);
+                    if receipt.duplicate {report.duplicates+=1;} else {report.accepted+=1;}
+                }
+                report.archive=Some(ArchiveReport {entries:report.accepted+report.duplicates,complete});
+                return Ok(report);
+            }
+        } else if xml.is("message","jabber:client") {
+            if entries.len()==4 {return Err(Error::Protocol);}
+            let binding=crate::mail_wire::Binding {peer:&peer,peer_device,peer_identity,own:&settings.account,own_device:ready.device};
+            let entry=protocol(crate::mail_archive::result(&xml,&q,binding,own_identity))?;
+            if entries.iter().any(|old:&crate::mail_archive::Entry|old.id==entry.id) {return Err(Error::Protocol);}
+            entries.push(entry);
+        } else if !xml.is("presence","jabber:client") {
+            return Err(Error::Protocol);
+        }
+    }
+    Err(Error::Protocol)
+}
+async fn exchange<C: Channel>(
+    vault: &mut CheckpointVault,
+    settings: &Settings,
+    session: &mut C,
+    mode: Mode,
+    ready: Ready,
+) -> Result<Report, Error> {
+    if mode == Mode::CatchUp {
+        return catch_up(vault, settings, session, ready).await;
+    }
+    let Ready {
+        archive: _,
+        device,
+        peer,
+        clock,
+    } = ready;
+    let mut report = Report::default();
+    let own_query = protocol(crate::mail_wire::devices_query(
+        "own-devices",
+        &settings.account,
+        &settings.account,
+    ))?;
+    let own = request(
+        session,
+        vault,
+        own_query,
+        "own-devices",
+        &clock,
+        &mut report,
+    )
+    .await?;
+    let own = local_response(&own, "own-devices", settings)?;
+    let current = if own.attr("type") == Some("error") {
+        let error = own
+            .get_child("error", "jabber:client")
+            .ok_or(Error::Protocol)?;
+        if error
+            .get_child("item-not-found", "urn:ietf:params:xml:ns:xmpp-stanzas")
+            .is_none()
+        {
+            return Err(Error::Protocol);
+        }
+        Vec::new()
+    } else {
+        protocol(crate::mail_wire::devices_result(
+            &own,
+            "own-devices",
+            &settings.account,
+            &settings.account,
+        ))?
+    };
+    if current.iter().any(|&id| id != device) {
+        return Err(Error::State);
+    }
+    for id in ["pub-bundle", "pub-devices"] {
+        // request() can accept and commit native prekey messages while awaiting
+        // an IQ. Export immediately before each publication from that durable
+        // current snapshot, and recheck expiry after the preceding network wait.
+        let (bundle, prekeys) = backend(vault.publication(clock.now()))?;
+        let publication = if id == "pub-bundle" {
+            protocol(crate::mail_wire::bundle_publish(
+                id,
+                &settings.account,
+                device,
+                &bundle,
+                &prekeys,
+            ))?
+        } else {
+            protocol(crate::mail_wire::devices_publish(
+                id,
+                &settings.account,
+                &[device],
+            ))?
+        };
+        let response = request(session, vault, publication, id, &clock, &mut report).await?;
+        if local_response(&response, id, settings)?.attr("type") != Some("result") {
+            return Err(Error::Protocol);
+        }
+    }
+    session
+        .send(&faction_xmpp::Element::builder("presence", "jabber:client").build())
+        .await
+        .map_err(Error::Transport)?;
+    if mode == Mode::Publish {
+        return Ok(report);
+    }
+    let (address, peer_device, identity) = peer.ok_or(Error::State)?;
+    let query = protocol(crate::mail_wire::devices_query(
+        "peer-devices",
+        &settings.account,
+        &address,
+    ))?;
+    let response = request(session, vault, query, "peer-devices", &clock, &mut report).await?;
+    let devices =
+        crate::mail_wire::devices_result(&response, "peer-devices", &settings.account, &address)
+            .map_err(|_| Error::PeerUnavailable)?;
+    if !devices.contains(&peer_device) {
+        return Err(Error::PeerUnavailable);
+    }
+    let query = protocol(crate::mail_wire::bundle_query(
+        "peer-bundle",
+        &settings.account,
+        &address,
+        peer_device,
+    ))?;
+    let response = request(session, vault, query, "peer-bundle", &clock, &mut report).await?;
+    let peer_bundle = protocol(crate::mail_wire::bundle_result(
+        &response,
+        "peer-bundle",
+        &settings.account,
+        &address,
+        peer_device,
+        &identity,
+    ))?;
+    if mode == Mode::Prepare {
+        backend(vault.start(&peer_bundle, clock.now()))?;
+        return Ok(report);
+    }
+    for delivery in backend(vault.pending_deliveries(clock.now()))? {
+        let xml = protocol(crate::mail_wire::message(
+            &delivery.wire,
+            delivery.operation,
+        ))?;
+        session.send(&xml).await.map_err(Error::Transport)?;
+        report.sent += 1;
+    }
+    for _ in 0..32 {
+        match tokio::time::timeout(std::time::Duration::from_secs(2), session.next()).await {
+            Err(_) => return Ok(report),
+            Ok(Err(error)) => return Err(Error::Transport(error)),
+            Ok(Ok(xml)) => accept(vault, &xml, &clock, &mut report)?,
+        }
+    }
+    Err(Error::Protocol)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{
+        fs,
+        os::unix::fs::{PermissionsExt, symlink},
+    };
+    struct Owned(std::path::PathBuf);
+    impl Owned {
+        fn new() -> Self {
+            let mut id = [0; 16];
+            getrandom::fill(&mut id).unwrap();
+            let path = std::env::temp_dir()
+                .canonicalize()
+                .unwrap()
+                .join(format!("faction209-config-{}", crate::mail_data::hex(&id)));
+            fs::create_dir(&path).unwrap();
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o700)).unwrap();
+            Self(path)
+        }
+        fn files(&self) -> std::path::PathBuf {
+            let ca = self.0.join("ca.pem");
+            fs::write(&ca, b"generated public fixture CA placeholder").unwrap();
+            fs::set_permissions(&ca, fs::Permissions::from_mode(0o600)).unwrap();
+            let path = self.0.join("home.toml");
+            fs::write(&path,format!("version=1\naccount='alice@home.test'\nendpoint='127.0.0.1:5223'\ndomain='home.test'\nca='{}'\npin='{}'\n",ca.display(),"12".repeat(32))).unwrap();
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+            path
+        }
+    }
+    impl Drop for Owned {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+    #[test]
+    fn foreign_account_and_expired_state_cannot_open_a_home_connection() {
+        let owned = Owned::new();
+        let path = owned.files();
+        let mut settings = Settings::load(&path).unwrap();
+        let store = owned.0.join("store");
+        let t = 1_792_886_400;
+        let (mut vault, _) = CheckpointVault::create(
+            crate::mail_vault::Store::at(&store, true).unwrap(),
+            crate::mail_data::Data::new("alice@home.test".into()).unwrap(),
+            b"synthetic private passphrase",
+            101,
+            t,
+        )
+        .unwrap();
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        settings.account = "mallory@home.test".into();
+        assert!(matches!(
+            runtime.block_on(cycle(
+                &mut vault,
+                &settings,
+                "synthetic-home-password",
+                Mode::Publish,
+                t
+            )),
+            Err(Error::Account)
+        ));
+        settings.account = "alice@home.test".into();
+        assert!(matches!(
+            runtime.block_on(cycle(
+                &mut vault,
+                &settings,
+                "synthetic-home-password",
+                Mode::Publish,
+                t + crate::mail_checkpoint::SESSION_AGE + 1
+            )),
+            Err(Error::State)
+        ));
+    }
+    #[test]
+    fn private_regular_local_configuration_is_preloaded() {
+        let owned = Owned::new();
+        assert!(Settings::load(&owned.files()).is_ok());
+    }
+    #[test]
+    fn symlinks_hardlinks_fifo_and_public_files_are_refused() {
+        let owned = Owned::new();
+        let path = owned.files();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(Settings::load(&path).is_err());
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+        let link = owned.0.join("link");
+        symlink(&path, &link).unwrap();
+        assert!(Settings::load(&link).is_err());
+        let hard = owned.0.join("hard");
+        fs::hard_link(&path, &hard).unwrap();
+        assert!(Settings::load(&path).is_err());
+        fs::remove_file(hard).unwrap();
+        fs::remove_file(owned.0.join("ca.pem")).unwrap();
+        assert!(
+            std::process::Command::new("mkfifo")
+                .arg(owned.0.join("ca.pem"))
+                .status()
+                .unwrap()
+                .success()
+        );
+        assert!(Settings::load(&path).is_err());
+    }
+    #[test]
+    fn unknown_fields_credentials_and_non_numeric_endpoints_are_rejected() {
+        let owned = Owned::new();
+        let path = owned.files();
+        let good = fs::read_to_string(&path).unwrap();
+        for text in [
+            format!("{good}password='forbidden'\n"),
+            good.replace("127.0.0.1:5223", "home.test:5223"),
+            good.replace("alice@home.test", "alice@elsewhere.test"),
+        ] {
+            fs::write(&path, text).unwrap();
+            assert!(Settings::load(&path).is_err());
+        }
+    }
+    const NOW: u64 = 1_792_886_400;
+    const PASS: &[u8] = b"synthetic network regression passphrase";
+    fn pair() -> (Owned, CheckpointVault, CheckpointVault, Settings) {
+        let owned = Owned::new();
+        let mut alice = CheckpointVault::create(
+            crate::mail_vault::Store::at(&owned.0.join("alice"), true).unwrap(),
+            crate::mail_data::Data::new("alice@home.test".into()).unwrap(),
+            PASS,
+            101,
+            NOW,
+        )
+        .unwrap()
+        .0;
+        let mut bob = CheckpointVault::create(
+            crate::mail_vault::Store::at(&owned.0.join("bob"), true).unwrap(),
+            crate::mail_data::Data::new("bob@away.test".into()).unwrap(),
+            PASS,
+            202,
+            NOW,
+        )
+        .unwrap()
+        .0;
+        let alice_bundle = alice.bundle().unwrap();
+        let bob_bundle = bob.bundle().unwrap();
+        alice
+            .enroll(
+                "bob@away.test",
+                202,
+                &format!("ed25519:{}", crate::mail_data::hex(&bob_bundle.identity)),
+                NOW,
+            )
+            .unwrap();
+        bob.enroll(
+            "alice@home.test",
+            101,
+            &format!("ed25519:{}", crate::mail_data::hex(&alice_bundle.identity)),
+            NOW,
+        )
+        .unwrap();
+        alice.start(&bob_bundle, NOW).unwrap();
+        let settings = Settings {
+            account: "bob@away.test".into(),
+            endpoint: "127.0.0.1:9".parse().unwrap(),
+            domain: "away.test".into(),
+            ca: vec![],
+            pin: [0; 32],
+        };
+        (owned, alice, bob, settings)
+    }
+    struct Scripted {
+        reads: std::collections::VecDeque<(std::time::Duration, faction_xmpp::Element)>,
+        sent: Vec<faction_xmpp::Element>,
+    }
+    impl Channel for Scripted {
+        async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {
+            self.sent.push(xml.clone());
+            Ok(())
+        }
+        async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error> {
+            let (delay, xml) = self.reads.pop_front().ok_or(faction_xmpp::Error::Lost)?;
+            if !delay.is_zero() {
+                tokio::time::sleep(delay).await;
+            }
+            Ok(xml)
+        }
+    }
+    fn interleaved(message: faction_xmpp::Element, delay: std::time::Duration) -> Scripted {
+        let empty = "<iq xmlns='jabber:client' type='error' id='own-devices'><error><item-not-found xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/></error></iq>".parse().unwrap();
+        let ack = |id| {
+            format!("<iq xmlns='jabber:client' type='result' id='{id}'/>")
+                .parse()
+                .unwrap()
+        };
+        Scripted {
+            reads: [
+                (delay, message),
+                (std::time::Duration::ZERO, empty),
+                (std::time::Duration::ZERO, ack("pub-bundle")),
+                (std::time::Duration::ZERO, ack("pub-devices")),
+            ]
+            .into(),
+            sent: vec![],
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn publication_excludes_prekey_consumed_while_awaiting_own_device_iq() {
+        let (_owned, mut alice, mut bob, settings) = pair();
+        let consumed = bob.bundle().unwrap().prekey_id;
+        assert!(
+            bob.publication(NOW)
+                .unwrap()
+                .1
+                .iter()
+                .any(|(id, _)| *id == consumed)
+        );
+        let wire = alice
+            .queue(
+                [21; 16],
+                "interleaved subject",
+                "authenticated native body",
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        assert!(wire.prekey);
+        let message = crate::mail_wire::message(&wire, [21; 16]).unwrap();
+        let mut channel = interleaved(message, std::time::Duration::ZERO);
+        let ready = preflight(&bob, &settings, Mode::Publish, NOW).unwrap();
+        let report = exchange(&mut bob, &settings, &mut channel, Mode::Publish, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.accepted, 1);
+        assert_eq!(bob.history().unwrap().len(), 1);
+        let (bundle, prekeys) = bob.publication(NOW).unwrap();
+        assert!(!prekeys.iter().any(|(id, _)| *id == consumed));
+        let expected = crate::mail_wire::bundle_publish(
+            "pub-bundle",
+            &settings.account,
+            202,
+            &bundle,
+            &prekeys,
+        )
+        .unwrap();
+        let publication = channel
+            .sent
+            .iter()
+            .find(|xml| xml.attr("id") == Some("pub-bundle"))
+            .unwrap();
+        let published_ids: Vec<_> = publication
+            .get_child("pubsub", "http://jabber.org/protocol/pubsub")
+            .unwrap()
+            .get_child("publish", "http://jabber.org/protocol/pubsub")
+            .unwrap()
+            .get_child("item", "http://jabber.org/protocol/pubsub")
+            .unwrap()
+            .get_child("bundle", "urn:xmpp:omemo:2")
+            .unwrap()
+            .get_child("prekeys", "urn:xmpp:omemo:2")
+            .unwrap()
+            .children()
+            .map(|pk| pk.attr("id").unwrap().parse::<u32>().unwrap())
+            .collect();
+        assert!(
+            !published_ids.contains(&consumed),
+            "a committed receive must remove its consumed public prekey before publication"
+        );
+        assert_eq!(
+            publication, &expected,
+            "publication must match the current durable snapshot"
+        );
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message() {
+        let (owned, mut alice, mut bob, settings) = pair();
+        let wire = alice
+            .queue(
+                [22; 16],
+                "late subject",
+                "late authenticated body",
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        let message = crate::mail_wire::message(&wire, [22; 16]).unwrap();
+        let mut channel = interleaved(message, std::time::Duration::from_millis(1200));
+        let at_expiry = bob.inspection().unwrap().expires;
+        let ready = preflight(&bob, &settings, Mode::Publish, at_expiry).unwrap();
+        let before = fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+        let result = exchange(&mut bob, &settings, &mut channel, Mode::Publish, ready).await;
+        assert!(
+            matches!(result, Err(Error::State)),
+            "expired state must not accept a message after a network wait"
+        );
+        assert!(bob.history().unwrap().is_empty());
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(), before);
+        assert_eq!(
+            channel.sent.len(),
+            1,
+            "only the preceding own-device query may be sent"
+        );
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn connection_elapsed_is_counted_before_the_exchange_begins() {
+        let (_owned, mut alice, mut bob, settings) = pair();
+        let wire = alice
+            .queue(
+                [23; 16],
+                "connection-delayed subject",
+                "authenticated body",
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        let mut channel = interleaved(
+            crate::mail_wire::message(&wire, [23; 16]).unwrap(),
+            std::time::Duration::ZERO,
+        );
+        let at_expiry = bob.inspection().unwrap().expires;
+        let ready = preflight(&bob, &settings, Mode::Publish, at_expiry).unwrap();
+        // The real cycle awaits TLS/SASL/binding at this same boundary.
+        tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
+        let result = exchange(&mut bob, &settings, &mut channel, Mode::Publish, ready).await;
+        assert!(
+            matches!(result, Err(Error::State)),
+            "connection elapsed time belongs to the original cycle clock"
+        );
+        assert!(bob.history().unwrap().is_empty());
+        assert_eq!(channel.sent.len(), 1);
+    }
+    #[test]
+    fn revoked_recovered_and_poisoned_handles_stop_before_transport_setup() {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let (_owned, _alice, mut bob, settings) = pair();
+        bob.revoke().unwrap();
+        assert!(bob.inspection().unwrap().peer.unwrap().revoked);
+        assert!(matches!(
+            runtime.block_on(cycle(
+                &mut bob,
+                &settings,
+                "synthetic-home",
+                Mode::Publish,
+                NOW
+            )),
+            Err(Error::State)
+        ));
+
+        let owned = Owned::new();
+        let path = owned.0.join("recovered");
+        let (vault, recovery) = CheckpointVault::create(
+            crate::mail_vault::Store::at(&path, true).unwrap(),
+            crate::mail_data::Data::new(settings.account.clone()).unwrap(),
+            PASS,
+            202,
+            NOW,
+        )
+        .unwrap();
+        drop(vault);
+        let mut recovered = CheckpointVault::unlock(
+            crate::mail_vault::Store::at(&path, false).unwrap(),
+            &*recovery,
+            true,
+        )
+        .unwrap();
+        assert!(recovered.inspection().unwrap().history_only);
+        assert!(matches!(
+            runtime.block_on(cycle(
+                &mut recovered,
+                &settings,
+                "synthetic-home",
+                Mode::Publish,
+                NOW
+            )),
+            Err(Error::State)
+        ));
+
+        let (_poison_owned, _alice, mut poisoned, settings) = pair();
+        poisoned.fail_once(crate::mail_checkpoint::Fault::BeforeWrite);
+        assert!(poisoned.revoke().is_err());
+        assert!(poisoned.inspection().is_err());
+        // These settings have no CA bytes: proceeding into transport setup would
+        // return Transport(Config), so State proves the local guard stopped it.
+        assert!(matches!(
+            runtime.block_on(cycle(
+                &mut poisoned,
+                &settings,
+                "synthetic-home",
+                Mode::Publish,
+                NOW
+            )),
+            Err(Error::State)
+        ));
+    }    enum MamEnd { Good, WrongId, Lost, Idle }
+    struct MamScript {
+        wires: Vec<crate::mail_checkpoint::Wire>,
+        sent: Vec<faction_xmpp::Element>,
+        index: usize,
+        end: MamEnd,
+        complete: bool,
+        delay: std::time::Duration,
+    }
+    impl MamScript {
+        fn new(wires:Vec<crate::mail_checkpoint::Wire>)->Self { Self {wires,sent:vec![],index:0,end:MamEnd::Good,complete:true,delay:std::time::Duration::ZERO} }
+    }
+    impl Channel for MamScript {
+        async fn send(&mut self,xml:&faction_xmpp::Element)->Result<(),faction_xmpp::Error> { self.sent.push(xml.clone());Ok(()) }
+        async fn next(&mut self)->Result<faction_xmpp::Element,faction_xmpp::Error> {
+            if !self.delay.is_zero() {tokio::time::sleep(self.delay).await;}
+            let request=self.sent.first().ok_or(faction_xmpp::Error::Lost)?;
+            let query=request.get_child("query",crate::mail_archive::MAM).ok_or(faction_xmpp::Error::Lost)?;
+            if self.index<self.wires.len() {
+                let wire=&self.wires[self.index];self.index+=1;
+                let delay=faction_xmpp::Element::builder("delay","urn:xmpp:delay").build();
+                let mut delay=delay;delay.set_attr("".into(),"stamp".try_into().unwrap(),"1999-01-01T00:00:00Z");
+                let forwarded=faction_xmpp::Element::builder("forwarded","urn:xmpp:forward:0").append(delay).append(crate::mail_wire::message(wire,[1;16]).unwrap()).build();
+                let mut result=faction_xmpp::Element::builder("result",crate::mail_archive::MAM).append(forwarded).build();
+                result.set_attr("".into(),"queryid".try_into().unwrap(),query.attr("queryid").unwrap());
+                result.set_attr("".into(),"id".try_into().unwrap(),format!("item{}",self.index));
+                let mut message=faction_xmpp::Element::builder("message","jabber:client").append(result).build();
+                message.set_attr("".into(),"to".try_into().unwrap(),request.attr("to").unwrap());
+                return Ok(message);
+            }
+            match self.end { MamEnd::Lost=>return Err(faction_xmpp::Error::Lost),MamEnd::Idle=>{std::future::pending::<()>().await;},_=>{} }
+            let bounds=if self.wires.is_empty(){String::new()}else{format!("<first>item1</first><last>item{}</last>",self.wires.len())};
+            let id=if matches!(self.end,MamEnd::WrongId){"wrong"}else{request.attr("id").unwrap()};
+            Ok(format!("<iq xmlns='jabber:client' type='result' id='{id}'><fin xmlns='urn:xmpp:mam:2' complete='{}'><set xmlns='http://jabber.org/protocol/rsm'>{bounds}<count>999</count></set></fin></iq>",self.complete).parse().unwrap())
+        }
+    }
+    #[tokio::test(flavor="current_thread")]
+    async fn catch_up_commits_native_page_without_presence_pep_or_retry() {
+        let (_owned,mut alice,mut bob,settings)=pair();bob.enable_archive(NOW).unwrap();
+        let wire=alice.queue([31;16],"offline subject","offline body",NOW,NOW).unwrap();
+        let mut channel=MamScript::new(vec![wire]);
+        let ready=preflight(&bob,&settings,Mode::CatchUp,NOW).unwrap();
+        let report=exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await.unwrap();
+        assert_eq!(report.accepted,1);assert_eq!(report.sent,0);assert_eq!(report.duplicates,0);
+        let page=report.archive.unwrap();assert_eq!(page.entries,1);assert!(page.complete);
+        assert_eq!(bob.history().unwrap()[0].subject.as_str(),"offline subject");
+        assert_eq!(bob.archive_checkpoint(NOW).unwrap().after.as_deref(),Some("item1"));
+        assert_eq!(channel.sent.len(),1);assert!(channel.sent[0].get_child("query",crate::mail_archive::MAM).is_some());
+    }
+    #[tokio::test(flavor="current_thread")]
+    async fn catch_up_lost_idle_or_invalid_fin_commits_nothing() {
+        for end in [MamEnd::WrongId,MamEnd::Lost,MamEnd::Idle] {
+            let (owned,mut alice,mut bob,settings)=pair();bob.enable_archive(NOW).unwrap();
+            let before=fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+            let wire=alice.queue([32;16],"uncommitted subject","uncommitted body",NOW,NOW).unwrap();
+            let mut channel=MamScript::new(vec![wire]);channel.end=end;
+            let ready=preflight(&bob,&settings,Mode::CatchUp,NOW).unwrap();
+            assert!(exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await.is_err());
+            assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(),before);assert!(bob.history().unwrap().is_empty());
+            assert_eq!(channel.sent.len(),1);
+        }
+    }
+    #[tokio::test(flavor="current_thread")]
+    async fn catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial() {
+        let (owned,mut alice,mut bob,settings)=pair();bob.enable_archive(NOW).unwrap();
+        let mut wires=vec![];for id in 40..45 {wires.push(alice.queue([id;16],"bounded subject","bounded body",NOW,NOW).unwrap());}
+        let before=fs::read(owned.0.join("bob/mail.fkv")).unwrap();
+        let mut channel=MamScript::new(wires);let ready=preflight(&bob,&settings,Mode::CatchUp,NOW).unwrap();
+        assert!(exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await.is_err());
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(),before);
+        let mut channel=MamScript::new(vec![]);channel.complete=false;
+        let ready=preflight(&bob,&settings,Mode::CatchUp,NOW).unwrap();
+        let report=exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await.unwrap();
+        assert_eq!(report.archive.unwrap().entries,0);assert!(!report.archive.unwrap().complete);
+        assert_eq!(fs::read(owned.0.join("bob/mail.fkv")).unwrap(),before);
+    }
+    #[tokio::test(flavor="current_thread")]
+    async fn catch_up_tampered_second_stops_at_last_good_cursor_and_reopens() {
+        let (owned,mut alice,mut bob,settings)=pair();bob.enable_archive(NOW).unwrap();
+        let first=alice.queue([51;16],"first","authenticated first body",NOW,NOW).unwrap();
+        let mut second=alice.queue([52;16],"second","authenticated second body",NOW,NOW).unwrap();second.payload[0]^=1;
+        let mut channel=MamScript::new(vec![first.clone(),second]);let ready=preflight(&bob,&settings,Mode::CatchUp,NOW).unwrap();
+        assert!(matches!(exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await,Err(Error::State)));
+        assert_eq!(bob.history().unwrap().len(),1);assert_eq!(bob.archive_checkpoint(NOW).unwrap().after.as_deref(),Some("item1"));
+        drop(bob);let mut bob=CheckpointVault::unlock(crate::mail_vault::Store::at(&owned.0.join("bob"),false).unwrap(),PASS,false).unwrap();
+        assert_eq!(bob.archive_checkpoint(NOW).unwrap().after.as_deref(),Some("item1"));
+        let mut channel=MamScript::new(vec![first]);
+        // A repeated ciphertext may have another opaque archive id; history and
+        // native keys must deduplicate while the later archive position commits.
+        let ready=preflight(&bob,&settings,Mode::CatchUp,NOW).unwrap();
+        // Reuse starts at item1 here, so the same cursor itself is rejected.
+        assert!(exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await.is_err());
+        assert_eq!(bob.history().unwrap().len(),1);
+    }
+    #[tokio::test(flavor="current_thread")]
+    async fn catch_up_preflight_rejects_disabled_and_expiry_after_wait() {
+        let (_owned,mut alice,mut bob,settings)=pair();
+        assert!(matches!(preflight(&bob,&settings,Mode::CatchUp,NOW),Err(Error::State)));
+        bob.enable_archive(NOW).unwrap();
+        let wire=alice.queue([61;16],"late","authenticated late body",NOW,NOW).unwrap();
+        let mut channel=MamScript::new(vec![wire]);channel.delay=std::time::Duration::from_millis(1200);
+        let ready=preflight(&bob,&settings,Mode::CatchUp,bob.inspection().unwrap().expires).unwrap();
+        assert!(matches!(exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await,Err(Error::State)));
+        assert!(bob.history().unwrap().is_empty());assert_eq!(bob.archive_checkpoint(NOW).unwrap().after,None);
+    }
+    #[tokio::test(flavor="current_thread")]
+    async fn catch_up_expired_during_connect_sends_no_query() {
+        let (_owned,_alice,mut bob,settings)=pair();bob.enable_archive(NOW).unwrap();
+        let ready=preflight(&bob,&settings,Mode::CatchUp,bob.inspection().unwrap().expires).unwrap();
+        tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
+        let mut channel=MamScript::new(vec![]);
+        assert!(matches!(exchange(&mut bob,&settings,&mut channel,Mode::CatchUp,ready).await,Err(Error::State)));
+        assert!(channel.sent.is_empty(),"a local expiry after connect must precede query transmission");
+    }
+
+}

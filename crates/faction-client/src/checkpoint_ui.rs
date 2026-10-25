@@ -451,12 +451,24 @@ impl Screen<'_> {
             v.history()?.len(),
             v.inspect_outbox()?.len()
         ))?;
-        self.print("[U] Publish public keys   [K] Prepare verified peer\r\n[C] Compose and queue     [N] Connect / sync\r\n[P] Public identity       [V] Verify peer\r\n[H] History               [O] Pending operation IDs\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device          [B] History-only backup\r\n[S] Reset local secrets   [D] Legacy local drafts\r\n[L] Lock and exit\r\n")?;
+        self.print(if v.inspection()?.archive_enabled {
+            "Archive checkpoints: enabled\r\n"
+        } else {
+            "Archive checkpoints: disabled; explicit upgrade required\r\n"
+        })?;
+        self.print("[G] Enable archive checkpoints\r\n[A] Catch up one archive page\r\n")?;
+        self.print("[U] Publish public keys   [K] Prepare verified peer\r\n")?;
+        self.print(if v.inspection()?.archive_enabled {
+            "[C] Compose and queue     [N] Send pending\r\n"
+        } else {
+            "[C] Compose and queue     [N] Connect / sync\r\n"
+        })?;
+        self.print("[P] Public identity       [V] Verify peer\r\n[H] History               [O] Pending operation IDs\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device          [B] History-only backup\r\n[S] Reset local secrets   [D] Legacy local drafts\r\n[L] Lock and exit\r\n")?;
         let mut decoder = Decoder::new();
         loop {
             if let Some(Key::Hotkey(key)) = decoder.feed(self.byte()?, Instant::now()) {
                 let key = key.to_ascii_uppercase();
-                if b"UKCNPVHOTRFBSDL".contains(&key) {
+                if b"UKCNPVHOTRFBSDLGA".contains(&key) {
                     return Ok(key);
                 }
             }
@@ -480,10 +492,40 @@ impl Screen<'_> {
         key: u8,
     ) -> io::Result<()> {
         use faction_client::mail_network::{self, Mode};
-        if !b"UKCNO".contains(&key) {
+        if !b"UKCNOGA".contains(&key) {
             return self.action(v, key);
         }
         self.clear()?;
+        if key == b'G' {
+            if v.inspection()?.archive_enabled {
+                self.print("Archive checkpoints already enabled; existing cursor kept.\r\n")?;
+            } else {
+                self.print("Explicit checkpoint schema upgrade for one bounded archive page.\r\nExisting keys, trust, history, recovery and pending ciphertext remain.\r\nArchive mode receives retained mail with A; N sends pending ciphertext without announcing availability.\r\nOlder clients cannot open the upgraded schema. Keep a history-only backup first.\r\n")?;
+                self.confirm(
+                    "Type upgrade to enable encrypted archive checkpoints: ",
+                    "upgrade",
+                )?;
+                match v.enable_archive(now()?) {
+                    Ok(()) => self.print("Archive checkpoints enabled; existing messages, keys and pending ciphertext kept.\r\n")?,
+                    Err(_) => {
+                        v.inspection()?;
+                        self.print("Archive upgrade stopped; check verified peer, recovery, expiry and retained-store limits.\r\n")?;
+                    }
+                }
+            }
+            return self.pause();
+        }
+        if key == b'A' {
+            if !v.inspection()?.archive_enabled {
+                self.print("Enable archive checkpoints with G before catch-up.\r\n")?;
+                return self.pause();
+            }
+            if v.archive_checkpoint(now()?).is_err() {
+                self.print("Catch-up unavailable; check verified peer, recovery, expiry and full history/outbox.\r\nNo archive cursor or pending ciphertext was changed.\r\n")?;
+                return self.pause();
+            }
+            self.print("One explicit archive page: at most four entries. Server order and completeness are not guaranteed.\r\n")?;
+        }
         if key == b'O' {
             self.print("Durable pending ciphertext; delivery remains unproven.\r\nA socket write never retires these IDs. Use Retire only as a deliberate local decision.\r\n")?;
             for item in v.inspect_outbox()? {
@@ -523,6 +565,7 @@ impl Screen<'_> {
         let mode = match key {
             b'U' => Mode::Publish,
             b'K' => Mode::Prepare,
+            b'A' => Mode::CatchUp,
             _ => Mode::Sync,
         };
         if mode == Mode::Prepare {
@@ -551,8 +594,33 @@ impl Screen<'_> {
         drop(password);
         self.activity = Instant::now();
         match result {
-            Ok(report)=>self.print(&format!("Manual cycle complete. Sent writes: {}; accepted: {}; duplicates: {}.\r\nPending ciphertext is retained. A write is not a delivery/read receipt.\r\n",report.sent,report.accepted,report.duplicates))?,
-            Err(_)=>{v.inspection()?;self.print("Home cycle stopped; pending ciphertext retained.\r\nCheck local configuration, account or peer; history remains available.\r\n")?;}
+            Ok(report) => {
+                if let Some(page) = report.archive {
+                    self.print(&format!("Archive page saved. Entries: {}; accepted: {}; duplicates or known sent copies: {}.\r\n", page.entries, report.accepted, report.duplicates))?;
+                    self.print(if page.complete {
+                        "Server marked this page complete; this does not prove complete server history.\r\n"
+                    } else {
+                        "More may be available. Use A for another deliberate page.\r\n"
+                    })?;
+                    self.print("Pending ciphertext is retained; archived sent copies are not delivery receipts.\r\n")?;
+                } else {
+                    self.print(&format!("Manual cycle complete. Sent writes: {}; accepted: {}; duplicates: {}.\r\nPending ciphertext is retained. A write is not a delivery/read receipt.\r\n",report.sent,report.accepted,report.duplicates))?;
+                }
+            }
+            Err(error) => {
+                if mode == Mode::CatchUp && v.inspection().is_err() {
+                    self.print("Local checkpoint unavailable. Lock and reopen the canonical store before further work.\r\n")?;
+                    return Err(invalid());
+                }
+                v.inspection()?;
+                self.print(if matches!(error, mail_network::Error::ArchiveCursorUnavailable) {
+                    "Home no longer recognizes the saved archive position.\r\nRetained history is intact. Automatic reset or skip is unavailable.\r\nAsk your home operator about archive retention; the saved cursor is kept.\r\n"
+                } else if mode == Mode::CatchUp {
+                    "Catch-up stopped; earlier accepted entries may already be saved.\r\nInspect History and retry explicitly. After ambiguous local I/O, lock and reopen the canonical store.\r\n"
+                } else {
+                    "Home cycle stopped; pending ciphertext retained.\r\nCheck local configuration, account or peer; history remains available.\r\n"
+                })?;
+            }
         }
         self.pause()
     }
@@ -578,7 +646,7 @@ pub fn run_online(path: &Path, config: &Path, unicode: bool) -> io::Result<()> {
             activity: Instant::now(),
             unicode,
         };
-        s.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\nManual connections; keys and decryption stay on this device.\r\nNo reliable offline/archive synchronization yet.\r\n")?;
+        s.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\nManual connections; keys and decryption stay on this device.\r\nManual archive pages; server completeness is not guaranteed.\r\n")?;
         let store = Store::at(path, false)?;
         let password = s.line("LOCAL checkpoint passphrase (hidden): ", 128, true)?;
         let mut vault = CheckpointVault::unlock(store, password.as_bytes(), false)?;

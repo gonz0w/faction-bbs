@@ -1,0 +1,26 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.66s
+     Running unittests src/lib.rs (/private/tmp/faction211-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 18 tests
+test mail_network::tests::private_regular_local_configuration_is_preloaded ... ok
+test mail_network::tests::unknown_fields_credentials_and_non_numeric_endpoints_are_rejected ... ok
+test mail_network::tests::symlinks_hardlinks_fifo_and_public_files_are_refused ... ok
+test mail_network::tests::foreign_account_and_expired_state_cannot_open_a_home_connection ... ok
+test mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq ... ok
+test mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry ... ok
+test mail_network::tests::catch_up_cancellation_after_result_preserves_checkpoint ... ok
+test mail_network::tests::catch_up_total_stanza_budget_and_stale_local_token_stop ... ok
+test mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial ... ok
+test mail_network::tests::catch_up_full_outbox_and_foreign_settings_stop_before_transport ... ok
+test mail_network::tests::catch_up_expired_during_connect_sends_no_query ... ok
+test mail_network::tests::catch_up_own_sent_echo_matches_durable_history_without_retiring_outbox ... ok
+test mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins ... ok
+test mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message ... ok
+test mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens ... ok
+test mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait ... ok
+test mail_network::tests::revoked_recovered_and_poisoned_handles_stop_before_transport_setup ... ok
+test mail_network::tests::catch_up_lost_idle_or_invalid_fin_commits_nothing ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 9.10s
+

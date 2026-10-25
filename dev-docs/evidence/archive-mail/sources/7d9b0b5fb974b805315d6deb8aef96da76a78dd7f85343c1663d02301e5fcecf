@@ -1,0 +1,28 @@
+from pathlib import Path
+import hashlib,json,subprocess,tarfile,urllib.request,os,shlex
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction211-owned');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text())
+def remote(cmd,data=None,timeout=120):
+ x=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n'+cmd],input=data,capture_output=True,timeout=timeout)
+ if x.returncode:(P/'lab-private-error.txt').write_bytes(x.stdout+x.stderr);raise RuntimeError('Owned lab step failed; private diagnostics retained')
+ return x.stdout
+public=P/'public';public.mkdir(exist_ok=True);packages=json.loads((R/'dev-docs/evidence/home-mail/fixture-packages.json').read_text());proof=json.loads((R/'dev-docs/evidence/home-mail/fixture-provenance.json').read_text())
+for row in packages+[dict(url=proof['source']['url'],sha256=proof['source']['archive_sha256'])]:
+ name=row['url'].split('/')[-1];file=public/name
+ if not file.exists():file.write_bytes(urllib.request.urlopen(row['url'],timeout=60).read())
+ assert hashlib.sha256(file.read_bytes()).hexdigest()==row['sha256'],name
+ if name.endswith('.tgz'):
+  with tarfile.open(file) as t:
+   names=[v.name for v in t.getmembers()];assert not any(Path(n).suffix.lower() in {'.js','.ts','.mjs','.cjs','.jsx','.tsx'} or 'node_modules' in Path(n).parts for n in names)
+print('Exact reviewed official Prosody/prerequisite archives verified.',flush=True)
+shutil=None
+archive=P/'public.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for p in public.iterdir():t.add(p,arcname=p.name)
+ t.add(R/'experiments/084-mail-proof/prosody-netbsd-lua54.patch',arcname='prosody-netbsd-lua54.patch')
+remote('test ! -e /root/faction211-setup\ninstall -d -m 700 /root/faction211-setup/public\numask 077\nprintf "%s\\n" "owned issue211 disposable software fixture" > /etc/faction-disposable-test\nchmod 644 /etc/faction-disposable-test\ntar -xzf - -C /root/faction211-setup/public',archive.read_bytes())
+remote('PKG_PATH=/root/faction211-setup/public\nPKG_RCD_SCRIPTS=NO\nexport PKG_PATH PKG_RCD_SCRIPTS\npkg_add /root/faction211-setup/public/expat-2.8.3.tgz /root/faction211-setup/public/prosody-13.0.3.tgz',timeout=180)
+remote('test ! -e /home/factionbuild/prosody211\ninstall -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/prosody211\ntar -xzf /root/faction211-setup/public/prosody-13.0.7.tar.gz -C /home/factionbuild/prosody211\ncp /root/faction211-setup/public/prosody-netbsd-lua54.patch /home/factionbuild/prosody211/\nchown -R factionbuild:factionbuild /home/factionbuild/prosody211')
+build='cd /home/factionbuild/prosody211/prosody-13.0.7 && patch -p1 < ../prosody-netbsd-lua54.patch && ./configure --ostype=netbsd --no-example-certs --lua-version=5.4 --lua-suffix=5.4 --prefix=/usr/pkg && make -j 2 CFLAGS="-Wall -fPIC -D_NETBSD_SOURCE -I/usr/pkg/include -I/usr/pkg/include/lua-5.4"'
+remote('su -m factionbuild -c '+shlex.quote(build),timeout=180)
+remote('cp -R /home/factionbuild/prosody211/prosody-13.0.7 /usr/local/faction-mail-probe\nchmod -R a+rX /usr/local/faction-mail-probe')
+print('Owned guest source-built Prosody13.0.7 ready; no mail listener started.',flush=True)

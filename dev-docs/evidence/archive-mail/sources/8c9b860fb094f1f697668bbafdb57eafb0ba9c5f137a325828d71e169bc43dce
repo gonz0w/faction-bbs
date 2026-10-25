@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction211-owned/prepare-homes.py", line 23, in <module>
+    remote('cd /usr/local/faction-mail-probe\n/usr/pkg/bin/lua5.4 -e '+shlex.quote(code),(password+'\n').encode())
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction211-owned/prepare-homes.py", line 7, in remote
+    if x.returncode:(P/'home-private-error.txt').write_bytes(x.stdout+x.stderr);raise RuntimeError('Owned home preparation failed')
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned home preparation failed
