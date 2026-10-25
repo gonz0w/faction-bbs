@@ -1,0 +1,19 @@
+{
+  "result": "continuation-pass",
+  "exit": 0,
+  "phase": "server-plaintext-check",
+  "wall_seconds": 17.206,
+  "nominal_ram_mib": 1024,
+  "physmem_bytes": 1054990336,
+  "codec_sha256": "2f68838331150cb43bb5446ed5bb4e9baa492eaeb644cc8e952f9cad7c2eac69",
+  "native_failures": [],
+  "milestones": [
+    "existing_alice_prepare_succeeded",
+    "existing_encrypted_a_to_b_accepted",
+    "existing_authenticated_reply_and_pending_retention",
+    "existing_reopen_retry_preserves_operations_and_duplicate_history",
+    "existing_no_plaintext_in_home_message_storage_or_logs"
+  ],
+  "executed_native_actions": 16,
+  "fresh_full_harness_claim": false
+}

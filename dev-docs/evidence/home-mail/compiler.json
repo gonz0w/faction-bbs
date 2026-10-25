@@ -1,0 +1,141 @@
+{
+  "result": "compile-only-pass",
+  "tests_executed": false,
+  "servers_started": false,
+  "vm_nominal_ram_mib": 2048,
+  "root_release_opt": 2,
+  "standalone_release_opt": 3,
+  "source_archive_sha256": "18cafc2c809d03efbdca7d670ff669de8fd1a3371860cd670628585994bdae42",
+  "source_files": 285,
+  "compiled_executable_records": 23,
+  "unique_current_executables": 22,
+  "stages": [
+    {
+      "stage": "01-default",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "faction-client",
+        "--no-default-features",
+        "--bin",
+        "faction-client"
+      ],
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "status": "passed",
+      "exit": 0,
+      "wall_seconds": 9.46
+    },
+    {
+      "stage": "02-network",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "faction-client",
+        "--features",
+        "network-mail",
+        "--bin",
+        "faction-client",
+        "--example",
+        "home_mail_fixture",
+        "--example",
+        "checkpoint_ui_fixture"
+      ],
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "status": "passed",
+      "exit": 0,
+      "wall_seconds": 19.752
+    },
+    {
+      "stage": "03-product-tests-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "faction-client",
+        "-p",
+        "faction-omemo",
+        "--features",
+        "faction-client/network-mail",
+        "--all-targets",
+        "--no-run"
+      ],
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "status": "passed",
+      "exit": 0,
+      "wall_seconds": 20.867
+    },
+    {
+      "stage": "04-transport-tests-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-xmpp/Cargo.toml",
+        "--release",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--no-run"
+      ],
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "status": "failed",
+      "exit": 101,
+      "wall_seconds": 0.025
+    },
+    {
+      "stage": "04b-transport-tests-compile-resume",
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-xmpp/Cargo.toml",
+        "--release",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--no-run"
+      ],
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "status": "passed",
+      "exit": 0,
+      "wall_seconds": 172.172
+    },
+    {
+      "stage": "05-transport-example",
+      "command": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "crates/faction-xmpp/Cargo.toml",
+        "--release",
+        "--offline",
+        "--locked",
+        "--example",
+        "transport_fixture"
+      ],
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "status": "passed",
+      "exit": 0,
+      "wall_seconds": 4.74
+    }
+  ],
+  "resolved_failures": [
+    {
+      "stage": "04-transport-tests-compile",
+      "resolved_by": "04b-transport-tests-compile-resume",
+      "reason": "only missing offline cc1.10.0 cache, exact qualified archive/source verified; no source/lock changes"
+    }
+  ],
+  "runtime_collector_files": 7
+}

@@ -10,7 +10,12 @@ publish.workspace = true
 default = []
 native-mail = ["dep:faction-omemo", "faction-omemo/native"]
 
+network-mail = ["native-mail", "dep:faction-xmpp", "dep:tokio", "dep:roxmltree"]
+
 [dependencies]
+faction-xmpp = { path = "../faction-xmpp", optional = true }
+tokio = { version = "=1.54.1", default-features = false, features = ["rt", "time", "net", "io-util", "macros"], optional = true }
+roxmltree = { workspace = true, optional = true }
 faction-omemo = { path = "../faction-omemo", optional = true, default-features = false }
 faction-client-pty = { path = "../faction-client-pty" }
 faction-files = { path = "../faction-files" }
@@ -27,3 +32,7 @@ chacha20poly1305.workspace = true
 [[example]]
 name = "checkpoint_ui_fixture"
 required-features = ["native-mail"]
+
+[[example]]
+name = "home_mail_fixture"
+required-features = ["network-mail"]

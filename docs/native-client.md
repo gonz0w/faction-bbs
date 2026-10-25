@@ -5,7 +5,8 @@ software VM. See [ADR 0033](../dev-docs/decisions/0033-native-terminal-files.md)
 and [validation](../dev-docs/evidence/native-client-netbsd/README.md).
 The client provides integrated file transfers, recent room/chat file links and an
 optional [local board launcher](board-launcher.md) for independent configured communities.
-Home identity, XMPP and encrypted mail are **not implemented** in this increment.
+The default-off [manual home-mail entry](online-mail.md) adds device-local encrypted
+XMPP exchange. Roaming authentication and integrated background mail remain separate.
 
 ## Connect
 
@@ -89,7 +90,7 @@ transfer. Normal keyboard actions and local confirmation choose those operations
 The native Files screen is local and currently has a fixed palette; the board's
 sysop themes/art continue outside it. Client theming can evolve independently.
 
-## Plain SSH and future mail
+## Plain SSH and member-device mail
 
 Ordinary SSH remains supported. Its Files screen retains manual key/grant/SFTP
 commands, including `link OBJECT_ID` and `cancel TRANSFER_ID`. It does not acquire
@@ -97,8 +98,9 @@ local filesystem access from the native protocol.
 
 The optional [local mail vault](local-mail-vault.md) now adds a separate trusted
 local screen, encrypted drafts/device pins, hidden unlock and encrypted
-backup/recovery. It opens no SSH connection. Native inbox/send, OMEMO device
-keys/ratchets and roaming login remain unimplemented under #90/#91.
+backup/recovery. Those v1 commands open no SSH or home connection. The separate
+[manual home-mail entry](online-mail.md) uses v2 native keys/history/outbox for
+online exchange; roaming login remains #91.
 [Encrypted attachments](private-mail.md#encrypted-attachments) are separately scoped:
 current sysop-readable file areas are not a substitute for client-encrypted blobs.
 
@@ -120,7 +122,8 @@ filtered. This adds no mail, image-import or universal visual certification.
 The member-owned [board launcher](board-launcher.md) optionally opens the existing
 [local offline vault](local-mail-vault.md) with M between board visits. Its store
 path is an explicit private catalog setting. No SSH child exists during unlock;
-network private mail and roaming authentication remain follow-on work.
+the separate [manual home-mail entry](online-mail.md) provides online exchange.
+Roaming authentication and automatic mailbox catch-up remain separate.
 
 
 ## Deliberate travel preferences
@@ -149,3 +152,7 @@ An explicit feature build adds the [v2 checkpoint console](checkpoint-console.md
 for member-local setup/upgrade, device verification, authenticated history and
 durable pending-operation inspection. It is separate from the v1 picker entry,
 opens no connection and claims no live network inbox/send or roaming identity.
+
+The optional [manual encrypted home-mail guide](online-mail.md) covers the separate
+`--mail-online` entry and `network-mail` build feature. It does not change Files,
+board visits, the picker's v1 M entry or the offline checkpoint console.

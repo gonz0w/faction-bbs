@@ -1,0 +1,33 @@
+   Compiling libc v0.2.191
+   Compiling getrandom v0.4.3
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling memchr v2.8.3
+   Compiling roxmltree v0.21.1
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.50s
+     Running unittests src/lib.rs (/private/tmp/faction209-codec-tests/target/debug/deps/faction_omemo-8a2c27e473d94185)
+
+running 2 tests
+test native::network_tests::network_public_prekeys_all_open_and_used_key_disappears_only_after_commit ... FAILED
+test native::network_tests::network_public_prekeys_are_bounded_distinct_and_survive_import ... FAILED
+
+failures:
+
+---- native::network_tests::network_public_prekeys_all_open_and_used_key_disappears_only_after_commit stdout ----
+
+thread 'native::network_tests::network_public_prekeys_all_open_and_used_key_disappears_only_after_commit' (5827842) panicked at crates/faction-omemo/src/network_tests.rs:21:42:
+called `Result::unwrap()` on an `Err` value: Error
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- native::network_tests::network_public_prekeys_are_bounded_distinct_and_survive_import stdout ----
+
+thread 'native::network_tests::network_public_prekeys_are_bounded_distinct_and_survive_import' (5827860) panicked at crates/faction-omemo/src/network_tests.rs:8:35:
+called `Result::unwrap()` on an `Err` value: Error
+
+
+failures:
+    native::network_tests::network_public_prekeys_all_open_and_used_key_disappears_only_after_commit
+    native::network_tests::network_public_prekeys_are_bounded_distinct_and_survive_import
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 16 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p faction-omemo --lib`

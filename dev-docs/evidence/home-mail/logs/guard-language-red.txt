@@ -1,0 +1,32 @@
+F..........F
+======================================================================
+FAIL: test_actual_darwin_tls12_only_matrix_is_valid (test_home_mail_evidence.HomeMailEvidence.test_actual_darwin_tls12_only_matrix_is_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_evidence.py", line 143, in test_actual_darwin_tls12_only_matrix_is_valid
+    self.validate(value)
+    ~~~~~~~~~~~~~^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_evidence.py", line 134, in validate
+    guard.validate(value, lambda name,digest:b'executed')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_home_mail_evidence.py", line 123, in validate
+    assert {'TLSv1.2', 'TLSv1.3'} <= {row['tls_version'] for row in rows}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+======================================================================
+FAIL: test_transport_platform_and_native_tls13_are_required (test_home_mail_evidence.HomeMailEvidence.test_transport_platform_and_native_tls13_are_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_evidence.py", line 146, in test_transport_platform_and_native_tls13_are_required
+    self.reject(lambda d:d['transport']['host']['matrix'].update(platform='NetBSD'))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_evidence.py", line 138, in reject
+    with self.assertRaises((AssertionError,KeyError)):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'AssertionError'>, <class 'KeyError'>) not raised
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.005s
+
+FAILED (failures=2)

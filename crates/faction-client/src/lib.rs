@@ -5,3 +5,12 @@ mod checkpoint_tests;
 pub mod mail_checkpoint;
 pub mod mail_data;
 pub mod mail_vault;
+
+#[cfg(feature = "network-mail")]
+pub mod mail_wire;
+
+#[cfg(all(test, feature = "native-mail"))]
+mod network_checkpoint_tests;
+
+#[cfg(feature = "network-mail")]
+pub mod mail_network;

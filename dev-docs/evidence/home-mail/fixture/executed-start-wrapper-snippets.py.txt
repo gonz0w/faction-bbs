@@ -1,0 +1,5 @@
+for user in ['maila','mailb']:
+ command='cd /usr/local/faction-mail-probe; nohup /usr/pkg/bin/lua5.4 ./prosody --config /home/'+user+'/prosody.cfg.lua > /home/'+user+'/startup.log 2>&1 < /dev/null &'
+ remote('su -m '+user+' -c '+shlex.quote(command))
+
+command='cd /usr/local/faction-mail-probe; nohup /usr/pkg/bin/lua5.4 ./prosody --config /home/mailb/prosody.cfg.lua > /home/mailb/startup-final.log 2>&1 < /dev/null &'

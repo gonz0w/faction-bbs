@@ -1,0 +1,36 @@
+    Blocking waiting for file lock on build directory
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling faction-xmpp v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-xmpp)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.34s
+     Running unittests src/lib.rs (/private/tmp/faction209-codec-tests/target/debug/deps/faction_client-8240718d549cfb91)
+
+running 10 tests
+test mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys ... ok
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... ok
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... ok
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... ok
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... ok
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+test mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys ... FAILED
+
+failures:
+
+---- mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys stdout ----
+
+thread 'mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys' (5828290) panicked at crates/faction-client/src/mail_wire.rs:292:9:
+assertion `left == right` failed
+  left: 1
+ right: 25
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys
+
+test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p faction-client --lib`

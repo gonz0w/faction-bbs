@@ -1,0 +1,19 @@
+{
+  "result": "fail",
+  "exit": 1,
+  "wall_seconds": 2.732,
+  "nominal_ram_mib": 1024,
+  "physmem_bytes": 1054990336,
+  "old_positive_harness_sha256": "c144bd2433f587b69572aab9c02d53884eed47232821ed2859b2f7cfcf347d3d",
+  "native_failures": [
+    {
+      "step": 6,
+      "action": "prepare",
+      "device": "alice",
+      "exit": 1,
+      "error": "PeerUnavailable"
+    }
+  ],
+  "executed_native_actions": 6,
+  "source_files_changed": false
+}

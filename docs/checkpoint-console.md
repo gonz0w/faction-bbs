@@ -105,3 +105,7 @@ copies cannot be revoked by changing your password. Arbitrary active-file rollba
 is not detected. This is a bounded experimental implementation, not an audit,
 physical storage certification or supported-capacity claim. See the
 [format and recovery contract](../dev-docs/native-mail-checkpoints.md).
+
+For deliberate direct home connections, use the separate default-off
+[manual encrypted mail entry](online-mail.md). This offline console retains its
+existing setup, recovery and inspection behavior.

@@ -85,4 +85,7 @@ bridge or visited board, and no room export follows from these requirements.
 
 The member-side offline vault is available through [its explicit local entry](../docs/local-mail-vault.md).
 Remote BBS output cannot select stores, unlock keys or change device trust. Encrypted
-network mail, OMEMO ratchet state, roaming proofs and attachments remain separate.
+network mail uses the separate default-off [native home adapter](native-home-mail.md)
+and atomic checkpoint state. A transport/codec supplies ciphertext only; it cannot
+unlock a vault or supply claimed verified plaintext. Roaming proofs, integrated
+background views and attachments remain separately scoped.

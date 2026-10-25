@@ -115,6 +115,25 @@ int proof_bundle(const void *ptr, uint8_t out[160], uint32_t ids[2]) {
     ids[0]=ctx->store.cursignedprekey.id; ids[1]=pk->id;
     return 0;
 }
+/* Read-only public publication view. Keep consumed private prekeys for delayed
+ * same-session authentication; exclude the passive session's used key from new
+ * announcements. An active initiator's usedpk_id refers to the peer's store. */
+int proof_public_prekeys(const void *ptr, uint8_t out[32*32],
+                         uint32_t ids[32], size_t *count) {
+    const struct proof *ctx=ptr;
+    if (!out || !ids || !count) return ERROR;
+    memset(out,0,32*32); memset(ids,0,32*sizeof(*ids)); *count=0;
+    if (!ctx || !ctx->store.init) return ERROR;
+    for (unsigned i=0; i<OMEMO2_NUMPREKEYS && *count<32; ++i) {
+        const struct omemo2PreKey *pk=ctx->store.prekeys+i;
+        if (!pk->id || (ctx->session.initiation==2 &&
+                        pk->id==ctx->session.usedpk_id)) continue;
+        ids[*count]=pk->id;
+        omemo2SerializeKey(out+32*(*count),pk->kp.pub);
+        ++*count;
+    }
+    return 0;
+}
 int proof_trust(void *ptr, const uint8_t pin[32]) {
     struct proof *ctx=ptr;
     if (!ctx || !ctx->store.init || !pin) return ERROR;

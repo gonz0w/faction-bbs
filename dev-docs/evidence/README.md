@@ -366,3 +366,9 @@ records. The resolver selects those bytes by recorded digest; later console
 changes do not refresh prior checkpoint or interoperability observations.
 
 [Native XMPP transport evidence](xmpp-transport/README.md) preserves the host/NetBSD research profile, rejected intermediate observations and distinct compiler/runtime costs. Its digest-pinned guard verifies saved results; it does not rerun a VM or establish product mail support.
+
+[Native home-mail evidence](home-mail/README.md) records the optional manual
+encrypted exchange, real terminal/transport controls, distinct compiler/runtime
+costs and source-matched owned teardown. Its three baseline manifests preserve
+prior checkpoint, console, transport and dependency evidence unchanged. Reliable
+archive catch-up remains a separate issue; saved checks are not fresh execution.

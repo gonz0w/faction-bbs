@@ -1,0 +1,15 @@
+........E.
+======================================================================
+ERROR: test_selected_local_sources_and_license_are_reviewed_too (test_network_mail_policy.NetworkMailPolicy.test_selected_local_sources_and_license_are_reviewed_too)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_network_mail_policy.py", line 60, in test_selected_local_sources_and_license_are_reviewed_too
+    row = policy.scan_local(package, ['network-mail'], repository)
+  File "/Users/cam/DEV/faction-bbs/tools/check_network_mail_dependencies.py", line 80, in scan_local
+    raise ValueError('selected local source review not implemented')
+ValueError: selected local source review not implemented
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.017s
+
+FAILED (errors=1)

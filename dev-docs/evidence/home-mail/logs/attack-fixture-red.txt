@@ -1,0 +1,49 @@
+EEEEE....
+======================================================================
+ERROR: test_attack_module_is_explicit_and_owned_fixture_only (test_home_mail_fixture.AdversarialFixtureBoundary.test_attack_module_is_explicit_and_owned_fixture_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_fixture.py", line 69, in test_attack_module_is_explicit_and_owned_fixture_only
+    config = fixture.server_configuration('b', attack_directory=directory)
+TypeError: server_configuration() got an unexpected keyword argument 'attack_directory'
+
+======================================================================
+ERROR: test_denial_requires_exact_native_status_and_unchanged_checkpoint (test_home_mail_fixture.AdversarialFixtureBoundary.test_denial_requires_exact_native_status_and_unchanged_checkpoint)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_fixture.py", line 84, in test_denial_requires_exact_native_status_and_unchanged_checkpoint
+    fixture.denied_cycle(Path('/binary'), home, '/config', 'Transport(Pin)')
+    ^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_home_mail' has no attribute 'denied_cycle'
+
+======================================================================
+ERROR: test_public_results_have_all_named_controls_and_no_private_fields (test_home_mail_fixture.AdversarialFixtureBoundary.test_public_results_have_all_named_controls_and_no_private_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_fixture.py", line 132, in test_public_results_have_all_named_controls_and_no_private_fields
+    result = fixture.public_result(fixture.POSITIVE_CHECKS + negative)
+             ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_home_mail' has no attribute 'public_result'
+
+======================================================================
+ERROR: test_receipt_requires_fresh_nonce_mode_and_bounded_counts (test_home_mail_fixture.AdversarialFixtureBoundary.test_receipt_requires_fresh_nonce_mode_and_bounded_counts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_fixture.py", line 119, in test_receipt_requires_fresh_nonce_mode_and_bounded_counts
+    self.assertEqual(fixture.parse_attack_receipt(raw, token, 'added-device'), dict(devices=1, bundles=1, messages=1, unexpected=0))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_home_mail' has no attribute 'parse_attack_receipt'
+
+======================================================================
+ERROR: test_wrong_pin_configuration_is_private_changes_only_pin_and_is_removed (test_home_mail_fixture.AdversarialFixtureBoundary.test_wrong_pin_configuration_is_private_changes_only_pin_and_is_removed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_home_mail_fixture.py", line 106, in test_wrong_pin_configuration_is_private_changes_only_pin_and_is_removed
+    with fixture.wrong_pin_configuration(dict(config=str(path))) as changed:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_home_mail' has no attribute 'wrong_pin_configuration'
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.003s
+
+FAILED (errors=5)

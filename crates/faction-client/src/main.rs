@@ -454,6 +454,17 @@ fn run() -> io::Result<()> {
             ))
         };
     }
+    #[cfg(feature = "network-mail")]
+    if args.first().is_some_and(|s| s == "--mail-online") {
+        if !(args.len() == 3 || (args.len() == 4 && args[3] == "--unicode")) {
+            return Err(invalid());
+        }
+        return checkpoint_ui::run_online(
+            Path::new(&args[1]),
+            Path::new(&args[2]),
+            args.len() == 4,
+        );
+    }
     #[cfg(feature = "native-mail")]
     if args.first().is_some_and(|s| s == "--mail-checkpoints") {
         if !(args.len() == 3 || (args.len() == 4 && args[3] == "--unicode")) {

@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "checks": [
+    "full_native_device_identity_deliberately_verified",
+    "durable_public_bundle_published_and_verified_peer_prepared",
+    "native_encrypted_subject_and_body_cross_two_homes",
+    "native_authenticated_reply_and_explicit_pending_outbox",
+    "reopen_retry_preserves_exact_operations_and_bounded_duplicate_history",
+    "no_private_subject_or_body_in_home_message_storage_or_logs",
+    "tls_wrong_leaf_pin_denied_without_checkpoint_mutation",
+    "home_wrong_password_denied_without_checkpoint_mutation",
+    "server_replaced_device_list_denied_without_checkpoint_mutation",
+    "server_changed_identity_bundle_denied_without_checkpoint_mutation",
+    "server_added_device_never_enrolled_or_addressed"
+  ],
+  "scope": "complete",
+  "independent_unprivileged_homes": 2,
+  "native_product_client": true,
+  "no_offline_archive_reliability_claim": true,
+  "live_provider_contact": false
+}

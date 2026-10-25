@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "origin_commit": "2224c41df1b6c633b27fd4243e60a99df2532dff",
+  "source_root": "sources/pre209-native-network",
+  "files": {
+    "Cargo.toml": "86c5df10a5c23823083cee7f06256caf578de5d514f79d4b2d4bb8c401a30a77",
+    "Cargo.lock": "399ea8a6d6bb7ff8dce529d796f797acccc2b87502575e3c3997e2c654aa2d6d",
+    "crates/faction-client/Cargo.toml": "e1238de446bb06edc2a811eac682b45373e0a21962248fd731f9e26603c458ec",
+    "crates/faction-client/src/lib.rs": "1d86c910d7c632dcce848fa8142e6a2bd23917fc2a06ff684f21caf8065869ea",
+    "crates/faction-client/src/main.rs": "3276a66d8588d90a7435e0c81e374fdd166a128a8a981cfc0b1ce617bf1acc1f",
+    "crates/faction-client/src/checkpoint_ui.rs": "df9b95f2f6d5c5343e3e9914a6a9a5ccaf11c277c7f193adc7ff84edb0620f88",
+    "crates/faction-client/src/mail_checkpoint.rs": "f2eaa2b4d3d68aab52c836ac53869b787fe1356e5779072e4872c9934a8c8e75",
+    "crates/faction-omemo/src/sce.rs": "acf2cfd7fe20d7f4820ed6e8b97d4038300cf374bc7cb5319e6cdedf179db5bf",
+    ".github/workflows/documentation.yml": "903dfe8e29100964a7515814d2ab866bbbd889bbc8dd33cbd434e1c5ab462e24"
+  },
+  "records": {
+    "dev-docs/evidence/checkpoint-console/results.json": "71c7bd9a553ee8c69f60b4aca4e55fa3ec4ec3a6aef5c23a84671042a95565ec",
+    "dev-docs/evidence/mail-checkpoints/results.json": "d93af1e39174b1382b1b261acd105ca25075267f1dcbb7b357c8a410f94acd79",
+    "dev-docs/evidence/xmpp-transport/results.json": "12a94d6a0d50c4351b36dff5a022bbd0d82279f449ade74a82f1a00cfebcd500"
+  }
+}

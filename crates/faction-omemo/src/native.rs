@@ -17,6 +17,12 @@ unsafe extern "C" {
     fn proof_free(ctx: *mut c_void);
     fn proof_setup(ctx: *mut c_void) -> i32;
     fn proof_bundle(ctx: *const c_void, out: *mut u8, ids: *mut u32) -> i32;
+    fn proof_public_prekeys(
+        ctx: *const c_void,
+        out: *mut u8,
+        ids: *mut u32,
+        count: *mut usize,
+    ) -> i32;
     fn proof_trust(ctx: *mut c_void, pin: *const u8) -> i32;
     fn proof_start(ctx: *mut c_void, bundle: *const u8, ids: *const u32) -> i32;
     fn proof_seal(
@@ -136,6 +142,34 @@ impl Device {
             signed_prekey_id: ids[0],
             prekey_id: ids[1],
         })
+    }
+    /// Public prekeys from committed state only; no private state is exported.
+    pub fn public_prekeys(&self) -> Result<Vec<(u32, [u8; 32])>> {
+        self.ready()?;
+        let mut keys = [[0; 32]; 32];
+        let mut ids = [0; 32];
+        let mut count = 0;
+        let _guard = NATIVE_LOCK.lock().map_err(|_| Error)?;
+        if unsafe {
+            proof_public_prekeys(
+                self.ptr.as_ptr(),
+                keys.as_mut_ptr().cast(),
+                ids.as_mut_ptr(),
+                &mut count,
+            )
+        } != 0
+            || count > 32
+        {
+            return Err(Error);
+        }
+        let mut out = Vec::with_capacity(count);
+        for i in 0..count {
+            if !(1..=i32::MAX as u32).contains(&ids[i]) || ids[..i].contains(&ids[i]) {
+                return Err(Error);
+            }
+            out.push((ids[i], keys[i]));
+        }
+        Ok(out)
     }
     pub fn trust(&mut self, typed: &str) -> Result<()> {
         self.ready()?;
@@ -811,3 +845,7 @@ mod tests {
         assert!(decode("000000", 2).is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "network_tests.rs"]
+mod network_tests;
