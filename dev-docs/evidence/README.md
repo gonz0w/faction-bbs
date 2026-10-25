@@ -332,3 +332,12 @@ shared SSH/native controls. Guard 62 checks 340 exact guest inputs, current keys
 feature/role filtering, inert house notes, read-only navigation and classic fallback.
 There are 72 offline/archive checks. Normal resource/schema defaults remain;
 only an owned clone is used and the saved playground stays stopped and unchanged.
+
+
+The [Nightwire refresh baseline](nightwire-refresh-baseline-manifest.json) preserves
+one additional measured menu preview from the merged `42aff651` tree. The
+board-guide record references this exact later menu variant; it differs from
+older frozen previews at the same path. Its bytes and the complete original
+board-guide record are independently pinned. The dark artwork replacement does
+not refresh that measurement or claim a new emulator/font observation. All prior
+snapshots and result identities remain unchanged.

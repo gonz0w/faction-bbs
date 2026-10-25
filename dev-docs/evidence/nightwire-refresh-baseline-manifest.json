@@ -1,0 +1,11 @@
+{
+  "files": {
+    "docs/images/nightwire-menu.svg": "eef05b78b5e08270ab241c4a11756ff688ccb5362bf055beebe20cc3cf7d2dc1"
+  },
+  "origin_commit": "42aff65138942c9c56bd39132a0a38737b4cd667",
+  "records": {
+    "dev-docs/evidence/board-guide-netbsd/results.json": "5dac3b652607c91c0676f55153f8bedd1adb1a650766fc69dd505bbb45385257"
+  },
+  "schema": 1,
+  "source_root": "sources/pre196-art"
+}
