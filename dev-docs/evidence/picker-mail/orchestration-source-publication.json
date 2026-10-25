@@ -1,0 +1,12 @@
+{
+  "result": "public-source-only",
+  "files": 31,
+  "generated_private_values_checked": 9,
+  "generated_value_matches": 0,
+  "private_key_blocks": 0,
+  "raw_logs_included": false,
+  "actual_private_profiles_included": false,
+  "known_fixture_constants_already_public": true,
+  "static_paths_describe_owned_fixture_and_workspace": true,
+  "network_literals_are_loopback_or_synthetic_vm_only": true
+}

@@ -1,0 +1,28 @@
+{
+  "artifacts_sha256": {
+    "examples/checkpoint_ui_fixture": "26197383ba5e3f1c12d322a5ff97e71c50875b83bf29fc8c3281e507e4b23d01",
+    "examples/home_mail_fixture": "d9a127625c5860684b1d732f2d31673b9d4f3d076c83f480462006ac6c670500",
+    "faction-client": "3d93e4110668c8b6b3dde0124b969d4c8e4e2e3eb4b415a96a19dd744be12688"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "1",
+    "-p",
+    "faction-client",
+    "--features",
+    "network-mail",
+    "--bin",
+    "faction-client",
+    "--example",
+    "checkpoint_ui_fixture",
+    "--example",
+    "home_mail_fixture"
+  ],
+  "result": "pass",
+  "returncode": 0
+}

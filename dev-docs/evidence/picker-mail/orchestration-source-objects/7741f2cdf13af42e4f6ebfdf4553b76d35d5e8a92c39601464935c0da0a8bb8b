@@ -1,0 +1,16 @@
+from lab import *
+manifest=json.loads((P/'source-server-stage.json').read_text())
+code='''import json,sys,hashlib,subprocess
+from pathlib import Path
+expected=json.load(sys.stdin);root=Path('/home/factionbuild/source214');actual={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts}
+assert actual==expected
+names=['faction','faction-service','faction-files','faction-tty','faction-daemon']
+built={n:hashlib.sha256(Path('/home/factionbuild/target214/release',n).read_bytes()).hexdigest() for n in names}
+installed={n:hashlib.sha256(Path('/usr/local/libexec',n).read_bytes()).hexdigest() for n in names}
+assert built==installed
+print(json.dumps(dict(result='pass',matched_source_files=len(actual),installed_artifacts_match=True,built_sha256=built,installed_sha256=installed,source_sha256=actual,system=subprocess.check_output(['uname','-srm'],text=True).strip(),rust=subprocess.check_output(['/usr/pkg/bin/rustc','--version'],text=True).strip(),openssl=subprocess.check_output(['/usr/bin/openssl','version'],text=True).strip(),cores=int(subprocess.check_output(['sysctl','-n','hw.ncpu'])),physmem_bytes=int(subprocess.check_output(['sysctl','-n','hw.physmem64'])),scope='native-server-compile-and-install-only')),indent=2))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(manifest).encode());(P/'server-build-proof.json').write_bytes(r.stdout)
+r=remote('cat /home/factionbuild/proof214/server-build.json');(P/'server-build.json').write_bytes(r.stdout)
+r=remote('cat /home/factionbuild/proof214/server-build.log');(P/'server-build.log').write_bytes(r.stdout)
+print('Native server copied-source membership and all five installed binary hashes match; compile-only proof retained.')

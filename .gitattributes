@@ -114,3 +114,9 @@ dev-docs/evidence/archive-mail/** -text
 dev-docs/evidence/archive-mail/sources/** linguist-generated=true
 dev-docs/evidence/archive-mail/native-source-objects/** linguist-generated=true
 dev-docs/evidence/archive-mail/final-source-objects/** linguist-generated=true
+
+# #214 native protocol/source evidence retains exact executed bytes.
+dev-docs/evidence/picker-mail/** -text
+dev-docs/evidence/picker-mail/source-objects/** linguist-generated=true
+dev-docs/evidence/picker-mail/native-source-objects/** linguist-generated=true
+dev-docs/evidence/picker-mail/lead-source-objects/** linguist-generated=true

@@ -201,8 +201,10 @@ reader's copy. Public reference namespaces survive restore; private session iden
 rotates and transfer grants are discarded. No link automatically fetches from a
 remote BBS or publishes local files. Current file areas are readable by the sysop;
 future device-encrypted mail attachments require a separate ciphertext/key boundary
-under #88. The client has an optional [encrypted local vault](local-mail-vault.md), but
-no network mail encryption/delivery or roaming authentication.
+under #88. The client has an optional [encrypted local vault](local-mail-vault.md) and
+an optional [native home-mail console](online-mail.md) with bounded encrypted
+exchange/archive. Its [local picker entry](picker-home-mail.md) cannot be opened
+by remote text or frames. Roaming authentication remains separate.
 
 
 The [encrypted-mail research proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)

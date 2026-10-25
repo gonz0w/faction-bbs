@@ -1,0 +1,29 @@
+"""The supported picker proof must never report skipped assertions as passes."""
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+import probe_picker_home_mail as probe
+
+
+class RequiredMailFixture(unittest.TestCase):
+    def test_supported_api_requires_inspection_fixture_before_creating_private_state(self):
+        with self.assertRaisesRegex(ValueError, 'mail_fixture is required'):
+            probe.probe(Path('/missing/client'), Path('/missing/checkpoint-fixture'))
+
+    def test_supported_cli_requires_inspection_fixture_before_opening_paths(self):
+        with tempfile.TemporaryDirectory(prefix='faction214-picker-contract-OWNED-') as temp:
+            output = Path(temp) / 'result.json'
+            result = subprocess.run([sys.executable, str(Path(probe.__file__)),
+                                     '--client', '/missing/client',
+                                     '--checkpoint-fixture', '/missing/checkpoint-fixture',
+                                     '--output', str(output)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn('--mail-fixture is required', result.stderr)
+            self.assertFalse(output.exists())
+
+
+if __name__ == '__main__':
+    unittest.main()

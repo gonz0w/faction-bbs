@@ -1,0 +1,29 @@
+{
+  "status": "REJECTED",
+  "reason": "The optional inspector was omitted. The probe reported seventeen passes while skipping the backend connection and exact history/pending/archive-cursor assertions. This result is excluded from acceptance.",
+  "reported_result": {
+    "path": "host/rejected-missing-inspector-reported-pass.json",
+    "sha256": "36a9bd66fe230ffdf1d87bc6750fedc198d8432847c9b83c3cd2327c9f52326b",
+    "count": 17
+  },
+  "probe_sha256": "ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836",
+  "actual_outer_oracle": {
+    "expected_exit": 2,
+    "observed_exit": 0,
+    "result": "failed"
+  },
+  "red_unit": {
+    "failures": 1,
+    "errors": 1,
+    "tests": 2,
+    "sha256": "32e8dc91e681dbe915b4ed2c057ac0305628f8cee8a840775069141c239664a3",
+    "original_artifact": "red-required-fixture-unit.log",
+    "raw_log_exported": false
+  },
+  "replacement": {
+    "stage": "candidate-04",
+    "probe_sha256": "2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81",
+    "required_inspector": true,
+    "contract_tests_passed": 2
+  }
+}

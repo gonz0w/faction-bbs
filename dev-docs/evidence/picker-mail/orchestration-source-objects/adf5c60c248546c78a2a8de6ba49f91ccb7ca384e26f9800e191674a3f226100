@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,subprocess,socket,tempfile,os,hashlib
+p=Path(tempfile.mkdtemp(prefix='connect-diagnostic-',dir='/home/factionbuild/device214'));p.chmod(0o700)
+t=Path('/home/factionbuild/target214/release/examples');root=Path('/home/factionbuild/source214-client');store=p/'mail'
+r=subprocess.run([str(t/'checkpoint_ui_fixture'),str(store),'archive-pending'],capture_output=True);assert r.returncode==0
+ca=p/'ca.pem';ca.write_bytes((root/'crates/faction-xmpp/tests/fixtures/local-ca.pem').read_bytes());ca.chmod(0o600)
+with socket.socket() as endpoint:
+ endpoint.bind(('127.0.0.1',0));config=p/'home.toml';config.write_text('version=1\naccount="alice@home.test"\nendpoint="127.0.0.1:'+str(endpoint.getsockname()[1])+'"\ndomain="home.test"\nca='+json.dumps(str(ca))+'\npin="'+'ab'*32+'"\n');config.chmod(0o600)
+ before=(store/'mail.fkv').read_bytes();r=subprocess.run([str(t/'home_mail_fixture'),'sync',str(store),str(config)],input=b'checkpoint synthetic fixture password\ngenerated-synthetic-home-password\n',capture_output=True)
+ (p/'transport-error.private').write_bytes(r.stderr);result=dict(returncode=r.returncode,stdout_bytes=len(r.stdout),stderr=r.stderr.decode(),canonical_unchanged=(store/'mail.fkv').read_bytes()==before)
+ try:
+  with socket.create_connection(endpoint.getsockname(),timeout=2):result['python_connect']='unexpected success'
+ except OSError as e:result['python_connect_errno']=e.errno
+ print(json.dumps(result))

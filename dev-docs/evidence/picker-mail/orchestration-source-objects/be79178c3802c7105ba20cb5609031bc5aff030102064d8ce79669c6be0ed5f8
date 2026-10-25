@@ -1,0 +1,18 @@
+from lab import *
+import time
+build=json.loads(remote('cat /home/factionbuild/proof214/client-build.json').stdout);assert build['result']=='pass'
+(P/'native-client-build.json').write_text(json.dumps(build,indent=2))
+q=json.loads((V/'qemu-command.json').read_text());pid=int((V/'qemu.pid').read_text());cmd=subprocess.check_output(['ps','-p',str(pid),'-o','command='],text=True).strip();assert str(V/'disk.qcow2') in cmd and '-m 2048' in cmd
+r=remote('/sbin/shutdown -p now',check=False);assert r.returncode in [0,255]
+for _ in range(60):
+ if subprocess.run(['ps','-p',str(pid)],capture_output=True).returncode:break
+ time.sleep(1)
+else:raise RuntimeError('Owned builder did not shut down; preserve and inspect')
+controller=int((V/'controller.pid').read_text());assert subprocess.run(['ps','-p',str(controller)],capture_output=True).returncode!=0
+q[q.index('-m')+1]='1024';q[q.index('-serial')+1]=f'unix:{V}/serial-runtime.sock,server=on,wait=on'
+controller_source=(V/'serial-controller.py').read_text().replace("p/'serial.sock'","p/'serial-runtime.sock'").replace("p/'serial.log'","p/'serial-runtime.log'").replace("p/'console.in'","p/'console-runtime.in'")
+(V/'serial-runtime-controller.py').write_text(controller_source)
+with (V/'qemu-runtime.log').open('wb') as log:p=subprocess.Popen(q,stdout=log,stderr=log,start_new_session=True)
+(V/'runtime-qemu.pid').write_text(str(p.pid));(V/'runtime-qemu-command.json').write_text(json.dumps(q))
+with (V/'controller-runtime.log').open('wb') as log:c=subprocess.Popen(['python3',str(V/'serial-runtime-controller.py')],stdout=log,stderr=log,start_new_session=True)
+(V/'runtime-controller.pid').write_text(str(c.pid));print('Same owned overlay cleanly rebooted: two cores/1GiB runtime; serial wait-on retains full boot. Saved owner remains stopped.')

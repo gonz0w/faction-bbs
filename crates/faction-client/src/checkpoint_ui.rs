@@ -1,5 +1,6 @@
 //! Deliberate member-device terminal entry. Never called by a remote stream,
-//! profile, environment variable, picker, or transport control frame.
+//! profile, environment variable, or transport control frame. The explicit home-mail
+//! action in the trusted local picker may call run_online between board visits.
 
 use faction_client::{
     mail_checkpoint::{CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX},

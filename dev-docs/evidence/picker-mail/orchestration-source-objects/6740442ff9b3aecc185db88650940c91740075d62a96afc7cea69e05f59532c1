@@ -1,0 +1,10 @@
+from lab import *
+import hashlib
+(P/'native-runtime-rejected.log').write_bytes(remote('cat /home/factionbuild/proof214/native-runtime-launch.log').stdout)
+remote('/etc/rc.d/faction_doors onestop; printf "faction_doors=NO\\n" > /etc/rc.conf.d/faction_doors')
+name='tools/probe_picker_mail_outage.py';data=(R/name).read_bytes();runtime=json.loads((P/'runtime-source-final.json').read_text());old=runtime[name];new=hashlib.sha256(data).hexdigest();runtime[name]=new
+changes=json.loads((P/'runtime-source-overrides.json').read_text());changes.append(dict(name=name,compiled_sha256=old,runtime_sha256=new));(P/'runtime-source-overrides.json').write_text(json.dumps(changes,indent=2));(P/'runtime-source-final.json').write_text(json.dumps(runtime,indent=2));dest=P/'runtime-overrides'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+remote('cat > /home/factionbuild/source214-client/'+name+'; chown factionbuild:factionbuild /home/factionbuild/source214-client/'+name,data)
+remote('cat > /home/factionbuild/proof214/native-runtime.py; chown factionbuild:factionbuild /home/factionbuild/proof214/native-runtime.py',(P/'native_runtime.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof214/native-runtime.py > /home/factionbuild/proof214/native-runtime-launch2.log 2>&1 < /dev/null &'")
+print('Native runner relaunched with explicit tool PATH; third Python-only oracle override retained. Inherited optional doors stopped in owned overlay.')

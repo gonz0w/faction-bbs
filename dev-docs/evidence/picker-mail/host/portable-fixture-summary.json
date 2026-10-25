@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "scope": "Portable unavailable-home fixture qualification only; product Rust remains unchanged.",
+  "result": "pass",
+  "host_platform": "Darwin",
+  "host_machine": "arm64",
+  "host_pty_build_profile": "debug",
+  "final_owned_source_stage": "candidate-06-portable-final",
+  "final_owned_source_sha256": {
+    "crates/faction-client/src/launcher.rs": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+    "crates/faction-client/src/main.rs": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+    "crates/faction-client/src/checkpoint_ui.rs": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+    "tools/probe_picker_home_mail.py": "80b70d83502b37cb0c842fbd572264562ce215b18baf99ac5533675b3a8e2aa7",
+    "tools/test_picker_home_mail.py": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179"
+  },
+  "prior_bound_socket_probe_sha256": "2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81",
+  "socket_reservation_closed_before_use": true,
+  "actual_refusal_required_before_and_after": true,
+  "timeout_or_success_is_not_refusal": true,
+  "adapter_error_remains": "Transport(Connect)",
+  "product_deadlines_changed": false,
+  "rust_sources_unchanged": true,
+  "red_unit": {
+    "result": "expected_failure",
+    "tests": 5,
+    "failures": 0,
+    "errors": 3,
+    "original_artifact": "red-portable-endpoint-unit.log",
+    "sha256": "138faec0c588b3bcd3a2c54eca89c659b33997f3a05ef7a80410f54817f6591c",
+    "raw_log_exported": false
+  },
+  "green_unit": {
+    "result": "pass",
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "original_artifact": "green-portable-endpoint-unit-final.log",
+    "sha256": "bedc69ddc63d77b75aa91e9bcf59e11e843e0e5c863c8a442612f7e6ff898ba2",
+    "raw_log_exported": false
+  },
+  "cases": [
+    {
+      "record": "host/picker-home-mail.json",
+      "count": 17,
+      "original_artifact": "green-pty-06-portable.json",
+      "sha256": "36a9bd66fe230ffdf1d87bc6750fedc198d8432847c9b83c3cd2327c9f52326b",
+      "result": "pass"
+    },
+    {
+      "record": "host/default-off.json",
+      "count": 1,
+      "original_artifact": "default-off-06-portable.json",
+      "sha256": "526dc32df191adfd7bc22b010015a6702f463cdd11875da03ebafbd0ee730080",
+      "result": "pass"
+    },
+    {
+      "record": "host/native-only-off.json",
+      "count": 1,
+      "original_artifact": "native-only-off-06-portable.json",
+      "sha256": "526dc32df191adfd7bc22b010015a6702f463cdd11875da03ebafbd0ee730080",
+      "result": "pass"
+    }
+  ],
+  "prior_release_rust_summary": "host/rust-summary.json",
+  "prior_release_rust_summary_source_stage": "candidate-04",
+  "prior_release_rust_summary_is_separate_from_debug_pty": true,
+  "raw_logs_exported": false,
+  "runtime_fixture_files_exported": false
+}

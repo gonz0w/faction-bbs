@@ -1,0 +1,21 @@
+from pathlib import Path
+import json,hashlib
+p=Path('/private/tmp/faction214-lab-OWNED');out=p/'public-result';out.mkdir(mode=0o700,exist_ok=False)
+def write(name,value):
+ data=json.dumps(value,indent=2,sort_keys=True)+'\n'
+ assert not any(v in data for v in ['/private/tmp/','/Users/','127.0.0.1','10.0.2.15','sysop_password','home_password','admin_argv','member_argv','host-settings','settings.json']),name
+ (out/name).write_text(data)
+def read(name):return json.loads((p/(name+'.json')).read_text())
+for name in ['native-default-off','native-native-only','native-picker-vault','native-online-ui','native-archive-ui','native-checkpoint-ui','native-v1-vault','native-picker','native-combined','host-combined','native-rust-summary','host-build-environment','runtime-environment','saved-preserved-runtime-summary']:
+ write(name+'.json',read(name))
+runtime=read('native-runtime');runtime['stages']=[{k:v for k,v in stage.items() if k!='command'} for stage in runtime['stages']];write('native-runtime.json',runtime)
+for name in ['native-final-proof','host-final-proof','server-build-proof','native-client-build-proof','host-final-build','server-config-proof']:
+ write(name+'.json',read(name))
+corrections=read('fixture-corrections-summary');corrections['firewall_or_host_network_tuning_changed']=corrections.pop('firewall_or_network_policy_changed');write('fixture-corrections-summary.json',corrections)
+write('normal-bounds.json',dict(result='pass',scope='current service configuration and unchanged source bounds; no capacity claim',max_sessions=8,launch_ms=5000,credential_permits=2,kernel_credential_slots=2,owner_helper_budget=3,file_streams=2,file_chunk_bytes=32768,max_file_bytes=16777216,grant_seconds=300,output_drain_seconds=5,experimental_capacity=False,loopback_host_forwards_only=True,fresh_board_and_file_store=True,no_public_listener=True,argon2_unchanged=True))
+archives={}
+for n in ['source-server-stage.tar.gz','source-client-final.tar.gz']:
+ f=p/n;archives[n]=dict(sha256=hashlib.sha256(f.read_bytes()).hexdigest(),bytes=f.stat().st_size)
+write('source-provenance.json',dict(result='pass',scope='public project source retained in owned lab; no generated fixture profiles, mail stores, credentials or raw terminal logs',compiled_server_members=len(read('source-server-stage')),compiled_client_members=len(read('source-client-final')),runtime_members=len(read('runtime-source-final')),archives=archives,runtime_overrides=read('runtime-source-overrides'),public_ca_only=True,public_ca_sha256=hashlib.sha256((p/'source-client-final/crates/faction-xmpp/tests/fixtures/local-ca.pem').read_bytes()).hexdigest(),generated_private_files_excluded=True,full_source_archives_copied_into_public_result=False))
+manifest={f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in out.iterdir() if f.is_file()};(out/'manifest.json').write_text(json.dumps(dict(files=manifest,raw_transcripts=False,generated_private_credentials=False),indent=2)+'\n')
+print('Prepared',len(manifest),'fixed public JSON records plus manifest in owned/public-result; no private paths/ports/credentials or raw logs exported.')

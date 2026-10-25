@@ -1,0 +1,47 @@
+{
+  "firewall_or_host_network_tuning_changed": false,
+  "first_build_audit": {
+    "correction": "syntax-only repair; unchanged source and binaries",
+    "reason": "unmatched parenthesis in audit helper",
+    "result": "fail-before-audit"
+  },
+  "first_host_attempt": {
+    "correction": "assert online heading and every authenticated pending operation ID",
+    "product_failure": false,
+    "reason": "offline outbox heading expected in online console",
+    "result": "fail"
+  },
+  "inherited_clone_services": {
+    "autostart_disabled_in_owned_overlay": true,
+    "doors_stopped_before_final_qualification": true,
+    "member_and_files_stopped_before_fresh_setup": true,
+    "saved_owner_started": false
+  },
+  "initial_vm_console": {
+    "correction": "one owned serial newline; runtime reboot uses wait-on",
+    "reason": "userconf prompt preceded wait-off serial attachment",
+    "result": "startup-observation"
+  },
+  "native_bound_socket": {
+    "canonical_unchanged": true,
+    "correction": "select ephemeral port then close; require actual ConnectionRefused before and after proof",
+    "independent_bound_tcp": "timeout",
+    "independent_closed_tcp_errno": 61,
+    "result": "fail",
+    "returncode": 1,
+    "safe_error": "Transport(Timeout)",
+    "stderr_bytes": 19,
+    "stdout_bytes": 0,
+    "strict_transport_connect_assertion_retained": true
+  },
+  "native_runner_initial": {
+    "correction": "explicit system tool path",
+    "product_failure": false,
+    "reason": "sysctl not in login PATH",
+    "result": "fail-before-tests"
+  },
+  "product_rust_changed_after_build": false,
+  "result": "pass-after-preserved-fixture-corrections",
+  "same_native_bound_failure_repeated_before_helper_handoff": true,
+  "timeout_bounds_changed": false
+}

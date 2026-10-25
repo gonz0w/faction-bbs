@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "picker_tests": 5,
+  "combined_oracle_tests": 4,
+  "failed": 0,
+  "scope": "native Python harness requirements and negative oracles",
+  "source_sha256": {
+    "tools/probe_picker_home_mail.py": "80b70d83502b37cb0c842fbd572264562ce215b18baf99ac5533675b3a8e2aa7",
+    "tools/test_picker_home_mail.py": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179",
+    "tools/probe_picker_mail_outage.py": "a3c1fdb3ac692460c038ba21550942cfaeaf9337331b70fde188af1db25ee3ba",
+    "tools/test_probe_picker_mail_outage.py": "bf4cd701f747ebbd830b60be78425f461b99b3b3bdc0e01c03bd3f5484bac712"
+  },
+  "log_sha256": "282cb95fb8c940ff64c5e49232f5a7660bf235f179ff0341f4302530a3662bd0"
+}

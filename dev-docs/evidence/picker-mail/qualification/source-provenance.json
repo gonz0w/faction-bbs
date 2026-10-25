@@ -1,0 +1,43 @@
+{
+  "archives": {
+    "source-client-final.tar.gz": {
+      "bytes": 1192043,
+      "sha256": "af10c0eaa9352190f6a2eb820b756be7e2d808c733b91889ff3e1b055e30e385"
+    },
+    "source-server-stage.tar.gz": {
+      "bytes": 1186883,
+      "sha256": "fe22af418b15431ad30b02de9bb822d0a0a0426d797f70f5965ec094e1be4408"
+    }
+  },
+  "compiled_client_members": 679,
+  "compiled_server_members": 677,
+  "full_source_archives_copied_into_public_result": false,
+  "generated_private_files_excluded": true,
+  "public_ca_only": true,
+  "public_ca_sha256": "4c6cec0b5ffab12b1126d5f4ed85a4256656742f9e6c4c206fc04135051338a3",
+  "result": "pass",
+  "runtime_members": 680,
+  "runtime_overrides": [
+    {
+      "compiled_sha256": "ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836",
+      "name": "tools/probe_picker_home_mail.py",
+      "runtime_sha256": "80b70d83502b37cb0c842fbd572264562ce215b18baf99ac5533675b3a8e2aa7"
+    },
+    {
+      "compiled_sha256": null,
+      "name": "tools/test_picker_home_mail.py",
+      "runtime_sha256": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179"
+    },
+    {
+      "compiled_sha256": "c710148eac09516dde4820263c9eada95dfc643fc45a9aa5e7059ac6f7882c83",
+      "name": "tools/probe_picker_mail_outage.py",
+      "runtime_sha256": "a3c1fdb3ac692460c038ba21550942cfaeaf9337331b70fde188af1db25ee3ba"
+    },
+    {
+      "compiled_sha256": "808c2734cff6592c4aa6514ba14d8216507e02f7c3a4ba5d4d2644be8843eccd",
+      "name": "tools/test_probe_picker_mail_outage.py",
+      "runtime_sha256": "bf4cd701f747ebbd830b60be78425f461b99b3b3bdc0e01c03bd3f5484bac712"
+    }
+  ],
+  "scope": "public project source retained in owned lab; no generated fixture profiles, mail stores, credentials or raw terminal logs"
+}

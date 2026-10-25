@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "machine": "arm64",
+  "checks": [
+    "hidden_local_unlock_and_recovery_display",
+    "draft_is_explicitly_local_and_unsent",
+    "explicit_full_device_pin_confirmation",
+    "concurrent_vault_access_denied",
+    "private_encrypted_backup_contains_no_known_plaintext_markers",
+    "wrong_password_denied_without_draft_render",
+    "reopen_and_arrow_selected_draft_view",
+    "member_recovery_rotates_current_password_key_and_recovery_secret",
+    "old_backup_keeps_old_member_secret",
+    "draft_delete_and_local_pin_removal_persist",
+    "tampered_payload_denied_before_render",
+    "cancel_relocks_and_restores_terminal_echo",
+    "oversize_secret_refused_without_truncation"
+  ],
+  "count": 13,
+  "network_mail_implemented": false,
+  "roaming_authentication_implemented": false,
+  "encrypted_attachments_implemented": false,
+  "private_fixture_removed_on_exit": true
+}

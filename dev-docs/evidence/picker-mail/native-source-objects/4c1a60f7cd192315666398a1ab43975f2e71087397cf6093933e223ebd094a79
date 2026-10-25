@@ -1,0 +1,71 @@
+version = 1
+enabled = true
+name = "Nightwire gallery"
+compact = false
+formats = ["ansi", "ascii"]
+[[exhibit]]
+id = "nightwire"
+title = "Signals below the surface"
+[[exhibit]]
+id = "seasons"
+title = "Seasons on the wire"
+
+[[work]]
+id = "nightwire"
+exhibit = "nightwire"
+title = "Nightwire after midnight"
+artist = "Faction contributors"
+license = "BSD-3-Clause; see LICENSE"
+provenance = "Original Faction repository artwork: themes/nightwire."
+source = "original"
+description = "Original dark angular lettering, a split-wing sigil and carrier notes. Compact text edition included."
+format = "ansi"
+asset = "nightwire.ans"
+fallback = "nightwire.txt"
+display_permission = true
+download_permission = false
+
+[[work]]
+id = "autumn"
+exhibit = "seasons"
+title = "Autumn frequencies"
+artist = "Faction contributors"
+license = "BSD-3-Clause; see LICENSE"
+provenance = "Original Faction repository artwork: themes/nightwire-seasons/autumn."
+source = "original"
+description = "Original angular scene lettering in restrained amber and steel."
+format = "ansi"
+asset = "autumn.ans"
+fallback = "autumn.txt"
+display_permission = true
+download_permission = false
+
+[[work]]
+id = "winter"
+exhibit = "seasons"
+title = "Winter carrier"
+artist = "Faction contributors"
+license = "BSD-3-Clause; see LICENSE"
+provenance = "Original Faction repository artwork: themes/nightwire-seasons/winter."
+source = "original"
+description = "Original angular scene lettering in deep blue and steel."
+format = "ansi"
+asset = "winter.ans"
+fallback = "winter.txt"
+display_permission = true
+download_permission = false
+
+[[work]]
+id = "signal"
+exhibit = "nightwire"
+title = "Signal notes"
+artist = "Faction contributors"
+license = "BSD-3-Clause; see LICENSE"
+provenance = "Original Faction repository artwork: gallery/nightwire/signal.txt."
+source = "original"
+description = "An original ASCII sketch of a board, its rooms and its people."
+format = "ascii"
+asset = "signal.txt"
+fallback = "signal.txt"
+display_permission = true
+download_permission = false

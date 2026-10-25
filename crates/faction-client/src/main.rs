@@ -481,11 +481,15 @@ fn run() -> io::Result<()> {
         ));
     }
     let mut travel = Travel::default();
+    #[cfg(feature = "network-mail")]
+    let mut mail_unicode = false;
     let (mut kitty, mut compact_seen, mut budget_seen) = (false, false, false);
     let mut i = 2;
     while i < args.len() {
         match args[i].as_str() {
             "--kitty" if !kitty => kitty = true,
+            #[cfg(feature = "network-mail")]
+            "--unicode" if args[0] == "--boards" && !mail_unicode => mail_unicode = true,
             "--compact" if !compact_seen => {
                 travel.compact = true;
                 compact_seen = true;
@@ -558,6 +562,39 @@ fn run() -> io::Result<()> {
                 {
                     return Err(e);
                 }
+                continue;
+            }
+            launcher::Destination::HomeMail(selected) => {
+                #[cfg(feature = "network-mail")]
+                {
+                    last = selected;
+                    // Trusted local picker only, between visits: no Remote/SSH child.
+                    let home = catalog.home_mail.as_ref().ok_or_else(invalid)?;
+                    let result = checkpoint_ui::run_online(&home.store, &home.config, mail_unicode);
+                    // run_online drops the vault and terminal guard before returning.
+                    // Clear the local viewport; terminal scrollback is not erased.
+                    t.print("\x1b[2J\x1b[H")?;
+                    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+                    if let Err(error) = result
+                        && error.kind() != io::ErrorKind::Interrupted
+                    {
+                        t.print("Home mail locked; local operation stopped.\r\n")?;
+                        if let Err(error) = t.line("Enter to return to local Boards: ", 0)
+                            && error.kind() != io::ErrorKind::Interrupted
+                        {
+                            return Err(error);
+                        }
+                    }
+                }
+                #[cfg(not(feature = "network-mail"))]
+                {
+                    let _ = selected;
+                    return Err(io::Error::new(
+                        io::ErrorKind::Unsupported,
+                        "home_mail requires a network-mail build",
+                    ));
+                }
+                #[cfg(feature = "network-mail")]
                 continue;
             }
             launcher::Destination::Mail(selected) => {

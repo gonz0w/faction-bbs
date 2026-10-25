@@ -1,0 +1,8 @@
+from pathlib import Path
+import subprocess,os,json,hashlib
+p=Path('/private/tmp/faction214-lab-OWNED');source=p/'source-client-final';env=os.environ.copy();env.update(CARGO_HOME='/private/tmp/faction209-public-cargo',CARGO_TARGET_DIR=str(p/'host-final-target'),CARGO_BUILD_JOBS='1')
+cmd=['cargo','build','--release','--locked','--offline','-j','1','-p','faction-client','--features','network-mail','--bin','faction-client','--example','checkpoint_ui_fixture','--example','home_mail_fixture']
+with (p/'host-final-build.log').open('wb') as log:r=subprocess.run(cmd,cwd=source,env=env,stdout=log,stderr=log)
+result=dict(result='pass' if r.returncode==0 else 'fail',returncode=r.returncode,command=cmd)
+if r.returncode==0:result['artifacts_sha256']={n:hashlib.sha256((p/'host-final-target/release'/n).read_bytes()).hexdigest() for n in ['faction-client','examples/checkpoint_ui_fixture','examples/home_mail_fixture']}
+(p/'host-final-build.json').write_text(json.dumps(result,indent=2));raise SystemExit(r.returncode)

@@ -1,0 +1,9 @@
+from lab import *
+import hashlib
+compiled=json.loads((P/'source-client-final.json').read_text());runtime=dict(compiled);changes=[]
+for name in ['tools/probe_picker_home_mail.py','tools/test_picker_home_mail.py']:
+ data=(R/name).read_bytes();digest=hashlib.sha256(data).hexdigest();before=compiled.get(name);dest=P/'runtime-overrides'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+ changes.append(dict(name=name,compiled_sha256=before,runtime_sha256=digest));runtime[name]=digest
+ remote('cat > /home/factionbuild/source214-client/'+name+'; chown factionbuild:factionbuild /home/factionbuild/source214-client/'+name,data)
+(P/'runtime-source-overrides.json').write_text(json.dumps(changes,indent=2));(P/'runtime-source-final.json').write_text(json.dumps(runtime,indent=2))
+print('Two Python-only runtime sources composed over immutable compiled679-source stage; no Rust changes.')

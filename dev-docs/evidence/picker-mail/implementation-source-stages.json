@@ -1,0 +1,436 @@
+{
+  "schema": 1,
+  "issue": 214,
+  "scope": "Exact public project source captures only; excludes raw logs and all runtime fixture files. Host terminal proofs use debug executables; separate release Rust tests do not relabel terminal runs.",
+  "base_public_commit": "fff67449a0abc95f1b52df1fe9a503016e4f3f09",
+  "original_source_paths": [
+    "crates/faction-client/src/launcher.rs",
+    "crates/faction-client/src/main.rs",
+    "crates/faction-client/src/checkpoint_ui.rs",
+    "tools/probe_picker_home_mail.py",
+    "tools/test_picker_home_mail.py"
+  ],
+  "source_object_count": 18,
+  "stage_count": 17,
+  "captured_file_count": 59,
+  "stages": [
+    {
+      "label": "baseline",
+      "status": "capture_only",
+      "context": "Captured original owned Rust source before adding tests.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/bddf7e2079417ff74379fdd8c5d2fb86d9a1f5e49f9492b3d41690a8904c431f",
+          "sha256": "bddf7e2079417ff74379fdd8c5d2fb86d9a1f5e49f9492b3d41690a8904c431f"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2cfe60a68261d79d8f6f1155963dd60a085d5f78d7462c28a3fbbf00874b1c8b",
+          "sha256": "2cfe60a68261d79d8f6f1155963dd60a085d5f78d7462c28a3fbbf00874b1c8b"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49",
+          "sha256": "bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49"
+        }
+      ]
+    },
+    {
+      "label": "red-tests",
+      "status": "expected_failure",
+      "context": "Executed new parser/render tests against original behavior: network two failures, default one failure.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/da012692493e95495dbef90da313d6638e6db6aa0083d6d09961975becab4131",
+          "sha256": "da012692493e95495dbef90da313d6638e6db6aa0083d6d09961975becab4131"
+        }
+      ]
+    },
+    {
+      "label": "red-executed",
+      "status": "expected_failure",
+      "context": "Original behavior with new tests/probe; configured catalog rejected before picker. Raw PTY output is excluded.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/da012692493e95495dbef90da313d6638e6db6aa0083d6d09961975becab4131",
+          "sha256": "da012692493e95495dbef90da313d6638e6db6aa0083d6d09961975becab4131"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2cfe60a68261d79d8f6f1155963dd60a085d5f78d7462c28a3fbbf00874b1c8b",
+          "sha256": "2cfe60a68261d79d8f6f1155963dd60a085d5f78d7462c28a3fbbf00874b1c8b"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49",
+          "sha256": "bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/f129021c3d5db7dba8368e9baade7cc7270dc32124a2c27ad3ed21db188258c4",
+          "sha256": "f129021c3d5db7dba8368e9baade7cc7270dc32124a2c27ad3ed21db188258c4"
+        }
+      ]
+    },
+    {
+      "label": "candidate-01",
+      "status": "superseded",
+      "context": "First implementation passed fifteen PTY controls. Placeholder CA meant this is not the final qualified outage proof.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/615ddeaa3f3bd6dfa4e494979708dca9033fc80f3b5fbad1b7d0378a3e0593e5",
+          "sha256": "615ddeaa3f3bd6dfa4e494979708dca9033fc80f3b5fbad1b7d0378a3e0593e5"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/27ea45a98eb5b86e47d4d107487760848d0fc266be8904f1b3be90a4e982b9d2",
+          "sha256": "27ea45a98eb5b86e47d4d107487760848d0fc266be8904f1b3be90a4e982b9d2"
+        }
+      ]
+    },
+    {
+      "label": "before-candidate-02",
+      "status": "capture_alias",
+      "context": "Preserved executed first-candidate bytes before refinement.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/615ddeaa3f3bd6dfa4e494979708dca9033fc80f3b5fbad1b7d0378a3e0593e5",
+          "sha256": "615ddeaa3f3bd6dfa4e494979708dca9033fc80f3b5fbad1b7d0378a3e0593e5"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/27ea45a98eb5b86e47d4d107487760848d0fc266be8904f1b3be90a4e982b9d2",
+          "sha256": "27ea45a98eb5b86e47d4d107487760848d0fc266be8904f1b3be90a4e982b9d2"
+        }
+      ]
+    },
+    {
+      "label": "candidate-02",
+      "status": "rejected_oracle",
+      "context": "Probe expected nonexistent Transport(Io); corrected later to the existing Transport(Connect) class. Raw PTY output is excluded.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/7a276b34a618b18fe518945512ac69a4d722e9332b09fb7c717b83d134631414",
+          "sha256": "7a276b34a618b18fe518945512ac69a4d722e9332b09fb7c717b83d134631414"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/277c5a17479616cdf571dc2e446aa1ef3e1fd251401290276f00166d19d371e8",
+          "sha256": "277c5a17479616cdf571dc2e446aa1ef3e1fd251401290276f00166d19d371e8"
+        }
+      ]
+    },
+    {
+      "label": "before-error-notice",
+      "status": "capture_alias",
+      "context": "Preserved candidate-two bytes before the persistent-notice test.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/7a276b34a618b18fe518945512ac69a4d722e9332b09fb7c717b83d134631414",
+          "sha256": "7a276b34a618b18fe518945512ac69a4d722e9332b09fb7c717b83d134631414"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/277c5a17479616cdf571dc2e446aa1ef3e1fd251401290276f00166d19d371e8",
+          "sha256": "277c5a17479616cdf571dc2e446aa1ef3e1fd251401290276f00166d19d371e8"
+        }
+      ]
+    },
+    {
+      "label": "red-error-notice-executed",
+      "status": "expected_failure",
+      "context": "Persistent generic failure acknowledgement assertion failed before the Rust error-path change. Raw PTY output is excluded.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/7a276b34a618b18fe518945512ac69a4d722e9332b09fb7c717b83d134631414",
+          "sha256": "7a276b34a618b18fe518945512ac69a4d722e9332b09fb7c717b83d134631414"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836",
+          "sha256": "ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836"
+        }
+      ]
+    },
+    {
+      "label": "candidate-03",
+      "status": "superseded_probe",
+      "context": "Final Rust implementation. Seventeen controls passed with the inspector supplied; the same optional-inspector probe was later rejected when the inspector was omitted.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+          "sha256": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836",
+          "sha256": "ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836"
+        }
+      ]
+    },
+    {
+      "label": "pre-required-fixture",
+      "status": "capture_alias",
+      "context": "Preserved executed optional-inspector probe before the missing-fixture fix.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+          "sha256": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836",
+          "sha256": "ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836"
+        }
+      ]
+    },
+    {
+      "label": "red-required-fixture-executed",
+      "status": "expected_failure",
+      "context": "New missing-inspector CLI/API contract tests produced one failure and one error before the fix.",
+      "files": [
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836",
+          "sha256": "ea57ae433bc364ce080ff94b279a7d51116d0431363002efdfd59f8416103836"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0",
+          "sha256": "e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0"
+        }
+      ]
+    },
+    {
+      "label": "candidate-04",
+      "status": "superseded_fixture",
+      "context": "Mandatory inspector fixed the false-pass defect; seventeen host controls passed. Native NetBSD later exposed that a bound non-listening socket can time out, so the fixture was replaced without widening accepted errors.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+          "sha256": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81",
+          "sha256": "2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0",
+          "sha256": "e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0"
+        }
+      ]
+    },
+    {
+      "label": "pre-portable-closed-endpoint",
+      "status": "capture_alias",
+      "context": "Preserved the executed bound-socket probe before the portable unavailable-home correction.",
+      "files": [
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81",
+          "sha256": "2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0",
+          "sha256": "e04a318d88830549ac66dc52daffe8f683633b9c8d922ef45c28b41371d604e0"
+        }
+      ]
+    },
+    {
+      "label": "red-portable-endpoint-executed",
+      "status": "expected_failure",
+      "context": "Three new strict refusal helper tests failed because the helper did not exist; the earlier required-inspector tests remained green.",
+      "files": [
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81",
+          "sha256": "2f2a69db5cdbe1ecfa9dd995b3fcb0f56af13af12d315dc1fe9a422e80ba7c81"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179",
+          "sha256": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179"
+        }
+      ]
+    },
+    {
+      "label": "candidate-05-portable",
+      "status": "superseded_fixture",
+      "context": "First reserve-close strict-refusal helper; five unit tests passed. Diagnostic-only timeout was then aligned with the independent lab helper.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+          "sha256": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2b5ef5705ac816015b6c3ca94a6415add7a439d6320cd375418ce88fdb2b6760",
+          "sha256": "2b5ef5705ac816015b6c3ca94a6415add7a439d6320cd375418ce88fdb2b6760"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179",
+          "sha256": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179"
+        }
+      ]
+    },
+    {
+      "label": "before-portable-qualification",
+      "status": "capture_alias",
+      "context": "Preserved the executed helper unit-test version before its one-second diagnostic qualification.",
+      "files": [
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/2b5ef5705ac816015b6c3ca94a6415add7a439d6320cd375418ce88fdb2b6760",
+          "sha256": "2b5ef5705ac816015b6c3ca94a6415add7a439d6320cd375418ce88fdb2b6760"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179",
+          "sha256": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179"
+        }
+      ]
+    },
+    {
+      "label": "candidate-06-portable-final",
+      "status": "final_owned_source",
+      "context": "Reservation is closed before use. Only actual ConnectionRefused qualifies before and after the full proof. Adapter Transport(Connect), product deadlines and Rust bytes remain unchanged.",
+      "files": [
+        {
+          "name": "crates/faction-client/src/launcher.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+          "sha256": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e"
+        },
+        {
+          "name": "crates/faction-client/src/main.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df",
+          "sha256": "9e97096a600815135eb98ccf5700327563541658c0c80f9ebc367b6438ca58df"
+        },
+        {
+          "name": "crates/faction-client/src/checkpoint_ui.rs",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c",
+          "sha256": "4fbeec32c24a9e577040df96965b2b916e25181ffe973fd5b5c92af429af734c"
+        },
+        {
+          "name": "tools/probe_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/80b70d83502b37cb0c842fbd572264562ce215b18baf99ac5533675b3a8e2aa7",
+          "sha256": "80b70d83502b37cb0c842fbd572264562ce215b18baf99ac5533675b3a8e2aa7"
+        },
+        {
+          "name": "tools/test_picker_home_mail.py",
+          "resolved_path": "dev-docs/evidence/picker-mail/source-objects/0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179",
+          "sha256": "0c9985d4db40dd4ebad7845303461db75aa716b31e131419e35b99c010910179"
+        }
+      ]
+    }
+  ],
+  "source_publication_proof": "dev-docs/evidence/picker-mail/source-publication-proof.json",
+  "runtime_fixture_values_exported": false,
+  "raw_logs_exported": false,
+  "prior_archive_record_sha256": "40a72ebcdfb6845e9d29e2a73b55510b42d7b142c48916647163426cdf033f03"
+}

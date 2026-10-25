@@ -1,0 +1,27 @@
+from pathlib import Path
+import os,subprocess,json,hashlib,time,sys
+root=Path('/home/factionbuild/source214-client');target=Path('/home/factionbuild/target214/release');proof=Path('/home/factionbuild/proof214');device=Path('/home/factionbuild/device214')
+env=os.environ.copy();env.update(PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo214',CARGO_TARGET_DIR='/home/factionbuild/target214',CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+client=str(target/'faction-client-network');seed=str(target/'examples/checkpoint_ui_fixture');mail=str(target/'examples/home_mail_fixture');ca=str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem');python='/usr/pkg/bin/python3.13'
+result=dict(result='running',scope='two-core-1GiB-native-runtime',cores=int(subprocess.check_output(['/sbin/sysctl','-n','hw.ncpu'])),physmem_bytes=int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem64'])),stages=[])
+assert result['cores']==2 and 1000000000<result['physmem_bytes']<1100000000
+steps=[
+ ('default-off',[python,'tools/probe_picker_home_mail.py','--client',str(target/'faction-client-default'),'--unsupported','--output',str(proof/'native-default-off.json')]),
+ ('native-only',[python,'tools/probe_picker_home_mail.py','--client',str(target/'faction-client-native'),'--unsupported','--output',str(proof/'native-native-only.json')]),
+ ('picker-vault',[python,'tools/smoke_local_vault_launcher.py',client,'--output',str(proof/'native-picker-vault.json')]),
+ ('online-ui',[python,'tools/probe_home_ui.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--output',str(proof/'native-online-ui.json')]),
+ ('archive-ui',[python,'tools/probe_home_archive_ui.py','--client',client,'--fixture',seed,'--output',str(proof/'native-archive-ui.json')]),
+ ('checkpoint-ui',[python,'tools/probe_checkpoint_ui.py','--client',client,'--fixture',seed,'--owned-root',str(device/'checkpoint-regression'),'--output',str(proof/'native-checkpoint-ui.json')]),
+ ('v1-vault',[python,'tools/probe_native_mail.py','--client',client,'--output',str(proof/'native-v1-vault.json')]),
+ ('client-omemo-tests',['cargo','test','--release','--locked','--offline','-j','1','-p','faction-client','-p','faction-omemo','--features','faction-client/network-mail,faction-omemo/native','--all-targets','--','--test-threads=1']),
+ ('picker', [python,'tools/probe_picker_home_mail.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--ca',ca,'--output',str(proof/'native-picker.json')]),
+ ('combined',[python,'tools/probe_picker_mail_outage.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--public-ca',ca,'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(proof/'native-combined.json')]),
+]
+(proof/'native-runtime.json').write_text(json.dumps(result,indent=2))
+for name,cmd in steps:
+ started=time.monotonic()
+ with (proof/('native-'+name+'.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+ result['stages'].append(dict(name=name,returncode=r.returncode,elapsed_seconds=round(time.monotonic()-started,3),command=cmd))
+ if r.returncode:result['result']='fail';(proof/'native-runtime.json').write_text(json.dumps(result,indent=2));raise SystemExit(1)
+ (proof/'native-runtime.json').write_text(json.dumps(result,indent=2))
+result['result']='pass';(proof/'native-runtime.json').write_text(json.dumps(result,indent=2))

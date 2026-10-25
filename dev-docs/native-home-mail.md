@@ -12,7 +12,9 @@ Authority is [#209](https://github.com/gonz0w/faction-bbs/issues/209), within #9
 
 The entry is `faction-client --mail-online STORE PRIVATE_CONFIG [--unicode]`.
 Both paths are absolute. The caller starts from a trusted local terminal; no
-remote ANSI frame, board picker entry, BBS account or plugin can unlock this path.
+remote ANSI frame, BBS account or plugin can unlock this path. An explicit
+[private local picker entry](../docs/picker-home-mail.md) reuses the same console
+between visits; only its locally validated catalog may select the store/config.
 Core dumps are disabled before secret input. The configuration and CA are preloaded
 before connection, using descriptor-relative `NOFOLLOW` on every path component.
 Each final file must be same-UID, regular, mode `0600`, single-link and nonempty;

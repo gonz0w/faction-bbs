@@ -1,0 +1,17 @@
+from lab import *
+(P/'native-runtime-second-failure.json').write_bytes(remote('cat /home/factionbuild/proof214/native-runtime.json').stdout)
+(P/'native-picker-second-failure.log').write_bytes(remote('cat /home/factionbuild/proof214/native-picker.log').stdout)
+script=(P/'native_runtime.py').read_text();needle="(proof/'native-runtime.json').write_text(json.dumps(result,indent=2))\nfor name,cmd in steps:\n";replacement="""earlier=json.loads((proof/'native-runtime.json').read_text())
+assert earlier['result']=='fail' and earlier['stages'][-1]['name']=='picker' and earlier['stages'][-1]['returncode']==1
+assert [v['name'] for v in earlier['stages'][:-1]]==[v[0] for v in steps[:-2]]
+assert all(v['returncode']==0 for v in earlier['stages'][:-1])
+result['stages']=earlier['stages'][:-1]
+result['resumed_after_preserved_fixture_failure']=True
+steps=steps[-2:]
+(proof/'native-runtime.json').write_text(json.dumps(result,indent=2))
+for name,cmd in steps:
+""";assert needle in script;script=script.replace(needle,replacement);(P/'native_runtime_final_controls.py').write_text(script)
+remote('cat > /home/factionbuild/proof214/native-runtime-final-controls.py; chown factionbuild:factionbuild /home/factionbuild/proof214/native-runtime-final-controls.py',script.encode())
+r=remote("su - factionbuild -c 'cd /home/factionbuild/source214-client && PYTHONDONTWRITEBYTECODE=1 /usr/pkg/bin/python3.13 -m unittest discover -s tools -p test_picker_home_mail.py && PYTHONDONTWRITEBYTECODE=1 /usr/pkg/bin/python3.13 -m unittest discover -s tools -p test_probe_picker_mail_outage.py'");(P/'native-final-harness-tests.txt').write_bytes(r.stdout+r.stderr)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof214/native-runtime-final-controls.py > /home/factionbuild/proof214/native-runtime-launch4.log 2>&1 < /dev/null &'")
+print('All8 independentnative stagespassed; preserved stale-helperfailure; finalportable picker17 andcombined8 launched. FinalPythonoracles5+4passed.')

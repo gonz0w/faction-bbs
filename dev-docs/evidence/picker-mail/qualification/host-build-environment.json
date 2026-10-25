@@ -1,0 +1,7 @@
+{
+  "cargo": "cargo 1.98.0 (797e8a9bc 2026-08-05)",
+  "machine": "arm64",
+  "platform": "Darwin",
+  "rust": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "scope": "host-software-build-and-PTY-only"
+}

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "baseline_public_commit": "fff67449a0abc95f1b52df1fe9a503016e4f3f09",
+  "baseline_source_sha256": {
+    "crates/faction-client/src/launcher.rs": "bddf7e2079417ff74379fdd8c5d2fb86d9a1f5e49f9492b3d41690a8904c431f",
+    "crates/faction-client/src/main.rs": "2cfe60a68261d79d8f6f1155963dd60a085d5f78d7462c28a3fbbf00874b1c8b",
+    "crates/faction-client/src/checkpoint_ui.rs": "bb09407750fbbf76e10707fd80fe6305ab9a14674e59148a4ffd5bf7dbc75c49"
+  },
+  "published_fixture_source": "tools/probe_home_ui.py",
+  "published_fixture_source_sha256": "0ce2ffaa8362892c581a724b4458e84c17ddcbaf02d58bce6a2962757e0b850a",
+  "published_synthetic_passphrase_sha256": "d7033462688a650b3898cc2a92bb6b9dc8dba45d6148c3326a79b179ccaf24e4",
+  "captured_probe_versions_with_exact_published_fixture": 15,
+  "source_object_count": 18,
+  "source_path_allowlist": [
+    "crates/faction-client/src/launcher.rs",
+    "crates/faction-client/src/main.rs",
+    "crates/faction-client/src/checkpoint_ui.rs",
+    "tools/probe_picker_home_mail.py",
+    "tools/test_picker_home_mail.py"
+  ],
+  "private_host_filesystem_literals_found": 0,
+  "external_ipv4_literals_found": 0,
+  "generated_hex_literal_values_found": 0,
+  "source_ipv4_literals": [
+    "127.0.0.1"
+  ],
+  "raw_logs_exported": false,
+  "runtime_fixture_files_exported": false,
+  "generated_runtime_values_exported": false,
+  "static_fixture_literals_are_source_code": true
+}
