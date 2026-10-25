@@ -411,7 +411,7 @@ art and final original/licensed artistic acceptance remain #13/#25/#29 work.
 ## Original Nightwire artwork
 
 The [Nightwire art guide](artwork-nightwire.md) provides a cohesive original
-radio-city identity, bespoke lettering, three-page/short variants, seasonal
+dark angular identity, original lettering/sigil, three-page/short variants, seasonal
 palettes and matching compact cards. Select a complete pack or its manual
 seasonal override using the existing options. These are new opt-in assets; no
 runtime parser, default installer, menu mapping or previously measured pack

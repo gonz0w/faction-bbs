@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="824" height="420" viewBox="0 0 824 420" role="img" aria-labelledby="title description">
+<title id="title">Faction BBS / original Nightwire artwork</title>
+<desc id="description">Original Codex-assisted CP437 artwork. Reference-palette cells; not an emulator/font screenshot or owner acceptance.</desc>
+<rect width="824" height="420" fill="#101018"/>
+<text x="32" y="29" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">Faction BBS                                                                 </text>
+<text x="12" y="51" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Independent signals. Shared nights.                                           </text>
+<text x="32" y="73" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">+-- AFTERHOURS / MAIN -----------------------------------------------------+</text>
+<text x="12" y="95" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  |Arrows select; Enter/hotkey opens.                                        |  </text>
+<text x="12" y="117" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">  |</text>
+<rect x="42" y="100" width="360" height="22" fill="#415b94"/>
+<text x="42" y="117" fill="#f3edf9" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="360" lengthAdjust="spacingAndGlyphs">&gt; [R] Message rooms                 </text>
+<text x="432" y="117" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[S]</text>
+<text x="462" y="117" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="350" lengthAdjust="spacingAndGlyphs"> Sysop controls                 |  </text>
+<text x="12" y="139" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="139" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[N]</text>
+<text x="92" y="139" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="340" lengthAdjust="spacingAndGlyphs"> New messages                     </text>
+<text x="432" y="139" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[D]</text>
+<text x="462" y="139" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="350" lengthAdjust="spacingAndGlyphs"> Doors                          |  </text>
+<text x="12" y="161" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="161" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[H]</text>
+<text x="92" y="161" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="340" lengthAdjust="spacingAndGlyphs"> Room history                     </text>
+<text x="432" y="161" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[T]</text>
+<text x="462" y="161" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="350" lengthAdjust="spacingAndGlyphs"> Terminal settings              |  </text>
+<text x="12" y="183" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="183" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[P]</text>
+<text x="92" y="183" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="340" lengthAdjust="spacingAndGlyphs"> Post a message                   </text>
+<text x="432" y="183" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[F]</text>
+<text x="462" y="183" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="350" lengthAdjust="spacingAndGlyphs"> File areas                     |  </text>
+<text x="12" y="205" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="50" lengthAdjust="spacingAndGlyphs">  |  </text>
+<text x="62" y="205" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[C]</text>
+<text x="92" y="205" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="340" lengthAdjust="spacingAndGlyphs"> Local chat                       </text>
+<text x="432" y="205" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="30" lengthAdjust="spacingAndGlyphs">[Q]</text>
+<text x="462" y="205" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="350" lengthAdjust="spacingAndGlyphs"> Log out                        |  </text>
+<text x="32" y="227" fill="#dfa5ff" font-family="monospace" font-size="16" font-weight="700" xml:space="preserve" textLength="760" lengthAdjust="spacingAndGlyphs">+--------------------------------------------------------------------------+</text>
+<text x="12" y="249" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  F1 guide; Tab next; -- unavailable.                                           </text>
+<text x="12" y="271" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Ctrl-C exits; Esc: Enter to recover.                                          </text>
+<text x="12" y="293" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="800" lengthAdjust="spacingAndGlyphs">  Find a room; follow the talk                                                  </text>
+</svg>

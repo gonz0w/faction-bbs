@@ -139,7 +139,8 @@ not imply unlimited scrolling, animation or compatibility with every scene pack.
 ## Original artwork candidate
 
 The [Nightwire set](artwork-nightwire.md) is original CP437 artwork with a custom
-slanted/beveled FACTION wordmark, radio-city skyline and illustrated receiver.
+angular FACTION wordmark, split-wing sigil and abstract signal cuts. Charcoal/steel
+and restrained red, amber or deep-blue accents replace the earlier pastel skyline.
 Short cover, three-page identity, seasonal colors and compact ASCII cards now
 form one coordinated set. It is opt-in with exact source/rights and reproducible
 canonical previews; the default installer and all existing packs stay unchanged.

@@ -2,9 +2,9 @@
 <title id="title">Faction BBS / original Nightwire artwork</title>
 <desc id="description">Original Codex-assisted CP437 artwork. Reference-palette cells; not an emulator/font screenshot or owner acceptance.</desc>
 <rect width="424" height="420" fill="#101018"/>
-<text x="12" y="29" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">    __ / F A C T I O N / __             </text>
-<text x="12" y="51" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs"> .-'/  N I G H T W I R E  /-.           </text>
-<text x="12" y="73" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">  '  private frequencies   '            </text>
+<text x="12" y="29" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">  / /  F A C T I O N  / /               </text>
+<text x="12" y="51" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">  --&lt; N I G H T W I R E &gt;--             </text>
+<text x="12" y="73" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">     independent frequencies            </text>
 <text x="12" y="95" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">  rooms / files / chat / doors          </text>
 <text x="12" y="293" fill="#c5c5d0" font-family="monospace" font-size="16" font-weight="400" xml:space="preserve" textLength="400" lengthAdjust="spacingAndGlyphs">Independent signals. Shared nights.     </text>
 </svg>

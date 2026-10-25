@@ -6,7 +6,7 @@ Status: confirmed product intent, early local core implemented; complete technic
 
 Give independent communities a durable, low-bandwidth home that their sysops own and shape. Faction BBS is the selected project name, replacing the working name Citadel IRC.
 
-The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes they remember: Vision-X, Vision/2, Oblivion, and personal Pascal-era BBS hacks. These are aesthetic and experiential references, not adopted implementations or verified historical lineage. The system should feel like a place operated by people, with distinctive identity, messaging, file sharing, and games.
+The founder wants the underground, hax0r/1337, ANSI-rich feel of the BBS scenes they remember: Vision-X, Vision/2, Oblivion, and personal Pascal-era BBS hacks. These are aesthetic and experiential references, not adopted implementations or verified historical lineage. The owner's visual direction is dark, angular scene lettering and abstract motifs: no buildings or bright pastel cyan/magenta identity bands. Keep iCE and Razor 1911 as references for study; original artwork and readable classic recovery remain required. The system should feel like a place operated by people, with distinctive identity, messaging, file sharing, and games.
 
 The optional [gatherings agenda](gatherings.md) now provides one-off UTC chat nights,
 explicit counts-only RSVPs, organizer/sysop controls and approved-login reminders.

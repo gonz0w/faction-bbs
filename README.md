@@ -2,308 +2,67 @@
 
 **Independent boards. Private communities. Shared frequencies.**
 
-**An independent, terminal-first BBS with a modern foundation and an underground soul.**
+Faction is a terminal-first BBS for communities run by their own sysops: ANSI
+identity screens, custom menus, Citadel-style message rooms, files, late-night
+chat and game doors. It brings the spirit of WWIV and the underground BBS scene
+to a Rust foundation, with NetBSD as its primary target.
 
-Faction brings together the things that made a BBS feel like somewhere: a distinctive ANSI welcome, a sysop's own menus, rooms full of conversation, file areas, late-night chat, and a door into another game. The spirit comes from WWIV, Citadel, and the colorful, heavily customized BBS scenes its founder remembers from the 1980s and 1990s—Vision-X, Vision/2, Oblivion, and the many personal hacks that made each board its own world.
+Connect over SSH, use arrows or hotkeys, and make yourself at home. Each board
+owns its membership and content. A sysop can keep it on a private network without
+a public website or central service.
 
-The goal is private, human-scale communities whose operators own their systems and their data. Ordinary SSH terminal access is the initial secure-access direction, with optional private-network-only deployments. A web portal is a future optional access surface; a sysop must be able to keep a board off the public web.
+![Faction BBS dark Nightwire ANSI cover](docs/images/nightwire-cover.svg)
+
+*Original Nightwire artwork: angular steel/red lettering, abstract motifs and
+coordinated seasonal variants. This is a reference-cell preview; terminal palettes
+and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
+[sysop theme system](docs/theme-packs.md).*
 
 ## Status
 
-Try the populated private NetBSD [terminal playground](docs/test-playground.md):
-Ghostty/SSH login, Nightwire art, rooms, wall, member pages, chat and Lua demos,
-with persistent testing data and guarded start/stop commands. Operator preparation
-is required; this is a development preview.
+**Working hobby preview · updated 2026-10-24 · no supported release yet.**
 
-The optional [local sysop console](docs/sysop-console.md) now provides themed
-read-only BBS status, live CPU/RAM/network graphs and separate observations of snapshot age
-and publisher lifetime after OS login. Its [Recovery panel](docs/backup-checks.md) now shows explicitly
-recorded complete-bundle checks and preserves the last success when a recheck fails.
-Private publication is opt-in; member SSH stays separate.
+The local BBS core and restricted SSH service work. Optional features are enabled
+by the sysop; experiments and future protocols are separate from normal operation.
 
-The [BBS menus and sysop themes](docs/theme-packs.md) now support centered
-lightbars and opt-in two-column layouts with sysop-defined entry positions,
-directional arrows, ordered Tab and direct hotkeys. Narrow/plain terminals keep
-the classic ordered menu. Original CP437 login templates demonstrate bounded
-SAUCE/iCE import; the importer emits canonical cells, never raw art controls.
-Optional seasonal calendars pin colors/login screens for each approved session.
-Opt-in long-form ANSI login art now pages with Enter/skip controls, keeping
-classic ASCII recovery. A local authoring preview needs no running board. The
-example calendar stays disabled. The optional [original Nightwire artwork](docs/artwork-nightwire.md)
-now adds bespoke lettering, a radio-city scene, coordinated seasons and a matching
-short/compact identity. [Real-terminal artwork checks](docs/artwork-terminal-compatibility.md)
-cover cursor placement and cell widths; pixel/font appearance and owner visual
-acceptance remain open.
+- **Platform:** software validation on a NetBSD 11 ARM64 VM, with macOS development
+  and terminal checks. Physical SBCs and other NetBSD ports remain untested.
+- **Capacity:** the normal shared service admits **eight sessions**. Earlier
+  250-member experiments are [research evidence](dev-docs/research/README.md),
+  not supported capacity.
+- **Privacy:** encrypted mail currently has a device-local offline vault and a
+  separate protocol proof. Network inbox/send, encrypted attachments and roaming
+  authentication are not integrated product features.
 
-Optional **[art galleries](docs/scene-gallery.md)** now add curated original/licensed
-ANSI/ASCII exhibits, artist/provenance notes and bounded paged viewing. The included
-Nightwire collection has readable text editions for classic/narrow terminals;
-optional file offers use current local Files permissions. Sysops install/review
-packs explicitly; no new schema or public publication.
+## What you can do
 
-![Original Nightwire ANSI cover, reference-cell preview](docs/images/nightwire-cover.svg)
-
-
-**Working hobby preview · updated 2026-10-24 · Rust on NetBSD; no supported release yet.**
-
-Faction already runs an approved-membership board with hidden-password login,
-ANSI menus, sysop themes, Citadel-style rooms, local command chat, approval/revoke
-controls and private export/restore. Arrows/Enter and displayed hotkeys both work.
-No JavaScript/TypeScript or public HTTP service is required.
-The **[board guide](docs/board-guide.md)** now adds ANSI F1 and plain `help` at
-the main menu: current keys, room/writing and chat/file references, plus sysop
-house notes. It stays read-only and keeps `?` refresh and existing hotkeys.
-The **[room browser](docs/room-browser.md)** now adds named arrow/hotkey selection,
-unread counts, next-unread navigation and room cards for reading/posting without
-entering room IDs. Plain terminals and the existing numeric commands remain available.
-The optional **[room writing desk](docs/writing-desk.md)** adds multiline paragraphs,
-reply quotes, paged preview and explicit send/cancel. Enter `/edit`, then `.screen`
-for caret/paragraph editing or keep classic line input. Explicit Save checkpoints
-recover local room writing after disconnect; these are plaintext board data,
-readable by its sysop. Schema-15 upgrades require a stopped complete backup.
-The opt-in **[community wall](docs/community-wall.md)** adds short local ASCII
-notes/art, chronological paging, own edits/deletion, sysop moderation and optional
-weekly archives. Enable/name it in S:Sysop controls → W:Wall settings; plain and
-ANSI terminals share explicit review/send.
-Optional **[member pages](docs/member-pages.md)** add bios, interests, original ASCII
-signatures, current projects and dated `.plan` history. Members explicitly preview,
-share/hide and remove their own content; sysops configure presentation/retention
-and moderate without rewriting authorship. Enable through Sysop → Member pages.
-
-
-Optional **[gatherings and chat nights](docs/gatherings.md)** add a local agenda,
-one-off UTC events, counts-only RSVPs, organizer edits/cancellation, sysop moderation,
-optional login reminders and deliberate room/chat jumps. Enable through Sysop →
-Gatherings; classic and plain terminals share the same workflow. No external calendar.
-
-Optional **[community polls](docs/polls.md)** add local single-choice questions,
-explicit ballot review/change/withdrawal, paged text-cell result charts and creator/
-sysop controls. Result visibility is configurable; ballots remain operator-readable
-local data. Enable through Sysop → Polls; plain and ANSI terminals share the desk.
-
-
-Optional **[personal catch-up](docs/catchup.md)** brings together the sysop notice,
-unread rooms/direct replies, your favorite rooms, eligible files and gatherings.
-Enable through Sysop → Catch-up settings. Previews leave room unread unchanged;
-visit checkpoints are explicitly saved, with no automatic login tracking. Shared
-SSH/native and local/worker desks preserve the classic fallback. Private-mail
-content and counts remain outside the server-side desk.
-
-
-Optional **[Find & save](docs/discussion-search.md)** adds literal discussion
-search with room/author filters, current-permission snippets, exact read-only post
-views and personal bookmarks. Explicit copyable reference exports keep useful
-conversations portable. Enable through Sysop → Find settings; classic/plain and
-Unicode-capable terminals share the workflow. Queries are not stored as history,
-and these previews never advance room unread markers.
-
-
-**[Run your first NetBSD board](docs/quickstart-netbsd.md).** Build on the target,
-run the first-install preflight/helper, initialize your sysop and explicitly start
-the dedicated SSH service. The normal shared backend starts with **eight sessions**.
-The installer leaves services disabled and binds loopback unless you choose a
-specific interface. You can also [try the local console](docs/local-development.md).
-
-The immediate priority is a useful small board: straightforward setup, an
-individual BBS identity, rooms, chat and recovery. The optional
-**[Lua arcade](docs/lua-doors.md)** now adds a sysop-editable Doors menu and two
-original games: **Signal Hunt** and **Neon Salvage**, with arrows/hotkeys and a
-separate game account/evaluator. Local top tens, persistent personal bests,
-completed-run counts and an arcade guide give members a reason to return. Scores
-survive reconnect/reboot and travel in private exports. Game failure returns to
-the board. Optional **[classic server doors](docs/classic-game-doors.md)** now
-connect to sysop-selected Telnet endpoints with destination confirmation,
-ANSI/CP437 display and a local return key. The connector passed owned-fixture
-NetBSD tests. **[Original LORD 4.06 now runs](docs/original-lord.md)** through the
-SSH doorway on a separate native NetBSD game VM, with original character creation,
-bank gameplay and saved progress. This is a private software proof with one active
-game, not a supported public game launcher. TWGS installation reached mandatory
-publisher activation, which the owner has deferred. Both original servers and
-isolated DOS hosting remain reuse paths, ahead of rewriting.
-**[Local file areas and restricted SFTP](docs/file-areas.md)** now add an optional
-[F]iles lobby, private-area grants, quota reservations, sysop upload review,
-one-file key-bound transfers and complete catalog/blob backup and restore.
-The file listener is separate and disabled until the sysop starts it.
-The optional **[native terminal client](docs/native-client.md)** keeps transfers in
-the BBS flow: select Files, upload/download with local confirmation and progress,
-and return to the connected board. Room/chat file links recheck current permissions;
-the client can download recently seen links by number. This preview runs on macOS
-and native NetBSD; ordinary SSH/manual SFTP remain available.
-Optional **[native travel settings](docs/travel-modes.md)** add a local T panel
-before connecting: ordinary/compact text and a per-file payload ceiling. Explicit
-apply/cancel, direct CLI flags and size deferral keep low-cost visits deliberate;
-classic board content and existing transfer approvals remain. Offline exchange
-and measured slow-link profiles are follow-on work.
-Optional **[library shelves](docs/library-shelves.md)** now organize existing
-approved files into sysop-curated collections, with notes, declared rights/provenance
-and current-permission file/discussion links. Shared/native Files handoff preserves
-recent links and travel ceilings; classic/plain reading remains available. The optional
-[file request desk](docs/file-requests.md) now adds member requests, explicit
-published-file fulfillment, author/sysop close/delete and current-permission links.
-Optional **[local magazines](docs/board-magazine.md)** now add published editions,
-a themed contents/reader, full contributor credits and optional current-permission
-text downloads. An original five-article Nightwire issue includes an editorial,
-field notes, ASCII interlude and arcade ideas. Sysops can also enable the **[magazine workshop](docs/magazine-workshop.md)**:
-private drafts, explicit submissions, copied editorial revisions, exact-issue
-contributor approvals, local publish/withdrawal and optional Files editions.
-Published text stays fixed; changes require a new edition and new approvals.
-Take a stopped complete backup before upgrading the catalog (current schema 18).
-The optional **[chat lounge](docs/social-lounge.md)** now adds explicit
-available/busy/away status and polite bodyless invitations across local chat
-channels, with accept/decline, mute, blocks, UTC quiet hours and opted-in sysop
-paging. Plain/classic commands remain. In the shared SSH/native service, availability
-now survives rooms, editing and doors; the new Lounge menu checks invitations
-and marks current signals during safe menu redraws. Local login and inherited
-workers now share the visit lifetime, including plain prompts and full-screen
-editing. Classic fallback remains. Optional `/notify on` adds quiet idle-menu
-indications for this visit, preserving partial input and staying silent in
-drafts/games/probes. Take a stopped complete backup before the forward-only
-schema-18 upgrade.
-The distinct **[Who caller list](docs/who-and-presence.md)** shows current broad
-activity and separate availability. Group `/who` uses the same visible callers;
-Who, group commands and the Lounge share visibility/availability, while the
-Lounge retains its social/paging features. Private locations and draft contents
-stay hidden. Classic/plain menus remain available.
-The owner also selected **[native-client encrypted mail and home identities](docs/private-mail.md)**:
-independent invited home servers, member-held keys and local approval at each
-visited board. The native client now has an optional [encrypted local vault](docs/local-mail-vault.md)
-with hidden unlock, offline recovery, drafts and explicit device pins. Network
-inbox/send and roaming authentication remain outside the native product. A
-[working two-home protocol experiment](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
-now passes encrypted subject/body/reply, offline/archive and verified-device refusal
-controls, plus scoped native SSH certificate admission. Native OMEMO integration,
-incoming mail/history recovery and trusted local identity binding remain #90/#91;
-the installed native signer remains rejected. [The #92 investigation](dev-docs/research/0052-netbsd-signing-exit.md)
-reproduced a stale noreturn annotation and validated an uninstalled one-line
-correction; issuer adoption remains separate under #91. Encrypted attachments stay planned in #88.
-The native [board picker](docs/board-launcher.md#open-your-local-offline-vault-between-visits)
-can now open that existing offline vault with **M** between visits, using an explicit
-member-owned catalog path. Its own hidden local passphrase never goes to a BBS.
-The optional **[Other BBSes directory](docs/other-boards.md)** now provides themed
-pages and connection cards for sysop-reviewed boards, with independent destination
-login/approval. It stays local and never auto-connects or shares keys. Member
-submissions, automatic profile import, federation, payments, mesh and browser access
-remain backlog work. The **[native board launcher](docs/board-launcher.md)** now lets
-members pick their own verified profiles, visit independent boards and return to
-the local picker after disconnecting. Every destination still requires local login/approval.
-Sysops can customize [themes and original/licensed art](docs/theme-packs.md),
-including optional seasonal colors and identity screens.
-
-The native Boards picker now includes a **[local connection desk](docs/connection-desk.md)** (I): inspect profile/file readiness and deliberately look up stored host pins before connecting. A redacted `--check-profile` command also works without a TTY. Neither claims live host verification or BBS approval.
-
-The optional **[local board passport](docs/local-passport.md)** adds explicitly saved
-device notes, favorite-room reminders and original ASCII calling cards. Share
-previews keep personal fields off by default. No automatic visits or board tracking;
-notes are plaintext in a private local store, separate from encrypted mail.
-
-Native software validation uses a **NetBSD 11 ARM64 VM**. Physical SBCs and other
-NetBSD ports remain untested. The maintained service uses base OpenSSH, a separate
-terminal identity, private SQLite state and a small native terminal frontend;
-[service lifecycle and worker rollback](docs/service-lifecycle.md) remain available.
-Read the [security boundary](docs/process-confinement.md) before deployment.
-
-The earlier 250-member memory/admission work is preserved as
-[engineering evidence](dev-docs/research/README.md), with
-[experimental isolation](docs/experimental-isolation.md),
-[key admission](docs/experimental-admission.md) and
-[global admission](docs/experimental-global-admission.md) kept separate from normal
-setup. Combined-pressure/recovery, host timing, long soaks and independent
-privileged-code review stay open. **250 is a research target, not supported
-capacity.** These experiments and physical hardware tests do not block building
-the ordinary small-board experience.
-
-[Project direction](docs/project.md), [the GitHub issue](https://github.com/gonz0w/faction-bbs/issues/133) and
-[GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) separate the working
-core from future features. Rust/primary NetBSD is selected in
-[ADR 0006](dev-docs/decisions/0006-rust-and-primary-netbsd.md); local storage and
-identity use SQLite WAL under [ADR 0008](dev-docs/decisions/0008-local-core-and-credentials.md).
-
-The [modern sysop and communications stories](docs/modern-sysop-and-communications.md)
-guide the local VM-console dashboard, capability-aware Ghostty-style enhancements,
-NetBSD setup/abuse-management workflows and integrated native XMPP notifications.
-Real IRC/IRCv3 integration remains research. [Discussion-room posts](docs/discussion-articles-and-news.md)
-will use Netnews-style articles, with NNTP-first optional peering and news-provider
-subscriptions planned. IRC and encrypted XMPP keep their own formats. The goal keeps the underground BBS character with a modern terminal
-experience. The first optional [local sysop console](docs/sysop-console.md) now reads private
-aggregate service snapshots, CPU/RAM/network graphs and historical backup checks,
-with ANSI/plain panels, stale/unavailable labels and an independent publisher lease
-that rejects old startup instances even when a PID is reused. Host actions, peer collectors,
-firewall management and new IRC/forum federation protocols remain planned.
-An optional [bounded Kitty image preview](docs/kitty-graphics.md) now complements
-the terminal settings: T/G probes then streams one original RGB calibration image;
-the native client requires local `--kitty` and its own positive probe. Classic
-ANSI remains default. [Real terminal profiles](docs/terminal-compatibility.md)
-now validate Ghostty, Kitty and Alacritty through local/NetBSD SSH/native routes,
-tmux and old screen. Old screen needs classic text; image probes fall back through
-both multiplexers. Pixel/glyph certification and rich-art imports remain separate.
-
-The [room reader](docs/room-reading.md) now shares wrapped, paged message screens
-across local/worker and shared-service sessions, with theme-aware ANSI transitions
-and complete-message unread acknowledgment. A bounded
-[Netnews text codec](docs/discussion-articles-and-news.md) is available offline;
-[schema-6 post metadata](docs/post-metadata.md) now gives new messages stable
-article IDs and recorded UTC times, while legacy dates remain unknown. Members
-can now [author subjects and inherit reply defaults](docs/room-articles.md).
-Stored posts project into local articles with reserved author/group aliases and
-bounded reply references, with strict duplicate/conflict comparison and no
-publication. Bodies/replies/unread stay intact and old exports remain readable.
-Follow the stopped-service backup/upgrade procedure before opening an older board.
-The [v2 article profile](docs/article-profile.md) adds UTF-8 encoded wire subjects,
-common dates, plain-text MIME encodings and root/recent reply references. Original
-INN passes twelve offline controls on macOS and NetBSD; no news service is enabled.
-[Unicode subject composing](docs/unicode-subjects.md) now works in local/worker and
-shared terminals with schema-7 metadata, UTF-8-safe reply clipping and inert
-classic-terminal echo/previews. [Terminal settings](docs/terminal-capabilities.md)
-now opt into native Unicode subjects/room text, cell-aware paging, color depth,
-block/braille samples and bounded synchronized redraw with an isolated sync probe.
-Classic mode remains the default and immediate fallback. The optional Kitty preview
-is separately gated; general bitmap assets, extended input, live NNTP/provider
-integration and encrypted network mail remain future work.
-
-A later [hardening phase](docs/later-phase-hardening.md) is tracked in #106–#111:
-OpenPGP release/member signatures, a hardened NetBSD VM, post-compromise
-containment, protected storage/backups and independent validation. These stories
-preserve current safeguards and do not activate a new isolation profile.
-
-## Enter the board
-
-```text
-connect -> log in / register -> local sysop approval required
-        -> this BBS's ANSI welcome -> message / quote -> main menu
-        -> rooms | chat | files | mail | doors | other BBSes
-```
-
-- **Approved membership.** Registration requests access; each sysop decides who enters. Community content requires authentication and local approval.
-- **Citadel-style message rooms.** Find a room, enter, catch up on new messages, post, and reply. Detailed reply presentation is still being designed.
-- **IRC-style conversation.** Command-driven chat begins within one BBS. Channels may stay local. Future shared channels let participating systems subscribe and talk together.
-- **Local file areas and mail.** Community resources, messages, and file-sharing policy belong to the local sysop. The native client integrates scoped SFTP in the Files menu; classic terminal transfer protocols remain future adapters.
-- **Doors and original games.** Investigate reuse of classics such as TradeWars, including isolated compatibility hosting where appropriate. Ports may follow later. The optional Lua arcade includes two original examples; no legacy title is supported or bundled.
-- **A scene of independent boards.** A local Contacts / Other BBSes directory lets operators submit their systems for discovery. Visiting another BBS means entering that system's own membership process.
-
-## The boundaries matter
-
-Each BBS has its own identity, members, rooms, mail, files, games, directory, and rules. **Future cross-board capabilities are participating shared chat, explicitly addressed encrypted mail and scoped home-identity proofs.** Local-only channels, local rooms/community files and local approval stores remain local; visited boards do not receive home mailboxes or decryption keys. [#101](https://github.com/gonz0w/faction-bbs/issues/101) validates NNTP-first opt-in shared discussion rooms; [#103](https://github.com/gonz0w/faction-bbs/issues/103) delivered the bounded Netnews article codec and [#104](https://github.com/gonz0w/faction-bbs/issues/104) optional news providers. Formatting does not publish a room; no room export or new protocol is enabled. A separately labeled, deliberate public-publishing room is a new optional research category; it never implies automatic private-room export. A directory listing establishes neither federation nor remote approval.
-
-Privacy, security, lightweight operation, and efficient text interaction are core requirements. Telemetry must be minimal and opt-in. Constrained, intermittent, private, and future mesh networks are research targets; no alternative-network support is claimed today. Public discovery, an HTTP portal, and shared chat must not become prerequisites for operating an independent BBS.
-
-**No JavaScript or TypeScript.** This includes product code, tooling, and browser-terminal dependencies. We will compare fast, lightweight implementation options using evidence and representative prototypes. Browser-console feasibility under this constraint remains an explicit open question; we will not quietly introduce a JavaScript terminal library.
-
-## Find your way
-
-| You want to… | Start here |
+| Area | Working preview |
 | --- | --- |
-| Understand the product | [Project direction](docs/project.md) and [session flow](docs/session.md) |
-| Understand privacy and access | [Security and privacy requirements](docs/security-privacy.md) |
-| Explore the BBS look and feel | [Customization direction](docs/customization.md) |
-| Contribute research or implementation | [Contributing](CONTRIBUTING.md) and [development guide](dev-docs/README.md) |
-| Work with an agent | [Agent instructions](AGENTS.md), [engineering policy](PROJECT.md), and [workflow](dev-docs/workflow.md) |
-| Find work and dependencies | [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) |
-| Review architecture decisions | [Decision records](dev-docs/decisions/README.md) |
-| Report a vulnerability | [Security policy](SECURITY.md) |
+| Login and identity | Registration, local sysop approval/revocation, hidden passwords, [ANSI/lightbar menus](docs/theme-packs.md), seasonal screens and compact/plain fallback. |
+| Discussion rooms | [Room browsing](docs/room-browser.md), unread navigation, subjects/replies, [paged reading](docs/room-reading.md), [full-screen writing and saved drafts](docs/writing-desk.md), [search and bookmarks](docs/discussion-search.md). |
+| Chat and callers | [Local IRC-style chat](docs/local-chat.md), a distinct [Who list](docs/who-and-presence.md), shared availability/visibility and [polite paging](docs/social-lounge.md). |
+| Community | [Wall](docs/community-wall.md), [member pages](docs/member-pages.md), [gatherings](docs/gatherings.md), [polls](docs/polls.md) and [personal catch-up](docs/catchup.md). |
+| Files | [File areas and restricted SFTP](docs/file-areas.md), private-area grants, upload review, permission-checked room/chat links, [library shelves](docs/library-shelves.md) and [file requests](docs/file-requests.md). |
+| Arcade | [Lua menus and two original games](docs/lua-doors.md), persistent high scores and an optional [classic server connector](docs/classic-game-doors.md). |
+| Creative scene | [ANSI/ASCII galleries](docs/scene-gallery.md), [local magazines](docs/board-magazine.md) and a [contributor approval workshop](docs/magazine-workshop.md). |
+| Native client | [Integrated transfers](docs/native-client.md), a [board picker](docs/board-launcher.md), [connection desk](docs/connection-desk.md), [local passport](docs/local-passport.md) and an [offline encrypted vault](docs/local-mail-vault.md). |
+| Sysop operations | [Local stats console](docs/sysop-console.md), CPU/RAM/network graphs, service health, [backup checks](docs/backup-checks.md) and [export/restore](docs/export-restore.md). |
 
-## Build the local core
+The main-menu [board guide](docs/board-guide.md) provides ANSI **F1** and plain
+`help`. Classic ANSI remains the default. Optional [Unicode text and terminal
+capabilities](docs/terminal-capabilities.md) and a bounded
+[Kitty image preview](docs/kitty-graphics.md) use explicit settings and capability
+probes; a terminal brand alone never enables them.
 
-Use Rust 1.96+ and a native C compiler for the local application. Python 3.10+ and Git support repository checks. The console needs a real Unix terminal; application tests and terminal/recovery workflows also ran natively on NetBSD 11 ARM64. Read the [SSH guide](docs/restricted-ssh.md) before configuring the separate development gateway.
+Original **[LORD 4.06](docs/original-lord.md)** also ran through the SSH doorway on
+a separate NetBSD game VM, with saved progress. That is a private reuse proof,
+not a bundled or supported game launcher. Further emulator/game expansion and
+TWGS publisher activation remain deferred.
+
+## Run a local board
+
+Use Rust **1.96+**, a native C compiler for bundled SQLite, and a real Unix
+terminal. Python 3.10+ and Git support repository checks.
 
 ```sh
 git clone https://github.com/gonz0w/faction-bbs.git
@@ -311,19 +70,83 @@ cd faction-bbs
 python3 tools/check_repository.py
 cargo build --workspace --locked --release
 ./target/release/faction --state-dir "$HOME/.faction-dev" init
-./target/release/faction --state-dir "$HOME/.faction-dev" login --ansi --theme themes/base
+./target/release/faction --state-dir "$HOME/.faction-dev" login --ansi --theme themes/nightwire
 ```
 
-See [local development](docs/local-development.md) for member registration, sysop approval, posting, recovery and tests. This owner-capable console opens no listener and must never be used as an SSH forced command. It supports plain text and opt-in ANSI menus; the full BBS experience is still being built. Start contributions with an issue and keep this README and affected docs current.
+This creates a local sysop account and enters the owner console. It opens no
+listener. **Never use this owner-capable command as an SSH forced command.**
+See [local development](docs/local-development.md) for registration, approval,
+posting, recovery and tests.
+
+For a networked board, follow the **[NetBSD first-install guide](docs/quickstart-netbsd.md)**
+and [restricted SSH guide](docs/restricted-ssh.md). The installer leaves services
+disabled and defaults to loopback; starting a listener and choosing an interface
+are explicit operator steps. Keep administrative host access separate from member
+access, and read the [process boundary](docs/process-confinement.md).
+
+A populated private [terminal playground](docs/test-playground.md) is available
+for operator-prepared testing. It requires local preparation and explicit startup;
+no public demo or always-running board is provided. Before upgrading existing
+state, take a stopped complete backup and follow the
+[service lifecycle](docs/service-lifecycle.md) and restore instructions.
+
+## Independent boards, optional federation
+
+Local rooms, files, approval stores and channels stay local. A directory entry
+in [Other BBSes](docs/other-boards.md) grants no remote membership. Visiting a
+board still requires that sysop's approval.
+
+The protocols have separate jobs:
+
+- **IRC/IRCv3:** the direction for optional federated public/shared chat. Current
+  chat is local and IRC-style; it does not implement an IRC wire service.
+- **Netnews/NNTP:** room posts already have a bounded
+  [article format](docs/article-profile.md), Unicode subjects and offline INN
+  validation. Live peering and news-provider subscriptions remain planned; article
+  formatting does not publish a room.
+- **XMPP/OMEMO:** a candidate for [encrypted private mail and home identities](docs/private-mail.md),
+  with invited independent home boards. Keys and decryption stay on the member's
+  device. An ordinary SSH BBS session never receives private-mail plaintext or keys.
+
+The existing [two-home proof](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
+is separate from native product integration. The installed native signer remains
+rejected; the [validated signing correction](dev-docs/research/0052-netbsd-signing-exit.md)
+is uninstalled and adoption remains separate work.
+
+Ordinary operation must stay independent of federation, Lua, emulators, optional
+HTTP and external providers. Mesh/private-network integrations and a browser portal
+remain research. **No JavaScript or TypeScript**, including tooling, transitive
+and browser-terminal dependencies. Later [hardening](docs/later-phase-hardening.md)
+is separately scoped; existing safeguards remain required.
+
+## Explore and contribute
+
+| Start here | Guide |
+| --- | --- |
+| Product and session | [Project direction](docs/project.md), [session flow](docs/session.md) |
+| Member and sysop guides | [Documentation index](docs/README.md) |
+| Privacy and security | [Security requirements](docs/security-privacy.md), [vulnerability reporting](SECURITY.md) |
+| Architecture and evidence | [Development docs](dev-docs/README.md), [decisions](dev-docs/decisions/README.md) |
+| Contribute | [Contributing](CONTRIBUTING.md), [GitHub Issues](https://github.com/gonz0w/faction-bbs/issues) |
+| Agent workflow | [AGENTS.md](AGENTS.md), [PROJECT.md](PROJECT.md), [issue-only workflow](dev-docs/workflow.md) |
+
+Work is **100% GitHub issue-driven**: finite acceptance, test-first behavior
+changes and PRs that close completed issues. Faction follows a pinned
+[Agent Temper method](.agent-temper/METHOD.md), with explicit local policy and a
+[reviewed source revision](.agent-temper/SOURCE.md). Approaches and handoffs belong
+in issues; repository docs describe the product, not a second backlog.
 
 ## License and heritage
 
-Faction BBS is licensed under [BSD-3-Clause](LICENSE). Third-party games, source, fonts, and artwork retain their own licenses; nothing in this repository grants rights to redistribute them. The historical names above describe the founder's inspiration, not affiliation or a claim that their code is included.
+Faction BBS uses the [BSD 3-Clause license](LICENSE). Third-party games, source,
+fonts and artwork keep their own terms; this repository grants no rights to
+redistribute them.
 
-Earlier planning used the working name Citadel IRC. Its records are preserved in the [historical archive](dev-docs/archive/README.md); they do not govern current work.
+WWIV, Citadel, Vision-X, Vision/2, Oblivion, iCE and Razor 1911 are inspirations,
+not affiliations or claims that their code or artwork is included. Faction's
+Nightwire identity uses original artwork with dark scene lettering and abstract
+motifs, rather than buildings or pastel color bands.
 
-Faction adopts a pinned [Agent Temper method](.agent-temper/METHOD.md) with explicit
-[local engineering policy](PROJECT.md). The [source record](.agent-temper/SOURCE.md)
-identifies the reviewed revision; upstream changes require deliberate adoption.
-
-Work is **100% [GitHub issue-driven](dev-docs/workflow.md)**: finite acceptance, test-first behavior changes, and PRs that close completed issues. Plans/handoffs live in issues; there is no repository task tracker.
+The earlier working name was Citadel IRC. Its
+[historical archive](dev-docs/archive/README.md) is preserved for context and does
+not govern current work.
