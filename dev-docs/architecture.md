@@ -79,3 +79,8 @@ authenticated device-local v2 metadata/history/outbox and manages deliberate
 upgrade/recovery. It is a standalone entry, outside remote stream and picker
 routing. Read-only status/operation inspection does not relax protocol delivery
 gates for expired, revoked or history-only stores.
+
+The separate [native XMPP experiment](native-xmpp-transport.md) qualifies a bounded
+member-side transport only. It is outside the product Cargo workspace and owns
+no vault/server authority. Its selected runtime/resource observations do not
+qualify the future integrated mailbox or change normal service budgets.

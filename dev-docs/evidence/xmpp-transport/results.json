@@ -1,0 +1,525 @@
+{
+  "schema": 1,
+  "issue": 208,
+  "result": "qualified-research-direct-tls",
+  "date": "2026-10-25",
+  "profile": {
+    "stack": "tokio-xmpp6.0.0",
+    "tls": "verified-direct",
+    "sasl": "PLAIN",
+    "attempts": 1
+  },
+  "limits": {
+    "xml_bytes": 65536,
+    "interval_bytes": 16384,
+    "depth": 32,
+    "events": 256,
+    "lifetime_seconds": 10
+  },
+  "runs": {
+    "host": {
+      "rust_passed": 17,
+      "matrix": {
+        "result": "pass",
+        "platform": "Darwin",
+        "checks": [
+          "verified_tls_plain_auth_and_ciphertext_exchange",
+          "verified_tls12_profile",
+          "fragmented_xml_exchange",
+          "coalesced_sasl_restart_retains_unread_bytes",
+          "wrong_server_name",
+          "untrusted_certificate",
+          "changed_certificate_pin",
+          "failed_account_authentication",
+          "no_plain_mechanism",
+          "malformed_xml_rejected",
+          "excessive_depth_rejected_before_dom",
+          "excessive_events_rejected_before_dom",
+          "oversized_unfinished_text_rejected",
+          "oversized_stanza_rejected",
+          "root_whitespace_budget_is_bounded",
+          "connection_loss_has_no_retry",
+          "absolute_deadline_bounds_trickling_peer",
+          "explicit_cancellation_bounds_stalled_peer"
+        ],
+        "count": 18,
+        "outcomes": [
+          {
+            "check": "verified_tls_plain_auth_and_ciphertext_exchange",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "verified_tls12_profile",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "fragmented_xml_exchange",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "coalesced_sasl_restart_retains_unread_bytes",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "wrong_server_name",
+            "result": "pass",
+            "status": "tls",
+            "attempts": 1,
+            "tls_version": null
+          },
+          {
+            "check": "untrusted_certificate",
+            "result": "pass",
+            "status": "tls",
+            "attempts": 1,
+            "tls_version": null
+          },
+          {
+            "check": "changed_certificate_pin",
+            "result": "pass",
+            "status": "pin",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "failed_account_authentication",
+            "result": "pass",
+            "status": "auth",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "no_plain_mechanism",
+            "result": "pass",
+            "status": "mechanism",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "malformed_xml_rejected",
+            "result": "pass",
+            "status": "xml_malformed",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "excessive_depth_rejected_before_dom",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "excessive_events_rejected_before_dom",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "oversized_unfinished_text_rejected",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "oversized_stanza_rejected",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "root_whitespace_budget_is_bounded",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "connection_loss_has_no_retry",
+            "result": "pass",
+            "status": "lost",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "absolute_deadline_bounds_trickling_peer",
+            "result": "pass",
+            "status": "timeout",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "explicit_cancellation_bounds_stalled_peer",
+            "result": "pass",
+            "status": "cancelled",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          }
+        ],
+        "private_fixture_removed": true,
+        "product_adopted": false,
+        "live_federation": false
+      }
+    },
+    "netbsd": {
+      "rust_passed": 17,
+      "matrix": {
+        "result": "pass",
+        "platform": "NetBSD",
+        "checks": [
+          "verified_tls_plain_auth_and_ciphertext_exchange",
+          "verified_tls12_profile",
+          "fragmented_xml_exchange",
+          "coalesced_sasl_restart_retains_unread_bytes",
+          "wrong_server_name",
+          "untrusted_certificate",
+          "changed_certificate_pin",
+          "failed_account_authentication",
+          "no_plain_mechanism",
+          "malformed_xml_rejected",
+          "excessive_depth_rejected_before_dom",
+          "excessive_events_rejected_before_dom",
+          "oversized_unfinished_text_rejected",
+          "oversized_stanza_rejected",
+          "root_whitespace_budget_is_bounded",
+          "connection_loss_has_no_retry",
+          "absolute_deadline_bounds_trickling_peer",
+          "explicit_cancellation_bounds_stalled_peer"
+        ],
+        "count": 18,
+        "outcomes": [
+          {
+            "check": "verified_tls_plain_auth_and_ciphertext_exchange",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "verified_tls12_profile",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "fragmented_xml_exchange",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "coalesced_sasl_restart_retains_unread_bytes",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "wrong_server_name",
+            "result": "pass",
+            "status": "tls",
+            "attempts": 1,
+            "tls_version": null
+          },
+          {
+            "check": "untrusted_certificate",
+            "result": "pass",
+            "status": "tls",
+            "attempts": 1,
+            "tls_version": null
+          },
+          {
+            "check": "changed_certificate_pin",
+            "result": "pass",
+            "status": "pin",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "failed_account_authentication",
+            "result": "pass",
+            "status": "auth",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "no_plain_mechanism",
+            "result": "pass",
+            "status": "mechanism",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "malformed_xml_rejected",
+            "result": "pass",
+            "status": "xml_malformed",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "excessive_depth_rejected_before_dom",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "excessive_events_rejected_before_dom",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "oversized_unfinished_text_rejected",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "oversized_stanza_rejected",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "root_whitespace_budget_is_bounded",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "connection_loss_has_no_retry",
+            "result": "pass",
+            "status": "lost",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "absolute_deadline_bounds_trickling_peer",
+            "result": "pass",
+            "status": "timeout",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "explicit_cancellation_bounds_stalled_peer",
+            "result": "pass",
+            "status": "cancelled",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          }
+        ],
+        "private_fixture_removed": true,
+        "product_adopted": false,
+        "live_federation": false
+      }
+    }
+  },
+  "build": {
+    "failed_1g": [
+      {
+        "jobs": 2,
+        "result": "compiler-sigkill",
+        "exit": 101
+      },
+      {
+        "jobs": 1,
+        "result": "compiler-sigkill",
+        "exit": 101
+      }
+    ],
+    "kernel_confirmed_jobs": [
+      2
+    ],
+    "complete_builder_mib": 2048,
+    "complete_builder_tests": 16,
+    "builder_details": {
+      "configured_mib": 2048,
+      "observed_ram_bytes": 2128732160,
+      "jobs": 1,
+      "tests": 16,
+      "test_exit": 0,
+      "build_exit": 0
+    },
+    "compiler_profile": "unchanged release optimization; serial builder; no swap/kernel tuning",
+    "post_review": "final guard incremental rebuild at1GiB reuses unchanged dependencies compiled by2GiB phase",
+    "initial_offline_setup": "incomplete directory-vendor subset rejected; verified sparse-index/source cache used without fetching unselected JS sources"
+  },
+  "runtime": {
+    "configured_mib": 1024,
+    "incremental_build_exit": 0,
+    "observed_ram_bytes": 1054990336
+  },
+  "cost": {
+    "result": "pass",
+    "usage": {
+      "max_rss_kib": 9992,
+      "wall_seconds": 0.44,
+      "user_seconds": 0.0,
+      "system_seconds": 0.0,
+      "scope": "one whole native research-client process; fixture/compiler excluded"
+    },
+    "control": {
+      "check": "native_whole_process_cost",
+      "result": "pass",
+      "status": "ok",
+      "attempts": 1,
+      "tls_version": "TLSv1.3"
+    },
+    "private_fixture_removed": true,
+    "compiler_included": false,
+    "fixture_included": false,
+    "capacity_claim": false
+  },
+  "platform": {
+    "host": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "netbsd": "NetBSD 11.0 evbarm aarch64",
+    "rust": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)",
+    "compiler": "cc (nb3 20260326) 12.5.0",
+    "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+    "native_cores": 2,
+    "native_linked_libraries": [
+      "/home/factionbuild/target208/release/faction-xmpp-probe:",
+      "\t-lssl.16 => /usr/lib/libssl.so.16",
+      "\t-lcrypto.16 => /usr/lib/libcrypto.so.16",
+      "\t-lcrypt.1 => /lib/libcrypt.so.1",
+      "\t-lc.12 => /usr/lib/libc.so.12",
+      "\t-lpthread.1 => /usr/lib/libpthread.so.1",
+      "\t-lgcc_s.1 => /usr/lib/libgcc_s.so.1",
+      "\t-lm.0 => /usr/lib/libm.so.0"
+    ]
+  },
+  "native_binary": {
+    "bytes": 3152824,
+    "sha256": "5a6b719cbd8750ff852d8d5d2c2eeb34375f4942ffdc559887d158469da34179"
+  },
+  "candidate_sources": {
+    "tokio_xmpp": {
+      "version": "6.0.0",
+      "commit": "1710a6f99edd18cd926a2dc5d14ec532a2a6ad72",
+      "archive_sha256": "8921a165ab1eefd447cb1661423c582ac77b9c6960e123a71c8ad9cebc40b026",
+      "license": "MPL-2.0"
+    },
+    "libstrophe": {
+      "version": "0.14.0",
+      "commit": "7c2e78937d1f8614339bfa88bdcc21bb406deadd",
+      "archive_sha256": "adeb9e673d7f8b8cd20a2437cc220a8de581abf6e46594896b622e3e0dfa5c1f",
+      "status": "stock-parser-boundary-rejected-not-built"
+    }
+  },
+  "graph": {
+    "package_counts": {
+      "aarch64-apple-darwin": 125,
+      "aarch64-unknown-netbsd": 127,
+      "x86_64-unknown-linux-gnu": 127
+    },
+    "inventory_sha256": "e710bbae49f13e35075fd36710904ce78a3e0bd34b5d08836d2b2c090b87a580",
+    "upstream_ci_selected": false,
+    "product_graph_unchanged": true,
+    "selected_source_matches_locked_archives": true,
+    "unselected_js_source_fetched": false
+  },
+  "execution_sources": {
+    "experiments/208-xmpp-transport/Cargo.toml": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+    "experiments/208-xmpp-transport/Cargo.lock": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+    "experiments/208-xmpp-transport/tests/probe.rs": "0130091deb60a7e631a66ecb193d6cb50a9bc8628f54320e5bef9106143d6e5c",
+    "experiments/208-xmpp-transport/tests/guard.rs": "bf41cb8da15ae8d7bd31317ea5cfc61feadeea38d84b3585767d36cee43ce1a0",
+    "experiments/208-xmpp-transport/src/lib.rs": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+    "experiments/208-xmpp-transport/src/main.rs": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+    "experiments/208-xmpp-transport/src/probe.rs": "99637e917379342df24e63a1f99ca83946a2ffdc291df6c572a18f9f7bb78e09",
+    "experiments/208-xmpp-transport/src/guard.rs": "d86e630cb2b2537b46f341e9bf011cd424054047e1a4ff710c285e5ec06c7928",
+    "tools/probe_xmpp_transport.py": "79c730d3c2e82354589c456947684f93bd284df46ed2b9516675286b3a6f57ff",
+    "tools/measure_xmpp_transport.py": "7018071eb0368e11eeec4ef6a58620c8d95c1b9f12c142c4a23486f84997fedd",
+    "dev-docs/evidence/xmpp-transport/run-build.sh": "90ce8af9ee1ab9301e1b36fe3cf9f40ba56c1a28fcccfa1eb00207449115528c",
+    "dev-docs/evidence/xmpp-transport/run-runtime.sh": "cd2c8f44f2e6ac685d7e65249e96c4139f15ec665e2d779c6ca0a725cc3083a8"
+  },
+  "frozen_sources": {
+    "dev-docs/evidence/sources/208-xmpp/frozen-inputs.json": "5c8a17ddea65632d241b1ee0a092f7a0f3ebc2b083250c7af3b5f157d9a6eb0f",
+    "dev-docs/evidence/sources/208-xmpp/reviewer/stanza-red.rs": "d182cce715f72a1c5f5e3be45f876f23a4bc6f8f8ebf4f74de36b2d3427cc222",
+    "dev-docs/evidence/sources/208-xmpp/lead/run-build-jobs2.sh": "d9f6573594b2bf44d7ba5f29a93e96c508808bc081b6343b828b4d89c96ea853",
+    "dev-docs/evidence/sources/208-xmpp/lead/guard-before-whitespace-fix.rs": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+    "dev-docs/evidence/sources/208-xmpp/lead/probe-before-whitespace-case-rename.py": "1be8366595725d8623d8046a5ac14865c885cae55092e2010228bd3a1b1a8c2a",
+    "dev-docs/evidence/sources/208-xmpp/lead/probe-before-coalesced.py": "f769acb007e1b38575c3c2d7069ffc66963b363ad1af8ffa35200c7193efe8de",
+    "dev-docs/evidence/sources/208-xmpp/lead/probe-before-netbsd-config.py": "a8c038278ee497155a0e36f54941fcafe18e680911c2874433b49d74589149b4",
+    "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.toml": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+    "dev-docs/evidence/sources/208-xmpp/red-source/Cargo.lock": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71",
+    "dev-docs/evidence/sources/208-xmpp/red-source/tests/guard.rs": "a2f98a422f66c9021d32be80cf5b8058bc55366b779505e9956c89996c6db926",
+    "dev-docs/evidence/sources/208-xmpp/red-source/src/lib.rs": "d2c10615cb3db976753b0047995f0285b269d50b2a34c45503a716f868c489cb",
+    "dev-docs/evidence/sources/208-xmpp/whitespace-red-source/tests/guard.rs": "effca9bc9869dbaeb8bc1fd93d28391437d7e2238c22255dac04a63dd9c710a9",
+    "dev-docs/evidence/sources/208-xmpp/argv-red-source/tests/probe.rs": "15bf027177fa4841389c5fae3d76d5388d5423690dd340daa061bb15d34da573",
+    "dev-docs/evidence/sources/208-xmpp/argv-red-source/tests/guard.rs": "26b30c7de18a56a117bf3a1c783a59648b4cf8f519f7a0aab5434e350fdfca31",
+    "dev-docs/evidence/sources/208-xmpp/pre-format-source/src/probe.rs": "9eb23387c1e81767240f8c3720f41bf02743dd304d7aac54c9750312919cf042",
+    "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/main.rs": "1c8a97813ea1a5be01d90db322249ef51861106f886f91c7aefef46c1ceed9c4",
+    "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/probe.rs": "3b6fb4e9e3b9e2dbb01de93baa4cae9c961fe74c3fe988fa9895bf2cb000fd9b",
+    "dev-docs/evidence/sources/208-xmpp/driver-compile-failure-source/src/guard.rs": "41d02f80e9659be3b9b223f32828457f12bd00c0110f0ddaac4de7d37cbae246",
+    "dev-docs/evidence/sources/208-xmpp/driver-red-source/tests/probe.rs": "9bf439b48fe4dd12eaecf73d4d824351bbb8a18af672af08e032b607956ccdef",
+    "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/lib.rs": "4defd5393907e1041549761a9d0e37971b0e3c0333373c8da94de901009d9fa4",
+    "dev-docs/evidence/sources/208-xmpp/driver-red-source/src/guard.rs": "bcdbfd3505388de6db800980a546491aeb09a4305e4ce1b11814fb05e995d110",
+    "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/tests/probe.rs": "3a31093d82963d68baabcb0460d76eb3c01f4dfdaae83a9c109d928f2e245b6c",
+    "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/tests/guard.rs": "533d8e3f911034c6ee963f0150358b4ebd363c6a37ca242e13c52ba0f515c7d1",
+    "dev-docs/evidence/sources/208-xmpp/lookahead-red-source/src/main.rs": "d5cdcb043acc5164dcfc10b4ffa894b3f4e4a77f9ae4321ef221dd9078f0f95e",
+    "dev-docs/evidence/sources/208-xmpp/loss-red-source/tests/probe.rs": "ebab4892c54116cbb5ea50e75e61848d6315c2c4a3b150e7fc5128ce4b16e6f4",
+    "dev-docs/evidence/sources/208-xmpp/loss-red-source/tests/guard.rs": "406f504a708c5e38ef1ec01cf56c50a54c0ebefcb54fdc4499de22290adf38f0",
+    "dev-docs/evidence/sources/208-xmpp/loss-red-source/src/guard.rs": "47d28c8d37616a2ff4b2bde7eded6fe65c07bb1798af929fc537c4a63346315e",
+    "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/tests/probe.rs": "0130091deb60a7e631a66ecb193d6cb50a9bc8628f54320e5bef9106143d6e5c",
+    "dev-docs/evidence/sources/208-xmpp/pre-whitespace-fix-source/src/probe.rs": "99637e917379342df24e63a1f99ca83946a2ffdc291df6c572a18f9f7bb78e09",
+    "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/tests/probe.rs": "05df362db02e1a5c86f17fd6b6780831a60eb1ec889f14f9a985d5a4553c9994",
+    "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/tests/guard.rs": "397b632338b132443478d415806ab750ff76d1baa743bd2dbf0845176a1c0c75",
+    "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/main.rs": "1f1a6fb355dc687991a5caa296b95c38a65234c0cf51068dfd8db05577178fd4",
+    "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/probe.rs": "560061d64fc0976f89284979333ed97a535e7de1bdaf75323b221760c00b1d84",
+    "dev-docs/evidence/sources/208-xmpp/pre-clippy-fix-source/src/guard.rs": "3303ada43b56566848a1287d43277211f7a11e24739dc502fd5762e567d2b7a2",
+    "dev-docs/evidence/sources/208-xmpp/post-review-source/tests/guard.rs": "bf41cb8da15ae8d7bd31317ea5cfc61feadeea38d84b3585767d36cee43ce1a0",
+    "dev-docs/evidence/sources/208-xmpp/post-review-source/src/guard.rs": "d86e630cb2b2537b46f341e9bf011cd424054047e1a4ff710c285e5ec06c7928",
+    "dev-docs/evidence/xmpp-transport/intermediate-observations.json": "f47ee87d38a0db8048658c9f33c88f28dd077cbec6b978177deefd5702d5df94"
+  },
+  "capture_scope": "Exact own research crate, TLS fixture and executed native scripts SHA-matched to actual guest. Dependency archive/source identity checked separately; no source capture implies every upstream function was exercised.",
+  "timing_scope": "Cooperative async network deadline after trusted stdin; generated regular CA files only, no hard OS/provider/local-blocking preemption claim.",
+  "tdd": {
+    "rust": "Actual missing-module reds; argv panic, parser unconsumed-byte/restart and typed EOF regressions before fixes.",
+    "review": "Actual 16385-byte-after-whitespace failure; positive budget boundary retained, constants unchanged and17 final tests pass.",
+    "fixture": "Missing module then explicit private OpenSSL request-config regression after native missing-host-config setup failure.",
+    "policy": "Missing dependency checker/CI, locked-archive mismatch guard, saved-evidence checker/CI and backend-specific TLS oracle each failed before implementation/correction."
+  },
+  "teardown": {
+    "owned_vm_removed": true,
+    "owned_private_inputs_removed": true,
+    "ports_closed": true,
+    "saved_playground_stopped": true,
+    "saved_playground_unchanged": true
+  },
+  "claims": {
+    "product_adoption": false,
+    "live_mailbox": false,
+    "complete_omemo_codec": false,
+    "full_conformance": false,
+    "security_audit": false,
+    "physical_hardware": false,
+    "capacity": false,
+    "fresh_1g_release_build": false
+  },
+  "observation_pin_correction": {
+    "original_record_sha256": "cbb314bd3f12008fc4b20dcd7b3e1646a91a907f66372ddcd444bde40b75a50b",
+    "added_observation_path": "dev-docs/evidence/xmpp-transport/intermediate-observations.json"
+  }
+}
