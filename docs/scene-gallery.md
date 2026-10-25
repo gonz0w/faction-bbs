@@ -9,9 +9,9 @@ approved local membership is required. No public publication or federation occur
 ## Try and configure
 
 The [Nightwire pack](../gallery/nightwire/gallery.toml) contains three original
-three-page city/season works and one ASCII sketch. Its included BSD-3-Clause
+three-page dark lettering/sigil works and one ASCII sketch. Its included BSD-3-Clause
 license covers those originals. It makes no claim to archival ACiD/iCE/Razor art.
-Existing [Nightwire reference previews](artwork-nightwire.md) show the same city
+Existing [Nightwire reference previews](artwork-nightwire.md) show the same generated
 cells; actual terminal fonts/pixels and owner artistic acceptance remain open.
 
 ```sh

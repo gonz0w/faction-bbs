@@ -30,7 +30,7 @@ Optional seasonal calendars pin colors/login screens for each approved session.
 Opt-in long-form ANSI login art now pages with Enter/skip controls, keeping
 classic ASCII recovery. A local authoring preview needs no running board. The
 example calendar stays disabled. The optional [original Nightwire artwork](docs/artwork-nightwire.md)
-now adds bespoke lettering, a radio-city scene, coordinated seasons and a matching
+now adds dark angular lettering, abstract scene motifs, coordinated seasons and a matching
 short/compact identity. [Real-terminal artwork checks](docs/artwork-terminal-compatibility.md)
 cover cursor placement and cell widths; pixel/font appearance and owner visual
 acceptance remain open.

@@ -1,6 +1,6 @@
 # Nightwire terminal compatibility
 
-Updated 2026-10-22. This is a software compatibility check of the opt-in
+Updated 2026-10-24. This describes the original software compatibility check of the opt-in
 [Nightwire packs](artwork-nightwire.md), not a supported terminal/font list or
 approval of the artwork's appearance.
 
@@ -26,7 +26,7 @@ restarting after preflight remains the sysop's recovery path.
 
 ## What the measurements establish
 
-Fresh private Ghostty, Kitty and Alacritty instances receive the compiled
+The recorded private Ghostty, Kitty and Alacritty instances received the compiled
 product's canonical long, short and seasonal pages, compact/plain cards and
 80/40-column menus. Cursor-position replies are checked at every emitted text
 row, including right-edge pending wrap. Repeated runs of every CP437 glyph used
@@ -60,7 +60,11 @@ SGR colors, geometry and visible foreground/background differences; user palette
 can still change contrast. The SVGs use a reference palette and forced reference
 cell spacing, so they cannot establish real-font quality.
 
-Review the cover lettering, city, receiver, autumn/winter colors and menu together
+The current dark artwork replaces the measured skyline/receiver composition.
+Its canonical previews and local login/gallery PTYs are checked separately; the
+old emulator matrix is not a fresh observation of these new bytes.
+
+Review the cover lettering, split-wing sigil, carrier notes, seasons and menu together
 on the intended terminal before accepting a board identity. Prefer a different
 local font or palette, the short pack or ASCII fallback when necessary. No desktop
 capture/automation permission is requested. Animation, more formats, broader

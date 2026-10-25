@@ -1,14 +1,16 @@
 # Nightwire: original ANSI artwork and login screens
 
-Updated 2026-10-22. Original, Codex-assisted artwork candidate for #25; ready to
+Updated 2026-10-24. Original, Codex-assisted artwork candidate for #25; ready to
 try through the existing theme system. Owner visual acceptance remains open.
 
 ![Nightwire cover](images/nightwire-cover.svg)
 
-Nightwire gives Faction a coherent nocturnal radio-city identity: a bespoke
-slanted/beveled wordmark, rooftop mast and moon, layered city/windows/cables and
-an illustrated community receiver. The cyan/magenta/blue palette and deliberate
-negative space carry from cover to menu; autumn and winter reuse the composition.
+Nightwire uses original angular FACTION lettering, pointed terminals, scored metal
+edges and dark red recesses on a black ground. A split-wing sigil and abstract
+signal cuts replace the earlier buildings, moon and receiver. Charcoal/steel is
+the dominant ink; red accents become muted amber in autumn and deep blue in
+winter. The menu and compact text card follow the same identity. Bright
+cyan/magenta bands and architectural scenes are outside this direction.
 This is original cell artwork, with no archival work, group logo or font generator.
 The [reference catalog](../dev-docs/research/0025-menu-and-art-direction.md) remains
 attribution for aesthetic study, not a redistribution license.
@@ -17,10 +19,15 @@ attribution for aesthetic study, not a redistribution license.
 
 | Pack | Identity | Recovery |
 | --- | --- | --- |
-| [Nightwire](../themes/nightwire/theme.toml) | Three 80-column / 16-row pages: cover, city and receiver. | Enter-next / S+Enter-skip; fitting ASCII card for compact/plain. |
+| [Nightwire](../themes/nightwire/theme.toml) | Three 80-column / 16-row pages: wordmark, split-wing sigil and carrier notes. | Enter-next / S+Enter-skip; fitting ASCII card for compact/plain. |
 | [Nightwire short](../themes/nightwire-short/theme.toml) | The same complete cover in one 16-row screen. | Normal welcome/Enter pause; no art paging. |
-| [Autumn override](../themes/nightwire-seasons/autumn/theme.toml) | Warm yellow/red/brown variation, three pages; seasonal welcome/card. | Same actions, coordinates, recovery and approval gates. |
-| [Winter override](../themes/nightwire-seasons/winter/theme.toml) | Icy cyan/blue variation, three pages; seasonal welcome/card. | Same actions, coordinates, recovery and approval gates. |
+| [Autumn override](../themes/nightwire-seasons/autumn/theme.toml) | Muted amber/steel variation, three pages; seasonal welcome/card. | Same actions, coordinates, recovery and approval gates. |
+| [Winter override](../themes/nightwire-seasons/winter/theme.toml) | Deep blue/steel variation, three pages; seasonal welcome/card. | Same actions, coordinates, recovery and approval gates. |
+
+The [gallery pack](../gallery/nightwire/gallery.toml) uses the same generated
+ANSI/text editions, so it cannot silently keep the rejected artwork after a theme
+regeneration. Preview filenames `nightwire-city.svg` and `nightwire-receiver.svg`
+are retained for existing links; their contents are now the sigil and carrier notes.
 
 The artwork does not enable Doors/Files, change permissions or remap commands.
 The two-column main menu retains arrow highlighting, Tab and displayed hotkeys.
@@ -58,7 +65,7 @@ Recovery is selecting the earlier valid/base pack and restarting after preflight
   generated preview assets. Preserve its copyright/license notices when sharing.
 - Editable source: [build_nightwire.py](../tools/build_nightwire.py). The seven
   letter silhouettes/counters are custom point polygons, with explicit pixels,
-  CP437 shading/half-blocks and hand-set scene objects. No raster conversion or
+  CP437 shading/half-blocks and hand-set abstract details. No raster conversion or
   third-party font/image is an input.
 - Encoding: CP437 + the existing bounded CSI subset; SAUCE00 Character/ANSi
   records identify original authorship/extent. Metadata is stripped by the
@@ -67,7 +74,7 @@ Recovery is selecting the earlier valid/base pack and restarting after preflight
   controls, approval/epoch checks and shared memory/output limits remain.
 
 ```sh
-python3 tools/build_nightwire.py             # regenerate only the 12 named new files
+python3 tools/build_nightwire.py             # regenerate the 12 theme files and six matching gallery editions
 python3 tools/build_nightwire.py --check
 python3 tools/check_nightwire.py target/release/examples/preview_theme --write-previews
 python3 tools/check_nightwire.py target/release/examples/preview_theme
@@ -83,14 +90,15 @@ authoring/validation; an installed BBS reads only the prebuilt assets.
 
 ## Review the rest of the set
 
-![Nightwire city](images/nightwire-city.svg)
-![Nightwire receiver](images/nightwire-receiver.svg)
+![Nightwire split-wing sigil](images/nightwire-city.svg)
+![Nightwire carrier notes](images/nightwire-receiver.svg)
 ![Nightwire autumn cover](images/nightwire-autumn.svg)
 ![Nightwire winter cover](images/nightwire-winter.svg)
 
 These are reference-palette renders of the actual canonical output, not Ghostty/
-other-emulator screenshots or font certification. Terminal palettes and CP437
-Unicode glyph metrics can differ; the short/compact/plain paths remain available.
+other-emulator screenshots or font certification. ANSI color indices follow each
+member's terminal palette; the reference RGBs are not forced onto their terminal.
+Terminal palettes and CP437 Unicode glyph metrics can differ; the short/compact/plain paths remain available.
 See the [real-terminal compatibility guide](artwork-terminal-compatibility.md) for
 measured cell placement, multiplexer viewport requirements and classic recovery.
 Review letter readability, silhouette, palette, margins and transition into the
