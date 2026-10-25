@@ -1,0 +1,243 @@
+--- a/omemo.c
++++ b/omemo.c
+@@ -557,6 +557,19 @@
+   return 0;
+ }
+ 
++#ifdef OMEMO2
++// XEP-0384 0.9.1 section 4.2: AD retains X3DH initiator/responder order,
++// independently of which party sends this Double Ratchet message.
++static int GetSessionMac(uint8_t d[static MACSIZE],
++                         const struct omemoSession *session,
++                         const omemoKey mk, const uint8_t *msg, size_t msgn) {
++  if (session->initiation == 1)
++    return GetMac(d, session->identity, session->remoteidentity, mk, msg, msgn);
++  if (session->initiation == 2)
++    return GetMac(d, session->remoteidentity, session->identity, mk, msg, msgn);
++  return OMEMO_ESTATE;
++}
++#endif
+ #define GetPad(n) (16 - ((n) % 16))
+ 
+ static int Encrypt(uint8_t out[OMEMO_INTERNAL_PAYLOAD_MAXPADDEDSIZE],
+@@ -622,8 +635,8 @@
+       Encrypt(msg->p + msg->n, key, keyn, kdfout->cipher, kdfout->iv);
+ #ifdef OMEMO2
+   msg->p[19] = msg->n - 20;
+-  TRY(GetMac(msg->p + 2, session->identity, session->remoteidentity,
+-             kdfout->mac, msg->p + 20, msg->n - 20));
++  TRY(GetSessionMac(msg->p + 2, session, kdfout->mac,
++                    msg->p + 20, msg->n - 20));
+ #else
+   TRY(GetMac(msg->p + msg->n, session->identity,
+              session->remoteidentity, kdfout->mac, msg->p, msg->n));
+@@ -751,6 +764,9 @@
+   session->usedpk_id = pk_id;
+   session->usedspk_id = spk_id;
+   session->init = SESSION_INIT;
++#ifdef OMEMO2
++  session->initiation = 1;
++#endif
+   return 0;
+ }
+ 
+@@ -908,8 +924,8 @@
+   TRY(DeriveKey(Zero32, mk, HkdfInfoMessageKeys, kdfout));
+   uint8_t mac[MACSIZE];
+ #ifdef OMEMO2
+-  TRY(GetMac(mac, session->remoteidentity, session->identity,
+-             kdfout->mac, fields1[2].p, fields1[2].v));
++  TRY(GetSessionMac(mac, session, kdfout->mac,
++                    fields1[2].p, fields1[2].v));
+ #else
+   TRY(GetMac(mac, session->remoteidentity, session->identity,
+              kdfout->mac, msg, msgn - 8));
+@@ -971,6 +987,9 @@
+       if (!pk || !spk)
+         return OMEMO_ECORRUPT;
+       session->usedpk_id = fields[PbKeyEx_pk_id].v;
++#ifdef OMEMO2
++      session->initiation = 2;
++#endif
+       omemoKey sk;
+       memcpy(session->identity, store->identity.pub, 32);
+       memcpy(session->remoteidentity, GetRawKey(fields[PbKeyEx_ik].p),
+@@ -1235,6 +1254,9 @@
+          GetVarIntSize(session->state.pn) +
+          GetVarIntSize(session->usedpk_id) +
+          GetVarIntSize(session->usedspk_id) +
++#ifdef OMEMO2
++         2 + GetVarIntSize(session->initiation) +
++#endif
+          GetVarIntSize(session->init);
+ }
+ 
+@@ -1259,6 +1281,9 @@
+   d = FormatVarInt(d, PB_UINT32, 13, session->usedspk_id);
+   d = FormatVarInt(d, PB_UINT32, 14, session->init);
+   d = FormatKey(d, 15, session->identity);
++#ifdef OMEMO2
++  d = FormatVarInt(d, PB_UINT32, 16, session->initiation);
++#endif
+   ASSERT(d - p == omemoGetSerializedSessionSize(session));
+ }
+ 
+@@ -1282,9 +1307,24 @@
+       [13] = {PB_REQUIRED | PB_UINT32},
+       [14] = {PB_REQUIRED | PB_UINT32},
+       [15] = {PB_REQUIRED | PB_LEN, 32},
++#ifdef OMEMO2
++      [16] = {PB_REQUIRED | PB_UINT32},
++#endif
+   };
++#ifdef OMEMO2
++  if (ParseProtobuf(p, n, fields, 17))
++    return OMEMO_EPROTOBUF;
++#endif
++#ifndef OMEMO2
+   if (ParseProtobuf(p, n, fields, 16))
+     return OMEMO_EPROTOBUF;
++#endif
++#ifdef OMEMO2
++  if (fields[14].v > SESSION_HEARTBEAT || fields[16].v > 2 ||
++      ((fields[14].v == SESSION_UNINIT) != (fields[16].v == 0)) ||
++      (fields[14].v == SESSION_INIT && fields[16].v != 1))
++    return OMEMO_EPROTOBUF;
++#endif
+   memcpy(session->remoteidentity, fields[1].p, 32);
+   memcpy(session->state.dhs.prv, fields[2].p, 32);
+   memcpy(session->state.dhs.pub, fields[3].p, 32);
+@@ -1299,6 +1339,9 @@
+   session->usedpk_id = fields[12].v;
+   session->usedspk_id = fields[13].v;
+   session->init = fields[14].v;
++#ifdef OMEMO2
++  session->initiation = fields[16].v;
++#endif
+   memcpy(session->identity, fields[15].p, 32);
+   return 0;
+ }
+--- a/omemo.h
++++ b/omemo.h
+@@ -117,6 +117,11 @@
+ 
+ struct omemoSession {
+   int init;
++#ifdef OMEMO2
++  // Stable X3DH role: 0 uninitialized, 1 active initiator, 2 passive responder.
++  // This metadata is required by the OMEMO-2 session serialization format.
++  uint32_t initiation;
++#endif
+   omemoKey identity;
+   omemoKey remoteidentity;
+   struct omemoState state;
+--- a/gen/omemo2.c
++++ b/gen/omemo2.c
+@@ -472,6 +472,17 @@
+   return 0;
+ }
+ 
++// XEP-0384 0.9.1 section 4.2: AD retains X3DH initiator/responder order,
++// independently of which party sends this Double Ratchet message.
++static int GetSessionMac(uint8_t d[static MACSIZE],
++                         const struct omemo2Session *session,
++                         const omemo2Key mk, const uint8_t *msg, size_t msgn) {
++  if (session->initiation == 1)
++    return GetMac(d, session->identity, session->remoteidentity, mk, msg, msgn);
++  if (session->initiation == 2)
++    return GetMac(d, session->remoteidentity, session->identity, mk, msg, msgn);
++  return OMEMO2_ESTATE;
++}
+ #define GetPad(n) (16 - ((n) % 16))
+ 
+ static int Encrypt(uint8_t out[OMEMO2_INTERNAL_PAYLOAD_MAXPADDEDSIZE],
+@@ -534,8 +545,8 @@
+   msg->n +=
+       Encrypt(msg->p + msg->n, key, keyn, kdfout->cipher, kdfout->iv);
+   msg->p[19] = msg->n - 20;
+-  TRY(GetMac(msg->p + 2, session->identity, session->remoteidentity,
+-             kdfout->mac, msg->p + 20, msg->n - 20));
++  TRY(GetSessionMac(msg->p + 2, session, kdfout->mac,
++                    msg->p + 20, msg->n - 20));
+   session->state.ns++;
+   if (session->init == SESSION_INIT) {
+     msg->isprekey = true;
+@@ -653,6 +664,7 @@
+   session->usedpk_id = pk_id;
+   session->usedspk_id = spk_id;
+   session->init = SESSION_INIT;
++  session->initiation = 1;
+   return 0;
+ }
+ 
+@@ -795,8 +807,8 @@
+   struct DeriveChainKeyOutput kdfout[1];
+   TRY(DeriveKey(Zero32, mk, HkdfInfoMessageKeys, kdfout));
+   uint8_t mac[MACSIZE];
+-  TRY(GetMac(mac, session->remoteidentity, session->identity,
+-             kdfout->mac, fields1[2].p, fields1[2].v));
++  TRY(GetSessionMac(mac, session, kdfout->mac,
++                    fields1[2].p, fields1[2].v));
+   if (omemoDriverCompare(mac, realmac, MACSIZE))
+     return OMEMO2_ECORRUPT;
+   uint8_t tmp[OMEMO2_INTERNAL_PAYLOAD_MAXPADDEDSIZE];
+@@ -838,6 +850,7 @@
+       if (!pk || !spk)
+         return OMEMO2_ECORRUPT;
+       session->usedpk_id = fields[PbKeyEx_pk_id].v;
++      session->initiation = 2;
+       omemo2Key sk;
+       memcpy(session->identity, store->identity.pub, 32);
+       memcpy(session->remoteidentity, GetRawKey(fields[PbKeyEx_ik].p),
+@@ -1058,6 +1071,7 @@
+          GetVarIntSize(session->state.pn) +
+          GetVarIntSize(session->usedpk_id) +
+          GetVarIntSize(session->usedspk_id) +
++         2 + GetVarIntSize(session->initiation) +
+          GetVarIntSize(session->init);
+ }
+ 
+@@ -1082,6 +1096,7 @@
+   d = FormatVarInt(d, PB_UINT32, 13, session->usedspk_id);
+   d = FormatVarInt(d, PB_UINT32, 14, session->init);
+   d = FormatKey(d, 15, session->identity);
++  d = FormatVarInt(d, PB_UINT32, 16, session->initiation);
+   ASSERT(d - p == omemo2GetSerializedSessionSize(session));
+ }
+ 
+@@ -1105,9 +1120,14 @@
+       [13] = {PB_REQUIRED | PB_UINT32},
+       [14] = {PB_REQUIRED | PB_UINT32},
+       [15] = {PB_REQUIRED | PB_LEN, 32},
++      [16] = {PB_REQUIRED | PB_UINT32},
+   };
+-  if (ParseProtobuf(p, n, fields, 16))
++  if (ParseProtobuf(p, n, fields, 17))
+     return OMEMO2_EPROTOBUF;
++  if (fields[14].v > SESSION_HEARTBEAT || fields[16].v > 2 ||
++      ((fields[14].v == SESSION_UNINIT) != (fields[16].v == 0)) ||
++      (fields[14].v == SESSION_INIT && fields[16].v != 1))
++    return OMEMO2_EPROTOBUF;
+   memcpy(session->remoteidentity, fields[1].p, 32);
+   memcpy(session->state.dhs.prv, fields[2].p, 32);
+   memcpy(session->state.dhs.pub, fields[3].p, 32);
+@@ -1122,6 +1142,7 @@
+   session->usedpk_id = fields[12].v;
+   session->usedspk_id = fields[13].v;
+   session->init = fields[14].v;
++  session->initiation = fields[16].v;
+   memcpy(session->identity, fields[15].p, 32);
+   return 0;
+ }
+--- a/gen/omemo2.h
++++ b/gen/omemo2.h
+@@ -100,6 +100,9 @@
+ 
+ struct omemo2Session {
+   int init;
++  // Stable X3DH role: 0 uninitialized, 1 active initiator, 2 passive responder.
++  // This metadata is required by the OMEMO-2 session serialization format.
++  uint32_t initiation;
+   omemo2Key identity;
+   omemo2Key remoteidentity;
+   struct omemo2State state;

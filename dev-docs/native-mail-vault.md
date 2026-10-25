@@ -76,6 +76,14 @@ new device/home password alone cannot recover ratcheted history. Define migratio
 revocation/old-backup limits and recovery enrollment before making support claims.
 Current generic draft/pin persistence must not masquerade as those controls.
 
+The [two-way NetBSD qualification](research/0054-omemo-interop-netbsd.md) rejects
+the original library and qualifies only an explicit corrected research candidate.
+Its typed `ed25519:` pins and raw restart snapshots are not v1 vault records.
+Existing Curve-format pins require deliberate verified enrollment, never silent
+conversion. [#203](https://github.com/gonz0w/faction-bbs/issues/203) owns source
+adoption review and encrypted atomic state/message/outbox persistence before a
+transport can send. The current product vault remains version 1 and unchanged.
+
 For #91, a locally typed home address is only a label. Online proof must establish
 issuer, full subject, member device possession, target board audience, lifetime
 and replay policy, then enter a trusted live connection-bound server path. Keep

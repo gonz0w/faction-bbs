@@ -87,6 +87,7 @@ jobs:
           python3 tools/check_passport_evidence.py
           python3 tools/check_board_guide_evidence.py
           python3 tools/check_mail_proof_evidence.py
+          python3 tools/check_omemo_interop_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py
