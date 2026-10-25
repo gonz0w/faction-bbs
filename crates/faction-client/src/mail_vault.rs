@@ -22,12 +22,12 @@ const HEADER: usize = 184;
 const PREFIX: usize = HEADER + 24;
 const MAX_FILE: usize = PREFIX + MAX_PLAIN + 16;
 const NAME: &str = "mail.fkv";
-fn random<const N: usize>() -> io::Result<[u8; N]> {
+pub(crate) fn random<const N: usize>() -> io::Result<[u8; N]> {
     let mut a = [0; N];
     getrandom::fill(&mut a).map_err(|_| invalid())?;
     Ok(a)
 }
-fn kdf(password: &[u8], salt: &[u8]) -> io::Result<Zeroizing<[u8; 32]>> {
+pub(crate) fn kdf(password: &[u8], salt: &[u8]) -> io::Result<Zeroizing<[u8; 32]>> {
     // Fixed local parameters. Untrusted files cannot request more work. These do
     // not alter server password parameters or its two-permit credential budget.
     if !(12..=128).contains(&password.len()) {
@@ -40,7 +40,7 @@ fn kdf(password: &[u8], salt: &[u8]) -> io::Result<Zeroizing<[u8; 32]>> {
         .map_err(|_| invalid())?;
     Ok(key)
 }
-fn seal(key: &[u8; 32], nonce: &[u8], plain: &[u8], aad: &[u8]) -> io::Result<Vec<u8>> {
+pub(crate) fn seal(key: &[u8; 32], nonce: &[u8], plain: &[u8], aad: &[u8]) -> io::Result<Vec<u8>> {
     XChaCha20Poly1305::new(key.into())
         .encrypt(
             <&XNonce>::try_from(nonce).map_err(|_| invalid())?,
@@ -48,7 +48,12 @@ fn seal(key: &[u8; 32], nonce: &[u8], plain: &[u8], aad: &[u8]) -> io::Result<Ve
         )
         .map_err(|_| invalid())
 }
-fn open(key: &[u8; 32], nonce: &[u8], cipher: &[u8], aad: &[u8]) -> io::Result<Zeroizing<Vec<u8>>> {
+pub(crate) fn open(
+    key: &[u8; 32],
+    nonce: &[u8],
+    cipher: &[u8],
+    aad: &[u8],
+) -> io::Result<Zeroizing<Vec<u8>>> {
     XChaCha20Poly1305::new(key.into())
         .decrypt(
             <&XNonce>::try_from(nonce).map_err(|_| invalid())?,
@@ -63,7 +68,7 @@ fn aad(header: &[u8], kind: &[u8]) -> Vec<u8> {
     out.extend_from_slice(&header[..40]);
     out
 }
-fn valid(file: &File) -> io::Result<()> {
+pub(crate) fn valid(file: &File) -> io::Result<()> {
     let m = file.metadata()?;
     if !m.is_file()
         || m.uid() != rustix::process::getuid().as_raw()
@@ -75,7 +80,7 @@ fn valid(file: &File) -> io::Result<()> {
     Ok(())
 }
 pub struct Store {
-    dir: File,
+    pub(crate) dir: File,
     _lock: File,
 }
 impl Store {
@@ -97,6 +102,11 @@ impl Store {
             if let std::path::Component::Normal(name) = component {
                 if create && components.peek().is_none() {
                     fs::mkdirat(&dir, name, Mode::from_raw_mode(0o700))?;
+                    #[cfg(all(test, feature = "native-mail"))]
+                    if FAIL_PARENT_SYNC.with(|v| v.replace(false)) {
+                        return Err(io::Error::other("injected parent-directory sync failure"));
+                    }
+                    dir.sync_all()?;
                 }
                 dir = File::from(fs::openat(
                     &dir,
@@ -180,6 +190,10 @@ pub struct Vault {
     pub data: Data,
 }
 impl Vault {
+    #[cfg(feature = "native-mail")]
+    pub(crate) fn into_checkpoint_parts(self) -> (Store, Data) {
+        (self.store, self.data)
+    }
     pub fn create(
         store: Store,
         data: Data,
@@ -419,4 +433,11 @@ mod tests {
         std::fs::set_permissions(&f.0, std::fs::Permissions::from_mode(0o755)).unwrap();
         assert!(Store::at(&f.0, false).is_err());
     }
+}
+
+#[cfg(all(test, feature = "native-mail"))]
+thread_local! { static FAIL_PARENT_SYNC: std::cell::Cell<bool> = const {std::cell::Cell::new(false)}; }
+#[cfg(all(test, feature = "native-mail"))]
+pub(crate) fn fail_parent_sync_once() {
+    FAIL_PARENT_SYNC.with(|v| v.set(true));
 }

@@ -14,11 +14,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  documentation:
-    name: Documentation and policy
+  native_mail:
+    name: Optional native mail
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Validate the optional member-device checkpoint path
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-native-mail
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo fmt --all -- --check
+          python3 tools/check_omemo_dependencies.py
+          cargo clippy -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- -D warnings
+          cargo test -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- --test-threads=1
+  documentation:
+    name: Documentation and policy
+    needs: native_mail
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Require optional native tests
+        env:
+          NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}
+        run: test "$NATIVE_MAIL_RESULT" = success
       - name: Fetch the public repository revision
         env:
           REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
@@ -88,6 +118,7 @@ jobs:
           python3 tools/check_board_guide_evidence.py
           python3 tools/check_mail_proof_evidence.py
           python3 tools/check_omemo_interop_evidence.py
+          python3 tools/check_checkpoint_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

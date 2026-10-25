@@ -67,3 +67,9 @@ SBC results. Preserve previously executed source bytes and rejected trials befor
 editing measured inputs; [evidence](evidence/README.md) defines provenance. Product
 contracts and accepted ADRs remain in docs; new decisions and defects require
 finite GitHub issues, never another local plan/status file.
+
+
+The default-off [native checkpoint backend](native-mail-checkpoints.md) owns
+member-device v2 encryption, protocol state, accepted history and durable outbound
+ciphertext. It cannot connect or decrypt through an SSH board stream. Ordinary
+client/board operation and the v1 local vault do not enable this adapter.

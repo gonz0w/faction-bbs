@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/faction-library", "crates/faction-gallery", "crates/faction-find", "crates/faction-catchup", "crates/faction-polls", "crates/faction-gatherings", "crates/faction-pages", "crates/faction-wall", "crates/faction-articles", "crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service", "crates/faction-files", "crates/faction-client", "crates/faction-client-pty"]
+members = ["crates/faction-omemo", "crates/faction-library", "crates/faction-gallery", "crates/faction-find", "crates/faction-catchup", "crates/faction-polls", "crates/faction-gatherings", "crates/faction-pages", "crates/faction-wall", "crates/faction-articles", "crates/faction-core", "crates/faction-cli", "crates/faction-terminal", "crates/faction-access", "crates/faction-unix", "crates/faction-service", "crates/faction-files", "crates/faction-client", "crates/faction-client-pty"]
 exclude = ["experiments/004-native-sessions", "experiments/023-netbsd-dependencies"]
 resolver = "3"
 
@@ -20,6 +20,8 @@ zeroize = "=1.9.1"
 base64 = "=0.23.1"
 sha2 = "=0.11.1"
 chacha20poly1305 = { version = "=0.11.0", default-features = false, features = ["alloc", "zeroize"] }
+
+roxmltree = { version = "=0.21.1", default-features = false, features = ["std"] }
 
 [profile.release]
 opt-level = 2
