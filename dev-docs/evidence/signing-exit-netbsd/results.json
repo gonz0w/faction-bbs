@@ -1,0 +1,497 @@
+{
+  "base_private_library_relink": {
+    "explicit_library_link_unresolved_symbols": [
+      "freezero",
+      "xstrdup",
+      "prime_test"
+    ],
+    "ordinary_library_name_unavailable": true,
+    "reason": "Private versioned libssh exposes a different namespace/build interface; direct relink had unresolved symbols. No bit-for-bit base build was produced.",
+    "result": "unavailable"
+  },
+  "base_tool_replaced": false,
+  "date": "2026-10-24",
+  "external_report_sent": false,
+  "fixture": {
+    "architecture": "aarch64",
+    "ram_mib": 1024,
+    "system": "NetBSD 11.0",
+    "vcpus": 2
+  },
+  "hardware_claim": false,
+  "identities": {
+    "architecture": "aarch64",
+    "binaries": {
+      "base": {
+        "bytes": 160280,
+        "linked_libraries": {
+          "/usr/lib/libc.so.12": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "/usr/lib/libcrypt.so.1": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "/usr/lib/libcrypto.so.16": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "/usr/lib/libz.so.1": "59c62530e9ab7c6f729212c7ff796627acf210443b1a798857f9b6c3d4f733f6",
+          "/usr/lib/private/libssh.so.50": "ea351f8af51fae47d7b3c26d7870573f6e93e5baf5312eaac14eec4b0b836032"
+        },
+        "sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648"
+      },
+      "netbsd_annotated": {
+        "bytes": 1918328,
+        "linked_libraries": {
+          "/lib/libcrypt.so.1": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "/usr/lib/libc.so.12": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "/usr/lib/libcrypto.so.16": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "/usr/lib/libgcc_s.so.1": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "/usr/lib/libutil.so.7": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f",
+          "/usr/lib/libz.so.1": "59c62530e9ab7c6f729212c7ff796627acf210443b1a798857f9b6c3d4f733f6"
+        },
+        "sha256": "9beb2a32ccf1e14cb66575305834fe18666b0763f53e0e75bd936381d257e668"
+      },
+      "netbsd_returning": {
+        "bytes": 1917008,
+        "linked_libraries": {
+          "/lib/libcrypt.so.1": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "/usr/lib/libc.so.12": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "/usr/lib/libcrypto.so.16": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "/usr/lib/libgcc_s.so.1": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "/usr/lib/libutil.so.7": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f",
+          "/usr/lib/libz.so.1": "59c62530e9ab7c6f729212c7ff796627acf210443b1a798857f9b6c3d4f733f6"
+        },
+        "sha256": "ad1c897bb0f9a341c79af4e2824e8620a504f4be0297b1046dda17546a2b0561"
+      },
+      "portable_noreturn": {
+        "bytes": 1925432,
+        "linked_libraries": {
+          "/lib/libcrypt.so.1": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "/usr/lib/libc.so.12": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "/usr/lib/libcrypto.so.16": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "/usr/lib/libgcc_s.so.1": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "/usr/lib/libutil.so.7": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f",
+          "/usr/lib/libz.so.1": "59c62530e9ab7c6f729212c7ff796627acf210443b1a798857f9b6c3d4f733f6"
+        },
+        "sha256": "e528c7a3faf98ab86276adf963ebce4a244326816154a57ffc053122486db2ca"
+      },
+      "portable_returning": {
+        "bytes": 1925104,
+        "linked_libraries": {
+          "/lib/libcrypt.so.1": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "/usr/lib/libc.so.12": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "/usr/lib/libcrypto.so.16": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "/usr/lib/libgcc_s.so.1": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "/usr/lib/libutil.so.7": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f",
+          "/usr/lib/libz.so.1": "59c62530e9ab7c6f729212c7ff796627acf210443b1a798857f9b6c3d4f733f6"
+        },
+        "sha256": "266b2d8528a65acbbd9f17a3e3a16ecb09848d9a3767e0b99d3b38c2a7a14a2d"
+      }
+    },
+    "compile_command": "cc -O2 -g -pipe -Wno-error=format-truncation -Wall -Wextra -Wpointer-arith -Wuninitialized -Wsign-compare -Wformat-security -Wsizeof-pointer-memaccess -Wno-pointer-sign -Wno-unused-parameter -Wno-unused-result -Wimplicit-fallthrough -Wmisleading-indentation -fno-strict-aliasing -D_FORTIFY_SOURCE=2 -ftrapv -fzero-call-used-regs=used -ftrivial-auto-var-init=zero -fno-builtin-memset -fstack-protector-strong -I. -I. -I\"/home/factionbuild/signing92/openssh-10.3p1/openbsd-compat/include\"  -D_OPENBSD_SOURCE -DOPENSSL_API_COMPAT=0x10100000L -DSSHDIR=\\\"/usr/local/etc\\\"  -D_PATH_SSH_PROGRAM=\\\"/usr/local/bin/ssh\\\"  -D_PATH_SSH_ASKPASS_DEFAULT=\\\"/usr/local/libexec/ssh-askpass\\\"  -D_PATH_SFTP_SERVER=\\\"/usr/local/libexec/sftp-server\\\"  -D_PATH_SSH_KEY_SIGN=\\\"/usr/local/libexec/ssh-keysign\\\"  -D_PATH_SSHD_SESSION=\\\"/usr/local/libexec/sshd-session\\\"  -D_PATH_SSHD_AUTH=\\\"/usr/local/libexec/sshd-auth\\\"  -D_PATH_SSH_PKCS11_HELPER=\\\"/usr/local/libexec/ssh-pkcs11-helper\\\"  -D_PATH_SSH_SK_HELPER=\\\"/usr/local/libexec/ssh-sk-helper\\\"  -D_PATH_SSH_PIDDIR=\\\"/var/run\\\"  -D_PATH_PRIVSEP_CHROOT_DIR=\\\"/var/empty\\\" -DHAVE_CONFIG_H -c ssh-keygen.c -o ssh-keygen.o",
+    "compiler": "cc (nb3 20260326) 12.5.0",
+    "netbsd_header_sha256": "e9d20af9dd61673849afe8d5f20c1d025b72ba1a146d6ee67bc4824fc64399fb",
+    "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+    "sources": {
+      "Makefile": "abbda5eacd769e238356451fbc74385a0bf6c9c80e0f4d92d238fc5457caa2ec",
+      "config.h": "6264df3a89a7f85acf7769a00275376f4c7dc228ed5e363fa97d778d9a2aa433",
+      "ssh-keygen.c": "db41fb108271a886a0737d30de06d4556aaecd4e2ccfccbb3c85cedfa9db4bc6",
+      "ssh-keygen.c.good": "3f0e5d0d0e981e612e378df44c053170d201e28d26d1af656d0f7d49fdee7e68",
+      "ssh-keygen.c.netbsd": "bff1b1a05c240359fe5c65ecbc16d26c5dc3d2e216eae07d73e6e433aeefb213"
+    },
+    "system": "NetBSD arm64 11.0"
+  },
+  "issue": 92,
+  "local_probe_tests": 6,
+  "matrices": {
+    "base": {
+      "controls": [
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "basic",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "short_validity",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "clear_extensions",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "forced_command",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "quiet",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        }
+      ],
+      "core_dumps_disabled": true,
+      "count": 5,
+      "host_observed_matrix_seconds_with_ssh": 0.31,
+      "invalid_ca_denied": true,
+      "keygen_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648",
+      "keys_removed": true,
+      "result": "observed_failure",
+      "verifier_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648"
+    },
+    "netbsd_annotated": {
+      "controls": [
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "basic",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "short_validity",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "clear_extensions",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "forced_command",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "quiet",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        }
+      ],
+      "core_dumps_disabled": true,
+      "count": 5,
+      "host_observed_matrix_seconds_with_ssh": 0.307,
+      "invalid_ca_denied": true,
+      "keygen_sha256": "9beb2a32ccf1e14cb66575305834fe18666b0763f53e0e75bd936381d257e668",
+      "keys_removed": true,
+      "result": "observed_failure",
+      "verifier_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648"
+    },
+    "netbsd_returning": {
+      "controls": [
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "basic",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "short_validity",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "clear_extensions",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "forced_command",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "quiet",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        }
+      ],
+      "core_dumps_disabled": true,
+      "count": 5,
+      "host_observed_matrix_seconds_with_ssh": 0.898,
+      "invalid_ca_denied": true,
+      "keygen_sha256": "ad1c897bb0f9a341c79af4e2824e8620a504f4be0297b1046dda17546a2b0561",
+      "keys_removed": true,
+      "result": "pass",
+      "verifier_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648"
+    },
+    "portable_noreturn": {
+      "controls": [
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "basic",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "short_validity",
+          "exit": null,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": true,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "clear_extensions",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "forced_command",
+          "exit": -11,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": false,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        },
+        {
+          "accepted": false,
+          "artifact_produced": true,
+          "case": "quiet",
+          "exit": null,
+          "signature_verified": false,
+          "tamper_denied": false,
+          "timed_out": true,
+          "wrong_ca_denied": false,
+          "wrong_principal_denied": false
+        }
+      ],
+      "core_dumps_disabled": true,
+      "count": 5,
+      "host_observed_matrix_seconds_with_ssh": 22.464,
+      "invalid_ca_denied": true,
+      "keygen_sha256": "e528c7a3faf98ab86276adf963ebce4a244326816154a57ffc053122486db2ca",
+      "keys_removed": true,
+      "result": "observed_failure",
+      "verifier_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648"
+    },
+    "portable_returning": {
+      "controls": [
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "basic",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "short_validity",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "clear_extensions",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "forced_command",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        },
+        {
+          "accepted": true,
+          "artifact_produced": true,
+          "case": "quiet",
+          "exit": 0,
+          "signature_verified": true,
+          "tamper_denied": true,
+          "timed_out": false,
+          "wrong_ca_denied": true,
+          "wrong_principal_denied": true
+        }
+      ],
+      "core_dumps_disabled": true,
+      "count": 5,
+      "host_observed_matrix_seconds_with_ssh": 0.942,
+      "invalid_ca_denied": true,
+      "keygen_sha256": "266b2d8528a65acbbd9f17a3e3a16ecb09848d9a3767e0b99d3b38c2a7a14a2d",
+      "keys_removed": true,
+      "result": "pass",
+      "verifier_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648"
+    }
+  },
+  "netbsd_source": {
+    "corrected_sha256": "db41fb108271a886a0737d30de06d4556aaecd4e2ccfccbb3c85cedfa9db4bc6",
+    "patch_sha256": "7dd73cd0ad4a51330160f9095f31815ddede2e61a9dabe0fabb93cf09dbf49d5",
+    "revision": "4d24211097fc31930b5547e6e454385370758b67",
+    "sha256": "bff1b1a05c240359fe5c65ecbc16d26c5dc3d2e216eae07d73e6e433aeefb213",
+    "url": "https://raw.githubusercontent.com/NetBSD/src/4d24211097fc31930b5547e6e454385370758b67/crypto/external/bsd/openssh/dist/ssh-keygen.c"
+  },
+  "online_issuer_adopted": false,
+  "original_four_case_reproduction": {
+    "controls": [
+      {
+        "artifact_produced": true,
+        "case": "basic",
+        "exit": -11
+      },
+      {
+        "artifact_produced": true,
+        "case": "short_validity",
+        "exit": -11
+      },
+      {
+        "artifact_produced": true,
+        "case": "clear_extensions",
+        "exit": -11
+      },
+      {
+        "artifact_produced": true,
+        "case": "forced_command",
+        "exit": -11
+      }
+    ],
+    "core_dumps_disabled": true,
+    "count": 4,
+    "keys_removed": true,
+    "result": "observed_failure",
+    "ssh_keygen_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648",
+    "ssh_version": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+  },
+  "probe_sources": {
+    "experiments/084-mail-proof/signing_probe.py": "7253c7fbf99695ea262ac08e54d3e6c3d1324419dd38e0b1f490aa2df3dde257",
+    "tools/probe_signing_exit.py": "e422b3fecb75ae25f6487b8af093d1cc8bb288ef090305602b52020d0e6c33d9",
+    "tools/test_signing_exit.py": "049e515043687b6c38b938aea2bd8753579a2be505ebf5844ed477e3d41004f1"
+  },
+  "product_runtime_changed": false,
+  "result": "pass",
+  "schema": 1,
+  "scope": "Research disposition, not an installed signer or identity product",
+  "source_archive": {
+    "checksum_format": "base64 SHA-256",
+    "official_checksum_source": "https://www.openssh.org/txt/release-10.3",
+    "release_signature_verified": false,
+    "selected_archive_filename_no_js_check": true,
+    "sha256": "56682a36bb92dcf4b4f016fd8ec8e74059b79a8de25c15d670d731e7d18e45f4",
+    "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.3p1.tar.gz"
+  },
+  "teardown": {
+    "owned_vm_stopped": true,
+    "private_fixture_removed": true,
+    "saved_playground_stopped_and_intact": true
+  }
+}

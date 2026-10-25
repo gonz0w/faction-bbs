@@ -83,3 +83,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0051: Real terminal compatibility](0051-real-terminal-compatibility.md)
 
 - [0046: Native local mail vault](0046-native-local-mail-vault.md).
+
+- [0052: NetBSD certificate-signing exit](0052-netbsd-signing-exit.md) — reproduced stale noreturn annotation, controlled source correction and unchanged installed-issuer boundary.

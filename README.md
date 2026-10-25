@@ -173,8 +173,9 @@ inbox/send and roaming authentication remain outside the native product. A
 now passes encrypted subject/body/reply, offline/archive and verified-device refusal
 controls, plus scoped native SSH certificate admission. Native OMEMO integration,
 incoming mail/history recovery and trusted local identity binding remain #90/#91;
-native certificate
-signing has a recorded failure under #92. Encrypted attachments stay planned in #88.
+the installed native signer remains rejected. [The #92 investigation](dev-docs/research/0052-netbsd-signing-exit.md)
+reproduced a stale noreturn annotation and validated an uninstalled one-line
+correction; issuer adoption remains separate under #91. Encrypted attachments stay planned in #88.
 The native [board picker](docs/board-launcher.md#open-your-local-offline-vault-between-visits)
 can now open that existing offline vault with **M** between visits, using an explicit
 member-owned catalog path. Its own hidden local passphrase never goes to a BBS.
