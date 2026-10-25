@@ -1,0 +1,42 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.07s
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 15 tests
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... ok
+test mail_wire::tests::mail_wire_rejects_underfilled_discovery_bundle ... ok
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language ... FAILED
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language ... FAILED
+test mail_wire::tests::mail_wire_accepts_exact_standard_store_hint_only ... ok
+test mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... ok
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... ok
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... ok
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+test mail_wire::tests::mail_wire_rejects_language_namespace_shape_and_bounds ... ok
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys ... ok
+
+failures:
+
+---- mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language stdout ----
+
+thread 'mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language' (6106399) panicked at crates/faction-client/src/mail_wire.rs:650:66:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+
+---- mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language stdout ----
+
+thread 'mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language' (6106398) panicked at crates/faction-client/src/mail_wire.rs:636:72:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language
+    mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language
+
+test result: FAILED. 13 passed; 2 failed; 0 ignored; 0 measured; 29 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p faction-client --lib`

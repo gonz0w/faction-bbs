@@ -1,0 +1,341 @@
+   Compiling libc v0.2.191
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling cfg-if v1.0.5
+   Compiling typenum v1.20.1
+   Compiling rand_core v0.10.1
+   Compiling getrandom v0.4.3
+   Compiling memchr v2.8.3
+   Compiling stable_deref_trait v1.2.1
+   Compiling cmov v0.5.4
+   Compiling rustversion v1.0.23
+   Compiling zeroize v1.9.1
+   Compiling version_check v0.9.5
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling litemap v0.8.3
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling writeable v0.6.4
+   Compiling bytes v1.12.1
+   Compiling const-oid v0.10.2
+   Compiling utf8_iter v1.0.4
+   Compiling subtle v2.6.1
+   Compiling icu_normalizer_data v2.4.0
+   Compiling ctutils v0.4.3
+   Compiling itoa v1.0.18
+   Compiling generic-array v0.14.7
+   Compiling icu_properties_data v2.4.0
+   Compiling static_assertions v1.1.0
+   Compiling ryu v1.0.23
+   Compiling find-msvc-tools v0.1.15
+   Compiling shlex v2.0.1
+   Compiling roxmltree v0.21.1
+   Compiling bitflags v2.13.2
+   Compiling rustix v1.1.5
+   Compiling cc v1.9.0
+   Compiling futures-sink v0.3.34
+   Compiling smallvec v1.16.4
+   Compiling rxml_validation v0.11.0
+   Compiling thiserror v2.0.21
+   Compiling zmij v1.0.23
+   Compiling hybrid-array v0.4.15
+   Compiling autocfg v1.5.1
+   Compiling tinyvec v1.13.3
+   Compiling core-foundation-sys v0.8.7
+   Compiling serde_json v1.0.154
+   Compiling unicode-bidi v0.3.18
+   Compiling unicode-properties v0.1.4
+   Compiling futures-channel v0.3.34
+   Compiling once_cell v1.21.4
+   Compiling num-traits v0.2.19
+   Compiling castaway v0.2.4
+   Compiling fastrand v2.5.0
+   Compiling unicode-normalization v0.1.26
+   Compiling base64 v0.22.1
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling syn v3.0.9
+   Compiling mio v1.2.4
+   Compiling socket2 v0.6.5
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling syn v2.0.119
+   Compiling compact_str v0.9.1
+   Compiling digest v0.10.7
+   Compiling cpufeatures v0.3.1
+   Compiling errno v0.3.14
+   Compiling inout v0.2.5
+   Compiling stringprep v0.1.5
+   Compiling core-foundation v0.10.1
+   Compiling security-framework-sys v2.17.0
+   Compiling cpufeatures v0.2.17
+   Compiling futures-task v0.3.34
+   Compiling rxml_validation v0.12.0
+   Compiling digest v0.11.3
+   Compiling cipher v0.5.2
+   Compiling futures-io v0.3.34
+   Compiling slab v0.4.12
+   Compiling native-tls v0.2.18
+   Compiling sha2 v0.11.1
+   Compiling faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+   Compiling security-framework v3.7.0
+   Compiling chacha20 v0.10.2
+   Compiling keccak v0.2.2
+   Compiling uuid v1.29.0
+   Compiling sponge-cursor v0.1.0
+   Compiling winnow v1.0.4
+   Compiling sha3 v0.12.0
+   Compiling sha1 v0.11.0
+   Compiling sha2 v0.10.9
+   Compiling sha1 v0.10.7
+   Compiling hmac v0.12.1
+   Compiling chrono v0.4.45
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling blake2 v0.10.6
+   Compiling pbkdf2 v0.12.2
+   Compiling getrandom v0.2.17
+   Compiling log v0.4.34
+   Compiling base64ct v1.8.3
+   Compiling rand v0.10.3
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+   Compiling sasl v0.5.2
+   Compiling universal-hash v0.6.1
+   Compiling phc v0.6.1
+   Compiling poly1305 v0.9.1
+   Compiling blake2 v0.11.0
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling aead v0.6.1
+   Compiling password-hash v0.6.1
+   Compiling base64 v0.23.1
+   Compiling unicode-width v0.2.2
+   Compiling argon2 v0.6.0
+   Compiling chacha20poly1305 v0.11.0
+   Compiling tempfile v3.27.0
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling synstructure v0.14.0
+   Compiling rxml_proc v0.12.1
+   Compiling xso_proc v0.3.0
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling tokio-macros v2.7.2
+   Compiling thiserror-impl v2.0.21
+   Compiling futures-macro v0.3.34
+   Compiling tokio v1.54.1
+   Compiling futures-util v0.3.34
+   Compiling zerofrom v0.1.8
+   Compiling yoke v0.8.4
+   Compiling zerovec v0.11.9
+   Compiling zerotrie v0.2.5
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling icu_collections v2.4.0
+   Compiling icu_locale_core v2.4.0
+   Compiling futures-executor v0.3.34
+   Compiling icu_provider v2.4.0
+   Compiling futures v0.3.34
+   Compiling icu_properties v2.4.0
+   Compiling icu_normalizer v2.4.0
+   Compiling rxml v0.14.0
+   Compiling tokio-util v0.7.20
+   Compiling tokio-native-tls v0.3.1
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling tokio-stream v0.1.19
+   Compiling minidom v0.19.0
+   Compiling jid v0.12.3
+   Compiling xso v0.4.0
+   Compiling xmpp-parsers v0.23.0
+   Compiling tokio-xmpp v6.0.0
+   Compiling faction-xmpp v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-xmpp)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 21.51s
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/release/deps/faction_client-72ac106b24ee8b1d)
+
+running 44 tests
+test checkpoint_tests::backup_is_history_only_until_explicit_fresh_device ... ok
+test checkpoint_tests::checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by checkpoint crash controls
+test checkpoint_tests::checkpoint_review_parent_sync_failure_prevents_usable_initialization ... ok
+test checkpoint_tests::checkpoint_review_recovery_quarantine_survives_password_reopen ... ok
+test checkpoint_tests::checkpoint_review_restart_outbox_recovers_acknowledgement_id ... ok
+test checkpoint_tests::delayed_keys_and_reply_ratchets_commit_with_history ... ok
+test checkpoint_tests::encrypted_send_receive_retry_and_ack_survive_reopen ... ok
+test checkpoint_tests::explicit_upgrade_preserves_v1_drafts_pins_and_original_backup ... ok
+test checkpoint_tests::locks_wrong_secrets_malformed_bytes_and_caps_fail_closed ... ok
+test checkpoint_tests::process_death_after_delivery_before_ack_retries_identical_ciphertext ... ok
+test checkpoint_tests::process_death_before_and_after_publication_keeps_canonical_state ... ok
+test checkpoint_tests::reset_write_ambiguity_never_rolls_back_into_a_live_handle ... ok
+test checkpoint_tests::validation_tamper_trust_and_duplicates_do_not_change_canonical_state ... ok
+test checkpoint_tests::write_errors_poison_until_durable_reopen ... ok
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins ... ok
+test mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message ... ok
+test mail_network::tests::foreign_account_and_expired_state_cannot_open_a_home_connection ... ok
+test mail_network::tests::private_regular_local_configuration_is_preloaded ... ok
+test mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq ... ok
+test mail_network::tests::revoked_recovered_and_poisoned_handles_stop_before_transport_setup ... ok
+test mail_network::tests::symlinks_hardlinks_fifo_and_public_files_are_refused ... ok
+test mail_network::tests::unknown_fields_credentials_and_non_numeric_endpoints_are_rejected ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+test mail_wire::tests::mail_wire_accepts_exact_standard_store_hint_only ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language ... ok
+test mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys ... ok
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... ok
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... ok
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... ok
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... ok
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_language_namespace_shape_and_bounds ... ok
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_rejects_underfilled_discovery_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+test mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys ... ok
+test network_checkpoint_tests::authenticated_network_timestamp_and_delayed_duplicate_survive_reopen ... ok
+test network_checkpoint_tests::published_prekeys_come_from_the_durable_current_identity_only ... ok
+test network_checkpoint_tests::unauthenticated_timestamp_substitution_and_tampering_never_mutate_checkpoint ... ok
+
+test result: ok. 43 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 12.54s
+
+     Running unittests src/main.rs (/private/tmp/faction209-owned/target/release/deps/faction_client-3455de78e012e51a)
+
+running 24 tests
+test checkpoint_ui::tests::inactivity_locks_without_remote_connection ... ok
+test checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input ... ok
+test checkpoint_ui::tests::private_text_is_inert_in_classic_and_unicode_modes ... ok
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.24s
+
+     Running unittests examples/checkpoint_ui_fixture.rs (/private/tmp/faction209-owned/target/release/examples/checkpoint_ui_fixture-bb269b97eb2578a1)
+
+running 5 tests
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/home_mail_fixture.rs (/private/tmp/faction209-owned/target/release/examples/home_mail_fixture-e6587f4e13a6ca00)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/release/deps/faction_omemo-57ac361ac988595f)
+
+running 19 tests
+test native::network_tests::network_public_prekeys_active_role_preserves_own_equal_id ... ok
+test native::network_tests::network_public_prekeys_all_open_and_used_key_disappears_only_after_commit ... ok
+test native::network_tests::network_public_prekeys_are_bounded_distinct_and_survive_import ... ok
+test native::tests::all_raw_error_buffers_are_cleared ... ok
+test native::tests::altered_signature_and_wrong_bundle_reject_without_state_change ... ok
+test native::tests::empty_and_maximum_plaintext_roundtrip ... ok
+test native::tests::existing_session_prekey_outer_identity_change_rejects ... ok
+test native::tests::explicit_ed25519_pin_required_and_immutable ... ok
+test native::tests::generated_library_first_message_and_reply ... ok
+test native::tests::hex_decoder_has_exact_bounds_and_no_ambiguous_text ... ok
+test native::tests::independent_edwards_to_montgomery_vectors_and_sign_pin ... ok
+test native::tests::initiation_role_serializes_and_malformed_or_missing_role_rejects ... ok
+test native::tests::max_skip_and_aggregate_cache_are_bounded_with_rollback ... ok
+test native::tests::payload_failure_and_truncation_roll_back_entire_context ... ok
+test native::tests::pending_sce_acceptance_commits_or_aborts_whole_transaction ... ok
+test native::tests::raw_ffi_error_zeroes_entire_output_and_length ... ok
+test native::tests::skipped_keys_survive_restart_and_are_consumed_once ... ok
+test native::tests::snapshot_rejects_truncation_trailing_bytes_and_invalid_header ... ok
+test native::tests::wrong_inbound_pin_and_wrong_payload_key_never_commit ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/build_contract.rs (/private/tmp/faction209-owned/target/release/deps/build_contract-b22af58099edd6f0)
+
+running 1 test
+test disabled_has_no_native_tools_cross_rejects_and_source_tampering_fails ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+
+     Running tests/core_dump_guard.rs (/private/tmp/faction209-owned/target/release/deps/core_dump_guard-d78ba263f1cf7319)
+
+running 1 test
+test creating_private_native_state_disables_both_core_dump_limits ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/core_dump_refusal.rs (/private/tmp/faction209-owned/target/release/deps/core_dump_refusal-2557bb51e31f1f8f)
+
+running 1 test
+test refusing_core_dump_suppression_refuses_private_device_creation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/native_contract.rs (/private/tmp/faction209-owned/target/release/deps/native_contract-8b719dae72d4307f)
+
+running 1 test
+test native_clone_is_an_independent_transaction_and_sce_abort_keeps_state ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/network_sce.rs (/private/tmp/faction209-owned/target/release/deps/network_sce-ac703554664b905f)
+
+running 2 tests
+test network_sce_keeps_exact_addresses_and_strict_envelope ... ok
+test network_sce_uses_authenticated_sender_time_without_arrival_metadata ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/openssl_runtime_refusal.rs (/private/tmp/faction209-owned/target/release/deps/openssl_runtime_refusal-15679fd2bbacdada)
+
+running 1 test
+test incompatible_openssl_runtime_refuses_device_creation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/sce_contract.rs (/private/tmp/faction209-owned/target/release/deps/sce_contract-f6d456ff4f783830)
+
+running 4 tests
+test accepts_independently_written_sce_and_inert_escaped_unicode ... ok
+test exact_utf8_and_envelope_bounds_and_large_received_padding ... ok
+test rejects_wrong_binding_shape_namespace_and_active_xml ... ok
+test timestamp_subset_calendar_range_and_enclosing_time_are_checked ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/interop_probe.rs (/private/tmp/faction209-owned/target/release/examples/interop_probe-1f1703590a1f0a84)
+
+running 2 tests
+test tests::oversized_lines_drain_before_next_command_and_incomplete_eof_refuses ... ok
+test tests::valid_product_sce_is_pending_until_commit_and_bad_sce_aborts ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

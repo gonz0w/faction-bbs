@@ -1,0 +1,19 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.13s
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/debug/deps/faction_client-8240718d549cfb91)
+
+running 1 test
+
+thread 'mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins' (5897924) panicked at crates/faction-client/src/mail_network.rs:799:9:
+connection elapsed time belongs to the original cycle clock
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins ... FAILED
+
+failures:
+
+failures:
+    mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 3.42s
+
+error: test failed, to rerun pass `-p faction-client --lib`

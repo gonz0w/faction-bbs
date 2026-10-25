@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-10-24 · no supported release yet.**
+**Working hobby preview · updated 2026-10-25 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -30,13 +30,11 @@ by the sysop; experiments and future protocols are separate from normal operatio
 - **Capacity:** the normal shared service admits **eight sessions**. Earlier
   250-member experiments are [research evidence](dev-docs/research/README.md),
   not supported capacity.
-- **Privacy:** a device-local offline vault is available. The optional
-  [native checkpoint backend](dev-docs/native-mail-checkpoints.md) and
-  [trusted local console](docs/checkpoint-console.md) add encrypted
-  protocol state and outbox persistence behind a default-off feature. Terminal
-  network inbox/send, encrypted attachments and roaming are not integrated yet.
-  A [native XMPP research transport](dev-docs/research/0055-native-xmpp-transport.md)
-  is qualified separately; its first product adapter is tracked in [#209](https://github.com/gonz0w/faction-bbs/issues/209).
+- **Privacy:** the device-local offline vault remains available. The default-off
+  [manual home-mail client](docs/online-mail.md) adds verified XMPP access,
+  encrypted subject/body exchange and durable pending ciphertext. Keys and
+  decryption stay on the member's device. Reliable offline archive catch-up,
+  background notifications, encrypted attachments and roaming remain incomplete.
 
 ## What you can do
 
@@ -49,7 +47,7 @@ by the sysop; experiments and future protocols are separate from normal operatio
 | Files | [File areas and restricted SFTP](docs/file-areas.md), private-area grants, upload review, permission-checked room/chat links, [library shelves](docs/library-shelves.md) and [file requests](docs/file-requests.md). |
 | Arcade | [Lua menus and two original games](docs/lua-doors.md), persistent high scores and an optional [classic server connector](docs/classic-game-doors.md). |
 | Creative scene | [ANSI/ASCII galleries](docs/scene-gallery.md), [local magazines](docs/board-magazine.md) and a [contributor approval workshop](docs/magazine-workshop.md). |
-| Native client | [Integrated transfers](docs/native-client.md), a [board picker](docs/board-launcher.md), [connection desk](docs/connection-desk.md), [local passport](docs/local-passport.md) and an [offline encrypted vault](docs/local-mail-vault.md). |
+| Native client | [Integrated transfers](docs/native-client.md), a [board picker](docs/board-launcher.md), [connection desk](docs/connection-desk.md), [local passport](docs/local-passport.md), an [offline encrypted vault](docs/local-mail-vault.md) and optional [manual encrypted home mail](docs/online-mail.md). |
 | Sysop operations | [Local stats console](docs/sysop-console.md), CPU/RAM/network graphs, service health, [backup checks](docs/backup-checks.md) and [export/restore](docs/export-restore.md). |
 
 The main-menu [board guide](docs/board-guide.md) provides ANSI **F1** and plain
@@ -108,12 +106,12 @@ The protocols have separate jobs:
   [article format](docs/article-profile.md), Unicode subjects and offline INN
   validation. Live peering and news-provider subscriptions remain planned; article
   formatting does not publish a room.
-- **XMPP/OMEMO:** a candidate for [encrypted private mail and home identities](docs/private-mail.md),
+- **XMPP/OMEMO:** optional [manual encrypted private mail](docs/online-mail.md),
   with invited independent home boards. Keys and decryption stay on the member's
   device. An ordinary SSH BBS session never receives private-mail plaintext or keys.
 
 The existing [two-home proof](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
-is separate from native product integration. The installed native signer remains
+is separate from the adopted [bounded native adapter](dev-docs/native-home-mail.md). The installed native signer remains
 rejected; the [validated signing correction](dev-docs/research/0052-netbsd-signing-exit.md)
 is uninstalled and adoption remains separate work.
 

@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "origin_commit": "2224c41df1b6c633b27fd4243e60a99df2532dff",
+  "source_root": "sources/pre209-native-network",
+  "files": {
+    "dev-docs/dependencies/local-core.json": "152df6752813ceef5aa3b057a68c54dcb1d4135c54e05c5519ca9da940b0599e",
+    "dev-docs/dependencies/native-mail.json": "79f84b8712b6d0b5d2a1bc68d1ba5deda1de616174693344838a38039ac597b7"
+  }
+}

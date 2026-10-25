@@ -156,3 +156,20 @@ NetBSD retains `_NETBSD_SOURCE` and Darwin adds neither definition. The saved VM
 record measured the earlier build-script bytes, retained through the
 [post-proof build follow-up](evidence/mail-checkpoints/linux-build-followup.json).
 Runtime/vendor sources and the BSD/Darwin compiler definitions did not change.
+
+## Manual home-adapter boundary
+
+The optional [home adapter](native-home-mail.md) calls `publication(now)` for
+public bundle material and 32 existing public prekeys from one durable snapshot.
+Expiry, revocation, quarantine or a poisoned handle prevent publication. Receiving
+a prekey message may change which keys remain publishable; the caller refreshes
+this view after processing messages during an IQ wait.
+
+`receive_network` requires a `Wire` with `sent_at = 0`, because standard OMEMO
+carries the sender time inside authenticated SCE. It derives the time only after
+native authentication and strict SCE decoding, then commits the same canonical
+Wire digest/history representation. Exact duplicate lookup tries only the bounded
+received-history timestamps. It never substitutes arrival or server delay time.
+The original `receive` API and its enclosing-time comparison remain unchanged.
+Neither API changes the v2 envelope/payload schema or grants network trust.
+The caller samples its trusted cycle clock immediately before each operation.

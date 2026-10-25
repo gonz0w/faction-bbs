@@ -1,17 +1,20 @@
 # Home identities and encrypted private mail
 
-Status: network mail/identity remain owner-selected direction, **not implemented**.
-The [native terminal client](native-client.md) now provides SSH/Files integration;
-its optional [local encrypted vault](local-mail-vault.md) now stores private drafts
-and explicit device pins with member-controlled backup/recovery. It does not yet
-hold OMEMO device keys, route XMPP, receive/send mail or perform roaming authentication.
-A separate [two-home reference proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
-passes 12 actual OMEMO-2/SCE controls and 11 native scoped SSH verifier controls.
-It is research tooling, not the shipped client or an adopted complete protocol.
-Native protocol/inbox integration and history recovery remain [#90](https://github.com/gonz0w/faction-bbs/issues/90),
-and trusted membership binding [#91](https://github.com/gonz0w/faction-bbs/issues/91).
+Status: experimental **manual member-device mail** is available through the
+[optional native home-mail entry](online-mail.md). It authenticates directly to
+one configured home, publishes durable public device material, verifies one peer
+and exchanges encrypted subject/body/replies. The local encrypted checkpoint
+keeps native protocol state, authenticated history and exact pending ciphertext.
+Ordinary SSH never decrypts or renders this mail.
+
+Reliable offline/archive catch-up is [#211](https://github.com/gonz0w/faction-bbs/issues/211).
+Integrated background/picker notifications remain #99, trusted visited-board
+membership binding #91 and attachments #88. Parent #90 stays open. The earlier
+[two-home reference proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
+and [native interoperability qualification](../dev-docs/research/0054-omemo-interop-netbsd.md)
+remain separate immutable evidence; they do not establish full XMPP/OMEMO conformance.
 The [native signing investigation](../dev-docs/research/0052-netbsd-signing-exit.md)
-records a controlled source correction; the installed base signer remains rejected.
+remains separate from mail authentication and installed-signer adoption.
 Native client/identity/mail
 proof [#84](https://github.com/gonz0w/faction-bbs/issues/84); local mail #33 and
 federation #17. This supersedes the old blanket chat-only federation restriction
@@ -25,7 +28,7 @@ federation peers and retain their own community admission decisions.
 
 ## One identity, separately approved communities
 
-The future mail increment of the native Faction client will own the member's device keys. It keeps
+The optional native mail entry owns the member's device keys. It keeps
 the ANSI/BBS feel while connecting to a visited board and the home mailbox through
 separate channels. Ordinary SSH remains useful for rooms, chat, files and games.
 It cannot provide server-blind mail by having the server decrypt and render text.
@@ -38,19 +41,18 @@ Member's native terminal client
                               `--> invited remote home server --> recipient device
 ```
 
-The client authenticates its home identity, then presents a narrowly scoped proof
-to a visited board. **How that proof is issued/verified is still research.** XMPP
+The client authenticates its configured home account over verified TLS. Presenting
+a narrowly scoped identity proof to a visited board remains separate #91 work. XMPP
 federation is message routing and does not itself log a user into arbitrary BBSes.
 No visited board receives the home password, private key or global bearer token.
 No replicated password database or automatic local sysop/member privileges.
 A visited board may bind the proven home identity to a local membership record;
 that record does not become an independent copy of the home identity.
 
-An already enrolled member device reads the home inbox directly while the member
-visits another board. Changing boards does not copy the mailbox into that board
-or require giving its sysop mail keys. A genuinely new device needs explicit key
-enrollment/recovery; merely entering an account password does not recover all
-old encrypted messages.
+The manual mail entry currently runs separately from a board visit. The integrated
+journey in #99 will keep the home inbox available across visits without copying
+mail keys into a board. A new device still needs explicit key enrollment/recovery;
+entering a home account password cannot recover old encrypted history.
 
 ## Server-blind means member-side cryptography
 
@@ -66,21 +68,19 @@ inside an SSH process on a BBS. Password changes can rewrap a local keystore;
 server-side password reset must not decrypt history or silently authorize a new
 device. Recovery needs a member-controlled recovery secret or trusted device.
 The [local vault](local-mail-vault.md) selects a bounded encrypted persistence format
-and member-held backup/recovery secret. OMEMO device/state/history recovery and
-new-device enrollment remain unimplemented; a local vault backup is not yet an
-OMEMO history export.
+and member-held backup/recovery secret. The separate v2 checkpoint keeps native
+state/history/outbox; official backup or recovery opens history only and cannot
+resume old ratchets. Fresh-device enrollment remains deliberate.
 
-XMPP with OMEMO is the leading reuse candidate, not an implemented/validated
-protocol profile. Device-key verification/enrollment is essential: a compromised
-home server must not quietly add a device that receives future messages. Pin and
-interoperate a concrete OMEMO namespace/version before adoption. See
-[research 0044](../dev-docs/research/0044-home-identities-and-encrypted-mail.md).
-
-The [native reuse qualification](../dev-docs/research/0053-native-omemo-reuse.md)
-identifies Picomemo 1.3.1 as a candidate for further testing. Host library tests
-passed, including a reference-origin first-message decrypt; no native network
-mail adapter is adopted. Two-way interoperability, typed device-pin mapping,
-transactional encrypted persistence and native NetBSD qualification remain required.
+The [adopted native profile](../dev-docs/native-home-mail.md) uses
+`urn:xmpp:omemo:2` with the reviewed SCE subset and full typed Ed25519 verification.
+A server device list never enrolls a key. The narrow public-key export reuses
+already committed native prekeys; it adds no cipher or ratchet. The
+[native qualification](../dev-docs/research/0054-omemo-interop-netbsd.md),
+[checkpoint contract](../dev-docs/native-mail-checkpoints.md) and
+[adoption decision](../dev-docs/decisions/0080-native-home-mail.md) describe exact
+sources and limits. This is a bounded one-peer implementation, not a complete
+current-spec conformance or independent security-audit claim.
 
 Servers still see necessary addressing, timing, sizes and delivery information.
 Encryption does not guarantee anonymity or prevent a recipient retaining a copy.

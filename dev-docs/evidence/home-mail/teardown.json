@@ -1,0 +1,13 @@
+{
+  "owned_vm_removed": true,
+  "owned_private_inputs_removed": true,
+  "ports_closed": true,
+  "saved_playground_stopped": true,
+  "saved_playground_unchanged": true,
+  "owned_home_processes_stopped": true,
+  "owned_qemu_controller_stopped": true,
+  "saved_files_match": true,
+  "saved_disk_size_mtime_match": true,
+  "reviewer_public_caches_removed": true,
+  "retained_public_cargo_source_cache": true
+}

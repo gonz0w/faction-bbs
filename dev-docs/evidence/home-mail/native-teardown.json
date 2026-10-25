@@ -1,0 +1,12 @@
+{
+  "owned_home_pids_stopped": true,
+  "four_owned_loopback_ports_closed": true,
+  "generated_209_credentials_clientstores_serverprofiles_removed": true,
+  "attack_controls_and_module_removed": true,
+  "generated_marker_removed": true,
+  "owned_qemu_process_stopped": true,
+  "owned_controller_process_stopped": true,
+  "owned_admin_forward_closed": true,
+  "public_reports_source_and_artifact_maps_captured_before_shutdown": true,
+  "host_private_vm_and_build_roots_retained_for_lead": true
+}

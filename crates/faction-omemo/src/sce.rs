@@ -224,7 +224,17 @@ pub fn decode(
     recipient: &str,
     enclosing_sent_at: u64,
 ) -> Result<Content> {
-    if raw.len() > MAX_PLAINTEXT || enclosing_sent_at > LAST_SECOND {
+    let (content, stamp) = decode_network(raw, sender, recipient)?;
+    if enclosing_sent_at > LAST_SECOND || stamp.abs_diff(enclosing_sent_at) > 300 {
+        return Err(Error);
+    }
+    Ok(content)
+}
+
+/// Decode an already authenticated native plaintext, deriving its sender time.
+/// Arrival time and unauthenticated XMPP metadata are never clock authority.
+pub fn decode_network(raw: &[u8], sender: &str, recipient: &str) -> Result<(Content, u64)> {
+    if raw.len() > MAX_PLAINTEXT {
         return Err(Error);
     }
     bounded(sender, MAX_PLAINTEXT)?;
@@ -295,11 +305,10 @@ pub fn decode(
         }
     }
     let time = time.ok_or(Error)?;
-    if !elements(time)?.is_empty()
-        || parse_stamp(only_attribute(time, "stamp")?)?.abs_diff(enclosing_sent_at) > 300
-    {
+    if !elements(time)?.is_empty() {
         return Err(Error);
     }
+    let stamp = parse_stamp(only_attribute(time, "stamp")?)?;
     let _padding = text_leaf(pad.ok_or(Error)?, MAX_PLAINTEXT)?;
     let content = content.ok_or(Error)?;
     if content.attributes().len() != 0 {
@@ -320,8 +329,11 @@ pub fn decode(
             return Err(Error);
         }
     }
-    Ok(Content {
-        subject: subject.ok_or(Error)?,
-        body: body.ok_or(Error)?,
-    })
+    Ok((
+        Content {
+            subject: subject.ok_or(Error)?,
+            body: body.ok_or(Error)?,
+        },
+        stamp,
+    ))
 }

@@ -1,0 +1,15 @@
+{
+  "issue": 209,
+  "phase": "executed remote CI guard failure before fix",
+  "run_id": 40224886568,
+  "job_id": 121265782191,
+  "source_root": "dev-docs/evidence/sources/209-research-guards",
+  "files": {
+    "tools/check_ui_dependencies.py": "2319210a7adc4d7c7415447b7d75094c0b861b9c85229ecabf5ab7eee66f5d99",
+    "tools/check_shared_dependencies.py": "f7e9fc1d0e3b3aebc20c55462ebf9dcca05e66c171422b6116b3deccf0ab3dd0",
+    "tools/check_headroom_dependencies.py": "1cf3db0ff36cd34bb47e7784ebfb4b616ab8cdf51beef7c05e15cf204c5eead2",
+    "tools/check_transport_dependencies.py": "c503cac437e74ff309262d03a447c972c055adcb44fcd778647ac84a9a1abaf9"
+  },
+  "failed_assertion": "unreviewed experiment dependency/features",
+  "cause": "current product inventory smallvec1.16.4 cannot stand in for reviewed historical experiment smallvec1.16.3"
+}

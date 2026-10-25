@@ -47,3 +47,5 @@ The local client vault additionally uses the seven previously reviewed MIT/Apach
 packages from #94 (aead/chacha20/chacha20poly1305/cipher/inout/poly1305/universal-hash).
 The integrated inventory also retains the current reviewed Unicode width table;
 all selected package versions/licenses/features are compared before acceptance.
+
+[Network mail](network-mail.json) records the combined optional Linux/NetBSD/macOS graph. Verify selected source archives and bytes with `python3 tools/check_network_mail_dependencies.py`; this is not an audit.

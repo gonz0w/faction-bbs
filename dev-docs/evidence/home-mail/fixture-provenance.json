@@ -1,0 +1,46 @@
+{
+  "source": {
+    "url": "https://prosody.im/downloads/source/prosody-13.0.7.tar.gz",
+    "version": "13.0.7",
+    "archive_sha256": "f671df3c7535c7269afc89579ea26fc13d1006b40ef5df4ccb71a560197f151b",
+    "netbsd_lua54_patch": "experiments/084-mail-proof/prosody-netbsd-lua54.patch",
+    "patch_sha256": "4e1f49a30b2b4f50a8c750a7ccdd307c11d5dbacc0d9e5ea7b29c7eda7825ba4"
+  },
+  "s2s_module_sha256": "88fed46b5095a8f589e429d68aae238a91deea011025e6aa8702ed9fd079d281",
+  "packages": "fixture-packages.json",
+  "packaged_prosody_version": "13.0.3",
+  "runtime": {
+    "source_sha256": {
+      "prosody": "d3f03c31682d8ad8b0a3158eead35dac55546573197f1e45fd18d0bce0f645d3",
+      "loader.lua": "73899e70ce043d627b49abc6937333380484214ac13d5c09b2e06ca6b516dccf",
+      "util/startup.lua": "e3cc444f1227d177df01dfea4a95e109fa2d8272f288976d60ead166c08fb614"
+    },
+    "version_file": "13.0.7",
+    "startup_log_versions": [
+      {
+        "home": "maila",
+        "startup_versions": [
+          "13.0.7"
+        ]
+      },
+      {
+        "home": "mailb",
+        "startup_versions": [
+          "13.0.7"
+        ]
+      }
+    ],
+    "source_file_matches_official_archive": {
+      "prosody": true,
+      "loader.lua": true,
+      "util/startup.lua": true
+    },
+    "version_command_exit": 1,
+    "version_command_stdout": "**************************\nProsody was unable to find the configuration file:\n./prosody.cfg.lua\n\nA sample config file is included in the Prosody download called prosody.cfg.lua.dist\nCopy or rename it to ./prosody.cfg.lua and edit as necessary.\n\nMore help on configuring Prosody can be found at https://prosody.im/doc/configure\nGood luck!\n**************************",
+    "version_command_stderr_present": false,
+    "installed_prerequisite_package": [
+      "prosody-13.0.3"
+    ]
+  },
+  "packaged_service_used": false
+}

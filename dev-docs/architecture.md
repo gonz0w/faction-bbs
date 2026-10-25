@@ -84,3 +84,13 @@ The separate [native XMPP experiment](native-xmpp-transport.md) qualifies a boun
 member-side transport only. It is outside the product Cargo workspace and owns
 no vault/server authority. Its selected runtime/resource observations do not
 qualify the future integrated mailbox or change normal service budgets.
+
+The default-off [manual native home-mail adapter](native-home-mail.md) combines
+that qualified transport with atomic member checkpoints through a separate local
+entry. It publishes existing public prekeys, verifies one already enrolled peer,
+releases only persisted ciphertext and commits authenticated incoming SCE/history.
+Only the first sender explicitly starts a session; the recipient accepts the first
+authenticated prekey message. No network write retires the outbox. This adapter
+adds neither BBS authority nor reliable archive synchronization, background mail,
+roaming or attachments. The research transport's earlier observations remain
+separate from this integrated implementation.

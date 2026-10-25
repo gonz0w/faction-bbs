@@ -1,0 +1,151 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "count": 20,
+  "outcomes": [
+    {
+      "check": "verified_tls_plain_auth_and_ciphertext_exchange",
+      "result": "pass",
+      "status": "ok",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "verified_tls12_profile",
+      "result": "pass",
+      "status": "ok",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "fragmented_xml_exchange",
+      "result": "pass",
+      "status": "ok",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "coalesced_sasl_restart_retains_unread_bytes",
+      "result": "pass",
+      "status": "ok",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "wrong_server_name",
+      "result": "pass",
+      "status": "tls",
+      "attempts": 1,
+      "tls_version": null
+    },
+    {
+      "check": "untrusted_certificate",
+      "result": "pass",
+      "status": "tls",
+      "attempts": 1,
+      "tls_version": null
+    },
+    {
+      "check": "changed_certificate_pin",
+      "result": "pass",
+      "status": "pin",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "failed_account_authentication",
+      "result": "pass",
+      "status": "auth",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "no_plain_mechanism",
+      "result": "pass",
+      "status": "mechanism",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "malformed_xml_rejected",
+      "result": "pass",
+      "status": "xml_malformed",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "excessive_depth_rejected_before_dom",
+      "result": "pass",
+      "status": "xml_limit",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "excessive_events_rejected_before_dom",
+      "result": "pass",
+      "status": "xml_limit",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "oversized_unfinished_text_rejected",
+      "result": "pass",
+      "status": "xml_limit",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "oversized_stanza_rejected",
+      "result": "pass",
+      "status": "xml_limit",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "root_whitespace_budget_is_bounded",
+      "result": "pass",
+      "status": "xml_limit",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "connection_loss_has_no_retry",
+      "result": "pass",
+      "status": "lost",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "absolute_deadline_bounds_trickling_peer",
+      "result": "pass",
+      "status": "timeout",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "explicit_cancellation_bounds_stalled_peer",
+      "result": "pass",
+      "status": "cancelled",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "wrong_bound_identity",
+      "result": "pass",
+      "status": "bind",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    },
+    {
+      "check": "wrong_bind_identifier",
+      "result": "pass",
+      "status": "bind",
+      "attempts": 1,
+      "tls_version": "TLSv1.2"
+    }
+  ],
+  "private_fixture_removed": true,
+  "product_transport_exercised": true,
+  "encrypted_mail_proof": false,
+  "live_federation": false
+}

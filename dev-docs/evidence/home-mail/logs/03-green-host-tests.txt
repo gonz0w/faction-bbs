@@ -1,0 +1,15 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.87s
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/debug/deps/faction_client-8240718d549cfb91)
+
+running 7 tests
+test mail_network::tests::private_regular_local_configuration_is_preloaded ... ok
+test mail_network::tests::unknown_fields_credentials_and_non_numeric_endpoints_are_rejected ... ok
+test mail_network::tests::symlinks_hardlinks_fifo_and_public_files_are_refused ... ok
+test mail_network::tests::foreign_account_and_expired_state_cannot_open_a_home_connection ... ok
+test mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq ... ok
+test mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message ... ok
+test mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 33 filtered out; finished in 3.86s
+

@@ -4,7 +4,8 @@ Status: optional native-client **offline preview**, 2026-10-21. This increment o
 [#90](https://github.com/gonz0w/faction-bbs/issues/90) stores encrypted local drafts
 and manually verified device pins. It does **not receive, send or queue mail**,
 generate OMEMO device keys, enroll devices on a server or authenticate a home
-identity. The inbox remains disabled pending the native OMEMO adapter. The [local board picker](board-launcher.md#open-your-local-offline-vault-between-visits)
+identity. The inbox in this v1 screen remains disabled; use the separate
+[manual home-mail entry](online-mail.md) for the optional native adapter. The [local board picker](board-launcher.md#open-your-local-offline-vault-between-visits)
 can open an existing vault between SSH visits when explicitly configured. [Mail direction](private-mail.md)
 and [native client](native-client.md) describe the broader work.
 
@@ -88,8 +89,10 @@ remain visible. This is a reviewed implementation slice, not an independent audi
 
 Host and native NetBSD software checks are recorded in the
 [validation report](../dev-docs/research/0046-native-local-mail-vault.md).
-Native online inbox/send/reply, atomic ratchet/history persistence, independent
-OMEMO interoperability and home-loss/export policy remain #90. Connection-bound
+The separate [native checkpoint](../dev-docs/native-mail-checkpoints.md) and
+[manual home-mail entry](online-mail.md) provide native state/history/outbox and
+online exchange; these v1 commands remain offline. Reliable archive catch-up and
+remaining home-loss/export policy stay under #90. Connection-bound
 home authentication/local approval remains #91; encrypted attachments remain #88.
 No public file-area upload substitutes for a private attachment.
 
@@ -105,4 +108,5 @@ API. These v1 terminal commands do not initialize or open v2 vaults; explicit
 upgrade rotates local unlocking keys and preserves v1 drafts/pins. Existing Curve
 pins are not native Ed25519 enrollment. The optional [checkpoint console](checkpoint-console.md) now provides explicit
 v2 setup/upgrade, device verification, history/outbox inspection and recovery.
-Live inbox/send and XMPP remain separate #90 work.
+The separate default-off [manual home-mail entry](online-mail.md) now uses that
+checkpoint for direct XMPP exchange. It does not turn the v1 picker into an inbox.

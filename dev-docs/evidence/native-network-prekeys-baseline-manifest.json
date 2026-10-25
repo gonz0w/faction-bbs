@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "origin_commit": "2224c41df1b6c633b27fd4243e60a99df2532dff",
+  "source_root": "sources/pre209-native-network",
+  "files": {
+    "crates/faction-omemo/src/native.rs": "c23168712f00b10abe6dde0306a3eb299e49ca4e8d3b0114120b1582db0210ba",
+    "crates/faction-omemo/native/adapter.c": "69e84e5db1aa811b9c051c5257b969fc1bd3c09fedc76fc3e87862a0be2dbf34"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "source_files": 285,
+  "artifact_files": 22,
+  "all_source_matches_current_root": true,
+  "rust_source_membership_matches": true,
+  "no_diagnostic_example": true,
+  "runtime_prosody": "13.0.7",
+  "stock_package_prerequisite": "13.0.3",
+  "public_config_files": [
+    "homea.cfg.lua",
+    "homeb.cfg.lua",
+    "homeb-before-attack.cfg.lua"
+  ],
+  "physmem_bytes": 1054990336
+}

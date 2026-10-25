@@ -133,7 +133,9 @@ A native local terminal client holds device keys and reads the home inbox while
 visiting another board. Each visited sysop still approves local access. No server
 may decrypt/render the requested private mail; login unlocks local client keys,
 not a server-side mailbox key. New devices and recovery require explicit key trust.
-XMPP/OMEMO and cross-BBS auth are under research #84, not working integrations.
+The optional [manual home-mail entry](online-mail.md) implements a bounded
+XMPP/OMEMO exchange. Integrated mailbox/roaming and scoped cross-BBS authentication
+remain incomplete under #90/#91/#99.
 This supersedes earlier blanket chat-only/local-mail constraints only for these
 explicit capabilities. See ADRs [0030](../dev-docs/decisions/0030-file-areas-and-transfer-adapters.md)
 and [0031](../dev-docs/decisions/0031-home-identities-and-client-encrypted-mail.md).
@@ -175,6 +177,12 @@ The optional [local native mail vault](local-mail-vault.md) now stores encrypted
 offline drafts and device pins with member-held backup/recovery. It does not yet
 provide network inbox/send, OMEMO private state or authenticated roaming. Local
 BBS approval and current rooms/chat/files remain independent.
+
+The separate default-off [native checkpoint](../dev-docs/native-mail-checkpoints.md)
+now stores protocol/history/outbox state. [Manual home mail](online-mail.md) uses
+it for device-local encrypted online exchange, without changing the v1 picker or
+automatically connecting from a board visit. Reliable archive catch-up is #211;
+roaming, background notifications and attachments remain separately scoped.
 
 
 The [Who caller list](who-and-presence.md) is separate from the Lounge: main-menu

@@ -1,0 +1,17 @@
+{
+  "capacity_claim": false,
+  "checks": [
+    "explicit_private_catalog_mail_opens_local_vault_and_returns_locked",
+    "picker_drafts_remain_encrypted_unsent_and_survive_reopen",
+    "wrong_local_secret_returns_to_picker_without_draft_render",
+    "cancel_relocks_and_restores_picker_then_reopens",
+    "sixteen_board_catalog_and_optional_vault_fit_40x18",
+    "missing_store_is_not_created_or_recovered_implicitly",
+    "unconfigured_mail_hotkey_has_no_unlock_authority",
+    "local_mail_never_reads_bad_board_profiles_or_connects_and_secrets_not_echoed"
+  ],
+  "count": 8,
+  "network_mail_implemented": false,
+  "remote_unlock_authority": false,
+  "result": "pass"
+}

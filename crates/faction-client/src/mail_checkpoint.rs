@@ -21,6 +21,8 @@ pub const MAX_HISTORY: usize = 64;
 pub const MAX_OUTBOX: usize = 8;
 pub const SESSION_AGE: u64 = 30 * 24 * 60 * 60;
 const LAST_SECOND: u64 = 253_402_300_799;
+/// Public material derived from a single committed native snapshot.
+pub type Publication = (Bundle, Vec<(u32, [u8; 32])>);
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Wire {
     pub namespace: String,
@@ -775,6 +777,19 @@ impl CheckpointVault {
         }
         native(self.state.device()?.bundle())
     }
+    /// Public material from one durable native snapshot; no private key export.
+    pub fn publication(&self, now: u64) -> io::Result<Publication> {
+        self.healthy()?;
+        if self.state.history_only
+            || now < self.state.created
+            || now > self.state.expires
+            || self.state.peer.as_ref().is_some_and(|p| p.revoked)
+        {
+            return Err(invalid());
+        }
+        let device = self.state.device()?;
+        Ok((native(device.bundle())?, native(device.public_prekeys())?))
+    }
     pub fn enroll(&mut self, who: &str, id: u32, typed: &str, now: u64) -> io::Result<()> {
         self.healthy()?;
         if self.state.history_only
@@ -910,6 +925,18 @@ impl CheckpointVault {
     /// Accept ciphertext only. Native authentication and inner SCE validation run on
     /// an isolated candidate; plaintext history is visible only after durable commit.
     pub fn receive(&mut self, wire: &Wire, now: u64) -> io::Result<Receipt> {
+        self.receive_inner(wire, now, false)
+    }
+    /// A standard OMEMO message carries its timestamp only inside authenticated
+    /// SCE. Network codecs must supply zero, never server/arrival time. Exact
+    /// duplicates compare at most the bounded received-history entries.
+    pub fn receive_network(&mut self, wire: &Wire, now: u64) -> io::Result<Receipt> {
+        if wire.sent_at != 0 {
+            return Err(invalid());
+        }
+        self.receive_inner(wire, now, true)
+    }
+    fn receive_inner(&mut self, wire: &Wire, now: u64, network: bool) -> io::Result<Receipt> {
         self.healthy()?;
         let peer = self.state.active(now)?;
         wire.validate()?;
@@ -922,16 +949,25 @@ impl CheckpointVault {
             return Err(invalid());
         }
         let frame = wire.digest()?;
-        if self
+        for r in self
             .state
             .history
             .iter()
-            .any(|r| r.direction == Direction::Received && r.frame == frame)
+            .filter(|r| r.direction == Direction::Received)
         {
-            return Ok(Receipt {
-                frame,
-                duplicate: true,
-            });
+            let expected = if network {
+                let mut canonical = wire.clone();
+                canonical.sent_at = r.sent_at;
+                canonical.digest()?
+            } else {
+                frame
+            };
+            if r.frame == expected {
+                return Ok(Receipt {
+                    frame: expected,
+                    duplicate: true,
+                });
+            }
         }
         if self.state.history.len() == MAX_HISTORY {
             return Err(invalid());
@@ -943,12 +979,26 @@ impl CheckpointVault {
             prekey: wire.prekey,
             payload: wire.payload.clone(),
         }))?;
-        let content = native(sce::decode(
-            &plain,
-            &peer.address,
-            &candidate.legacy.home,
-            wire.sent_at,
-        ))?;
+        let (content, sent_at) = if network {
+            native(sce::decode_network(
+                &plain,
+                &peer.address,
+                &candidate.legacy.home,
+            ))?
+        } else {
+            (
+                native(sce::decode(
+                    &plain,
+                    &peer.address,
+                    &candidate.legacy.home,
+                    wire.sent_at,
+                ))?,
+                wire.sent_at,
+            )
+        };
+        let mut canonical = wire.clone();
+        canonical.sent_at = sent_at;
+        let frame = canonical.digest()?;
         native(d.commit())?;
         candidate.snapshot = native(d.export())?;
         candidate.started = true;
@@ -957,7 +1007,7 @@ impl CheckpointVault {
             address: peer.address.clone(),
             device: peer.device,
             identity: peer.identity,
-            sent_at: wire.sent_at,
+            sent_at,
             subject: content.subject,
             body: content.body,
             operation: [0; 16],

@@ -1,0 +1,552 @@
+{
+  "result": "pass",
+  "nominal_ram_mib": 1024,
+  "physmem_bytes": 1054990336,
+  "vcpus": 2,
+  "stages": [
+    {
+      "stage": "01-product-rust",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "faction-client",
+        "-p",
+        "faction-omemo",
+        "--features",
+        "faction-client/network-mail",
+        "--all-targets",
+        "--",
+        "--test-threads=1"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 42.449,
+      "test_groups": [
+        {
+          "passed": 43,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "passed": 24,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 19,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "passed": 104,
+      "ignored": 1,
+      "compile_packages": [
+        "faction-client v0.1.0-alpha.1 (/home/factionbuild/faction209-final-candidate/source/crates/faction-client)"
+      ],
+      "cached_incremental_compilation_only": true,
+      "fresh_1gib_compile_claim": false,
+      "failed_test_names": []
+    },
+    {
+      "stage": "02-transport-rust",
+      "status": "passed",
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-xmpp/Cargo.toml",
+        "--release",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "--test-threads=1"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 0.296,
+      "test_groups": [
+        {
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "passed": 25,
+      "ignored": 0,
+      "compile_packages": [],
+      "cached_incremental_compilation_only": false,
+      "fresh_1gib_compile_claim": false,
+      "failed_test_names": []
+    },
+    {
+      "stage": "03-transport-tls",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "/home/factionbuild/faction209-runtime-tools-03/probe_home_transport.py",
+        "--binary",
+        "/home/factionbuild/target209/release/examples/transport_fixture",
+        "--output",
+        "/home/factionbuild/faction209-runtime-results-03/transport-tls.json"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 16.804,
+      "result": {
+        "result": "pass",
+        "platform": "NetBSD",
+        "count": 20,
+        "outcomes": [
+          {
+            "check": "verified_tls_plain_auth_and_ciphertext_exchange",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "verified_tls12_profile",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.2"
+          },
+          {
+            "check": "fragmented_xml_exchange",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "coalesced_sasl_restart_retains_unread_bytes",
+            "result": "pass",
+            "status": "ok",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "wrong_server_name",
+            "result": "pass",
+            "status": "tls",
+            "attempts": 1,
+            "tls_version": null
+          },
+          {
+            "check": "untrusted_certificate",
+            "result": "pass",
+            "status": "tls",
+            "attempts": 1,
+            "tls_version": null
+          },
+          {
+            "check": "changed_certificate_pin",
+            "result": "pass",
+            "status": "pin",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "failed_account_authentication",
+            "result": "pass",
+            "status": "auth",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "no_plain_mechanism",
+            "result": "pass",
+            "status": "mechanism",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "malformed_xml_rejected",
+            "result": "pass",
+            "status": "xml_malformed",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "excessive_depth_rejected_before_dom",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "excessive_events_rejected_before_dom",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "oversized_unfinished_text_rejected",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "oversized_stanza_rejected",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "root_whitespace_budget_is_bounded",
+            "result": "pass",
+            "status": "xml_limit",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "connection_loss_has_no_retry",
+            "result": "pass",
+            "status": "lost",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "absolute_deadline_bounds_trickling_peer",
+            "result": "pass",
+            "status": "timeout",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "explicit_cancellation_bounds_stalled_peer",
+            "result": "pass",
+            "status": "cancelled",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "wrong_bound_identity",
+            "result": "pass",
+            "status": "bind",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          },
+          {
+            "check": "wrong_bind_identifier",
+            "result": "pass",
+            "status": "bind",
+            "attempts": 1,
+            "tls_version": "TLSv1.3"
+          }
+        ],
+        "private_fixture_removed": true,
+        "product_transport_exercised": true,
+        "encrypted_mail_proof": false,
+        "live_federation": false
+      }
+    },
+    {
+      "stage": "04-online-ui",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "/home/factionbuild/faction209-runtime-tools-03/probe_home_ui.py",
+        "--client",
+        "/home/factionbuild/target209/release/faction-client",
+        "--checkpoint-fixture",
+        "/home/factionbuild/target209/release/examples/checkpoint_ui_fixture",
+        "--mail-fixture",
+        "/home/factionbuild/target209/release/examples/home_mail_fixture",
+        "--output",
+        "/home/factionbuild/faction209-runtime-results-03/online-ui.json"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 0.844,
+      "result": {
+        "result": "pass",
+        "platform": "NetBSD",
+        "count": 9,
+        "checks": [
+          "explicit_local_online_entry_and_hidden_unlock",
+          "authenticated_history_has_classic_inert_unicode",
+          "unicode_compose_queues_encrypted_state_without_network",
+          "unavailable_home_and_hidden_credential_keep_pending_state",
+          "reopen_preserves_exact_existing_ids_and_new_ciphertext",
+          "unicode_override_and_local_cancel_restore_terminal",
+          "wrong_local_unlock_never_discloses_history",
+          "oversized_hidden_home_credential_locks_and_flushes_terminal",
+          "typeahead_cannot_supply_hidden_home_credential"
+        ],
+        "private_fixture_removed": true,
+        "provider_contact": false
+      }
+    },
+    {
+      "stage": "05-checkpoint-ui",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "/home/factionbuild/faction209-runtime-tools-03/probe_checkpoint_ui.py",
+        "--client",
+        "/home/factionbuild/target209/release/faction-client",
+        "--fixture",
+        "/home/factionbuild/target209/release/examples/checkpoint_ui_fixture",
+        "--owned-root",
+        "/home/factionbuild/faction209-runtime-results-03/checkpoint-owned",
+        "--output",
+        "/home/factionbuild/faction209-runtime-results-03/checkpoint-ui.json"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 3.226,
+      "result": {
+        "result": "pass",
+        "platform": "NetBSD",
+        "checks": [
+          "explicit_local_create_hidden_secret_and_new_recovery",
+          "public_device_inspection_and_exclusive_lock",
+          "typed_ed25519_peer_enrollment_survives_reopen",
+          "changed_or_server_added_peer_is_never_silently_accepted",
+          "authentication_failure_never_renders_private_state",
+          "cancel_relocks_and_restores_terminal",
+          "oversize_hidden_secret_rejected_and_queued_secret_flushed_before_shell",
+          "typeahead_before_hidden_passphrase_is_discarded",
+          "legacy_curve_or_partial_ed_identity_cannot_enroll",
+          "confirmation_typeahead_and_control_splicing_cannot_change_trust",
+          "bounded_authenticated_history_ids_and_classic_inert_unicode",
+          "reopened_outbox_persisted_ids_pending_and_fresh_device_guard",
+          "explicit_retirement_preserves_history_without_fake_delivery_claim",
+          "explicit_unicode_override_keeps_control_and_bidi_text_inert",
+          "official_backup_is_history_only_and_fresh_device_needs_reverification",
+          "expired_state_is_visible_without_silent_restart",
+          "revoked_state_is_visible_without_silent_restart",
+          "full_state_is_visible_without_silent_restart",
+          "poisoned_write_exits_and_canonical_reopen_resolves_handle",
+          "recovery_and_password_reset_cannot_unquarantine_old_ratchets",
+          "hostile_remote_filter_pty_has_no_unlock_upgrade_or_store_authority",
+          "profile_metadata_cannot_select_or_open_checkpoint_store",
+          "deliberate_upgrade_preserves_legacy_records_and_rotates_recovery"
+        ],
+        "count": 23,
+        "fixture_children_removed": true,
+        "network_mail": false,
+        "hardware_claim": false
+      }
+    },
+    {
+      "stage": "06-legacy-vault",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "/home/factionbuild/faction209-runtime-tools-03/probe_native_mail.py",
+        "--client",
+        "/home/factionbuild/target209/release/faction-client",
+        "--output",
+        "/home/factionbuild/faction209-runtime-results-03/legacy-vault.json"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 0.975,
+      "result": {
+        "result": "pass",
+        "platform": "NetBSD",
+        "machine": "evbarm",
+        "checks": [
+          "hidden_local_unlock_and_recovery_display",
+          "draft_is_explicitly_local_and_unsent",
+          "explicit_full_device_pin_confirmation",
+          "concurrent_vault_access_denied",
+          "private_encrypted_backup_contains_no_known_plaintext_markers",
+          "wrong_password_denied_without_draft_render",
+          "reopen_and_arrow_selected_draft_view",
+          "member_recovery_rotates_current_password_key_and_recovery_secret",
+          "old_backup_keeps_old_member_secret",
+          "draft_delete_and_local_pin_removal_persist",
+          "tampered_payload_denied_before_render",
+          "cancel_relocks_and_restores_terminal_echo",
+          "oversize_secret_refused_without_truncation"
+        ],
+        "count": 13,
+        "network_mail_implemented": false,
+        "roaming_authentication_implemented": false,
+        "encrypted_attachments_implemented": false,
+        "private_fixture_removed_on_exit": true
+      }
+    },
+    {
+      "stage": "07-picker",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "/home/factionbuild/faction209-runtime-tools-03/smoke_local_vault_launcher.py",
+        "/home/factionbuild/target209/release/faction-client",
+        "--output",
+        "/home/factionbuild/faction209-runtime-results-03/picker.json"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 0.977,
+      "result": {
+        "capacity_claim": false,
+        "checks": [
+          "explicit_private_catalog_mail_opens_local_vault_and_returns_locked",
+          "picker_drafts_remain_encrypted_unsent_and_survive_reopen",
+          "wrong_local_secret_returns_to_picker_without_draft_render",
+          "cancel_relocks_and_restores_picker_then_reopens",
+          "sixteen_board_catalog_and_optional_vault_fit_40x18",
+          "missing_store_is_not_created_or_recovered_implicitly",
+          "unconfigured_mail_hotkey_has_no_unlock_authority",
+          "local_mail_never_reads_bad_board_profiles_or_connects_and_secrets_not_echoed"
+        ],
+        "count": 8,
+        "network_mail_implemented": false,
+        "remote_unlock_authority": false,
+        "result": "pass"
+      }
+    },
+    {
+      "stage": "08-default-off",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "-c",
+        "from pathlib import Path\nimport json,subprocess,tempfile\nwith tempfile.TemporaryDirectory(prefix='faction209-default-denial-') as temporary:\n root=Path(temporary);store=root/'must-not-exist';config=root/'absent-config'\n p=subprocess.run(['/home/factionbuild/target209/release/faction-client-default','--mail-online',str(store),str(config)],stdin=subprocess.DEVNULL,capture_output=True,timeout=15)\n assert p.returncode==1 and not store.exists() and b'[LOCAL / MANUAL ONLINE]' not in p.stdout\n Path('/home/factionbuild/faction209-runtime-results-03/default-denial.json').write_text(json.dumps(dict(result='pass',count=1,check='default_feature_off_online_route_denied_without_store_creation',store_created=False))+'\\n')\n"
+      ],
+      "user": "factionbuild",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 0.04,
+      "result": {
+        "result": "pass",
+        "count": 1,
+        "check": "default_feature_off_online_route_denied_without_store_creation",
+        "store_created": false
+      }
+    },
+    {
+      "stage": "09-whole-client-cost",
+      "status": "passed",
+      "command": [
+        "/usr/pkg/bin/python3.13",
+        "/home/factionbuild/faction209-runtime-tools-03/measure_home_mail.py",
+        "--client",
+        "/home/factionbuild/target209/release/faction-client",
+        "--private-fixture",
+        "/root/faction209-mail-setup/mail-fixture-final.json",
+        "--output",
+        "/home/factionbuild/faction209-runtime-results-03/whole-client-cost.json"
+      ],
+      "user": "root-orchestrator/member-child",
+      "cwd": "/home/factionbuild/faction209-final-candidate/source",
+      "physmem_bytes": 1054990336,
+      "exit": 0,
+      "wall_seconds": 3.279,
+      "result": {
+        "result": "pass",
+        "usage": {
+          "max_rss_kib": 70676,
+          "wall_seconds": 3.22,
+          "user_seconds": 0.06,
+          "system_seconds": 0.02,
+          "scope": "one complete faction-client manual UI process, including checkpoint unlock and one TLS/account/publication/pending-write cycle"
+        },
+        "whole_client": true,
+        "includes_unlock": true,
+        "includes_network_cycle": true,
+        "compiler_included": false,
+        "server_fixture_included": false,
+        "capacity_claim": false,
+        "terminal_restored": true
+      }
+    }
+  ],
+  "source_code_changed": false,
+  "limits_changed": false,
+  "homes_left_live": true
+}

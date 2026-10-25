@@ -1,0 +1,19 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/debug/deps/faction_client-8240718d549cfb91)
+
+running 1 test
+
+thread 'mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq' (5891990) panicked at crates/faction-client/src/mail_network.rs:723:9:
+a committed receive must remove its consumed public prekey before publication
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq ... FAILED
+
+failures:
+
+failures:
+    mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 38 filtered out; finished in 2.22s
+
+error: test failed, to rerun pass `-p faction-client --lib`

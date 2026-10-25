@@ -1,0 +1,227 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling libc v0.2.191
+   Compiling typenum v1.20.1
+   Compiling cfg-if v1.0.5
+   Compiling stable_deref_trait v1.2.1
+   Compiling cmov v0.5.4
+   Compiling rand_core v0.10.1
+   Compiling version_check v0.9.5
+   Compiling getrandom v0.4.3
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling rustversion v1.0.23
+   Compiling serde_core v1.0.229
+   Compiling memchr v2.8.3
+   Compiling litemap v0.8.3
+   Compiling writeable v0.6.4
+   Compiling itoa v1.0.18
+   Compiling bytes v1.12.1
+   Compiling const-oid v0.10.2
+   Compiling static_assertions v1.1.0
+   Compiling utf8_iter v1.0.4
+   Compiling icu_normalizer_data v2.4.0
+   Compiling subtle v2.6.1
+   Compiling ctutils v0.4.3
+   Compiling ryu v1.0.23
+   Compiling icu_properties_data v2.4.0
+   Compiling rustix v1.1.5
+   Compiling shlex v2.0.1
+   Compiling bitflags v2.13.2
+   Compiling find-msvc-tools v0.1.15
+   Compiling generic-array v0.14.7
+   Compiling rxml_validation v0.11.0
+   Compiling smallvec v1.16.4
+   Compiling futures-sink v0.3.34
+   Compiling thiserror v2.0.21
+   Compiling tinyvec v1.13.3
+   Compiling cc v1.9.0
+   Compiling zmij v1.0.23
+   Compiling autocfg v1.5.1
+   Compiling zeroize v1.9.1
+   Compiling core-foundation-sys v0.8.7
+   Compiling unicode-bidi v0.3.18
+   Compiling serde_json v1.0.154
+   Compiling unicode-properties v0.1.4
+   Compiling futures-channel v0.3.34
+   Compiling once_cell v1.21.4
+   Compiling base64 v0.22.1
+   Compiling unicode-normalization v0.1.26
+   Compiling futures-io v0.3.34
+   Compiling hybrid-array v0.4.15
+   Compiling slab v0.4.12
+   Compiling num-traits v0.2.19
+   Compiling futures-task v0.3.34
+   Compiling native-tls v0.2.18
+   Compiling fastrand v2.5.0
+   Compiling sponge-cursor v0.1.0
+   Compiling winnow v1.0.4
+   Compiling log v0.4.34
+   Compiling base64ct v1.8.3
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling castaway v0.2.4
+   Compiling roxmltree v0.21.1
+   Compiling stringprep v0.1.5
+   Compiling base64 v0.23.1
+   Compiling unicode-width v0.2.2
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.4
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling compact_str v0.9.1
+   Compiling errno v0.3.14
+   Compiling cpufeatures v0.3.1
+   Compiling inout v0.2.5
+   Compiling digest v0.10.7
+   Compiling security-framework-sys v2.17.0
+   Compiling cpufeatures v0.2.17
+   Compiling core-foundation v0.10.1
+   Compiling keccak v0.2.2
+   Compiling uuid v1.29.0
+   Compiling blake2 v0.10.6
+   Compiling hmac v0.12.1
+   Compiling pbkdf2 v0.12.2
+   Compiling sha1 v0.10.7
+   Compiling rxml_validation v0.12.0
+   Compiling security-framework v3.7.0
+   Compiling sha2 v0.10.9
+   Compiling getrandom v0.2.17
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling phc v0.6.1
+   Compiling sasl v0.5.2
+   Compiling digest v0.11.3
+   Compiling cipher v0.5.2
+   Compiling universal-hash v0.6.1
+   Compiling aead v0.6.1
+   Compiling faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+   Compiling sha2 v0.11.1
+   Compiling sha1 v0.11.0
+   Compiling chrono v0.4.45
+   Compiling chacha20 v0.10.2
+   Compiling sha3 v0.12.0
+   Compiling blake2 v0.11.0
+   Compiling password-hash v0.6.1
+   Compiling poly1305 v0.9.1
+   Compiling rand v0.10.3
+   Compiling chacha20poly1305 v0.11.0
+   Compiling argon2 v0.6.0
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling tempfile v3.27.0
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling rxml_proc v0.12.1
+   Compiling xso_proc v0.3.0
+   Compiling synstructure v0.14.0
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling tokio-macros v2.7.2
+   Compiling thiserror-impl v2.0.21
+   Compiling futures-macro v0.3.34
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling tokio v1.54.1
+   Compiling futures-util v0.3.34
+   Compiling zerofrom v0.1.8
+   Compiling yoke v0.8.4
+   Compiling zerovec v0.11.9
+   Compiling zerotrie v0.2.5
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling icu_collections v2.4.0
+   Compiling icu_locale_core v2.4.0
+   Compiling futures-executor v0.3.34
+   Compiling icu_provider v2.4.0
+   Compiling futures v0.3.34
+   Compiling icu_normalizer v2.4.0
+   Compiling icu_properties v2.4.0
+   Compiling rxml v0.14.0
+   Compiling tokio-util v0.7.20
+   Compiling tokio-native-tls v0.3.1
+   Compiling tokio-stream v0.1.19
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling minidom v0.19.0
+   Compiling jid v0.12.3
+   Compiling xso v0.4.0
+   Compiling xmpp-parsers v0.23.0
+   Compiling tokio-xmpp v6.0.0
+   Compiling faction-xmpp v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-xmpp)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+warning: unused import: `address`
+ --> crates/faction-client/src/mail_wire.rs:5:24
+  |
+5 | use crate::mail_data::{address, invalid};
+  |                        ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: constant `MAX_LIST` is never used
+  --> crates/faction-client/src/mail_wire.rs:16:7
+   |
+16 | const MAX_LIST: usize = 32;
+   |       ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `faction-client` (lib test) generated 2 warnings (run `cargo fix --lib -p faction-client --tests` to apply 1 suggestion)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.54s
+     Running unittests src/lib.rs (/private/tmp/faction209-codec-tests/target/debug/deps/faction_client-9ad7efa627938e50)
+
+running 9 tests
+test mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys ... ok
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... FAILED
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... FAILED
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... FAILED
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... FAILED
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... FAILED
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+
+failures:
+
+---- mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert stdout ----
+
+thread 'mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert' (5821135) panicked at crates/faction-client/src/mail_wire.rs:191:9:
+assertion failed: decode_message(&parse(&bare), binding()).is_ok()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time stdout ----
+
+thread 'mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time' (5821136) panicked at crates/faction-client/src/mail_wire.rs:92:50:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+
+---- mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only stdout ----
+
+thread 'mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only' (5821137) panicked at crates/faction-client/src/mail_wire.rs:68:48:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+
+---- mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex stdout ----
+
+thread 'mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex' (5821138) panicked at crates/faction-client/src/mail_wire.rs:104:59:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+
+---- mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle stdout ----
+
+thread 'mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle' (5821139) panicked at crates/faction-client/src/mail_wire.rs:83:70:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+
+
+failures:
+    mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert
+    mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time
+    mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only
+    mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex
+    mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle
+
+test result: FAILED. 4 passed; 5 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p faction-client --lib`

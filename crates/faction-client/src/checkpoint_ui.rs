@@ -424,6 +424,184 @@ impl Screen<'_> {
         self.pause()
     }
 }
+#[cfg(feature = "network-mail")]
+impl Screen<'_> {
+    fn compose_line(&mut self, label: &str, cap: usize) -> io::Result<Zeroizing<String>> {
+        self.print(label)?;
+        let mut input = Zeroizing::new(Vec::new());
+        loop {
+            let byte = self.byte()?;
+            match faction_terminal::subject::feed_limited(&mut input, byte, self.unicode, cap)
+                .map_err(|_| invalid())?
+            {
+                faction_terminal::subject::Edit::Echo(text) => self.print(&Zeroizing::new(text))?,
+                faction_terminal::subject::Edit::Submit(text) => {
+                    self.print("\r\n")?;
+                    return Ok(Zeroizing::new(text));
+                }
+            }
+        }
+    }
+    fn online_menu(&mut self, v: &CheckpointVault) -> io::Result<u8> {
+        self.clear()?;
+        self.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\n")?;
+        self.show("Home: ", &v.legacy()?.home)?;
+        self.print(&format!(
+            "History: {}   Pending ciphertext: {}\r\n",
+            v.history()?.len(),
+            v.inspect_outbox()?.len()
+        ))?;
+        self.print("[U] Publish public keys   [K] Prepare verified peer\r\n[C] Compose and queue     [N] Connect / sync\r\n[P] Public identity       [V] Verify peer\r\n[H] History               [O] Pending operation IDs\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device          [B] History-only backup\r\n[S] Reset local secrets   [D] Legacy local drafts\r\n[L] Lock and exit\r\n")?;
+        let mut decoder = Decoder::new();
+        loop {
+            if let Some(Key::Hotkey(key)) = decoder.feed(self.byte()?, Instant::now()) {
+                let key = key.to_ascii_uppercase();
+                if b"UKCNPVHOTRFBSDL".contains(&key) {
+                    return Ok(key);
+                }
+            }
+        }
+    }
+    async fn network_cancel(&mut self) -> io::Result<()> {
+        loop {
+            tokio::time::sleep(Duration::from_millis(50)).await;
+            if self.term.ready(0)? && matches!(self.term.byte()?, 3 | 4) {
+                return Err(io::Error::new(
+                    io::ErrorKind::Interrupted,
+                    "local cancellation",
+                ));
+            }
+        }
+    }
+    fn online_action(
+        &mut self,
+        v: &mut CheckpointVault,
+        settings: &faction_client::mail_network::Settings,
+        key: u8,
+    ) -> io::Result<()> {
+        use faction_client::mail_network::{self, Mode};
+        if !b"UKCNO".contains(&key) {
+            return self.action(v, key);
+        }
+        self.clear()?;
+        if key == b'O' {
+            self.print("Durable pending ciphertext; delivery remains unproven.\r\nA socket write never retires these IDs. Use Retire only as a deliberate local decision.\r\n")?;
+            for item in v.inspect_outbox()? {
+                self.print(&format!(
+                    "Operation: {} / {} / UTC {}\r\n",
+                    hex(&item.operation),
+                    item.address,
+                    item.sent_at
+                ))?;
+            }
+            return self.pause();
+        }
+        if key == b'C' {
+            let state = v.inspection()?;
+            if !state.started {
+                self.print("Prepare the independently verified peer before composing.\r\n")?;
+                return self.pause();
+            }
+            let peer = state.peer.ok_or_else(invalid)?.address.to_owned();
+            let subject = self.compose_line("Subject (128 UTF-8 bytes): ", 128)?;
+            let body = self.compose_line("Body (1024 UTF-8 bytes, one line): ", 1024)?;
+            self.show("To: ", &peer)?;
+            self.show("Subject: ", &subject)?;
+            self.show("Body: ", &body)?;
+            self.confirm("Type queue to persist encrypted ciphertext: ", "queue")?;
+            let mut operation = [0; 16];
+            getrandom::fill(&mut operation).map_err(|_| invalid())?;
+            match v.queue(operation, &subject, &body, now()?, now()?) {
+                Ok(_) => self.print("Queued durably; no delivery or read receipt.\r\n")?,
+                Err(_) => {
+                    v.inspection()?;
+                    self.print("Queue stopped; check peer, expiry and retained-store limits.\r\n")?;
+                }
+            }
+            return self.pause();
+        }
+        let mode = match key {
+            b'U' => Mode::Publish,
+            b'K' => Mode::Prepare,
+            _ => Mode::Sync,
+        };
+        if mode == Mode::Prepare {
+            self.print("Use Prepare only on the chosen FIRST SENDER. The receiving member publishes and connects first.\r\nUses only your already verified peer identity. It cannot replace an existing session.\r\n")?;
+            self.confirm(
+                "Type prepare to start the verified peer session: ",
+                "prepare",
+            )?;
+        }
+        let password = self.line(
+            "HOME account password (hidden; never sent to a BBS): ",
+            128,
+            true,
+        )?;
+        self.print("Connecting directly to your home. Ctrl-C locks and cancels.\r\n")?;
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()?;
+        let timestamp = now()?;
+        let result = runtime.block_on(async {
+            tokio::select! {
+                result=mail_network::cycle(v,settings,&password,mode,timestamp)=>Ok(result),
+                cancelled=self.network_cancel()=>{cancelled?;Err(invalid())}
+            }
+        })?;
+        drop(password);
+        self.activity = Instant::now();
+        match result {
+            Ok(report)=>self.print(&format!("Manual cycle complete. Sent writes: {}; accepted: {}; duplicates: {}.\r\nPending ciphertext is retained. A write is not a delivery/read receipt.\r\n",report.sent,report.accepted,report.duplicates))?,
+            Err(_)=>{v.inspection()?;self.print("Home cycle stopped; pending ciphertext retained.\r\nCheck local configuration, account or peer; history remains available.\r\n")?;}
+        }
+        self.pause()
+    }
+}
+/// Explicit trusted-local entry only. Remote streams/picker metadata never call it.
+#[cfg(feature = "network-mail")]
+pub fn run_online(path: &Path, config: &Path, unicode: bool) -> io::Result<()> {
+    if !path.is_absolute() || !config.is_absolute() {
+        return Err(invalid());
+    }
+    rustix::process::setrlimit(
+        rustix::process::Resource::Core,
+        rustix::process::Rlimit {
+            current: Some(0),
+            maximum: Some(0),
+        },
+    )?;
+    let mut terminal = LocalTerminal::start()?;
+    let result = (|| {
+        let settings = faction_client::mail_network::Settings::load(config)?;
+        let mut s = Screen {
+            term: &mut terminal,
+            activity: Instant::now(),
+            unicode,
+        };
+        s.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\nManual connections; keys and decryption stay on this device.\r\nNo reliable offline/archive synchronization yet.\r\n")?;
+        let store = Store::at(path, false)?;
+        let password = s.line("LOCAL checkpoint passphrase (hidden): ", 128, true)?;
+        let mut vault = CheckpointVault::unlock(store, password.as_bytes(), false)?;
+        drop(password);
+        if vault.legacy()?.home != settings.account {
+            return Err(invalid());
+        }
+        loop {
+            let key = s.online_menu(&vault)?;
+            if key == b'L' {
+                break;
+            }
+            s.online_action(&mut vault, &settings, key)?;
+        }
+        Ok(())
+    })();
+    let _ = terminal.print(&"\r\n".repeat(32));
+    if result.is_err() {
+        let _=terminal.print("Home mail locked: local operation stopped. Reopen the canonical store before retrying.\r\n");
+    }
+    result
+}
+
 pub fn run(path: &Path, action: &str, unicode: bool) -> io::Result<()> {
     if !path.is_absolute() || !matches!(action, "init" | "upgrade" | "open" | "recover") {
         return Err(invalid());
@@ -542,5 +720,54 @@ mod tests {
             unicode: false,
         };
         assert_eq!(s.byte().unwrap_err().kind(), io::ErrorKind::TimedOut);
+    }
+    #[cfg(feature = "network-mail")]
+    #[test]
+    fn online_entry_disables_core_limits_before_any_input() {
+        const MARKER: &str = "FACTION209_CORE_LIMIT_TEST_CHILD";
+        if std::env::var_os(MARKER).is_some() {
+            use rustix::process::{Resource, Rlimit, getrlimit, setrlimit};
+            let inherited = getrlimit(Resource::Core);
+            assert!(
+                inherited.maximum.is_none_or(|n| n >= 8192),
+                "test requires an inherited nonzero hard core limit"
+            );
+            setrlimit(
+                Resource::Core,
+                Rlimit {
+                    current: Some(4096),
+                    maximum: Some(8192),
+                },
+            )
+            .unwrap();
+            // No terminal/config exists. The guard must precede even terminal
+            // initialization, and thus every hidden prompt or file operation.
+            assert!(
+                run_online(
+                    Path::new("/faction209-absent-store"),
+                    Path::new("/faction209-absent-config"),
+                    false
+                )
+                .is_err()
+            );
+            let after = getrlimit(Resource::Core);
+            assert_eq!(after.current, Some(0));
+            assert_eq!(after.maximum, Some(0));
+        } else {
+            let child = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input",
+                    "--nocapture",
+                ])
+                .env(MARKER, "1")
+                .output()
+                .unwrap();
+            assert!(
+                child.status.success(),
+                "isolated early-core-guard regression failed: {}",
+                String::from_utf8_lossy(&child.stdout)
+            );
+        }
     }
 }

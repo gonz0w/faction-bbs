@@ -1,0 +1,46 @@
+{
+  "result": "pass",
+  "exit": 0,
+  "wall_seconds": 24.342,
+  "nominal_ram_mib": 1024,
+  "physmem_bytes": 1054990336,
+  "fresh_accounts": true,
+  "full_harness": true,
+  "harness_sha256": "956fcad8ca398936ec5b711a034ce2671a7211b457335205ec5b376532d2ae19",
+  "observed_native_actions": 27,
+  "expected_native_denials": [
+    {
+      "step": 23,
+      "action": "sync",
+      "device": "alice",
+      "exit": 1,
+      "expected_denial": true,
+      "error": "Transport(Pin)"
+    },
+    {
+      "step": 24,
+      "action": "sync",
+      "device": "alice",
+      "exit": 1,
+      "expected_denial": true,
+      "error": "Transport(Auth)"
+    },
+    {
+      "step": 25,
+      "action": "sync",
+      "device": "alice",
+      "exit": 1,
+      "expected_denial": true,
+      "error": "PeerUnavailable"
+    },
+    {
+      "step": 26,
+      "action": "sync",
+      "device": "alice",
+      "exit": 1,
+      "expected_denial": true,
+      "error": "Protocol"
+    }
+  ],
+  "unexpected_native_failures": []
+}

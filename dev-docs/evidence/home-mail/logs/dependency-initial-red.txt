@@ -1,0 +1,58 @@
+..E.E.EEE
+======================================================================
+ERROR: test_default_off_and_exact_transport_profile_are_mandatory (test_network_mail_policy.NetworkMailPolicy.test_default_off_and_exact_transport_profile_are_mandatory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_network_mail_policy.py", line 138, in test_default_off_and_exact_transport_profile_are_mandatory
+    policy.validate_profile(*self.profiles())
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_network_mail_dependencies.py", line 20, in validate_profile
+    raise ValueError('network feature profile review not implemented')
+ValueError: network feature profile review not implemented
+
+======================================================================
+ERROR: test_inventory_change_requires_deliberate_write (test_network_mail_policy.NetworkMailPolicy.test_inventory_change_requires_deliberate_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_network_mail_policy.py", line 155, in test_inventory_change_requires_deliberate_write
+    policy.check_inventory(path, expected)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_network_mail_dependencies.py", line 23, in check_inventory
+    raise ValueError('network inventory comparison not implemented')
+ValueError: network inventory comparison not implemented
+
+======================================================================
+ERROR: test_locked_archive_and_every_extracted_byte_match (test_network_mail_policy.NetworkMailPolicy.test_locked_archive_and_every_extracted_byte_match)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_network_mail_policy.py", line 79, in test_locked_archive_and_every_extracted_byte_match
+    evidence = policy.verify_archive_source(root, archive, checksum)
+  File "/Users/cam/DEV/faction-bbs/tools/check_network_mail_dependencies.py", line 14, in verify_archive_source
+    raise ValueError('network archive/source verification not implemented')
+ValueError: network archive/source verification not implemented
+
+======================================================================
+ERROR: test_only_selected_graph_is_scanned_but_no_selected_node_is_lost (test_network_mail_policy.NetworkMailPolicy.test_only_selected_graph_is_scanned_but_no_selected_node_is_lost)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_network_mail_policy.py", line 127, in test_only_selected_graph_is_scanned_but_no_selected_node_is_lost
+    self.assertEqual(policy.selected_packages(data), [({'id': 'yes'}, ['selected'])])
+                     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_network_mail_dependencies.py", line 17, in selected_packages
+    raise ValueError('network selected graph review not implemented')
+ValueError: network selected graph review not implemented
+
+======================================================================
+ERROR: test_selected_source_license_and_feature_inventory (test_network_mail_policy.NetworkMailPolicy.test_selected_source_license_and_feature_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_network_mail_policy.py", line 50, in test_selected_source_license_and_feature_inventory
+    row = policy.scan_package(self.package(root), ['z', 'a'], checksum)
+  File "/Users/cam/DEV/faction-bbs/tools/check_network_mail_dependencies.py", line 11, in scan_package
+    raise ValueError('network dependency source review not implemented')
+ValueError: network dependency source review not implemented
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.014s
+
+FAILED (errors=5)

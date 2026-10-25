@@ -1,0 +1,18 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running unittests src/lib.rs (/private/tmp/faction209-owned/target/debug/deps/faction_client-8240718d549cfb91)
+
+running 1 test
+
+thread 'mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message' (5892055) panicked at crates/faction-client/src/mail_network.rs:758:9:
+expired state must not accept a message after a network wait
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message ... FAILED
+
+failures:
+
+failures:
+    mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 38 filtered out; finished in 3.42s
+
+error: test failed, to rerun pass `-p faction-client --lib`

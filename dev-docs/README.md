@@ -23,3 +23,5 @@ Member/sysop/product docs live in [docs](../docs/README.md). The current runnabl
 software and support limits are in [README](../README.md), the
 [NetBSD quickstart](../docs/quickstart-netbsd.md) and feature docs. Root
 [AGENTS.md](../AGENTS.md) contains concise durable instructions, not a backlog.
+
+[Native home-mail contract](native-home-mail.md) describes the optional direct-TLS transport, verified device codec and checkpoint boundary.
