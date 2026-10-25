@@ -1,0 +1,11 @@
+--- a/ssh-keygen.c
++++ b/ssh-keygen.c
+@@ -1693,7 +1693,7 @@
+ 	    data, datalen, alg, compat);
+ }
+ 
+-__dead static void
++static void
+ do_ca_sign(struct passwd *pw, const char *ca_key_path, int prefer_agent,
+     unsigned long long cert_serial, int cert_serial_autoinc,
+     int argc, char **argv)

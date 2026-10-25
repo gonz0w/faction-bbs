@@ -9,8 +9,10 @@ A separate [two-home reference proof](../dev-docs/research/0045-encrypted-mail-a
 passes 12 actual OMEMO-2/SCE controls and 11 native scoped SSH verifier controls.
 It is research tooling, not the shipped client or an adopted complete protocol.
 Native protocol/inbox integration and history recovery remain [#90](https://github.com/gonz0w/faction-bbs/issues/90),
-trusted membership binding [#91](https://github.com/gonz0w/faction-bbs/issues/91),
-and a native signer failure [#92](https://github.com/gonz0w/faction-bbs/issues/92). Native client/identity/mail
+and trusted membership binding [#91](https://github.com/gonz0w/faction-bbs/issues/91).
+The [native signing investigation](../dev-docs/research/0052-netbsd-signing-exit.md)
+records a controlled source correction; the installed base signer remains rejected.
+Native client/identity/mail
 proof [#84](https://github.com/gonz0w/faction-bbs/issues/84); local mail #33 and
 federation #17. This supersedes the old blanket chat-only federation restriction
 only for explicit private-message delivery and scoped home-identity proofs.
@@ -130,7 +132,10 @@ No ordinary SSH process on a BBS renders this private mail.
 Standard OpenSSH certificates can provide target-scoped admission in the native
 control. They do not yet bind a home principal to a Faction membership or supply an
 online home issuer. Each CA has explicit local principal grants; certificate
-possession is not mail-key ownership or imported approval. Native signing crashes
-in the measured fixture, so externally minted certificates test only its verifier.
+possession is not mail-key ownership or imported approval. The installed native
+signer remains rejected after the [signing-exit investigation](../dev-docs/research/0052-netbsd-signing-exit.md).
+An uninstalled one-line source correction passed the controlled comparison; it
+is not an adopted home issuer. The earlier externally minted certificates still
+test only the native verifier. Reviewed issuer selection remains part of #91.
 Private OAuth/OIDC is still a separately researched alternative. Existing local
 BBS login remains available and unchanged.
