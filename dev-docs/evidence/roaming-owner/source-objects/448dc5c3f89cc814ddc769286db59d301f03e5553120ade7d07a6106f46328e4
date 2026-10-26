@@ -1,0 +1,28 @@
+from lab import *
+import time
+
+build=json.loads(remote('cat /home/factionbuild/proof228/native-build.json').stdout)
+assert build['result']=='pass' and len(build['checks'])==3
+(P/'native-build.json').write_text(json.dumps(build,indent=2)+'\n')
+q=json.loads((V/'qemu-command.json').read_text())
+pid=int((V/'qemu.pid').read_text())
+cmd=subprocess.check_output(['ps','-p',str(pid),'-o','command='],text=True).strip()
+assert str(V/'disk.qcow2') in cmd and '-m 2048' in cmd
+r=remote('/sbin/shutdown -p now',check=False)
+assert r.returncode in [0,255]
+for attempt in range(60):
+ if subprocess.run(['ps','-p',str(pid)],capture_output=True).returncode:break
+ time.sleep(1)
+else:raise RuntimeError('Owned compiler VM did not stop; preserve and inspect')
+controller=int((V/'controller.pid').read_text())
+assert subprocess.run(['ps','-p',str(controller)],capture_output=True).returncode!=0
+q[q.index('-m')+1]='1024'
+q[q.index('-serial')+1]=f'unix:{V}/serial-runtime.sock,server=on,wait=on'
+source=(V/'serial-controller.py').read_text().replace("p/'serial.sock'","p/'serial-runtime.sock'").replace("p/'serial.log'","p/'serial-runtime.log'").replace("p/'console.in'","p/'console-runtime.in'")
+(V/'serial-runtime-controller.py').write_text(source)
+with (V/'qemu-runtime.log').open('wb') as log:process=subprocess.Popen(q,stdout=log,stderr=log,start_new_session=True)
+(V/'runtime-qemu.pid').write_text(str(process.pid)+'\n')
+(V/'runtime-qemu-command.json').write_text(json.dumps(q)+'\n')
+with (V/'controller-runtime.log').open('wb') as log:process=subprocess.Popen(['python3',str(V/'serial-runtime-controller.py')],stdout=log,stderr=log,start_new_session=True)
+(V/'runtime-controller.pid').write_text(str(process.pid)+'\n')
+print(json.dumps({'runtime_qemu_pid':int((V/'runtime-qemu.pid').read_text()),'runtime_controller_pid':int((V/'runtime-controller.pid').read_text()),'runtime_memory_mib':1024}))

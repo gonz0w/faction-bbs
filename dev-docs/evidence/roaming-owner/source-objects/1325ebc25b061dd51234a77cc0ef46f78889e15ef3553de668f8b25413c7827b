@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""Validate immutable issue228 observations without running a board or VM."""
+import hashlib
+import json
+from pathlib import Path
+import re
+
+ROOT = Path(__file__).resolve().parents[1]
+# Set only when the observed result is frozen, before review.
+RESULT_SHA256 = None
+PROFILE = dict(normal_sessions=8, admission_refill_ms=5000, credential_permits=2,
+               kernel_slots=2, owner_helpers=3, drain_seconds=5,
+               issuers=2, enabled_bindings=4, uid_history=32)
+CLAIMS = {'installed', 'online_issuer', 'enrollment', 'production', 'physical_hardware', 'capacity'}
+SERVICE = {'actual-owner-cli-local-member-id-lookup', 'actual-owner-cli-invite-enable-numeric-member-link-consent-binding-enable', 'actual-owner-cli-state-through-pty', 'owner-inspection-preview-readonly-private-new-export-root-install', 'actual-faction-member-entry-denies-owner-command', 'exported-root-manifest-valid-service-startup', 'kernel-peer-uid-owned-tty-enters-approved-session', 'actual-owner-cli-disable-invalidates-live-service-session', 'disabled-binding-old-manifest-rejected-before-listening', 'stale-binding-generation-old-manifest-rejected-before-listening', 'explicit-reexport-current-generation-service-restarts', 'revoked-member-export-and-service-startup-fail-closed', 'real-export-restore-disables-authority-rotates-board-old-manifest-rejected', 'default-off-service-classic-owned-tty-login-menu'}
+REQUIRED = {'host-cli', 'native-cli', 'native-source-match', 'native-service',
+            'native-classic', 'recovery', 'runtime', 'cleanup', 'tdd'}
+
+def raw(root, ref):
+    path = Path(ref['path'])
+    assert not path.is_absolute() and '..' not in path.parts
+    assert re.fullmatch('[0-9a-f]{64}', ref['sha256'])
+    candidate = root / path
+    assert not candidate.is_symlink() and candidate.resolve().is_relative_to(root.resolve())
+    data = candidate.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == ref['sha256'], str(path)
+    return data
+
+def validate(root, record):
+    assert record['schema'] == 1 and record['issue'] == 228 and record['result'] == 'pass'
+    assert record['profile'] == PROFILE
+    assert set(record['claims']) == CLAIMS and all(v is False for v in record['claims'].values())
+    assert REQUIRED <= record['records'].keys() and record['sources'] and record['prior_records']
+    for source in record['sources'] + record['prior_records']:
+        raw(root, source)
+    records = {name: json.loads(raw(root, ref)) for name, ref in record['records'].items()}
+    assert all(value['result'] == 'pass' for value in records.values())
+    assert records['host-cli']['passed'] == records['native-cli']['passed'] > 0
+    checks = records['native-service']['checks']
+    assert {c['name'] for c in checks} == SERVICE and len(checks) == len(SERVICE)
+    assert all(c['result'] == 'pass' for c in checks)
+    classic = records['native-classic']['checks']
+    assert {c['name'] for c in classic} == {'classic-console-pty','export-restore-pty','complete-bundle-recovery'} and len(classic) == 3
+    assert all(c['result'] == 'pass' and c['returncode'] == 0 for c in classic)
+    recovery = records['recovery']
+    assert recovery['count'] == len(recovery['checks']) == 21
+    assert len(set(recovery['checks'])) == 21
+    assert recovery['native_distinct_uid_cli'] is True and recovery['developer_api_fixture'] is False
+    assert recovery['capacity_claim'] is False and recovery['hardening_claim'] is False
+    final = [stage for stage in record['source_stages'] if stage['label'] == 'native-final']
+    assert len(final) == 1 and final[0]['files']
+    expected = {f['name']: f['sha256'] for f in final[0]['files']}
+    assert len(expected) == len(final[0]['files'])
+    assert expected == records['native-source-match']['files']
+    assert records['native-source-match']['all_match'] is True
+    assert set(expected.values()) <= {source['sha256'] for source in record['sources']}
+    for stage in record['source_stages']:
+        assert stage['files']
+        for entry in stage['files']:
+            assert entry['sha256'] in {source['sha256'] for source in record['sources']}
+    for key, value in PROFILE.items():
+        assert records['runtime'][key] == value
+    assert 1000 * 1024**2 < records['runtime']['physmem'] < 1024**3
+    assert all(records['cleanup'][key] is True for key in (
+        'owned_removed', 'saved_stopped', 'saved_hashes_unchanged', 'forwards_closed'))
+    assert records['tdd']['red_exit'] != 0 and records['tdd']['green_exit'] == 0
+    assert records['tdd']['captured_before_edit'] is True
+    return records
+
+def check():
+    data = (ROOT / 'dev-docs/evidence/roaming-owner/results.json').read_bytes()
+    assert RESULT_SHA256 and hashlib.sha256(data).hexdigest() == RESULT_SHA256, 'immutable owner CLI result changed'
+    validate(ROOT, json.loads(data))
+    print('Owner CLI evidence passed: source-bound host/NetBSD, approval/revocation, manifest, recovery and cleanup; no production claim.')
+
+if __name__ == '__main__':
+    check()

@@ -1,0 +1,4 @@
+from lab import *
+s='import json,pathlib; p=pathlib.Path("/home/factionbuild/proof228/native-runtime.json");x=json.loads(p.read_text()) if p.exists() else {};print(json.dumps({k:v for k,v in x.items() if k!="failure"}));print("failure_type="+x.get("failure","").split(":")[0])'
+import shlex
+print(remote('python3.13 -c '+shlex.quote(s)).stdout.decode())

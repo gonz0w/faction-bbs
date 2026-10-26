@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "classic-console-pty",
+      "command": [
+        "su",
+        "-m",
+        "factiond",
+        "-c",
+        "cd /usr/local/share/faction228-source-final03 && python3.13 tools/smoke_local_console.py /usr/local/libexec/faction228-final03/faction"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 1.145
+    },
+    {
+      "name": "export-restore-pty",
+      "command": [
+        "su",
+        "-m",
+        "factiond",
+        "-c",
+        "cd /usr/local/share/faction228-source-final03 && python3.13 tools/smoke_export_restore.py /usr/local/libexec/faction228-final03/faction"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.363
+    },
+    {
+      "name": "complete-bundle-recovery",
+      "command": [
+        "python3.13",
+        "tools/smoke_backup_recovery.py",
+        "/usr/local/libexec/faction228-final03/faction",
+        "/usr/local/libexec/faction228-final03/faction-sysop",
+        "--owner-uid",
+        "1001",
+        "--files-uid",
+        "1004",
+        "--disposable-fixture",
+        "--output",
+        "/home/factionbuild/proof228-final03/native-backup-recovery.json"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.673
+    }
+  ],
+  "runtime_memory_mib": 1024
+}
+

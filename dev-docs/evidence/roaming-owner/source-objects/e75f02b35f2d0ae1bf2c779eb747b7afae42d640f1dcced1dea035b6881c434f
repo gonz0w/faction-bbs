@@ -1,0 +1,9 @@
+{
+  "script": "prepare_vm.py",
+  "sha256": "869856ef819322003952035b2ef12adb0d93cedddc236f70f392257fd7cdba87",
+  "returncode": 1,
+  "seconds": 0.042,
+  "argv": [
+    "prepare_vm.py"
+  ]
+}

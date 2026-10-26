@@ -1,0 +1,42 @@
+   Compiling argon2 v0.6.0
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+   Compiling faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+   Compiling faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+   Compiling faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+   Compiling faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+   Compiling faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+   Compiling faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+   Compiling faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+   Compiling faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+warning: unused import: `Path`
+ --> crates/faction-cli/tests/roaming_owner.rs:2:76
+  |
+2 | use std::{fs, os::unix::fs::{symlink, PermissionsExt, MetadataExt}, path::{Path, PathBuf}, process::{Command, Output}};
+  |                                                                            ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `faction-cli` (test "roaming_owner") generated 1 warning (run `cargo fix --test "roaming_owner" -p faction-cli` to apply 1 suggestion)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.85s
+     Running tests/roaming_owner.rs (target/debug/deps/roaming_owner-9e773b0dfc0cebd3)
+
+running 1 test
+test owner_inspection_and_exact_manifest_are_readonly_and_default_off ... FAILED
+
+failures:
+
+---- owner_inspection_and_exact_manifest_are_readonly_and_default_off stdout ----
+
+thread 'owner_inspection_and_exact_manifest_are_readonly_and_default_off' (981002) panicked at crates/faction-cli/tests/roaming_owner.rs:21:9:
+["manifest-preview"]: Faction: unknown command
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    owner_inspection_and_exact_manifest_are_readonly_and_default_off
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.77s
+
+error: test failed, to rerun pass `-p faction-cli --test roaming_owner`

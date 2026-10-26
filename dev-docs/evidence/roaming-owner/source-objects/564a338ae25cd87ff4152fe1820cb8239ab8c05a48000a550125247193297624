@@ -1,0 +1,18 @@
+{
+  "admission_refill_ms": 5000,
+  "credential_permits": 2,
+  "drain_seconds": 5,
+  "enabled_bindings": 4,
+  "environment": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/2a3e4be126024b260aba47ec82455e9e45fc82c15655aa01111055a93ef8a15c",
+    "sha256": "2a3e4be126024b260aba47ec82455e9e45fc82c15655aa01111055a93ef8a15c"
+  },
+  "issuers": 2,
+  "kernel_slots": 2,
+  "normal_sessions": 8,
+  "owner_helpers": 3,
+  "physmem": 1054990336,
+  "result": "pass",
+  "scope": "One-GiB runtime controls; two-GiB compiler/CLI/core tests separately recorded. Profile values are unchanged product contracts, not connected-member capacity.",
+  "uid_history": 32
+}

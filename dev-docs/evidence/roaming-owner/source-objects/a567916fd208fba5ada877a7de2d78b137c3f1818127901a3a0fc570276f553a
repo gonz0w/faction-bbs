@@ -1,0 +1,7 @@
+from lab import *
+import shlex
+remote('install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/proof228-final03; test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source228-final03; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source228-final03')
+remote('tar -xf - -C /home/factionbuild/source228-final03; chown -R factionbuild:factionbuild /home/factionbuild/source228-final03',(P/'sources-final03.tar').read_bytes(),180)
+remote('cat > /home/factionbuild/proof228-final03/native_build.py; chown factionbuild:factionbuild /home/factionbuild/proof228-final03/native_build.py',(P/'native_build03.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof228-final03/native_build.py > /home/factionbuild/proof228-final03/build-launch.private.log 2>&1 < /dev/null &'")
+print('Source-matched native build launched offline jobs2.')

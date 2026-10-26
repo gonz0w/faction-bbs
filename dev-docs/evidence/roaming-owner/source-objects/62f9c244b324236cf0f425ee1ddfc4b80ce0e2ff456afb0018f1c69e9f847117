@@ -1,0 +1,2 @@
+from lab import *
+r=remote('if test -f /home/factionbuild/proof228-final03/native-build.json; then cat /home/factionbuild/proof228-final03/native-build.json; fi; tail -8 /home/factionbuild/proof228-final03/build-0.private.log');print(r.stdout.decode())

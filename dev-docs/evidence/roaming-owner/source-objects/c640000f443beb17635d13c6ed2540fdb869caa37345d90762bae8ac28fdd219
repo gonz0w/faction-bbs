@@ -1,0 +1,70 @@
+from pathlib import Path
+import hashlib,json,re
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent
+E=R/'dev-docs/evidence/roaming-owner';O=E/'source-objects'
+O.mkdir(parents=True,exist_ok=True)
+index={}
+for name in ('roaming-uid','signer-qualification'):
+ r=json.loads((R/f'dev-docs/evidence/{name}/results.json').read_text())
+ for ref in r['sources']:
+  index[ref['sha256']]=ref
+sources={};stages=[]
+def blob(data):
+ digest=hashlib.sha256(data).hexdigest()
+ if digest in index:
+  ref=index[digest];assert hashlib.sha256((R/ref['path']).read_bytes()).hexdigest()==digest
+ else:
+  target=O/digest
+  if target.exists():assert target.read_bytes()==data
+  else:target.write_bytes(data)
+  ref=dict(path=str(target.relative_to(R)),sha256=digest)
+ sources[digest]=ref
+ return ref
+
+def capture(path):return blob(path.read_bytes())
+
+def cli_contexts():
+ C=Path('/private/tmp/faction228-cli-OWNED')
+ for context in sorted(x for x in C.iterdir() if x.is_dir() and (x/'SHA256SUMS').exists()):
+  files=[]
+  for line in (context/'SHA256SUMS').read_text().splitlines():
+   digest,name=line.split('  ',1);path=context/name
+   assert hashlib.sha256(path.read_bytes()).hexdigest()==digest,(context,name)
+   ref=capture(path)
+   if name in ('crates/faction-cli/src/main.rs','crates/faction-cli/src/roaming.rs','crates/faction-cli/tests/roaming_owner.rs','crates/faction-core/src/lib.rs','crates/faction-core/tests/existing_state.rs'):
+    files.append(dict(name=name,sha256=ref['sha256']))
+  stages.append(dict(label='host-'+context.name,manifest=capture(context/'SHA256SUMS'),files=files))
+ for path in C.iterdir():
+  if path.is_file():capture(path)
+
+def native_context(label,directory,mapping):
+ files=[]
+ for name,digest in json.loads(mapping.read_text()).items():
+  ref=capture(directory/name);assert ref['sha256']==digest,name
+  files.append(dict(name=name,sha256=digest))
+ stages.append(dict(label=label,files=files,manifest=capture(mapping)))
+
+if __name__=='__main__':
+ cli_contexts()
+ N=Path('/private/tmp/faction228-native-OWNED')
+ native_context('native-candidate01',N/'candidate01/source',N/'candidate01/sources.json')
+ native_context('native-candidate02',N/'candidate02/source-final',N/'candidate02/sources-final.json')
+ native_context('native-final',N/'source-final03',N/'sources-final03.json')
+ for directory in [P/'host-python-context',N/'executed',N/'public-final03']:
+  for path in directory.rglob('*'):
+   if path.is_file() and '__pycache__' not in path.parts:capture(path)
+ for path in (N/'vm').glob('*.py'):capture(path)
+ for directory in [P,N,N/'candidate01',N/'candidate02']:
+  for path in directory.iterdir():
+   if path.is_file() and (path.suffix in {'.py','.json','.log'} or path.name=='OWNED') and '.private.' not in path.name and path.name not in {'saved-before.private.json','frozen-inputs.json','records-assembled.json'}:capture(path)
+ orchestration=[]
+ for label, directory, recursive in [('lead',P,False),('native',N,False),('executed',N/'executed',True),('controller',N/'vm',False)]:
+  paths=directory.rglob('*.py') if recursive else directory.glob('*.py')
+  for path in paths:
+   ref=capture(path);orchestration.append(dict(name=label+'/'+str(path.relative_to(directory)),sha256=ref['sha256']))
+ stages.append(dict(label='orchestration-and-host-checks',files=orchestration))
+ for pattern in ('faction228-review-OWNED-*','faction228-wal-review-OWNED-*'):
+  for directory in Path('/private/tmp').glob(pattern):
+   for path in directory.glob('result.json'):capture(path)
+ (P/'frozen-inputs.json').write_text(json.dumps(dict(sources=list(sources.values()),source_stages=stages),indent=2)+'\n')
+ print('Frozen',len(sources),'unique content inputs;',len(stages),'source stages.')

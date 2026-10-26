@@ -1,0 +1,1 @@
+{"result": "pass", "candidate02_preserved_files": 732, "full_cli": {"result": "pass", "command": ["cargo", "test", "--release", "--locked", "--offline", "-j", "2", "-p", "faction-cli"], "returncode": 0, "seconds": 1.846, "test_results": [[8, 0, 0], [1, 0, 0], [0, 0, 0], [0, 0, 0], [8, 0, 0], [0, 0, 0]], "scope": "two-core-2GiB-compiler-and-tests"}}

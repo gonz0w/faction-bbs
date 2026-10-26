@@ -1,0 +1,9 @@
+{
+  "script": "freeze_source02.py",
+  "sha256": "63c3898812ba12381a654b1bde13f148b138086d813409b9293b2cd790450bb7",
+  "returncode": 0,
+  "seconds": 0.199,
+  "argv": [
+    "freeze_source02.py"
+  ]
+}

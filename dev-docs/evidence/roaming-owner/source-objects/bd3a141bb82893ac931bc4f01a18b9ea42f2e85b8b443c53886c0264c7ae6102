@@ -1,0 +1,9 @@
+import pathlib, shutil, hashlib, sys
+root=pathlib.Path('/Users/cam/DEV/faction-bbs'); dest=pathlib.Path('/private/tmp/faction228-cli-OWNED')/sys.argv[1]
+dest.mkdir(); files=[root/'Cargo.toml',root/'Cargo.lock']+sorted((root/'crates').rglob('*'))
+manifest=[]
+for p in files:
+ if p.is_file():
+  rel=p.relative_to(root); target=dest/rel; target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(p,target); manifest.append(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(rel))
+(dest/'SHA256SUMS').write_text('\n'.join(manifest)+'\n')
+print(dest)

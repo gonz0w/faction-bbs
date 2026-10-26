@@ -1,0 +1,12 @@
+from pathlib import Path
+import os,subprocess,json,time,re
+P=Path('/home/factionbuild/proof228');R=Path('/home/factionbuild/source228');env=os.environ.copy();env.update(CARGO_HOME='/home/factionbuild/cargo228',CARGO_TARGET_DIR='/home/factionbuild/target228',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib')
+checks=[]
+commands=[['cargo','build','--release','--locked','--offline','-j','2','-p','faction-cli','-p','faction-service','-p','faction-access','-p','faction-core','--examples','--bins'],['cargo','test','--release','--locked','--offline','-j','2','-p','faction-cli','--test','roaming_owner'],['cargo','test','--release','--locked','--offline','-j','2','-p','faction-core','--test','roaming','--test','snapshot']]
+for i,cmd in enumerate(commands):
+ t=time.monotonic();log=P/f'build-{i}.private.log'
+ with log.open('wb') as out:r=subprocess.run(cmd,cwd=R,env=env,stdout=out,stderr=out)
+ counts=[list(map(int,x)) for x in re.findall(rb'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',log.read_bytes())]
+ checks.append({'result':'pass' if r.returncode==0 else 'fail','command':cmd,'returncode':r.returncode,'seconds':round(time.monotonic()-t,3),'test_results':counts,'scope':'two-core-2GiB-compiler-and-tests'})
+ (P/'native-build.json').write_text(json.dumps({'result':'pass' if all(x['returncode']==0 for x in checks) else 'fail','checks':checks},indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)

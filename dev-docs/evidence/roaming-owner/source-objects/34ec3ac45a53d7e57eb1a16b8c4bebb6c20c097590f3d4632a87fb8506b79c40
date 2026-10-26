@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/factionbuild/proof228/runtime_guest.py", line 104, in <module>
+    start(manifest=False);master,pid,_=tty_enter(pwd.getpwnam('factionterm').pw_uid,b'[L]ogin [R]egister [Q]uit: ');tty_drain(master,pid);stop();record('default-off-service-classic-owned-tty-login-menu')
+                                                                                                                    ~~~~~~~~~^^^^^^^^^^^^
+  File "/home/factionbuild/proof228/runtime_guest.py", line 60, in tty_drain
+    else:raise AssertionError('tty client drain timeout')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: tty client drain timeout
+
+

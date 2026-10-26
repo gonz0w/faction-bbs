@@ -1,0 +1,11 @@
+from lab import *
+import shutil,hashlib
+C=P/'candidate01';assert not C.exists();C.mkdir()
+for name in ['source','sources.json','sources.tar','native-source-match.json','native-environment.json','native-build.json','native-runtime-environment.json']:
+ if (P/name).is_dir():shutil.copytree(P/name,C/name)
+ elif (P/name).is_file():shutil.copyfile(P/name,C/name)
+(C/'guest-proof.private.tar').write_bytes(remote('tar -cf - -C /home/factionbuild/proof228 .').stdout)
+remote('test ! -e /home/factionbuild/proof228-candidate01; cp -Rp /home/factionbuild/proof228 /home/factionbuild/proof228-candidate01; test ! -e /home/factionbuild/source228-candidate01; cp -Rp /home/factionbuild/source228 /home/factionbuild/source228-candidate01; cp -Rp /usr/local/libexec/faction228 /usr/local/libexec/faction228-candidate01')
+for n in ['native-runtime.json','native-runtime-continuation.json','native-binaries.json','native-build.json']:(C/n).write_bytes(remote('cat /home/factionbuild/proof228/'+n).stdout)
+manifest={str(p.relative_to(C)):hashlib.sha256(p.read_bytes()).hexdigest() for p in C.rglob('*') if p.is_file()};(C/'SHA256.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'result':'pass','candidate01_preserved_files':len(manifest),'source_inputs':len(json.loads((C/'sources.json').read_text()))}))

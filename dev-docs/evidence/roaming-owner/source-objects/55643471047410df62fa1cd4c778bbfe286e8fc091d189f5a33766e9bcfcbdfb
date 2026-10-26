@@ -1,0 +1,13 @@
+{
+  "log": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/3de8c30a3248172e7f9eb604609436b32317ce3f8755bd993f1eabdd6effa84a",
+    "sha256": "3de8c30a3248172e7f9eb604609436b32317ce3f8755bd993f1eabdd6effa84a"
+  },
+  "passed": 381,
+  "result": "pass",
+  "scope": "Complete host suite before later control-presence guard extension; separate final focused five-test guard log retained.",
+  "source_map": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/b45ccc2e7b27338e83131a0ac2da3a5b096508282b7929a97836650c9b223c22",
+    "sha256": "b45ccc2e7b27338e83131a0ac2da3a5b096508282b7929a97836650c9b223c22"
+  }
+}

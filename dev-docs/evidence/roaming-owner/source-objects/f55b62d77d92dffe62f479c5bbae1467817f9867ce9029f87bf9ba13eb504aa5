@@ -1,0 +1,7 @@
+{
+  "main_header_schema": 19,
+  "effective_schema": 20,
+  "state_exit": 1,
+  "state_stderr": "Faction: roaming requires initialized schema 20; take a stopped backup before upgrade\n",
+  "state_stdout": ""
+}

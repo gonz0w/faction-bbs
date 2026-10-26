@@ -1,0 +1,10 @@
+from pathlib import Path
+import sys,hashlib,subprocess,time,json,os
+P=Path(__file__).resolve().parent;os.umask(0o077)
+name=sys.argv[1];src=P/name;stamp=str(time.time_ns());dest=P/'executed'/stamp;dest.mkdir();data=src.read_bytes();(dest/name).write_bytes(data)
+for support in P.glob('*.py'):
+ if support.name != name: (dest/support.name).write_bytes(support.read_bytes())
+start=time.monotonic()
+with (dest/'output.private.log').open('wb') as log:r=subprocess.run([sys.executable,str(src),*sys.argv[2:]],stdout=log,stderr=log)
+record={'script':name,'sha256':hashlib.sha256(data).hexdigest(),'returncode':r.returncode,'seconds':round(time.monotonic()-start,3),'argv':sys.argv[1:]}
+(dest/'execution.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record));print((dest/'output.private.log').read_text()[-3000:]);sys.exit(r.returncode)

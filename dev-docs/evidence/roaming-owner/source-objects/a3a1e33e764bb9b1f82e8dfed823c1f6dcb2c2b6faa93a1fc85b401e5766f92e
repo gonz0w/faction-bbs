@@ -1,0 +1,4 @@
+from lab import *
+(P/'final03-legacy-failed01.private.tar').write_bytes(remote('tar -cf - -C /home/factionbuild/proof228-final03 .').stdout)
+remote('cp /home/factionbuild/proof228-final03/native-legacy.json /home/factionbuild/proof228-final03/native-legacy-failed01.json')
+r=remote('cat /home/factionbuild/proof228-final03/classic-console-pty.private.log');(P/'classic-console-failed01.private.log').write_bytes(r.stdout);print(r.stdout.decode()[-2500:])

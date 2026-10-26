@@ -1,0 +1,9 @@
+{
+  "script": "inspect_runtime03.py",
+  "sha256": "4b66407ee6f32c454e625672f82e91f3ad0c421ce1ca3d314500d4073bf70e48",
+  "returncode": 0,
+  "seconds": 0.103,
+  "argv": [
+    "inspect_runtime03.py"
+  ]
+}

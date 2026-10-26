@@ -1,0 +1,9 @@
+{
+  "script": "reboot_compile02.py",
+  "sha256": "4f37d166b425f3b6f0e8c102df0fbddd96e4a36fecb44f590fb1006212be7e1f",
+  "returncode": 0,
+  "seconds": 15.219,
+  "argv": [
+    "reboot_compile02.py"
+  ]
+}

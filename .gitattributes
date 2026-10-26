@@ -148,3 +148,7 @@ dev-docs/evidence/roaming-uid/source-objects/** linguist-generated=true whitespa
 # Exact issue226 compiler/probe inputs retain their original bytes.
 dev-docs/evidence/signer-qualification/** -text
 dev-docs/evidence/signer-qualification/source-objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+
+# Issue228 source-bound owner CLI observations retain exact executed bytes.
+dev-docs/evidence/roaming-owner/** -text
+dev-docs/evidence/roaming-owner/source-objects/** linguist-generated=true whitespace=-blank-at-eof

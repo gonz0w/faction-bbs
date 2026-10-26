@@ -1,0 +1,15 @@
+from pathlib import Path
+import subprocess,json,hashlib,tarfile,os
+P=Path(__file__).resolve().parent;R=Path('/Users/cam/DEV/faction-bbs');os.umask(0o077)
+assert not (P/'source-final').exists();(P/'source-final').mkdir()
+names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard'],cwd=R,text=True).splitlines()
+names=sorted(n for n in names if n in ['Cargo.toml','Cargo.lock'] or n.startswith(('crates/','native/','tools/','themes/','deploy/','gallery/','library/')))
+files={}
+for n in names:
+ src=R/n
+ assert src.is_file() and not src.is_symlink(),n
+ data=src.read_bytes();dest=P/'source-final'/n;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data);files[n]=hashlib.sha256(data).hexdigest()
+(P/'sources-final.json').write_text(json.dumps(files,sort_keys=True,indent=2)+'\n')
+with tarfile.open(P/'sources-final.tar','w') as archive:
+ for n in names:archive.add(P/'source-final'/n,arcname=n,recursive=False)
+print(json.dumps({'result':'pass','inputs':len(files),'source_map_sha256':hashlib.sha256((P/'sources-final.json').read_bytes()).hexdigest()}))

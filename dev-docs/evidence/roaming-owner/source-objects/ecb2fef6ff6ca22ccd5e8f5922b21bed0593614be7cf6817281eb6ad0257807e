@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "tools/smoke_local_console.py",
+        "target/debug/faction"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 6.99
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_member_worker.py",
+        "target/debug/faction",
+        "target/debug/faction-member"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 1.673
+    }
+  ]
+}

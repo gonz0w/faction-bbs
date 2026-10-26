@@ -1,0 +1,8 @@
+from lab import *
+for _ in range(45):
+ r=remote('sysctl -n hw.physmem64 hw.ncpu',check=False)
+ if r.returncode==0:break
+ time.sleep(1)
+else:raise AssertionError('Owned runtime guest failed readiness')
+v=list(map(int,r.stdout.splitlines()));assert v[0]<1100000000 and v[1]==2
+(P/'native-runtime-environment.json').write_text(json.dumps({'result':'pass','system':'NetBSD11.0 ARM64','memory_bytes':v[0],'cores':v[1],'configured_memory_mib':1024},indent=2)+'\n');print(v)

@@ -1,0 +1,9 @@
+{
+  "script": "wait_runtime03.py",
+  "sha256": "1f1a9ff836721a23965858649cb1e4b962e28acb222cfb7980f4ee8b25cdc922",
+  "returncode": 0,
+  "seconds": 0.091,
+  "argv": [
+    "wait_runtime03.py"
+  ]
+}

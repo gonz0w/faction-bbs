@@ -1,0 +1,123 @@
+import hashlib
+import json
+from pathlib import Path
+import re
+
+REPO = Path('/Users/cam/DEV/faction-bbs')
+NATIVE = Path('/private/tmp/faction228-native-OWNED')
+PUBLIC = NATIVE / 'public-final03'
+FROZEN = Path('/private/tmp/faction228-lead-OWNED/frozen-inputs.json')
+EXPECTED = {
+    'crates/faction-cli/src/main.rs': '0359116837f68f60e2a0e1b5e2372dc3ab05a4b678ab638015894276ce12b203',
+    'crates/faction-cli/src/roaming.rs': 'cbe995b332119578d4ce9da4baf1732571271aae71e3c53451055b7bc8009367',
+    'crates/faction-cli/tests/roaming_owner.rs': 'a6196c9e76d77b9a722e2c0de5f85ae4f47de279c7f507c125b3aa0f11d86c03',
+    'crates/faction-core/src/lib.rs': '5c2d72f50904dcc9183c0bd6d437aa2e3c9f349bb61c0726cabb01236901d1be',
+    'crates/faction-core/tests/existing_state.rs': '7c0d36a45bad10b4edd7043ac93d95eb446d419d0b7258fbb2a3889aebee9aa3',
+}
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def current():
+    return {name: sha((REPO / name).read_bytes()) for name in EXPECTED}
+
+before = current()
+assert before == EXPECTED
+manifest = json.loads((NATIVE / 'public-final03-SHA256.json').read_bytes())
+assert len(manifest) == 36
+assert set(manifest) == {p.name for p in PUBLIC.iterdir()}
+for name, digest in manifest.items():
+    assert sha((PUBLIC / name).read_bytes()) == digest, name
+frozen = json.loads(FROZEN.read_bytes())
+sources = frozen['sources']
+assert len(sources) == 990
+assert len({r['sha256'] for r in sources}) == 990
+by_sha = {}
+for ref in sources:
+    path = REPO / ref['path']
+    assert not path.is_symlink() and path.resolve().is_relative_to(REPO)
+    data = path.read_bytes()
+    assert sha(data) == ref['sha256'], ref['path']
+    by_sha[ref['sha256']] = data
+stages = frozen['source_stages']
+assert len(stages) == 15
+for stage in stages:
+    if 'manifest' not in stage:
+        assert stage['label'] == 'orchestration-and-host-checks'
+        assert all(entry['sha256'] in by_sha for entry in stage['files'])
+        continue
+    ref = stage['manifest']
+    data = (REPO / ref['path']).read_bytes()
+    assert sha(data) == ref['sha256']
+    if stage['label'].startswith('host-'):
+        entries = dict((line.split('  ', 1)[1], line.split('  ', 1)[0])
+                       for line in data.decode().splitlines())
+    else:
+        entries = json.loads(data)
+    for name, digest in entries.items():
+        assert digest in by_sha, (stage['label'], name)
+    for entry in stage['files']:
+        assert entries[entry['name']] == entry['sha256']
+final = next(s for s in stages if s['label'] == 'native-final')
+final_map = {f['name']: f['sha256'] for f in final['files']}
+match = json.loads((PUBLIC / 'native-source-match-final03.json').read_bytes())
+assert len(final_map) == 725
+assert match['result'] == 'pass' and match['matched_inputs'] == 725
+assert match['independently_hashed_inside_guest'] is True
+assert final_map == match['files']
+assert match['source_manifest_sha256'] == final['manifest']['sha256']
+assert {name: final_map[name] for name in EXPECTED} == EXPECTED
+cli = json.loads((PUBLIC / 'native-cli-all.json').read_bytes())
+assert cli['result'] == 'pass' and cli['returncode'] == 0
+assert sum(row[0] for row in cli['test_results']) == 18
+assert all(row[1:] == [0, 0] for row in cli['test_results'])
+build = json.loads((PUBLIC / 'native-build.json').read_bytes())
+assert build['result'] == 'pass'
+assert all(c['result'] == 'pass' and c['returncode'] == 0 for c in build['checks'])
+assert [row[0] for row in build['checks'][-1]['test_results']] == [3, 15, 10]
+assert all(row[1:] == [0, 0] for row in build['checks'][-1]['test_results'])
+runtime = json.loads((PUBLIC / 'native-runtime.json').read_bytes())
+assert runtime['result'] == 'pass' and len(runtime['checks']) == 14
+assert all(c['result'] == 'pass' for c in runtime['checks'])
+assert runtime['runtime_memory_mib'] == 1024
+assert runtime['physical_hardware'] is False and runtime['capacity_claim'] is False
+environment = json.loads((PUBLIC / 'native-runtime-environment-final03.json').read_bytes())
+assert environment['cores'] == 2 and environment['configured_memory_mib'] == 1024
+assert 1000 * 1024**2 < environment['memory_bytes'] < 1024**3
+legacy = json.loads((PUBLIC / 'native-legacy.json').read_bytes())
+assert legacy['result'] == 'pass'
+assert {c['name'] for c in legacy['checks']} == {
+    'classic-console-pty', 'export-restore-pty', 'complete-bundle-recovery'}
+assert all(c['result'] == 'pass' and c['returncode'] == 0 for c in legacy['checks'])
+recovery = json.loads((PUBLIC / 'native-backup-recovery.json').read_bytes())
+assert recovery['result'] == 'pass' and recovery['count'] == len(recovery['checks']) == 21
+assert recovery['native_distinct_uid_cli'] is True
+assert recovery['developer_api_fixture'] is False
+assert recovery['capacity_claim'] is False and recovery['hardening_claim'] is False
+patterns = {
+    'private_key_marker': rb'-----BEGIN (?:OPENSSH |RSA |EC |DSA |ENCRYPTED )?PRIVATE KEY-----',
+    'provider_secret': rb'(?:sk-proj-|gh[pousr]_|github_pat_)[A-Za-z0-9_-]{20,}',
+    'ssh_private_identity_option': rb'(?:["\x27]-i["\x27]|ssh[^\n]{0,120}-i\s)',
+    'secret_assignment': rb'(?i)(?:password|secret|token|credential)\s*=\s*["\x27][^"\x27\n]{8,}["\x27]',
+}
+scan_hits = []
+objects = list((REPO / 'dev-docs/evidence/roaming-owner/source-objects').iterdir())
+for path in objects + list(PUBLIC.iterdir()):
+    data = path.read_bytes()
+    assert not data.startswith((b'\x7fELF', b'\x1f\x8b', b'PK\x03\x04'))
+    assert b'\x00' not in data, path.name
+    data.decode('utf-8')
+    for label, pattern in patterns.items():
+        for hit in re.finditer(pattern, data):
+            scan_hits.append({'object': str(path), 'pattern': label,
+                              'line': data[:hit.start()].count(b'\n') + 1})
+after = current()
+assert before == after
+result = dict(result='pass', public_files=36, source_refs=990, source_stages=15,
+              native_matched_inputs=725, cli_tests=18, core_tests=28,
+              runtime_controls=14, recovery_controls=21,
+              new_source_objects=len(objects), privacy_candidates=scan_hits,
+              product_source_before=before, product_source_after=after,
+              audit_script_sha256=sha(Path(__file__).read_bytes()))
+Path(__file__).with_name('audit-final03-result.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result, indent=2))

@@ -1,0 +1,9 @@
+{
+  "script": "verify_source02.py",
+  "sha256": "a82fcbbc8675ffc78ec67dfa795aaedf596dae6019e022537a2200660b682296",
+  "returncode": 0,
+  "seconds": 0.295,
+  "argv": [
+    "verify_source02.py"
+  ]
+}

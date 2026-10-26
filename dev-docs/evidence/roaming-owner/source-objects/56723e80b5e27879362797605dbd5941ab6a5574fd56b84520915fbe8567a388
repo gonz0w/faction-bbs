@@ -1,0 +1,6 @@
+from lab import *
+r=remote('tar -cf - -C /home/factionbuild/proof228 .');(P/'runtime-candidate01-private.tar').write_bytes(r.stdout)
+remote('cp /home/factionbuild/proof228/native-runtime.json /home/factionbuild/proof228/native-runtime-candidate01.private.json')
+s='from pathlib import Path;ps=sorted(Path("/home/factionbuild/proof228").glob("runtime-failure-*.private.log"));print(ps[-1].read_text()[-2000:])'
+import shlex
+print(remote('python3.13 -c '+shlex.quote(s)).stdout.decode())

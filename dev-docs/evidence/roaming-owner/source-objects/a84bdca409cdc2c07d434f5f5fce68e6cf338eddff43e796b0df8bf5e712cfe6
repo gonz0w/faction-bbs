@@ -1,0 +1,7 @@
+{
+  "result": "pass",
+  "system": "NetBSD11.0 ARM64",
+  "memory_bytes": 1054990336,
+  "cores": 2,
+  "configured_memory_mib": 1024
+}

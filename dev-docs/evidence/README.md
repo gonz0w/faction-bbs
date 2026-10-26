@@ -396,3 +396,6 @@ retains every original output byte while providing newline-compliant JSON mirror
 [Experimental roaming UID handoff](roaming-uid/README.md) records two-home/two-board restricted SSH and native sessions, scoped revocation, recovery and exact host/NetBSD inputs. It adds no production SSO, signer or capacity support.
 
 [Manual NetBSD signer qualification](signer-qualification/README.md) records one maintained portable source build, five native issuances, the preserved rejected base signer, exact negative controls, ordinary-access preservation and owned cleanup. No issuer installation or production adoption is implied.
+
+
+[Manual roaming owner CLI software evidence](roaming-owner/README.md) covers explicit local association, private manifest export, current service revocation and effective SQLite WAL state, with source-matched host/NetBSD and recovery checks.

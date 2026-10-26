@@ -1,0 +1,9 @@
+{
+  "script": "prepare_cache.py",
+  "sha256": "a586355855fac468538d143bcb7f10c399576bbad7d0ed117fe3a5992366bf6c",
+  "returncode": 0,
+  "seconds": 1.176,
+  "argv": [
+    "prepare_cache.py"
+  ]
+}

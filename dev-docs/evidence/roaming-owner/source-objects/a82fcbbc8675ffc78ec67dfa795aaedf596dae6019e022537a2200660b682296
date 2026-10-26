@@ -1,0 +1,9 @@
+from lab import *
+import hashlib,shlex
+expected=json.loads((P/'sources-final.json').read_text())
+script='import hashlib,json,pathlib;root=pathlib.Path("/home/factionbuild/source228-final");names=json.loads('+repr(json.dumps(list(expected)))+');print(json.dumps({n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names},sort_keys=True))'
+actual=json.loads(remote('python3.13 -c '+shlex.quote(script)).stdout);assert actual==expected
+(P/'native-source-match-final.json').write_text(json.dumps({'result':'pass','matched_inputs':len(actual),'files':actual,'source_manifest_sha256':hashlib.sha256((P/'sources-final.json').read_bytes()).hexdigest(),'independently_hashed_inside_guest':True},indent=2)+'\n')
+identity=remote('uname -srm; rustc --version; cargo --version; python3.13 --version; sysctl -n hw.physmem64 hw.ncpu').stdout.decode().splitlines()
+(P/'native-environment-final.json').write_text(json.dumps({'result':'pass','system':identity[0],'rustc':identity[1],'cargo':identity[2],'python':identity[3],'memory_bytes':int(identity[4]),'cores':int(identity[5]),'scope':'software-compilation-and-focused-tests'},indent=2)+'\n')
+print(json.dumps({'result':'pass','source_inputs':len(actual),'identity':identity}))

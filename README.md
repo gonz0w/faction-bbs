@@ -117,8 +117,9 @@ The protocols have separate jobs:
   device. An ordinary SSH BBS session never receives private-mail plaintext or keys.
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
-a trusted UID-to-local-member path for operator-provisioned software fixtures.
-Online issuance/enrollment and production roaming remain incomplete.
+a trusted UID-to-local-member path plus filesystem-owner commands for manual
+association, revocation and reviewed manifest export. Root transport provisioning,
+online issuance/enrollment and production roaming remain incomplete.
 
 The existing [two-home proof](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 is separate from the adopted [bounded native adapter](dev-docs/native-home-mail.md). The installed native signer remains

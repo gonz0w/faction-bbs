@@ -1,0 +1,14 @@
+from lab import *
+pid=int((V/'runtime-qemu.pid').read_text());controller=int((V/'runtime-controller.pid').read_text());cmd=subprocess.check_output(['ps','-p',str(pid),'-o','command='],text=True);assert str(V/'disk.qcow2') in cmd and '-m 1024' in cmd
+r=remote('/sbin/shutdown -p now',check=False);assert r.returncode in [0,255]
+for _ in range(45):
+ if subprocess.run(['ps','-p',str(pid)],capture_output=True).returncode:break
+ time.sleep(1)
+else:raise AssertionError('owned runtime VM did not stop')
+assert subprocess.run(['ps','-p',str(controller)],capture_output=True).returncode!=0
+q=json.loads((V/'qemu-command.json').read_text());q[q.index('-serial')+1]=f'unix:{V}/serial-compile02.sock,server=on,wait=on'
+source=(V/'serial-controller.py').read_text().replace("p/'serial.sock'","p/'serial-compile02.sock'").replace("p/'serial.log'","p/'serial-compile02.log'").replace("p/'console.in'","p/'console-compile02.in'");(V/'serial-compile02-controller.py').write_text(source)
+with (V/'qemu-compile02.log').open('wb') as log:p=subprocess.Popen(q,stdout=log,stderr=log,start_new_session=True)
+(V/'compile02-qemu.pid').write_text(str(p.pid)+'\n');(V/'compile02-qemu-command.json').write_text(json.dumps(q)+'\n')
+with (V/'controller-compile02.log').open('wb') as log:p=subprocess.Popen(['python3',str(V/'serial-compile02-controller.py')],stdout=log,stderr=log,start_new_session=True)
+(V/'compile02-controller.pid').write_text(str(p.pid)+'\n');print('Owned candidate02 compiler VM booting at2GiB.')

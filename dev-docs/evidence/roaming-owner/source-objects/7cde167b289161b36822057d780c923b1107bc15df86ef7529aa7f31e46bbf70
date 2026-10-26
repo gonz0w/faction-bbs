@@ -1,0 +1,501 @@
+use faction_core::{Board, RoamingAdmission, RoamingRegistry, Status, request_id};
+use std::{
+    fs,
+    os::unix::fs::{DirBuilderExt, MetadataExt, PermissionsExt, symlink},
+    path::PathBuf,
+    process::{Command, Output},
+};
+static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
+fn fixtures() -> PathBuf {
+    let root = std::env::temp_dir()
+        .canonicalize()
+        .unwrap()
+        .join("faction228-cli-OWNED");
+    match fs::DirBuilder::new().mode(0o700).create(&root) {
+        Ok(()) => fs::write(
+            root.join("OWNED"),
+            "Disposable issue 228 integration fixtures",
+        )
+        .unwrap(),
+        Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => (),
+        Err(e) => panic!("fixture root: {e}"),
+    }
+    let m = fs::symlink_metadata(&root).unwrap();
+    assert!(m.is_dir());
+    assert_eq!(m.uid(), rustix::process::geteuid().as_raw());
+    assert_eq!(m.mode() & 0o077, 0);
+    assert!(root.join("OWNED").is_file());
+    root
+}
+const FP: &str = "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+struct Fixture {
+    path: PathBuf,
+    secret: String,
+}
+impl Fixture {
+    fn new() -> Self {
+        let path = fixtures().join(request_id().unwrap());
+        let secret = request_id().unwrap();
+        let mut board = Board::open(&path).unwrap();
+        board.bootstrap("sysop", &secret).unwrap();
+        board.register("member", &secret).unwrap();
+        let root = board.authenticate("sysop", &secret).unwrap();
+        board.set_status(&root, "member", Status::Approved).unwrap();
+        Self { path, secret }
+    }
+    fn run(&self, args: &[&str]) -> Output {
+        Command::new(env!("CARGO_BIN_EXE_faction"))
+            .arg("--state-dir")
+            .arg(&self.path)
+            .arg("roaming")
+            .args(args)
+            .output()
+            .unwrap()
+    }
+    fn ok(&self, args: &[&str]) -> String {
+        let out = self.run(args);
+        assert!(
+            out.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        String::from_utf8(out.stdout).unwrap()
+    }
+    fn no(&self, args: &[&str]) {
+        let out = self.run(args);
+        assert!(!out.status.success(), "accepted {args:?}");
+    }
+    fn link(&self) {
+        self.ok(&["invite", "home-one", FP]);
+        self.ok(&["issuer-enable", "1", "1"]);
+        self.ok(&[
+            "link",
+            "1",
+            "2",
+            "same-handle",
+            "board:home-one:subject",
+            "2",
+            "42001",
+            "consent-228",
+        ]);
+        self.ok(&["binding-enable", "1", "1"]);
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        fs::remove_dir_all(&self.path).unwrap();
+        assert!(!self.path.exists());
+    }
+}
+#[test]
+fn owner_inspection_and_exact_manifest_are_readonly_and_default_off() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    let empty = f.ok(&["manifest-preview"]);
+    assert!(empty.starts_with("version = 1\nboard_identity = \""));
+    assert!(empty.ends_with("\"\nentries = []\n"));
+    let state = f.ok(&["state"]);
+    assert!(state.contains("Experimental roaming owner state"));
+    f.link();
+    let before = f.ok(&["state"]);
+    for text in [
+        "home-one",
+        FP,
+        "same-handle",
+        "member_id=2",
+        "uid=42001",
+        "consent-228",
+        "generation=2",
+        "enabled=true",
+    ] {
+        assert!(before.contains(text), "missing {text}: {before}");
+    }
+    let manifest = f.ok(&["manifest-preview"]);
+    assert!(manifest.ends_with("\n[[entries]]\nuid = 42001\nbinding_id = 1\nbinding_generation = 2\nissuer_generation = 2\n"));
+    assert!(manifest.len() <= 8192);
+    assert_eq!(manifest.lines().count(), 8);
+    assert_eq!(before, f.ok(&["state"]));
+    let mut board = Board::open(&f.path).unwrap();
+    assert!(board.authenticate_roaming_uid(42001).is_err());
+    assert!(board.authenticate("member", &f.secret).is_ok());
+}
+#[test]
+fn initialized_private_state_and_strict_arguments_are_required() {
+    let _serial = SERIAL.lock().unwrap();
+    let root = fixtures().join(request_id().unwrap());
+    for path in [&root, &root.join("nested")] {
+        let out = Command::new(env!("CARGO_BIN_EXE_faction"))
+            .arg("--state-dir")
+            .arg(path)
+            .args(["roaming", "state"])
+            .output()
+            .unwrap();
+        assert!(!out.status.success());
+        assert!(!root.exists());
+    }
+    fs::create_dir(&root).unwrap();
+    fs::set_permissions(&root, fs::Permissions::from_mode(0o700)).unwrap();
+    fs::write(root.join("faction.sqlite3"), []).unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_faction"))
+        .arg("--state-dir")
+        .arg(&root)
+        .args(["roaming", "state"])
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    assert_eq!(fs::metadata(root.join("faction.sqlite3")).unwrap().len(), 0);
+    fs::remove_dir_all(root).unwrap();
+    let f = Fixture::new();
+    let before = f.ok(&["state"]);
+    for args in [
+        vec![],
+        vec!["state", "extra"],
+        vec!["invite", "home", "bad"],
+        vec!["issuer-enable", "0", "1"],
+        vec!["issuer-enable", "1", "9223372036854775808"],
+        vec!["link", "1", "1", "x", "y", "member", "1", "consent"],
+        vec!["manifest-export"],
+    ] {
+        f.no(&args);
+    }
+    assert_eq!(before, f.ok(&["state"]));
+    fs::set_permissions(&f.path, fs::Permissions::from_mode(0o755)).unwrap();
+    f.no(&["state"]);
+    fs::set_permissions(&f.path, fs::Permissions::from_mode(0o700)).unwrap();
+    let alias = f.path.join("alias");
+    symlink(&f.path, &alias).unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_faction"))
+        .arg("--state-dir")
+        .arg(&alias)
+        .args(["roaming", "state"])
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    let db_path = f.path.join("faction.sqlite3");
+    let original = fs::read(&db_path).unwrap();
+    let mut legacy = original.clone();
+    legacy[60..64].copy_from_slice(&19_u32.to_be_bytes());
+    fs::write(&db_path, &legacy).unwrap();
+    f.no(&["state"]);
+    assert_eq!(fs::read(&db_path).unwrap(), legacy);
+    fs::write(&db_path, original).unwrap();
+}
+#[test]
+fn current_approval_generations_immutable_uids_and_independent_homes() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    f.link();
+    let before = f.ok(&["state"]);
+    f.no(&["binding-disable", "1", "1"]);
+    f.no(&["issuer-disable", "1", "1"]);
+    f.no(&["link", "1", "2", "x", "x", "2", "42001", "consent"]);
+    f.no(&["link", "1", "2", "x", "x", "2", "0", "consent"]);
+    f.no(&["link", "1", "2", "x", "x", "2", "4294967296", "consent"]);
+    f.no(&["link", "1", "2", "x", "x", "2", "42002", ""]);
+    assert_eq!(before, f.ok(&["state"]));
+    let mut board = Board::open(&f.path).unwrap();
+    board.register("pending", &f.secret).unwrap();
+    f.no(&[
+        "link", "1", "2", "pending", "pending", "3", "42002", "consent",
+    ]);
+    f.ok(&[
+        "invite",
+        "home-two",
+        "SHA256:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    ]);
+    f.ok(&["issuer-enable", "2", "1"]);
+    f.ok(&[
+        "link",
+        "2",
+        "2",
+        "same-handle",
+        "board:home-two:subject",
+        "2",
+        "42002",
+        "other-consent",
+    ]);
+    f.ok(&["binding-enable", "2", "1"]);
+    f.no(&["invite", "third", FP]);
+    f.ok(&["binding-disable", "1", "2"]);
+    f.no(&[
+        "link",
+        "1",
+        "2",
+        "same-handle",
+        "board:home-one:subject",
+        "2",
+        "42001",
+        "fresh-consent",
+    ]);
+    f.ok(&[
+        "link",
+        "1",
+        "2",
+        "same-handle",
+        "board:home-one:subject",
+        "2",
+        "42003",
+        "fresh-consent",
+    ]);
+    f.ok(&["binding-enable", "3", "1"]);
+    f.no(&["binding-enable", "1", "3"]);
+    let root = board.authenticate("sysop", &f.secret).unwrap();
+    board.set_status(&root, "member", Status::Revoked).unwrap();
+    f.no(&["manifest-preview"]);
+    let path = f.path.join("revoked.toml");
+    f.no(&["manifest-export", path.to_str().unwrap()]);
+    assert!(!path.exists());
+    f.no(&[
+        "link", "1", "2", "revoked", "revoked", "2", "42004", "consent",
+    ]);
+    f.ok(&["binding-disable", "3", "2"]);
+    f.no(&["binding-enable", "3", "3"]);
+}
+#[test]
+fn manifest_output_is_private_new_only_and_rejects_unsafe_paths() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    f.link();
+    let path = f.path.join("manifest.toml");
+    let preview = f.ok(&["manifest-preview"]);
+    f.ok(&["manifest-export", path.to_str().unwrap()]);
+    assert_eq!(fs::read_to_string(&path).unwrap(), preview);
+    assert_eq!(fs::metadata(&path).unwrap().mode() & 0o777, 0o600);
+    f.no(&["manifest-export", path.to_str().unwrap()]);
+    assert_eq!(fs::read_to_string(&path).unwrap(), preview);
+    let link = f.path.join("link.toml");
+    symlink(&path, &link).unwrap();
+    f.no(&["manifest-export", link.to_str().unwrap()]);
+    let alias = f.path.join("alias");
+    symlink(&f.path, &alias).unwrap();
+    f.no(&[
+        "manifest-export",
+        alias.join("through-link.toml").to_str().unwrap(),
+    ]);
+    assert!(!f.path.join("through-link.toml").exists());
+    let unsafe_dir = f.path.join("unsafe");
+    fs::create_dir(&unsafe_dir).unwrap();
+    fs::set_permissions(&unsafe_dir, fs::Permissions::from_mode(0o777)).unwrap();
+    f.no(&[
+        "manifest-export",
+        unsafe_dir.join("bad.toml").to_str().unwrap(),
+    ]);
+    f.no(&[
+        "manifest-export",
+        f.path.join("missing/new.toml").to_str().unwrap(),
+    ]);
+    f.no(&["manifest-export", f.path.to_str().unwrap()]);
+    let private_leaf = unsafe_dir.join("private");
+    fs::DirBuilder::new()
+        .mode(0o700)
+        .create(&private_leaf)
+        .unwrap();
+    f.no(&[
+        "manifest-export",
+        private_leaf.join("bad.toml").to_str().unwrap(),
+    ]);
+    f.no(&[
+        "manifest-export",
+        f.path.join("../traversal.toml").to_str().unwrap(),
+    ]);
+    // Actual write failure, independent of filesystem permissions (also works as root).
+    let out = Command::new("sh")
+        .args([
+            "-c",
+            "trap '' XFSZ; ulimit -f 0; exec \"$@\"",
+            "faction228-test",
+            env!("CARGO_BIN_EXE_faction"),
+            "--state-dir",
+        ])
+        .arg(&f.path)
+        .args(["roaming", "manifest-export"])
+        .arg(f.path.join("failed.toml"))
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    assert!(!f.path.join("failed.toml").exists());
+}
+#[test]
+fn actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    f.link();
+    let mut board = Board::open(&f.path).unwrap();
+    let state = board.roaming_owner_state().unwrap();
+    board
+        .configure_roaming_owner(Some(RoamingRegistry {
+            board_identity: state.board_identity,
+            entries: vec![RoamingAdmission {
+                uid: 42001,
+                binding_id: 1,
+                binding_generation: 2,
+                issuer_generation: 2,
+            }],
+        }))
+        .unwrap();
+    let roaming = board.authenticate_roaming_uid(42001).unwrap();
+    let password = board.authenticate("member", &f.secret).unwrap();
+    let lease = board.chat_open(&roaming).unwrap();
+    let plain_lease = board.chat_open(&password).unwrap();
+    let mut game = board.game_start(&roaming, "fixture").unwrap();
+    let mut plain_game = board.game_start(&password, "fixture").unwrap();
+    let root = board.authenticate("sysop", &f.secret).unwrap();
+    let area = board
+        .file_create_area(&root, "uploads", "Uploads", false, 1024)
+        .unwrap();
+    let key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    let grant = board
+        .file_upload(&roaming, area, "one.txt", "fixture", 1, key)
+        .unwrap();
+    let plain_key =
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB";
+    let plain_grant = board
+        .file_upload(&password, area, "two.txt", "fixture", 1, plain_key)
+        .unwrap();
+    let claim = board.file_claim(&grant).unwrap();
+    let plain_claim = board.file_claim(&plain_grant).unwrap();
+    f.ok(&["binding-disable", "1", "2"]);
+    assert!(board.whoami(&roaming).is_err());
+    assert!(board.chat_heartbeat(&lease).is_err());
+    assert!(board.game_finish(&roaming, &mut game, 1).is_err());
+    assert!(board.file_check(&grant, &claim.lease).is_err());
+    assert!(board.whoami(&password).is_ok());
+    board.chat_heartbeat(&plain_lease).unwrap();
+    board.game_finish(&password, &mut plain_game, 1).unwrap();
+    board.file_check(&plain_grant, &plain_claim.lease).unwrap();
+    f.ok(&["issuer-disable", "1", "2"]);
+    f.ok(&["issuer-enable", "1", "3"]);
+    assert!(f.ok(&["manifest-preview"]).ends_with("entries = []\n"));
+}
+#[test]
+fn restore_stays_disabled_and_real_member_entry_rejects_owner_commands() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    f.link();
+    let old = f.ok(&["manifest-preview"]);
+    let export = f.path.join("backup.sqlite3");
+    let restored = f.path.join("restored");
+    faction_core::export_local(&f.path, &export).unwrap();
+    faction_core::restore_local(&export, &restored).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_faction"))
+        .arg("--state-dir")
+        .arg(&restored)
+        .args(["roaming", "manifest-preview"])
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    let new = String::from_utf8(output.stdout).unwrap();
+    assert!(new.ends_with("entries = []\n"));
+    assert_ne!(old.lines().nth(1), new.lines().nth(1));
+    let before = f.ok(&["state"]);
+    let out = Command::new(env!("CARGO_BIN_EXE_faction-member"))
+        .arg("--state-dir")
+        .arg(&f.path)
+        .args(["roaming", "issuer-disable", "1", "2"])
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    assert_eq!(before, f.ok(&["state"]));
+}
+
+#[test]
+fn cli_preserves_four_enabled_and_thirty_two_immutable_records() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    f.ok(&["invite", "home", FP]);
+    f.ok(&["issuer-enable", "1", "1"]);
+    for n in 0..32 {
+        f.ok(&[
+            "link",
+            "1",
+            "2",
+            &format!("subject-{n}"),
+            &format!("principal-{n}"),
+            "2",
+            &(42000 + n).to_string(),
+            "consent",
+        ]);
+        if n < 4 {
+            f.ok(&["binding-enable", &(n + 1).to_string(), "1"]);
+        }
+    }
+    let before = f.ok(&["state"]);
+    assert!(before.len() <= 32768);
+    f.no(&["binding-enable", "5", "1"]);
+    f.no(&["link", "1", "2", "extra", "extra", "2", "43000", "consent"]);
+    assert_eq!(before, f.ok(&["state"]));
+    assert_eq!(
+        f.ok(&["manifest-preview"]).matches("[[entries]]").count(),
+        4
+    );
+    f.ok(&["binding-disable", "1", "2"]);
+    f.no(&[
+        "link",
+        "1",
+        "2",
+        "reuse",
+        "reuse",
+        "2",
+        "42000",
+        "new-consent",
+    ]);
+    f.ok(&["binding-enable", "5", "1"]);
+    assert_eq!(f.ok(&["state"]).matches("binding id=").count(), 32);
+}
+
+#[test]
+fn maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap() {
+    let _serial = SERIAL.lock().unwrap();
+    let f = Fixture::new();
+    let home = "\\\"".repeat(48);
+    let subject = "\\\"".repeat(64);
+    let principal = "=\\\"".repeat(64);
+    let consent = "\\\"".repeat(80);
+    f.ok(&["invite", &home, FP]);
+    f.ok(&["issuer-enable", "1", "1"]);
+    for n in 0..32 {
+        f.ok(&[
+            "link",
+            "1",
+            "2",
+            &subject,
+            &principal,
+            "2",
+            &(42000 + n).to_string(),
+            &consent,
+        ]);
+    }
+    let before = Board::open(&f.path).unwrap().roaming_owner_state().unwrap();
+    let out = f.ok(&["state"]);
+    assert!(out.len() <= 32768);
+    let field = |line: &str, key: &str| {
+        line.split(' ')
+            .find_map(|part| part.strip_prefix(key))
+            .unwrap()
+            .to_owned()
+    };
+    let issuer = out
+        .lines()
+        .find(|line| line.starts_with("issuer "))
+        .unwrap();
+    assert_eq!(field(issuer, "home="), home);
+    let bindings: Vec<_> = out
+        .lines()
+        .filter(|line| line.starts_with("binding "))
+        .collect();
+    assert_eq!(bindings.len(), 32);
+    for (n, row) in bindings.iter().enumerate() {
+        assert_eq!(field(row, "id="), (n + 1).to_string());
+        assert_eq!(field(row, "subject="), subject);
+        assert_eq!(field(row, "principal="), principal);
+        assert_eq!(field(row, "consent="), consent);
+        assert_eq!(field(row, "uid="), (42000 + n).to_string());
+        assert_eq!(row.split(' ').count(), 10);
+    }
+    let after = Board::open(&f.path).unwrap().roaming_owner_state().unwrap();
+    assert_eq!(before.board_identity, after.board_identity);
+    assert_eq!(before.bindings.len(), after.bindings.len());
+    for (a, b) in before.bindings.iter().zip(&after.bindings) {
+        assert_eq!((a.generation, a.enabled), (b.generation, b.enabled));
+    }
+}

@@ -1,0 +1,11 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.71s
+     Running tests/existing_state.rs (target/debug/deps/existing_state-866bf0df0f4830c5)
+
+running 3 tests
+test existing_state_rejects_unsafe_paths_and_unrecognized_application ... ok
+test existing_state_never_initializes_or_migrates_missing_empty_or_old_state ... ok
+test existing_state_reads_current_schema_from_real_wal_after_explicit_migration ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

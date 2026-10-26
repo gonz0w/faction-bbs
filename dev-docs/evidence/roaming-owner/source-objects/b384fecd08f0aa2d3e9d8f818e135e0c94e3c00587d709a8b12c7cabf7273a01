@@ -1,0 +1,13 @@
+    Checking argon2 v0.6.0
+    Checking faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Checking faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Checking faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+    Checking faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+    Checking faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+    Checking faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+    Checking faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+    Checking faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+    Checking faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+    Checking faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+    Checking faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.58s

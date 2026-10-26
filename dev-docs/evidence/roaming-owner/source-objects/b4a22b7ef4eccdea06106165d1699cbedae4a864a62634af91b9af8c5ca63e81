@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "owned_vm_stopped": true,
+  "owned_controller_stopped": true,
+  "forwards_closed": true,
+  "forward_count": 4,
+  "saved_stopped": true,
+  "saved_hashes_unchanged": true,
+  "saved_sha256": {
+    "playground.qcow2": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+    "kernel.img": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8"
+  },
+  "owned_root_removed": false,
+  "cleanup_remaining": "lead removes owned fixture root after all public exports are verified",
+  "owned_overlay_and_vm_files_removed": true
+}

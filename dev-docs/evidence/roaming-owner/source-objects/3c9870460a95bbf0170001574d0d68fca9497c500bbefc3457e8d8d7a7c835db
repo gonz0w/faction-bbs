@@ -1,0 +1,4 @@
+from lab import *
+remote('cat > /home/factionbuild/proof228/runtime_finish_guest.py',(P/'runtime_finish_guest.py').read_bytes())
+remote('nohup python3.13 /home/factionbuild/proof228/runtime_finish_guest.py > /home/factionbuild/proof228/finish-launch.private.log 2>&1 < /dev/null &')
+print('Classic controller continuation launched; actual prior12 controls preserved.')

@@ -1,0 +1,44 @@
+{
+  "result": "retained",
+  "candidates": [
+    {
+      "name": "initial-sandbox-process-probe",
+      "phase": "fixture preparation",
+      "observed": "ps denied by sandbox before overlay creation",
+      "product_failure": false
+    },
+    {
+      "name": "initial-public-cache-network-probe",
+      "phase": "public cache preparation",
+      "observed": "sandbox DNS denied public crate download; successful authorized retry preserved",
+      "product_failure": false
+    },
+    {
+      "name": "candidate01-classic-controller",
+      "phase": "native runtime",
+      "observed": "first12 controls passed and classic prompt reached; extra welcome-page Enter at classic choice caused controller drain timeout",
+      "product_failure": false,
+      "continuation": "separate corrected controller passed13th classic control; original failure retained"
+    },
+    {
+      "name": "candidate01-output-bound-review",
+      "phase": "independent review",
+      "observed": "lead/CLI agent report maximal quote/backslash valid metadata exceeds unchanged32768-byte state cap; candidate01 native controls did not exercise that case",
+      "product_failure": true,
+      "actual_red_owner": "CLI agent separate RED evidence"
+    },
+    {
+      "name": "final03-legacy-theme-owner",
+      "phase": "native legacy PTY setup",
+      "observed": "root-owned copied theme rejected by current-owner theme policy; unchanged smoke failed LOCAL / MAIN assertion; exact failed log and38-object owner/mode/hash map retained before ownership correction",
+      "product_failure": false,
+      "continuation": "same maintained smoke assertions pass after only ownedguest copied theme metadata changed to factiond"
+    },
+    {
+      "name": "final03-public-assembly01",
+      "phase": "public evidence assembly",
+      "observed": "collector requested nonexistent separate cli-all log; final all-CLI test actually lives in build-1.private.log; partial public payload and failed collector source/output retained before filename correction",
+      "product_failure": false
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+from pathlib import Path
+import json,subprocess,time,pwd
+assert Path('/etc/faction-disposable-test').is_file()
+P=Path('/home/factionbuild/proof228');R=Path('/home/factionbuild/source228');B=Path('/usr/local/libexec/faction228');checks=[]
+commands=[('classic-console-pty',['su','-m','factiond','-c',f'cd {R} && python3.13 tools/smoke_local_console.py {B}/faction']),('export-restore-pty',['su','-m','factiond','-c',f'cd {R} && python3.13 tools/smoke_export_restore.py {B}/faction']),('complete-bundle-recovery',['python3.13','tools/smoke_backup_recovery.py',str(B/'faction'),str(B/'faction-sysop'),'--owner-uid',str(pwd.getpwnam('factiond').pw_uid),'--files-uid',str(pwd.getpwnam('factionfiles').pw_uid),'--disposable-fixture','--output',str(P/'native-backup-recovery.json')])]
+# Source is private to build owner. Its executable smoke input copy is installed public, below.
+public=Path('/usr/local/share/faction228-source');assert public.is_dir()
+commands[0][1][-1]=commands[0][1][-1].replace(str(R),str(public));commands[1][1][-1]=commands[1][1][-1].replace(str(R),str(public))
+for name,cmd in commands:
+ start=time.monotonic()
+ with (P/(name+'.private.log')).open('wb') as log:r=subprocess.run(cmd,cwd=public,stdout=log,stderr=log)
+ checks.append({'name':name,'command':cmd,'returncode':r.returncode,'result':'pass' if r.returncode==0 else 'fail','seconds':round(time.monotonic()-start,3)})
+ (P/'native-legacy.json').write_text(json.dumps({'result':'pass' if all(x['returncode']==0 for x in checks) else 'fail','checks':checks,'runtime_memory_mib':1024},indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print(json.dumps({'result':'pass','commands':len(checks)}))

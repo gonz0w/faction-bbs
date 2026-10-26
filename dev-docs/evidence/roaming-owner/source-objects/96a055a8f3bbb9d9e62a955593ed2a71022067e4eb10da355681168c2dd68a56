@@ -1,0 +1,7 @@
+{
+  "main_header_schema": 19,
+  "effective_schema": 20,
+  "state_exit": 0,
+  "state_stderr": "",
+  "state_stdout": "Experimental roaming owner state\nboard_identity=66be10d8e437a83fe0f1e0575bcf83693cb779a11c3a6414dfac13395f24a1dd\n"
+}

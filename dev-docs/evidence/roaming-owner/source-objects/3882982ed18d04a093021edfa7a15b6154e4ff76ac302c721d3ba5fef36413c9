@@ -1,0 +1,9 @@
+{
+  "script": "launch_cli_all.py",
+  "sha256": "d5fd3d12deb39eba3bcd222d8efed46ab472e338ae962347a5560f262df1dfc5",
+  "returncode": 0,
+  "seconds": 0.235,
+  "argv": [
+    "launch_cli_all.py"
+  ]
+}

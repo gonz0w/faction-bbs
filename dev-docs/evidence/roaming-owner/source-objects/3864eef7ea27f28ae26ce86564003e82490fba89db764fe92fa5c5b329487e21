@@ -1,0 +1,48 @@
+from lab import *
+import hashlib,shlex
+out=P/'public-final03';out.mkdir(exist_ok=True)
+for n in ['native-build.json','native-cli-all.json','native-runtime.json','native-binaries.json','native-legacy.json','native-backup-recovery.json']:
+ r=remote('cat /home/factionbuild/proof228-final03/'+n);value=json.loads(r.stdout);assert value['result']=='pass';(out/n).write_bytes(r.stdout)
+for n in ['native-source-match-final03.json','native-environment-final03.json','native-runtime-environment-final03.json','native-failures.json']:
+ (out/n).write_bytes((P/n).read_bytes())
+for n in ['build-0.private.log','build-1.private.log','build-2.private.log','classic-console-pty.private.log','export-restore-pty.private.log','complete-bundle-recovery.private.log']:
+ (out/n.replace('.private','')).write_bytes(remote('cat /home/factionbuild/proof228-final03/'+n).stdout)
+(P/'final-guest-proof.private.tar').write_bytes(remote('tar -cf - -C /home/factionbuild/proof228-final03 .').stdout)
+script='''from pathlib import Path
+import json,shlex,hashlib
+checks=[]
+for p in sorted(Path('/home/factionbuild/proof228-final03').glob('command-*.private.json')):
+ x=json.loads(p.read_text());args=shlex.split(x['command'][-1]) if x['command'][:1]==['su'] else x['command']
+ if args[0].endswith('/faction') and 'roaming' in args:
+  checks.append({'command':args,'returncode':x['returncode'],'stdout_bytes':len(x['stdout'].encode()),'stdout_sha256':hashlib.sha256(x['stdout'].encode()).hexdigest()})
+print(json.dumps({'result':'recorded','checks':checks},indent=2))
+'''
+(out/'native-owner-cli-commands.json').write_bytes(remote('python3.13 -c '+shlex.quote(script)).stdout)
+for n in ['native-legacy-failed01.json','legacy-theme-owner-before.json']:
+ (out/n).write_bytes(remote('cat /home/factionbuild/proof228-final03/'+n).stdout)
+(out/'classic-console-failed01.log').write_bytes((P/'classic-console-failed01.private.log').read_bytes())
+import tarfile
+for candidate in ['candidate01','candidate02']:
+ c=P/candidate
+ for n in ['native-build.json','native-cli-all.json','native-runtime.json','native-runtime-continuation.json','native-binaries.json']:
+  if (c/n).exists():(out/(candidate+'-'+n)).write_bytes((c/n).read_bytes())
+ with tarfile.open(c/'guest-proof.private.tar') as archive:
+  byname={m.name.lstrip('./'):m for m in archive.getmembers()}
+  for m in archive.getmembers():
+   if m.name.split('/')[-1].startswith('runtime-failure-') and m.name.endswith('.private.log'):(out/(candidate+'-classic-controller-failed01.log')).write_bytes(archive.extractfile(m).read())
+  for n in ['build-0.private.log','build-1.private.log','build-2.private.log','cli-all.private.log','native-runtime-candidate01.private.json']:
+   if n in byname:(out/(candidate+'-'+n.replace('.private',''))).write_bytes(archive.extractfile(byname[n]).read())
+# Verify publication against the actual generated fixture passwords without printing them.
+secrets=set()
+for private_archive in [P/'final-guest-proof.private.tar',P/'candidate01/guest-proof.private.tar']:
+ with tarfile.open(private_archive) as archive:
+  for m in archive.getmembers():
+   if m.name.split('/')[-1].startswith('command-') and m.name.endswith('.private.json'):
+    x=json.load(archive.extractfile(m));args=shlex.split(x['command'][-1]) if x['command'][:1]==['su'] else x['command']
+    if args[0].endswith('/roaming_owner_fixture') and args[2] in ['bootstrap','memberadd']:secrets.add(args[-1].encode())
+for path in out.iterdir():
+ if path.is_file():
+  data=path.read_bytes();assert not any(secret in data for secret in secrets),path.name
+  assert b'BEGIN OPENSSH PRIVATE KEY' not in data and b'BEGIN PRIVATE KEY' not in data,path.name
+(out/'publication-check.json').write_text(json.dumps({'result':'pass','actual_fixture_credential_values_checked':len(secrets),'private_key_data_excluded':True,'raw_private_command_logs_excluded':True},indent=2)+'\n')
+manifest={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in out.iterdir() if p.is_file()};(P/'public-final03-SHA256.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n');print(json.dumps({'result':'pass','public_files':len(manifest),'private_raw_guest_preserved':True}))

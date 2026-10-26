@@ -311,6 +311,36 @@ fn post_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<Post> {
 }
 
 impl Board {
+    /// Open current initialized state without performing initialization or migration.
+    /// Filesystem-owner management adapters use this; ordinary setup/upgrade uses `open`.
+    pub fn open_existing(directory: &Path) -> Result<Self> {
+        private(directory, true)?;
+        let path = directory.join("faction.sqlite3");
+        private(&path, false)?;
+        for suffix in ["-wal", "-shm", "-journal"] {
+            let side = directory.join(format!("faction.sqlite3{suffix}"));
+            match fs::symlink_metadata(&side) {
+                Ok(_) => private(&side, false)?,
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => (),
+                Err(e) => return Err(e.into()),
+            }
+        }
+        let db = Connection::open_with_flags(
+            &path,
+            rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY | rusqlite::OpenFlags::SQLITE_OPEN_NO_MUTEX,
+        )?;
+        db.busy_timeout(Duration::from_millis(100))?;
+        // SQLite resolves committed WAL state. Raw main-file headers can still
+        // report the previous schema while another connection keeps the WAL open.
+        let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
+        let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if app != APP_ID || version != 20 {
+            return Err(Error::UnsupportedSchema);
+        }
+        drop(db);
+        Self::open(directory)
+    }
+
     /// Parent directories must already exist and be trusted by the local operator.
     pub fn open(directory: &Path) -> Result<Self> {
         match fs::DirBuilder::new().mode(0o700).create(directory) {

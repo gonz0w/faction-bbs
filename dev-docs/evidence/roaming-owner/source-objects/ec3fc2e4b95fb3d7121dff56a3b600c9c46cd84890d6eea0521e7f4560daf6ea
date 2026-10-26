@@ -1,0 +1,12 @@
+{
+  "log": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/dd7569c72877ace14d5756ff9f8869afb2c6443029f5cbb0e9885e6c31369a82",
+    "sha256": "dd7569c72877ace14d5756ff9f8869afb2c6443029f5cbb0e9885e6c31369a82"
+  },
+  "observation": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/ed55548d8c727113c0e9cdca969e92a2ce13851baaf7b2c84028fa362d209960",
+    "sha256": "ed55548d8c727113c0e9cdca969e92a2ce13851baaf7b2c84028fa362d209960"
+  },
+  "passed": 18,
+  "result": "pass"
+}

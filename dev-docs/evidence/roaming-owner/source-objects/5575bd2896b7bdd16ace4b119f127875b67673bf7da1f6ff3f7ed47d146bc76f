@@ -1,0 +1,12 @@
+{
+  "main_header_schema": 19,
+  "effective_schema": 20,
+  "state_exit": 1,
+  "state_stderr": "Faction: roaming requires initialized schema 20; take a stopped backup before upgrade\n",
+  "state_stdout": ""
+}
+Traceback (most recent call last):
+  File "/private/tmp/faction228-cli-OWNED/wal_repro.py", line 21, in <module>
+    assert result.returncode==0,'existing current WAL state must remain inspectable'
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: existing current WAL state must remain inspectable
