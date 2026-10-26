@@ -93,3 +93,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0055: Native XMPP transport](0055-native-xmpp-transport.md) — pinned reuse comparison and actual NetBSD software qualification.
 
 - [0056: Roaming identity handoff](0056-roaming-identity-handoff.md) — proposed SSH-certificate/transport-UID proof, private OAuth/OIDC comparison and explicit local approval/adoption gates; no roaming runtime adoption.
+
+- [0057 — Maintained NetBSD signer qualification](0057-netbsd-signer-qualification.md): one uninstalled portable source build, preserved rejected baseline, update path and operational limits.

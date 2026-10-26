@@ -1,0 +1,56 @@
+from pathlib import Path
+import hashlib,importlib.util,json,os,shutil,socket,subprocess,time
+R=Path('/Users/cam/DEV/faction-bbs');L=Path('/private/tmp/faction226-lead-OWNED');N=Path('/private/tmp/faction226-native-OWNED');Q=Path('/private/tmp/faction226-probe-OWNED');U=Path('/private/tmp/faction-226-signer-primary');E=R/'dev-docs/evidence/signer-qualification';O=E/'source-objects'
+P=L/'publication';assert hashlib.sha256((P/'reviewed-draft.json').read_bytes()).hexdigest()=='55274804ac4ded507664365168c138d42e214c83ceb434da2f1d053bd38e4a00';r=json.loads((P/'reviewed-draft.json').read_text());audit=json.loads((P/'audit.json').read_text());assert audit['result']=='pass' and not audit['findings']
+for ref in r['sources']:assert hashlib.sha256((R/ref['path']).read_bytes()).hexdigest()==ref['sha256']
+roots=[N,Q,U,L]
+for p in roots:assert p.resolve()==p and p.stat().st_uid==os.geteuid() and not p.is_symlink() and (p.name.endswith('-OWNED') or (p/'OWNERSHIP').is_file())
+# No product work remains dependent on this owned guest. Stop only its processes.
+spec=importlib.util.spec_from_file_location('owned_signer_lab',N/'lab.py');lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
+assert lab.remote('test ! -S /var/run/faction/terminal.sock; ! pgrep -u 1000 >/dev/null',check=False).returncode==0
+qpid=int((N/'vm/qemu.pid').read_text());cpid=int((N/'vm/controller.pid').read_text());command=subprocess.check_output(['ps','-p',str(qpid),'-o','command='],text=True);assert str(N/'vm/disk.qcow2') in command
+lab.remote('/sbin/shutdown -p now',timeout=15,check=False)
+for _ in range(40):
+ if subprocess.run(['kill','-0',str(qpid)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:break
+ time.sleep(.5)
+else:raise RuntimeError('owned signer VM did not shut down')
+assert subprocess.run(['kill','-0',str(cpid)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode!=0
+ports=json.loads((N/'vm/ports.json').read_text())
+for port in ports.values():
+ s=socket.socket();s.settimeout(.2);assert s.connect_ex(('127.0.0.1',port))!=0;s.close()
+processes=subprocess.check_output(['ps','-axo','pid=,command='],text=True);owned_agents=[]
+for line in processes.splitlines():
+ parts=line.split(None,2)
+ if len(parts)<2:continue
+ if Path(parts[1]).name.startswith('qemu-system-'):assert str(N) not in line and str(R/'local/demo/saved') not in line
+ if Path(parts[1]).name=='gpg-agent' and str(U/'gnupg') in line:owned_agents.append(int(parts[0]))
+if owned_agents:
+ subprocess.run(['gpgconf','--homedir',str(U/'gnupg'),'--kill','gpg-agent'],check=True)
+ for pid in owned_agents:
+  for _ in range(10):
+   if subprocess.run(['kill','-0',str(pid)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:break
+   time.sleep(.2)
+  else:raise RuntimeError('owned temporary key-agent remains')
+base=R/'local/demo';before=json.loads((N/'saved-before.private.json').read_text())
+for name,value in before['metadata_sha256'].items():assert hashlib.sha256((base/name).read_bytes()).hexdigest()==value
+for name,value in before['saved_sha256'].items():
+ h=hashlib.sha256()
+ with (base/'saved/20261022T005925Z'/name).open('rb') as f:
+  while b:=f.read(1048576):h.update(b)
+ assert h.hexdigest()==value
+for name,value in r['prior_records'].items():assert hashlib.sha256((R/name).read_bytes()).hexdigest()==value
+def store(raw):
+ d=hashlib.sha256(raw).hexdigest();p=O/d
+ if p.exists():assert p.read_bytes()==raw
+ else:
+  with p.open('xb') as f:f.write(raw)
+ return dict(path=str(p.relative_to(R)),sha256=d)
+source=store(Path(__file__).read_bytes());r['sources'].append(source);r['source_stages'].append(dict(label='owned-teardown',files=[dict(name='finalize-owned.py',**source)]))
+for p in roots:shutil.rmtree(p)
+assert all(not p.exists() for p in roots)
+cleanup=dict(result='pass',owned_removed=True,saved_stopped=True,saved_hashes_unchanged=True,forwards_closed=True,vm_stopped=True,controller_stopped=True,saved_metadata_unchanged=True,temporary_key_agents_stopped=True,temporary_roots_removed=4)
+ref=store((json.dumps(cleanup,indent=2,sort_keys=True)+'\n').encode());r['records']['cleanup']=ref;r['sources'].append(ref)
+r['publication_audit']=dict(result='pass',reviewed_draft_sha256='55274804ac4ded507664365168c138d42e214c83ceb434da2f1d053bd38e4a00',reviewed_objects=99,reviewed_new_objects=93,privacy_findings=0,metadata_excluded=True,subsequent_additions='This explicit owned teardown source and counts-only cleanup observation.')
+raw=(json.dumps(r,indent=2,sort_keys=True)+'\n').encode();(E/'results.json').write_bytes(raw);digest=hashlib.sha256(raw).hexdigest();p=R/'tools/check_signer_qualification_evidence.py';s=p.read_text();assert s.count("RESULT_SHA256 = 'PENDING'")==1;p.write_text(s.replace("RESULT_SHA256 = 'PENDING'","RESULT_SHA256 = '"+digest+"'"))
+print(json.dumps(dict(result='pass',record_sha256=digest,source_objects=len(r['sources']),temporary_roots_removed=4)))
+Path(__file__).unlink()

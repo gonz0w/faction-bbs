@@ -1,0 +1,12 @@
+from pathlib import Path
+import hashlib,json,os,resource,subprocess,time
+P=Path('/home/factionbuild/signer226');os.chdir(P);resource.setrlimit(resource.RLIMIT_CORE,(0,0));os.umask(0o077)
+commands=[['./configure','--without-pam','--without-security-key-builtin','--disable-pkcs11','CFLAGS=-O2'],['make','-j1','ssh-keygen']];results=[]
+for n,cmd in enumerate(commands):
+ start=time.monotonic()
+ with (P/f'build-{n}.private.log').open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log)
+ results.append(dict(command=cmd,returncode=r.returncode,elapsed_ms=round((time.monotonic()-start)*1000)))
+ if r.returncode:break
+result=dict(result='pass' if len(results)==2 and all(x['returncode']==0 for x in results) else 'fail',steps=results)
+(P/'build-result.json').write_text(json.dumps(result,indent=2)+'
+')

@@ -1,0 +1,78 @@
+{
+  "result": "pass",
+  "candidate": {
+    "config.h": {
+      "sha256": "344f66688d479800bc8ae41f9b82ab9fce1ccac131009edd2d9e3e579a62ef7b",
+      "bytes": 59614
+    },
+    "config.log": {
+      "sha256": "d5acc554da490f30ed985c09012a46413fd5dede26f7aa24d78dc87dbd0c8625",
+      "bytes": 1354808
+    },
+    "config.status": {
+      "sha256": "1c59b5544a702222c254cc1c0dfda6a5bc9437c3ba76a5c5e98b700887eee20b",
+      "bytes": 180275
+    },
+    "Makefile": {
+      "sha256": "0aad2b43b4df3f4394664d242c4620270b1dd05b041b118589d68d3167b764cf",
+      "bytes": 171004
+    },
+    "ssh-keygen.c": {
+      "sha256": "757e5d0b5a6affddefb37dd14b820bd436d733b87b9736a98431b1e8d2b1d535",
+      "bytes": 110593
+    },
+    "version.h": {
+      "sha256": "82a3527e9deadd01c0dddaaed8e6ef46e365b4a6d8cac4f10e6776c15d056cd4",
+      "bytes": 172
+    },
+    "ssh-keygen": {
+      "sha256": "e9100697a7c62e84d5bfd42b6fbf79ba92dccad63059d57adea8306d08ba02e5",
+      "bytes": 601096
+    },
+    "libssh.a": {
+      "sha256": "055f44758b750146e2f81fa3696b21b125fbdcd4c1150b71640cde58bac61416",
+      "bytes": 1334704
+    },
+    "openbsd-compat/libopenbsd-compat.a": {
+      "sha256": "52d907bf225966feb515defd89991ee32b932463f010511729cb93e11ed1671e",
+      "bytes": 149828
+    }
+  },
+  "linked_output": "/home/factionbuild/signer226/ssh-keygen:\n\t-lutil.7 => /usr/lib/libutil.so.7\n\t-lc.12 => /usr/lib/libc.so.12\n\t-lcrypto.16 => /usr/lib/libcrypto.so.16\n\t-lcrypt.1 => /lib/libcrypt.so.1\n\t-lz.1 => /usr/lib/libz.so.1\n\t-lgcc_s.1 => /usr/lib/libgcc_s.so.1\n",
+  "linked_library_identities": {
+    "/usr/lib/libutil.so.7": {
+      "sha256": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f",
+      "bytes": 165496
+    },
+    "/usr/lib/libc.so.12": {
+      "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+      "bytes": 2644584
+    },
+    "/usr/lib/libcrypto.so.16": {
+      "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+      "bytes": 6244640
+    },
+    "/lib/libcrypt.so.1": {
+      "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+      "bytes": 80048
+    },
+    "/usr/lib/libz.so.1": {
+      "sha256": "59c62530e9ab7c6f729212c7ff796627acf210443b1a798857f9b6c3d4f733f6",
+      "bytes": 143728
+    },
+    "/usr/lib/libgcc_s.so.1": {
+      "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+      "bytes": 149040
+    }
+  },
+  "make_assignments": [
+    "CC=cc",
+    "CFLAGS=-O2 -pipe -Wno-error=discarded-qualifiers -Wno-error=format-truncation -Wall -Wextra -Wpointer-arith -Wuninitialized -Wsign-compare -Wformat-security -Wsizeof-pointer-memaccess -Wno-pointer-sign -Wno-unused-parameter -Wno-unused-result -Wimplicit-fallthrough -Wmisleading-indentation -fno-strict-aliasing -ftrapv -fzero-call-used-regs=used -ftrivial-auto-var-init=zero -fno-builtin-memset -fstack-protector-strong  ",
+    "CPPFLAGS=-I. -I$(srcdir) -I$(COMPATINCLUDES)  -D_OPENBSD_SOURCE -DOPENSSL_API_COMPAT=0x10100000L $(PATHS) -DHAVE_CONFIG_H",
+    "LIBS=-lutil ",
+    "CHANNELLIBS=-lcrypto  -lz",
+    "LDFLAGS=-L. -Lopenbsd-compat/  -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -fstack-protector-strong ",
+    "SSHKEYGEN_OBJS=\tssh-keygen.o sshsig.o ssh-pkcs11.o $(SKOBJS)",
+    "LIBCOMPAT=openbsd-compat/libopenbsd-compat.a"
+  ]
+}

@@ -1,0 +1,126 @@
+sysconfdir=${prefix}/etc
+piddir=/var/run
+srcdir=.
+top_srcdir=..
+
+BUILDDIR=/home/factionbuild/signer226
+
+CC=cc
+LD=cc
+CFLAGS=-O2 -pipe -Wno-error=discarded-qualifiers -Wno-error=format-truncation -Wall -Wextra -Wpointer-arith -Wuninitialized -Wsign-compare -Wformat-security -Wsizeof-pointer-memaccess -Wno-pointer-sign -Wno-unused-parameter -Wno-unused-result -Wimplicit-fallthrough -Wmisleading-indentation -fno-strict-aliasing -ftrapv -fzero-call-used-regs=used -ftrivial-auto-var-init=zero -fno-builtin-memset -fstack-protector-strong  
+CFLAGS_NOPIE=-O2 -pipe -Wno-error=discarded-qualifiers -Wno-error=format-truncation -Wall -Wextra -Wpointer-arith -Wuninitialized -Wsign-compare -Wformat-security -Wsizeof-pointer-memaccess -Wno-pointer-sign -Wno-unused-parameter -Wno-unused-result -Wimplicit-fallthrough -Wmisleading-indentation -fno-strict-aliasing -ftrapv -fzero-call-used-regs=used -ftrivial-auto-var-init=zero -fno-builtin-memset -fstack-protector-strong  
+COMPATINCLUDES="$(BUILDDIR)/openbsd-compat/include"
+CPPFLAGS=-I. -I.. -I$(srcdir) -I$(srcdir)/.. -I$(COMPATINCLUDES)  -D_OPENBSD_SOURCE -DOPENSSL_API_COMPAT=0x10100000L -DHAVE_CONFIG_H
+PICFLAG=-fPIC
+LIBS=-lutil 
+AR=ar
+RANLIB=ranlib
+INSTALL=/usr/bin/install -c
+LDFLAGS=-L.  -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -fstack-protector-strong 
+LDFLAGS_NOPIE=-L. -Lopenbsd-compat/  -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -fstack-protector-strong 
+
+OPENBSD=arc4random.o \
+	arc4random_uniform.o \
+	base64.o \
+	basename.o \
+	bcrypt_pbkdf.o \
+	bindresvport.o \
+	blowfish.o \
+	daemon.o \
+	dirname.o \
+	explicit_bzero.o \
+	fmt_scaled.o \
+	freezero.o \
+	fnmatch.o \
+	getcwd.o \
+	getgrouplist.o \
+	getopt_long.o \
+	getrrsetbyname.o \
+	glob.o \
+	inet_aton.o \
+	inet_ntoa.o \
+	inet_ntop.o \
+	md5.o \
+	memmem.o \
+	mktemp.o \
+	pwcache.o \
+	readpassphrase.o \
+	reallocarray.o \
+	recallocarray.o \
+	rresvport.o \
+	setenv.o \
+	setproctitle.o \
+	sha1.o \
+	sha2.o \
+	sigact.o \
+	strcasestr.o \
+	strlcat.o \
+	strlcpy.o \
+	strmode.o \
+	strndup.o \
+	strnlen.o \
+	strptime.o \
+	strsep.o \
+	strtoll.o \
+	strtonum.o \
+	strtoull.o \
+	strtoul.o \
+	timingsafe_bcmp.o \
+	vis.o
+
+COMPAT= bsd-asprintf.o \
+	bsd-closefrom.o \
+	bsd-cygwin_util.o \
+	bsd-err.o \
+	bsd-flock.o \
+	bsd-getentropy.o \
+	bsd-getline.o \
+	bsd-getpagesize.o \
+	bsd-getpeereid.o \
+	bsd-malloc.o \
+	bsd-misc.o \
+	bsd-nextstep.o \
+	bsd-openpty.o \
+	bsd-poll.o \
+	bsd-pselect.o \
+	bsd-setres_id.o \
+	bsd-signal.o \
+	bsd-snprintf.o \
+	bsd-statvfs.o \
+	bsd-timegm.o \
+	bsd-waitpid.o \
+	fake-rfc2553.o \
+	getrrsetbyname-ldns.o \
+	kludge-fd_set.o \
+	openssl-compat.o \
+	libressl-api-compat.o \
+	xcrypt.o
+
+PORTS=	port-aix.o \
+	port-irix.o \
+	port-linux.o \
+	port-linux-selinux.o \
+	port-prngd.o \
+	port-solaris.o \
+	port-net.o \
+	port-uw.o
+
+.c.o:
+	$(CC) $(CFLAGS_NOPIE) $(PICFLAG) $(CPPFLAGS) -c $<
+
+all: libopenbsd-compat.a
+
+$(COMPAT): ../config.h
+$(OPENBSD): ../config.h
+$(PORTS): ../config.h
+
+libopenbsd-compat.a:  $(COMPAT) $(OPENBSD) $(PORTS)
+	$(AR) rv $@ $(COMPAT) $(OPENBSD) $(PORTS)
+	$(RANLIB) $@
+
+clean:
+	rm -f *.o *.a core
+
+distclean: clean
+	rm -f Makefile *~
+	rm -rf include

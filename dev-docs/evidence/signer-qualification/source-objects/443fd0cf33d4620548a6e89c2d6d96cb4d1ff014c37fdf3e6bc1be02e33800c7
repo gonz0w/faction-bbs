@@ -1,0 +1,331 @@
+{
+  "checked": "2026-10-26",
+  "pkgsrc_pin": "ae5a7a8218f9f9ed307c05200d830ebe0a939acb",
+  "archive_checks": {
+    "absolute_paths": [],
+    "parent_traversal": [],
+    "links": [],
+    "special_files": [],
+    "js_ts_paths": [],
+    "members": 932
+  },
+  "sources": {
+    "openssh-10.6p1.tar.gz": {
+      "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz",
+      "path": "/tmp/faction-226-signer-primary/openssh-10.6p1.tar.gz",
+      "bytes": 2355244,
+      "sha256": "a9dc9565dffe8640f64d863cd29a32bc4a3dbdec0566a7fc44c5d6ee767d5f39"
+    },
+    "openssh-10.6p1.tar.gz.asc": {
+      "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz.asc",
+      "path": "/tmp/faction-226-signer-primary/openssh-10.6p1.tar.gz.asc",
+      "bytes": 833,
+      "sha256": "1f8fd46ddb5ec95f5bc9e0d7b0fc34ccea3ef8f94a8e3a5d3911434cce7027cf"
+    },
+    "RELEASE_KEY.asc": {
+      "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc",
+      "path": "/tmp/faction-226-signer-primary/RELEASE_KEY.asc",
+      "bytes": 22720,
+      "sha256": "c4a6f4692c9b8e75ec096add049fe0314b3ceff9410321f1e85907cf7a864269"
+    },
+    "release-10.6.txt": {
+      "url": "https://www.openssh.org/txt/release-10.6",
+      "path": "/tmp/faction-226-signer-primary/release-10.6.txt",
+      "bytes": 16004,
+      "sha256": "292e2b2f0d314d9ff575417a5453f0823e6bc2adf018a5f8d50ec11f5665f388"
+    },
+    "portable-INSTALL": {
+      "archive_member": "openssh-10.6p1/INSTALL",
+      "path": "/tmp/faction-226-signer-primary/portable-INSTALL",
+      "bytes": 10157,
+      "sha256": "cc2f99e7ddf2e2caaad53c3322c64d5c55c8b6fca89dcc56da4cda37018f34fa"
+    },
+    "portable-LICENCE": {
+      "archive_member": "openssh-10.6p1/LICENCE",
+      "path": "/tmp/faction-226-signer-primary/portable-LICENCE",
+      "bytes": 21140,
+      "sha256": "5bb5b160726ef5756e4f32fe95b35249c294962419650f48d05134b486d27ccb"
+    },
+    "portable-configure": {
+      "archive_member": "openssh-10.6p1/configure",
+      "path": "/tmp/faction-226-signer-primary/portable-configure",
+      "bytes": 743136,
+      "sha256": "3e764c6bddd331f33f6a71de70cc6b473403691aae3a5285a99578df2c1cf0b5"
+    },
+    "portable-Makefile.in": {
+      "archive_member": "openssh-10.6p1/Makefile.in",
+      "path": "/tmp/faction-226-signer-primary/portable-Makefile.in",
+      "bytes": 34712,
+      "sha256": "48aca700f84de35ce4a478bd95688d219a23eaa8cc4287f648b21ff35a38d26f"
+    },
+    "portable-ssh-keygen.c": {
+      "archive_member": "openssh-10.6p1/ssh-keygen.c",
+      "path": "/tmp/faction-226-signer-primary/portable-ssh-keygen.c",
+      "bytes": 110593,
+      "sha256": "757e5d0b5a6affddefb37dd14b820bd436d733b87b9736a98431b1e8d2b1d535"
+    },
+    "portable-version.h": {
+      "archive_member": "openssh-10.6p1/version.h",
+      "path": "/tmp/faction-226-signer-primary/portable-version.h",
+      "bytes": 172,
+      "sha256": "82a3527e9deadd01c0dddaaed8e6ef46e365b4a6d8cac4f10e6776c15d056cd4"
+    },
+    "base-trunk-commit.json": {
+      "url": "https://api.github.com/repos/NetBSD/src/commits?path=crypto/external/bsd/openssh/dist/ssh-keygen.c&sha=trunk&per_page=1",
+      "path": "/tmp/faction-226-signer-primary/base-trunk-commit.json",
+      "bytes": 3182,
+      "sha256": "9a943e83c74e13066ee23ad228588235278a0a130cbafa0cdfa342c126e51824"
+    },
+    "base-netbsd-11-commit.json": {
+      "url": "https://api.github.com/repos/NetBSD/src/commits?path=crypto/external/bsd/openssh/dist/ssh-keygen.c&sha=netbsd-11&per_page=1",
+      "path": "/tmp/faction-226-signer-primary/base-netbsd-11-commit.json",
+      "bytes": 12482,
+      "sha256": "5ff40992a900e1a501126e32afc672ef9302d20e9dc21ddb4e4537c6a18e34a0"
+    },
+    "pkgsrc-2026Q3-commit.json": {
+      "url": "https://api.github.com/repos/NetBSD/pkgsrc/commits?path=security/openssh&sha=pkgsrc-2026Q3&per_page=1",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-2026Q3-commit.json",
+      "bytes": 17801,
+      "sha256": "62504db24d989e5ce79b7dc6e47aec774853f491c1997d3f45f4c9c038962709"
+    },
+    "pkgsrc-patches.json": {
+      "url": "https://api.github.com/repos/NetBSD/pkgsrc/contents/security/openssh/patches?ref=ae5a7a8218f9f9ed307c05200d830ebe0a939acb",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-patches.json",
+      "bytes": 5397,
+      "sha256": "333036b8a8fbeacb206a3aaaabb1c6fc0b05f96e131ea84302f30da10c3ed0e7"
+    },
+    "patch-Makefile.in": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/patches/patch-Makefile.in",
+      "path": "/tmp/faction-226-signer-primary/patch-Makefile.in",
+      "bytes": 980,
+      "sha256": "fafe0b12ec21eb0ce730eef360174ac0b145d6822f38e83e9ff1f333b5e0a4a0"
+    },
+    "patch-atomicio.c": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/patches/patch-atomicio.c",
+      "path": "/tmp/faction-226-signer-primary/patch-atomicio.c",
+      "bytes": 416,
+      "sha256": "c010f5acd4ae74d250ec5c2b53a9caab38830fc94e7162ce414d69ae2d9e8037"
+    },
+    "patch-configure.ac": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/patches/patch-configure.ac",
+      "path": "/tmp/faction-226-signer-primary/patch-configure.ac",
+      "bytes": 1549,
+      "sha256": "57bce12276fdfa79c658db1ad19ad4860e300dc2cc2caca3fe015503443da225"
+    },
+    "patch-defines.h": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/patches/patch-defines.h",
+      "path": "/tmp/faction-226-signer-primary/patch-defines.h",
+      "bytes": 718,
+      "sha256": "96697586c3b2a198e1d8cf4524362affa252f9ff5080e6f798fd41014e565485"
+    },
+    "patch-sshkey.h": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/patches/patch-sshkey.h",
+      "path": "/tmp/faction-226-signer-primary/patch-sshkey.h",
+      "bytes": 663,
+      "sha256": "3bfb285de4e8e0ceee90f5707b1f349dd8c1cc2b947e9ec350005a7c093504ae"
+    },
+    "pkgsrc-Makefile": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/Makefile",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-Makefile",
+      "bytes": 4253,
+      "sha256": "7587adef9b940bf61422f8d985b382e61632bfaefa9fcdcc8d941506b7f4c9b9"
+    },
+    "pkgsrc-options.mk": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/options.mk",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-options.mk",
+      "bytes": 1714,
+      "sha256": "68c532f0b3f78e1d0ecde410faec475dd9cf5bc245aaee58e4e08ebee2e24c3b"
+    },
+    "pkgsrc-distinfo": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/ae5a7a8218f9f9ed307c05200d830ebe0a939acb/security/openssh/distinfo",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-distinfo",
+      "bytes": 697,
+      "sha256": "c880391349e11574b133df5cf5b40ed4ce671b4373e020c7092bf6ba86ac58ae"
+    },
+    "pkgsrc-2026Q3-Makefile": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/pkgsrc-2026Q3/security/openssh/Makefile",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-2026Q3-Makefile",
+      "bytes": 4273,
+      "sha256": "fd58ceb0e064d84e25213c98f84dcc155c307f316c45d6c7da40ae53c3940637"
+    },
+    "pkgsrc-stable-Makefile": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/Makefile",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-stable-Makefile",
+      "bytes": 4273,
+      "sha256": "fd58ceb0e064d84e25213c98f84dcc155c307f316c45d6c7da40ae53c3940637"
+    },
+    "pkgsrc-stable-options.mk": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/options.mk",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-stable-options.mk",
+      "bytes": 1715,
+      "sha256": "8149d9fc51cb7dc6aabe021751913999a80dd5c58e5ea176dcf3e3d3ebf64cba"
+    },
+    "pkgsrc-stable-distinfo": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/distinfo",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-stable-distinfo",
+      "bytes": 703,
+      "sha256": "e335dd7dff613dff06c323530e07b4c9605a0726cf093ef1cec90fdcff511e44"
+    },
+    "base-netbsd-11-version.h": {
+      "url": "https://raw.githubusercontent.com/NetBSD/src/5c6b80a579fcae9cf883a80f606d8a8df6e0f54f/crypto/external/bsd/openssh/dist/version.h",
+      "path": "/tmp/faction-226-signer-primary/base-netbsd-11-version.h",
+      "bytes": 563,
+      "sha256": "45ef2e99ad8a5837e420a110f4fea87225f2bfc1bf0c952589128dd7b683ca71"
+    },
+    "base-netbsd-11-ssh-keygen.c": {
+      "url": "https://raw.githubusercontent.com/NetBSD/src/5c6b80a579fcae9cf883a80f606d8a8df6e0f54f/crypto/external/bsd/openssh/dist/ssh-keygen.c",
+      "path": "/tmp/faction-226-signer-primary/base-netbsd-11-ssh-keygen.c",
+      "bytes": 108085,
+      "sha256": "7ddabf4429737aa3866af1c867739761724a0810af614a1824b818c330bf25be"
+    },
+    "base-netbsd-11-LICENCE": {
+      "url": "https://raw.githubusercontent.com/NetBSD/src/5c6b80a579fcae9cf883a80f606d8a8df6e0f54f/crypto/external/bsd/openssh/dist/LICENCE",
+      "path": "/tmp/faction-226-signer-primary/base-netbsd-11-LICENCE",
+      "bytes": 9282,
+      "sha256": "a117b38feb44f74dd10e3152112d375cd4c044bf23a18da9bc53880a46e97dca"
+    },
+    "base-trunk-version.h": {
+      "url": "https://raw.githubusercontent.com/NetBSD/src/f73dc21d75578cecd73546d9cfb13dc51bd9f07c/crypto/external/bsd/openssh/dist/version.h",
+      "path": "/tmp/faction-226-signer-primary/base-trunk-version.h",
+      "bytes": 561,
+      "sha256": "66e6bb6fb73953dff8b9443baa4a1a9f04756e35192b1e4e930c7bc80fcf94d5"
+    },
+    "base-trunk-ssh-keygen.c": {
+      "url": "https://raw.githubusercontent.com/NetBSD/src/f73dc21d75578cecd73546d9cfb13dc51bd9f07c/crypto/external/bsd/openssh/dist/ssh-keygen.c",
+      "path": "/tmp/faction-226-signer-primary/base-trunk-ssh-keygen.c",
+      "bytes": 110743,
+      "sha256": "3f8505784a34895b61446ee1f2a790db8fdec7a2fdf75c0e52e48cfca7103366"
+    },
+    "base-trunk-LICENCE": {
+      "url": "https://raw.githubusercontent.com/NetBSD/src/f73dc21d75578cecd73546d9cfb13dc51bd9f07c/crypto/external/bsd/openssh/dist/LICENCE",
+      "path": "/tmp/faction-226-signer-primary/base-trunk-LICENCE",
+      "bytes": 9282,
+      "sha256": "a117b38feb44f74dd10e3152112d375cd4c044bf23a18da9bc53880a46e97dca"
+    },
+    "pkgsrc-home.html": {
+      "url": "https://www.pkgsrc.org/",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-home.html",
+      "bytes": 17050,
+      "sha256": "82c21fbdb44b1e5b5355c7dcd807de64d7c1cbd6ae046d4e6b409df973d968aa"
+    },
+    "pkgsrc-guide.html": {
+      "url": "https://www.netbsd.org/docs/pkgsrc/",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-guide.html",
+      "bytes": 43200,
+      "sha256": "200e7c55e87740dd13b5fe09a3d2076fe437474ec3c67d06dfe50f02b14b946a"
+    },
+    "netbsd-formal.html": {
+      "url": "https://www.netbsd.org/releases/formal.html",
+      "path": "/tmp/faction-226-signer-primary/netbsd-formal.html",
+      "bytes": 22236,
+      "sha256": "be1f3c1d6bccedf8f5acff967380005f3cec0a20ce562ce42eaa22181d54594a"
+    },
+    "pkgsrc-quarterly.html": {
+      "url": "https://www.pkgsrc.org/quarterly/",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-quarterly.html",
+      "bytes": 18270,
+      "sha256": "59a749b4acbedfa0d762055f9c1525611100e25d49afc7b2c7c7e42e8e90223f"
+    },
+    "pkgsrc-2026Q3-news.html": {
+      "url": "https://www.pkgsrc.org/news/2026Q3/",
+      "path": "/tmp/faction-226-signer-primary/pkgsrc-2026Q3-news.html",
+      "bytes": 2172,
+      "sha256": "1763e4ef0d94561fa5873a5cb361df95e145f2f140c9f9343fb6076839870699"
+    },
+    "openssh-index.html": {
+      "url": "https://www.openssh.org/",
+      "path": "/tmp/faction-226-signer-primary/openssh-index.html",
+      "bytes": 3058,
+      "sha256": "baf50e649c3cc33b8e95bf51235a033d0aff3531b12b38c5b9a8a1bd386e8cae"
+    },
+    "openssh-portable.html": {
+      "url": "https://www.openssh.org/portable.html",
+      "path": "/tmp/faction-226-signer-primary/openssh-portable.html",
+      "bytes": 26151,
+      "sha256": "5618b1179a113132e1a65ddfefb9750854a498b4f6458aacc4fc6666b627746b"
+    },
+    "stable-patch-Makefile.in": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches/patch-Makefile.in",
+      "path": "/tmp/faction-226-signer-primary/stable-patch-Makefile.in",
+      "bytes": 980,
+      "sha256": "fafe0b12ec21eb0ce730eef360174ac0b145d6822f38e83e9ff1f333b5e0a4a0"
+    },
+    "stable-patch-atomicio.c": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches/patch-atomicio.c",
+      "path": "/tmp/faction-226-signer-primary/stable-patch-atomicio.c",
+      "bytes": 422,
+      "sha256": "87853a3de31c72d8536ff4317224769cb4525363866cfdfc1ba94ce8c1890ae8"
+    },
+    "stable-patch-configure.ac": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches/patch-configure.ac",
+      "path": "/tmp/faction-226-signer-primary/stable-patch-configure.ac",
+      "bytes": 1556,
+      "sha256": "9408e770081cfbca96f83d26124f3e522d9a7313f711e96696f18cb4356a5696"
+    },
+    "stable-patch-defines.h": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches/patch-defines.h",
+      "path": "/tmp/faction-226-signer-primary/stable-patch-defines.h",
+      "bytes": 718,
+      "sha256": "96697586c3b2a198e1d8cf4524362affa252f9ff5080e6f798fd41014e565485"
+    },
+    "stable-patch-sshkey.h": {
+      "url": "https://raw.githubusercontent.com/NetBSD/pkgsrc/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches/patch-sshkey.h",
+      "path": "/tmp/faction-226-signer-primary/stable-patch-sshkey.h",
+      "bytes": 663,
+      "sha256": "3bfb285de4e8e0ceee90f5707b1f349dd8c1cc2b947e9ec350005a7c093504ae"
+    },
+    "portable-tag.json": {
+      "url": "https://api.github.com/repos/openssh/openssh-portable/git/ref/tags/V_10_6_P1",
+      "path": "/tmp/faction-226-signer-primary/portable-tag.json",
+      "bytes": 361,
+      "sha256": "cea4224e79ced5fb31ab077f6b7802bab8c051bfa592dfe588b3605df02886d9"
+    },
+    "portable-tag-object.json": {
+      "url": "https://api.github.com/repos/openssh/openssh-portable/git/tags/4cdb6b619315d919e03a6b20a54230340a86b106",
+      "path": "/tmp/faction-226-signer-primary/portable-tag-object.json",
+      "bytes": 1752,
+      "sha256": "5abbe3644192e8e38376af05649da1605934c15d1d595c82a5d086ade9ca341f"
+    }
+  },
+  "release_signature": {
+    "import": {
+      "argv": [
+        "/opt/homebrew/bin/gpg",
+        "--homedir",
+        "/tmp/faction-226-signer-primary/gnupg",
+        "--batch",
+        "--no-auto-check-trustdb",
+        "--import-options",
+        "import-minimal",
+        "--import",
+        "/tmp/faction-226-signer-primary/RELEASE_KEY.asc"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "gpg: keybox '/tmp/faction-226-signer-primary/gnupg/pubring.kbx' created\ngpg: /tmp/faction-226-signer-primary/gnupg/trustdb.gpg: trustdb created\ngpg: key CE8ECB0386FF9C48: public key \"Damien Miller (Personal Key) <djm@mindrot.org>\" imported\ngpg: can't connect to the gpg-agent: IPC connect call failed\ngpg: key A2B989F511B5748F: public key \"Damien Miller <dmiller@vitnet.com.sg>\" imported\ngpg: can't connect to the gpg-agent: IPC connect call failed\ngpg: key A819A2D8691EF8DA: public key \"Damien Miller (Personal Key) <djm@mindrot.org>\" imported\ngpg: can't connect to the gpg-agent: IPC connect call failed\ngpg: Note: third-party key signatures using the SHA1 algorithm are rejected\ngpg: (use option \"--allow-weak-key-signatures\" to override)\ngpg: key D3E5F56B6D920D30: public key \"Damien Miller <djm@mindrot.org>\" imported\ngpg: can't connect to the gpg-agent: IPC connect call failed\ngpg: key 2A3F414E736060BA: public key \"Damien Miller <djm@mindrot.org>\" imported\ngpg: can't connect to the gpg-agent: IPC connect call failed\ngpg: Total number processed: 5\ngpg:               imported: 5\n"
+    },
+    "verification": {
+      "argv": [
+        "/opt/homebrew/bin/gpgv",
+        "--homedir",
+        "/tmp/faction-226-signer-primary/gnupg",
+        "--keyring",
+        "/tmp/faction-226-signer-primary/gnupg/pubring.kbx",
+        "--status-fd",
+        "1",
+        "/tmp/faction-226-signer-primary/openssh-10.6p1.tar.gz.asc",
+        "/tmp/faction-226-signer-primary/openssh-10.6p1.tar.gz"
+      ],
+      "exit": 0,
+      "stdout": "[GNUPG:] NEWSIG\n[GNUPG:] KEY_CONSIDERED 7168B983815A5EEF59A4ADFD2A3F414E736060BA 0\n[GNUPG:] SIG_ID AQvMNm1hv6PA533sCWiHv4/2hnA 2026-10-06 1791280023\n[GNUPG:] GOODSIG 2A3F414E736060BA Damien Miller <djm@mindrot.org>\n[GNUPG:] VALIDSIG 7168B983815A5EEF59A4ADFD2A3F414E736060BA 2026-10-06 1791280023 0 4 0 1 10 00 7168B983815A5EEF59A4ADFD2A3F414E736060BA\n",
+      "stderr": "gpgv: Signature made Tue Oct  6 03:47:03 2026 MDT\ngpgv:                using RSA key 7168B983815A5EEF59A4ADFD2A3F414E736060BA\ngpgv: Good signature from \"Damien Miller <djm@mindrot.org>\"\n"
+    },
+    "trust_limit": "Cryptographic signature checked against the release key fetched over official HTTPS, without independently established key trust."
+  },
+  "pkgsrc_stable_pin": "a41868e500da86345080d97ed45dac65b2b241a6",
+  "portable_tag_commit": "a8c72b842423f0774f542d3c2197247c3dd28d74",
+  "pkgsrc_archive_digest_matches": {
+    "BLAKE2s": true,
+    "SHA512": true
+  }
+}

@@ -144,3 +144,7 @@ dev-docs/evidence/directory-submissions/*.json linguist-generated=true
 # Issue223 immutable execution inputs retain protocol and compiler bytes.
 dev-docs/evidence/roaming-uid/** -text
 dev-docs/evidence/roaming-uid/source-objects/** linguist-generated=true whitespace=-blank-at-eof
+
+# Exact issue226 compiler/probe inputs retain their original bytes.
+dev-docs/evidence/signer-qualification/** -text
+dev-docs/evidence/signer-qualification/source-objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab

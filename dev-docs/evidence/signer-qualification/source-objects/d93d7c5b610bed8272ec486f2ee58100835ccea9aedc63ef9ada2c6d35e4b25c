@@ -1,0 +1,182 @@
+{
+  "result": "rejected",
+  "overall_qualification": false,
+  "controls": [
+    {
+      "case": 1,
+      "artifact_produced": true,
+      "accepted": false,
+      "independently_parsed": false,
+      "signature_verified": false,
+      "reuse_verified": false,
+      "wrong_ca_denied": false,
+      "wrong_principal_denied": false,
+      "wrong_private_key_denied": false,
+      "tamper_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 53
+        }
+      }
+    },
+    {
+      "case": 2,
+      "artifact_produced": true,
+      "accepted": false,
+      "independently_parsed": false,
+      "signature_verified": false,
+      "reuse_verified": false,
+      "wrong_ca_denied": false,
+      "wrong_principal_denied": false,
+      "wrong_private_key_denied": false,
+      "tamper_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 20
+        }
+      }
+    },
+    {
+      "case": 3,
+      "artifact_produced": true,
+      "accepted": false,
+      "independently_parsed": false,
+      "signature_verified": false,
+      "reuse_verified": false,
+      "wrong_ca_denied": false,
+      "wrong_principal_denied": false,
+      "wrong_private_key_denied": false,
+      "tamper_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 23
+        }
+      }
+    },
+    {
+      "case": 4,
+      "artifact_produced": true,
+      "accepted": false,
+      "independently_parsed": false,
+      "signature_verified": false,
+      "reuse_verified": false,
+      "wrong_ca_denied": false,
+      "wrong_principal_denied": false,
+      "wrong_private_key_denied": false,
+      "tamper_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 47
+        }
+      }
+    },
+    {
+      "case": 5,
+      "artifact_produced": true,
+      "accepted": false,
+      "independently_parsed": false,
+      "signature_verified": false,
+      "reuse_verified": false,
+      "wrong_ca_denied": false,
+      "wrong_principal_denied": false,
+      "wrong_private_key_denied": false,
+      "tamper_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 23
+        }
+      }
+    }
+  ],
+  "valid_issuance_count": 0,
+  "fixture_setup_complete": true,
+  "failure_layer": "qualification",
+  "expired_denied": false,
+  "future_denied": false,
+  "missing_ca_denied": true,
+  "core_dumps_disabled": true,
+  "candidate_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648",
+  "verifier_sha256": "b1c2957c9645e7a81522492e82daad827d5d697339ae3991f2902e5edbb85648",
+  "probe_sha256": "b420838208604fcffb6f18128a36b40f0a3ee6997ce70e76c453ce22ff67f39b",
+  "candidate_bytes": 160280,
+  "verifier_bytes": 160280,
+  "rounds": 5,
+  "validity_seconds": 300,
+  "command_timeout_seconds": 10,
+  "command_output_limit_bytes": 65536,
+  "setup_operations": [
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 27,
+      "artifacts_produced": true
+    },
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 24,
+      "artifacts_produced": true
+    },
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 23,
+      "artifacts_produced": true
+    },
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 16,
+      "artifacts_produced": true
+    }
+  ],
+  "temporal_controls": [
+    {
+      "case": "expired",
+      "independently_parsed": false,
+      "in_window_verified": false,
+      "validity_direction_confirmed": false,
+      "current_time_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 58
+        }
+      }
+    },
+    {
+      "case": "future",
+      "independently_parsed": false,
+      "in_window_verified": false,
+      "validity_direction_confirmed": false,
+      "current_time_denied": false,
+      "operations": {
+        "issue": {
+          "status": "signal",
+          "exit": -11,
+          "elapsed_ms": 53
+        }
+      }
+    }
+  ],
+  "missing_ca_operation": {
+    "status": "normal_error",
+    "exit": 255,
+    "elapsed_ms": 2
+  },
+  "keys_removed": true,
+  "elapsed_ms": 377,
+  "child_user_ms": 137,
+  "child_system_ms": 21
+}

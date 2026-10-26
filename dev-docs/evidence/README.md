@@ -394,3 +394,5 @@ The local unread evidence [publication layout](local-unread-mail/publication-lay
 retains every original output byte while providing newline-compliant JSON mirrors.
 
 [Experimental roaming UID handoff](roaming-uid/README.md) records two-home/two-board restricted SSH and native sessions, scoped revocation, recovery and exact host/NetBSD inputs. It adds no production SSO, signer or capacity support.
+
+[Manual NetBSD signer qualification](signer-qualification/README.md) records one maintained portable source build, five native issuances, the preserved rejected base signer, exact negative controls, ordinary-access preservation and owned cleanup. No issuer installation or production adoption is implied.

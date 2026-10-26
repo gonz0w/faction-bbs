@@ -112,3 +112,5 @@ online issuance/enrollment and operator acceptance of this per-UID model remain
 [separate adoption work](https://github.com/gonz0w/faction-bbs/issues/91).
 
 [Host and NetBSD software evidence](../dev-docs/evidence/roaming-uid/README.md) records the qualified bounded handoff, retained failures, costs and adoption limits.
+
+A separate [manual signer qualification](../dev-docs/research/0057-netbsd-signer-qualification.md) now identifies an uninstalled portable OpenSSH10.6p1 build that passes the native profile. The installed failing signer remains rejected; this does not install a home issuer or enable roaming.

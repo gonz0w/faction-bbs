@@ -1,0 +1,20 @@
+E
+======================================================================
+ERROR: test_signer_qualification_evidence (unittest.loader._FailedTest.test_signer_qualification_evidence)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_signer_qualification_evidence
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 433, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py", line 374, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_signer_qualification_evidence.py", line 8, in <module>
+    import check_signer_qualification_evidence as evidence
+ModuleNotFoundError: No module named 'check_signer_qualification_evidence'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

@@ -1,0 +1,20 @@
+from lab import *
+import hashlib,json,shlex
+archive=Path('/tmp/faction-226-signer-primary/openssh-10.6p1.tar.gz');raw=archive.read_bytes();expected='a9dc9565dffe8640f64d863cd29a32bc4a3dbdec0566a7fc44c5d6ee767d5f39';assert hashlib.sha256(raw).hexdigest()==expected
+remote('test ! -e /home/factionbuild/signer226; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/signer226; su -m factionbuild -c "tar -xzf - --strip-components 1 -C /home/factionbuild/signer226"',raw,timeout=60)
+script="""from pathlib import Path
+import hashlib,json,os,resource,subprocess,time
+P=Path('/home/factionbuild/signer226');os.chdir(P);resource.setrlimit(resource.RLIMIT_CORE,(0,0));os.umask(0o077)
+commands=[['./configure','--without-pam','--without-security-key-builtin','--disable-pkcs11','CFLAGS=-O2'],['make','-j1','ssh-keygen']];results=[]
+for n,cmd in enumerate(commands):
+ start=time.monotonic()
+ with (P/f'build-{n}.private.log').open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log)
+ results.append(dict(command=cmd,returncode=r.returncode,elapsed_ms=round((time.monotonic()-start)*1000)))
+ if r.returncode:break
+result=dict(result='pass' if len(results)==2 and all(x['returncode']==0 for x in results) else 'fail',steps=results)
+(P/'build-result.json').write_text(json.dumps(result,indent=2)+'\n')
+"""
+remote('cat > /home/factionbuild/build-signer226.py; chown factionbuild:factionbuild /home/factionbuild/build-signer226.py; chmod 700 /home/factionbuild/build-signer226.py',script.encode())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/build-signer226.py > /home/factionbuild/build-signer226.private.log 2>&1 < /dev/null &' ")
+(P/'executed-build-source.py').write_text(script);(P/'source-archive-identity.json').write_text(json.dumps(dict(source_url='https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz',sha256=expected,bytes=len(raw)))+'\n')
+print('Pinned uninstalled portable signer build launched as factionbuild; no install step.')

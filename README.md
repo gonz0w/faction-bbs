@@ -123,7 +123,10 @@ Online issuance/enrollment and production roaming remain incomplete.
 The existing [two-home proof](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 is separate from the adopted [bounded native adapter](dev-docs/native-home-mail.md). The installed native signer remains
 rejected; the [validated signing correction](dev-docs/research/0052-netbsd-signing-exit.md)
-is uninstalled and adoption remains separate work.
+is uninstalled and adoption remains separate work. A maintained
+[portable signer build](dev-docs/research/0057-netbsd-signer-qualification.md) now
+passes the bounded NetBSD manual-signing profile; it remains uninstalled, with
+online issuance and operator adoption separate.
 
 Ordinary operation must stay independent of federation, Lua, emulators, optional
 HTTP and external providers. Mesh/private-network integrations and a browser portal

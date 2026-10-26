@@ -1,0 +1,22 @@
+E....
+======================================================================
+ERROR: test_committed_record_and_all_bound_inputs (test_signer_qualification_evidence.CommittedSignerEvidenceTests.test_committed_record_and_all_bound_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_signer_qualification_evidence.py", line 212, in test_committed_record_and_all_bound_inputs
+    evidence.check()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_signer_qualification_evidence.py", line 197, in check
+    data = (ROOT/RESULT_PATH).read_bytes()
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/signer-qualification/results.json'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.057s
+
+FAILED (errors=1)

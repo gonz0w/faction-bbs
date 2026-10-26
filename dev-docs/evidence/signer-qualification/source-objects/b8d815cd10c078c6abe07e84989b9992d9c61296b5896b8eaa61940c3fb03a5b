@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "base_binary_hashes_unchanged": true,
+  "baseline_signer_hash_matches_preserved_rejected": true,
+  "admin_ssh_before_after": true,
+  "admin_ssh_tty_after": true,
+  "sshd_config_valid": true,
+  "baseline_cli_before_after": true,
+  "scope": "Preserved saved-image baseline binaries, not a rebuild or new current-member-SSH trial",
+  "secret_echoed": false,
+  "keys_or_state_retained": false
+}
