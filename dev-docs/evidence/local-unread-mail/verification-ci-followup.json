@@ -1,4 +1,17 @@
 {
+  "archive_note_correction": {
+    "actual_error": "executed source bytes changed: dev-docs/evidence/local-unread-mail/README.md",
+    "note": "verification-followup.md",
+    "owned_archive_fixture_removed": true,
+    "rejected_readme": {
+      "path": "dev-docs/evidence/local-unread-mail/source-objects/609acdea684b1432538148b659ec7b74ef0f7897dbab05310c2742635ff2fc57",
+      "sha256": "609acdea684b1432538148b659ec7b74ef0f7897dbab05310c2742635ff2fc57"
+    },
+    "rejected_revision": "d760543",
+    "resolution": "Restore exact prior bound README; keep new verifier note in a separate document. No resolver/manifest/result hash was refreshed.",
+    "restored_readme_sha256": "7bf668a8661be80c5e162d21208833e2627724d98aa01b657621cb16eb32e495",
+    "result": "source-archive-rejected-changed-bound-evidence-README"
+  },
   "cache_fix": {
     "artifacts": {
       "baseline-archive-guard.log": {
