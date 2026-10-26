@@ -56,9 +56,9 @@ def run(a):
         code='import sqlite3; d=sqlite3.connect('+repr(db)+'); d.execute("DELETE FROM post_metadata WHERE post_id=?",('+str(parent)+',)); d.execute("DELETE FROM posts WHERE id=?",('+str(parent)+',)); d.commit()';remote('python3.13 -c '+shlex.quote(code))
         mark=len(first.transcript);first.raw(b'p');first.expect('Room ID: ');first.send('1');first.expect(SAVED);first.send('r');first.expect('reply');action_end(first,shared=True);assert b'Stale reply draft body.' not in first.transcript[mark:]
         first.raw(b'p');first.expect('Room ID: ');first.send('1');first.expect(SAVED);first.send('d');first.expect('Reply to post ID');first.close();children.remove(first);checks.append('stale_reply_resume_refused_without_redirect_or_disclosure_and_delete_available')
-        assert query('pragma user_version')==[[18]] and query('select count(*) from unread')==[[0]] and query('select count(*) from room_drafts')==[[0]]
+        assert query('pragma user_version')==[[19]] and query('select count(*) from unread')==[[0]] and query('select count(*) from room_drafts')==[[0]]
         assert all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=18,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared full-screen/saved-draft controls passed:',len(checks))
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=19,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared full-screen/saved-draft controls passed:',len(checks))
     finally:
         for c in children:c.close()
         remote('/etc/rc.d/faction_broker onestop || true');remote('cat > /etc/faction/service.toml',original.encode())

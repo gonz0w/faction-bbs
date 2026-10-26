@@ -1,0 +1,706 @@
+use faction_core::{
+    Board, DirectoryDraft, DirectoryKey, Session, Status, request_id, restore_local, verify_export,
+};
+use std::{fs, os::unix::fs::DirBuilderExt, path::PathBuf};
+const PASS: &str = "synthetic-directory-password";
+struct Fixture(PathBuf);
+impl Fixture {
+    fn new() -> Self {
+        let p = std::env::temp_dir().join(format!("faction-directory-{}", request_id().unwrap()));
+        fs::DirBuilder::new().mode(0o700).create(&p).unwrap();
+        fs::write(p.join("OWNERSHIP"), "disposable directory tests").unwrap();
+        Self(p)
+    }
+    fn board(&self) -> (Board, Session) {
+        let mut b = Board::open(&self.0.join("board")).unwrap();
+        b.configure_directory_owner(Some(vec![])).unwrap();
+        b.bootstrap("sysop", PASS).unwrap();
+        let s = b.authenticate("sysop", PASS).unwrap();
+        (b, s)
+    }
+    fn db(&self) -> rusqlite::Connection {
+        rusqlite::Connection::open(self.0.join("board/faction.sqlite3")).unwrap()
+    }
+    fn member(&self, b: &mut Board, s: &Session, name: &str) -> Session {
+        b.register(name, PASS).unwrap();
+        b.set_status(s, name, Status::Approved).unwrap();
+        b.authenticate(name, PASS).unwrap()
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        fs::remove_dir_all(&self.0).unwrap();
+        assert!(!self.0.exists());
+    }
+}
+fn draft(n: usize) -> DirectoryDraft {
+    DirectoryDraft {
+        slug: format!("board-{n}"),
+        name: "Friendly board".into(),
+        summary: "Local operator supplied details".into(),
+        host: format!("board{n}.example"),
+        port: 22,
+        login: "bbs".into(),
+        fingerprint: None,
+    }
+}
+fn save(b: &mut Board, s: &Session, n: usize) -> i64 {
+    b.directory_save(s, &request_id().unwrap(), &draft(n))
+        .unwrap()
+}
+fn submit(b: &mut Board, s: &Session, id: i64) -> String {
+    let r = b.directory_submission(s, id).unwrap().revision;
+    b.directory_submit(s, id, &r).unwrap();
+    b.directory_submission(s, id).unwrap().revision
+}
+fn approve(b: &mut Board, s: &Session, id: i64, r: &str) {
+    b.directory_review(s, id, r, "approve", Some("2026-01-01"), Some("2026-12-31"))
+        .unwrap();
+}
+#[test]
+fn submit_never_publishes_and_exact_approval_publishes_once() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    let id = save(&mut b, &a, 1);
+    let d = b.directory_submission(&a, id).unwrap();
+    assert_eq!(d.state, "draft");
+    assert!(d.mine);
+    assert_eq!(d.author, "alice");
+    assert!(b.directory_published(&s).unwrap().is_empty());
+    let r = submit(&mut b, &a, id);
+    assert_ne!(r, d.revision);
+    assert!(b.directory_published(&s).unwrap().is_empty());
+    assert!(
+        b.directory_review(
+            &a,
+            id,
+            &r,
+            "approve",
+            Some("2026-01-01"),
+            Some("2026-12-31")
+        )
+        .is_err()
+    );
+    assert!(
+        b.directory_review(
+            &s,
+            id,
+            &d.revision,
+            "approve",
+            Some("2026-01-01"),
+            Some("2026-12-31")
+        )
+        .is_err()
+    );
+    approve(&mut b, &s, id, &r);
+    assert_eq!(b.directory_published(&s).unwrap().len(), 1);
+    assert!(
+        b.directory_review(
+            &s,
+            id,
+            &r,
+            "approve",
+            Some("2026-01-01"),
+            Some("2026-12-31")
+        )
+        .is_err()
+    );
+    assert_eq!(b.directory_published(&s).unwrap().len(), 1);
+    let p = b.directory_submission(&a, id).unwrap();
+    b.directory_withdraw(&a, id, &p.revision).unwrap();
+    assert!(b.directory_published(&s).unwrap().is_empty());
+    assert!(b.directory_submission(&s, id).is_err());
+}
+#[test]
+fn disabled_pending_revoked_cross_board_and_current_sysop_authority() {
+    let f = Fixture::new();
+    let mut disabled = Board::open(&f.0.join("disabled")).unwrap();
+    disabled.bootstrap("sysop", PASS).unwrap();
+    let ds = disabled.authenticate("sysop", PASS).unwrap();
+    assert!(
+        disabled
+            .directory_save(&ds, &request_id().unwrap(), &draft(1))
+            .is_err()
+    );
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    b.register("pending", PASS).unwrap();
+    let p = b.authenticate("pending", PASS).unwrap();
+    let id = save(&mut b, &a, 1);
+    let r = submit(&mut b, &a, id);
+    for denied in [&p, &ds] {
+        assert!(b.directory_submission(denied, id).is_err());
+        assert!(b.directory_published(denied).is_err());
+        assert!(
+            b.directory_save(denied, &request_id().unwrap(), &draft(2))
+                .is_err()
+        );
+    }
+    b.set_status(&s, "alice", Status::Revoked).unwrap();
+    assert!(b.directory_withdraw(&a, id, &r).is_err());
+    assert!(
+        b.directory_review(
+            &s,
+            id,
+            &r,
+            "approve",
+            Some("2026-01-01"),
+            Some("2026-12-31")
+        )
+        .is_err()
+    );
+    b.set_status(&s, "alice", Status::Approved).unwrap();
+    approve(&mut b, &s, id, &r);
+    b.set_status(&s, "alice", Status::Revoked).unwrap();
+    assert!(b.directory_published(&s).unwrap().is_empty());
+    let rev = b.directory_submission(&s, id).unwrap().revision;
+    f.db()
+        .execute("UPDATE members SET role='member' WHERE handle='sysop'", [])
+        .unwrap();
+    assert!(
+        b.directory_review(&s, id, &rev, "remove", None, None)
+            .is_err()
+    );
+}
+#[test]
+fn nonce_private_idempotent_content_checked_and_pending_immutable() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    let other = f.member(&mut b, &s, "bob");
+    let nonce = request_id().unwrap();
+    let id = b.directory_save(&a, &nonce, &draft(1)).unwrap();
+    assert_eq!(b.directory_save(&a, &nonce, &draft(1)).unwrap(), id);
+    assert!(b.directory_save(&a, &nonce, &draft(2)).is_err());
+    assert!(b.directory_submission(&other, id).is_err());
+    submit(&mut b, &a, id);
+    assert!(b.directory_save(&a, &nonce, &draft(2)).is_err());
+    assert_eq!(b.directory_submission(&a, id).unwrap().draft, draft(1));
+    assert_ne!(b.directory_save(&other, &nonce, &draft(1)).unwrap(), id);
+}
+#[test]
+fn canonical_conflicts_reserved_on_submit_only_login_case_sensitive() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    let one = save(&mut b, &a, 1);
+    let two = save(&mut b, &a, 1);
+    let r = submit(&mut b, &a, one);
+    let rev = b.directory_submission(&a, two).unwrap().revision;
+    assert!(b.directory_submit(&a, two, &rev).is_err());
+    let mut d = draft(2);
+    d.host = "BOARD1.EXAMPLE".into();
+    assert_eq!(d.canonicalized().unwrap().host, "board1.example");
+    let three = b.directory_save(&a, &request_id().unwrap(), &d).unwrap();
+    let rev = b.directory_submission(&a, three).unwrap().revision;
+    assert!(b.directory_submit(&a, three, &rev).is_err());
+    d.login = "BBS".into();
+    let four = b.directory_save(&a, &request_id().unwrap(), &d).unwrap();
+    submit(&mut b, &a, four);
+    b.directory_review(&s, one, &r, "reject", None, None)
+        .unwrap();
+    assert!(b.directory_submission(&s, one).is_err());
+    let mut reopened = Board::open(&f.0.join("board")).unwrap();
+    reopened
+        .configure_directory_owner(Some(vec![DirectoryKey {
+            slug: d.slug,
+            host: d.host,
+            port: d.port,
+            login: d.login,
+        }]))
+        .unwrap();
+    assert!(reopened.configure_directory_owner(Some(vec![])).is_err());
+}
+#[test]
+fn controls_invalid_endpoints_dates_and_actions_rejected_and_expiry_rotates() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    for value in ["\u{1b}[31m", "bad\nline", "snowman ☃", ""] {
+        let mut d = draft(1);
+        d.summary = value.into();
+        assert!(b.directory_save(&s, &request_id().unwrap(), &d).is_err());
+    }
+    for host in [
+        "-bad.example",
+        "bad..example",
+        "x;touch",
+        "[::1]",
+        "a/../../x",
+    ] {
+        let mut d = draft(1);
+        d.host = host.into();
+        assert!(d.validate().is_err());
+    }
+    let mut d = draft(1);
+    d.port = 0;
+    assert!(d.validate().is_err());
+    d = draft(1);
+    d.login = "-option".into();
+    assert!(d.validate().is_err());
+    d = draft(1);
+    d.fingerprint = Some("SHA256:bad".into());
+    assert!(d.validate().is_err());
+    let id = save(&mut b, &s, 1);
+    let r = submit(&mut b, &s, id);
+    for (start, end) in [
+        ("2026-02-30", "2026-12-31"),
+        ("0000-01-01", "2026-12-31"),
+        ("2026-12-31", "2026-01-01"),
+    ] {
+        assert!(
+            b.directory_review(&s, id, &r, "approve", Some(start), Some(end))
+                .is_err()
+        );
+    }
+    assert!(b.directory_review(&s, id, &r, "bogus", None, None).is_err());
+    approve(&mut b, &s, id, &r);
+    let p = b.directory_submission(&s, id).unwrap();
+    b.directory_review(&s, id, &p.revision, "expire", None, None)
+        .unwrap();
+    let old = b.directory_submission(&s, id).unwrap();
+    assert_eq!(old.state, "expired");
+    assert_ne!(old.revision, p.revision);
+    assert_eq!(b.directory_published(&s).unwrap().len(), 1);
+    b.directory_review(&s, id, &old.revision, "remove", None, None)
+        .unwrap();
+    assert!(b.directory_published(&s).unwrap().is_empty());
+}
+#[test]
+fn unpublished_count_limits_and_four_record_pages() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    for n in 0..4 {
+        save(&mut b, &s, n);
+    }
+    assert!(
+        b.directory_save(&s, &request_id().unwrap(), &draft(5))
+            .is_err()
+    );
+    for user in 0..7 {
+        let a = f.member(&mut b, &s, &format!("member{user}"));
+        for n in 0..4 {
+            let id = save(&mut b, &a, 10 + user * 4 + n);
+            submit(&mut b, &a, id);
+        }
+    }
+    assert!(
+        b.directory_save(&s, &request_id().unwrap(), &draft(99))
+            .is_err()
+    );
+    assert_eq!(b.directory_submissions(&s, 0).unwrap().len(), 4);
+    let page = b.directory_submissions(&s, 4).unwrap();
+    assert_eq!(page.len(), 4);
+    assert!(page.iter().all(|r| r.id > 4));
+}
+#[test]
+fn restart_migration18_snapshot_roundtrip_fresh_identity_and_corruption() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let id = save(&mut b, &s, 1);
+    let r = submit(&mut b, &s, id);
+    approve(&mut b, &s, id, &r);
+    let export = f.0.join("export.sqlite3");
+    b.export_local(&export).unwrap();
+    verify_export(&export).unwrap();
+    let restored = f.0.join("restored");
+    restore_local(&export, &restored).unwrap();
+    let mut rb = Board::open(&restored).unwrap();
+    rb.configure_directory_owner(Some(vec![])).unwrap();
+    assert!(rb.directory_published(&s).is_err());
+    let rs = rb.authenticate("sysop", PASS).unwrap();
+    assert_eq!(rb.directory_published(&rs).unwrap()[0].draft, draft(1));
+    let mut restarted = Board::open(&f.0.join("board")).unwrap();
+    restarted.configure_directory_owner(Some(vec![])).unwrap();
+    assert_eq!(restarted.directory_published(&s).unwrap().len(), 1);
+    let mut conflicting = Board::open(&f.0.join("board")).unwrap();
+    assert!(
+        conflicting
+            .configure_directory_owner(Some(vec![DirectoryKey {
+                slug: "board-1".into(),
+                host: "different.example".into(),
+                port: 22,
+                login: "bbs".into()
+            }]))
+            .is_err()
+    );
+    let db = rusqlite::Connection::open(&export).unwrap();
+    db.execute("UPDATE directory_submissions SET host='UPPER.EXAMPLE'", [])
+        .unwrap();
+    assert!(verify_export(&export).is_err());
+    drop(db);
+    drop(b);
+    drop(restarted);
+    drop(conflicting);
+    f.db()
+        .execute_batch("DROP TABLE directory_submissions;PRAGMA user_version=18")
+        .unwrap();
+    let migrated = Board::open(&f.0.join("board")).unwrap();
+    drop(migrated);
+    assert_eq!(
+        f.db()
+            .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        19
+    );
+}
+#[test]
+fn private_drafts_are_author_only() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    let id = save(&mut b, &a, 1);
+    assert!(b.directory_submission(&s, id).is_err());
+    assert!(b.directory_submissions(&s, 0).unwrap().is_empty());
+    submit(&mut b, &a, id);
+    assert_eq!(b.directory_submissions(&s, 0).unwrap()[0].id, id);
+}
+#[test]
+fn configuration_seals_before_authentication() {
+    let f = Fixture::new();
+    let (_b, _s) = f.board();
+    let mut reopened = Board::open(&f.0.join("board")).unwrap();
+    reopened.authenticate("sysop", PASS).unwrap();
+    assert!(reopened.configure_directory_owner(Some(vec![])).is_err());
+    let mut enabled = Board::open(&f.0.join("board")).unwrap();
+    enabled.configure_directory_owner(None).unwrap();
+    assert!(enabled.configure_directory_owner(Some(vec![])).is_err());
+}
+#[test]
+fn published_capacity_includes_hidden_expired_and_curator_rows() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    for n in 0..32 {
+        let id = save(&mut b, &a, n);
+        let r = submit(&mut b, &a, id);
+        approve(&mut b, &s, id, &r);
+    }
+    let rows = b.directory_published(&s).unwrap();
+    assert_eq!(rows.len(), 32);
+    let p = &rows[0];
+    b.directory_review(&s, p.id, &p.revision, "expire", None, None)
+        .unwrap();
+    assert_eq!(b.directory_published(&s).unwrap().len(), 32);
+    b.set_status(&s, "alice", Status::Revoked).unwrap();
+    assert!(b.directory_published(&s).unwrap().is_empty());
+    let id = save(&mut b, &s, 100);
+    let r = submit(&mut b, &s, id);
+    assert!(
+        b.directory_review(
+            &s,
+            id,
+            &r,
+            "approve",
+            Some("2026-01-01"),
+            Some("2026-12-31")
+        )
+        .is_err()
+    );
+    let mut over = Board::open(&f.0.join("board")).unwrap();
+    assert!(
+        over.configure_directory_owner(Some(vec![DirectoryKey {
+            slug: "curator".into(),
+            host: "curator.example".into(),
+            port: 22,
+            login: "bbs".into()
+        }]))
+        .is_err()
+    );
+    let mut dup = Board::open(&f.0.join("board")).unwrap();
+    let k = DirectoryKey {
+        slug: "same".into(),
+        host: "same.example".into(),
+        port: 22,
+        login: "bbs".into(),
+    };
+    assert!(
+        dup.configure_directory_owner(Some(vec![k.clone(), k]))
+            .is_err()
+    );
+}
+#[test]
+fn simultaneous_submission_reserves_one_endpoint_and_stale_other_writer_fails() {
+    use std::sync::{Arc, Barrier};
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let a = f.member(&mut b, &s, "alice");
+    let one = save(&mut b, &a, 1);
+    let two = save(&mut b, &a, 1);
+    let ids = [one, two];
+    let revisions = ids.map(|id| b.directory_submission(&a, id).unwrap().revision);
+    let barrier = Arc::new(Barrier::new(2));
+    let mut handles = vec![];
+    for (i, id) in ids.into_iter().enumerate() {
+        let path = f.0.join("board");
+        let barrier = barrier.clone();
+        let r = revisions[i].clone();
+        handles.push(std::thread::spawn(move || {
+            let mut b = Board::open(&path).unwrap();
+            b.configure_directory_owner(Some(vec![])).unwrap();
+            let s = b.authenticate("alice", PASS).unwrap();
+            barrier.wait();
+            b.directory_submit(&s, id, &r).is_ok()
+        }));
+    }
+    assert_eq!(
+        handles
+            .into_iter()
+            .map(|h| h.join().unwrap())
+            .filter(|ok| *ok)
+            .count(),
+        1
+    );
+    let pending = b
+        .directory_submissions(&a, 0)
+        .unwrap()
+        .into_iter()
+        .find(|r| r.state == "pending")
+        .unwrap();
+    let mut other = Board::open(&f.0.join("board")).unwrap();
+    other.configure_directory_owner(Some(vec![])).unwrap();
+    let os = other.authenticate("sysop", PASS).unwrap();
+    approve(&mut other, &os, pending.id, &pending.revision);
+    assert!(
+        b.directory_review(&s, pending.id, &pending.revision, "reject", None, None)
+            .is_err()
+    );
+    assert_eq!(b.directory_published(&s).unwrap().len(), 1);
+}
+#[test]
+fn snapshot_rejects_revision_dates_state_bounds_duplicates_and_extra_schema() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let id = save(&mut b, &s, 1);
+    let r = submit(&mut b, &s, id);
+    approve(&mut b, &s, id, &r);
+    let attacks = [
+        "UPDATE directory_submissions SET revision='BAD'",
+        "UPDATE directory_submissions SET nonce='BAD'",
+        "UPDATE directory_submissions SET valid_until='2026-02-30'",
+        "UPDATE directory_submissions SET state='pending'",
+        "UPDATE directory_submissions SET port=0",
+        "UPDATE directory_submissions SET summary=char(27)||'[2J'",
+        "INSERT INTO directory_submissions SELECT 2,author,'0123456789abcdef0123456789abcdef',revision,state,slug,name,summary,host,port,login,fingerprint,reviewed,valid_until FROM directory_submissions",
+        "CREATE TABLE unexpected_directory_data(secret TEXT)",
+        "UPDATE directory_submissions SET reviewed='2027-01-01'",
+        "UPDATE directory_submissions SET state='unknown'",
+    ];
+    for (i, sql) in attacks.iter().enumerate() {
+        let path = f.0.join(format!("bad-{i}.sqlite3"));
+        b.export_local(&path).unwrap();
+        let db = rusqlite::Connection::open(&path).unwrap();
+        db.execute_batch("PRAGMA ignore_check_constraints=ON")
+            .unwrap();
+        db.execute_batch(sql).unwrap();
+        drop(db);
+        assert!(verify_export(&path).is_err(), "accepted {sql}");
+        let target = f.0.join(format!("bad-restore-{i}"));
+        assert!(restore_local(&path, &target).is_err());
+        assert!(!target.exists());
+    }
+    let path = f.0.join("quota.sqlite3");
+    b.export_local(&path).unwrap();
+    let db = rusqlite::Connection::open(&path).unwrap();
+    db.execute_batch("WITH RECURSIVE n(x) AS (VALUES(2) UNION ALL SELECT x+1 FROM n WHERE x<33) INSERT INTO directory_submissions SELECT x,1,printf('%032x',x),printf('%032x',x),'published','board-'||x,'Board','Summary','board'||x||'.example',22,'bbs',NULL,'2026-01-01','2026-12-31' FROM n").unwrap();
+    drop(db);
+    assert!(verify_export(&path).is_err());
+}
+
+#[test]
+fn curator_capacity_endpoint_canonicalization_and_pending_conflicts_are_rechecked() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let id = save(&mut b, &s, 1);
+    let pending_revision = submit(&mut b, &s, id);
+    let mut owner = Board::open(&f.0.join("board")).unwrap();
+    owner
+        .configure_directory_owner(Some(vec![DirectoryKey {
+            slug: "another-slug".into(),
+            host: "BOARD1.EXAMPLE".into(),
+            port: 22,
+            login: "bbs".into(),
+        }]))
+        .unwrap();
+    let os = owner.authenticate("sysop", PASS).unwrap();
+    assert!(
+        owner
+            .directory_review(
+                &os,
+                id,
+                &pending_revision,
+                "approve",
+                Some("2026-01-01"),
+                Some("2026-12-31")
+            )
+            .is_err()
+    );
+    assert_eq!(
+        owner.directory_submission(&os, id).unwrap().state,
+        "pending"
+    );
+    let mut full = Board::open(&f.0.join("board")).unwrap();
+    let keys = (0..32)
+        .map(|n| DirectoryKey {
+            slug: format!("curator-{n}"),
+            host: format!("curator{n}.example"),
+            port: 22,
+            login: "bbs".into(),
+        })
+        .collect();
+    full.configure_directory_owner(Some(keys)).unwrap();
+    let fs = full.authenticate("sysop", PASS).unwrap();
+    assert!(
+        full.directory_review(
+            &fs,
+            id,
+            &pending_revision,
+            "approve",
+            Some("2026-01-01"),
+            Some("2026-12-31")
+        )
+        .is_err()
+    );
+    let mut d = draft(9);
+    d.host = "2001:0db8:0000:0000:0000:0000:0000:0001".into();
+    assert_eq!(d.canonicalized().unwrap().host, "2001:db8::1");
+    let mut duplicate = Board::open(&f.0.join("board")).unwrap();
+    assert!(
+        duplicate
+            .configure_directory_owner(Some(vec![
+                DirectoryKey {
+                    slug: "ip-one".into(),
+                    host: d.host.clone(),
+                    port: 22,
+                    login: "bbs".into()
+                },
+                DirectoryKey {
+                    slug: "ip-two".into(),
+                    host: "2001:db8::1".into(),
+                    port: 22,
+                    login: "bbs".into()
+                }
+            ]))
+            .is_err()
+    );
+    let mut oversized = Board::open(&f.0.join("board")).unwrap();
+    assert!(
+        oversized
+            .configure_directory_owner(Some(
+                (0..33)
+                    .map(|n| DirectoryKey {
+                        slug: format!("curator-{n}"),
+                        host: format!("curator{n}.example"),
+                        port: 22,
+                        login: "bbs".into()
+                    })
+                    .collect()
+            ))
+            .is_err()
+    );
+}
+
+#[test]
+fn all_lifecycle_states_survive_private_export_and_schema18_export_stays_readonly() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    let draft_id = save(&mut b, &s, 1);
+    let pending_id = save(&mut b, &s, 2);
+    submit(&mut b, &s, pending_id);
+    let published_id = save(&mut b, &s, 3);
+    let r = submit(&mut b, &s, published_id);
+    approve(&mut b, &s, published_id, &r);
+    let expired_id = save(&mut b, &s, 4);
+    let r = submit(&mut b, &s, expired_id);
+    approve(&mut b, &s, expired_id, &r);
+    let r = b.directory_submission(&s, expired_id).unwrap().revision;
+    b.directory_review(&s, expired_id, &r, "expire", None, None)
+        .unwrap();
+    let output = f.0.join("all-states.sqlite3");
+    b.export_local(&output).unwrap();
+    let restored = f.0.join("all-states");
+    restore_local(&output, &restored).unwrap();
+    let mut rb = Board::open(&restored).unwrap();
+    rb.configure_directory_owner(Some(vec![])).unwrap();
+    let rs = rb.authenticate("sysop", PASS).unwrap();
+    for (id, state) in [
+        (draft_id, "draft"),
+        (pending_id, "pending"),
+        (published_id, "published"),
+        (expired_id, "expired"),
+    ] {
+        assert_eq!(rb.directory_submission(&rs, id).unwrap().state, state);
+    }
+    assert_eq!(rb.directory_published(&rs).unwrap().len(), 2);
+    drop(rb);
+    drop(b);
+    f.db()
+        .execute_batch("DROP TABLE directory_submissions;PRAGMA user_version=18")
+        .unwrap();
+    let legacy = f.0.join("legacy18.sqlite3");
+    faction_core::export_local(&f.0.join("board"), &legacy).unwrap();
+    verify_export(&legacy).unwrap();
+    let db = rusqlite::Connection::open(&legacy).unwrap();
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        18
+    );
+    assert!(
+        !db.prepare("SELECT 1 FROM sqlite_schema WHERE name='directory_submissions'")
+            .unwrap()
+            .exists([])
+            .unwrap()
+    );
+    assert_eq!(
+        f.db()
+            .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
+            .unwrap(),
+        18
+    );
+    let target = f.0.join("legacy18");
+    restore_local(&legacy, &target).unwrap();
+    let mut migrated = Board::open(&target).unwrap();
+    migrated.configure_directory_owner(Some(vec![])).unwrap();
+    let ms = migrated.authenticate("sysop", PASS).unwrap();
+    assert!(migrated.directory_submissions(&ms, 0).unwrap().is_empty());
+}
+
+#[test]
+fn per_author_snapshot_quota_and_full_retained_row_bound() {
+    let f = Fixture::new();
+    let (mut b, s) = f.board();
+    for n in 0..32 {
+        let id = save(&mut b, &s, n);
+        let r = submit(&mut b, &s, id);
+        approve(&mut b, &s, id, &r);
+    }
+    for user in 0..8 {
+        let a = f.member(&mut b, &s, &format!("member{user}"));
+        for n in 0..4 {
+            save(&mut b, &a, 100 + user * 4 + n);
+        }
+    }
+    assert_eq!(
+        f.db()
+            .query_row("SELECT count(*) FROM directory_submissions", [], |r| r
+                .get::<_, i64>(0))
+            .unwrap(),
+        64
+    );
+    assert!(
+        b.directory_save(&s, &request_id().unwrap(), &draft(999))
+            .is_err()
+    );
+    let output = f.0.join("full.sqlite3");
+    b.export_local(&output).unwrap();
+    verify_export(&output).unwrap();
+    let db = rusqlite::Connection::open(&output).unwrap();
+    db.execute(
+        "UPDATE directory_submissions SET author=1 WHERE state='draft'",
+        [],
+    )
+    .unwrap();
+    drop(db);
+    assert!(verify_export(&output).is_err());
+}

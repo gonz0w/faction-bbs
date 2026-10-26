@@ -9,7 +9,7 @@ all unfinished work; this document describes component boundaries, not a roadmap
 
 `faction-core` owns the local SQLite/WAL data model, current member/sysop roles,
 approval/epochs, rooms/unread/replies, channel/file grants and community actions.
-The current schema is 18; migrations and stopped complete export/verify/restore
+The current schema is 19; migrations and stopped complete export/verify/restore
 must preserve explicit version contracts. Connection-bound sessions cannot import
 caller-supplied identity, role or owner authority. Owner recovery stays outside
 member RPC. See [privacy/security](../docs/security-privacy.md),

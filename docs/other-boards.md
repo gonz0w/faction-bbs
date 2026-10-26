@@ -1,7 +1,7 @@
 # Contacts / Other BBSes
 
-Updated 2026-10-22. The optional **[O]ther BBSes** menu lets approved members browse
-a sysop-curated local directory and read SSH connection cards. It adds another
+Updated 2026-10-26. The optional **[O]ther BBSes** menu lets approved members browse
+a locally moderated directory and read SSH connection cards. It adds another
 place to discover private communities while keeping each board independent.
 
 ## Enable a reviewed local pack
@@ -12,7 +12,8 @@ review every field and give the service owner read/traverse access. A typical
 owner-managed folder is `/var/db/faction/boards`, owned by factiond/factionipc,
 mode 700, with `boards.toml` mode 600. Root-owned read-only packs are also accepted
 when the service owner can read them. Symlinks, linked/nonregular files, writable
-packs and unknown fields are rejected. Metadata is loaded at startup, not per key.
+packs and unknown fields are rejected. The curator pack is loaded at startup; published submission state is checked
+again on directory actions.
 
 Validate as the BBS Unix owner before enabling:
 
@@ -108,30 +109,65 @@ performs no remote login and implements no federation.
 
 ## Submissions, review and listing lifecycle
 
-For this first slice, another operator sends proposed public connection details
-to the local sysop through an agreed out-of-band channel. The sysop obtains consent,
-checks the endpoint/login/host-key hint independently, chooses a local slug,
-records the review window and edits the pack. A listing is local editorial data;
-there is no claim of remote ownership proof or automatic verification. In-BBS
-pending submissions/review tools remain follow-on work under #27.
+The owner-managed pack and member submissions are separate sources. The BBS
+never rewrites `boards.toml`. With an enabled pack, including an empty
+`version=1` / `boards=[]` pack, **S** from Other BBSes opens the submission desk. A listing never
+verifies its operator or grants membership, host trust or federation rights.
 
-Past `valid_until` listings show **OLD**. A future review date or unavailable clock
-shows **DATE?**. These are editorial dates, not online/availability tests. Expired
-listings remain visible with their dates until the sysop reviews or removes them.
-Removal/change takes effect on a stopped restart; active sessions do not silently
-switch to another endpoint. An empty `boards=[]` pack is a usable empty directory.
+Approved members can prepare a private draft, preview it and explicitly submit
+it for review. Canceling unsaved input publishes and saves nothing. A saved draft
+survives logout and restart. Pending content cannot change underneath a review;
+withdraw it and create a new draft to revise it. Members can inspect and withdraw
+their own records, including published ones. Other members cannot see unpublished
+submissions. Do not enter passwords, invite secrets, private keys or information
+the destination operator has not agreed to share locally.
 
-Keep the pack with other reviewed installation configuration. Database exports
-and complete file-area bundles do not include it, just as they exclude themes and
-host configuration. Back it up separately; never put private host credentials in
-it. A listed destination never receives rooms, files, chat or account data from
-this directory. Optional browser handoff remains separate no-JS/private-portal
-work, not a requirement for discovering or visiting another board.
+Use **N** to enter a new listing. **S** on its preview saves a private draft;
+**S** on the saved draft explicitly submits it. Use **1–4** to open your records,
+**>** for the next page, **B** for the first page, **W** to withdraw an open record
+and **Q** to return to the directory. Desk commands take Enter in both ANSI and
+plain modes. **C** cancels unsaved input. Preview/card **N/P** pages longer text.
+
+The current local sysop uses **M** for review and **L** for their own list. Open
+a pending record and use **A**, enter review/valid-until dates, then type exact
+uppercase `APPROVE`. **R** and `REJECT` reject it. Published records use **X** and
+`REMOVE`, or **E** and `EXPIRE`. Any other confirmation cancels the operation.
+The sysop reviews pending records, checks the endpoint and consent
+independently, then approves or rejects the exact revision. Approval publishes one
+listing with the sysop's review dates. Rejection, withdrawal and removal delete the
+submission. Explicit expiry marks a published listing **OLD**; a past valid-until
+date also shows OLD. Expiry is a warning, not removal. Current approval and role
+are checked again on every action. Listings submitted by an unapproved author
+are hidden until the author's local approval is restored or the sysop removes them.
+
+There are at most 32 private draft/pending records across the board, four per
+member, and 32 combined curator plus retained published/expired listings. Expired
+or hidden published records still reserve a listing slot. Slug or canonical
+host/port/login conflicts are refused at submission and approval. Conflicts reveal
+no other member's private pending text. Records persist until explicitly removed;
+there is no automatic purge, rejection log or submission history. When a queue is
+full, reject or withdraw unwanted records to free space.
+
+Changing the published directory returns an open card to the list for a new
+selection. It cannot silently swap the selected endpoint. Curator entries retain
+the pack edit/restart workflow. An incompatible pack/published-overlay union
+refuses service startup before listening: reconcile the pack, or restart with the
+prior compatible pack and remove the conflicting submission. Pending conflicts
+can stay in the queue for rejection; they do not block startup.
+
+Schema-19 owner database exports and complete file-area bundles include private
+submission records. Back up the curator pack separately with installation
+configuration; it remains outside those exports. Restore validates submission
+bounds and content, discards live session authority and checks the pack union
+when the feature is enabled again. Deleted records may still exist in older
+backups or storage remnants. See [export and restore](export-restore.md).
 
 ## Validation
 
-[GitHub issue](https://github.com/gonz0w/faction-bbs/issues/27) records software
-checks. Local/worker PTYs cover paging, arrows/hotkeys, card return, compact/plain,
+[Submission software evidence](../dev-docs/evidence/directory-submissions/README.md)
+records #184 checks. The original
+[design issue](https://github.com/gonz0w/faction-bbs/issues/27) retains the earlier
+curated-directory checks. Local/worker PTYs cover paging, arrows/hotkeys, card return, compact/plain,
 revocation, configuration and a loopback no-connect trap. Native shared SSH/client
 checks exercise the actual maintained service separately. No new physical-SBC,
 250-user, public-listener, game, host-action or hardening claim.

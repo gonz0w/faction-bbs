@@ -1,0 +1,51 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "submissions",
+      "command": [
+        "python3.13",
+        "tools/smoke_directory_submissions.py",
+        "/home/factionbuild/target184/release/faction",
+        "/home/factionbuild/target184/release/faction-member",
+        "--output",
+        "/home/factionbuild/proof184/native-directory-submissions.json"
+      ],
+      "returncode": 0,
+      "result": "pass"
+    },
+    {
+      "name": "directory",
+      "command": [
+        "python3.13",
+        "tools/smoke_directory.py",
+        "/home/factionbuild/target184/release/faction",
+        "/home/factionbuild/target184/release/faction-member",
+        "--output",
+        "/home/factionbuild/proof184/native-directory-regressions.json"
+      ],
+      "returncode": 0,
+      "result": "pass"
+    },
+    {
+      "name": "export",
+      "command": [
+        "python3.13",
+        "tools/smoke_export_restore.py",
+        "/home/factionbuild/target184/release/faction"
+      ],
+      "returncode": 0,
+      "result": "pass"
+    },
+    {
+      "name": "launcher",
+      "command": [
+        "python3.13",
+        "tools/smoke_board_launcher.py",
+        "/home/factionbuild/target184/release/faction-client"
+      ],
+      "returncode": 0,
+      "result": "pass"
+    }
+  ]
+}

@@ -988,6 +988,23 @@ impl Client {
                 self.state = State::Lounge(desk);
                 self.lounge_show(board, theme)?;
             }
+            State::DirectoryDesk(mut desk) => {
+                match desk.feed(text, board, self.session()?) {
+                    Ok(true) => {
+                        self.state = State::Directory(Default::default());
+                        self.directory_show(board, theme)?;
+                        return Ok(());
+                    }
+                    Ok(false) => (),
+                    Err(e) => {
+                        if !desk.recover(&e) {
+                            return Err(e);
+                        }
+                    }
+                }
+                self.state = State::DirectoryDesk(desk);
+                self.directory_desk_show(board, theme)?;
+            }
             State::Pages(mut desk) => {
                 match desk.feed(text, board, self.session()?) {
                     Ok(true) => {
@@ -1392,6 +1409,17 @@ impl Client {
                 .map_err(|_| Error::Invalid("lounge input flush"))?;
             return self.lounge_show(board, theme);
         }
+        if matches!(self.state, State::DirectoryDesk(_))
+            && self.size() != self.dimensions
+            && self.output.is_empty()
+        {
+            self.dimensions = self.size();
+            self.ansi = self.capable();
+            self.input.clear();
+            termios::tcflush(&self.tty, termios::QueueSelector::IFlush)
+                .map_err(|_| Error::Invalid("directory submission input flush"))?;
+            return self.directory_desk_show(board, theme);
+        }
         if matches!(self.state, State::Pages(_))
             && self.size() != self.dimensions
             && self.output.is_empty()
@@ -1768,6 +1796,7 @@ impl Client {
                     | State::Writing { .. }
                     | State::Wall(_)
                     | State::Pages(_)
+                    | State::DirectoryDesk(_)
                     | State::Lounge(_)
                     | State::Who(_)
                     | State::Gatherings(_)
@@ -1782,6 +1811,7 @@ impl Client {
                     self.state,
                     State::Wall(_)
                         | State::Pages(_)
+                        | State::DirectoryDesk(_)
                         | State::Lounge(_)
                         | State::Who(_)
                         | State::Gatherings(_)
@@ -1805,6 +1835,7 @@ impl Client {
                             self.state,
                             State::Wall(_)
                                 | State::Pages(_)
+                                | State::DirectoryDesk(_)
                                 | State::Lounge(_)
                                 | State::Who(_)
                                 | State::Gatherings(_)

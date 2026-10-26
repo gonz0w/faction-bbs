@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "logs": {
+    "entry-red.log": {
+      "sha256": "f38f2c1a8a62b79a2731812be47526293d778ab4b87f18b66c07574b49e83494",
+      "bytes": 910
+    },
+    "evidence-red.log": {
+      "sha256": "4734857cdcd2fcb2bc97981708fb8b02e0a67fbccff4ce1f3cd06f6cabf9cc78",
+      "bytes": 1124
+    },
+    "native-binding-red.log": {
+      "sha256": "66a7e395a698ba7e575b2f5ab366f56752e93832d6b0b0a99bbde4a220e50d5a",
+      "bytes": 1228
+    },
+    "bytes-red.log": {
+      "sha256": "96e4cda1b662fe261c1971faefecc11bde227958bea5d8ddfef55656e163de4b",
+      "bytes": 823
+    }
+  },
+  "raw_logs_exported": false
+}

@@ -1,0 +1,57 @@
+from pathlib import Path
+import hashlib, io, json, os, shutil, tarfile, tomllib, urllib.request
+
+P = Path('/private/tmp/faction184-lead-OWNED')
+R = Path('/Users/cam/DEV/faction-bbs')
+H = Path.home()/'.cargo/registry'
+os.umask(0o077)
+C = P/'public-cargo'
+assert (P/'OWNED').is_file() and not C.exists()
+C.mkdir(mode=0o700)
+(C/'PUBLIC_ONLY').write_text('Checksum-verified reviewed public dependency archives and public registry index only. No Cargo config or credentials.\n')
+idx = 'index.crates.io-1949cf8c6b5b557f'
+srcidx = H/'index'/idx
+destidx = C/'registry/index'/idx
+destidx.parent.mkdir(parents=True)
+shutil.copytree(srcidx, destidx, symlinks=False)
+cache = C/'registry/cache'/idx
+cache.mkdir(parents=True)
+inventory = json.loads((R/'dev-docs/dependencies/network-mail.json').read_text())
+packages = inventory['graphs']['aarch64-unknown-netbsd']['registry']
+locked = {(x['name'],x['version']):x['checksum'] for x in tomllib.loads((R/'Cargo.lock').read_text())['package'] if 'source' in x}
+records=[]
+for package in packages:
+    name,version=package['name'],package['version']
+    expected=locked[(name,version)]
+    assert expected==package['checksum']
+    filename=f'{name}-{version}.crate'
+    matches=list((H/'cache').glob('*/'+filename))
+    if matches:
+        assert len(matches)==1
+        data=matches[0].read_bytes(); origin='existing-public-host-cache'
+    else:
+        url=f'https://static.crates.io/crates/{name}/{filename}'
+        with urllib.request.urlopen(url,timeout=45) as response: data=response.read(33554432)
+        origin='checksum-verified-public-download'
+    assert hashlib.sha256(data).hexdigest()==expected
+    assert len(data)==package['archive_bytes']
+    with tarfile.open(fileobj=io.BytesIO(data),mode='r:gz') as archive:
+        for member in archive.getmembers():
+            path=Path(member.name)
+            assert not member.issym() and not member.islnk()
+            assert not path.is_absolute() and '..' not in path.parts
+            assert path.suffix.lower() not in {'.js','.jsx','.mjs','.cjs','.ts','.tsx','.mts','.cts'}
+            assert 'node_modules' not in path.parts
+            assert path.name not in {'package.json','package-lock.json','npm-shrinkwrap.json','yarn.lock','pnpm-lock.yaml','bun.lock','bun.lockb','deno.json','deno.jsonc','credentials','credentials.toml'}
+    (cache/filename).write_bytes(data)
+    records.append({'name':name,'version':version,'sha256':expected,'bytes':len(data),'origin':origin})
+    (P/'public-cache-progress.json').write_text(json.dumps(records,indent=2)+'\n')
+manifest={}
+for path in sorted((C/'registry').rglob('*')):
+    assert not path.is_symlink()
+    if path.is_file():
+        assert path.name not in {'credentials','credentials.toml'}
+        manifest[str(path.relative_to(C))]=hashlib.sha256(path.read_bytes()).hexdigest()
+(P/'public-cache-manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
+with tarfile.open(P/'public-registry.tar.gz','w:gz') as archive: archive.add(C/'registry',arcname='registry')
+print(json.dumps({'result':'pass','selected_native_public_packages':len(records),'downloaded':sum(x['origin']=='checksum-verified-public-download' for x in records),'registry_files':len(manifest),'no_credentials_or_config':True}))

@@ -65,7 +65,7 @@ def run(a):
         remote('/etc/rc.d/faction_broker onestart')
         c=connect(plain=True);checks+=['actual_shared_plain_'+s for s in exercise(c,count,plain=True,shared=True)];logout(c,True);assert b'\x1b' not in c.transcript
         remote('/etc/rc.d/faction_broker onestop');remote('cat > /etc/faction/service.toml',original.encode());remote('/etc/rc.d/faction_broker onestart')
-        assert query('pragma user_version')==[[18]]
+        assert query('pragma user_version')==[[19]]
         assert query('select count(*) from unread')==[[0]],'preview/quote advanced unread state'
         assert all(password.encode() not in c.transcript for c in children)
     finally:

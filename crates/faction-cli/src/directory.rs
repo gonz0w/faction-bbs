@@ -18,13 +18,15 @@ pub(super) fn run(
 ) -> Result<()> {
     let dimensions = terminal::size().unwrap_or((80, 24));
     let ansi = ansi && terminal::capable();
-    let raw = if ansi {
+    let mut raw = if ansi {
         Some(terminal::Raw::open()?)
     } else {
         None
     };
     let mut decoder = Decoder::new();
     let mut view = View::default();
+    let owner = directory;
+    let mut current;
     let mut redraw = true;
     loop {
         board.tick()?;
@@ -32,8 +34,10 @@ pub(super) fn run(
             if board.whoami(session)?.status != Status::Approved {
                 return Err(invalid("current local approval required"));
             }
+            current = faction_pages::directory::catalog(board, session, owner)?;
+            view.synchronize(&current);
             io::stdout().write_all(
-                directory
+                current
                     .render(&view, dimensions.0, dimensions.1, ansi, theme)
                     .as_bytes(),
             )?;
@@ -67,10 +71,57 @@ pub(super) fn run(
         if board.whoami(session)?.status != Status::Approved {
             return Err(invalid("current local approval required"));
         }
-        if view.feed(key, directory, dimensions.0, dimensions.1) {
+        if key == Key::Hotkey(b'S') {
+            drop(raw.take());
+            submissions(board, session, theme, ansi)?;
+            if ansi {
+                raw = Some(terminal::Raw::open()?);
+            }
+            redraw = true;
+            continue;
+        }
+        current = faction_pages::directory::catalog(board, session, owner)?;
+        if view.feed(key, &current, dimensions.0, dimensions.1) {
             break;
         }
         redraw = true;
     }
     Ok(())
+}
+
+fn submissions(
+    board: &mut crate::Visit<'_>,
+    session: &Session,
+    theme: &Theme,
+    ansi: bool,
+) -> Result<()> {
+    let mut desk = faction_pages::directory::Desk::default();
+    loop {
+        let (columns, rows) = terminal::size().unwrap_or((80, 24));
+        let frame = match desk.render(
+            board,
+            session,
+            theme,
+            ansi,
+            (columns as usize, rows as usize),
+        ) {
+            Ok(frame) => frame,
+            Err(e) => {
+                if desk.recover(&e) {
+                    continue;
+                }
+                return Err(e.into());
+            }
+        };
+        let input = crate::edited_line(board, &frame, 128, false)?;
+        match desk.feed(&input, board, session) {
+            Ok(true) => return Ok(()),
+            Ok(false) => (),
+            Err(e) => {
+                if !desk.recover(&e) {
+                    return Err(e.into());
+                }
+            }
+        }
+    }
 }

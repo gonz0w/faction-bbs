@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "owned_removed": true,
+  "saved_stopped": true,
+  "saved_hashes_unchanged": true,
+  "forwards_closed": true,
+  "owned_root_count": 3,
+  "vm_proof_sha256": "39a9e8ea5e39fb8698241d603d3499376269449c6cf5da1acbfc88a2a5e2a628"
+}

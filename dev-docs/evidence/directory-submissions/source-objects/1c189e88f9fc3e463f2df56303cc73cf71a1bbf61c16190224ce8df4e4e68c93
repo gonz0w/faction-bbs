@@ -1,0 +1,25 @@
+from pathlib import Path
+import hashlib,json,os,shutil,stat,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent;E=R/'dev-docs/evidence/directory-submissions';O=E/'source-objects'
+r=json.loads((P/'record-draft.json').read_text());proof=json.loads((P/'teardown-vm-proof.json').read_text())
+assert all(proof[n] for n in ['owned_vm_root_removed','saved_owner_stopped','saved_metadata_hashes_unchanged','saved_disk_full_sha256_matches_original_manifest','saved_kernel_full_sha256_matches_original_manifest'])
+assert proof['owned_qemu_processes']==proof['owned_serial_controllers']==proof['owned_forward_listeners']==0
+for entry in r['sources']+list(r['records'].values()):assert hashlib.sha256((R/entry['path']).read_bytes()).hexdigest()==entry['sha256']
+roots=[Path('/private/tmp/faction184-'+suffix+'-OWNED') for suffix in ['core','ui','lead']]
+for root in roots:
+ assert root==root.resolve() and not root.is_symlink() and root.is_dir()
+ assert root.stat().st_uid==os.getuid() and (root/'OWNERSHIP').is_file()
+ assert '184' in (root/'OWNERSHIP').read_text()
+commands=subprocess.check_output(['ps','-axo','pid=,command='],text=True).splitlines()
+for line in commands:
+ pid,_,cmd=line.strip().partition(' ')
+ if int(pid) in [os.getpid(),os.getppid()]:continue
+ assert not (any(str(q) in cmd for q in roots) and any(token in cmd for token in ['cargo ','smoke_','qemu-system','serial-controller.py','native_checks.py'])), 'owned validation process remains'
+ assert not ('/Users/cam/DEV/faction-bbs/local/demo/' in cmd and ('qemu-system' in cmd or 'serial-controller.py' in cmd)), 'owner playground running'
+for root in roots:shutil.rmtree(root);assert not root.exists()
+cleanup={'result':'pass','owned_removed':True,'saved_stopped':True,'saved_hashes_unchanged':True,'forwards_closed':True,'owned_root_count':len(roots),'vm_proof_sha256':hashlib.sha256(json.dumps(proof,sort_keys=True).encode()).hexdigest()}
+data=(json.dumps(cleanup,indent=2)+'\n').encode();digest=hashlib.sha256(data).hexdigest();(O/digest).write_bytes(data)
+r['records']['cleanup']={'path':str((O/digest).relative_to(R)),'sha256':digest};r['teardown']={k:True for k in r['teardown']}
+data=(json.dumps(r,indent=2)+'\n').encode();(E/'results.json').write_bytes(data)
+pin=hashlib.sha256(data).hexdigest();guard=R/'tools/check_directory_submissions_evidence.py';text=guard.read_text();assert "RESULT_SHA256='PENDING'" in text;guard.write_text(text.replace("RESULT_SHA256='PENDING'","RESULT_SHA256='"+pin+"'"))
+print('Owned fixture roots removed; immutable directory result pinned:',pin)

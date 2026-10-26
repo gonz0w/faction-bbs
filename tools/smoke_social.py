@@ -42,10 +42,10 @@ def run(a):
             write('UPDATE social_pages SET created=unixepoch()-61');frame=cmd(alice,'/pages','Requests/replies expire');assert b'to sysop: declined' not in frame;cmd(alice,'/hide','Lounge availability hidden');stop(alice,True);assert b'\x1b' not in alice.transcript;stop(bob,True);assert b'\x1b' not in bob.transcript;checks.append('expired_signal_hidden_cleanup_and_plain_commands_emit_no_escapes')
             worker=start('alice',worker=True);cmd(worker,'/available Worker presence','Availability shared');frame=cmd(owner,'/who','Not a delivery guarantee.');assert b'alice | Chat | available' in frame;stop(worker);frame=cmd(owner,'/who','Not a delivery guarantee.');assert b'alice |' not in frame;checks.append('inherited_worker_reuses_presenter_and_logout_removes_advertisement')
             cmd(owner,'/social off','Social configuration updated.');cmd(owner,'/who','social lounge disabled by sysop');stop(owner);checks.append('sysop_name_and_disable_controls_remove_live_advertisements')
-            c=start('pending');c.expect('No community access.');c.finish();assert query('PRAGMA user_version')==[(18,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_denied_schema_18_no_room_transfer_or_password_echo_side_effects')
+            c=start('pending');c.expect('No community access.');c.finish();assert query('PRAGMA user_version')==[(19,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_denied_schema_18_no_room_transfer_or_password_echo_side_effects')
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=18,synthetic_clock_aging=True,capacity_claim=False,private_message_bodies=False,boardwide_presence=False,automatic_notifications=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,synthetic_clock_aging=True,capacity_claim=False,private_message_bodies=False,boardwide_presence=False,automatic_notifications=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker social lounge passed:',len(checks),'controls.')
 if __name__=='__main__':

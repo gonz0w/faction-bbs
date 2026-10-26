@@ -106,7 +106,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=18).contains(&version) {
+    if app != APP_ID || !(2..=19).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -161,6 +161,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 18 {
         reference.execute_batch(include_str!("activity.sql"))?;
+    }
+    if version >= 19 {
+        reference.execute_batch(include_str!("directory.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -389,6 +392,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
         {
             return Err(Error::Invalid("snapshot live social cooldowns"));
         }
+    }
+    if version >= 19 {
+        crate::directory::validate(db)?;
     }
     Ok(SnapshotSummary {
         members: count(db, "SELECT count(*) FROM members")?,

@@ -68,7 +68,7 @@ def run(a):
     c=start('alice');c.raw(sequence[:2]);time.sleep(.04);c.raw(sequence[2:]);c.expect(END);c.resize(40,18);c.expect(MENU);c.raw(F1);c.expect(END);back(c);logout(c)
    checks.append('both_fragmented_f1_encodings_and_resize_return_to_a_working_classic_menu')
    c=start('alice');begin(c,subject='Kept private subject');c.send('Guide must not steal this draft.');c.expect(PROMPT);mark=len(c.transcript);c.send('.preview');c.expect(PROMPT);assert b'CREW HANDBOOK' not in c.transcript[mark:];c.send('.cancel');c.expect('Draft cancelled');action_end(c);logout(c);checks.append('writing_and_preview_remain_separate_from_read_only_guide_navigation')
-   logout(owner,True);assert query('pragma user_version')==[(18,)] and query('select count(*) from unread')==[(0,)] and query('select count(*) from posts')==baseline and query('select count(*) from room_drafts')==[(0,)] and query('select count(*) from file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('guide_has_no_posts_unread_draft_transfer_or_password_side_effects')
+   logout(owner,True);assert query('pragma user_version')==[(19,)] and query('select count(*) from unread')==[(0,)] and query('select count(*) from posts')==baseline and query('select count(*) from room_drafts')==[(0,)] and query('select count(*) from file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('guide_has_no_posts_unread_draft_transfer_or_password_side_effects')
   except Exception:
    if a.diagnostics:
     a.diagnostics.mkdir(parents=True,exist_ok=True,mode=0o700)
@@ -76,7 +76,7 @@ def run(a):
    raise
   finally:
    for c in children:c.close()
- d=dict(result='pass',count=len(checks),checks=checks,schema_version=18,actual_registration_and_approval=True,current_menu_keys=True,current_enabled_topics=True,classic_plain_fallback=True,question_mark_refresh_preserved=True,read_only=True,capacity_claim=False,hardening_claim=False)
+ d=dict(result='pass',count=len(checks),checks=checks,schema_version=19,actual_registration_and_approval=True,current_menu_keys=True,current_enabled_topics=True,classic_plain_fallback=True,question_mark_refresh_preserved=True,read_only=True,capacity_claim=False,hardening_claim=False)
  if a.output:a.output.write_text(json.dumps(d,indent=2,sort_keys=True)+'\n')
  print('Board guide passed:',len(checks),'actual local/worker controls.')
 if __name__=='__main__':
