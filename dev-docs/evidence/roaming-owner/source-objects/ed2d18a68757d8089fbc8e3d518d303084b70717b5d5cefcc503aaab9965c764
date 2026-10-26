@@ -1,0 +1,42 @@
+from pathlib import Path
+import hashlib,json,shutil,tempfile
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent;N=Path('/private/tmp/faction228-native-OWNED');C=Path('/private/tmp/faction228-cli-OWNED');E=R/'dev-docs/evidence/roaming-owner';O=E/'source-objects'
+r=json.loads((P/'records-assembled.json').read_text());sources={x['sha256']:x for x in r['sources']}
+def ref(path):
+ raw=path.read_bytes();digest=hashlib.sha256(raw).hexdigest();dest=O/digest
+ assert not raw.startswith(b'\x00\x00\x00\x01Bud1')
+ if dest.exists():assert dest.read_bytes()==raw
+ else:dest.write_bytes(raw)
+ source=dict(path=str(dest.relative_to(R)),sha256=digest);sources[digest]=source;return source
+stage=next(s for s in r['source_stages'] if s['label']=='orchestration-and-host-checks')
+for path in [P/'assemble.py',P/'finalize.py']:
+ stage['files'].append(dict(name='lead/'+path.name,sha256=ref(path)['sha256']))
+review=[]
+A=Path('/private/tmp/faction228-review-artifacts-OWNED')
+for path in A.iterdir():
+ if path.is_file():
+  saved=ref(path);review.append(dict(name=path.name,reference=saved))
+  if path.suffix=='.py':stage['files'].append(dict(name='review/'+path.name,sha256=saved['sha256']))
+r['supplemental_review_artifacts']=review
+r['publication_manifest']=ref(N/'public-final03-SHA256.json')
+r['publication_check']=ref(N/'public-final03/publication-check.json')
+native_cleanup=Path('/private/tmp/faction228-native-cleanup.json');d=json.loads(native_cleanup.read_text());assert d['result']=='pass' and d['owned_vm_stopped'] and d['owned_controller_stopped'] and d['forwards_closed'] and d['saved_stopped'] and d['saved_hashes_unchanged'] and d['owned_overlay_and_vm_files_removed']
+native_cleanup_ref=ref(native_cleanup)
+roots=[N,C,A,*Path('/private/tmp').glob('faction228-review-OWNED-*'),*Path('/private/tmp').glob('faction228-wal-review-OWNED-*')]
+for root in roots:
+ assert root.is_dir() and not root.is_symlink() and root.name.startswith('faction228-') and str(root).startswith('/private/tmp/')
+ if root in [N,C]:assert (root/'OWNED').is_file()
+ shutil.rmtree(root);assert not root.exists()
+test_root=Path(tempfile.gettempdir()).resolve()/'faction228-cli-OWNED'
+if test_root.exists():
+ assert sorted(x.name for x in test_root.iterdir())==['OWNED'];shutil.rmtree(test_root)
+assert (P/'OWNED').is_file() and not P.is_symlink()
+# Script bytes are frozen above before removing the last owned source fixture.
+shutil.rmtree(P);assert not P.exists()
+cleanup=dict(result='pass',owned_removed=all(not root.exists() for root in roots+[P,test_root]),saved_stopped=d['saved_stopped'],saved_hashes_unchanged=d['saved_hashes_unchanged'],forwards_closed=d['forwards_closed'],native_teardown=native_cleanup_ref,owned_roots_removed=len(roots)+1,incidental_metadata_excluded=8)
+raw=(json.dumps(cleanup,indent=2,sort_keys=True)+'\n').encode();digest=hashlib.sha256(raw).hexdigest();(O/digest).write_bytes(raw);cleanup_ref=dict(path=str((O/digest).relative_to(R)),sha256=digest);sources[digest]=cleanup_ref;r['records']['cleanup']=cleanup_ref
+r['sources']=list(sources.values())
+output=(json.dumps(r,indent=2,sort_keys=True)+'\n').encode();(E/'results.json').write_bytes(output);result_hash=hashlib.sha256(output).hexdigest()
+checker=R/'tools/check_roaming_owner_evidence.py';text=checker.read_text();assert 'RESULT_SHA256 = None' in text;checker.write_text(text.replace('RESULT_SHA256 = None',f'RESULT_SHA256 = {result_hash!r}'))
+Path('/private/tmp/faction228-finalization.json').write_text(json.dumps(dict(result='pass',result_sha256=result_hash,sources=len(sources),source_stages=len(r['source_stages']),cleanup=cleanup),indent=2)+'\n')
+print('Final source-bound record frozen; all marked private roots removed. Result SHA256:',result_hash)

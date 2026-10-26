@@ -1,0 +1,9 @@
+{
+  "script": "fix_guest_theme_owner.py",
+  "sha256": "33436a3af5953288d27268651b77b0c5a6034b6d83df78f61f2d21f2bf23adbe",
+  "returncode": 0,
+  "seconds": 0.248,
+  "argv": [
+    "fix_guest_theme_owner.py"
+  ]
+}

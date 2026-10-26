@@ -1,0 +1,31 @@
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running tests/roaming_owner.rs (target/debug/deps/roaming_owner-9e773b0dfc0cebd3)
+
+running 1 test
+test member_id_lookup_is_local_readonly_and_grants_no_association ... FAILED
+
+failures:
+
+---- member_id_lookup_is_local_readonly_and_grants_no_association stdout ----
+
+thread 'member_id_lookup_is_local_readonly_and_grants_no_association' (1014484) panicked at crates/faction-cli/tests/roaming_owner.rs:57:9:
+["member-id", "member"]: Faction: Experimental filesystem-owner roaming (existing schema-20 state only):
+  faction --state-dir PATH roaming state
+  faction --state-dir PATH roaming invite NAME CA_FP
+  faction --state-dir PATH roaming issuer-enable|issuer-disable ID GEN
+  faction --state-dir PATH roaming link ISSUER_ID ISSUER_GEN SUBJECT PRINCIPAL MEMBER_ID UID CONSENT
+  faction --state-dir PATH roaming binding-enable|binding-disable ID GEN
+  faction --state-dir PATH roaming manifest-preview
+  faction --state-dir PATH roaming manifest-export NEW_FILE
+Export is inert; root separately reviews transport accounts, CA/principal policy and reserved UIDs. No session or host configuration is installed.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    member_id_lookup_is_local_readonly_and_grants_no_association
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.75s
+
+error: test failed, to rerun pass `-p faction-cli --test roaming_owner`

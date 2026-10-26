@@ -1,0 +1,9 @@
+{
+  "script": "upload_cache.py",
+  "sha256": "09f1da039f0445de4d7235d30ba56d24839a4f5d1a2f4519504921634f07bb6f",
+  "returncode": 0,
+  "seconds": 0.409,
+  "argv": [
+    "upload_cache.py"
+  ]
+}

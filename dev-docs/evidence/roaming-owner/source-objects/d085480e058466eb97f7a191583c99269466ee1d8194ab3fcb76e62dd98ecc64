@@ -1,0 +1,4 @@
+from lab import *
+x=json.loads(remote('cat /home/factionbuild/proof228-final03/native-runtime.json').stdout);assert x['result']=='pass' and len(x['checks'])==14
+remote('nohup python3.13 /home/factionbuild/proof228-final03/native_legacy_guest_final03.py > /home/factionbuild/proof228-final03/legacy-launch.private.log 2>&1 < /dev/null &')
+print('Finalsource native classicPTY/exportrestore/completebundle recovery launched.')

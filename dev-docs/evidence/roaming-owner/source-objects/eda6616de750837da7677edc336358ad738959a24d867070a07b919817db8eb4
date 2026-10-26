@@ -1,0 +1,9 @@
+{
+  "script": "collect_public03.py",
+  "sha256": "40eba7610b241961fb2fce097a2ce4649539b7eb3d1ba617e15855a8de1407c2",
+  "returncode": 1,
+  "seconds": 0.77,
+  "argv": [
+    "collect_public03.py"
+  ]
+}

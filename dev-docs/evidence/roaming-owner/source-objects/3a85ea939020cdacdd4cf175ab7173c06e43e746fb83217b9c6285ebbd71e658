@@ -1,0 +1,53 @@
+EEEE
+======================================================================
+ERROR: test_accepts_source_bound_bounded_observations (test_roaming_owner_evidence.EvidenceTests.test_accepts_source_bound_bounded_observations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_roaming_owner_evidence.py'
+
+======================================================================
+ERROR: test_rejects_changed_native_sources_and_enlarged_claims (test_roaming_owner_evidence.EvidenceTests.test_rejects_changed_native_sources_and_enlarged_claims)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_roaming_owner_evidence.py'
+
+======================================================================
+ERROR: test_rejects_failed_records_and_missing_cleanup_or_red (test_roaming_owner_evidence.EvidenceTests.test_rejects_failed_records_and_missing_cleanup_or_red)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_roaming_owner_evidence.py'
+
+======================================================================
+ERROR: test_rejects_missing_modified_and_escaping_evidence (test_roaming_owner_evidence.EvidenceTests.test_rejects_missing_modified_and_escaping_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_roaming_owner_evidence.py'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (errors=4)

@@ -1,0 +1,9 @@
+{
+  "script": "preserve_candidate01.py",
+  "sha256": "f3fcd36310c436661cfe69e90cb68f05a481dedf34f2ca1e9b2ba61e1fae0952",
+  "returncode": 0,
+  "seconds": 0.726,
+  "argv": [
+    "preserve_candidate01.py"
+  ]
+}

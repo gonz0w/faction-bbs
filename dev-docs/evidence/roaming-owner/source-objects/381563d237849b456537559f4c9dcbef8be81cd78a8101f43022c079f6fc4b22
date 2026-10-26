@@ -1,0 +1,28 @@
+import os, select, socket, sys, time
+from pathlib import Path
+p=Path(__file__).resolve().parent
+s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+for attempt in range(50):
+ try:s.connect(str(p/'serial-compile02.sock'));break
+ except (FileNotFoundError,ConnectionRefusedError):time.sleep(0.1)
+else:raise SystemExit('VM serial socket unavailable')
+s.setblocking(False)
+# userconf prompt is already waiting
+log=(p/'serial-compile02.log').open('ab',buffering=0)
+fifo=p/'console-compile02.in'
+if not fifo.exists():os.mkfifo(fifo,0o600)
+fd=os.open(fifo,os.O_RDWR|os.O_NONBLOCK)
+pending=b''; counter=0
+while True:
+    ready,_,_=select.select([s,fd],[],[],1)
+    if s in ready:
+        data=s.recv(65536)
+        if not data:break
+        log.write(data);pending=(pending+data)[-32768:]
+        if b'uc> ' in pending:
+            pending=b''; command=b'disable vmt\n' if counter%2==0 else b'quit\n'; counter+=1
+            for byte in command:s.send(bytes([byte]));time.sleep(0.04)
+    if fd in ready:
+        data=os.read(fd,65536)
+        if data:
+            for byte in data:s.send(bytes([byte]));time.sleep(0.02)

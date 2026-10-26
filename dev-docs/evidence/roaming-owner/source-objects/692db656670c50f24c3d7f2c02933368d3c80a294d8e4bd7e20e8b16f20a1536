@@ -1,0 +1,41 @@
+   Compiling zeroize v1.9.1
+   Compiling argon2 v0.6.0
+   Compiling faction-core v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-core)
+    Finished `release` profile [optimized] target(s) in 5.70s
+     Running tests/roaming.rs (/home/factionbuild/target228/release/deps/roaming-3b107bfdbcbe95b3)
+
+running 15 tests
+test bounded_owner_registry_and_uid_tombstones_survive_restart ... ok
+test disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid ... ok
+test bound_transfer_grants_recheck_after_disable_without_revoking_password_grants ... ok
+test generation_exhaustion_is_atomic_and_never_wraps_or_exports ... ok
+test independent_issuers_keep_same_member_password_and_other_home_authority ... ok
+test issuer_disablement_rotates_every_binding_before_reenable ... ok
+test issuer_revocation_removes_only_exact_bound_leases_and_ready_grants ... ok
+test issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority ... ok
+test owner_association_needs_approval_consent_exact_generation_and_permanent_unused_uid ... ok
+test owner_registry_authenticates_real_sessions_and_revokes_exact_provenance ... ok
+test owner_registry_is_once_before_auth_and_rejects_wrong_board_or_generation ... ok
+test restart_and_restore_require_manual_reconciliation_and_fresh_board_identity ... ok
+test schema19_stays_readonly_on_export_and_migrates_atomically_to20 ... ok
+test trusted_registry_is_default_off_late_locked_and_checks_all_entry_fields ... ok
+test snapshot_rejects_malformed_identity_metadata_authority_and_catalog ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s
+
+     Running tests/snapshot.rs (/home/factionbuild/target228/release/deps/snapshot-6927386eaf082ff4)
+
+running 10 tests
+test concurrent_restore_publish_has_one_winner_and_no_partial_database ... ok
+test export_and_restore_never_overwrite_existing_paths ... ok
+test exported_bytes_exclude_discarded_chat_receipts_and_freelist_content ... ok
+test busy_offline_source_fails_without_publishing_then_recovers ... ok
+test readonly_export_never_initializes_or_migrates_source ... ok
+test reject_unsafe_files_parents_and_sidecars ... ok
+test size_cap_refuses_sparse_large_artifacts_without_allocating_them ... ok
+test snapshot_during_concurrent_wal_writes_is_consistent ... ok
+test wal_roundtrip_preserves_durable_records_and_drops_live_authority ... ok
+test reject_truncated_corrupt_foreign_future_and_executable_catalogs ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.42s
+

@@ -1,0 +1,17 @@
+from lab import *
+import shlex
+script='''from pathlib import Path
+import json,hashlib,os,pwd
+P=Path('/usr/local/share/faction228-source-final03/themes');rows={}
+for p in [P,*sorted(P.rglob('*'))]:
+ s=p.stat();rows[str(p.relative_to(P.parent))]={'uid':s.st_uid,'gid':s.st_gid,'mode':oct(s.st_mode & 0o777),'sha256':hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else None}
+Path('/home/factionbuild/proof228-final03/legacy-theme-owner-before.json').write_text(json.dumps(rows,indent=2)+'\\n')
+assert all(x['uid']==0 for x in rows.values())
+owner=pwd.getpwnam('factiond')
+for p in [P,*sorted(P.rglob('*'))]:os.chown(p,owner.pw_uid,owner.pw_gid)
+print(json.dumps({'result':'pass','theme_objects':len(rows),'only_owner_metadata_changed':True}))
+'''
+print(remote('python3.13 -c '+shlex.quote(script)).stdout.decode())
+(P/'legacy-theme-owner-before.json').write_bytes(remote('cat /home/factionbuild/proof228-final03/legacy-theme-owner-before.json').stdout)
+remote('nohup python3.13 /home/factionbuild/proof228-final03/native_legacy_guest_final03.py > /home/factionbuild/proof228-final03/legacy-retry-launch.private.log 2>&1 < /dev/null &')
+print('Unchanged legacy smoke assertions rerun after ownedtheme metadata correction.')

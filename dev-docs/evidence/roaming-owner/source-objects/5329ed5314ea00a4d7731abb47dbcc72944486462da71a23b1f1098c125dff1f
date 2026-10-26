@@ -1,0 +1,50 @@
+....FFFFF
+======================================================================
+FAIL: test_rejects_missing_or_failed_authority_controls_and_recovery (test_roaming_owner_evidence.EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery) (name='native-service', change=<function EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery.<locals>.<lambda> at 0x109b6efb0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 92, in test_rejects_missing_or_failed_authority_controls_and_recovery
+    with self.assertRaises(AssertionError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_rejects_missing_or_failed_authority_controls_and_recovery (test_roaming_owner_evidence.EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery) (name='native-service', change=<function EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery.<locals>.<lambda> at 0x109b6f530>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 92, in test_rejects_missing_or_failed_authority_controls_and_recovery
+    with self.assertRaises(AssertionError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_rejects_missing_or_failed_authority_controls_and_recovery (test_roaming_owner_evidence.EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery) (name='native-classic', change=<function EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery.<locals>.<lambda> at 0x109b6f5e0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 92, in test_rejects_missing_or_failed_authority_controls_and_recovery
+    with self.assertRaises(AssertionError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_rejects_missing_or_failed_authority_controls_and_recovery (test_roaming_owner_evidence.EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery) (name='recovery', change=<function EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery.<locals>.<lambda> at 0x109b6f690>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 92, in test_rejects_missing_or_failed_authority_controls_and_recovery
+    with self.assertRaises(AssertionError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_rejects_missing_or_failed_authority_controls_and_recovery (test_roaming_owner_evidence.EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery) (name='recovery', change=<function EvidenceTests.test_rejects_missing_or_failed_authority_controls_and_recovery.<locals>.<lambda> at 0x109b6f740>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_owner_evidence.py", line 92, in test_rejects_missing_or_failed_authority_controls_and_recovery
+    with self.assertRaises(AssertionError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.013s
+
+FAILED (failures=5)

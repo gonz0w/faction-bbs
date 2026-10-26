@@ -1,0 +1,49 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "faction-cli",
+    "--",
+    "--test-threads=1"
+  ],
+  "log": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/8eca9812bc2662146cf804f0ca3a3788dc5ea801927bc6bbf73ee809bb513992",
+    "sha256": "8eca9812bc2662146cf804f0ca3a3788dc5ea801927bc6bbf73ee809bb513992"
+  },
+  "passed": 18,
+  "result": "pass",
+  "stage": "host-green-10",
+  "test_results": [
+    [
+      8,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      9,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

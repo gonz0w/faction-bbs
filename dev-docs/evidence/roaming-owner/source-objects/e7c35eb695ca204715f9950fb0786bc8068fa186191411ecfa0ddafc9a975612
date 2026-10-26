@@ -1,0 +1,18 @@
+{
+  "source_before": {
+    "crates/faction-cli/src/main.rs": "0359116837f68f60e2a0e1b5e2372dc3ab05a4b678ab638015894276ce12b203",
+    "crates/faction-cli/src/roaming.rs": "312532f74e053cf2a261f1aa0a377b234453df9e8fbf1a27ac4b63885b826da1",
+    "crates/faction-cli/tests/roaming_owner.rs": "9c44e91eb9fb46223e31129f16fbd3dc3c6436ecf4611a5452786469e7f17075"
+  },
+  "binary_sha256": "9df0ae85de121970f0bbc4095b8bb3795739e8d80dcbcd1e3b766b2f96221cfa",
+  "effective_schema": 20,
+  "main_header_schema": 19,
+  "state_exit": 1,
+  "state_stderr": "Faction: roaming requires initialized schema 20; take a stopped backup before upgrade\n",
+  "after_close_state_exit": 0,
+  "source_after": {
+    "crates/faction-cli/src/main.rs": "0359116837f68f60e2a0e1b5e2372dc3ab05a4b678ab638015894276ce12b203",
+    "crates/faction-cli/src/roaming.rs": "312532f74e053cf2a261f1aa0a377b234453df9e8fbf1a27ac4b63885b826da1",
+    "crates/faction-cli/tests/roaming_owner.rs": "9c44e91eb9fb46223e31129f16fbd3dc3c6436ecf4611a5452786469e7f17075"
+  }
+}

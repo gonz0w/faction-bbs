@@ -1,0 +1,19 @@
+{
+  "result": "fail",
+  "checks": [
+    {
+      "name": "classic-console-pty",
+      "command": [
+        "su",
+        "-m",
+        "factiond",
+        "-c",
+        "cd /usr/local/share/faction228-source-final03 && python3.13 tools/smoke_local_console.py /usr/local/libexec/faction228-final03/faction"
+      ],
+      "returncode": 1,
+      "result": "fail",
+      "seconds": 0.312
+    }
+  ],
+  "runtime_memory_mib": 1024
+}

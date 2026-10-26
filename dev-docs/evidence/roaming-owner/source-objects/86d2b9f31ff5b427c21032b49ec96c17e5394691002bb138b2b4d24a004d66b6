@@ -1,0 +1,34 @@
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.32s
+     Running tests/roaming_owner.rs (target/debug/deps/roaming_owner-9e773b0dfc0cebd3)
+
+running 6 tests
+test actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation ... FAILED
+test current_approval_generations_immutable_uids_and_independent_homes ... FAILED
+test initialized_private_state_and_strict_arguments_are_required ... ok
+test manifest_output_is_private_new_only_and_rejects_unsafe_paths ... ok
+test owner_inspection_and_exact_manifest_are_readonly_and_default_off ... ok
+test restore_stays_disabled_and_real_member_entry_rejects_owner_commands ... ok
+
+failures:
+
+---- actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation stdout ----
+
+thread 'actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation' (982437) panicked at crates/faction-cli/tests/roaming_owner.rs:302:10:
+called `Result::unwrap()` on an `Err` value: Invalid("transfer key already has a live grant")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- current_approval_generations_immutable_uids_and_independent_homes stdout ----
+
+thread 'current_approval_generations_immutable_uids_and_independent_homes' (982513) panicked at crates/faction-cli/tests/roaming_owner.rs:35:9:
+["invite", "home-two", "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"]: Faction: database operation failed
+
+
+
+failures:
+    actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation
+    current_approval_generations_immutable_uids_and_independent_homes
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.87s
+
+error: test failed, to rerun pass `-p faction-cli --test roaming_owner`

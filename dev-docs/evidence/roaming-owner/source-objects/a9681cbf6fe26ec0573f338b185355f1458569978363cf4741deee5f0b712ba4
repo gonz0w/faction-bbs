@@ -1,0 +1,9 @@
+{
+  "script": "launch_legacy03.py",
+  "sha256": "d085480e058466eb97f7a191583c99269466ee1d8194ab3fcb76e62dd98ecc64",
+  "returncode": 0,
+  "seconds": 0.152,
+  "argv": [
+    "launch_legacy03.py"
+  ]
+}

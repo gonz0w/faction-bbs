@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/usr/local/share/faction228-source-final03/tools/smoke_local_console.py", line 329, in <module>
+    smoke(parser.parse_args().binary.resolve(strict=True))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/share/faction228-source-final03/tools/smoke_local_console.py", line 270, in smoke
+    assert b'LOCAL / MAIN' in c.transcript
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

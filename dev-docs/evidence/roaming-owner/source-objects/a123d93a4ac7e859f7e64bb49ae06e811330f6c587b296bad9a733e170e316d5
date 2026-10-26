@@ -1,0 +1,7 @@
+{
+  "result": "pass",
+  "prior_actual_checks": 12,
+  "new_actual_checks": 1,
+  "retained_failed_candidate": true,
+  "controller_fix": "classic choice needs no welcome-page Enter"
+}

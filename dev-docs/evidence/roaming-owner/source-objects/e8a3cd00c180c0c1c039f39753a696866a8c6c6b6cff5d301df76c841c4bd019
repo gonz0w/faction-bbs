@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "sha256": {
+    "faction": "17c66a2519bf9c07b546c30cbe5e0764211b398a725d4e2c7479e8e671768b51",
+    "faction-member": "eaa54abcfc2fdda10f5d2b8da541cc929fac3cf37ac6e221cbe30e4a7482df10",
+    "faction-sysop": "52be49fe3ace8967f40397d945b6c99cf0e1dfa90345b276c4af21e07ed158e5",
+    "faction-service": "0143e52285417465b349f9c98e8bcef072cdf44cc3140268ec884f00ab3467d9",
+    "roaming_owner_fixture": "893460311077f3dbfff8201620522d03275344750050fc94b0f03581430be9a2"
+  }
+}

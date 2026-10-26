@@ -1,0 +1,36 @@
+from pathlib import Path
+import hashlib,json,re
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent;C=Path('/private/tmp/faction228-cli-OWNED');N=Path('/private/tmp/faction228-native-OWNED');U=N/'public-final03';E=R/'dev-docs/evidence/roaming-owner';O=E/'source-objects'
+frozen=json.loads((P/'frozen-inputs.json').read_text());sources={x['sha256']:x for x in frozen['sources']}
+def ref(path):
+ data=path.read_bytes();digest=hashlib.sha256(data).hexdigest()
+ if digest not in sources:
+  (O/digest).write_bytes(data);sources[digest]=dict(path=str((O/digest).relative_to(R)),sha256=digest)
+ return sources[digest]
+def save(data):
+ raw=(json.dumps(data,indent=2,sort_keys=True)+'\n').encode();digest=hashlib.sha256(raw).hexdigest();(O/digest).write_bytes(raw);sources[digest]=dict(path=str((O/digest).relative_to(R)),sha256=digest);return sources[digest]
+def load(name):return json.loads((U/name).read_text())
+def result_rows(path):return [[int(a),int(b),int(c)] for a,b,c in re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',path.read_text())]
+records={}
+rows=result_rows(C/'cli-green-10.log');assert sum(r[0] for r in rows)==18 and all(r[1:]==[0,0] for r in rows)
+records['host-cli']=save(dict(result='pass',passed=sum(r[0] for r in rows),test_results=rows,command=['cargo','test','-p','faction-cli','--','--test-threads=1'],log=ref(C/'cli-green-10.log'),stage='host-green-10'))
+d=load('native-cli-all.json');assert d['result']=='pass' and d['returncode']==0 and all(x[1:]==[0,0] for x in d['test_results']);records['native-cli']=save(dict(result='pass',passed=sum(r[0] for r in d['test_results']),observation=ref(U/'native-cli-all.json'),log=ref(U/'build-1.log')))
+d=load('native-source-match-final03.json');expected={x['name']:x['sha256'] for x in next(s for s in frozen['source_stages'] if s['label']=='native-final')['files']};assert d['files']==expected and d['independently_hashed_inside_guest'] is True;records['native-source-match']=save(dict(result='pass',all_match=True,files=d['files'],observation=ref(U/'native-source-match-final03.json')))
+for name,file in [('native-service','native-runtime.json'),('native-classic','native-legacy.json'),('recovery','native-backup-recovery.json'),('native-build','native-build.json'),('native-compile-environment','native-environment-final03.json')]:
+ assert load(file)['result']=='pass';records[name]=ref(U/file)
+profile=dict(normal_sessions=8,admission_refill_ms=5000,credential_permits=2,kernel_slots=2,owner_helpers=3,drain_seconds=5,issuers=2,enabled_bindings=4,uid_history=32)
+env=load('native-runtime-environment-final03.json');assert env['result']=='pass' and env['cores']==2 and env['configured_memory_mib']==1024
+records['runtime']=save(dict(result='pass',physmem=env['memory_bytes'],**profile,environment=ref(U/'native-runtime-environment-final03.json'),scope='One-GiB runtime controls; two-GiB compiler/CLI/core tests separately recorded. Profile values are unchanged product contracts, not connected-member capacity.'))
+rows=result_rows(C/'core-full-08.log');assert sum(r[0] for r in rows)==206 and all(x[1:]==[0,0] for x in rows);records['host-core']=save(dict(result='pass',passed=sum(r[0] for r in rows),log=ref(C/'core-full-08.log')))
+pty=json.loads((P/'host-pty.json').read_text());assert pty['result']=='pass';records['host-pty']=ref(P/'host-pty.json')
+assert 'Ran 381 tests' in (P/'host-python.log').read_text() and '\nOK\n' in (P/'host-python.log').read_text();records['host-python']=save(dict(result='pass',passed=381,log=ref(P/'host-python.log'),source_map=ref(P/'host-python-sources.json'),scope='Complete host suite before later control-presence guard extension; separate final focused five-test guard log retained.'))
+assert 'FAILED' in (C/'red-01.log').read_text() and '\nOK\n' in (P/'evidence-controls-green.log').read_text()
+records['tdd']=save(dict(result='pass',red_exit=101,green_exit=0,captured_before_edit=True,primary_interface_red=ref(C/'red-01.log'),maximal_metadata_red=ref(C/'red-06.log'),wal_effective_schema_red=ref(C/'wal-red-07-result.json'),existing_opener_red=ref(C/'core-red-07.log'),local_lookup_red=ref(C/'red-09.log'),guard_interface_red=ref(P/'evidence-red.log'),guard_control_presence_red=ref(P/'evidence-controls-red.log'),final_cli_green=ref(C/'cli-green-10.log'),final_guard_green=ref(P/'evidence-controls-green.log')))
+prior=[]
+for name in ['roaming-uid','signer-qualification']:prior.append(ref(R/f'dev-docs/evidence/{name}/results.json'))
+failures=[]
+for path in sorted(U.iterdir()):
+ if path.is_file() and (path.name.startswith('candidate') or 'failed' in path.name or path.name=='native-failures.json'):failures.append(dict(name=path.name,reference=ref(path)))
+record=dict(schema=1,issue=228,result='pass',profile=profile,claims={k:False for k in ['installed','online_issuer','enrollment','production','physical_hardware','capacity']},records=records,source_stages=frozen['source_stages'],sources=list(sources.values()),prior_records=prior,retained_candidates_and_failures=failures,provenance_limits=['Two supplemental reviewer probes ran inline; tool-call history and result facts/hash records remain, but standalone scripts were not saved. Captured regression RED tests are primary reproduction evidence.','Native source context includes unexecuted tools/assets; only named build/test/runtime/recovery commands were executed.','No new certificate/CA issuance, SSH-wire qualification, physical SBC, capacity or deployment claim.'])
+(P/'records-assembled.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n')
+print('Assembled observed records; cleanup remains pending.')

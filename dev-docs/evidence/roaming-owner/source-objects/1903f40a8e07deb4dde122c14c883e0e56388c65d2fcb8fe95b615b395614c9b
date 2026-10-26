@@ -1,0 +1,9 @@
+{
+  "script": "upload_source.py",
+  "sha256": "1fc6452539eac88a45bbeb79be8e03a9e5c0546be44be343e2b87bd62f2a0879",
+  "returncode": 0,
+  "seconds": 0.418,
+  "argv": [
+    "upload_source.py"
+  ]
+}

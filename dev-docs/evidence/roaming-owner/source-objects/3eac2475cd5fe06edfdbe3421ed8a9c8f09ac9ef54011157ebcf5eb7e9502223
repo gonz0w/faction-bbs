@@ -1,0 +1,9 @@
+{
+  "script": "collect_legacy_failure.py",
+  "sha256": "a3a1e33e764bb9b1f82e8dfed823c1f6dcb2c2b6faa93a1fc85b401e5766f92e",
+  "returncode": 0,
+  "seconds": 0.231,
+  "argv": [
+    "collect_legacy_failure.py"
+  ]
+}

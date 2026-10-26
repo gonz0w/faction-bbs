@@ -1,0 +1,31 @@
+from pathlib import Path
+import argparse,hashlib,json,os,socket,subprocess,time
+p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);args=p.parse_args()
+P=Path(__file__).resolve().parent;V=P/'vm';D=Path('/Users/cam/DEV/faction-bbs/local/demo');B=D/'saved/20261022T005925Z'
+assert (P/'OWNED').is_file() and (V/'OWNED').is_file() and not args.output.resolve().is_relative_to(P)
+pid=int((V/'runtime03-qemu.pid').read_text());controller=int((V/'runtime03-controller.pid').read_text());cmd=subprocess.check_output(['ps','-p',str(pid),'-o','command='],text=True);assert str(V/'disk.qcow2') in cmd and '-m 1024' in cmd
+A=json.loads((V/'ssh-admin.json').read_text());r=subprocess.run(A+['/sbin/shutdown -p now'],capture_output=True,timeout=10);assert r.returncode in [0,255]
+for _ in range(45):
+ if subprocess.run(['ps','-p',str(pid)],capture_output=True).returncode!=0:break
+ time.sleep(1)
+else:raise AssertionError('owned guest did not stop; preserve and inspect')
+assert subprocess.run(['ps','-p',str(controller)],capture_output=True).returncode!=0
+ports=json.loads((V/'ports.json').read_text())
+for port in ports.values():
+ with socket.socket() as s:
+  s.settimeout(.5);assert s.connect_ex(('127.0.0.1',port))!=0
+commands=subprocess.check_output(['ps','-axo','command='],text=True).splitlines();assert not any(str(D)+'/' in c and ('qemu-system' in c or 'serial-controller.py' in c) for c in commands)
+before=json.loads((P/'saved-before.private.json').read_text())
+for name,digest in before['metadata_sha256'].items():assert hashlib.sha256((D/name).read_bytes()).hexdigest()==digest
+for name,saved in before['artifacts'].items():
+ stat=(D/name).stat();assert {'size':stat.st_size,'mtime_ns':stat.st_mtime_ns}==saved
+hashes={}
+for name,expected in before['saved_sha256'].items():
+ h=hashlib.sha256()
+ with (B/name).open('rb') as f:
+  for data in iter(lambda:f.read(1048576),b''):h.update(data)
+ assert h.hexdigest()==expected;hashes[name]=h.hexdigest()
+record={'result':'pass','owned_vm_stopped':True,'owned_controller_stopped':True,'forwards_closed':True,'forward_count':len(ports),'saved_stopped':True,'saved_hashes_unchanged':True,'saved_sha256':hashes,'owned_root_removed':False,'cleanup_remaining':'lead removes owned fixture root after all public exports are verified'}
+import shutil
+shutil.rmtree(V);assert not V.exists();record['owned_overlay_and_vm_files_removed']=True
+args.output.write_text(json.dumps(record,indent=2)+'\n');print(json.dumps({'result':'pass','owned_vm_stopped':True,'forwards_closed':True,'saved_hashes_unchanged':True,'root_cleanup_pending':True}))

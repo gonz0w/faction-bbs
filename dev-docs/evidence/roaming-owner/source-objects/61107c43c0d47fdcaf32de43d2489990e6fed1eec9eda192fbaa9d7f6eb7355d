@@ -1,0 +1,3 @@
+{"result": "pass", "theme_objects": 38, "only_owner_metadata_changed": true}
+
+Unchanged legacy smoke assertions rerun after ownedtheme metadata correction.

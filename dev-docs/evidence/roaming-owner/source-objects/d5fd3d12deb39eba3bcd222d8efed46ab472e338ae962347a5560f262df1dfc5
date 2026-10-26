@@ -1,0 +1,5 @@
+from lab import *
+b=json.loads(remote('cat /home/factionbuild/proof228-final/native-build.json').stdout);assert b['result']=='pass' and len(b['checks'])==3
+remote('cat > /home/factionbuild/proof228-final/native_cli_all_guest.py; chown factionbuild:factionbuild /home/factionbuild/proof228-final/native_cli_all_guest.py',(P/'native_cli_all_guest.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof228-final/native_cli_all_guest.py > /home/factionbuild/proof228-final/cli-all-launch.private.log 2>&1 < /dev/null &'")
+print('Full native CLI package tests launched.')

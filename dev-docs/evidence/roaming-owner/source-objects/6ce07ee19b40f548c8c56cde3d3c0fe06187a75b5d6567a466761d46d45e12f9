@@ -1,0 +1,111 @@
+from pathlib import Path
+import array,hashlib,json,os,pty,pwd,grp,secrets,select,shlex,signal,subprocess,sys,time,traceback
+assert os.geteuid()==0 and Path('/etc/faction-disposable-test').is_file()
+P=Path('/home/factionbuild/proof228-final');B=Path('/usr/local/libexec/faction228-final');S=Path('/var/db/faction228-final');E=Path('/etc/faction228-final');uid=pwd.getpwnam('factiond').pw_uid;gid=grp.getgrnam('factionipc').gr_gid
+BEGIN=time.monotonic();checks=[];proc=None;SOCK=Path('/var/run/faction/terminal.sock')
+def save(failure=None):
+ (P/'native-runtime.json').write_text(json.dumps({'result':'fail' if failure else 'pass','checks':checks,'runtime_memory_mib':1024,'seconds':round(time.monotonic()-BEGIN,3),'physical_hardware':False,'capacity_claim':False,**({'failure':failure} if failure else {})},indent=2)+'\n')
+def record(name,**kw):checks.append({'name':name,'result':'pass',**kw});save()
+def call(argv,owner=True,ok=True):
+ cmd=['su','-m','factiond','-c',shlex.join(list(map(str,argv)))] if owner else list(map(str,argv));r=subprocess.run(cmd,capture_output=True,timeout=30)
+ (P/f'command-{time.time_ns()}.private.json').write_text(json.dumps({'command':cmd,'returncode':r.returncode,'stdout':r.stdout.decode(errors='replace'),'stderr':r.stderr.decode(errors='replace')},indent=2)+'\n')
+ if ok:assert r.returncode==0,(cmd,r.stderr)
+ return r
+def fixture(*a,state=S):return json.loads(call([B/'roaming_owner_fixture',state,*a]).stdout)
+def cli(*a,state=S,ok=True):return call([B/'faction','--state-dir',state,'roaming',*a],ok=ok)
+def config(state=S,manifest=True):
+ cfg=E/'service.toml';text=f'version=1\nterminal_uid={pwd.getpwnam("factionterm").pw_uid}\nsocket="{SOCK}"\nstate_dir="{state}"\nmax_sessions=8\nlaunch_ms=5000\nsession_seconds=1800\nansi=false\nexperimental_capacity=false\n'
+ if manifest:text+=f'experimental_roaming_manifest="{E}/manifest.toml"\n'
+ cfg.write_text(text);cfg.chmod(0o644);return cfg
+def start(expect=True,state=S,manifest=True):
+ global proc
+ assert not SOCK.exists();cfg=config(state,manifest);log=(P/f'service-{time.time_ns()}.private.log').open('wb')
+ proc=subprocess.Popen(['su','-m','factiond','-c','exec '+shlex.join([str(B/'faction-service'),'--config',str(cfg)])],stdout=log,stderr=log)
+ for _ in range(150):
+  if SOCK.exists() or proc.poll() is not None:break
+  time.sleep(.05)
+ if expect:assert SOCK.is_socket() and proc.poll() is None,'service failed to start'
+ else:
+  assert proc.wait(timeout=10)!=0 and not SOCK.exists(),'invalid authority reached listener';proc=None
+ return proc
+def stop():
+ global proc
+ if proc is None:return
+ assert proc.poll() is None
+ pid=int(Path('/var/run/faction/terminal.pid').read_text());os.kill(pid,signal.SIGTERM);assert proc.wait(timeout=8)==0;proc=None;assert not SOCK.exists()
+def install_export(name):
+ r=cli('manifest-export',S/name);data=(S/name).read_bytes();assert len(data)<=8192 and (S/name).stat().st_mode&0o777==0o600
+ (E/'manifest.toml').write_bytes(data);(E/'manifest.toml').chmod(0o644);assert (E/'manifest.toml').stat().st_uid==0
+ return data
+def tty_enter(transport,expected,continue_welcome=True):
+ master,slave=pty.openpty();os.fchown(slave,transport,gid);os.fchmod(slave,0o600);pid=os.fork()
+ if pid==0:
+  try:
+   os.close(master);os.setgroups([gid]);os.setgid(gid);os.setuid(transport);s=__import__('socket').socket(__import__('socket').AF_UNIX,__import__('socket').SOCK_STREAM);s.connect(str(SOCK));term=b'dumb';s.sendmsg([b'FBSTTY01'+bytes([len(term)])+term+bytes(63-len(term))],[(__import__('socket').SOL_SOCKET,__import__('socket').SCM_RIGHTS,array.array('i',[slave]))]);os.close(slave)
+   while s.recv(1):pass
+   os._exit(0)
+  except BaseException:os._exit(1)
+ os.close(slave);buf=b'';deadline=time.monotonic()+15
+ while expected not in buf:
+  assert time.monotonic()<deadline,repr(buf[-500:])
+  if select.select([master],[],[],.1)[0]:buf+=os.read(master,8192)
+ if continue_welcome:os.write(master,b'\n')
+ return master,pid,buf
+def tty_drain(master,pid):
+ os.write(master,b'q\n');deadline=time.monotonic()+10;buf=b''
+ while time.monotonic()<deadline:
+  if os.waitpid(pid,os.WNOHANG)[0]:break
+  if select.select([master],[],[],.1)[0]:
+   try:buf+=os.read(master,8192)
+   except OSError:break
+ else:raise AssertionError('tty client drain timeout')
+ os.close(master)
+try:
+ assert not B.exists();B.mkdir(mode=0o755)
+ for name in ['faction','faction-member','faction-sysop','faction-service']:
+  data=(Path('/home/factionbuild/target228/release')/name).read_bytes();(B/name).write_bytes(data);(B/name).chmod(0o755)
+ data=Path('/home/factionbuild/target228/release/examples/roaming_owner_fixture').read_bytes();(B/'roaming_owner_fixture').write_bytes(data);(B/'roaming_owner_fixture').chmod(0o755)
+ assert not S.exists();S.mkdir(mode=0o700);os.chown(S,uid,gid);(S/'.roaming-fixture').touch();os.chown(S/'.roaming-fixture',uid,gid)
+ E.mkdir(mode=0o755);Path('/var/run/faction').mkdir(mode=0o710,exist_ok=True);os.chown('/var/run/faction',uid,gid)
+ assert subprocess.run(['id','roam228b'],capture_output=True).returncode!=0
+ subprocess.run(['useradd','-m','-u','42282','-g','factionipc','-s','/bin/sh','roam228b'],check=True)
+ secret=secrets.token_hex(24);fixture('bootstrap','sysop',secret);fixture('memberadd','member',secret);fixture('member','member','approved')
+ cli('invite','home228','SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');cli('issuer-enable','1','1');cli('link','1','2','subject228','board:home228:subject228','2','42282','explicit-local-consent228');cli('binding-enable','1','1')
+ record('actual-owner-cli-invite-enable-numeric-member-link-consent-binding-enable')
+ state=cli('state').stdout;assert all(x in state for x in [b'member_id=2',b'uid=42282',b'subject228',b'explicit-local-consent228'])
+ child,fd=pty.fork()
+ if child==0:
+  os.setgroups([gid]);os.setgid(gid);os.setuid(uid);os.execv(str(B/'faction'),[str(B/'faction'),'--state-dir',str(S),'roaming','state'])
+ pty_data=b''
+ while True:
+  try:chunk=os.read(fd,8192)
+  except OSError:break
+  if not chunk:break
+  pty_data+=chunk
+ os.close(fd);_,status=os.waitpid(child,0);assert os.waitstatus_to_exitcode(status)==0 and b'Experimental roaming owner state' in pty_data and len(pty_data)<=32768
+ record('actual-owner-cli-state-through-pty',returncode=0,output_bytes=len(pty_data))
+ preview=cli('manifest-preview').stdout;assert state==cli('state').stdout
+ manifest=install_export('manifest01.toml');assert manifest==preview;record('owner-inspection-preview-readonly-private-new-export-root-install')
+ r=call([B/'faction-member','--state-dir',S,'roaming','state'],ok=False);assert r.returncode!=0;record('actual-faction-member-entry-denies-owner-command',returncode=r.returncode)
+ start();rss=int(subprocess.check_output(['ps','-p',Path('/var/run/faction/terminal.pid').read_text().strip(),'-o','rss='],text=True).strip());record('exported-root-manifest-valid-service-startup',owner_rss_kib=rss)
+ master,pid,transcript=tty_enter(42282,b'Welcome, member.');assert b'Password (hidden)' not in transcript;record('kernel-peer-uid-owned-tty-enters-approved-session')
+ cli('binding-disable','1','2');os.write(master,b'r\n');data=b'';deadline=time.monotonic()+10
+ while b'Action failed:' not in data:
+  assert time.monotonic()<deadline
+  if select.select([master],[],[],.1)[0]:data+=os.read(master,8192)
+ os.close(master);os.waitpid(pid,0);record('actual-owner-cli-disable-invalidates-live-service-session')
+ stop();start(False);record('disabled-binding-old-manifest-rejected-before-listening')
+ cli('binding-enable','1','3');start(False);record('stale-binding-generation-old-manifest-rejected-before-listening')
+ install_export('manifest02.toml');start();stop();record('explicit-reexport-current-generation-service-restarts')
+ fixture('member','member','revoked');assert cli('manifest-preview',ok=False).returncode!=0;start(False);record('revoked-member-export-and-service-startup-fail-closed')
+ fixture('member','member','approved');install_export('manifest03.toml')
+ recovery=Path('/var/db/faction228-final-recovery');recovery.mkdir(mode=0o700);os.chown(recovery,uid,gid)
+ call([B/'faction','--state-dir',S,'export',recovery/'export.sqlite3']);call([B/'faction','--state-dir',recovery/'restored','restore',recovery/'export.sqlite3'])
+ restored=recovery/'restored';out=cli('manifest-preview',state=restored).stdout;assert out.endswith(b'entries = []\n') and out!=preview;start(False,state=restored);record('real-export-restore-disables-authority-rotates-board-old-manifest-rejected')
+ start(manifest=False);master,pid,_=tty_enter(pwd.getpwnam('factionterm').pw_uid,b'[L]ogin [R]egister [Q]uit: ',False);tty_drain(master,pid);stop();record('default-off-service-classic-owned-tty-login-menu')
+ hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in B.iterdir()};(P/'native-binaries.json').write_text(json.dumps({'result':'pass','sha256':hashes},indent=2)+'\n')
+ save();print(json.dumps({'result':'pass','checks':len(checks)}))
+except BaseException as e:
+ save(type(e).__name__+': '+str(e));(P/f'runtime-failure-{time.time_ns()}.private.log').write_text(traceback.format_exc());raise
+finally:
+ if proc is not None and proc.poll() is None:stop()

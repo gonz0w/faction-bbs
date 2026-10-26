@@ -1,0 +1,12 @@
+from pathlib import Path
+import hashlib,json,subprocess,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent
+checks=[]
+commands=[['python3','tools/smoke_local_console.py','target/debug/faction'],['python3','tools/smoke_member_worker.py','target/debug/faction','target/debug/faction-member']]
+for index,argv in enumerate(commands):
+ t=time.monotonic();result=subprocess.run(argv,cwd=R,capture_output=True,timeout=180)
+ (P/f'host-pty-{index}.log').write_bytes(result.stdout+result.stderr)
+ checks.append(dict(command=argv,returncode=result.returncode,result='pass' if result.returncode==0 else 'fail',seconds=round(time.monotonic()-t,3)))
+ (P/'host-pty.json').write_text(json.dumps(dict(result='pass' if all(v['returncode']==0 for v in checks) else 'fail',checks=checks),indent=2)+'\n')
+ if result.returncode:raise SystemExit(result.returncode)
+print('Host real local/ANSI and inherited worker PTY regressions passed.')

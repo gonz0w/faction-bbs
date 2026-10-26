@@ -1,0 +1,111 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:37:20
+    |
+ 37 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:40:20
+    |
+ 40 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:45:20
+    |
+ 45 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:52:20
+    |
+ 52 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:83:27
+    |
+ 83 |     let existing = Board::open_existing(&f.path).unwrap();
+    |                           ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:95:20
+    |
+ 95 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:99:20
+    |
+ 99 |     assert!(Board::open_existing(&alias).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:102:20
+    |
+102 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `open_existing` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/existing_state.rs:106:20
+    |
+106 |     assert!(Board::open_existing(&f.path).is_err());
+    |                    ^^^^^^^^^^^^^ associated function or constant not found in `Board`
+    |
+note: if you're trying to build a new `Board`, consider using `Board::open` which returns `Result<Board, faction_core::Error>`
+   --> crates/faction-core/src/lib.rs:315:5
+    |
+315 |     pub fn open(directory: &Path) -> Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `faction-core` (test "existing_state") due to 9 previous errors

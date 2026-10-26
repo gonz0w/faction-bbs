@@ -1,0 +1,6 @@
+from lab import *
+remote('test -f /etc/faction-disposable-test; test ! -e /usr/local/share/faction228-source-final03; mkdir /usr/local/share/faction228-source-final03; cp -R /home/factionbuild/source228-final03/tools /home/factionbuild/source228-final03/themes /usr/local/share/faction228-source-final03/; chmod -R a+rX /usr/local/share/faction228-source-final03')
+for name in ['runtime_guest_final03.py','native_legacy_guest_final03.py']:
+ remote('cat > /home/factionbuild/proof228-final03/'+name,(P/name).read_bytes())
+remote('nohup python3.13 /home/factionbuild/proof228-final03/runtime_guest_final03.py > /home/factionbuild/proof228-final03/runtime-launch.private.log 2>&1 < /dev/null &')
+print('Native runtime controls launched at1GiB.')

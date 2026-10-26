@@ -1,0 +1,9 @@
+{
+  "script": "collect_failure01.py",
+  "sha256": "56723e80b5e27879362797605dbd5941ab6a5574fd56b84520915fbe8567a388",
+  "returncode": 0,
+  "seconds": 0.254,
+  "argv": [
+    "collect_failure01.py"
+  ]
+}

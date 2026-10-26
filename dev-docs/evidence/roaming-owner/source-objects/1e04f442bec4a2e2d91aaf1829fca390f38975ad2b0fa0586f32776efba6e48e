@@ -1,0 +1,64 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+   Compiling faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+   Compiling faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+   Compiling faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+   Compiling faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+   Compiling faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+   Compiling faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+   Compiling faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+   Compiling faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.77s
+     Running unittests src/lib.rs (target/debug/deps/faction_cli-5e9388b9407d2389)
+
+running 8 tests
+test operator::host::tests::cpu_and_network_deltas_measure_intervals_not_lifetime ... ok
+test operator::host::tests::first_failed_or_changed_scope_never_fabricates_activity ... ok
+test operator::tests::compact_lines_are_inert_and_leave_right_margin ... ok
+test operator::tests::histories_keep_recent_tail_and_fixed_bounds ... ok
+test operator::tests::owner_lifetime_is_separate_from_sample_age_and_resets_on_failed_read ... ok
+test operator::tests::stale_future_and_unavailable_never_look_fresh ... ok
+test tests::line_limit_does_not_accept_truncated_command ... ok
+test tests::member_output_is_inert ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/faction-606d87bf998fa0f1)
+
+running 1 test
+test roaming::tests::literal_metadata_preserves_field_values_and_rejects_non_graphical_stored_text ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/member.rs (target/debug/deps/faction_member-a4043c0cb431b265)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/faction-sysop.rs (target/debug/deps/faction_sysop-a60b890b2477b208)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/roaming_owner.rs (target/debug/deps/roaming_owner-9e773b0dfc0cebd3)
+
+running 8 tests
+test actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation ... ok
+test cli_preserves_four_enabled_and_thirty_two_immutable_records ... ok
+test current_approval_generations_immutable_uids_and_independent_homes ... ok
+test initialized_private_state_and_strict_arguments_are_required ... ok
+test manifest_output_is_private_new_only_and_rejects_unsafe_paths ... ok
+test maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap ... ok
+test owner_inspection_and_exact_manifest_are_readonly_and_default_off ... ok
+test restore_stays_disabled_and_real_member_entry_rejects_owner_commands ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.40s
+
+   Doc-tests faction_cli
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

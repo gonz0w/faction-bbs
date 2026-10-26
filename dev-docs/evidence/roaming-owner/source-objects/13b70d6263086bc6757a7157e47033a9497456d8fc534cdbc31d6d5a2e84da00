@@ -1,0 +1,42 @@
+{
+  "captured_before_edit": true,
+  "existing_opener_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/d548c212cac57c553d7493a6cf4c9a5a6f20dfe10b4a96a989712413719d74ee",
+    "sha256": "d548c212cac57c553d7493a6cf4c9a5a6f20dfe10b4a96a989712413719d74ee"
+  },
+  "final_cli_green": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/8eca9812bc2662146cf804f0ca3a3788dc5ea801927bc6bbf73ee809bb513992",
+    "sha256": "8eca9812bc2662146cf804f0ca3a3788dc5ea801927bc6bbf73ee809bb513992"
+  },
+  "final_guard_green": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/f96363f8d8dff4c4abed7197c63606ead0bd955ea4259bdcb5fb6f47dbe53992",
+    "sha256": "f96363f8d8dff4c4abed7197c63606ead0bd955ea4259bdcb5fb6f47dbe53992"
+  },
+  "green_exit": 0,
+  "guard_control_presence_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/5329ed5314ea00a4d7731abb47dbcc72944486462da71a23b1f1098c125dff1f",
+    "sha256": "5329ed5314ea00a4d7731abb47dbcc72944486462da71a23b1f1098c125dff1f"
+  },
+  "guard_interface_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/3a85ea939020cdacdd4cf175ab7173c06e43e746fb83217b9c6285ebbd71e658",
+    "sha256": "3a85ea939020cdacdd4cf175ab7173c06e43e746fb83217b9c6285ebbd71e658"
+  },
+  "local_lookup_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/8de8dc2a4d4598a4dfa29cf7988e3084c21eea6024dde244b0cffa2c3f53f9e8",
+    "sha256": "8de8dc2a4d4598a4dfa29cf7988e3084c21eea6024dde244b0cffa2c3f53f9e8"
+  },
+  "maximal_metadata_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/c74b5a895945af3460a4cb5ca3d7b7dc6777536513913e5856d47105fe1819b5",
+    "sha256": "c74b5a895945af3460a4cb5ca3d7b7dc6777536513913e5856d47105fe1819b5"
+  },
+  "primary_interface_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/4f89c44227eef4d20fe24edceca86276596ed57af65ed10ffcb104a935d36c1e",
+    "sha256": "4f89c44227eef4d20fe24edceca86276596ed57af65ed10ffcb104a935d36c1e"
+  },
+  "red_exit": 101,
+  "result": "pass",
+  "wal_effective_schema_red": {
+    "path": "dev-docs/evidence/roaming-owner/source-objects/f55b62d77d92dffe62f479c5bbae1467817f9867ce9029f87bf9ba13eb504aa5",
+    "sha256": "f55b62d77d92dffe62f479c5bbae1467817f9867ce9029f87bf9ba13eb504aa5"
+  }
+}

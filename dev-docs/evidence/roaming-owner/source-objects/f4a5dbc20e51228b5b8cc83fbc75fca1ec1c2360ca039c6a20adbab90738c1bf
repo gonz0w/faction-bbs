@@ -1,0 +1,24 @@
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running tests/roaming_owner.rs (target/debug/deps/roaming_owner-9e773b0dfc0cebd3)
+
+running 1 test
+test maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap ... FAILED
+
+failures:
+
+---- maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap stdout ----
+
+thread 'maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap' (995418) panicked at crates/faction-cli/tests/roaming_owner.rs:481:5:
+assertion `left == right` failed
+  left: "\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\\\\"\""
+ right: "\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\""
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.90s
+
+error: test failed, to rerun pass `-p faction-cli --test roaming_owner`

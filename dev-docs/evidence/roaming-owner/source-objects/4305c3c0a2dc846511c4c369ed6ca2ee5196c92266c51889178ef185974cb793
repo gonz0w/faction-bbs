@@ -1,0 +1,120 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "result": "pass",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-cli",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-access",
+        "-p",
+        "faction-core",
+        "--examples",
+        "--bins"
+      ],
+      "returncode": 0,
+      "seconds": 14.25,
+      "test_results": [],
+      "scope": "two-core-2GiB-compiler-and-tests"
+    },
+    {
+      "result": "pass",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-cli"
+      ],
+      "returncode": 0,
+      "seconds": 12.018,
+      "test_results": [
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "scope": "two-core-2GiB-compiler-and-tests"
+    },
+    {
+      "result": "pass",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-core",
+        "--test",
+        "roaming",
+        "--test",
+        "snapshot",
+        "--test",
+        "existing_state"
+      ],
+      "returncode": 0,
+      "seconds": 10.522,
+      "test_results": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "scope": "two-core-2GiB-compiler-and-tests"
+    }
+  ]
+}

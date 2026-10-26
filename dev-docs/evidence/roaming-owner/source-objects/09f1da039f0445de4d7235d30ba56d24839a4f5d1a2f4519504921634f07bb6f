@@ -1,0 +1,4 @@
+from lab import *
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/cargo228; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/cargo228 /home/factionbuild/target228 /home/factionbuild/proof228')
+remote('tar -xzf - -C /home/factionbuild/cargo228; chown -R factionbuild:factionbuild /home/factionbuild/cargo228',(P/'public-registry.tar.gz').read_bytes(),180)
+print('Public-only native Cargo cache uploaded.')

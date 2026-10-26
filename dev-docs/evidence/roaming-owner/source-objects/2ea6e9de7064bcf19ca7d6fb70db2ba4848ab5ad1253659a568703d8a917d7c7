@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction228-native-OWNED/collect_public03.py", line 9, in <module>
+    (out/n.replace('.private','')).write_bytes(remote('cat /home/factionbuild/proof228-final03/'+n).stdout)
+                                               ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction228-native-OWNED/lab.py", line 7, in remote
+    path=P/('remote-failure-'+str(time.time_ns())+'.private');path.write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained at '+str(path))
+                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned lab command failed; private diagnostic retained at /private/tmp/faction228-native-OWNED/remote-failure-1793042515395000000.private

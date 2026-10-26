@@ -1,0 +1,6 @@
+{
+  "result": "pass",
+  "actual_fixture_credential_values_checked": 2,
+  "private_key_data_excluded": true,
+  "raw_private_command_logs_excluded": true
+}

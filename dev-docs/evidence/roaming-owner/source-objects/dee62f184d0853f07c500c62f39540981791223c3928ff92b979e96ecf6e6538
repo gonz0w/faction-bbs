@@ -1,0 +1,9 @@
+{
+  "script": "launch_finish.py",
+  "sha256": "3c9870460a95bbf0170001574d0d68fca9497c500bbefc3457e8d8d7a7c835db",
+  "returncode": 0,
+  "seconds": 0.161,
+  "argv": [
+    "launch_finish.py"
+  ]
+}

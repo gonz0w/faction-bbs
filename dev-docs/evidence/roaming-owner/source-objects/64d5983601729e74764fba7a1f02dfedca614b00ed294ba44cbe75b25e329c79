@@ -1,0 +1,15 @@
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/roaming_owner.rs (target/debug/deps/roaming_owner-9e773b0dfc0cebd3)
+
+running 7 tests
+test actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation ... ok
+test cli_preserves_four_enabled_and_thirty_two_immutable_records ... ok
+test current_approval_generations_immutable_uids_and_independent_homes ... ok
+test initialized_private_state_and_strict_arguments_are_required ... ok
+test manifest_output_is_private_new_only_and_rejects_unsafe_paths ... ok
+test owner_inspection_and_exact_manifest_are_readonly_and_default_off ... ok
+test restore_stays_disabled_and_real_member_entry_rejects_owner_commands ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.61s
+

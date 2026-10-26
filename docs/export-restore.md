@@ -257,3 +257,19 @@ retain this privacy intent alongside editorial/file/room state. Exact supported
 schemas 2–16 remain read-only valid; stop/drain and verify a complete backup before
 upgrading, with new owner startup migrating restored older boards to schema 17.
 No in-place downgrade, mixed-version owners or secure-erasure promise.
+
+
+## Experimental roaming associations
+
+Schema20 export/restore retains the bounded invited issuer, stable subject,
+consent and immutable transport UID history for operator review. It disables
+issuers/bindings, rotates their generations and changes board identity; it cannot
+restore live roaming authority or reuse the old root manifest. Inspect with the
+[filesystem-owner roaming CLI](roaming-authentication.md#filesystem-owner-commands)
+after restoring. Keep ordinary local-password recovery available.
+
+Before deliberate re-enablement, reconcile member approval/consent and the separate
+root-owned account, CA/principal and manifest policy. Never remap a retained UID;
+a new association needs a fresh UID. Disable board authority before removing its
+root policy and draining processes. A preview/export never performs these root
+operations, enrolls a member or repairs restored authority.

@@ -1,0 +1,9 @@
+{
+  "script": "inspect_legacy03.py",
+  "sha256": "0983bc4dc08826e312affe36d5930dfd3dc0ebe6f95e5a29afec75fb489f175b",
+  "returncode": 0,
+  "seconds": 0.086,
+  "argv": [
+    "inspect_legacy03.py"
+  ]
+}

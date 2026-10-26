@@ -1,0 +1,15 @@
+from pathlib import Path
+source=Path('/home/factionbuild/proof228/runtime_guest.py').read_text().split('\ntry:\n assert not B.exists()')[0]
+# The controller must leave the classic choice prompt untouched: unlike roaming,
+# that prompt is already ready and needs no welcome-page Enter.
+source=source.replace('def tty_enter(transport,expected):','def tty_enter(transport,expected,continue_welcome=True):').replace(" os.write(master,b'\\n');return master,pid,buf"," if continue_welcome:os.write(master,b'\\n')\n return master,pid,buf")
+exec(source)
+old=json.loads((P/'native-runtime-candidate01.private.json').read_text());assert old['result']=='fail' and len(old['checks'])==12;checks=old['checks']
+try:
+ start(manifest=False);master,pid,_=tty_enter(pwd.getpwnam('factionterm').pw_uid,b'[L]ogin [R]egister [Q]uit: ',False);tty_drain(master,pid);stop();record('default-off-service-classic-owned-tty-login-menu')
+ hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in B.iterdir()};(P/'native-binaries.json').write_text(json.dumps({'result':'pass','sha256':hashes},indent=2)+'\n')
+ save();(P/'native-runtime-continuation.json').write_text(json.dumps({'result':'pass','prior_actual_checks':12,'new_actual_checks':1,'retained_failed_candidate':True,'controller_fix':'classic choice needs no welcome-page Enter'},indent=2)+'\n');print(json.dumps({'result':'pass','checks':len(checks)}))
+except BaseException as e:
+ save(type(e).__name__+': '+str(e));(P/f'finish-failure-{time.time_ns()}.private.log').write_text(traceback.format_exc());raise
+finally:
+ if proc is not None and proc.poll() is None:stop()

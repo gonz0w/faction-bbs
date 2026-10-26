@@ -1,0 +1,9 @@
+{
+  "script": "prepare_guest.py",
+  "sha256": "24cf4c5a971f6eb39d32d993b87aec316d427d7f0fb27a01acb51be1e1f41850",
+  "returncode": 0,
+  "seconds": 0.451,
+  "argv": [
+    "prepare_guest.py"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "script": "start_vm.py",
+  "sha256": "de1c4dc10836766b3b54f42b3378e86ff0de3193394932558f7a577dd501069c",
+  "returncode": 0,
+  "seconds": 0.026,
+  "argv": [
+    "start_vm.py"
+  ]
+}

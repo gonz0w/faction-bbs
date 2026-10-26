@@ -1,5 +1,6 @@
 //! Filesystem-owner console. Never install as an SSH forced command.
 #![forbid(unsafe_code)]
+mod roaming;
 use faction_cli::{Result, invalid, line, new_secret, secret};
 use faction_core::Board;
 use faction_terminal::Theme;
@@ -10,6 +11,7 @@ fn run() -> Result<()> {
         println!(
             "Faction local development console\nUsage: faction --state-dir PATH init|register|login|recover\nOwner magazine export: faction --state-dir PATH magazine-edition ISSUE_ID NEW_FILE\nOwner data tools: faction --state-dir PATH export NEW_FILE | restore EXPORT_FILE\n                 faction verify-export EXPORT_FILE\nLogin options: --ansi | --plain, --theme PACK_DIRECTORY, --season OVERRIDE_DIRECTORY, --theme-schedule SCHEDULE_DIRECTORY, --directory PACK, --gallery PACK, --library PACK\nOffline library check: faction library-check PACK\nOwner magazine tools: faction library-preview PACK ISSUE | library-edition PACK ISSUE NEW_FILE\nOffline gallery check: faction gallery-check PACK\nOffline directory check: faction directory-check PACK\nPrivate local state only. Never use as an SSH forced command.\nNo password arguments, environment credentials, listener or network service."
         );
+        println!("{}", roaming::HELP);
         return Ok(());
     }
     if args
@@ -109,6 +111,9 @@ fn run() -> Result<()> {
     }
     let path = PathBuf::from(&args[1]);
     let command = args[2].to_str().ok_or_else(|| invalid("invalid command"))?;
+    if command == "roaming" {
+        return roaming::run(&path, &args[3..]);
+    }
     if command == "magazine-edition" {
         if args.len() != 5 {
             return Err(invalid(

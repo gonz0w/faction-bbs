@@ -1,0 +1,9 @@
+{
+  "script": "inspect_build02.py",
+  "sha256": "86820968617d887b5f60f083400bcae228f518de9f4fd17678aa9885622f666b",
+  "returncode": 0,
+  "seconds": 0.09,
+  "argv": [
+    "inspect_build02.py"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "result": "pass",
+  "public_files": 36,
+  "source_refs": 990,
+  "source_stages": 15,
+  "native_matched_inputs": 725,
+  "cli_tests": 18,
+  "core_tests": 28,
+  "runtime_controls": 14,
+  "recovery_controls": 21,
+  "new_source_objects": 284,
+  "privacy_candidates": [],
+  "incidental_desktop_metadata": [
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/300df0b9d64fd11df39a14bc715747c1529fc6c18d349dd65e1d3d601533ed0d",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/f869e5f6218308606e506a22ba64b2e64fbe000e30cf516e4b0d1eda3b2f48f9",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/a609393c63c7ee97e0bd859b24ddab027b2f38f582b3aabfdddbfcd79cd9d144",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/ae62deb09ca99b344ad95bd477aa371a3e8ee1dd61a7e73246ddb7c06d57696a",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/d119a2f58d7e2301575c0caf4c2e6d3b3d9843c6af0dad78d9cb1c2cf9b067b6",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/c91f6caac6f924180e29ede5dc1bf511b6c459f6619bb0995b82601ab2197047",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/01e49d959f5cbe9b1a381e2572aec4fe779365840c416b50fadbdb72200a8d74",
+    "/Users/cam/DEV/faction-bbs/dev-docs/evidence/roaming-owner/source-objects/f989f539fe6d83a90e9074b528a8d0c4d088ebc4e82af37b2680b55c5d66bfbd"
+  ],
+  "product_source_before": {
+    "crates/faction-cli/src/main.rs": "0359116837f68f60e2a0e1b5e2372dc3ab05a4b678ab638015894276ce12b203",
+    "crates/faction-cli/src/roaming.rs": "cbe995b332119578d4ce9da4baf1732571271aae71e3c53451055b7bc8009367",
+    "crates/faction-cli/tests/roaming_owner.rs": "a6196c9e76d77b9a722e2c0de5f85ae4f47de279c7f507c125b3aa0f11d86c03",
+    "crates/faction-core/src/lib.rs": "5c2d72f50904dcc9183c0bd6d437aa2e3c9f349bb61c0726cabb01236901d1be",
+    "crates/faction-core/tests/existing_state.rs": "7c0d36a45bad10b4edd7043ac93d95eb446d419d0b7258fbb2a3889aebee9aa3"
+  },
+  "product_source_after": {
+    "crates/faction-cli/src/main.rs": "0359116837f68f60e2a0e1b5e2372dc3ab05a4b678ab638015894276ce12b203",
+    "crates/faction-cli/src/roaming.rs": "cbe995b332119578d4ce9da4baf1732571271aae71e3c53451055b7bc8009367",
+    "crates/faction-cli/tests/roaming_owner.rs": "a6196c9e76d77b9a722e2c0de5f85ae4f47de279c7f507c125b3aa0f11d86c03",
+    "crates/faction-core/src/lib.rs": "5c2d72f50904dcc9183c0bd6d437aa2e3c9f349bb61c0726cabb01236901d1be",
+    "crates/faction-core/tests/existing_state.rs": "7c0d36a45bad10b4edd7043ac93d95eb446d419d0b7258fbb2a3889aebee9aa3"
+  },
+  "audit_script_sha256": "0d1abd80679e5efb94fc812babc45627c9c8af9fd5fbcbeb80b02051514387cd"
+}

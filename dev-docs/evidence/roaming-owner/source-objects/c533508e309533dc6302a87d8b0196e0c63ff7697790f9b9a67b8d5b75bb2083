@@ -1,0 +1,1 @@
+{"result": "pass", "source_inputs": 725, "identity": ["NetBSD 11.0 evbarm", "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)", "cargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)", "Python 3.13.14", "2128732160", "2"]}

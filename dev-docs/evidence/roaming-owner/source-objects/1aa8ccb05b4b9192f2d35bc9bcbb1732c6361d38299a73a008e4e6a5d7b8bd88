@@ -1,0 +1,27 @@
+   Compiling digest v0.11.3
+   Compiling blake2 v0.11.0
+   Compiling argon2 v0.6.0
+   Compiling faction-core v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-core)
+   Compiling faction-gatherings v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-gatherings)
+   Compiling faction-library v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-library)
+   Compiling faction-polls v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-polls)
+   Compiling faction-gallery v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-gallery)
+   Compiling faction-catchup v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-catchup)
+   Compiling faction-wall v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-wall)
+   Compiling faction-pages v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-pages)
+   Compiling faction-find v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-find)
+   Compiling faction-cli v0.1.0-alpha.1 (/home/factionbuild/source228/crates/faction-cli)
+    Finished `release` profile [optimized] target(s) in 9.98s
+     Running tests/roaming_owner.rs (/home/factionbuild/target228/release/deps/roaming_owner-a546beb3e61b796e)
+
+running 7 tests
+test cli_preserves_four_enabled_and_thirty_two_immutable_records ... ok
+test actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation ... ok
+test current_approval_generations_immutable_uids_and_independent_homes ... ok
+test initialized_private_state_and_strict_arguments_are_required ... ok
+test manifest_output_is_private_new_only_and_rejects_unsafe_paths ... ok
+test owner_inspection_and_exact_manifest_are_readonly_and_default_off ... ok
+test restore_stays_disabled_and_real_member_entry_rejects_owner_commands ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s
+
