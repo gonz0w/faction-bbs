@@ -65,8 +65,8 @@ def run(a):
         watcher.raw(b'\r');watcher.expect('No boards listed yet. Ask the sysop.');assert b'Connection card' not in watcher.buffer;watcher.raw(b'q');watcher.expect(FOOTER);quit(watcher);checks.append('concurrent_card_removal_consumes_old_selection_without_endpoint_swap')
         configure(True);c=connect(plain=True);desk(c,True);draft(c,True);assert query('SELECT count(*) FROM directory_submissions')==[[0]];back(c,True);quit(c,True);assert b'\x1b' not in c.transcript;checks.append('plain_shared_submit_preview_cancel_and_return_without_ansi')
         assert remote('cat '+pack+'/boards.toml')==source;assert query('PRAGMA user_version')==[[19]]
-        assert all(password.encode() not in c.transcript for c in children);checks.append('owner_pack_unchanged_schema_nineteen_and_no_password_echo')
-        result={'result':'pass','count':len(checks),'checks':checks,'schema_version':19,'normal_sessions':8,'admission_refill_ms':5000,'capacity_claim':False,'hardening_claim':False,'federation_claim':False}
+        assert all(password.encode() not in c.transcript for c in children);checks.append('owner_pack_unchanged_schema_twenty_and_no_password_echo')
+        result={'result':'pass','count':len(checks),'checks':checks,'schema_version':20,'normal_sessions':8,'admission_refill_ms':5000,'capacity_claim':False,'hardening_claim':False,'federation_claim':False}
         a.output.write_text(json.dumps(result,indent=2)+'\n');print('Shared SSH/native directory submissions passed:',len(checks),'controls.')
     finally:
         for c in children:c.close()

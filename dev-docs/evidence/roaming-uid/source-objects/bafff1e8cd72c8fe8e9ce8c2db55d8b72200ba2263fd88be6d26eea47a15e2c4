@@ -1,0 +1,4 @@
+from lab import *
+import json,shlex
+r=remote('ls -ld /var/run/faction; ls -l /var/run/faction/terminal*; su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction223-a/service.toml"; su -m factiond -c "/usr/local/libexec/roaming_owner_fixture /var/db/faction223-a state"; cat /etc/faction223-a/manifest.toml',check=False);(P/'runtime-candidate01-setup.private.log').write_bytes(r.stdout+r.stderr)
+print(r.stdout.decode())

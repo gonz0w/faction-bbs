@@ -1,0 +1,11 @@
+    Checking faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Checking faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+    Checking faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+    Checking faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+    Checking faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+    Checking faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+    Checking faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+    Checking faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+    Checking faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+    Checking faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `release` profile [optimized] target(s) in 1.04s

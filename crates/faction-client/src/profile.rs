@@ -9,6 +9,11 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
 };
+pub struct ExperimentalTerminal {
+    pub login: String,
+    pub identity: PathBuf,
+    pub certificate: PathBuf,
+}
 pub struct Profile {
     pub host: String,
     pub port: u16,
@@ -17,6 +22,7 @@ pub struct Profile {
     pub identity: PathBuf,
     pub public_key: String,
     pub known_hosts: PathBuf,
+    pub experimental_terminal: Option<ExperimentalTerminal>,
 }
 /// Parsed local settings, separate from the readiness of the referenced files.
 pub(super) struct Settings {
@@ -27,6 +33,7 @@ pub(super) struct Settings {
     pub identity: PathBuf,
     pub public: PathBuf,
     pub known_hosts: PathBuf,
+    pub experimental_terminal: Option<ExperimentalTerminal>,
 }
 pub(super) fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
     let f = OpenOptions::new()
@@ -98,6 +105,38 @@ impl Settings {
             .and_then(|v| u16::try_from(v).ok())
             .filter(|n| *n > 0)
             .ok_or_else(invalid)?;
+        let experimental_terminal = match t.remove("experimental_terminal") {
+            None => None,
+            Some(toml::Value::Table(mut e)) => {
+                let mut string = |key: &str| {
+                    e.remove(key)
+                        .and_then(|v| v.as_str().map(str::to_owned))
+                        .ok_or_else(invalid)
+                };
+                let login = string("login")?;
+                let terminal_identity = path(string("identity")?)?;
+                let certificate = path(string("certificate")?)?;
+                if terminal_identity == identity
+                    || certificate == terminal_identity
+                    || certificate == identity
+                    || !e.is_empty()
+                    || login.is_empty()
+                    || login.len() > 32
+                    || login.starts_with('-')
+                    || !login
+                        .bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
+                {
+                    return Err(invalid());
+                }
+                Some(ExperimentalTerminal {
+                    login,
+                    identity: terminal_identity,
+                    certificate,
+                })
+            }
+            _ => return Err(invalid()),
+        };
         if !t.is_empty() || !host(&hostname) || !host(&file_host) {
             return Err(invalid());
         }
@@ -109,6 +148,7 @@ impl Settings {
             identity,
             public,
             known_hosts,
+            experimental_terminal,
         })
     }
     pub fn public_key(&self) -> io::Result<String> {
@@ -128,7 +168,15 @@ impl Settings {
         }
         Ok(public_key)
     }
+    pub(super) fn terminal_ready(&self) -> io::Result<()> {
+        if let Some(e) = &self.experimental_terminal {
+            regular(&e.identity, 65536, true)?;
+            regular(&e.certificate, 16384, false)?;
+        }
+        Ok(())
+    }
     fn ready(self) -> io::Result<Profile> {
+        self.terminal_ready()?;
         regular(&self.identity, 65536, false)?;
         regular(&self.known_hosts, 1024 * 1024, false)?;
         let public_key = self.public_key()?;
@@ -140,6 +188,7 @@ impl Settings {
             identity: self.identity,
             public_key,
             known_hosts: self.known_hosts,
+            experimental_terminal: self.experimental_terminal,
         })
     }
 }
@@ -179,8 +228,13 @@ impl Profile {
             "UserKnownHostsFile=\"{}\"",
             self.known_hosts.display()
         ));
+        let terminal = self.experimental_terminal.as_ref().filter(|_| !files);
+        if let Some(e) = terminal {
+            c.arg("-o")
+                .arg(format!("CertificateFile=\"{}\"", e.certificate.display()));
+        }
         c.arg("-i")
-            .arg(&self.identity)
+            .arg(terminal.map_or(&self.identity, |e| &e.identity))
             .arg("-p")
             .arg(if files { self.file_port } else { self.port }.to_string());
         if files {
@@ -188,7 +242,12 @@ impl Profile {
                 .arg(&self.file_host)
                 .arg("sftp");
         } else {
-            c.args(["-tt", "-l", "factionterm"]).arg(&self.host);
+            c.args([
+                "-tt",
+                "-l",
+                terminal.map_or("factionterm", |e| e.login.as_str()),
+            ])
+            .arg(&self.host);
         }
         c.env_clear()
             .env("PATH", "/usr/bin:/bin")
@@ -246,6 +305,59 @@ mod tests {
         assert!(args.contains(&"BatchMode=yes".into()));
         assert!(args.contains(&"ClearAllForwardings=yes".into()));
         assert!(args.contains(&"none".into()));
+        assert!(!args.iter().any(|a| a.starts_with("CertificateFile=")));
+        assert!(args.contains(&"factionterm".into()));
+        let experimental = format!(
+            "{original}[experimental_terminal]\nlogin='factionroam1'\nidentity='{}/auth key'\ncertificate='{}/auth cert.pub'\n",
+            root.display(),
+            root.display()
+        );
+        for name in ["auth key", "auth cert.pub"] {
+            std::fs::write(root.join(name), "fixture").unwrap();
+            std::fs::set_permissions(root.join(name), std::fs::Permissions::from_mode(0o600))
+                .unwrap();
+        }
+        std::fs::write(&path, &experimental).unwrap();
+        let roaming = Profile::load(&path).unwrap();
+        let args = roaming
+            .ssh(false)
+            .get_args()
+            .map(|a| a.to_string_lossy().into_owned())
+            .collect::<Vec<_>>();
+        assert!(args.contains(&"factionroam1".into()));
+        assert!(args.contains(&root.join("auth key").display().to_string()));
+        assert!(args.contains(&format!(
+            "CertificateFile=\"{}/auth cert.pub\"",
+            root.display()
+        )));
+        let files = roaming
+            .ssh(true)
+            .get_args()
+            .map(|a| a.to_string_lossy().into_owned())
+            .collect::<Vec<_>>();
+        assert!(files.contains(&"factionfiles".into()));
+        assert!(files.contains(&root.join("identity").display().to_string()));
+        assert!(!files.iter().any(|a| a.starts_with("CertificateFile=")));
+        for bad in [
+            experimental.replace("login='factionroam1'", "login='-unsafe'"),
+            experimental.replace("login='factionroam1'", "login='bad user'"),
+            experimental.replace(
+                "login='factionroam1'",
+                &format!("login='{}'", "a".repeat(33)),
+            ),
+            experimental.replace("login='factionroam1'\n", ""),
+            experimental.replace(
+                &format!("certificate='{}/auth cert.pub'\n", root.display()),
+                "",
+            ),
+            format!("{experimental}unknown=true\n"),
+            experimental.replace("auth cert.pub", "missing-cert.pub"),
+            experimental.replace("auth key", "identity"),
+            experimental.replace("auth cert.pub", "auth key"),
+        ] {
+            std::fs::write(&path, bad).unwrap();
+            assert!(Profile::load(&path).is_err());
+        }
         for bad in [
             original.replace("example.invalid", "-oProxyCommand=bad"),
             format!("{original}unknown=true\n"),

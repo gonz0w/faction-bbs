@@ -1,0 +1,10 @@
+{
+  "returncode": 0,
+  "observations": {
+    "result": "pass",
+    "layer": "OpenSSH RFC4252 public-key signature component",
+    "checks": 7,
+    "wire_replay_claim": false
+  },
+  "layer": "OpenSSH sshkey sign/verify RFC4252 request component, synthetic session identifiers; no network KEX capture"
+}

@@ -99,6 +99,10 @@ fn grant(
     file_id(id)?;
     let row=tx.query_row("SELECT t.id,t.object_id,o.filename,t.direction,o.bytes,o.sha256,t.lease,t.member_id,t.epoch,m.epoch,m.status,t.created,t.expires,t.state,o.area_id,o.state,m.role FROM file_transfers t JOIN members m ON m.id=t.member_id JOIN file_objects o ON o.id=t.object_id WHERE t.id=?1",[id],|r|Ok((TransferGrant{id:r.get(0)?,object:r.get(1)?,filename:r.get(2)?,direction:r.get(3)?,bytes:r.get(4)?,sha256:r.get(5)?,lease:r.get(6)?},r.get::<_,i64>(7)?,r.get::<_,i64>(8)?,r.get::<_,i64>(9)?,r.get::<_,String>(10)?,r.get::<_,i64>(11)?,r.get::<_,i64>(12)?,r.get::<_,String>(13)?,r.get::<_,i64>(14)?,r.get::<_,String>(15)?,r.get::<_,String>(16)?))).optional()?.ok_or(Error::Denied)?;
     let (g, member, epoch, actual, status, created, expires, state, area, object_state, role) = row;
+    let provenance = tx.query_row("SELECT binding_id,binding_generation,issuer_id,issuer_generation FROM roaming_transfers WHERE transfer=?1",[id],|r| Ok(crate::roaming::Provenance{binding_id:r.get(0)?,binding_generation:r.get(1)?,issuer_id:r.get(2)?,issuer_generation:r.get(3)?})).optional()?;
+    if let Some(p) = provenance {
+        crate::roaming::check(tx, member, p)?;
+    }
     let n = now()?;
     if epoch != actual
         || status != "approved"
@@ -497,6 +501,18 @@ fn insert_transfer(
     }
     let id = request_id()?;
     tx.execute("INSERT INTO file_transfers(id,object_id,member_id,epoch,ssh_key,direction,created,expires,state) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,'ready')",params![id,object,s.member,s.epoch,key,direction,n,n+300])?;
+    if let Some(p) = s.roaming {
+        tx.execute(
+            "INSERT INTO roaming_transfers VALUES(?1,?2,?3,?4,?5)",
+            params![
+                id,
+                p.binding_id,
+                p.binding_generation,
+                p.issuer_id,
+                p.issuer_generation
+            ],
+        )?;
+    }
     Ok(id)
 }
 

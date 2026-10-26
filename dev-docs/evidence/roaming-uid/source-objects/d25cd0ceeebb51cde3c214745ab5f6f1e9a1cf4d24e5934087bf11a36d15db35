@@ -1,0 +1,21 @@
+...........................................................................................................................................................................................................................................................................................E........................................................................
+======================================================================
+ERROR: test_committed_record_and_all_bound_inputs (test_roaming_evidence.RoamingEvidenceTests.test_committed_record_and_all_bound_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_evidence.py", line 28, in test_committed_record_and_all_bound_inputs
+    e.check()
+    ~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_roaming_evidence.py", line 50, in check
+    validate(ROOT,json.loads(data))
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_roaming_evidence.py", line 37, in validate
+    assert records['native-source-match']['all_match'] is True
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'all_match'
+
+----------------------------------------------------------------------
+Ran 356 tests in 47.684s
+
+FAILED (errors=1)
+Preview already running; data preserved.

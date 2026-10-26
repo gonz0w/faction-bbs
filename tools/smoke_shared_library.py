@@ -71,7 +71,7 @@ def run(a):
         remote('/etc/rc.d/faction_broker onestop');remote('cat > '+catalog+'/library.toml',text.replace('enabled=true','enabled=false').encode());remote('/etc/rc.d/faction_broker onestart');c=connect();assert b'Library shelves' not in c.transcript;logout(c)
         remote('/etc/rc.d/faction_broker onestop');remote('cat > '+catalog+'/library.toml',text.replace('rights="BSD-3-Clause synthetic fixture only"','rights=""',1).encode());code="import subprocess;x=subprocess.run(['su','-','factiond','-c','/usr/local/libexec/faction library-check "+catalog+"'],capture_output=True);assert x.returncode!=0";remote('python3.13 -c '+shlex.quote(code));checks.append('actual_owner_disabled_pack_and_invalid_rights_preflight_change_no_member_authority')
         assert query('PRAGMA user_version')==[[19]] and all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=19,normal_sessions=8,admission_refill_ms=5000,payload_bytes=len(payload),capacity_claim=False,request_desk=False,new_transfer_authority=False,public_library=False),indent=2,sort_keys=True)+'\n');print('Actual shared library passed:',len(checks),'controls.')
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=20,normal_sessions=8,admission_refill_ms=5000,payload_bytes=len(payload),capacity_claim=False,request_desk=False,new_transfer_authority=False,public_library=False),indent=2,sort_keys=True)+'\n');print('Actual shared library passed:',len(checks),'controls.')
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('library-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

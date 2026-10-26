@@ -106,7 +106,7 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     size(db)?;
     let app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-    if app != APP_ID || !(2..=19).contains(&version) {
+    if app != APP_ID || !(2..=20).contains(&version) {
         return Err(Error::UnsupportedSchema);
     }
     // Never run an imported SQL script. Only this exact checked-in catalog
@@ -164,6 +164,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     }
     if version >= 19 {
         reference.execute_batch(include_str!("directory.sql"))?;
+    }
+    if version >= 20 {
+        reference.execute_batch(include_str!("roaming.sql"))?;
     }
     if exported {
         reference.execute_batch(INFO)?;
@@ -396,6 +399,9 @@ fn validate(db: &Connection, exported: bool, deadline: Instant) -> Result<Snapsh
     if version >= 19 {
         crate::directory::validate(db)?;
     }
+    if version >= 20 {
+        crate::roaming::validate(db, exported)?;
+    }
     Ok(SnapshotSummary {
         members: count(db, "SELECT count(*) FROM members")?,
         rooms: count(db, "SELECT count(*) FROM rooms")?,
@@ -529,6 +535,10 @@ pub fn restore_local(input: &Path, destination: &Path) -> Result<SnapshotSummary
     let mut db = stage.connection(deadline)?;
     copy(&source, &mut db, deadline)?;
     validate(&db, true, deadline)?;
+    let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+    if version >= 20 {
+        crate::roaming::disable_snapshot(&db)?;
+    }
     let mut identity = [0; 32];
     getrandom::fill(&mut identity).map_err(|_| Error::Entropy)?;
     db.execute(
@@ -593,6 +603,9 @@ fn export_connection(
     let version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
     if version >= 4 {
         db.execute_batch("DELETE FROM file_transfers;")?;
+    }
+    if version >= 20 {
+        crate::roaming::disable_snapshot(&db)?;
     }
     db.execute_batch(INFO)?;
     db.execute("INSERT INTO faction_export VALUES(1,1)", [])?;

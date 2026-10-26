@@ -1,0 +1,6 @@
+    Checking zeroize v1.9.1
+    Checking digest v0.11.3
+    Checking blake2 v0.11.0
+    Checking argon2 v0.6.0
+    Checking faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Finished `release` profile [optimized] target(s) in 0.96s

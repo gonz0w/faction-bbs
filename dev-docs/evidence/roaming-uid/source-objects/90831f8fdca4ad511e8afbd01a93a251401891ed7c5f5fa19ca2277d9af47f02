@@ -1,0 +1,16 @@
+from lab import *
+import hashlib,json,re,shlex
+settings=json.loads(remote('cat /home/factionbuild/device223/settings.private.json').stdout);uids=settings['uids']
+cmd=['python3.13','tools/smoke_backup_recovery.py','/home/factionbuild/target223/release/faction','/home/factionbuild/target223/release/faction-sysop','--owner-uid',str(uids['factiond']),'--files-uid',str(uids['factionfiles']),'--disposable-fixture','--output','/home/factionbuild/proof223/native-backup-recovery.json']
+r=remote('cd /home/factionbuild/source223-oracles; '+shlex.join(cmd),timeout=60,check=False);(P/'native-backup-recovery.private.log').write_bytes(r.stdout+r.stderr);assert r.returncode==0,'native complete-bundle recovery failed; private diagnostics retained'
+for name in ['native-backup-recovery.json','native-extra-controls.json','native-kernel-controls.json','native-runtime-controls.json','native-legacy.json']:(P/name).write_bytes(remote('cat /home/factionbuild/proof223/'+name).stdout)
+log=remote('cat /home/factionbuild/proof223/final-native-1.private.log').stdout;(P/'candidate03-native-workspace.private.log').write_bytes(log)
+counts=[tuple(map(int,x)) for x in re.findall(rb'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',log)];assert counts and all(x[1]==0 for x in counts)
+workspace=json.loads(remote('cat /home/factionbuild/proof223/final-native-build.json').stdout);assert len(workspace['checks'])==2 and workspace['result']=='pass';workspace.update(passed_tests=sum(x[0] for x in counts),failed_tests=sum(x[1] for x in counts),ignored_tests=sum(x[2] for x in counts),test_targets=len(counts));(P/'native-workspace.json').write_text(json.dumps(workspace,indent=2)+'\n')
+manifest=json.loads((P/'candidate04-sources.json').read_text());script='import hashlib,json,pathlib;root=pathlib.Path("/home/factionbuild/source223-oracles");names=json.loads('+repr(json.dumps(list(manifest)))+');print(json.dumps({n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names},sort_keys=True))'
+actual=json.loads(remote('python3.13 -c '+shlex.quote(script)).stdout);assert actual==manifest
+(P/'native-oracle-source-match.json').write_text(json.dumps({'result':'pass','matched_inputs':len(actual),'files':actual,'source_manifest_sha256':hashlib.sha256((P/'candidate04-sources.json').read_bytes()).hexdigest(),'compiled_product_unchanged':True},indent=2)+'\n')
+r=remote('test ! -S /var/run/faction/terminal.sock; test ! -f /var/run/faction223-a-sshd.pid; test ! -f /var/run/faction223-b-sshd.pid; for u in 32231 32232 32233 32234; do ! pgrep -u "$u" >/dev/null; done',check=False)
+assert r.returncode==0
+(P/'owned-services-stopped.json').write_text(json.dumps({'result':'pass','board_owners_stopped':True,'board_ssh_listeners_stopped':True,'all_four_transport_uids_drained':True,'saved_playground_stopped':True,'vm_available_for_lead_validation':True})+'\n')
+print(json.dumps({'native_workspace_passed':workspace['passed_tests'],'native_workspace_failed':workspace['failed_tests'],'native_backup_controls':json.loads((P/'native-backup-recovery.json').read_text())['count'],'native_oracle_sources':len(actual),'services_stopped':True}))

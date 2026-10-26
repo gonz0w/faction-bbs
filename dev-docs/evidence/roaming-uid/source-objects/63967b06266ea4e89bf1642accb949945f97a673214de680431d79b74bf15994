@@ -1,0 +1,39 @@
+from pathlib import Path
+import hashlib,json,os,shutil,socket,subprocess
+P=Path(__file__).resolve().parent;R=Path('/Users/cam/DEV/faction-bbs');D=R/'local/demo';B=D/'saved/20261022T005925Z';V=P/'vm'
+os.umask(0o077)
+assert (P/'OWNED').is_file() and not V.exists()
+commands=subprocess.check_output(['ps','-axo','pid=,command='],text=True).splitlines()
+assert not any(str(D)+'/' in c and ('qemu-system' in c or 'serial-controller.py' in c) for c in commands)
+expected={'playground.qcow2':'94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062','kernel.img':'3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8'}
+for name,digest in expected.items():
+ h=hashlib.sha256()
+ with (B/name).open('rb') as f:
+  for data in iter(lambda:f.read(1048576),b''):h.update(data)
+ assert h.hexdigest()==digest
+before={'artifacts':{str(p.relative_to(D)):{'size':p.stat().st_size,'mtime_ns':p.stat().st_mtime_ns} for p in [B/'playground.qcow2',B/'kernel.img']},'metadata_sha256':{str(p.relative_to(D)):hashlib.sha256(p.read_bytes()).hexdigest() for p in D.iterdir() if p.is_file() and p.stat().st_size<1048576},'saved_sha256':expected}
+(P/'saved-before.private.json').write_text(json.dumps(before,indent=2)+'\n')
+V.mkdir(mode=0o700);(V/'OWNED').write_text('Issue #223 disposable overlay. Saved backing image read-only.\n')
+subprocess.run(['qemu-img','create','-f','qcow2','-F','qcow2','-b',str(B/'playground.qcow2'),str(V/'disk.qcow2')],check=True,stdout=subprocess.DEVNULL)
+shutil.copyfile(B/'kernel.img',V/'kernel.img')
+controller=R/'dev-docs/evidence/local-unread-mail/qualification/orchestration-source-objects/769874e53535fcbcd6a9c63a29809b9e0208ba000dfaab2362c988d6c1955f50'
+assert hashlib.sha256(controller.read_bytes()).hexdigest()==controller.name
+shutil.copyfile(controller,V/'serial-controller.py')
+ports={}
+for name in ['admin','a','b','files']:
+ with socket.socket() as sock:sock.bind(('127.0.0.1',0));ports[name]=sock.getsockname()[1]
+assert len(set(ports.values()))==4
+(V/'ports.json').write_text(json.dumps(ports)+'\n')
+args=json.loads((D/'ssh-admin.json').read_text());args[args.index('-p')+1]=str(ports['admin'])
+for i,arg in enumerate(args):
+ if arg.startswith('UserKnownHostsFile='):args[i]='UserKnownHostsFile='+str(V/'known_hosts')
+lines=[]
+for line in (D/'known_hosts').read_text().splitlines():
+ fields=line.split()
+ if len(fields)>=3:lines.append(f'[127.0.0.1]:{ports["admin"]} '+' '.join(fields[1:]))
+(V/'known_hosts').write_text('\n'.join(lines)+'\n');(V/'ssh-admin.json').write_text(json.dumps(args)+'\n')
+net='user,id=net0,'+','.join('hostfwd=tcp:127.0.0.1:'+str(ports[name])+'-:'+str(port) for name,port in [('admin',22),('a',2222),('b',2224),('files',2223)])
+q=['qemu-system-aarch64','-M','virt','-accel','hvf','-cpu','host','-smp','2','-m','2048','-kernel',str(V/'kernel.img'),'-append','root=NAME=netbsd-root -c','-drive',f'file={V}/disk.qcow2,if=none,format=qcow2,id=hd0','-device','virtio-blk-device,drive=hd0','-netdev',net,'-device','virtio-net-device,netdev=net0','-device','virtio-rng-device','-display','none','-monitor','none','-serial',f'unix:{V}/serial.sock,server=on,wait=on']
+(V/'qemu-command.json').write_text(json.dumps(q)+'\n')
+(P/'fixture-prepared.json').write_text(json.dumps({'result':'pass','overlay_only':True,'saved_owner_stopped':True,'compiler_cores':2,'compiler_memory_mib':2048,'loopback_forwards_only':True})+'\n')
+print(json.dumps({'prepared':True,'ports':ports}))

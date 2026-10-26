@@ -106,7 +106,7 @@ def run(a):
         owner=connect();friend=connect(handle=author);lounge(friend);cmd(friend,'/available Revocation check','Lounge> ');lobby(friend);status(owner,author,'v');friend.raw(b'l');friend.expect('session expired');friend.finish(1)
         lounge(owner);cmd(owner,'/social off',MENU);assert b'Social lounge disabled' in owner.transcript;logout(owner);passed('actual_revocation_and_disable_remove_outside_chat_authority_and_pending_signals')
         assert query('PRAGMA user_version')==[[19]] and query('SELECT * FROM unread ORDER BY member_id,room_id')==before_unread and all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=19,normal_sessions=8,admission_refill_ms=5000,heartbeat_observations=heartbeat,synthetic_clock_aging=True,capacity_claim=False,private_message_bodies=False,outside_chat_shared_availability=True,automatic_popups=False,legacy_outside_chat=False),indent=2,sort_keys=True)+'\n');print('Actual board-wide shared social passed:',len(checks),'controls.')
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=20,normal_sessions=8,admission_refill_ms=5000,heartbeat_observations=heartbeat,synthetic_clock_aging=True,capacity_claim=False,private_message_bodies=False,outside_chat_shared_availability=True,automatic_popups=False,legacy_outside_chat=False),indent=2,sort_keys=True)+'\n');print('Actual board-wide shared social passed:',len(checks),'controls.')
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('boardwide-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

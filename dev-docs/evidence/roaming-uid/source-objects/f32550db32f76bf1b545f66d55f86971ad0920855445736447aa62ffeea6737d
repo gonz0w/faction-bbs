@@ -1,0 +1,359 @@
+   Compiling zeroize v1.9.1
+   Compiling digest v0.11.3
+   Compiling blake2 v0.11.0
+   Compiling argon2 v0.6.0
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Finished `release` profile [optimized] target(s) in 4.62s
+     Running unittests src/lib.rs (target/release/deps/faction_core-0065cadc8b1aa141)
+
+running 3 tests
+test operator::backup::tests::records_attempt_and_last_success_separately_without_content ... ok
+test operator::tests::aggregate_budget_restores_normal_queries_and_busy_timeout ... ok
+test operator::tests::strict_versioned_aggregate_protocol ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/catchup.rs (target/release/deps/catchup-4a2c76bba33076b5)
+
+running 9 tests
+test busy_reads_stay_available_and_explicit_checkpoint_retries ... ok
+test favorites_are_member_owned_bounded_and_revision_checked ... ok
+test file_access_and_stale_targets_are_rechecked_without_private_metadata ... ok
+test file_window_is_publication_order_and_cannot_skip_later_publications ... ok
+test long_absences_are_capped_without_a_second_post_ledger ... ok
+test modules_notice_and_gathering_visibility_are_current_and_local ... ok
+test optional_policy_current_membership_and_no_automatic_activity_tracking ... ok
+test preview_counts_replies_and_checkpoint_never_acknowledge_posts ... ok
+test snapshot_publication_baseline_and_exact_schema_twelve_recovery ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s
+
+     Running tests/chat.rs (target/release/deps/chat-1acb7ef6a776bdb8)
+
+running 11 tests
+test channel_authority_rechecks_role_even_without_epoch_change ... ok
+test channel_join_and_lease_caps ... ok
+test concurrent_send_serializes_channel_sequence ... ok
+test names_are_paginated_and_account_based ... ok
+test pending_revoked_reapproved_and_foreign_leases_deny ... ok
+test presence_close_expiry_and_clock_rollback ... ok
+test private_channels_history_floor_and_regrant_are_current ... ok
+test retention_and_lag_are_bounded_and_explicit ... ok
+test schema_one_migration_preserves_identity_rooms_and_unread ... ok
+test slash_commands_are_bounded_and_not_irc_wire_commands ... ok
+test two_connections_chronology_retry_and_control_bounds ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.59s
+
+     Running tests/core.rs (target/release/deps/core-73dba34aabd3b78f)
+
+running 17 tests
+test bootstrap_only_once_and_registration_never_squats_sysop ... ok
+test bounded_pages_and_control_rejection ... ok
+test busy_bootstrap_retries_preserve_single_owner ... ok
+test busy_post_retries_reconcile_after_writer_releases ... ok
+test busy_retries_are_finite_and_never_retry_other_errors ... ok
+test concurrent_bootstrap_and_duplicate_submit_are_atomic ... ok
+test database_and_sidecar_symlinks_are_rejected ... ok
+test foreign_database_rejected_before_write_configuration ... ok
+test member_cannot_manage_users_or_rooms ... ok
+test pending_cannot_access_community_or_admin ... ok
+test posts_unread_and_retry_survive_reopen ... ok
+test private_files_symlinks_and_future_schema ... ok
+test retry_reconcile_reply_and_sql_parameters ... ok
+test role_is_checked_from_database_not_cached_session ... ok
+test salted_hashes_and_owner_recovery ... ok
+test session_cannot_move_between_boards ... ok
+test stale_sessions_do_not_revive_after_reapproval ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.73s
+
+     Running tests/credential_budget.rs (target/release/deps/credential_budget-159ccb5fbb04f414)
+
+running 4 tests
+test all_credential_paths_share_two_slots_and_release_on_return ... ok
+test credential_lock_symlinks_hardlinks_and_permissions_fail_closed ... ok
+test stored_costs_cannot_request_more_memory_or_weaker_work ... ok
+test unrelated_boards_do_not_share_credential_budget ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/directory.rs (target/release/deps/directory-7c32e6037ff22c5b)
+
+running 15 tests
+test all_lifecycle_states_survive_private_export_and_schema18_export_stays_readonly ... ok
+test canonical_conflicts_reserved_on_submit_only_login_case_sensitive ... ok
+test configuration_seals_before_authentication ... ok
+test controls_invalid_endpoints_dates_and_actions_rejected_and_expiry_rotates ... ok
+test curator_capacity_endpoint_canonicalization_and_pending_conflicts_are_rechecked ... ok
+test disabled_pending_revoked_cross_board_and_current_sysop_authority ... ok
+test nonce_private_idempotent_content_checked_and_pending_immutable ... ok
+test per_author_snapshot_quota_and_full_retained_row_bound ... ok
+test private_drafts_are_author_only ... ok
+test published_capacity_includes_hidden_expired_and_curator_rows ... ok
+test restart_migration18_snapshot_roundtrip_fresh_identity_and_corruption ... ok
+test simultaneous_submission_reserves_one_endpoint_and_stale_other_writer_fails ... ok
+test snapshot_rejects_revision_dates_state_bounds_duplicates_and_extra_schema ... ok
+test submit_never_publishes_and_exact_approval_publishes_once ... ok
+test unpublished_count_limits_and_four_record_pages ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.59s
+
+     Running tests/discussion.rs (target/release/deps/discussion-e1a2567c643edabc)
+
+running 9 tests
+test bookmarks_are_member_owned_idempotent_bounded_and_newest_first ... ok
+test bounded_sparse_search_pages_do_not_skip_older_hits_or_new_publications ... ok
+test busy_readers_continue_but_bookmark_writes_retry_and_disable_hides_every_path ... ok
+test complete_snapshot_and_exact_schema_thirteen_exports_remain_readonly ... ok
+test default_optional_policy_current_roles_sessions_and_unicode_query_validation ... ok
+test explicit_bookmark_reference_export_is_lossless_scoped_and_not_an_unread_ack ... ok
+test file_projection_precedes_matching_snippets_and_exact_source_views ... ok
+test literal_subject_body_room_and_exact_author_filters_are_useful ... ok
+test removed_posts_never_leave_stale_titles_sources_or_export_rows ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+
+     Running tests/editorial.rs (target/release/deps/editorial-09133e165c2a0a03)
+
+running 7 tests
+test busy_retry_bounds_quota_paging_and_explicit_live_retention ... ok
+test exact_issue_and_proposal_edits_invalidate_all_authors_until_reapproval ... ok
+test export_rejects_forged_publication_approval_and_inert_text_failures ... ok
+test private_drafts_submit_retry_owner_editor_and_selection_boundaries ... ok
+test revocation_role_sessions_foreign_boards_and_approval_withdrawal_are_current ... ok
+test snapshot_export_owner_edition_and_readonly_schema_fifteen_recovery ... ok
+test source_changes_drafts_withdrawal_and_published_snapshot_retention ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/files.rs (target/release/deps/files-16c1fac3da85739c)
+
+running 12 tests
+test approval_private_scope_review_and_search_are_local ... ok
+test concurrent_reservations_cannot_overspend_one_area ... ok
+test expired_grant_denies_lookup_and_claim_but_does_not_free_partial_quota ... ok
+test member_can_abandon_own_ready_or_active_grant_without_releasing_reserved_bytes ... ok
+test ordinary_text_about_file_link_syntax_remains_readable ... ok
+test private_deny_regrant_does_not_revive_a_transfer ... ok
+test public_file_namespace_and_references_survive_restore_but_sessions_do_not ... ok
+test quotas_remain_reserved_after_failure_and_remove_until_reclaimed ... ok
+test room_and_chat_links_do_not_grant_file_access_or_disclose_private_metadata ... ok
+test snapshot_keeps_catalog_and_scores_but_discards_transfer_authority ... ok
+test transfers_are_key_bound_one_shot_and_recheck_approval ... ok
+test unsafe_names_keys_sizes_and_metadata_are_rejected ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.23s
+
+     Running tests/gatherings.rs (target/release/deps/gatherings-2f3ab1f7100e9081)
+
+running 11 tests
+test calendar_inputs_are_explicit_utc_and_round_trip_invalid_dates ... ok
+test changing_schedule_or_destination_clears_responses_and_stale_votes_fail ... ok
+test creation_retry_is_exact_and_bounded_by_retained_events ... ok
+test default_disabled_current_local_approval_and_epoch_are_required ... ok
+test export_restore_preserves_gathering_policy_and_responses_and_upgrades_old_ten ... ok
+test member_and_response_quotas_are_bounded_without_exercising_capacity_claims ... ok
+test moderation_is_independent_of_author_edits_and_uses_revision_and_stable_id ... ok
+test organizer_policy_and_edit_revision_cannot_rewrite_other_authors ... ok
+test private_channel_metadata_and_jump_recheck_current_grants ... ok
+test reminders_are_opt_in_visible_only_and_do_not_change_unread ... ok
+test rsvp_upsert_change_clear_and_private_counts_never_list_attendees ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/member_pages.rs (target/release/deps/member_pages-4d4687039fcdc1c8)
+
+running 9 tests
+test bounded_dated_history_retry_retention_and_delete ... ok
+test busy_plan_retry_is_once_and_invalid_snapshot_is_refused ... ok
+test delete_conflict_and_authority_remove_page_and_all_plans ... ok
+test explicit_approval_cross_board_and_revocation_hide_authors ... ok
+test hidden_fields_page_and_plans_do_not_escape_local_visibility ... ok
+test malformed_fields_and_update_limits_are_atomic ... ok
+test owner_edits_conflict_and_disabled_field_policy_preserves_authorship ... ok
+test owner_export_restore_private_visibility_and_schema9_readonly_upgrade ... ok
+test sysop_hide_preserves_text_and_author_cannot_unhide ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+     Running tests/operator.rs (target/release/deps/operator-6e7ac2a90407c70e)
+
+running 6 tests
+test aggregate_owner_snapshot_excludes_content_and_keeps_export_independent ... ok
+test failed_publication_leaves_last_good_sample_readable ... ok
+test instance_snapshot_protocol_is_strict_and_keeps_legacy_unverified ... ok
+test lease_readers_never_create_files_and_unsafe_claims_are_unavailable ... ok
+test publisher_lease_distinguishes_live_dead_and_reused_pid_samples ... ok
+test unsafe_snapshot_links_modes_and_unbounded_input_are_denied ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/polls.rs (target/release/deps/polls-0ca02da127bf1726)
+
+running 9 tests
+test bounded_distinct_inert_questions_choices_and_descriptions ... ok
+test busy_readers_remain_available_while_votes_refuse_without_unread_changes ... ok
+test closure_cancellation_and_reviewed_ballots_are_transactional_and_final ... ok
+test creation_retry_editor_conflicts_and_first_ballot_permanently_lock_wording ... ok
+test current_export_ballots_and_exact_readonly_schema_eleven_recovery ... ok
+test moderation_preserves_authorship_and_hide_survives_own_edits ... ok
+test optional_policy_current_approval_board_and_epoch_gate_every_action ... ok
+test quotas_and_choice_bounds_limit_storage_without_a_concurrency_claim ... ok
+test result_visibility_is_counts_only_and_applies_to_authors_and_sysops ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+     Running tests/post_metadata.rs (target/release/deps/post_metadata-13dfa4c3f9d46923)
+
+running 10 tests
+test conflicting_schema_rolls_back_migration_without_changing_legacy_data ... ok
+test metadata_checks_approval_and_snapshot_missing_rows ... ok
+test new_metadata_is_atomic_stable_on_retry_and_survives_reopen ... ok
+test old_contract_rejects_unicode_and_new_snapshots_reject_malformed_utf8 ... ok
+test old_exports_are_read_only_and_new_snapshots_preserve_public_ids ... ok
+test readonly_export_of_a_legacy_live_store_never_upgrades_it ... ok
+test schema_five_migration_preserves_posts_replies_unread_and_unknown_dates ... ok
+test schema_six_is_read_only_in_exports_and_upgrades_without_changing_metadata ... ok
+test unicode_subjects_preserve_bytes_retries_replies_authority_and_restore ... ok
+test unknown_schema_six_metadata_catalog_is_not_silently_replaced ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+
+     Running tests/requests.rs (target/release/deps/requests-b3fda536b2fd8cc8)
+
+running 5 tests
+test create_retry_conflicts_bounds_pages_close_delete_and_current_roles ... ok
+test fulfillment_requires_both_members_current_catalog_access_and_filters_every_view ... ok
+test snapshot_rejects_request_text_quotas_and_malformed_keys ... ok
+test snapshot_roundtrip_preserves_requests_and_exact_schema_fourteen_stays_readonly ... ok
+test stale_reviews_busy_retry_revoked_requester_foreign_sessions_and_inert_text ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.82s
+
+     Running tests/roaming.rs (target/release/deps/roaming-4f500b86d758d8e9)
+
+running 15 tests
+test bound_transfer_grants_recheck_after_disable_without_revoking_password_grants ... ok
+test bounded_owner_registry_and_uid_tombstones_survive_restart ... ok
+test disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid ... ok
+test generation_exhaustion_is_atomic_and_never_wraps_or_exports ... ok
+test independent_issuers_keep_same_member_password_and_other_home_authority ... ok
+test issuer_disablement_rotates_every_binding_before_reenable ... ok
+test issuer_revocation_removes_only_exact_bound_leases_and_ready_grants ... ok
+test issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority ... ok
+test owner_association_needs_approval_consent_exact_generation_and_permanent_unused_uid ... ok
+test owner_registry_authenticates_real_sessions_and_revokes_exact_provenance ... ok
+test owner_registry_is_once_before_auth_and_rejects_wrong_board_or_generation ... ok
+test restart_and_restore_require_manual_reconciliation_and_fresh_board_identity ... ok
+test schema19_stays_readonly_on_export_and_migrates_atomically_to20 ... ok
+test snapshot_rejects_malformed_identity_metadata_authority_and_catalog ... ok
+test trusted_registry_is_default_off_late_locked_and_checks_all_entry_fields ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.32s
+
+     Running tests/room_articles.rs (target/release/deps/room_articles-6b306484c274c883)
+
+running 6 tests
+test authored_subjects_reply_defaults_retries_and_restore_are_stable ... ok
+test legacy_unknown_dates_and_inaccessible_links_fail_but_long_lines_roundtrip ... ok
+test projection_roundtrips_without_private_identity_and_keeps_chronological_cursors ... ok
+test reply_pruning_keeps_root_and_nearest_ancestors_with_a_fixed_work_cap ... ok
+test reply_reference_work_is_bounded_and_cross_room_replies_stay_denied ... ok
+test subjects_are_bounded_inert_and_current_approval_is_required ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+     Running tests/room_drafts.rs (target/release/deps/room_drafts-6c3ce33efdc6fdc2)
+
+running 8 tests
+test checkpoints_are_owned_persistent_and_revisions_do_not_overwrite_each_other ... ok
+test export_restore_preserves_room_drafts_without_importing_old_sessions ... ok
+test owner_recovery_invalidates_saved_sysop_drafts ... ok
+test pending_other_members_and_revoked_sessions_cannot_recover_a_checkpoint ... ok
+test quotas_expiry_and_body_limits_keep_saved_data_bounded ... ok
+test schema_seven_exports_stay_readonly_and_upgrade_adds_no_invented_drafts ... ok
+test send_removes_only_its_checkpoint_atomically_and_retry_never_duplicates ... ok
+test snapshots_reject_malformed_drafts_and_cross_room_reply_bindings ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+     Running tests/scores.rs (target/release/deps/scores-34e5fc865bdbca57)
+
+running 5 tests
+test bests_order_ties_personal_counts_and_top_ten_survive_reopen ... ok
+test failed_commit_can_retry_and_personal_game_keys_are_bounded ... ok
+test migration_failure_rolls_back_and_exports_reject_invalid_score_data ... ok
+test runs_are_one_shot_member_board_and_epoch_bound_with_current_approval ... ok
+test scores_export_restore_and_schema_two_exports_stay_readable ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/snapshot.rs (target/release/deps/snapshot-50daa889e33e4c1b)
+
+running 10 tests
+test busy_offline_source_fails_without_publishing_then_recovers ... ok
+test concurrent_restore_publish_has_one_winner_and_no_partial_database ... ok
+test export_and_restore_never_overwrite_existing_paths ... ok
+test exported_bytes_exclude_discarded_chat_receipts_and_freelist_content ... ok
+test readonly_export_never_initializes_or_migrates_source ... ok
+test reject_truncated_corrupt_foreign_future_and_executable_catalogs ... ok
+test reject_unsafe_files_parents_and_sidecars ... ok
+test size_cap_refuses_sparse_large_artifacts_without_allocating_them ... ok
+test snapshot_during_concurrent_wal_writes_is_consistent ... ok
+test wal_roundtrip_preserves_durable_records_and_drops_live_authority ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.58s
+
+     Running tests/social.rs (target/release/deps/social-be37557cc84458f6)
+
+running 13 tests
+test blocked_hidden_muted_quiet_unknown_and_non_sysop_targets_do_not_leak ... ok
+test board_visit_pages_work_without_channel_joins_and_end_on_disconnect ... ok
+test bodyless_page_response_is_recipient_only_and_never_changes_channels ... ok
+test cooldown_survives_mode_changes_reconnect_and_busy_transaction_retry ... ok
+test current_activity_cascades_on_close_and_never_survives_export_restore ... ok
+test default_hidden_explicit_optin_and_current_board_approval ... ok
+test disconnect_stale_future_and_expired_requests_do_not_revive ... ok
+test exact_snapshots_keep_preferences_but_remove_live_social_authority_and_schema_sixteen_is_readonly ... ok
+test host_activity_is_current_cross_connection_and_uses_universal_visibility ... ok
+test leaving_chat_keeps_connection_presence_but_clears_joins_receipt_and_history_floor ... ok
+test malformed_status_config_quiet_hours_and_forged_lease_snapshot_fail ... ok
+test privacy_block_and_request_storage_budgets_are_bounded ... ok
+test schema_seventeen_export_is_read_only_and_owner_open_adds_empty_activity ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s
+
+     Running tests/wall.rs (target/release/deps/wall-c03fcb0ed0edb3cf)
+
+running 9 tests
+test bounded_ascii_control_and_size_validation ... ok
+test busy_transaction_does_not_lose_request_or_duplicate ... ok
+test chronological_limits_retention_and_two_board_policies ... ok
+test cooldown_retry_deleted_receipt_and_edit_conflict ... ok
+test disabled_approval_epoch_and_board_boundaries ... ok
+test export_restore_wall_and_readonly_schema8_upgrade ... ok
+test invalid_snapshot_content_and_quota_are_rejected ... ok
+test own_edit_delete_sysop_moderation_and_stable_selected_id ... ok
+test weekly_rotation_explicit_archives_no_clock_change_and_readonly_edits ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.80s
+
+     Running unittests examples/playground_seed.rs (target/release/examples/playground_seed-c88885172e4cd6b8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/profile_seed.rs (target/release/examples/profile_seed-cb06a48721c54589)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/roaming_owner_fixture.rs (target/release/examples/roaming_owner_fixture-06e60ca67a1707c5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

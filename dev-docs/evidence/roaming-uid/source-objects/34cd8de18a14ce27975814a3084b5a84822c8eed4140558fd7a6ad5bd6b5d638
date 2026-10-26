@@ -1,0 +1,27 @@
+import json,os,pathlib,pwd,subprocess
+P=pathlib.Path('/etc/faction223-a');assert pathlib.Path('/etc/faction-disposable-test').is_file();original=(P/'manifest.toml').read_bytes();config=(P/'service.toml').read_text();test=P/'control.toml';cfg=P/'control-service.toml';link=P/'control-hardlink.toml';checks=[]
+def check(name,expected,data=original,mode=0o644,uid=0,symlink=False,hardlink=False,parent_mode=0o755):
+ for p in [test,link]:
+  if p.exists() or p.is_symlink():p.unlink()
+ test.write_bytes(data);test.chmod(mode);os.chown(test,uid,0)
+ if hardlink:os.link(test,link)
+ if symlink:test.unlink();test.symlink_to(P/'manifest.toml')
+ P.chmod(parent_mode);cfg.write_text(config.replace('/manifest.toml','/control.toml'));cfg.chmod(0o644)
+ r=subprocess.run(['su','-m','factiond','-c',f'/usr/local/libexec/faction-service --check-config {cfg}'],capture_output=True)
+ outcome=r.returncode==0;checks.append({'name':name,'expected_accept':expected,'accepted':outcome,'result':'pass' if outcome==expected else 'fail'})
+ pathlib.Path('/home/factionbuild/proof223/manifest-controls.json').write_text(json.dumps({'result':'pass' if all(x['result']=='pass' for x in checks) else 'fail','checks':checks},indent=2)+'\n')
+ assert outcome==expected,(name,r.returncode)
+try:
+ check('protected_root_owned_manifest',True)
+ check('member_owned_manifest',False,uid=pwd.getpwnam('factionbuild').pw_uid)
+ check('group_writable_manifest',False,mode=0o664)
+ check('hardlinked_manifest',False,hardlink=True)
+ check('symlink_manifest',False,symlink=True)
+ check('writable_ancestor',False,parent_mode=0o777)
+ check('oversized_manifest',False,data=original+b'#'*8193)
+ check('unknown_manifest_key',False,data=original+b'unknown="deny"\n')
+finally:
+ P.chmod(0o755)
+ for p in [test,cfg,link]:
+  if p.exists() or p.is_symlink():p.unlink()
+print(json.dumps({'result':'pass','checks':len(checks)}))

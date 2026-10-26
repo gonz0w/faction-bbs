@@ -1,0 +1,30 @@
+from pathlib import Path
+import errno,json,os,select,time,traceback
+p=Path('/home/factionbuild/proof223');exec((p/'native_runtime_probe.py').read_text().split("\ntry:\n start('a')")[0]);checks=[];timings=[]
+def result(name):
+ checks.append({'name':name,'result':'pass'});(p/'native-extra-controls.json').write_text(json.dumps({'result':'pass','checks':checks},indent=2)+'\n')
+try:
+ start('a')
+ r=root('python3.13 /home/factionbuild/proof223/kernel_controls.py');assert json.loads(r.stdout)['checks']==2;result('real-kernel-unknown-uid-and-wrong-tty-owner-rejected')
+ for name,options,cert in [('no-pty-rejected',[], 'extra-cert.pub'),('raw-key-without-certificate-rejected',[], '/dev/null'),('password-authentication-downgrade-rejected',['-o','PubkeyAuthentication=no','-o','PreferredAuthentications=password'],'extra-cert.pub')]:
+  a=argv(B[0],cert=cert,tty=False);r=subprocess.run(a[:-1]+options+[a[-1]],input=b'q\n',capture_output=True,timeout=12);(p/(name+'.private.log')).write_bytes(r.stdout+r.stderr);assert r.returncode!=0 and b'Welcome, ' not in r.stdout+r.stderr;result(name)
+ time.sleep(5.1);c=ProcessConsole(argv(B[0],cert='extra-cert.pub')+['printf UNTRUSTED-COMMAND-MARKER']);c.expect('Welcome, roama.');c.expect('Press Enter to continue: ');c.send('');c.expect('Command (then Enter): ');assert b'UNTRUSTED-COMMAND-MARKER' not in c.transcript;logout(c);result('alternate-command-enters-only-forced-native-frontend')
+ a=argv(B[0],cert='extra-cert.pub',tty=False);r=subprocess.run(a[:-1]+['-N','-o','ExitOnForwardFailure=yes','-R','127.0.0.1:0:127.0.0.1:22']+[a[-1]],capture_output=True,timeout=12);(p/'forwarding-denied.private.log').write_bytes(r.stdout+r.stderr);assert r.returncode!=0;result('remote-forwarding-rejected-before-listener')
+ c=enter(B[0],cert='extra-cert.pub');action(c);stop('a')
+ deadline=time.monotonic()+10
+ while time.monotonic()<deadline:
+  if select.select([c.fd],[],[],.1)[0]:
+   try:c.transcript+=os.read(c.fd,8192)
+   except OSError as e:
+    if e.errno!=errno.EIO:raise
+  pid,status=os.waitpid(c.pid,os.WNOHANG)
+  if pid:c.done=True;break
+ else:raise AssertionError('old SSH transport survived owner shutdown drain')
+ c.close();children.remove(c);result('owner-shutdown-ends-active-bound-ssh-session')
+ start('a');c=enter(B[0],cert='extra-cert.pub');action(c);logout(c);result('fresh-ssh-session-after-owner-restart-reconciles-current-binding')
+ stop('a');print(json.dumps({'result':'pass','checks':len(checks)}))
+except BaseException as e:
+ (p/'native-extra-controls.json').write_text(json.dumps({'result':'fail','checks':checks,'failure':type(e).__name__+': '+str(e)},indent=2)+'\n')
+ (p/f'extra-failure-{time.time_ns()}.private.log').write_text(traceback.format_exc())
+ for c in children:c.close()
+ raise

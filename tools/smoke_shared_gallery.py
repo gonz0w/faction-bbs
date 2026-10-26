@@ -66,7 +66,7 @@ def run(a):
         remote('/etc/rc.d/faction_broker onestop');remote('cat > '+pack+'/gallery.toml',manifest.replace('enabled = true','enabled = false').encode());remote('/etc/rc.d/faction_broker onestart');c=connect();assert b'Art gallery' not in c.transcript;logout(c);checks.append('actual_disabled_pack_removes_main_menu_capability')
         remote('/etc/rc.d/faction_broker onestop');remote('cat > '+pack+'/gallery.toml',manifest.replace('display_permission = true','display_permission = false',1).encode());code="import subprocess; x=subprocess.run(['su','-','factiond','-c','/usr/local/libexec/faction gallery-check "+pack+"'],capture_output=True);assert x.returncode!=0";remote('python3.13 -c '+shlex.quote(code));checks.append('actual_netbsd_offline_preflight_rejects_missing_display_rights')
         assert query('pragma user_version')==[[19]] and all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=19,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False,raw_member_art=False,public_art_publication=False),indent=2,sort_keys=True)+'\n');print('Actual shared gallery passed:',len(checks),'controls.')
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=20,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False,raw_member_art=False,public_art_publication=False),indent=2,sort_keys=True)+'\n');print('Actual shared gallery passed:',len(checks),'controls.')
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('gallery-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

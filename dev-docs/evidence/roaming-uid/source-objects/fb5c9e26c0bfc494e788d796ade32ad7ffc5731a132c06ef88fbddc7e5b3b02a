@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_writing_desk.py", line 72, in <module>
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('binary',type=Path);p.add_argument('member',type=Path);p.add_argument('--output',type=Path);a=p.parse_args();a.binary=a.binary.resolve();a.member=a.member.resolve();run(a)
+                                                                                                                                                                                                                                       ~~~^^^
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_writing_desk.py", line 63, in run
+    assert db.execute('pragma user_version').fetchone()[0]==20
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

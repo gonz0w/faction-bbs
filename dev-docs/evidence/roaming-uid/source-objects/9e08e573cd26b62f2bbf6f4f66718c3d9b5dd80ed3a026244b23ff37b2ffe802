@@ -1,0 +1,103 @@
+   Compiling fallible-iterator v0.3.0
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling smallvec v1.16.4
+   Compiling faction-articles v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-articles)
+   Compiling libc v0.2.191
+   Compiling chacha20 v0.10.2
+   Compiling libsqlite3-sys v0.38.2
+   Compiling chacha20poly1305 v0.11.0
+   Compiling rusqlite v0.40.1
+   Compiling errno v0.3.14
+   Compiling getrandom v0.4.3
+   Compiling cpufeatures v0.3.1
+   Compiling sha2 v0.11.1
+   Compiling phc v0.6.1
+   Compiling rustix v1.1.5
+   Compiling password-hash v0.6.1
+   Compiling argon2 v0.6.0
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling faction-access v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-access)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+   Compiling faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+   Compiling faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+   Compiling faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+   Compiling faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+   Compiling faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+   Compiling faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+   Compiling faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+   Compiling faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `release` profile [optimized] target(s) in 5.32s
+     Running unittests src/lib.rs (target/release/deps/faction_client-5f2914175fa4f537)
+
+running 4 tests
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+     Running unittests src/main.rs (target/release/deps/faction_client-b3ce9e1e2f51ed8a)
+
+running 28 tests
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test tests::files_mail_actions_are_local_configured_and_keep_classic_entries ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+test visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count ... ok
+test visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears ... ok
+test visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads ... ok
+test visit_mail::tests::only_configured_visits_offer_mail_and_notices ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+     Running unittests src/main.rs (target/release/deps/faction_service-0833c3089da75ea6)
+
+running 21 tests
+test classic::tests::protocol_buffers_and_terminal_commands_are_bounded ... ok
+test classic::tests::original_lord_rip_probe_is_discarded_and_art_can_return_to_column_one ... ok
+test classic::tests::telnet_fragmentation_negotiates_only_minimal_options_without_identity ... ok
+test config::tests::defaults_and_explicit_capacity ... ok
+test config::tests::operator_status_is_strict_and_disabled_by_default ... ok
+test classic::tests::fragmented_ansi_cp437_and_hidden_controls_are_filtered ... ok
+test config::tests::roaming_manifest_is_optional_and_has_a_bounded_absolute_path ... ok
+test dispatch_tests::two_jobs_before_receivers_wait_and_permits_cover_work_and_results ... ok
+test doors::tests::validate_complete_screen_and_only_allowed_actions ... ok
+test doors::tests::scores_require_one_bounded_terminal_completion ... ok
+test roaming::tests::manifest_parser_accepts_only_exact_bounded_identity_and_bindings ... ok
+test operator::tests::disabled_publisher_creates_no_lifetime_authority ... ok
+test config::tests::classic_destinations_are_fixed_bounded_and_disabled_by_default ... ok
+test roaming::tests::only_observed_shared_or_registered_uids_enter_handoff ... ok
+test roaming::tests::manifest_loader_rejects_untrusted_ancestors_and_paths ... ok
+test config::tests::reject_ambiguous_unbounded_or_unknown_settings ... ok
+test operator::tests::optional_publication_failure_never_steals_a_live_lease ... ok
+test config::tests::owner_file_permissions_links_and_size ... ok
+test doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results ... ok
+test policy::tests::key_lookup_uid_cannot_claim_or_complete_valid_transfer_authority ... ok
+test classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+

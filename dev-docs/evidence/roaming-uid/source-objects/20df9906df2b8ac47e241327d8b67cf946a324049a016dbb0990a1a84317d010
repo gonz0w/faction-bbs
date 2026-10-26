@@ -1,0 +1,8 @@
+from pathlib import Path
+import json,subprocess,time,os
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent;V=P/'vm';A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+def remote(cmd,data=None,timeout=60,check=True):
+ r=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n'+cmd],input=data,capture_output=True,timeout=timeout)
+ if check and r.returncode:
+  path=P/('remote-failure-'+str(time.time_ns())+'.private');path.write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained at '+str(path))
+ return r

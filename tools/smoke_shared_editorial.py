@@ -82,7 +82,7 @@ def run(a):
         c=connect(handle=reader);desk(c);send(c,'i','Editions> ');assert b'FIRST-ISSUE' not in c.transcript;send(c,'q',HOME);return_main(c);logout(c);assert query('SELECT state FROM magazine_issues')==[['withdrawn']];checks.append('actual_author_revocation_withdraws_issue_existing_download_is_retained')
         owner=connect();visitor=connect(handle=author);desk(visitor);send(visitor,'s','Submissions> ');send(visitor,'v','Submission ID (blank cancels): ');send(visitor,'1',SOURCE);status(owner,author,'v');visitor.send('n');visitor.expect('session expired');visitor.finish(1);logout(owner);checks.append('actual_account_revocation_expires_held_workshop_session')
         assert query('PRAGMA user_version')==[[19]] and all(password.encode() not in c.transcript for c in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=19,normal_sessions=8,admission_refill_ms=5000,payload_bytes=len(payload),capacity_claim=False,public_publication=False,new_transfer_authority=False),indent=2,sort_keys=True)+'\n');print('Actual shared editorial passed:',len(checks),'controls.')
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=20,normal_sessions=8,admission_refill_ms=5000,payload_bytes=len(payload),capacity_claim=False,public_publication=False,new_transfer_authority=False),indent=2,sort_keys=True)+'\n');print('Actual shared editorial passed:',len(checks),'controls.')
     except Exception:
         for i,c in enumerate(children):(a.output.parent/('editorial-private-transcript-'+str(i))).write_bytes(c.transcript)
         raise

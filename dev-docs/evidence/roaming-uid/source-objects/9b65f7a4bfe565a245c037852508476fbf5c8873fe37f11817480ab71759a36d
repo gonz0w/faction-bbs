@@ -1,0 +1,56 @@
+from lab import *
+import hashlib,json,secrets,shlex,sys
+sys.path.insert(0,str(R/'tools'));import roaming_native_fixture as f
+bindings=[f.Binding('roam223a',32231,'home-a','subject-a','board-a/home-a/subject-a'),f.Binding('roam223b',32232,'home-b','subject-b','board-a/home-b/subject-b'),f.Binding('roam223c',32233,'home-a','subject-a','board-b/home-a/subject-a'),f.Binding('roam223d',32234,'home-b','subject-b','board-b/home-b/subject-b')]
+remote("su - factionbuild -c 'cd /home/factionbuild/source223-server && python3.13 tools/build_terminal_frontend.py --output /home/factionbuild/target223/release/faction-tty && python3.13 tools/build_service_daemon.py --output /home/factionbuild/target223/release/faction-daemon'",timeout=120)
+remote('test -f /etc/faction-disposable-test; install -o root -g wheel -m 755 /home/factionbuild/target223/release/faction /home/factionbuild/target223/release/faction-service /home/factionbuild/target223/release/faction-client /home/factionbuild/target223/release/faction-tty /home/factionbuild/target223/release/faction-daemon /home/factionbuild/target223/release/examples/roaming_owner_fixture /usr/local/libexec/; install -d -o factiond -g factionipc -m 710 /var/run/faction; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/device223')
+uids=json.loads(remote("python3.13 -c 'import pwd,json;print(json.dumps({n:pwd.getpwnam(n).pw_uid for n in [\"factiond\",\"factionterm\",\"factionfiles\",\"factionfileauth\"]}))'").stdout)
+for b in bindings:
+ remote(f"! id {b.login} >/dev/null 2>&1; ! awk -F: '$3=={b.uid} {{found=1}} END {{exit !found}}' /etc/passwd; useradd -m -u {b.uid} -g factionipc -s /bin/sh {b.login}")
+for name in ['home-a-ca','home-b-ca','files-key','lab-admin-key']+[b.login+'-key' for b in bindings]:
+ assert not (P/name).exists();subprocess.run(['ssh-keygen','-q','-t','ed25519','-N','','-C','issue223-disposable','-f',str(P/name)],check=True)
+fingerprints={name:subprocess.check_output(['ssh-keygen','-lf',str(P/(name+'-ca.pub'))],text=True).split()[1] for name in ['home-a','home-b']}
+remote('cat >> /root/.ssh/authorized_keys; chmod 600 /root/.ssh/authorized_keys',(P/'lab-admin-key.pub').read_bytes())
+password=secrets.token_hex(24);(P/'password.private').write_text(password)
+records={}
+def owner(label,args):
+ cmd=['/usr/local/libexec/roaming_owner_fixture','/var/db/faction223-'+label,*map(str,args)]
+ return json.loads(remote('su -m factiond -c '+shlex.quote(shlex.join(cmd))).stdout)
+for label,port in [('a',2222),('b',2224)]:
+ root='/var/db/faction223-'+label
+ remote(f'test ! -e {root}; install -d -o factiond -g factionipc -m 700 {root}; touch {root}/.roaming-fixture; chown factiond:factionipc {root}/.roaming-fixture; install -d -o root -g wheel -m 755 /etc/faction223-{label} /etc/ssh/faction223-{label} /etc/ssh/faction223-{label}/keys')
+ state=owner(label,['bootstrap','sysop',password])
+ for name in ['roama','roamb']:
+  owner(label,['memberadd',name,password]);owner(label,['member',name,'approved'])
+ for name in ['home-a','home-b']:
+  state=owner(label,['addissuer',name,fingerprints[name]]);issuer=next(x for x in state['issuers'] if x['name']==name);state=owner(label,['issuer',issuer['id'],issuer['generation'],'on'])
+ local=bindings[:2] if label=='a' else bindings[2:]
+ for b,member in zip(local,['roama','roamb']):
+  issuer=next(x for x in state['issuers'] if x['name']==b.home)
+  state=owner(label,['link',issuer['id'],issuer['generation'],b.subject,b.principal,member,b.uid,'synthetic-independent-local-consent-'+member]);entry=next(x for x in state['bindings'] if x['uid']==b.uid);state=owner(label,['enable',entry['id'],entry['generation']])
+ manifest='version=1\nboard_identity="'+state['board_identity']+'"\n'
+ for b in state['bindings']:
+  issuer=next(i for i in state['issuers'] if i['id']==b['issuer_id'])
+  manifest+=f'[[entries]]\nuid={b["uid"]}\nbinding_id={b["id"]}\nbinding_generation={b["generation"]}\nissuer_generation={issuer["generation"]}\n'
+ remote(f'cat > /etc/faction223-{label}/manifest.toml; chmod 644 /etc/faction223-{label}/manifest.toml',manifest.encode())
+ service=(R/'deploy/netbsd/service.toml.in').read_text().replace('@FACTION_TERMINAL_UID@',str(uids['factionterm'])).replace('state_dir = "/var/db/faction"',f'state_dir = "{root}"').replace('ansi = true','ansi = false')
+ service=f'experimental_roaming_manifest="/etc/faction223-{label}/manifest.toml"\n'+service
+ remote(f'cat > /etc/faction223-{label}/service.toml; chmod 644 /etc/faction223-{label}/service.toml',service.encode())
+ remote(f'cat > /etc/ssh/faction223-{label}/sshd_config; chmod 600 /etc/ssh/faction223-{label}/sshd_config',f.sshd_config(label,port,uids['factiond'],local).encode())
+ for b in local:
+  remote(f'cat > /etc/ssh/faction223-{label}/keys/{b.login}; chmod 644 /etc/ssh/faction223-{label}/keys/{b.login}',f.authorized_ca(b,(P/(b.home+'-ca.pub')).read_text().strip()).encode())
+ remote(f'cat > /etc/ssh/faction223-{label}/keys/factionterm; chmod 644 /etc/ssh/faction223-{label}/keys/factionterm',b'restrict,pty '+(P/'files-key.pub').read_bytes())
+ remote(f'/usr/sbin/sshd -t -f /etc/ssh/faction223-{label}/sshd_config; su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction223-{label}/service.toml"')
+ records[label]=state
+(P/'owner-states.private.json').write_text(json.dumps(records,indent=2)+'\n')
+hostkey=remote('cat /etc/ssh/ssh_host_ed25519_key.pub').stdout.decode().strip();known='10.0.2.15 '+hostkey+'\n'+''.join(f'[10.0.2.15]:{p} '+hostkey+'\n' for p in [2222,2223,2224])
+remote('cat > /home/factionbuild/device223/known_hosts',known.encode())
+for n in ['files-key','files-key.pub','lab-admin-key']+[b.login+'-key' for b in bindings]:remote('cat > /home/factionbuild/device223/'+n,(P/n).read_bytes())
+for b in bindings:
+ label='a' if b.uid<32233 else 'b'
+ remote('cat > /home/factionbuild/device223/'+b.login+'.toml',f.client_profile('10.0.2.15',2222 if label=='a' else 2224,2223,'/home/factionbuild/device223',b).encode())
+settings={'disposable_fixture':True,'bindings':[b.__dict__ for b in bindings],'password':password,'uids':uids,'states':records,'same_home_display_handle':'samehandle','sequential_boards':True}
+remote('cat > /home/factionbuild/device223/settings.private.json',json.dumps(settings).encode())
+remote('chown -R factionbuild:factionbuild /home/factionbuild/device223; chmod 600 /home/factionbuild/device223/*')
+(P/'setup-summary.json').write_text(json.dumps({'result':'pass','boards':2,'independent_home_cas':2,'unused_transport_uids':4,'independent_local_consents':4,'sequential_boards':True,'mail_keys_touched':False,'files_auth_distinct':True,'services_started':False})+'\n')
+print('Two independent durable boards provisioned with four fresh unused UIDs; exact per-user CA/principals; services stopped.')

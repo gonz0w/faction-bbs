@@ -1,0 +1,28 @@
+from pathlib import Path
+import hashlib,json
+P=Path(__file__).resolve().parent;H=P/'handoff';O=H/'objects';O.mkdir(parents=True,exist_ok=True)
+def obj(data):
+ d=hashlib.sha256(data).hexdigest();p=O/d
+ if p.exists():assert p.read_bytes()==data
+ else:p.write_bytes(data)
+ return {'path':str(p),'sha256':d}
+stages=[]
+for label in ['candidate01','candidate02','candidate03','candidate04']:
+ files=[];manifest=json.loads((P/(label+'-sources.json')).read_text())
+ for name,digest in manifest.items():
+  b=(P/label/name).read_bytes();assert hashlib.sha256(b).hexdigest()==digest;files.append({'name':name,**obj(b)})
+ stages.append({'label':'native-'+label,'files':files})
+for p in sorted(P.glob('*.py')):stages.append({'label':'native-orchestration/'+p.name,'files':[{'name':p.name,**obj(p.read_bytes())}]})
+for p in sorted((P/'executed-source-objects').iterdir()):
+ b=p.read_bytes();assert hashlib.sha256(b).hexdigest()==p.name
+ name='retained-orchestration.py'
+ for token,filename in [(b'class NativeFixtureTests','tools/test_roaming_native_fixture.py'),(b'class Binding','tools/roaming_native_fixture.py'),(b'layer\':\'OpenSSH sshkey','native_oracle.py'),(b'def enter(b,native','native_runtime_probe.py'),(b'def mint(name','mint_certificates.py'),(b'matched_inputs','collect_native_identity.py'),(b'native-backup-recovery','native_backup_and_export.py')]:
+  if token in b:name=filename;break
+ stages.append({'label':'native-preserved-executed/'+p.name,'files':[{'name':name,**obj(b)}]})
+(H/'source-stages.json').write_text(json.dumps(stages,indent=2)+'\n')
+records=['rejected-candidates.json','native-workspace.json','native-source-match.json','native-oracle-source-match.json','native-artifacts.json','runtime.json','native-oracle.json','manifest-controls.json','manifest-controls-final.json','native-runtime-controls.json','native-extra-controls.json','native-kernel-controls.json','native-legacy.json','native-backup-recovery.json','certificate-controls-candidate01.json','certificate-controls-candidate02.json','certificate-controls.json','extra-certificate-controls.json','native-runtime-candidate01.json','native-runtime-candidate02.json','native-runtime-candidate03.json','native-extra-candidate01.json','candidate02-final-native-build.json','candidate03-native-build.json','native-client-build.json','candidate04-tool-only-change.json','setup-summary.json','owned-services-stopped.json']
+index={}
+for name in records:
+ p=P/name;assert p.is_file(),name;index[name]=obj(p.read_bytes())
+(H/'records.json').write_text(json.dumps(index,indent=2)+'\n')
+print(json.dumps({'public_source_stages':len(stages),'unique_public_objects':len(list(O.iterdir())),'records':len(index),'handoff':str(H)}))

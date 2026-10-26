@@ -1,0 +1,19 @@
+from pathlib import Path
+import array,errno,json,os,pty,pwd,socket
+assert os.geteuid()==0 and Path('/etc/faction-disposable-test').is_file()
+import grp
+gid=grp.getgrnam('factionipc').gr_gid
+cases=[('unregistered-kernel-peer-with-owned-tty',pwd.getpwnam('factionbuild').pw_uid,pwd.getpwnam('factionbuild').pw_uid),('registered-peer-with-another-uids-tty',pwd.getpwnam('roam223a').pw_uid,pwd.getpwnam('roam223b').pw_uid)]
+checks=[]
+for name,uid,ttyowner in cases:
+ master,slave=pty.openpty();os.fchown(slave,ttyowner,gid);os.fchmod(slave,0o600);pid=os.fork()
+ if pid==0:
+  try:
+   os.close(master);os.setgroups([gid]);os.setgid(gid);os.setuid(uid);s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);s.settimeout(5);s.connect('/var/run/faction/terminal.sock');term=b'dumb';packet=b'FBSTTY01'+bytes([len(term)])+term+bytes(63-len(term))
+   try:
+    s.sendmsg([packet],[(socket.SOL_SOCKET,socket.SCM_RIGHTS,array.array('i',[slave]))]);os.close(slave);s.shutdown(socket.SHUT_WR);data=s.recv(1);assert data==b''
+   except (BrokenPipeError,ConnectionResetError):pass
+   s.close();os._exit(0)
+  except BaseException:os._exit(1)
+ os.close(master);os.close(slave);_,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==0,name;checks.append({'name':name,'result':'pass'})
+result={'result':'pass','layer':'real NetBSD kernel peer UID and SCM_RIGHTS TTY ownership','checks':checks};Path('/home/factionbuild/proof223/native-kernel-controls.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'result':'pass','checks':len(checks)}))

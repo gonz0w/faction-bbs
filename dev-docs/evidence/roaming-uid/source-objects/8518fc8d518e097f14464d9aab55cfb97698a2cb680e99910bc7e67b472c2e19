@@ -1,0 +1,23 @@
+{
+  "certificate_controls": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/7159fe4c349abf622a5e39c370a270a67fe5fe7affa891412a38107407b8784c",
+    "sha256": "7159fe4c349abf622a5e39c370a270a67fe5fe7affa891412a38107407b8784c"
+  },
+  "extra": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/6dab5afebd975191a5b3923dff60145f2d16a6749225611e3fc5431446e5e9f3",
+    "sha256": "6dab5afebd975191a5b3923dff60145f2d16a6749225611e3fc5431446e5e9f3"
+  },
+  "extra_transport_controls": 8,
+  "kernel": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/f501fe1c8340a8aff08fa1c5148e6a967eab1e2a44ede375819ff2f7bc7f49b8",
+    "sha256": "f501fe1c8340a8aff08fa1c5148e6a967eab1e2a44ede375819ff2f7bc7f49b8"
+  },
+  "kernel_controls": 2,
+  "note": "Primary27 passed before correct private-parent export refusal; separate recovery continuation completed6. Failed candidates retained.",
+  "primary": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/ba6f1d44e40e2d4d2460ae6b08c3e7d95c1c39e3ab5f0f8154a38e6105cfd980",
+    "sha256": "ba6f1d44e40e2d4d2460ae6b08c3e7d95c1c39e3ab5f0f8154a38e6105cfd980"
+  },
+  "primary_controls": 33,
+  "result": "pass"
+}

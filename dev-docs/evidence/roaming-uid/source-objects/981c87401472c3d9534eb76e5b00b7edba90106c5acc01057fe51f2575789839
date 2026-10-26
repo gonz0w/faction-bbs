@@ -1,0 +1,5 @@
+    Checking memchr v2.8.3
+    Checking roxmltree v0.21.1
+    Checking faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Checking faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 0.75s

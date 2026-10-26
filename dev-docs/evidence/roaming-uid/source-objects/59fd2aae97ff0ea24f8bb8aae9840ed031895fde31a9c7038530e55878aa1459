@@ -1,0 +1,9 @@
+{
+  "result": "fail",
+  "checks": [],
+  "native_client_connect_ms": [],
+  "sequential_boards": true,
+  "physical_hardware": false,
+  "capacity_claim": false,
+  "failure": "AssertionError: console exited before 'Welcome, roama.'"
+}

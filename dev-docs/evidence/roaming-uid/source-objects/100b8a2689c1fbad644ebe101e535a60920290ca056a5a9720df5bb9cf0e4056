@@ -1,0 +1,48 @@
+//! Root-managed experimental UID admission. No terminal supplies identity fields.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    const ENTRY: &str = "[[entries]]\nuid=4242\nbinding_id=1\nbinding_generation=2\nissuer_generation=3\n";
+    fn text() -> String { format!("version=1\nboard_identity='{}'\n{ENTRY}", "ab".repeat(32)) }
+    fn reserved() -> Vec<u32> { vec![0, 123, rustix::process::geteuid().as_raw(), 124, 125, 126] }
+    #[test]
+    fn manifest_parser_accepts_only_exact_bounded_identity_and_bindings() {
+        let good = text();
+        let registry = parse(&good, &reserved()).unwrap();
+        assert_eq!(registry.board_identity, [0xab; 32]);
+        assert_eq!(registry.entries.len(), 1);
+        assert_eq!(registry.entries[0].uid, 4242);
+        assert_eq!(registry.entries[0].binding_generation, 2);
+        for bad in [
+            good.replace("version=1", "version=2"), good.replace("ab", "zz"),
+            good.replace(&"ab".repeat(32), &"ab".repeat(31)),
+            good.replace("uid=4242", "uid=0"), good.replace("uid=4242", "uid=123"),
+            good.replace("uid=4242", "uid=124"), good.replace("uid=4242", "uid=125"),
+            good.replace("uid=4242", "uid=126"),
+            good.replace("binding_id=1", "binding_id=0"),
+            good.replace("binding_generation=2", "binding_generation=-1"),
+            good.replace("issuer_generation=3", "issuer_generation=0"),
+            format!("{good}unknown=true\n"), format!("{good}{ENTRY}"),
+            format!("version=1\nboard_identity='{}'\n{}", "ab".repeat(32), (0..5).map(|i| ENTRY.replace("4242", &(4242+i).to_string()).replace("binding_id=1", &format!("binding_id={}",i+1))).collect::<String>()),
+            " ".repeat(8193),
+        ] { assert!(parse(&bad, &reserved()).is_err(), "{bad}"); }
+    }
+    #[test]
+    fn manifest_loader_rejects_writable_ancestors_links_and_oversize() {
+        let root = std::env::temp_dir().join(format!("faction223-manifest-{}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        let p = root.join("manifest.toml");
+        std::fs::write(&p, text()).unwrap();
+        assert!(load(&p, &reserved()).is_err());
+        assert!(load(std::path::Path::new("relative"), &reserved()).is_err());
+        assert!(load(std::path::Path::new("/etc/../manifest"), &reserved()).is_err());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn only_observed_shared_or_registered_uids_enter_handoff() {
+        assert!(admitted_uid(123, &[4242], 123));
+        assert!(admitted_uid(123, &[4242], 4242));
+        assert!(!admitted_uid(123, &[4242], 4243));
+        assert!(!admitted_uid(123, &[], 0));
+    }
+}

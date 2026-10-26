@@ -70,10 +70,10 @@ def run(a):
             c=start('reader',True);frame=open_issue(c);complete(c,frame,ISSUE);assert b'FINAL-APPROVED-END' in c.transcript and b'By author' in c.transcript;send(c,'q',HOME);end(c,True);assert b'\x1b' not in c.transcript and query('SELECT count(*) FROM unread')==[(0,)];checks.append('published_paged_plain_reading_preserves_credits_and_room_unread')
             output=root/'edition.txt';argv=[str(a.binary),'--state-dir',str(state),'magazine-edition','1',str(output)];x=subprocess.run(argv,capture_output=True);assert x.returncode==0 and b'FINAL-APPROVED-END' in output.read_bytes() and output.stat().st_mode&0o777==0o600;assert subprocess.run(argv,capture_output=True).returncode!=0;checks.append('filesystem_owner_currently_consented_text_export_is_private_and_no_overwrite')
             c=start();frame=open_issue(c);approve(c,frame,False);send(c,'q',HOME);end(c);assert query('SELECT state FROM magazine_issues')==[('withdrawn',)];c=start('reader');send(c,'i','Editions> ');assert b'FIRST-ISSUE' not in c.transcript;send(c,'q',HOME);end(c);checks.append('contributor_revocation_withdraws_issue_without_erasing_existing_export')
-            c=start('pending');c.expect('No community access.');c.finish();assert all(password.encode() not in x.transcript for x in children) and query('PRAGMA user_version')==[(19,)];checks.append('pending_denied_schema_17_and_passwords_never_echoed')
+            c=start('pending');c.expect('No community access.');c.finish();assert all(password.encode() not in x.transcript for x in children) and query('PRAGMA user_version')==[(20,)];checks.append('pending_denied_schema_17_and_passwords_never_echoed')
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,capacity_claim=False,public_publication=False,new_transfer_authority=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=20,capacity_claim=False,public_publication=False,new_transfer_authority=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker editorial passed:',len(checks),'controls.')
 if __name__=='__main__':

@@ -1,0 +1,53 @@
+{
+  "retained": 7,
+  "candidates": [
+    {
+      "record": "native-runtime-candidate01.json",
+      "result": "fail",
+      "completed_controls": 0,
+      "reason": "missing_ephemeral_runtime_directory_after_reboot",
+      "product_fault": false
+    },
+    {
+      "record": "native-runtime-candidate02.json",
+      "result": "fail",
+      "completed_controls": 0,
+      "reason": "incorrect_single_room_pagination_expectation",
+      "product_fault": false
+    },
+    {
+      "record": "native-runtime-candidate03.json",
+      "result": "fail",
+      "completed_controls": 27,
+      "reason": "export_destination_parent_not_private_owned",
+      "product_fault": false
+    },
+    {
+      "record": "native-extra-candidate01.json",
+      "result": "fail",
+      "completed_controls": 4,
+      "reason": "incorrect_expectation_that_alternate_command_reaches_bbs",
+      "product_fault": false
+    },
+    {
+      "result": "fail",
+      "scope": "native_openssh_component_link",
+      "reason": "missing_real_pkcs11_and_security_key_client_objects",
+      "product_fault": false
+    },
+    {
+      "result": "fail",
+      "scope": "native_distinct_uid_bundle_fixture",
+      "reason": "binary_in_private_build_directory_inaccessible_after_uid_drop",
+      "product_fault": false
+    },
+    {
+      "result": "superseded",
+      "scope": "native_source_candidate02",
+      "reason": "review_corrected_unreleased_schema20_relink_catalog",
+      "product_fault": false
+    }
+  ],
+  "raw_logs_private": true,
+  "executed_sources_preserved": true
+}

@@ -1,0 +1,11 @@
+{
+  "result": "fail",
+  "checks": [],
+  "native_client_connect_ms": [
+    371
+  ],
+  "sequential_boards": true,
+  "physical_hardware": false,
+  "capacity_claim": false,
+  "failure": "AssertionError: console timeout waiting for 'More rooms? [y/N]: '"
+}

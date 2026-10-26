@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,subprocess,time
+root=Path('/home/factionbuild/source223-oracles');out=Path('/home/factionbuild/proof223');b='/home/factionbuild/target223/release/'
+checks=[]
+commands=[('directory',['python3.13','tools/smoke_directory.py',b+'faction',b+'faction-member','--output',str(out/'native-directory.json')]),('export-restore',['python3.13','tools/smoke_export_restore.py',b+'faction']),('launcher',['python3.13','tools/smoke_board_launcher.py',b+'faction-client']),('local-console',['python3.13','tools/smoke_local_console.py',b+'faction']),('native-fixture-policy',['python3.13','-m','unittest','discover','-s','tools','-p','test_roaming_native_fixture.py'])]
+for name,cmd in commands:
+ t=time.monotonic()
+ with (out/(name+'-legacy.private.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,stdout=log,stderr=log)
+ checks.append({'name':name,'command':cmd,'returncode':r.returncode,'result':'pass' if r.returncode==0 else 'fail','seconds':round(time.monotonic()-t,3)})
+ (out/'native-legacy.json').write_text(json.dumps({'result':'pass' if all(x['returncode']==0 for x in checks) else 'fail','checks':checks,'runtime_memory_mib':1024},indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)

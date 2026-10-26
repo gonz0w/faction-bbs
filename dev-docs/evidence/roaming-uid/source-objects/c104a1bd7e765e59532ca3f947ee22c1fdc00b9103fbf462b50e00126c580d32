@@ -1,0 +1,136 @@
+{
+  "provenance": "recoveredfromrecordedtoolwriteinput",
+  "status": "Recovered verbatim heredoc contents and exact recorded replacement, not a contemporaneously saved pre-format copy. No Rust workspace changes.",
+  "first_interface_red": {
+    "log": "red.log",
+    "diagnostic_positions_confirmed": [
+      {
+        "line": 1,
+        "column": 34,
+        "source_tail": "RoamingAdmission, RoamingRegistry, Status, request_id};"
+      },
+      {
+        "line": 6,
+        "column": 61,
+        "source_tail": "roaming_add_issuer(\"home-one\",\"SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      {
+        "line": 6,
+        "column": 177,
+        "source_tail": "roaming_set_issuer_enabled(issuer.id,issuer.generation,true).unwrap(); let membe"
+      },
+      {
+        "line": 6,
+        "column": 270,
+        "source_tail": "roaming_owner_member_id(\"member\").unwrap(); let b=self.board.roaming_link_member"
+      },
+      {
+        "line": 6,
+        "column": 331,
+        "source_tail": "roaming_link_member(issuer.id,issuer.generation,\"stable-subject\",\"board-one:home"
+      },
+      {
+        "line": 6,
+        "column": 485,
+        "source_tail": "roaming_set_binding_enabled(b.id,b.generation,true).unwrap().id }"
+      },
+      {
+        "line": 7,
+        "column": 43,
+        "source_tail": "roaming_owner_state().unwrap(); self.board.configure_roaming_owner(Some(RoamingR"
+      },
+      {
+        "line": 7,
+        "column": 86,
+        "source_tail": "configure_roaming_owner(Some(RoamingRegistry {board_identity:s.board_identity,en"
+      },
+      {
+        "line": 12,
+        "column": 44,
+        "source_tail": "authenticate_roaming_uid(42001).is_err()); let id=f.binding(42001); f.install();"
+      },
+      {
+        "line": 13,
+        "column": 22,
+        "source_tail": "authenticate_roaming_uid(42001).unwrap(); let password=f.board.authenticate(\"mem"
+      },
+      {
+        "line": 13,
+        "column": 261,
+        "source_tail": "authenticate_roaming_uid(42002).is_err());"
+      },
+      {
+        "line": 15,
+        "column": 16,
+        "source_tail": "roaming_owner_state().unwrap().bindings.into_iter().find(|b|b.id==id).unwrap(); "
+      },
+      {
+        "line": 15,
+        "column": 104,
+        "source_tail": "roaming_set_binding_enabled(id,b.generation,false).unwrap();"
+      },
+      {
+        "line": 17,
+        "column": 16,
+        "source_tail": "roaming_owner_state().unwrap().bindings.remove(0); f.board.roaming_set_binding_e"
+      },
+      {
+        "line": 17,
+        "column": 75,
+        "source_tail": "roaming_set_binding_enabled(id,b.generation,true).unwrap(); assert!(f.board.auth"
+      },
+      {
+        "line": 17,
+        "column": 151,
+        "source_tail": "authenticate_roaming_uid(42001).is_err()); assert!(f.board.whoami(&roaming).is_e"
+      },
+      {
+        "line": 21,
+        "column": 64,
+        "source_tail": "roaming_owner_state().unwrap(); assert!(f.board.configure_roaming_owner(Some(Roa"
+      },
+      {
+        "line": 21,
+        "column": 112,
+        "source_tail": "configure_roaming_owner(Some(RoamingRegistry{board_identity:[0;32],entries:vec!["
+      },
+      {
+        "line": 23,
+        "column": 112,
+        "source_tail": "configure_roaming_owner(Some(RoamingRegistry{board_identity:state.board_identity"
+      },
+      {
+        "line": 24,
+        "column": 70,
+        "source_tail": "configure_roaming_owner(None).is_err()); let s=f.board.authenticate_roaming_uid("
+      },
+      {
+        "line": 24,
+        "column": 125,
+        "source_tail": "authenticate_roaming_uid(42001).unwrap(); let root=f.board.authenticate(\"sysop\","
+      },
+      {
+        "line": 24,
+        "column": 386,
+        "source_tail": "authenticate_roaming_uid(42001).is_err());"
+      }
+    ]
+  },
+  "export_authority_red": {
+    "log": "export-authority-red.log",
+    "assertion_line": 30,
+    "assertion_column": 2
+  },
+  "issuer_disable_red": {
+    "log": "issuer-disable-red.log",
+    "assertion_line": 37,
+    "assertion_column": 230
+  },
+  "files": {
+    "export-authority-red-tests.rs": "faaad77ffc2e22c711f5cc2cc7d0ec4c4c020349590671ee21aec8b43bdb2188",
+    "export-red-append.txt": "1f25548cdc95531a27e663c25985ee420b94a68e5e99e52c300dc858d57468b9",
+    "first-interface-red-tests.rs": "90be2c173c326f7a3fc16c60162fccc5d026193626eef3cd10824ae8be7cb9a5",
+    "issuer-disable-red-tests.rs": "e9ea3385daad24aba0b7a51740cc74f5d7545be0d10061aa39dfd2a2fbb1fbd4",
+    "issuer-red-append.txt": "dc70fb311e8f17026f354a6d8011754aeae128605dbf9a2c0ac12e935f3ce970"
+  }
+}

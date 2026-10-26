@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "directory",
+      "command": [
+        "python3.13",
+        "tools/smoke_directory.py",
+        "/home/factionbuild/target223/release/faction",
+        "/home/factionbuild/target223/release/faction-member",
+        "--output",
+        "/home/factionbuild/proof223/native-directory.json"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.446
+    },
+    {
+      "name": "export-restore",
+      "command": [
+        "python3.13",
+        "tools/smoke_export_restore.py",
+        "/home/factionbuild/target223/release/faction"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.343
+    },
+    {
+      "name": "launcher",
+      "command": [
+        "python3.13",
+        "tools/smoke_board_launcher.py",
+        "/home/factionbuild/target223/release/faction-client"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.276
+    },
+    {
+      "name": "local-console",
+      "command": [
+        "python3.13",
+        "tools/smoke_local_console.py",
+        "/home/factionbuild/target223/release/faction"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 1.06
+    },
+    {
+      "name": "native-fixture-policy",
+      "command": [
+        "python3.13",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_roaming_native_fixture.py"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.031
+    }
+  ],
+  "runtime_memory_mib": 1024
+}

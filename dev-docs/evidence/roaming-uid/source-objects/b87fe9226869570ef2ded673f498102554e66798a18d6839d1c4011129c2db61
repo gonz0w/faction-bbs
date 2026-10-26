@@ -1,0 +1,35 @@
+from lab import *
+import hashlib,json,sys
+sys.path.insert(0,str(R/'tools'));import roaming_native_fixture as f
+if (P/'home-a-ca.unavailable').exists():(P/'home-a-ca.unavailable').rename(P/'home-a-ca')
+settings=json.loads(remote('cat /home/factionbuild/device223/settings.private.json').stdout);bindings=[f.Binding(**x) for x in settings['bindings']];checks=[];serial=1
+fingerprints={h:subprocess.check_output(['ssh-keygen','-lf',str(P/(h+'-ca.pub'))],text=True).split()[1] for h in ['home-a','home-b']}
+def mint(name,binding,home=None,validity='-5s:+4m55s',leaf=None):
+ global serial
+ leaf=leaf or binding.login+'-key';ca=P/((home or binding.home)+'-ca');public=P/(leaf+'.pub')
+ if not public.exists():subprocess.run(['ssh-keygen','-q','-y','-f',str(P/leaf)],check=True,stdout=public.open('wb'))
+ generated=P/(leaf+'-cert.pub')
+ r=subprocess.run(f.certificate_argv('/usr/bin/ssh-keygen',ca,public,binding,serial,validity),capture_output=True);assert r.returncode==0
+ cert=P/(name+'.pub');cert.write_bytes(generated.read_bytes())
+ verification=subprocess.run(['/usr/bin/ssh-keygen','-Lf',str(cert)],capture_output=True);assert verification.returncode==0
+ assert fingerprints[home or binding.home].encode() in verification.stdout and binding.principal.encode() in verification.stdout
+ checks.append({'name':name,'signer_exit':r.returncode,'independent_parse_and_signature_exit':verification.returncode,'sha256':hashlib.sha256(cert.read_bytes()).hexdigest()});serial+=1
+ remote('cat > /home/factionbuild/device223/'+name+'.pub; chown factionbuild:factionbuild /home/factionbuild/device223/'+name+'.pub; chmod 600 /home/factionbuild/device223/'+name+'.pub',cert.read_bytes())
+for b in bindings:mint(b.login+'-key-cert',b)
+b=bindings[0]
+mint('wrong-ca-cert',b,home='home-b')
+mint('wrong-home-cert',f.Binding(b.login,b.uid,b.home,b.subject,'board-a/home-b/subject-b'))
+mint('wrong-board-cert',f.Binding(b.login,b.uid,b.home,b.subject,'board-b/home-a/subject-a'))
+mint('wrong-principal-cert',f.Binding(b.login,b.uid,b.home,b.subject,'board-a/home-a/unrelated'))
+mint('expired-cert',b,validity='-10m:-5m')
+mint('future-cert',b,validity='+5m:+10m')
+if not (P/'fresh-key').exists():subprocess.run(['ssh-keygen','-q','-t','ed25519','-N','','-C','issue223-fresh-leaf','-f',str(P/'fresh-key')],check=True)
+mint('fresh-key-cert',b,leaf='fresh-key')
+remote('cat > /home/factionbuild/device223/fresh-key; chown factionbuild:factionbuild /home/factionbuild/device223/fresh-key; chmod 600 /home/factionbuild/device223/fresh-key',(P/'fresh-key').read_bytes())
+# Deliberately unavailable offline issuance authority; no online home provider exists.
+(P/'home-a-ca').rename(P/'home-a-ca.unavailable')
+failed=subprocess.run(f.certificate_argv('/usr/bin/ssh-keygen',P/'home-a-ca',P/'roam223a-key.pub',b,serial),capture_output=True);assert failed.returncode!=0
+(P/'outage-issuance.private.log').write_bytes(failed.stdout+failed.stderr)
+mint('home-b-outage-control-cert',bindings[1])
+(P/'certificate-controls.json').write_text(json.dumps({'result':'pass','checks':checks,'home_a_issuance_unavailable_exit':failed.returncode,'home_b_issuance_available':True,'offline_home_fixture':True,'signer':'host OpenSSH; native installed signer remains rejected'},indent=2)+'\n')
+print(json.dumps({'result':'pass','issued':len(checks),'signer_success_and_independent_verification':len(checks),'home_a_unavailable':True,'home_b_available':True}))

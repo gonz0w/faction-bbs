@@ -116,6 +116,10 @@ The protocols have separate jobs:
   with invited independent home boards. Keys and decryption stay on the member's
   device. An ordinary SSH BBS session never receives private-mail plaintext or keys.
 
+The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
+a trusted UID-to-local-member path for operator-provisioned software fixtures.
+Online issuance/enrollment and production roaming remain incomplete.
+
 The existing [two-home proof](dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 is separate from the adopted [bounded native adapter](dev-docs/native-home-mail.md). The installed native signer remains
 rejected; the [validated signing correction](dev-docs/research/0052-netbsd-signing-exit.md)

@@ -1,0 +1,6 @@
+from lab import *
+import hashlib
+archive=Path('/private/tmp/faction223-lead-OWNED/openssh-10.3p1.tar.gz');assert hashlib.sha256(archive.read_bytes()).hexdigest()=='56682a36bb92dcf4b4f016fd8ec8e74059b79a8de25c15d670d731e7d18e45f4'
+remote('test ! -e /home/factionbuild/roaming223-openssh; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/roaming223-openssh; tar -xzf - --strip-components 1 -C /home/factionbuild/roaming223-openssh; chown -R factionbuild:factionbuild /home/factionbuild/roaming223-openssh',archive.read_bytes(),timeout=120)
+remote("su - factionbuild -c 'cd /home/factionbuild/roaming223-openssh && nohup sh -c \"CFLAGS=-O2 ./configure --without-pam --without-security-key-builtin > configure.log 2>&1 && make -j1 libssh.a > build.log 2>&1 && make -j1 -C openbsd-compat >> build.log 2>&1; echo \\$? > build-exit.txt\" < /dev/null > launch.log 2>&1 &' ")
+print('Pinned OpenSSH uninstalled native component build launched; no signer adoption.')

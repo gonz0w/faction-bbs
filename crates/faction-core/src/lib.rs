@@ -44,6 +44,10 @@ pub use member_pages::{
 };
 pub use room_drafts::{ROOM_DRAFT_SECONDS, ROOM_DRAFTS, SavedRoomDraft};
 pub use wall::{WallConfig, WallNote, WallPage, wall_text};
+mod roaming;
+pub use roaming::{
+    RoamingAdmission, RoamingBinding, RoamingIssuer, RoamingOwnerState, RoamingRegistry,
+};
 mod scores;
 pub use files::{
     AreaFile, FILE_BOARD_BYTES, FILE_BYTES, FILE_CHUNK, FILE_ROWS, FileArea, TransferGrant,
@@ -167,11 +171,13 @@ pub struct Post {
     pub body: String,
     pub reply_to: Option<i64>,
 }
-/// Created only after password verification; cannot be serialized or transplanted between boards.
+/// Created only after password verification or trusted owner UID admission.
+/// Cannot be serialized or transplanted between boards.
 pub struct Session {
     board: [u8; 32],
     member: i64,
     epoch: i64,
+    roaming: Option<roaming::Provenance>,
 }
 impl fmt::Debug for Session {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -184,6 +190,8 @@ pub struct Board {
     credential_directory: std::path::PathBuf,
     directory_owner: Option<Vec<DirectoryKey>>,
     directory_configured: bool,
+    roaming_owner: Option<RoamingRegistry>,
+    roaming_configured: bool,
 }
 
 fn private(path: &Path, directory: bool) -> Result<()> {
@@ -287,6 +295,9 @@ fn current(
     if (approved && member.status != Status::Approved) || (sysop && member.role != Role::Sysop) {
         return Err(Error::Denied);
     }
+    if let Some(p) = session.roaming {
+        roaming::check(tx, session.member, p)?;
+    }
     Ok(member)
 }
 fn post_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<Post> {
@@ -353,12 +364,12 @@ impl Board {
                 tx.pragma_update(None, "user_version", 1)?;
             }
             tx.commit()?;
-        } else if app != APP_ID || !(1..=19).contains(&version) {
+        } else if app != APP_ID || !(1..=20).contains(&version) {
             return Err(Error::UnsupportedSchema);
         }
         let actual_app: i64 = db.query_row("PRAGMA application_id", [], |r| r.get(0))?;
         let actual_version: i64 = db.query_row("PRAGMA user_version", [], |r| r.get(0))?;
-        if actual_app != APP_ID || !(1..=19).contains(&actual_version) {
+        if actual_app != APP_ID || !(1..=20).contains(&actual_version) {
             return Err(Error::UnsupportedSchema);
         }
         db.pragma_update(None, "foreign_keys", true)?;
@@ -368,7 +379,7 @@ impl Board {
             if v == 1 {
                 tx.execute_batch(include_str!("chat.sql"))?;
                 tx.pragma_update(None, "user_version", 2)?;
-            } else if !(2..=19).contains(&v) {
+            } else if !(2..=20).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -379,7 +390,7 @@ impl Board {
             if v == 2 {
                 tx.execute_batch(include_str!("scores.sql"))?;
                 tx.pragma_update(None, "user_version", 3)?;
-            } else if !(3..=19).contains(&v) {
+            } else if !(3..=20).contains(&v) {
                 return Err(Error::UnsupportedSchema);
             }
             tx.commit()?;
@@ -389,7 +400,7 @@ impl Board {
         if v == 3 {
             tx.execute_batch(include_str!("files.sql"))?;
             tx.pragma_update(None, "user_version", 4)?;
-        } else if !(4..=19).contains(&v) {
+        } else if !(4..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -399,7 +410,7 @@ impl Board {
             tx.execute_batch(include_str!("file_links.sql"))?;
             tx.execute("INSERT INTO file_namespace VALUES(1,?1)", [request_id()?])?;
             tx.pragma_update(None, "user_version", 5)?;
-        } else if !(5..=19).contains(&v) {
+        } else if !(5..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -408,7 +419,7 @@ impl Board {
         if v == 5 {
             tx.execute_batch(include_str!("post_metadata.sql"))?;
             tx.pragma_update(None, "user_version", 6)?;
-        } else if !(6..=19).contains(&v) {
+        } else if !(6..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -443,7 +454,7 @@ impl Board {
             )?;
             tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
             tx.pragma_update(None, "user_version", 7)?;
-        } else if !(7..=19).contains(&v) {
+        } else if !(7..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -452,7 +463,7 @@ impl Board {
         if v == 7 {
             tx.execute_batch(include_str!("room_drafts.sql"))?;
             tx.pragma_update(None, "user_version", 8)?;
-        } else if !(8..=19).contains(&v) {
+        } else if !(8..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -461,7 +472,7 @@ impl Board {
         if v == 8 {
             tx.execute_batch(include_str!("wall.sql"))?;
             tx.pragma_update(None, "user_version", 9)?;
-        } else if !(9..=19).contains(&v) {
+        } else if !(9..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -470,7 +481,7 @@ impl Board {
         if v == 9 {
             tx.execute_batch(include_str!("member_pages.sql"))?;
             tx.pragma_update(None, "user_version", 10)?;
-        } else if !(10..=19).contains(&v) {
+        } else if !(10..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -479,7 +490,7 @@ impl Board {
         if v == 10 {
             tx.execute_batch(include_str!("gatherings.sql"))?;
             tx.pragma_update(None, "user_version", 11)?;
-        } else if !(11..=19).contains(&v) {
+        } else if !(11..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -488,7 +499,7 @@ impl Board {
         if v == 11 {
             tx.execute_batch(include_str!("polls.sql"))?;
             tx.pragma_update(None, "user_version", 12)?;
-        } else if !(12..=19).contains(&v) {
+        } else if !(12..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -497,7 +508,7 @@ impl Board {
         if v == 12 {
             tx.execute_batch(include_str!("catchup.sql"))?;
             tx.pragma_update(None, "user_version", 13)?;
-        } else if !(13..=19).contains(&v) {
+        } else if !(13..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -506,7 +517,7 @@ impl Board {
         if v == 13 {
             tx.execute_batch(include_str!("discussion.sql"))?;
             tx.pragma_update(None, "user_version", 14)?;
-        } else if !(14..=19).contains(&v) {
+        } else if !(14..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -515,7 +526,7 @@ impl Board {
         if v == 14 {
             tx.execute_batch(include_str!("requests.sql"))?;
             tx.pragma_update(None, "user_version", 15)?;
-        } else if !(15..=19).contains(&v) {
+        } else if !(15..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -524,7 +535,7 @@ impl Board {
         if v == 15 {
             tx.execute_batch(include_str!("editorial.sql"))?;
             tx.pragma_update(None, "user_version", 16)?;
-        } else if !(16..=19).contains(&v) {
+        } else if !(16..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -533,7 +544,7 @@ impl Board {
         if v == 16 {
             tx.execute_batch(include_str!("social.sql"))?;
             tx.pragma_update(None, "user_version", 17)?;
-        } else if !(17..=19).contains(&v) {
+        } else if !(17..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -542,7 +553,7 @@ impl Board {
         if v == 17 {
             tx.execute_batch(include_str!("activity.sql"))?;
             tx.pragma_update(None, "user_version", 18)?;
-        } else if !(18..=19).contains(&v) {
+        } else if !(18..=20).contains(&v) {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -551,7 +562,16 @@ impl Board {
         if v == 18 {
             tx.execute_batch(include_str!("directory.sql"))?;
             tx.pragma_update(None, "user_version", 19)?;
-        } else if v != 19 {
+        } else if !(19..=20).contains(&v) {
+            return Err(Error::UnsupportedSchema);
+        }
+        tx.commit()?;
+        let tx = db.transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let v: i64 = tx.query_row("PRAGMA user_version", [], |r| r.get(0))?;
+        if v == 19 {
+            tx.execute_batch(include_str!("roaming.sql"))?;
+            tx.pragma_update(None, "user_version", 20)?;
+        } else if v != 20 {
             return Err(Error::UnsupportedSchema);
         }
         tx.commit()?;
@@ -566,6 +586,8 @@ impl Board {
             credential_directory: fs::canonicalize(directory)?,
             directory_owner: None,
             directory_configured: false,
+            roaming_owner: None,
+            roaming_configured: false,
         })
     }
     pub fn bootstrap(&mut self, name: &str, secret: &str) -> Result<()> {
@@ -617,6 +639,7 @@ impl Board {
     }
     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
         self.directory_configured = true;
+        self.roaming_configured = true;
         let name = handle(name).map_err(|_| Error::Credentials)?;
         if secret.len() > 128 || secret.is_empty() {
             return Err(Error::Credentials);
@@ -643,6 +666,7 @@ impl Board {
             board: self.identity,
             member,
             epoch,
+            roaming: None,
         })
     }
     pub fn whoami(&mut self, session: &Session) -> Result<Member> {

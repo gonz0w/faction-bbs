@@ -120,12 +120,25 @@ impl Board {
             "INSERT INTO chat_sessions(id,member,epoch,touched) VALUES(?1,?2,?3,unixepoch())",
             params![id.as_slice(), s.member, s.epoch],
         )?;
+        if let Some(p) = s.roaming {
+            tx.execute(
+                "INSERT INTO roaming_chat VALUES(?1,?2,?3,?4,?5)",
+                params![
+                    id.as_slice(),
+                    p.binding_id,
+                    p.binding_generation,
+                    p.issuer_id,
+                    p.issuer_generation
+                ],
+            )?;
+        }
         tx.commit()?;
         Ok(ChatLease {
             session: Session {
                 board: s.board,
                 member: s.member,
                 epoch: s.epoch,
+                roaming: s.roaming,
             },
             id,
         })

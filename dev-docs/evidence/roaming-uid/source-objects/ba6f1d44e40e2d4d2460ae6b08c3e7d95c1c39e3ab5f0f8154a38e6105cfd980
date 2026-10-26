@@ -1,0 +1,148 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "native-client-home-home-a-board-a",
+      "result": "pass"
+    },
+    {
+      "name": "native-client-home-home-b-board-a",
+      "result": "pass"
+    },
+    {
+      "name": "same-home-display-handle-separated-local-members",
+      "result": "pass",
+      "bindings": 4
+    },
+    {
+      "name": "wrong-ca-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "wrong-home-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "wrong-board-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "wrong-principal-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "expired-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "future-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "wrong-private-key-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "wrong-transport-uid-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "current-pending-member-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "current-revoked-member-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "legitimate-certificate-reuse-two-new-sessions",
+      "result": "pass"
+    },
+    {
+      "name": "fresh-certified-leaf-under-allowed-ca-principal-accepted",
+      "result": "pass"
+    },
+    {
+      "name": "already-issued-home-a-certificate-works-with-offline-issuance-authority",
+      "result": "pass"
+    },
+    {
+      "name": "home-b-independent-during-home-a-issuance-outage",
+      "result": "pass"
+    },
+    {
+      "name": "active-unlink-invalidates-protected-action",
+      "result": "pass"
+    },
+    {
+      "name": "classic-password-fallback-after-unlink",
+      "result": "pass"
+    },
+    {
+      "name": "active-member-revocation-invalidates-protected-action",
+      "result": "pass"
+    },
+    {
+      "name": "active-issuer-revocation-invalidates-protected-action",
+      "result": "pass"
+    },
+    {
+      "name": "explicit-reconciliation-after-issuer-disable-and-owner-restart",
+      "result": "pass"
+    },
+    {
+      "name": "board-a-unavailable-while-board-b-active",
+      "result": "pass"
+    },
+    {
+      "name": "native-client-home-home-a-board-b",
+      "result": "pass"
+    },
+    {
+      "name": "native-client-home-home-b-board-b",
+      "result": "pass"
+    },
+    {
+      "name": "board-b-unavailable-while-board-a-active",
+      "result": "pass"
+    },
+    {
+      "name": "board-a-independent-after-board-b-outage",
+      "result": "pass"
+    },
+    {
+      "name": "real-export-restore-disables-issuer-binding-and-rotates-board-authority",
+      "result": "pass"
+    },
+    {
+      "name": "restored-board-rejects-old-root-manifest-before-listening",
+      "result": "pass"
+    },
+    {
+      "name": "classic-native-frontend-password-access-remains",
+      "result": "pass"
+    },
+    {
+      "name": "native-owner-runtime-rss",
+      "result": "pass",
+      "rss_kib": 6528
+    },
+    {
+      "name": "normal-five-second-owner-drain-and-transport-teardown",
+      "result": "pass"
+    },
+    {
+      "name": "no-processes-under-all-four-transport-uids-after-drain",
+      "result": "pass"
+    }
+  ],
+  "native_client_connect_ms": [
+    320,
+    313,
+    344,
+    331
+  ],
+  "sequential_boards": true,
+  "physical_hardware": false,
+  "capacity_claim": false
+}

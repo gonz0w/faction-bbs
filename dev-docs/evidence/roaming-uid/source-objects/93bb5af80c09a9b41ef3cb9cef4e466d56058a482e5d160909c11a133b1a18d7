@@ -1,0 +1,171 @@
+{
+  "checks": [
+    {
+      "command": [
+        "state"
+      ],
+      "exit_code": 1
+    },
+    {
+      "command": [
+        "bootstrap",
+        "sysop",
+        "fixture-only-secret-223"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "memberadd",
+        "member",
+        "fixture-only-secret-223"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "member",
+        "member",
+        "approved"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "addissuer",
+        "home-one",
+        "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "issuer",
+        "1",
+        "1",
+        "on"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "link",
+        "1",
+        "2",
+        "subject-one",
+        "board-one:home-one:subject-one",
+        "member",
+        "42001",
+        "consent-223"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "enable",
+        "1",
+        "1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "disable",
+        "1",
+        "1"
+      ],
+      "exit_code": 1
+    },
+    {
+      "command": [
+        "disable",
+        "1",
+        "2"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "link",
+        "1",
+        "2",
+        "other-subject",
+        "other-principal",
+        "member",
+        "42001",
+        "new-consent"
+      ],
+      "exit_code": 1
+    },
+    {
+      "command": [
+        "link",
+        "1",
+        "2",
+        "subject-one",
+        "board-one:home-one:subject-one",
+        "member",
+        "42002",
+        "fresh-consent-223"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "enable",
+        "2",
+        "1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "enable",
+        "1",
+        "3"
+      ],
+      "exit_code": 1
+    },
+    {
+      "command": [
+        "issuer",
+        "1",
+        "2",
+        "off"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "issuer",
+        "1",
+        "3",
+        "on"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "state"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "member",
+        "member",
+        "revoked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "enable",
+        "2",
+        "3"
+      ],
+      "exit_code": 1
+    }
+  ],
+  "fixture_removed": true
+}

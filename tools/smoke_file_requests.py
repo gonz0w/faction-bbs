@@ -54,10 +54,10 @@ def run(a):
             c=start(True);view_request(c,id);c.send('n');c.expect('Request> ');c.send('x');c.expect('Close request? YES or Q: ');c.send('yes');c.expect('Requests> ');view_request(c,id);assert query('SELECT state FROM file_requests')==[('closed',)];back(c,True);assert b'\x1b' not in c.transcript;checks.append('plain_narrow_detail_paging_and_author_close_preserve_escape_free_fallback')
             c=start(worker=True);view_request(c,id);assert b'F:Files' not in c.transcript;c.send('z');c.expect('Delete request permanently');c.send('yes');c.expect('Requests> ');assert query('SELECT count(*) FROM file_requests')==[(0,)];c.send('q');c.expect(LIST);c.send('q');c.expect(MENU);c.raw(b'q');c.expect('Logged out.');c.finish();checks.append('worker_same_desk_ownership_and_explicit_delete_without_transfer_adapter')
             c=start(True,handle='sysop');create(c);id=query('SELECT id FROM file_requests')[0][0];c.send('z');c.expect('Delete request permanently');c.send('q');c.expect('Requests> ');view_request(c,id);c.send('z');c.expect('Delete request permanently');c.send('yes');c.expect('Requests> ');c.send('q');c.expect(LIST);c.send('q');c.expect('Command (then Enter): ');c.send('q');c.expect('Logged out.');c.finish();checks.append('sysop_moderation_requires_deliberate_confirmation')
-            c=start(handle='pending');c.expect('No community access.');c.finish();assert query('PRAGMA user_version')==[(19,)] and query('SELECT count(*) FROM unread')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_member_denied_schema_sixteen_no_unread_mutation_or_password_echo')
+            c=start(handle='pending');c.expect('No community access.');c.finish();assert query('PRAGMA user_version')==[(20,)] and query('SELECT count(*) FROM unread')==[(0,)] and all(password.encode() not in c.transcript for c in children);checks.append('pending_member_denied_schema_sixteen_no_unread_mutation_or_password_echo')
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,capacity_claim=False,new_transfer_authority=False,public_library=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=20,capacity_claim=False,new_transfer_authority=False,public_library=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker file requests passed:',len(checks),'controls.')
 if __name__=='__main__':

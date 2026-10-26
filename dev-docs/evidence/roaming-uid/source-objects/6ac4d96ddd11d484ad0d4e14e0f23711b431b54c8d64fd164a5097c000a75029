@@ -1,0 +1,24 @@
+   Compiling memchr v2.8.3
+   Compiling roxmltree v0.21.1
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 1.87s
+     Running unittests src/lib.rs (target/release/deps/faction_client-edd57512919a1334)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 46 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/faction_client-7f3742fae855ebcc)
+
+running 1 test
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 37 filtered out; finished in 0.00s
+
+     Running unittests examples/checkpoint_ui_fixture.rs (target/release/examples/checkpoint_ui_fixture-4ae06ebd5dce61af)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+

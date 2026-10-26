@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_playground_seed.py", line 60, in <module>
+    run(parser.parse_args().binary.resolve())
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_playground_seed.py", line 25, in run
+    assert db.execute('pragma user_version').fetchone() == (20,)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
