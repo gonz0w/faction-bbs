@@ -12,10 +12,19 @@ use toml::{Table, Value};
 pub const BYTES: usize = 32768;
 pub const LISTINGS: usize = 32;
 const PAGE: usize = 4;
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Directory {
     entries: Vec<Listing>,
+    snapshot: Vec<(i64, String, bool)>,
 }
+/// One validated published card, supplied by the approved local core adapter.
+pub struct Overlay {
+    pub id: i64,
+    pub revision: String,
+    pub catalog: Directory,
+    pub expired: bool,
+}
+#[derive(Clone)]
 struct Listing {
     slug: String,
     name: String,
@@ -28,12 +37,15 @@ struct Listing {
     reviewed_text: String,
     until_text: String,
     fingerprint: Option<String>,
+    owner: bool,
+    expired: bool,
 }
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct View {
     selected: usize,
     detail: bool,
     offset: usize,
+    snapshot: Option<Vec<(i64, String, bool)>>,
 }
 fn text(t: &mut Table, key: &str, max: usize) -> Result<String> {
     match t.remove(key) {
@@ -70,6 +82,9 @@ fn date_now() -> Option<Date> {
     Date::new(y, m, d)
 }
 fn status(entry: &Listing, today: Option<Date>) -> &'static str {
+    if entry.expired {
+        return "OLD";
+    }
     match today {
         Some(d) if d.fields() < entry.reviewed.fields() => "DATE?",
         Some(d) if d.fields() > entry.until.fields() => "OLD",
@@ -87,6 +102,45 @@ fn wrap(text: &str, width: usize) -> Vec<String> {
         .collect()
 }
 impl Directory {
+    /// Validated immutable pack conflict keys, for trusted startup configuration.
+    pub fn curator_keys(&self) -> Vec<(String, String, u16, String)> {
+        self.entries
+            .iter()
+            .filter(|e| e.owner)
+            .map(|e| (e.slug.clone(), e.host.clone(), e.port, e.login.clone()))
+            .collect()
+    }
+    pub fn compose(&self, overlays: Vec<Overlay>) -> Result<Self> {
+        if self.entries.len() + overlays.len() > LISTINGS {
+            return Err("directory union bound");
+        }
+        let mut result = self.clone();
+        result.snapshot.clear();
+        for overlay in overlays {
+            if overlay.catalog.entries.len() != 1
+                || overlay.id <= 0
+                || overlay.revision.is_empty()
+                || overlay.revision.len() > 128
+                || result.snapshot.iter().any(|(id, _, _)| *id == overlay.id)
+            {
+                return Err("invalid published directory card");
+            }
+            let mut entry = overlay.catalog.entries.into_iter().next().unwrap();
+            if result.entries.iter().any(|e| {
+                e.slug == entry.slug
+                    || (e.host == entry.host && e.port == entry.port && e.login == entry.login)
+            }) {
+                return Err("duplicate published directory card");
+            }
+            entry.owner = false;
+            entry.expired = overlay.expired;
+            result.entries.push(entry);
+            result
+                .snapshot
+                .push((overlay.id, overlay.revision, overlay.expired));
+        }
+        Ok(result)
+    }
     pub fn len(&self) -> usize {
         self.entries.len()
     }
@@ -208,9 +262,14 @@ impl Directory {
                 reviewed_text,
                 until_text,
                 fingerprint,
+                owner: true,
+                expired: false,
             });
         }
-        Ok(Self { entries })
+        Ok(Self {
+            entries,
+            snapshot: Vec::new(),
+        })
     }
     fn body(&self, index: usize, width: usize, today: Option<Date>) -> Vec<String> {
         let e = &self.entries[index];
@@ -218,6 +277,11 @@ impl Directory {
         let mut raw = vec![
             format!("{} [{}]", e.name, status(e, today)),
             e.summary.clone(),
+            if e.owner {
+                "Owner-managed; pack/restart changes.".into()
+            } else {
+                "Locally moderated member submission.".into()
+            },
             format!("Host: {}", e.host),
             format!("Port: {} | Login: {}", e.port, e.login),
             format!("Reviewed: {}", e.reviewed_text),
@@ -292,7 +356,7 @@ impl Directory {
                 ),
                 false,
             ));
-            lines.push(("N/P: more  L: list  Q: main menu".into(), false));
+            lines.push(("N/P: more L:list S:submit Q:main".into(), false));
         } else {
             let start = view.selected / PAGE * PAGE;
             lines.push((
@@ -319,7 +383,7 @@ impl Directory {
                 ));
                 lines.push((format!("  {}", e.summary), false));
             }
-            lines.push(("Arrows/Tab: select; N/P: page; Q: back".into(), false));
+            lines.push(("Arrows/Tab N/P:page S:submit Q:back".into(), false));
         }
         lines.push(("Independent login/approval required.".into(), false));
         let (normal, focus, _) = theme.menu_styles();
@@ -350,13 +414,31 @@ impl Directory {
     }
 }
 impl View {
+    /// A changed ordered overlay invalidates numeric selection and open cards.
+    pub fn synchronize(&mut self, directory: &Directory) -> bool {
+        let changed = self
+            .snapshot
+            .as_ref()
+            .is_some_and(|s| s != &directory.snapshot);
+        if changed {
+            self.selected = 0;
+            self.detail = false;
+            self.offset = 0;
+        }
+        self.snapshot = Some(directory.snapshot.clone());
+        changed
+    }
     pub fn is_card(&self) -> bool {
         self.detail
     }
     /// true returns to the BBS; never launches a local or remote command.
     pub fn feed(&mut self, key: Key, directory: &Directory, columns: u16, rows: u16) -> bool {
+        let changed = self.synchronize(directory);
         if key == Key::Hotkey(b'Q') {
             return true;
+        }
+        if changed {
+            return false;
         }
         if directory.is_empty() {
             return false;

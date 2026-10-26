@@ -248,6 +248,8 @@ fn run() -> Result<()> {
         .set_library_enabled(library.enabled())
         .map_err(invalid)?;
     let mut board = Board::open(&path)?;
+    board
+        .configure_directory_owner(directory.as_ref().map(faction_pages::directory::owner_keys))?;
     let name = line("Handle: ", 24)?;
     match command {
         "init" => {

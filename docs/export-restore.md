@@ -1,6 +1,6 @@
 # Private local export and restore
 
-Updated 2026-10-23. These are filesystem-owner tools for the local development
+Updated 2026-10-26. These are filesystem-owner tools for the local development
 core, not member commands or a network backup service. Build with
 [the local development instructions](local-development.md). Keep the owner-capable
 executable and state out of member SSH shells/forced commands.
@@ -29,7 +29,7 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2 through 17 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2 through 19 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2..16 boards upgrade to schema 17 when
+Verification is read-only; restored schema-2..18 boards upgrade to schema 19 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -51,6 +51,11 @@ and checks its format/schema, SQLite integrity, foreign keys and core record rul
 it prints only aggregate counts. It does not create a board or prove provenance.
 Future/unknown formats, extra schema objects, unsupported credential parameters,
 unsafe permissions, symlinks, sidecars and malformed/inconsistent data fail.
+
+Schema 19 adds private directory drafts, pending reviews and published/expired
+local submissions. The separately managed curator pack remains outside the
+export. Restoring an older snapshot can restore withdrawn listings too; review
+their publication and current author approvals before enabling the directory.
 
 ## What is included
 

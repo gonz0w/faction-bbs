@@ -1,0 +1,12 @@
+from pathlib import Path
+import json,os,re,subprocess
+p=Path('/home/factionbuild/proof184');root=Path('/home/factionbuild/source184-server')
+env=os.environ.copy();env.update(CARGO_HOME='/home/factionbuild/cargo184',CARGO_TARGET_DIR='/home/factionbuild/target184',CARGO_BUILD_JOBS='1')
+checks=[]
+for name,cmd in [('fmt',['cargo','fmt','--all','--','--check']),('clippy',['cargo','clippy','--workspace','--all-targets','--release','--locked','--offline','--','-D','warnings']),('tests',['cargo','test','--workspace','--all-targets','--release','--locked','--offline','--','--test-threads=1'])]:
+ with (p/(name+'.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+ record={'name':name,'command':cmd,'returncode':r.returncode,'result':'pass' if r.returncode==0 else 'fail'}
+ if name=='tests':
+  raw=(p/(name+'.log')).read_text();record['passed']=sum(map(int,re.findall(r'test result: ok\. (\d+) passed',raw)))
+ checks.append(record);(p/'native-checks.json').write_text(json.dumps({'result':'pass' if all(c['returncode']==0 for c in checks) else 'fail','checks':checks,'compile_memory_mib':2048},indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)

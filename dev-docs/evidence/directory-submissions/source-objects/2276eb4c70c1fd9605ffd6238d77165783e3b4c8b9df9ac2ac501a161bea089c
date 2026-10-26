@@ -1,0 +1,9 @@
+from pathlib import Path
+import json,os,subprocess
+root=Path('/home/factionbuild/source184-server');out=Path('/home/factionbuild/proof184');bin='/home/factionbuild/target184/release/'
+checks=[]
+for name,cmd in [('submissions',['python3.13','tools/smoke_directory_submissions.py',bin+'faction',bin+'faction-member','--output',str(out/'native-directory-submissions.json')]),('directory',['python3.13','tools/smoke_directory.py',bin+'faction',bin+'faction-member','--output',str(out/'native-directory-regressions.json')]),('export',['python3.13','tools/smoke_export_restore.py',bin+'faction']),('launcher',['python3.13','tools/smoke_board_launcher.py',bin+'faction-client'])]:
+ with (out/(name+'-runtime.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,stdout=log,stderr=log)
+ checks.append({'name':name,'command':cmd,'returncode':r.returncode,'result':'pass' if r.returncode==0 else 'fail'})
+ (out/'native-runtime-checks.json').write_text(json.dumps({'result':'pass' if all(x['returncode']==0 for x in checks) else 'fail','checks':checks},indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)

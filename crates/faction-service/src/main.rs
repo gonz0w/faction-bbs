@@ -67,6 +67,7 @@ enum State {
     Who(Box<faction_pages::who::Desk>),
     Terminal,
     Directory(faction_terminal::directory::View),
+    DirectoryDesk(Box<faction_pages::directory::Desk>),
     Gallery(Box<faction_gallery::Desk>),
     Library(Box<faction_library::Desk>),
     RoomBrowse(faction_terminal::rooms::View),
@@ -523,6 +524,11 @@ fn run() -> Result<()> {
         return Err(denied());
     }
     let mut board = Board::open(&state)?;
+    board.configure_directory_owner(
+        directory
+            .as_ref()
+            .map(|d| faction_pages::directory::owner_keys(d)),
+    )?;
     let ansi = config.ansi;
     let max_sessions = config.max_sessions;
     let launch_ms = u128::from(config.launch_ms);

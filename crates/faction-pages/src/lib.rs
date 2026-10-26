@@ -1,5 +1,6 @@
 //! Local member-page interaction shared by local/worker and shared terminals.
 #![forbid(unsafe_code)]
+pub mod directory;
 pub mod notifications;
 pub mod social;
 pub mod who;

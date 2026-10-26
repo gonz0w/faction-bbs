@@ -109,7 +109,7 @@ def run(a):
             write("UPDATE chat_sessions SET touched=unixepoch()-61 WHERE member=(SELECT id FROM members WHERE handle='charlie')")
             passed('failed_chat_part_cleanup_ends_visit_instead_of_resuming_with_retained_channel_joins')
             held=start('charlie');lounge(held);chat(owner,True);cmd(owner,'/social off','Social configuration updated.');cmd(held,'r',MENU);assert b'Social lounge disabled' in held.transcript;logout(held);leave_chat(owner,True);owner.send('?');owner.expect(PLAIN);assert query('SELECT count(*) FROM social_presence')==[(0,)] and query('SELECT count(*) FROM social_pages')==[(0,)];logout(owner,True);passed('sysop_disable_clears_live_signals_and_logout_closes_final_visit')
-            assert query('PRAGMA user_version')==[(18,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children)
+            assert query('PRAGMA user_version')==[(19,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children)
             passed('schema_unread_transfer_state_unchanged_and_passwords_never_echoed')
         except Exception:
             if a.diagnostics:
@@ -118,7 +118,7 @@ def run(a):
             raise
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=18,sustained=not a.quick,heartbeat_observations=observations,synthetic_clock_aging=True,actual_registration_and_approval=True,standalone_visit_availability=True,capacity_claim=False,automatic_popups=False,private_message_bodies=False,new_transfer_authority=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,sustained=not a.quick,heartbeat_observations=observations,synthetic_clock_aging=True,actual_registration_and_approval=True,standalone_visit_availability=True,capacity_claim=False,automatic_popups=False,private_message_bodies=False,new_transfer_authority=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Standalone visit lounge passed:',len(checks),'controls; sustained:',not a.quick,flush=True)
 if __name__=='__main__':

@@ -1,0 +1,137 @@
+* text=auto
+*.md text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
+dev-docs/archive/** -text
+
+# Preserve the exact measured theme fixture, including its trailing blank line.
+experiments/055-shared-ui/fixtures/base/theme.toml whitespace=-blank-at-eof
+
+# Frozen executed build inputs retain exact bytes.
+dev-docs/evidence/sources/** -text whitespace=-blank-at-eof,-blank-at-eol
+
+# Preserve rejected executed inputs; collapse generated matrices in GitHub review.
+dev-docs/evidence/admission-ledger/** -text
+dev-docs/evidence/ssh-inetd/** -text
+dev-docs/research/results/*.json linguist-generated=true
+
+# Unified-diff context preserves upstream tabs and mandatory prefix spaces.
+dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Historical source copies are generated evidence, not new runtime implementation.
+dev-docs/evidence/sources/** linguist-generated=true
+# A unified diff's required context prefix may precede upstream indentation tabs.
+dev-docs/evidence/sources/*/dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Article fixtures retain protocol-mandated CRLF bytes.
+crates/faction-articles/tests/fixtures/*.article -text whitespace=cr-at-eol
+
+# Preserve the exact executed terminal compatibility baseline.
+dev-docs/evidence/sources/pre25/** -text
+
+dev-docs/evidence/sources/pre25-calendar/** -text
+
+# ANSI templates preserve authored CRLF and canonical import bytes.
+themes/seasons/**/*.ans -text whitespace=cr-at-eol
+
+# Preserve executed seasonal art/source bytes before custom layout work.
+dev-docs/evidence/sources/pre25-layouts/** -text
+
+# Original CP437/SAUCE asset: binary byte encoding and CRLF are intentional.
+themes/grid/login.ans -text
+
+# Exact executed custom-menu inputs before long-form art.
+dev-docs/evidence/sources/pre25-paging/** -text
+
+# Intentional original CP437/SAUCE bytes.
+themes/longform/login.ans -text whitespace=cr-at-eol
+
+# Original Nightwire CP437/SAUCE artwork: preserve binary bytes.
+themes/nightwire*/**/*.ans -text whitespace=cr-at-eol
+
+dev-docs/evidence/sources/pre95-operator/** -text
+
+dev-docs/evidence/sources/pre95-hoststats/** -text
+dev-docs/evidence/sources/pre95-recovery/** -text
+dev-docs/evidence/sources/pre27-directory/** -text
+dev-docs/evidence/sources/pre27-launcher/** -text
+dev-docs/evidence/sources/pre21-room-browser/** -text
+dev-docs/evidence/sources/pre141-writing-desk/** -text
+dev-docs/evidence/sources/pre141-full-screen/** -text
+
+dev-docs/evidence/sources/pre134-wall/** -text
+
+dev-docs/evidence/sources/pre135-members/** -text
+
+/dev-docs/evidence/sources/pre94-community-integration/** -text
+/dev-docs/evidence/sources/pre94-vault-integration/** -text
+
+/dev-docs/evidence/sources/pre136-gatherings/** -text
+
+/dev-docs/evidence/sources/pre139-polls/** -text
+
+/dev-docs/evidence/sources/pre138-catchup/** -text
+
+/dev-docs/evidence/sources/pre142-discussion-search/** -text
+
+/dev-docs/evidence/sources/pre144-scene-gallery/** -text
+
+/dev-docs/evidence/sources/pre159-native-travel/** -text
+
+/dev-docs/evidence/sources/pre140-library-shelves/** -text
+
+/dev-docs/evidence/sources/pre140-file-requests/** -text
+
+/dev-docs/evidence/sources/pre143-magazine/** -text
+
+/dev-docs/evidence/sources/pre143-editorial/** -text
+
+dev-docs/evidence/sources/pre137-social/** -text
+
+dev-docs/evidence/sources/pre137-boardwide/** -text
+
+dev-docs/evidence/sources/pre137-standalone/** -text
+
+dev-docs/evidence/sources/pre137-idle/** -text
+
+dev-docs/evidence/sources/pre176-who/** -text
+
+# Exact Who execution inputs before the local connection desk.
+dev-docs/evidence/sources/pre158-connection-desk/** -text
+
+# Exact connection-desk inputs before the optional passport.
+dev-docs/evidence/sources/pre161-passport/** -text
+
+# Exact passport software inputs before the board guide.
+dev-docs/evidence/sources/pre21-guide/** -text
+
+# #211 immutable evidence includes exact protocol CRLF and compiler output.
+dev-docs/evidence/archive-mail/** -text
+# Captured source objects are generated evidence, not current implementation.
+dev-docs/evidence/archive-mail/sources/** linguist-generated=true
+dev-docs/evidence/archive-mail/native-source-objects/** linguist-generated=true
+dev-docs/evidence/archive-mail/final-source-objects/** linguist-generated=true
+
+# #214 native protocol/source evidence retains exact executed bytes.
+dev-docs/evidence/picker-mail/** -text
+dev-docs/evidence/picker-mail/source-objects/** linguist-generated=true
+dev-docs/evidence/picker-mail/native-source-objects/** linguist-generated=true
+dev-docs/evidence/picker-mail/lead-source-objects/** linguist-generated=true
+
+# #216/#217 exact executed source and protocol evidence.
+dev-docs/evidence/local-unread-mail/** -text
+dev-docs/evidence/local-unread-mail/source-objects/** linguist-generated=true
+dev-docs/evidence/local-unread-mail/qualification/orchestration-source-objects/** linguist-generated=true
+dev-docs/evidence/local-unread-mail/*.json linguist-generated=true
+dev-docs/evidence/local-unread-mail/host/*.json linguist-generated=true
+dev-docs/evidence/local-unread-mail/qualification/*.json linguist-generated=true
+
+# #219 immutable inbox source and protocol observations.
+dev-docs/evidence/mail-inbox/** -text
+dev-docs/evidence/mail-inbox/source-objects/** linguist-generated=true
+dev-docs/evidence/mail-inbox/*.json linguist-generated=true
+dev-docs/evidence/mail-inbox/host/*.json linguist-generated=true
+dev-docs/evidence/mail-inbox/native/*.json linguist-generated=true

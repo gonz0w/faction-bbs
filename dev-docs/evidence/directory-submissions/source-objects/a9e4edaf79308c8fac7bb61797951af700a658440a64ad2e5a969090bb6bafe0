@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "count": 11,
+  "checks": [
+    "default_directory_disabled",
+    "pending_member_sees_no_directory",
+    "offline_catalog_check_makes_no_connection",
+    "highlight_hotkeys_cards_paging_and_main_return",
+    "compact_card_pagination_and_classic_menu",
+    "plain_cards_and_return_without_ansi",
+    "inherited_terminal_worker_directory",
+    "resize_returns_to_working_main_menu",
+    "revocation_prevents_next_connection_card",
+    "unsafe_endpoint_tokens_rejected",
+    "no_network_connection_to_displayed_loopback_endpoint"
+  ],
+  "capacity_claim": false,
+  "remote_login_claim": false,
+  "federation_claim": false
+}

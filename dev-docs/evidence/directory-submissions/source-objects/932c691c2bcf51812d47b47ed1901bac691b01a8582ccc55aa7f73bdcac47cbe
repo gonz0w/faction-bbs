@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "owned_board_service_processes": 0,
+  "owned_qemu_processes": 0,
+  "owned_serial_controllers": 0,
+  "owned_forward_listeners": 0,
+  "owned_vm_root_removed": true,
+  "saved_owner_stopped": true,
+  "saved_metadata_hashes_unchanged": true,
+  "saved_disk_and_kernel_size_mtime_unchanged": true,
+  "saved_disk_full_sha256_matches_original_manifest": true,
+  "saved_kernel_full_sha256_matches_original_manifest": true,
+  "saved_disk_full_sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+  "saved_kernel_full_sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+  "private_host_root_retained_for_lead_review": true,
+  "full_private_fixture_cleanup_claim": false
+}

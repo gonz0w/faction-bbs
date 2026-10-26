@@ -135,3 +135,8 @@ dev-docs/evidence/mail-inbox/source-objects/** linguist-generated=true
 dev-docs/evidence/mail-inbox/*.json linguist-generated=true
 dev-docs/evidence/mail-inbox/host/*.json linguist-generated=true
 dev-docs/evidence/mail-inbox/native/*.json linguist-generated=true
+
+# #184 exact executed directory source and software observations.
+dev-docs/evidence/directory-submissions/** -text
+dev-docs/evidence/directory-submissions/source-objects/** linguist-generated=true
+dev-docs/evidence/directory-submissions/*.json linguist-generated=true

@@ -1,0 +1,15 @@
+from lab import *
+expected=json.loads((P/'candidate03-sources.json').read_text())
+code='''import hashlib,json,sys
+from pathlib import Path
+r=Path('/home/factionbuild/source184-server');e=json.load(sys.stdin)
+actual={n:hashlib.sha256((r/n).read_bytes()).hexdigest() for n in e}
+print(json.dumps({'result':'pass' if e==actual else 'fail','matched_inputs':sum(e[n]==actual[n] for n in e),'files':actual,'all_match':e==actual},sort_keys=True))'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(expected).encode());value=json.loads(r.stdout);assert value['result']=='pass' and value['matched_inputs']==len(expected);(P/'native-source-match.json').write_bytes(r.stdout)
+code='''import hashlib,json,subprocess
+from pathlib import Path
+names=['faction','faction-member','faction-service','faction-files','faction-client','faction-sysop']
+a={n:{'bytes':(p:=Path('/home/factionbuild/target184/release')/n).stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for n in names}
+print(json.dumps({'result':'pass','artifacts':a,'rustc':subprocess.check_output(['rustc','--version'],text=True).strip(),'cargo':subprocess.check_output(['cargo','--version'],text=True).strip(),'python':subprocess.check_output(['python3.13','--version'],text=True).strip()}))'''
+(P/'native-artifacts.json').write_bytes(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout)
+print('All frozen guest source inputs matched; native artifact/toolchain identities collected.')

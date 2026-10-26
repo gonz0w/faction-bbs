@@ -305,7 +305,7 @@ fn snapshot_export_owner_edition_and_readonly_schema_fifteen_recovery() {
     let s = b.authenticate("sysop", PASS).unwrap();
     assert_eq!(b.magazine_issue(&s, id).unwrap().text(), payload);
     drop(b);
-    f.db().execute_batch("DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;PRAGMA user_version=15").unwrap();
+    f.db().execute_batch("DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;PRAGMA user_version=15").unwrap();
     let out = f.0.join("old");
     export_local(&f.path(), &out).unwrap();
     verify_export(&out).unwrap();

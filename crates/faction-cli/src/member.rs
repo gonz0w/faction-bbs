@@ -104,6 +104,8 @@ fn run() -> Result<()> {
         .set_library_enabled(library.enabled())
         .map_err(invalid)?;
     let mut board = Board::open(&path)?;
+    board
+        .configure_directory_owner(directory.as_ref().map(faction_pages::directory::owner_keys))?;
     println!("Faction BBS access. SSH admission does not grant BBS membership.");
     match line("[L]ogin [R]egister [Q]uit: ", 1)?
         .to_ascii_lowercase()

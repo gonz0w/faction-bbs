@@ -1,0 +1,31 @@
+{
+  "result": "pass",
+  "count": 21,
+  "checks": [
+    "held_owner_lock_refuses_backup",
+    "complete_backup_is_opt_in_and_preserves_file_bytes",
+    "verify_only_leaves_artifact_and_destinations_unchanged",
+    "live_local_session_survives_verify_and_receipt",
+    "explicit_verified_receipt_read_by_rust_panel",
+    "corrupt_recheck_records_failure_and_retains_last_success",
+    "complete_restore_drops_transient_current_visit_activity",
+    "corrupt_bundle_cannot_reserve_restore_paths",
+    "restored_board_login_and_exact_blobs_without_receipt",
+    "complete_restore_preserves_wall_policy_note_and_cooldown_receipt",
+    "complete_restore_preserves_member_page_and_hidden_plan",
+    "complete_restore_preserves_gathering_policy_event_and_response",
+    "complete_restore_preserves_poll_policy_choices_ballot_and_wording_lock",
+    "complete_restore_preserves_catchup_policy_preferences_checkpoint_and_publication_order",
+    "complete_restore_preserves_discussion_policy_and_own_bookmarks",
+    "complete_restore_preserves_file_request_fulfillment_and_provenance",
+    "complete_restore_preserves_editorial_source_proposal_exact_consent_and_related_file",
+    "complete_restore_preserves_lounge_privacy_intent_without_live_presence_pages_or_rate_timestamps",
+    "backup_command_can_explicitly_record_success",
+    "unsafe_receipt_is_unavailable_to_dashboard",
+    "future_clock_and_missing_receipts_are_explicit"
+  ],
+  "native_distinct_uid_cli": false,
+  "developer_api_fixture": true,
+  "capacity_claim": false,
+  "hardening_claim": false
+}

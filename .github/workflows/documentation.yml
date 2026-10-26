@@ -118,6 +118,7 @@ jobs:
           python3 tools/check_operator_evidence.py
           python3 tools/check_operator_host_evidence.py
           python3 tools/check_operator_recovery_evidence.py
+          python3 tools/check_directory_submissions_evidence.py
           python3 tools/check_directory_evidence.py
           python3 tools/check_board_launcher_evidence.py
           python3 tools/check_room_browser_evidence.py
@@ -227,6 +228,7 @@ jobs:
           python3 tools/smoke_travel.py "$CARGO_TARGET_DIR/release/faction-client"
           python3 tools/smoke_board_launcher.py "$CARGO_TARGET_DIR/release/faction-client"
           python3 tools/smoke_directory.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_directory_submissions.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
           python3 tools/smoke_backup_recovery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-sysop"
           python3 tools/build_nightwire.py --check
           python3 tools/check_nightwire.py "$CARGO_TARGET_DIR/release/examples/preview_theme"

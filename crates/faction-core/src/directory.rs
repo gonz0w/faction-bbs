@@ -1,0 +1,492 @@
+//! Locally moderated directory overlay. Endpoint text grants no remote authority.
+use super::*;
+use std::net::IpAddr;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DirectoryKey {
+    pub slug: String,
+    pub host: String,
+    pub port: u16,
+    pub login: String,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DirectoryDraft {
+    pub slug: String,
+    pub name: String,
+    pub summary: String,
+    pub host: String,
+    pub port: u16,
+    pub login: String,
+    pub fingerprint: Option<String>,
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DirectorySubmission {
+    pub id: i64,
+    pub author: String,
+    pub revision: String,
+    pub state: String,
+    pub mine: bool,
+    pub draft: DirectoryDraft,
+    pub reviewed: Option<String>,
+    pub valid_until: Option<String>,
+}
+fn ascii(value: &str, max: usize) -> Result<()> {
+    if value.is_empty() || value.len() > max || !value.bytes().all(|b| (32..=126).contains(&b)) {
+        return Err(Error::Invalid("directory needs bounded printable ASCII"));
+    }
+    Ok(())
+}
+fn host(value: &str) -> Result<String> {
+    ascii(value, 96)?;
+    if let Ok(ip) = value.parse::<IpAddr>() {
+        return Ok(ip.to_string());
+    }
+    if value.split('.').any(|s| {
+        s.is_empty()
+            || s.len() > 63
+            || !s.as_bytes()[0].is_ascii_alphanumeric()
+            || !s.as_bytes()[s.len() - 1].is_ascii_alphanumeric()
+            || !s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-')
+    }) {
+        return Err(Error::Invalid("invalid directory host"));
+    }
+    Ok(value.to_ascii_lowercase())
+}
+impl DirectoryKey {
+    fn canonicalized(&self) -> Result<Self> {
+        ascii(&self.slug, 32)?;
+        if !self
+            .slug
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+        {
+            return Err(Error::Invalid("invalid directory slug"));
+        }
+        ascii(&self.login, 32)?;
+        if !self.login.as_bytes()[0].is_ascii_alphanumeric()
+            || !self
+                .login
+                .bytes()
+                .all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
+            || self.port == 0
+        {
+            return Err(Error::Invalid("invalid directory login or port"));
+        }
+        Ok(Self {
+            slug: self.slug.clone(),
+            host: host(&self.host)?,
+            port: self.port,
+            login: self.login.clone(),
+        })
+    }
+    fn conflicts(&self, other: &Self) -> bool {
+        self.slug == other.slug
+            || (self.host == other.host && self.port == other.port && self.login == other.login)
+    }
+}
+impl DirectoryDraft {
+    pub fn validate(&self) -> Result<()> {
+        self.canonicalized().map(|_| ())
+    }
+    pub fn canonicalized(&self) -> Result<Self> {
+        let k = self.key().canonicalized()?;
+        ascii(&self.name, 26)?;
+        ascii(&self.summary, 80)?;
+        if let Some(v) = &self.fingerprint
+            && (v.len() != 50
+                || !v.starts_with("SHA256:")
+                || !v[7..]
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b"+/".contains(&b)))
+        {
+            return Err(Error::Invalid("invalid public SHA256 fingerprint hint"));
+        }
+        let mut d = self.clone();
+        d.host = k.host;
+        Ok(d)
+    }
+    fn key(&self) -> DirectoryKey {
+        DirectoryKey {
+            slug: self.slug.clone(),
+            host: self.host.clone(),
+            port: self.port,
+            login: self.login.clone(),
+        }
+    }
+}
+fn token(value: &str) -> Result<()> {
+    if value.len() != 32
+        || !value
+            .bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+    {
+        return Err(Error::Invalid("invalid directory revision/request ID"));
+    }
+    Ok(())
+}
+fn date(value: &str) -> Result<()> {
+    let b = value.as_bytes();
+    if b.len() != 10
+        || b[4] != b'-'
+        || b[7] != b'-'
+        || b.iter()
+            .enumerate()
+            .any(|(i, b)| i != 4 && i != 7 && !b.is_ascii_digit())
+    {
+        return Err(Error::Invalid("use directory date YYYY-MM-DD"));
+    }
+    let y = value[..4]
+        .parse::<u16>()
+        .map_err(|_| Error::Invalid("invalid directory date"))?;
+    let m = value[5..7]
+        .parse::<u8>()
+        .map_err(|_| Error::Invalid("invalid directory date"))?;
+    let d = value[8..]
+        .parse::<u8>()
+        .map_err(|_| Error::Invalid("invalid directory date"))?;
+    let leap = y.is_multiple_of(4) && (!y.is_multiple_of(100) || y.is_multiple_of(400));
+    let max = match m {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 => {
+            if leap {
+                29
+            } else {
+                28
+            }
+        }
+        _ => 0,
+    };
+    if y == 0 || d == 0 || d > max {
+        return Err(Error::Invalid("invalid directory date"));
+    }
+    Ok(())
+}
+const SELECT: &str = "SELECT d.id,m.handle,d.revision,d.state,d.author=?2,d.slug,d.name,d.summary,d.host,d.port,d.login,d.fingerprint,d.reviewed,d.valid_until FROM directory_submissions d JOIN members m ON m.id=d.author";
+fn row(r: &rusqlite::Row<'_>) -> rusqlite::Result<DirectorySubmission> {
+    Ok(DirectorySubmission {
+        id: r.get(0)?,
+        author: r.get(1)?,
+        revision: r.get(2)?,
+        state: r.get(3)?,
+        mine: r.get(4)?,
+        draft: DirectoryDraft {
+            slug: r.get(5)?,
+            name: r.get(6)?,
+            summary: r.get(7)?,
+            host: r.get(8)?,
+            port: r.get(9)?,
+            login: r.get(10)?,
+            fingerprint: r.get(11)?,
+        },
+        reviewed: r.get(12)?,
+        valid_until: r.get(13)?,
+    })
+}
+fn get(tx: &Transaction<'_>, s: &Session, sysop: bool, id: i64) -> Result<DirectorySubmission> {
+    tx.query_row(
+        &format!("{SELECT} WHERE d.id=?1 AND (d.author=?2 OR (?3=1 AND d.state<>'draft'))"),
+        params![id, s.member, sysop],
+        row,
+    )
+    .optional()?
+    .ok_or(Error::NotFound)
+}
+fn conflict(db: &Connection, keys: &[DirectoryKey], id: i64, key: &DirectoryKey) -> Result<()> {
+    if keys.iter().any(|k|k.conflicts(key)) || db.prepare("SELECT 1 FROM directory_submissions WHERE id<>?1 AND state<>'draft' AND (slug=?2 OR (host=?3 AND port=?4 AND login=?5))")?.exists(params![id,key.slug,key.host,key.port,key.login])? { return Err(Error::Invalid("directory listing conflicts with an occupied listing")); }
+    Ok(())
+}
+fn capacity(db: &Connection, keys: &[DirectoryKey]) -> Result<()> {
+    let n: i64 = db.query_row(
+        "SELECT count(*) FROM directory_submissions WHERE state IN('published','expired')",
+        [],
+        |r| r.get(0),
+    )?;
+    if n + keys.len() as i64 > 32 {
+        return Err(Error::Invalid("directory published capacity reached"));
+    }
+    Ok(())
+}
+impl Board {
+    /// Trusted owner startup configuration. Call once before serving sessions.
+    /// None disables the overlay; curator keys stay outside board exports.
+    pub fn configure_directory_owner(&mut self, keys: Option<Vec<DirectoryKey>>) -> Result<()> {
+        if self.directory_configured {
+            return Err(Error::Invalid(
+                "directory owner configuration already installed",
+            ));
+        }
+        let keys = keys
+            .map(|keys| {
+                if keys.len() > 32 {
+                    return Err(Error::Invalid("directory curator capacity reached"));
+                }
+                let keys = keys
+                    .iter()
+                    .map(DirectoryKey::canonicalized)
+                    .collect::<Result<Vec<_>>>()?;
+                for (i, k) in keys.iter().enumerate() {
+                    if keys[..i].iter().any(|old| old.conflicts(k)) {
+                        return Err(Error::Invalid("duplicate directory curator listing"));
+                    }
+                }
+                Ok(keys)
+            })
+            .transpose()?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        validate(&tx)?;
+        if let Some(keys) = &keys {
+            capacity(&tx, keys)?;
+            let rows = tx
+                .prepare(&format!("{SELECT} WHERE d.state IN('published','expired')"))?
+                .query_map(params![0, 0], row)?
+                .collect::<std::result::Result<Vec<_>, _>>()?;
+            for r in rows {
+                if keys.iter().any(|k| k.conflicts(&r.draft.key())) {
+                    return Err(Error::Invalid(
+                        "curator conflicts with retained published listing",
+                    ));
+                }
+            }
+        }
+        tx.commit()?;
+        self.directory_owner = keys;
+        self.directory_configured = true;
+        Ok(())
+    }
+    pub fn directory_save(&mut self, s: &Session, nonce: &str, d: &DirectoryDraft) -> Result<i64> {
+        self.directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        token(nonce)?;
+        let d = d.canonicalized()?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        let old = tx
+            .query_row(
+                "SELECT id FROM directory_submissions WHERE author=?1 AND nonce=?2",
+                params![s.member, nonce],
+                |r| r.get::<_, i64>(0),
+            )
+            .optional()?;
+        if let Some(id) = old {
+            let old = get(&tx, s, false, id)?;
+            if old.draft != d {
+                return Err(Error::RequestConflict);
+            }
+            return Ok(id);
+        }
+        let (unpublished,mine,total):(i64,i64,i64)=tx.query_row("SELECT coalesce(sum(state IN('draft','pending')),0),coalesce(sum(state IN('draft','pending') AND author=?1),0),count(*) FROM directory_submissions",[s.member],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?)))?;
+        if unpublished >= 32 || mine >= 4 || total >= 64 {
+            return Err(Error::Invalid("directory draft capacity reached"));
+        }
+        tx.execute("INSERT INTO directory_submissions(author,nonce,revision,state,slug,name,summary,host,port,login,fingerprint) VALUES(?1,?2,?3,'draft',?4,?5,?6,?7,?8,?9,?10)",params![s.member,nonce,request_id()?,d.slug,d.name,d.summary,d.host,d.port,d.login,d.fingerprint])?;
+        let id = tx.last_insert_rowid();
+        tx.commit()?;
+        Ok(id)
+    }
+    pub fn directory_submissions(
+        &mut self,
+        s: &Session,
+        through: i64,
+    ) -> Result<Vec<DirectorySubmission>> {
+        self.directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        if through < 0 {
+            return Err(Error::Invalid("invalid directory page"));
+        }
+        let tx = self.db.transaction()?;
+        let m = current(&tx, &self.identity, s, true, false)?;
+        let rows=tx.prepare(&format!("{SELECT} WHERE d.id>?1 AND (d.author=?2 OR (?3=1 AND d.state<>'draft')) ORDER BY d.id LIMIT 4"))?.query_map(params![through,s.member,m.role==Role::Sysop],row)?.collect::<std::result::Result<Vec<_>,_>>()?;
+        Ok(rows)
+    }
+    pub fn directory_submission(&mut self, s: &Session, id: i64) -> Result<DirectorySubmission> {
+        self.directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        let tx = self.db.transaction()?;
+        let m = current(&tx, &self.identity, s, true, false)?;
+        get(&tx, s, m.role == Role::Sysop, id)
+    }
+    pub fn directory_published(&mut self, s: &Session) -> Result<Vec<DirectorySubmission>> {
+        let keys = self
+            .directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        let tx = self.db.transaction()?;
+        current(&tx, &self.identity, s, true, false)?;
+        capacity(&tx, keys)?;
+        let rows=tx.prepare(&format!("{SELECT} WHERE d.state IN('published','expired') AND m.status='approved' ORDER BY d.id LIMIT 32"))?.query_map(params![0,s.member],row)?.collect::<std::result::Result<Vec<_>,_>>()?;
+        Ok(rows)
+    }
+    pub fn directory_submit(&mut self, s: &Session, id: i64, expected: &str) -> Result<()> {
+        let keys = self
+            .directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        token(expected)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        let old = get(&tx, s, false, id)?;
+        if old.revision != expected {
+            return Err(Error::RequestConflict);
+        }
+        if old.state != "draft" {
+            return Err(Error::Invalid("only a draft can be submitted"));
+        }
+        conflict(&tx, keys, id, &old.draft.key())?;
+        tx.execute(
+            "UPDATE directory_submissions SET state='pending',revision=?1 WHERE id=?2",
+            params![request_id()?, id],
+        )?;
+        tx.commit()?;
+        Ok(())
+    }
+    pub fn directory_withdraw(&mut self, s: &Session, id: i64, expected: &str) -> Result<()> {
+        self.directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        token(expected)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, false)?;
+        let old = get(&tx, s, false, id)?;
+        if old.revision != expected {
+            return Err(Error::RequestConflict);
+        }
+        tx.execute("DELETE FROM directory_submissions WHERE id=?1", [id])?;
+        tx.commit()?;
+        Ok(())
+    }
+    pub fn directory_review(
+        &mut self,
+        s: &Session,
+        id: i64,
+        expected: &str,
+        action: &str,
+        reviewed: Option<&str>,
+        valid_until: Option<&str>,
+    ) -> Result<()> {
+        let keys = self
+            .directory_owner
+            .as_ref()
+            .ok_or(Error::Invalid("directory submissions disabled"))?;
+        token(expected)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        current(&tx, &self.identity, s, true, true)?;
+        let old = get(&tx, s, true, id)?;
+        if old.revision != expected {
+            return Err(Error::RequestConflict);
+        }
+        match action {
+            "approve" if old.state == "pending" => {
+                let approved:bool=tx.query_row("SELECT m.status='approved' FROM members m JOIN directory_submissions d ON d.author=m.id WHERE d.id=?1",[id],|r|r.get(0))?;
+                if !approved {
+                    return Err(Error::Denied);
+                }
+                let (reviewed, until) = (
+                    reviewed.ok_or(Error::Invalid("review date required"))?,
+                    valid_until.ok_or(Error::Invalid("expiry date required"))?,
+                );
+                date(reviewed)?;
+                date(until)?;
+                if until < reviewed {
+                    return Err(Error::Invalid("listing expires before review"));
+                }
+                conflict(&tx, keys, id, &old.draft.key())?;
+                let n:i64=tx.query_row("SELECT count(*) FROM directory_submissions WHERE state IN('published','expired')",[],|r|r.get(0))?;
+                if n + keys.len() as i64 >= 32 {
+                    return Err(Error::Invalid("directory published capacity reached"));
+                }
+                tx.execute("UPDATE directory_submissions SET state='published',reviewed=?1,valid_until=?2,revision=?3 WHERE id=?4",params![reviewed,until,request_id()?,id])?;
+            }
+            "reject" if old.state == "pending" && reviewed.is_none() && valid_until.is_none() => {
+                tx.execute("DELETE FROM directory_submissions WHERE id=?1", [id])?;
+            }
+            "remove"
+                if matches!(old.state.as_str(), "published" | "expired")
+                    && reviewed.is_none()
+                    && valid_until.is_none() =>
+            {
+                tx.execute("DELETE FROM directory_submissions WHERE id=?1", [id])?;
+            }
+            "expire" if old.state == "published" && reviewed.is_none() && valid_until.is_none() => {
+                tx.execute(
+                    "UPDATE directory_submissions SET state='expired',revision=?1 WHERE id=?2",
+                    params![request_id()?, id],
+                )?;
+            }
+            _ => return Err(Error::Invalid("directory review action unavailable")),
+        }
+        tx.commit()?;
+        Ok(())
+    }
+}
+/// Exact catalog is checked by snapshot.rs; this checks bounded canonical data.
+pub(crate) fn validate(db: &Connection) -> Result<()> {
+    let (total,unpublished,published):(i64,i64,i64)=db.query_row("SELECT count(*),coalesce(sum(state IN('draft','pending')),0),coalesce(sum(state IN('published','expired')),0) FROM directory_submissions",[],|r|Ok((r.get(0)?,r.get(1)?,r.get(2)?)))?;
+    if total>64 || unpublished>32 || published>32 || db.prepare("SELECT 1 FROM directory_submissions WHERE state IN('draft','pending') GROUP BY author HAVING count(*)>4")?.exists([])? { return Err(Error::Invalid("directory snapshot quota")); }
+    let mut stmt=db.prepare("SELECT id,nonce,revision,state,slug,name,summary,host,port,login,fingerprint,reviewed,valid_until FROM directory_submissions ORDER BY id LIMIT 65")?;
+    let rows = stmt
+        .query_map([], |r| {
+            Ok((
+                r.get::<_, i64>(0)?,
+                r.get::<_, String>(1)?,
+                r.get::<_, String>(2)?,
+                r.get::<_, String>(3)?,
+                DirectoryDraft {
+                    slug: r.get(4)?,
+                    name: r.get(5)?,
+                    summary: r.get(6)?,
+                    host: r.get(7)?,
+                    port: r.get(8)?,
+                    login: r.get(9)?,
+                    fingerprint: r.get(10)?,
+                },
+                r.get::<_, Option<String>>(11)?,
+                r.get::<_, Option<String>>(12)?,
+            ))
+        })?
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+    let mut occupied = Vec::<DirectoryKey>::new();
+    for (id, nonce, revision, state, d, reviewed, until) in rows {
+        if id <= 0 || d.canonicalized()? != d {
+            return Err(Error::Invalid("noncanonical directory snapshot"));
+        }
+        token(&nonce)?;
+        token(&revision)?;
+        match state.as_str() {
+            "draft" | "pending" if reviewed.is_none() && until.is_none() => (),
+            "published" | "expired" => {
+                let (r, u) = (
+                    reviewed.ok_or(Error::Invalid("missing directory review"))?,
+                    until.ok_or(Error::Invalid("missing directory expiry"))?,
+                );
+                date(&r)?;
+                date(&u)?;
+                if u < r {
+                    return Err(Error::Invalid("directory date order"));
+                }
+            }
+            _ => return Err(Error::Invalid("invalid directory lifecycle")),
+        }
+        if state != "draft" {
+            let k = d.key();
+            if occupied.iter().any(|old| old.conflicts(&k)) {
+                return Err(Error::Invalid("duplicate occupied directory snapshot"));
+            }
+            occupied.push(k);
+        }
+    }
+    Ok(())
+}

@@ -1,0 +1,20 @@
+from pathlib import Path
+import hashlib, json, os, subprocess
+
+P=Path('/private/tmp/faction184-lead-OWNED');V=P/'vm'
+os.umask(0o077)
+assert (P/'OWNED').is_file() and (V/'OWNED').is_file()
+assert not (V/'qemu.pid').exists()
+before=json.loads((P/'saved-before.private.json').read_text());D=Path('/Users/cam/DEV/faction-bbs/local/demo')
+for name,digest in before['metadata_sha256'].items():assert hashlib.sha256((D/name).read_bytes()).hexdigest()==digest
+for name,saved in before['artifacts'].items():
+ st=(D/name).stat();assert {'size':st.st_size,'mtime_ns':st.st_mtime_ns}==saved
+commands=subprocess.check_output(['ps','-axo','command='],text=True).splitlines()
+assert not any(str(D)+'/' in c and ('qemu-system' in c or 'serial-controller.py' in c) for c in commands)
+q=json.loads((V/'qemu-command.json').read_text())
+assert str(V/'disk.qcow2') in ' '.join(q) and q[q.index('-m')+1]=='2048'
+with (V/'qemu.log').open('wb') as log:p=subprocess.Popen(q,stdout=log,stderr=log,start_new_session=True)
+(V/'qemu.pid').write_text(str(p.pid)+'\n')
+with (V/'controller.log').open('wb') as log:c=subprocess.Popen(['python3',str(V/'serial-controller.py')],stdout=log,stderr=log,start_new_session=True)
+(V/'controller.pid').write_text(str(c.pid)+'\n')
+print('Issue #184 owned overlay started: two cores/2 GiB compiler phase, loopback forwards only.')

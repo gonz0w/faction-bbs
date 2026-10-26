@@ -1,0 +1,49 @@
+from pathlib import Path
+import hashlib,json,re,tarfile
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent;E=R/'dev-docs/evidence/directory-submissions';O=E/'source-objects';O.mkdir(parents=True,exist_ok=True)
+index={}
+for q in (R/'dev-docs/evidence').rglob('*'):
+ if q.is_file() and re.fullmatch('[a-f0-9]{64}',q.name):index.setdefault(q.name,q)
+def blob(data):
+ d=hashlib.sha256(data).hexdigest();q=index.get(d)
+ if q is None:q=O/d;q.write_bytes(data);index[d]=q
+ else:assert hashlib.sha256(q.read_bytes()).hexdigest()==d
+ return {'path':str(q.relative_to(R)),'sha256':d}
+sources=[];stages=[]
+def stage(label,files):
+ values=[]
+ for name,data in files:
+  v={'name':name,**blob(data)};sources.append(v);values.append(v)
+ stages.append({'label':label,'files':values})
+for label in ['candidate01','candidate02','candidate03']:
+ mapping=json.loads((P/(label+'-sources.json')).read_text())
+ stage(label,[(n,(P/label/n).read_bytes()) for n in mapping])
+base=P/'base'
+stage('pre-edit-old-PTY-source',[(str(q.relative_to(base)),q.read_bytes()) for folder in ['crates','native','tools','themes','deploy','gallery','library'] for q in (base/folder).rglob('*') if q.is_file() and q.name!='.DS_Store' and '__pycache__' not in q.parts]+[(n,(base/n).read_bytes()) for n in ['Cargo.toml','Cargo.lock']])
+for key in ['core','ui']:
+ root=Path('/private/tmp/faction184-'+key+'-OWNED')
+ for archive in sorted(root.rglob('*.tar')):
+  with tarfile.open(archive) as a:
+   values=[]
+   for member in a.getmembers():
+    n=Path(member.name)
+    if not member.isfile() or any(x.startswith('._') or x=='__pycache__' for x in n.parts):continue
+    assert not n.is_absolute() and '..' not in n.parts
+    assert n.suffix in {'.rs','.sql','.toml','.lock','.c','.h','.py','.txt','.json'} or n.name=='Cargo.lock',str(n)
+    values.append((str(n),a.extractfile(member).read()))
+   stage(key+'/'+str(archive.relative_to(root)),values)
+ for q in sorted(root.rglob('*.rs')):
+  if q.name.startswith('red'):stage(key+'/'+str(q.relative_to(root)),[(q.name,q.read_bytes())])
+for name in ['entry-red.py','failed-harness01.py','failed-harness02.py','shared-harness-failed01.py','shared-harness-failed02.py','shared-harness-unexecuted01.py','bytes-red.gitattributes','bytes-red-test.py','freeze.py','prepare_vm.py','start_vm.py','lab.py','prepare_guest.py','prepare_cache.py','build_server.py','upload_source.py','native_checks.py','setup_board.py','reboot_runtime.py','native_runtime.py','start_native_runtime.py','collect_identity.py','export_evidence.py']:
+ stage('lead/'+name,[(name,(P/name).read_bytes())])
+# Current lead-owned executed/validation inputs are separate from the native tree.
+for name in ['tools/smoke_directory_submissions.py','tools/smoke_shared_directory_submissions.py','tools/check_directory_submissions_evidence.py','tools/test_directory_submissions_evidence.py','tools/test_picker_evidence_bytes.py','.gitattributes','.github/workflows/documentation.yml']:
+ stage('lead-final/'+name,[(name,(R/name).read_bytes())])
+records={}
+for label,name in {'host-directory-submissions':'host-directory-submissions.json','native-directory-submissions':'native-directory-submissions.json','shared-directory-submissions':'shared-directory-submissions.json','host-workspace':'host-workspace.json','native-workspace':'native-workspace.json','native-source-match':'native-source-match.json','host-backup':'host-backup.json','native-backup':'native-backup.json','runtime':'runtime.json','native-build':'native-build.json','native-artifacts':'native-artifacts.json','native-directory-regressions':'native-directory-regressions.json','host-directory-regressions':'host-directory-regressions.json','native-runtime-controls':'native-runtime-checks.json','rejected-native-fixture':'native-checks-rejected01.json','rejected-shared-compact':'shared-rejected01.json','rejected-shared-daemon':'shared-rejected02.json'}.items():records[label]=blob((P/name).read_bytes())
+prior={}
+for name in ['mail-inbox','local-unread-mail','directory-netbsd','board-launcher-netbsd','who-netbsd']:
+ n='dev-docs/evidence/'+name+'/results.json';prior[n]=hashlib.sha256((R/n).read_bytes()).hexdigest()
+r={'schema':1,'issue':184,'result':'pass','base_revision':'92c7f62984e27459c55d9e635395bd830af35b22','sources':sources,'source_stages':stages,'records':records,'prior_records':prior,'native':{'matched_inputs':705,'compile_memory_mib':2048,'runtime_memory_bytes':json.loads((P/'runtime.json').read_text())['physmem']},'teardown':{'owned_removed':False,'saved_stopped':False,'saved_hashes_unchanged':False,'forwards_closed':False},'claims':{'capacity':False,'hardening':False,'physical_hardware':False},'limitations':['Native software checks only; compilation and unit suite used2GiB; terminal runtime used1GiB.','Raw private logs, credentials, settings, overlays and binaries are removed after fixed-schema export. Artifact hashes and actual public source are retained.','Requested helper model/effort selections are not independently observed runtime metadata.']}
+(P/'record-draft.json').write_text(json.dumps(r,indent=2)+'\n')
+print('Exported',len(stages),'source stages,',len(sources),'bindings;',len(list(O.iterdir())),'new immutable public objects.')

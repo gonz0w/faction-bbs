@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "passed": 411,
+  "command": [
+    "cargo",
+    "test",
+    "--workspace",
+    "--all-targets",
+    "--release",
+    "--locked",
+    "--",
+    "--test-threads=1"
+  ]
+}

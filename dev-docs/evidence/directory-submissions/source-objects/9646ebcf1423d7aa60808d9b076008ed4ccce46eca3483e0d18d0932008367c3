@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""Validate saved issue184 software observations; never start services or a VM."""
+import hashlib,json,re
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+REQUIRED={'host-directory-submissions','native-directory-submissions','shared-directory-submissions','host-workspace','native-workspace','native-source-match','host-backup','native-backup','runtime','cleanup'}
+
+def raw(root,ref):
+    name=Path(ref['path']);assert not name.is_absolute() and '..' not in name.parts
+    assert re.fullmatch('[0-9a-f]{64}',ref['sha256'])
+    path=root/name;assert not path.is_symlink() and path.resolve().is_relative_to(root.resolve())
+    data=path.read_bytes();assert hashlib.sha256(data).hexdigest()==ref['sha256'],str(name)
+    return data
+
+def validate(root,r):
+    assert r['schema']==1 and r['issue']==184 and r['result']=='pass'
+    assert REQUIRED<=r['records'].keys() and r['sources']
+    for source in r['sources']:raw(root,source)
+    records={name:json.loads(raw(root,ref)) for name,ref in r['records'].items()}
+    for name in REQUIRED:assert records[name]['result']=='pass',name
+    for name,minimum in [('host-directory-submissions',14),('native-directory-submissions',14),('shared-directory-submissions',6)]:
+        d=records[name];assert d['count']==len(d['checks'])>=minimum
+        assert d['schema_version']==19 and not d['capacity_claim'] and not d['hardening_claim']
+    shared=records['shared-directory-submissions'];assert shared['normal_sessions']==8 and shared['admission_refill_ms']==5000
+    assert 'concurrent_card_removal_consumes_old_selection_without_endpoint_swap' in shared['checks']
+    host=records['host-workspace'];native=records['native-workspace']
+    assert host['passed']==next(x['passed'] for x in native['checks'] if x['name']=='tests')
+    assert host['passed']>0 and all(x['returncode']==0 for x in native['checks'])
+    match=records['native-source-match'];assert match['matched_inputs']==r['native']['matched_inputs']>0
+    assert len(match['files'])==match['matched_inputs'] and match['all_match']
+    digests={x['sha256'] for x in r['sources']}
+    assert all(d in digests for d in match['files'].values())
+    assert r['native']['compile_memory_mib']==2048 and r['native']['runtime_memory_bytes']==records['runtime']['physmem']
+    assert 1000*1024*1024<records['runtime']['physmem']<1024*1024*1024
+    assert all(r['teardown'].values()) and not any(r['claims'].values())
+    assert all(records['cleanup'][k] for k in ['owned_removed','saved_stopped','saved_hashes_unchanged','forwards_closed'])
+    assert records['native-backup']['native_distinct_uid_cli'] and records['host-backup']['developer_api_fixture']
+    for name,digest in r['prior_records'].items():assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest
+    return records
+
+def check():
+    r=json.loads((ROOT/'dev-docs/evidence/directory-submissions/results.json').read_text());validate(ROOT,r)
+    print('Directory submission evidence passed: source-bound host/native lifecycle, shared SSH/client, recovery and owned cleanup; no capacity/hardening claim.')
+
+if __name__=='__main__':check()

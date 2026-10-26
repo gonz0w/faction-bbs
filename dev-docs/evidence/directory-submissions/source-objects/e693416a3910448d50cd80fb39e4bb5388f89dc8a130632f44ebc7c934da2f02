@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "scanned_unique_objects": 821,
+  "private_marker_variants": 20,
+  "matches": 0,
+  "raw_logs_or_settings_published": false,
+  "scope": "available generated settings and generated/admin private key blocks; short-lived PTY secrets use harness no-echo assertions and fixed-schema-only exports"
+}

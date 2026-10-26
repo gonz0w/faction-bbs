@@ -121,3 +121,5 @@ Use the [decision framework](../research/decision-framework.md) for gate screeni
 - [0080: Native manual home mail](0080-native-home-mail.md) — default-off product transport adoption and durable encrypted exchange.
 
 - [0081: Durable bounded archive catch-up](0081-durable-mail-archive.md)
+
+- [0082: Locally moderated directory submissions](0082-local-directory-submissions.md).

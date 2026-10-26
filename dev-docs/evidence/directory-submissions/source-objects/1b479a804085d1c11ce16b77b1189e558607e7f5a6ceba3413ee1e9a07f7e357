@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "count": 14,
+  "checks": [
+    "unsaved_preview_cancel_writes_no_row",
+    "explicit_save_retains_private_draft_without_publication",
+    "relogin_reopens_draft_and_explicit_submit_stays_pending",
+    "cancelled_sysop_confirmation_never_publishes",
+    "exact_review_approval_publishes_one_listing",
+    "ansi_published_card_hotkey_and_classic_main_return",
+    "explicit_expiry_retains_slot_and_old_metadata",
+    "sysop_removal_deletes_expired_listing",
+    "inherited_worker_uses_same_private_submit_workflow",
+    "sysop_rejection_deletes_pending_without_history",
+    "compact_ansi_draft_and_author_withdrawal",
+    "revocation_during_unsaved_input_prevents_mutation",
+    "owner_catalog_bytes_unchanged_schema_nineteen",
+    "no_secret_echo_or_endpoint_connection"
+  ],
+  "schema_version": 19,
+  "capacity_claim": false,
+  "hardening_claim": false,
+  "automatic_connection": false
+}

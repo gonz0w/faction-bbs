@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "count": 6,
+  "checks": [
+    "restricted_ssh_cancel_save_and_submit_never_publish",
+    "native_client_exact_sysop_approval_and_published_card",
+    "shared_sysop_expiry_and_removal_use_current_revision",
+    "concurrent_card_removal_consumes_old_selection_without_endpoint_swap",
+    "plain_shared_submit_preview_cancel_and_return_without_ansi",
+    "owner_pack_unchanged_schema_nineteen_and_no_password_echo"
+  ],
+  "schema_version": 19,
+  "normal_sessions": 8,
+  "admission_refill_ms": 5000,
+  "capacity_claim": false,
+  "hardening_claim": false,
+  "federation_claim": false
+}

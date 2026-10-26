@@ -1,0 +1,40 @@
+from pathlib import Path
+import hashlib,json,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent;E=R/'dev-docs/evidence/directory-submissions';O=E/'source-objects'
+r=json.loads((P/'record-draft.json').read_text())
+def ref(data):
+ d=hashlib.sha256(data).hexdigest();q=O/d
+ if not q.exists():q.write_bytes(data)
+ assert q.read_bytes()==data
+ return {'path':str(q.relative_to(R)),'sha256':d}
+extra=[]
+for name in ['finalize.py','teardown_vm.py','guard-before-native-binding.py','guard-tests-before-native-binding.py','native-binding-red-test.py','complete_export.py']:
+ extra.append({'name':name,**ref((P/name).read_bytes())})
+for name in ['tools/check_directory_submissions_evidence.py','tools/test_directory_submissions_evidence.py','tools/smoke_shared_directory_submissions.py']:
+ extra.append({'name':name,**ref((R/name).read_bytes())})
+r['sources'].extend(extra);r['source_stages'].append({'label':'lead-final-validation-and-owned-finalizer','files':extra})
+r['records']['vm-teardown']=ref((P/'teardown-vm-proof.json').read_bytes())
+# Log hashes preserve identity without exporting raw private test diagnostics.
+obs={}
+for name in ['entry-red.log','evidence-red.log','native-binding-red.log','bytes-red.log']:
+ data=(P/name).read_bytes();obs[name]={'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)}
+r['records']['observed-red-identities']=ref((json.dumps({'result':'pass','logs':obs,'raw_logs_exported':False},indent=2)+'\n').encode())
+marker_values=[]
+settings=json.loads((P/'host-settings.json').read_text());marker_values.append(settings['sysop_password'].encode())
+for name in ['member-key','lab-admin-key']:
+ data=(P/name).read_bytes();marker_values.append(data)
+ marker_values.extend(line for line in data.splitlines() if len(line)>28 and not line.startswith(b'-----'))
+admin=json.loads((R/'local/demo/ssh-admin.json').read_text());path=Path(admin[admin.index('-i')+1]);data=path.read_bytes();marker_values.append(data);marker_values.extend(line for line in data.splitlines() if len(line)>28 and not line.startswith(b'-----'))
+variants=set(marker_values)
+for value in marker_values:
+ try:variants.add(json.dumps(value.decode()).encode()[1:-1])
+ except UnicodeDecodeError:pass
+paths={entry['path'] for entry in r['sources']+list(r['records'].values())}
+for name in paths:
+ data=(R/name).read_bytes();assert not any(v in data for v in variants), 'private marker in public source/record'
+assert not any(v in json.dumps(r).encode() for v in variants)
+privacy={'result':'pass','scanned_unique_objects':len(paths),'private_marker_variants':len(variants),'matches':0,'raw_logs_or_settings_published':False,'scope':'available generated settings and generated/admin private key blocks; short-lived PTY secrets use harness no-echo assertions and fixed-schema-only exports'}
+r['records']['privacy']=ref((json.dumps(privacy,indent=2)+'\n').encode())
+r['notes']={'candidate01':'native production build; not the final workspace qualification','candidate02':'native workspace rejection: missing existing gallery fixtures','candidate03':'all705 input names/digests matched; full native suite and local runtime','lead-final-validation-and-owned-finalizer':'host shared probe, guard candidates and finalizer source; whole-result pin is set only after actual cleanup'}
+(P/'record-draft.json').write_text(json.dumps(r,indent=2)+'\n')
+print('Source/record marker scan passed:',len(paths),'unique objects; no raw private logs or settings exported.')

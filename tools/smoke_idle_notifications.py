@@ -75,7 +75,7 @@ def run(a):
             rearm(c);begin(c);command(c,'Full screen remains.');enter_screen(c);c.raw(b' kept');c.expect(FOOTER);collect(c);mark=len(c.transcript);page('alice');silent(c,mark);write('UPDATE social_pages SET created=unixepoch()-61');c.raw(b'\x11');c.expect('Classic line editing; draft kept.');c.expect(PROMPT);frame=cmd(c,'.preview',PROMPT);assert b'Full screen remains. kept' in frame;c.send('.cancel');c.expect('Draft cancelled');action_end(c);mark=len(c.transcript);silent(c,mark);passed('full_screen_input_survives_and_expired_deferred_signal_never_announces')
             rearm(c);lounge(c);cmd(c,'/mute on');lobby(c);mark=len(c.transcript);page('alice');silent(c,mark);lounge(c);cmd(c,'/mute off');cmd(c,'/block sysop');lobby(c);mark=len(c.transcript);page('alice');silent(c,mark);lounge(c);cmd(c,'/unblock sysop');minute=query('SELECT (unixepoch()/60)%1440')[0][0];end=(minute+2)%1440;cmd(c,f'/quiet {minute//60:02}:{minute%60:02} {end//60:02}:{end%60:02}');lobby(c);mark=len(c.transcript);page('alice');silent(c,mark);lounge(c);cmd(c,'/quiet off');lobby(c);logout(c);passed('current_mute_block_and_quiet_hours_suppress_optional_idle_notices')
             cmd(owner,'/quit','Chat closed.');owner.expect(PLAIN);logout(owner,True)
-            assert query('PRAGMA user_version')==[(18,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and query('SELECT count(*) FROM chat_sessions')==[(0,)] and all(password.encode() not in c.transcript for c in children);passed('logout_clears_live_authority_and_schema_unread_transfer_password_invariants_hold')
+            assert query('PRAGMA user_version')==[(19,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and query('SELECT count(*) FROM chat_sessions')==[(0,)] and all(password.encode() not in c.transcript for c in children);passed('logout_clears_live_authority_and_schema_unread_transfer_password_invariants_hold')
         except Exception:
             if a.diagnostics:
                 a.diagnostics.mkdir(mode=0o700,parents=True,exist_ok=True)
@@ -83,7 +83,7 @@ def run(a):
             raise
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=18,actual_registration_and_approval=True,synthetic_clock_aging=True,default_off=True,visit_only=True,idle_main_menu_only=True,plain_escape_free=True,capacity_claim=False,private_message_bodies=False,forced_switch=False,bells=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,actual_registration_and_approval=True,synthetic_clock_aging=True,default_off=True,visit_only=True,idle_main_menu_only=True,plain_escape_free=True,capacity_claim=False,private_message_bodies=False,forced_switch=False,bells=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Idle notification local/worker/plain passed:',len(checks),'controls.',flush=True)
 if __name__=='__main__':

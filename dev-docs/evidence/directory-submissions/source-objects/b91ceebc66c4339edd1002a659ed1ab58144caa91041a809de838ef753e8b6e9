@@ -1,0 +1,13 @@
+import secrets,sys,tempfile
+from pathlib import Path
+sys.path.insert(0,str(Path.cwd()/'tools'))
+from smoke_local_console import Console
+from smoke_directory import FOOTER
+binary=Path(sys.argv[1]); secret=secrets.token_hex(24); children=[]
+with tempfile.TemporaryDirectory(prefix='directory-entry-red-') as tmp:
+ root=Path(tmp);state=root/'state';pack=root/'pack';pack.mkdir(mode=0o700);(pack/'boards.toml').write_text('version=1\nboards=[]\n');(pack/'boards.toml').chmod(0o600)
+ try:
+  c=Console(binary,state,'init');children.append(c);c.expect('Handle: ');c.send('sysop');c.password(secret,'New password (12+ characters, hidden): ');c.password(secret,'Confirm password (hidden): ');c.expect('Lobby created.');c.finish()
+  c=Console(binary,state,'login',['--plain','--directory',str(pack)]);children.append(c);c.expect('Handle: ');c.send('sysop');c.password(secret);c.expect('Command (then Enter): ');c.send('o');c.expect('Directory command: ');c.send('s');c.expect('Directory submissions');c.expect('Submission command: ')
+ finally:
+  for c in children:c.close()

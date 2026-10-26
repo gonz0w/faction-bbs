@@ -1,0 +1,12 @@
+from lab import *
+import time
+for _ in range(30):
+ try:
+  r=remote('test -f /etc/faction-disposable-test; /sbin/sysctl -n hw.physmem64 hw.ncpu',timeout=8)
+  values=r.stdout.split();mem=int(values[0]);assert 1000*1024*1024<mem<1024*1024*1024
+  (P/'runtime.json').write_text(json.dumps({'result':'pass','physmem':mem,'cores':int(values[1]),'compile_memory_mib':2048})+'\n');break
+ except (RuntimeError,subprocess.TimeoutExpired):time.sleep(1)
+else:raise RuntimeError('owned runtime guest not ready')
+remote('cat > /home/factionbuild/proof184/native_runtime.py; chown factionbuild:factionbuild /home/factionbuild/proof184/native_runtime.py',(P/'native_runtime.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof184/native_runtime.py > /home/factionbuild/proof184/native-runtime-launch.log 2>&1 < /dev/null &' ")
+print('Native 1-GiB local/worker terminal, export and launcher controls running.')
