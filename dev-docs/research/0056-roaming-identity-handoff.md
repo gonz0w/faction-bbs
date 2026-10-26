@@ -68,9 +68,13 @@ Prosody's [OAuth module](https://modules.prosody.im/mod_http_oauth2) is marked A
 updated 2026-10-10, with incomplete OIDC discovery including missing JWKS.
 Rust [oauth2 5.0.0](https://docs.rs/oauth2/5.0.0/oauth2/) documents client
 PKCE/device flows; [openidconnect 4.0.1](https://docs.rs/openidconnect/4.0.1/openidconnect/)
-is a client library, not a complete provider. No NetBSD build, no-JS dependency/UI
+supplies protocol interfaces, not a complete deployable provider. No NetBSD build, no-JS dependency/UI
 graph, DPoP interoperability or resource envelope is qualified for these candidates.
-No library or new service is adopted by this comparison.
+No library or new service is adopted by this comparison. The same Prosody module
+documents incomplete XEP-0493 scopes: broad XMPP account access is unsuitable as a
+credential for an untrusted visited board. Limited `openid`/`profile` claims still
+need the explicit audience and live-session binding; do not forward a broad home
+access token to compensate for missing integration.
 
 There is no weighted score: current integration evidence favors the SSH experiment;
 unknown provider, authority and portability gates prevent a production winner.
