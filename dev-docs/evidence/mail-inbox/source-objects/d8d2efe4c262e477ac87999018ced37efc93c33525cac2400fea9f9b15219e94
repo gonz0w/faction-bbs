@@ -1,0 +1,87 @@
+"""Preserve generated qualification markers privately around an unchanged visit probe."""
+from pathlib import Path
+import hashlib,json,os,runpy,secrets,stat,subprocess,sys,time
+
+os.umask(0o077)
+arguments=sys.argv[1:]
+index=arguments.index('--variant')
+variant=Path(arguments[index+1]).resolve()
+del arguments[index:index+2]
+def option(name):return Path(arguments[arguments.index(name)+1]).resolve()
+private_root=option('--private-root')
+key_root=private_root
+if '--key-root' in arguments:
+ index=arguments.index('--key-root');key_root=Path(arguments[index+1]).resolve();del arguments[index:index+2]
+assert (key_root/'OWNED').is_file()
+settings_path=option('--settings')
+fixture=option('--mail-fixture')
+info=private_root.lstat()
+assert stat.S_ISDIR(info.st_mode) and info.st_uid==os.getuid() and info.st_mode&0o777==0o700
+assert (private_root/'OWNED').is_file()
+assert hashlib.sha256(variant.read_bytes()).hexdigest()=='cb267f7efc3d39f8b59a287d252ec248e5f3e21d8def26ad59cfbe6b06c9891a'
+before=set(private_root.glob('visit-mail-*'))
+tokens=[]
+original=secrets.token_hex
+def captured(*args,**kwargs):
+ value=original(*args,**kwargs)
+ if len(value)>=24:tokens.append(value)
+ return value
+secrets.token_hex=captured
+sys.argv=[str(variant),*arguments]
+static={
+ 'checkpoint synthetic fixture password',
+ 'synthetic private archive id','synthetic-private-archive-id',
+ 'synthetic subject','synthetic incoming','synthetic received body',
+ '01'*16,
+}
+try:
+ runpy.run_path(str(variant),run_name='__main__')
+finally:
+ secrets.token_hex=original
+ values=[];excluded=[];inspection_failures=0
+ def add(kind,value):
+  if not isinstance(value,str) or not value:return
+  if value in static:
+   excluded.append({'kind':kind,'sha256':hashlib.sha256(value.encode()).hexdigest(),'reason':'already-public-static-lab-fixture-constant'})
+  else:values.append({'kind':kind,'value':value})
+ for value in tokens:add('generated-token-at-least-96-bits',value)
+ settings=json.loads(settings_path.read_text())
+ add('generated-sysop-password',settings['sysop_password'])
+ keys=[]
+ for name in ['member-key','lab-admin-key']:
+  key=key_root/name
+  info=key.lstat()
+  assert stat.S_ISREG(info.st_mode) and info.st_uid==os.getuid() and not info.st_mode&0o077
+  block=key.read_text()
+  begin='-----'+'BEGIN OPENSSH '+'PRIVATE KEY'+'-----\n'
+  end='-----'+'END OPENSSH '+'PRIVATE KEY'+'-----\n'
+  assert block.startswith(begin) and block.endswith(end)
+  keys.append({'name':name,'block':block})
+  add('private-ssh-key-block',block)
+  for line in block.splitlines():
+   if len(line)>=32 and not line.startswith('-----'):add('private-ssh-key-base64-line',line)
+ def opaque(value,key=''):
+  if isinstance(value,dict):
+   for name,child in value.items():opaque(child,name)
+  elif isinstance(value,list):
+   for child in value:opaque(child,key)
+  elif key in {'operation','after','cursor','archive_id','message_id'}:add('opaque-'+key,value)
+ roots=sorted(set(private_root.glob('visit-mail-*'))-before)
+ for root in roots:
+  inputs=root/'private-inputs.json'
+  if inputs.exists():
+   data=json.loads(inputs.read_text())
+   for key in ['home_password','subject','body']:add('generated-'+key,data[key])
+  store=root/'mail'
+  if store.is_dir():
+   for action in ['inspect','archive-status']:
+    result=subprocess.run([str(fixture),action,str(store)],input=b'checkpoint synthetic fixture password\n',capture_output=True,timeout=30)
+    if result.returncode:inspection_failures+=1
+    else:opaque(json.loads(result.stdout))
+ identifier=str(time.time_ns())
+ inventory={'schema':1,'generated_markers':values,'private_ssh_keys':keys,'excluded_public_static':excluded,'inspection_failures':inspection_failures,'variant_sha256':hashlib.sha256(variant.read_bytes()).hexdigest(),'wrapper_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+ data=(json.dumps(inventory,indent=2)+'\n').encode()
+ path=private_root/('marker-inventory-'+identifier+'.private.json')
+ path.write_bytes(data);path.chmod(0o600)
+ summary={'result':'pass' if inspection_failures==0 else 'fail','schema':1,'generated_marker_values':len(values),'private_ssh_key_blocks':len(keys),'excluded_public_static_values':len(excluded),'static_exclusion_reason':'already-public-static-lab-fixture-constant','inspection_failures':inspection_failures,'inventory_sha256':hashlib.sha256(data).hexdigest(),'variant_sha256':inventory['variant_sha256'],'wrapper_sha256':inventory['wrapper_sha256'],'marker_values_published':False}
+ (private_root/('marker-inventory-'+identifier+'.summary.json')).write_text(json.dumps(summary,indent=2)+'\n')

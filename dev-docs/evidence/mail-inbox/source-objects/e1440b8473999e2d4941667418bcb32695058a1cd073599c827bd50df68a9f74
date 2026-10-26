@@ -1,0 +1,10 @@
+{
+  "stage": "old-client-real-pty-red",
+  "base_revision": "60fecae20fa4dd786b368ce72632b11c824ea8a5",
+  "probe_sha256": "8059a9d97f0b91960720429e7a41778ed49a56f7f52619d53571ce48993412cc",
+  "client_sha256": "5326f807a828f621d4eb7d51ec96ed31c7e35b4e0fe297b8942d3ab559676ff4",
+  "fixture_sha256": "947306819bd7448ace344e8acf0accaa4628d38cb5d21f6a40db9aa137847c24",
+  "result": "expected-failure",
+  "error": "inbox entry absent",
+  "actual_terminal_unlock_and_menu": true
+}

@@ -1,0 +1,39 @@
+from lab import *
+import hashlib,socket,shutil,time
+
+assert (P/'ALL_HOST_AND_NATIVE_JOURNEYS_COMPLETE').is_file()
+assert (P/'OWNED').is_file() and (V/'OWNED').is_file()
+assert V==P/'vm' and not V.is_symlink()
+r=remote('test -f /etc/faction-disposable-test; for service in faction_files_sshd faction_sshd faction_broker faction_doors; do if test -x /etc/rc.d/$service; then /etc/rc.d/$service onestop >/dev/null 2>&1 || true; fi; done; /usr/pkg/bin/python3.13 -c \'import subprocess,json; rows=[x for x in subprocess.check_output(["ps","-axo","comm"],text=True).splitlines() if x.rsplit("/",1)[-1] in {"faction-service","faction-files","faction-tty","faction-member"}];assert not rows; print(json.dumps({"owned_board_service_processes":0}))\'')
+assert json.loads(r.stdout)['owned_board_service_processes']==0
+pidfile='runtime-qemu.pid' if (V/'runtime-qemu.pid').exists() else 'qemu.pid'
+controllerfile='runtime-controller.pid' if (V/'runtime-controller.pid').exists() else 'controller.pid'
+pid=int((V/pidfile).read_text())
+command=subprocess.check_output(['ps','-p',str(pid),'-o','command='],text=True).strip()
+assert str(V/'disk.qcow2') in command and 'qemu-system-aarch64' in command
+r=remote('/sbin/shutdown -p now',check=False)
+assert r.returncode in [0,255]
+for attempt in range(60):
+ if subprocess.run(['ps','-p',str(pid)],capture_output=True).returncode:break
+ time.sleep(1)
+else:raise RuntimeError('Owned VM did not stop; no broad termination or deletion attempted')
+controller=int((V/controllerfile).read_text())
+assert subprocess.run(['ps','-p',str(controller)],capture_output=True).returncode!=0
+ports=json.loads((V/'ports.json').read_text())
+for port in ports.values():
+ with socket.socket() as sock:
+  sock.settimeout(1)
+  assert sock.connect_ex(('127.0.0.1',port))!=0
+D=Path('/Users/cam/DEV/faction-bbs/local/demo')
+before=json.loads((P/'saved-before.private.json').read_text())
+for name,digest in before['metadata_sha256'].items():assert hashlib.sha256((D/name).read_bytes()).hexdigest()==digest
+for name,saved in before['artifacts'].items():
+ stat=(D/name).stat();assert {'size':stat.st_size,'mtime_ns':stat.st_mtime_ns}==saved
+commands=subprocess.check_output(['ps','-axo','command='],text=True).splitlines()
+assert not any(str(D)+'/' in c and ('qemu-system' in c or 'serial-controller.py' in c) for c in commands)
+assert not any(str(V)+'/' in c and ('qemu-system' in c or 'serial-' in c) for c in commands)
+shutil.rmtree(V)
+assert not V.exists()
+result={'result':'pass','owned_board_service_processes':0,'owned_qemu_processes':0,'owned_serial_controllers':0,'owned_forward_listeners':0,'owned_vm_root_removed':True,'saved_owner_stopped':True,'saved_metadata_hashes_unchanged':True,'saved_disk_and_kernel_size_mtime_unchanged':True,'private_host_root_retained_for_lead_review':True,'full_private_fixture_cleanup_claim':False}
+(P/'teardown-vm-proof.json').write_text(json.dumps(result,indent=2)+'\n')
+print('Owned VM/services/controllers/forwards removed; saved owner remains stopped and unchanged. Private host root awaits lead extraction and removal.')

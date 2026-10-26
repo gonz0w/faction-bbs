@@ -126,6 +126,61 @@ fn main() -> std::io::Result<()> {
         created,
     )?;
     b.trust(&format!("ed25519:{}", hex(&ab.identity))).unwrap();
+    if let Some(count) = mode.strip_prefix("inbox-") {
+        let count: usize = count.parse().expect("public inbox fixture count");
+        assert!([0, 1, 7, 64].contains(&count));
+        a.enable_archive(created)?;
+        a.enable_read_tracking()?;
+        b.start(&ab).unwrap();
+        for number in 1..=count {
+            let subject = format!("inbox {number:02} λ界\t31m\u{202e}\n{}", "x".repeat(64));
+            let body = format!("inbox body {number:02}\n\u{202e}safe");
+            if number % 2 == 1 {
+                let plain =
+                    sce::encode("bob@away.test", "alice@home.test", created, &subject, &body)
+                        .unwrap();
+                let incoming = b.seal(&plain).unwrap();
+                let mut wire = Wire {
+                    namespace: "urn:xmpp:omemo:2".into(),
+                    from: "bob@away.test".into(),
+                    to: "alice@home.test".into(),
+                    device: 202,
+                    to_device: 101,
+                    identity: bb.identity,
+                    sent_at: created,
+                    key: incoming.key,
+                    prekey: incoming.prekey,
+                    payload: incoming.payload,
+                };
+                if number == 1 {
+                    wire.sent_at = 0;
+                    let token = a.archive_checkpoint(created)?;
+                    a.receive_archive(&token, "synthetic-inbox-archive-position", &wire, created)?;
+                } else {
+                    a.receive(&wire, created)?;
+                }
+            } else {
+                let wire = a.queue([number as u8; 16], &subject, &body, created, created)?;
+                let plain = b
+                    .open_pending(&Message {
+                        key: wire.key,
+                        prekey: wire.prekey,
+                        payload: wire.payload,
+                    })
+                    .unwrap();
+                drop(plain);
+                b.commit().unwrap();
+                if number != 2 && number != 6 {
+                    a.acknowledge([number as u8; 16])?;
+                }
+            }
+        }
+        if count >= 3 {
+            let identity = a.history()?[2].received_id().unwrap();
+            a.mark_read(2, identity)?;
+        }
+        return Ok(());
+    }
     a.start(&bb, created)?;
     let outgoing = a.queue(
         [1; 16],

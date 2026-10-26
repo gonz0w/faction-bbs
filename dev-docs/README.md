@@ -27,3 +27,5 @@ software and support limits are in [README](../README.md), the
 [Native home-mail contract](native-home-mail.md) describes the optional direct-TLS transport, verified device codec and checkpoint boundary.
 
 - [Native archive cursor and migration contract](native-mail-archive.md)
+
+- [Bounded local mail inbox](local-mail-inbox.md): index-only navigation and selected-record acknowledgement.

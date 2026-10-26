@@ -37,7 +37,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   saves bounded offline pages with an encrypted cursor. An explicit
   [picker E entry](docs/picker-home-mail.md) opens native mail between board visits.
   [Local read tracking and Files-desk mail](docs/local-unread-mail.md) add encrypted
-  unread decisions and a parked in-session entry. Background notifications,
+  unread decisions and a parked in-session entry. A [selectable local inbox](docs/local-mail-inbox.md)
+  adds bounded unread navigation and selected-message reading. Background notifications,
   encrypted attachments and roaming remain incomplete.
 
 ## What you can do

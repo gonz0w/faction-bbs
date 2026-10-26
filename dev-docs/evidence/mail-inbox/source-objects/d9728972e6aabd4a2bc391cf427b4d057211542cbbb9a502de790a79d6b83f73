@@ -1,0 +1,6 @@
+{
+  "rejected_setup": "First v2 setup read the old frozen path and failed its expected new-hash assertion before publishing a new map.",
+  "resolution": "Read the explicit current repository path, verify copied old tree, then replace exactly one file and preserve a distinct map.",
+  "old_inputs_retained": true,
+  "final_input_count": 695
+}

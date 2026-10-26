@@ -18,6 +18,9 @@ use std::{
 use zeroize::Zeroizing;
 const IDLE: Duration = Duration::from_secs(300);
 
+#[path = "checkpoint_ui_inbox.rs"]
+mod inbox;
+
 // Default output is classic ASCII. Unicode is an explicit local capability
 // override, never inferred from TERM/remote replies. Escape controls, bidi marks,
 // invisible format characters and line separators even with the override.
@@ -254,19 +257,160 @@ impl Screen<'_> {
         {
             self.print("Retire pending ciphertext, then create a fresh device and verify the peer again.\r\n")?;
         }
+        self.print("[I] Local inbox\r\n")?;
         self.print("[E] Enable local read tracking\r\n")?;
         self.print("[P] Public device / peer   [V] Verify peer identity\r\n[H] Authenticated history [O] Durable outbox\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device         [B] History-only encrypted backup\r\n[S] Reset local secrets  [D] Preserved legacy drafts / Curve pins\r\n[L] Lock and exit\r\n")?;
         let mut decoder = Decoder::new();
         loop {
             if let Some(Key::Hotkey(c)) = decoder.feed(self.byte()?, Instant::now()) {
                 let c = c.to_ascii_uppercase();
-                if b"PVHOTRFBSDLE".contains(&c) && c != b' ' {
+                if b"IPVHOTRFBSDLE".contains(&c) && c != b' ' {
                     return Ok(c);
                 }
             }
         }
     }
+    fn inbox_entries(v: &CheckpointVault) -> io::Result<Vec<inbox::Entry>> {
+        let pending = v.inspect_outbox()?;
+        v.history()?
+            .iter()
+            .enumerate()
+            .map(|(index, record)| {
+                let status = if let Some(identity) = record.received_id() {
+                    match v.received_read(index, identity)? {
+                        Some(false) => inbox::Status::Unread,
+                        Some(true) => inbox::Status::Read,
+                        None => inbox::Status::Unknown,
+                    }
+                } else if pending.iter().any(|p| p.operation == record.operation()) {
+                    inbox::Status::Pending
+                } else {
+                    inbox::Status::Retired
+                };
+                Ok(inbox::Entry { index, status })
+            })
+            .collect()
+    }
+    fn inbox(&mut self, v: &mut CheckpointVault) -> io::Result<()> {
+        let mut list = inbox::Inbox::new(Self::inbox_entries(v)?);
+        let mut decoder = Decoder::new();
+        let mut unknown = false;
+        loop {
+            // A compact fixed separator and cell-bounded rows fit classic 40 columns.
+            self.print("\r\n---------------------------------------\r\n[LOCAL INBOX]\r\n")?;
+            self.print(match list.mode() {
+                inbox::Filter::All => "All retained; newest first\r\n",
+                inbox::Filter::Unread => "Unread received; newest first\r\n",
+            })?;
+            self.print("Device snapshot; no home refresh.\r\n")?;
+            let (page, pages) = list.page();
+            self.print(&format!(
+                "Page {page}/{pages}; selection {}/{}\r\n",
+                if list.len() == 0 {
+                    0
+                } else {
+                    list.position() + 1
+                },
+                list.len()
+            ))?;
+            if unknown {
+                self.print("Unread unknown; tracking disabled.\r\n")?;
+            }
+            if list.visible().is_empty() {
+                self.print(if list.mode() == inbox::Filter::Unread {
+                    "No unread received records.\r\n"
+                } else {
+                    "No retained records.\r\n"
+                })?;
+            }
+            for entry in list.visible() {
+                let selected = list.selected() == Some(*entry);
+                let prefix = format!(
+                    "{} {:02} {:7} ",
+                    if selected { '>' } else { ' ' },
+                    entry.index + 1,
+                    entry.status.label()
+                );
+                self.print(&prefix)?;
+                self.print(&inbox::compact(
+                    &v.history()?[entry.index].subject,
+                    self.unicode,
+                    39 - prefix.len(),
+                ))?;
+                self.print("\r\n")?;
+            }
+            self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open  [U] Unread  [A] All\r\n[B] Back\r\n")?;
+            loop {
+                let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
+                    continue;
+                };
+                match key {
+                    Key::Up | Key::Hotkey(b'K') => list.up(),
+                    Key::Down | Key::Hotkey(b'J') => list.down(),
+                    Key::Hotkey(b'N') => list.next(),
+                    Key::Hotkey(b'P') => list.previous(),
+                    Key::Hotkey(b'U') => {
+                        unknown = v.read_summary()?.unread.is_none();
+                        if !unknown {
+                            list.filter(inbox::Filter::Unread);
+                        }
+                    }
+                    Key::Hotkey(b'A') => {
+                        unknown = false;
+                        list.filter(inbox::Filter::All);
+                    }
+                    Key::Hotkey(b'B') => return Ok(()),
+                    Key::Enter | Key::Hotkey(b'O') => {
+                        if let Some(entry) = list.selected() {
+                            self.inbox_record(v, entry)?;
+                            list.refresh(Self::inbox_entries(v)?);
+                            decoder = Decoder::new();
+                        }
+                    }
+                    _ => continue,
+                }
+                break;
+            }
+        }
+    }
+    fn inbox_record(&mut self, v: &mut CheckpointVault, entry: inbox::Entry) -> io::Result<()> {
+        let index = entry.index;
+        let record = &v.history()?[index];
+        self.print("\r\n---------------------------------------\r\n[LOCAL INBOX RECORD]\r\n")?;
+        self.print(&format!(
+            "{} / local retained record {}\r\n",
+            entry.status.label(),
+            index + 1
+        ))?;
+        self.show("Peer: ", &record.address)?;
+        self.print(&format!(
+            "Device: {} / UTC {}\r\n",
+            record.device, record.sent_at
+        ))?;
+        self.show("Subject: ", &record.subject)?;
+        self.show("Body: ", &record.body)?;
+        if let Some(identity) = record.received_id()
+            && v.received_read(index, identity)?.is_some()
+        {
+            // Fresh input only after all selected body output succeeded. Bind
+            // the decision to its original history index and received identity.
+            rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+            let answer = self.line(
+                "Type read to acknowledge locally, or Enter to keep current state: ",
+                16,
+                false,
+            )?;
+            if answer.as_str() == "read" {
+                v.mark_read(index, identity)?;
+                self.print("Acknowledged on this device only; no read receipt sent.\r\n")?;
+            }
+        }
+        self.pause()
+    }
     fn action(&mut self, v: &mut CheckpointVault, key: u8) -> io::Result<()> {
+        if key == b'I' {
+            return self.inbox(v);
+        }
         self.clear()?;
         match key {
             b'E' => {
@@ -522,6 +666,7 @@ impl Screen<'_> {
         } else {
             "Archive checkpoints: disabled; explicit upgrade required\r\n"
         })?;
+        self.print("[I] Local inbox\r\n")?;
         self.print("[E] Enable local read tracking\r\n")?;
         self.print("[G] Enable archive checkpoints\r\n[A] Catch up one archive page\r\n")?;
         self.print("[U] Publish public keys   [K] Prepare verified peer\r\n")?;
@@ -535,7 +680,7 @@ impl Screen<'_> {
         loop {
             if let Some(Key::Hotkey(key)) = decoder.feed(self.byte()?, Instant::now()) {
                 let key = key.to_ascii_uppercase();
-                if b"UKCNPVHOTRFBSDLGAE".contains(&key) {
+                if b"IUKCNPVHOTRFBSDLGAE".contains(&key) {
                     return Ok(key);
                 }
             }
@@ -850,6 +995,189 @@ mod tests {
             inert(text, true).as_str(),
             "λ\\u{a}\\u{1b}]52;c;hostile\\u{7}\\u{202e}safe"
         );
+    }
+    #[test]
+    fn inbox_output_failure_and_input_eof_preserve_unread_and_restore_tty() {
+        // Backend creation permanently disables core dumps. Keep its process
+        // limits out of the parent suite, including the existing early guard.
+        let child = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--ignored",
+                "--exact",
+                "checkpoint_ui::tests::inbox_output_failure_and_input_eof_helper",
+                "--nocapture",
+            ])
+            .output()
+            .unwrap();
+        assert!(
+            child.status.success(),
+            "isolated inbox failure control failed: {}",
+            String::from_utf8_lossy(&child.stdout)
+        );
+    }
+    #[test]
+    #[ignore = "owned subprocess helper, exercised by the inbox failure control"]
+    fn inbox_output_failure_and_input_eof_helper() {
+        use faction_client::mail_checkpoint::Wire;
+        use faction_omemo::{Device, sce};
+        use std::os::unix::fs::PermissionsExt;
+        struct Owned(std::path::PathBuf);
+        impl Drop for Owned {
+            fn drop(&mut self) {
+                assert!(self.0.join("OWNERSHIP").is_file());
+                std::fs::remove_dir_all(&self.0).unwrap();
+            }
+        }
+        let mut id = [0; 16];
+        getrandom::fill(&mut id).unwrap();
+        let root = Owned(
+            std::env::temp_dir()
+                .canonicalize()
+                .unwrap()
+                .join(format!("faction219-ui-OWNED-{}", hex(&id))),
+        );
+        std::fs::create_dir(&root.0).unwrap();
+        std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::write(
+            root.0.join("OWNERSHIP"),
+            b"synthetic inbox failure control\n",
+        )
+        .unwrap();
+        let path = root.0.join("vault");
+        let timestamp = now().unwrap();
+        let (mut vault, _) = CheckpointVault::create(
+            Store::at(&path, true).unwrap(),
+            Data::new("alice@home.test".into()).unwrap(),
+            b"synthetic local failure test password",
+            101,
+            timestamp,
+        )
+        .unwrap();
+        let mut peer = Device::fresh().unwrap();
+        let local = vault.bundle().unwrap();
+        let remote = peer.bundle().unwrap();
+        vault
+            .enroll(
+                "bob@away.test",
+                202,
+                &format!("ed25519:{}", hex(&remote.identity)),
+                timestamp,
+            )
+            .unwrap();
+        peer.trust(&format!("ed25519:{}", hex(&local.identity)))
+            .unwrap();
+        peer.start(&local).unwrap();
+        let plain = sce::encode(
+            "bob@away.test",
+            "alice@home.test",
+            timestamp,
+            "synthetic selected subject",
+            "synthetic selected body",
+        )
+        .unwrap();
+        let incoming = peer.seal(&plain).unwrap();
+        vault
+            .receive(
+                &Wire {
+                    namespace: "urn:xmpp:omemo:2".into(),
+                    from: "bob@away.test".into(),
+                    to: "alice@home.test".into(),
+                    device: 202,
+                    to_device: 101,
+                    identity: remote.identity,
+                    sent_at: timestamp,
+                    key: incoming.key,
+                    prekey: incoming.prekey,
+                    payload: incoming.payload,
+                },
+                timestamp,
+            )
+            .unwrap();
+        vault.enable_read_tracking().unwrap();
+        let before = std::fs::read(path.join("mail.fkv")).unwrap();
+        std::fs::write(root.0.join("eof"), []).unwrap();
+        for fail_output in [true, false] {
+            let (_master, slave) = faction_client_pty::open(24, 40).unwrap();
+            let observer = std::fs::File::from(slave.try_clone().unwrap());
+            let saved = rustix::termios::tcgetattr(&slave).unwrap();
+            let mut raw = saved.clone();
+            raw.make_raw();
+            rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                .unwrap();
+            let mut term = LocalTerminal {
+                input: slave.try_clone().unwrap().into(),
+                // An actual read-only output descriptor fails writes without
+                // depending on platform-specific /dev/full or signal timing.
+                output: if fail_output {
+                    std::fs::File::open("/dev/null").unwrap()
+                } else {
+                    slave.into()
+                },
+                saved: saved.clone(),
+            };
+            let input = if fail_output {
+                None
+            } else {
+                Some(std::mem::replace(
+                    &mut term.input,
+                    std::fs::File::open(root.0.join("eof")).unwrap(),
+                ))
+            };
+            let error = {
+                let mut screen = Screen {
+                    term: &mut term,
+                    activity: Instant::now(),
+                    unicode: false,
+                };
+                if fail_output {
+                    screen
+                        .inbox_record(
+                            &mut vault,
+                            inbox::Entry {
+                                index: 0,
+                                status: inbox::Status::Unread,
+                            },
+                        )
+                        .unwrap_err()
+                } else {
+                    screen.inbox(&mut vault).unwrap_err()
+                }
+            };
+            if !fail_output {
+                assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
+            }
+            // Put the owned tty input back so Drop can restore the actual tty.
+            if let Some(input) = input {
+                term.input = input;
+            }
+            drop(term);
+            let restored = rustix::termios::tcgetattr(&observer).unwrap();
+            // Darwin and NetBSD termios headers describe PENDIN as retyping
+            // or re-echoing pending input. Both kernels set this state bit when
+            // restoring identical configured modes; mask only that observed bit.
+            #[cfg(any(target_os = "macos", target_os = "netbsd"))]
+            let queue_state = rustix::termios::LocalModes::PENDIN;
+            #[cfg(not(any(target_os = "macos", target_os = "netbsd")))]
+            let queue_state = rustix::termios::LocalModes::empty();
+            assert_eq!(
+                restored.local_modes & !queue_state,
+                saved.local_modes & !queue_state
+            );
+            assert_eq!(restored.input_modes, saved.input_modes);
+            assert_eq!(restored.output_modes, saved.output_modes);
+            assert_eq!(restored.control_modes, saved.control_modes);
+            assert_eq!(restored.input_speed(), saved.input_speed());
+            assert_eq!(restored.output_speed(), saved.output_speed());
+            // Rustix exposes the complete control array through Debug, with no
+            // public iterator. Compare every control value, including padding.
+            assert_eq!(
+                format!("{:?}", restored.special_codes),
+                format!("{:?}", saved.special_codes)
+            );
+            assert_eq!(vault.read_summary().unwrap().unread, Some(1));
+            assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
+        }
+        drop(vault);
     }
     #[test]
     fn inactivity_locks_without_remote_connection() {

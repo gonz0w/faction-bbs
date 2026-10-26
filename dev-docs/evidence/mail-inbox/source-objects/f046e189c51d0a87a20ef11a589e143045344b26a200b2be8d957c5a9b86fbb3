@@ -1,0 +1,12 @@
+from pathlib import Path
+import json,os,subprocess,time
+
+proof=Path('/home/factionbuild/proof219/candidate02')
+root=Path('/home/factionbuild/source219-client-candidate02')
+env=os.environ.copy()
+env.update(CARGO_HOME='/home/factionbuild/cargo219',CARGO_TARGET_DIR='/home/factionbuild/target219',CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+command=['cargo','test','--release','--locked','--offline','-j','1','-p','faction-client','--features','network-mail','--bin','faction-client','--','--exact','checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input','--test-threads=1']
+with (proof/'core-isolation.private.log').open('wb') as log:
+ result=subprocess.run(command,cwd=root,env=env,stdout=log,stderr=log)
+(proof/'core-isolation.json').write_text(json.dumps({'result':'pass' if result.returncode==0 else 'fail','command':command,'returncode':result.returncode,'source_candidate':'candidate02','no_resource_limit_override':True},indent=2)+'\n')
+raise SystemExit(result.returncode)

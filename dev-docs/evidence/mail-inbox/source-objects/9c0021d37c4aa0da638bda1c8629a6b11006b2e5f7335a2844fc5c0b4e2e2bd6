@@ -1,0 +1,72 @@
+"""Reject incomplete inbox qualification or substituted historical source bytes."""
+import copy
+import hashlib
+import json
+import unittest
+from unittest.mock import patch
+
+import check_mail_inbox_evidence as check
+import test_unread_mail_evidence as prior_tests
+
+
+class InboxEvidence(unittest.TestCase):
+    def fixture(self):
+        def local(online=False):
+            names = set(check.LOCAL_CONTROLS)
+            if online: names.add(check.ONLINE_CONTROL)
+            return dict(result='pass', count=len(names), checks=sorted(names), private_fixture_removed=True,
+                        provider_contact=False, read_receipt_sent=False)
+        def visit(unicode):
+            row=copy.deepcopy(prior_tests.UnreadEvidence().fixture()['routes']['host']['visit'])
+            row['unicode']=unicode
+            row['inbox_views']=[dict(original_history_record=2,explicit_read=x) for x in [False,True,False]]
+            return row
+        raw=b'exact synthetic executed source';sha=hashlib.sha256(raw).hexdigest()
+        return dict(schema=1,issue=219,base_revision='60fecae20fa4dd786b368ce72632b11c824ea8a5',
+                    prior_unread_sha256=check.PRIOR_SHA256,
+                    routes={name:dict(offline=local(),online=local(True),visit=visit(False),visit_unicode=visit(True),unit_new_tests=8) for name in ['host','netbsd']},
+                    build=dict(compiler_mib=2048,fresh_1g_build=False),runtime=dict(netbsd_mib=1024,ncpu=2),
+                    claims={name:False for name in check.NO_CLAIMS},
+                    teardown={name:True for name in check.TEARDOWN},
+                    source_stages=[dict(label='actual-candidate',files=[dict(name='crates/faction-client/src/example.rs',path='dev-docs/evidence/mail-inbox/source-objects/'+sha,sha256=sha)])])
+    def test_complete_record_verifies_actual_execution_bytes(self):
+        check.validate(self.fixture(),lambda path:b'exact synthetic executed source')
+    def test_missing_graph_mode_or_behavior_control_rejects(self):
+        changes=[lambda d:d['routes'].pop('netbsd'),lambda d:d['routes']['host'].pop('online'),
+                 lambda d:d['routes']['netbsd'].pop('visit_unicode'),
+                 lambda d:d['routes']['host']['offline']['checks'].pop(),
+                 lambda d:d['routes']['host']['offline'].update(provider_contact=True)]
+        for change in changes:
+            data=self.fixture();change(data)
+            with self.assertRaises(AssertionError):check.validate(data,lambda p:b'exact synthetic executed source')
+    def test_wrong_selected_record_or_skip_ack_sequence_rejects(self):
+        for change in [lambda r:r['inbox_views'][1].update(original_history_record=1),
+                       lambda r:r['inbox_views'][0].update(explicit_read=True),
+                       lambda r:r.update(same_ssh_pid_until_explicit_disconnect=False),
+                       lambda r:r.update(pending_ids_unchanged=False),
+                       lambda r:r['privacy_scan'].update(matches=1)]:
+            data=self.fixture();change(data['routes']['netbsd']['visit'])
+            with self.assertRaises(AssertionError):check.validate(data,lambda p:b'exact synthetic executed source')
+    def test_source_substitution_escape_and_missing_stages_reject(self):
+        with self.assertRaises(AssertionError):check.validate(self.fixture(),lambda p:b'substituted')
+        for change in [lambda d:d.update(source_stages=[]),
+                       lambda d:d['source_stages'][0]['files'][0].update(path='../outside'),
+                       lambda d:d['source_stages'][0]['files'][0].update(name='/private/source')]:
+            data=self.fixture();change(data)
+            with self.assertRaises(AssertionError):check.validate(data,lambda p:b'exact synthetic executed source')
+    def test_resource_cleanup_claim_and_prior_result_changes_reject(self):
+        for change in [lambda d:d['runtime'].update(netbsd_mib=2048),
+                       lambda d:d['build'].update(fresh_1g_build=True),
+                       lambda d:d['claims'].update(background_refresh=True),
+                       lambda d:d['teardown'].update(saved_playground_unchanged=False),
+                       lambda d:d.update(prior_unread_sha256='00'*32)]:
+            data=self.fixture();change(data)
+            with self.assertRaises(AssertionError):check.validate(data,lambda p:b'exact synthetic executed source')
+    def test_result_fingerprint_is_immutable(self):
+        raw=json.dumps(self.fixture()).encode()
+        with patch.object(check,'RECORD_SHA256',hashlib.sha256(raw).hexdigest()):
+            self.assertEqual(check.load_record(raw)['issue'],219)
+            with self.assertRaises(AssertionError):check.load_record(raw+b' ')
+
+
+if __name__ == '__main__':unittest.main()

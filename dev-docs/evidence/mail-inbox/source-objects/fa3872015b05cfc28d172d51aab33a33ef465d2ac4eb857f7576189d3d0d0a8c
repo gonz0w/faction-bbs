@@ -1,0 +1,10 @@
+from lab import *
+
+assert (P/'source-client-final.json').is_file()
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source219-client; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source219-client')
+remote('tar -xzf - -C /home/factionbuild/source219-client; chown -R factionbuild:factionbuild /home/factionbuild/source219-client',(P/'source-client-final.tar.gz').read_bytes(),180)
+remote('cat > /home/factionbuild/proof219/build_client.py; chown factionbuild:factionbuild /home/factionbuild/proof219/build_client.py',(P/'build_client.py').read_bytes())
+build=json.loads(remote('cat /home/factionbuild/proof219/server-build.json').stdout)
+assert build['result']=='pass'
+remote("su - factionbuild -c 'cd /home/factionbuild/source219-client && nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof219/build_client.py > /home/factionbuild/proof219/client-launch.private.log 2>&1 < /dev/null &'")
+print('Frozen final client source uploaded; serial native compile and focused tests launched.')

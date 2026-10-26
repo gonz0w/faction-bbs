@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "inventories": 4,
+  "private_ssh_key_blocks": 2,
+  "literal_marker_variants": 42,
+  "files_scanned": 844,
+  "matches": 0,
+  "private_inventory_sha256": [
+    "ca398e01145833b9186295f66c419f86a3874adec2dae7e3380282f8954ce69e",
+    "cc170fe90d832ae613af653504384475d31c68d1893e723909669785c27fcb3d",
+    "190b5ffeb29e4cf9e7964d5055e76aa5530c5ce0fda078aca5b5321dab2404f1",
+    "2cdb0dc379ee29e108b05f218a06538a89c84fc19666994abb5a4af704d30936"
+  ],
+  "static_public_exclusions": 8,
+  "static_exclusion_reason": "already-public-static-lab-fixture-constant",
+  "marker_values_published": false,
+  "raw_private_transcripts_published": false
+}

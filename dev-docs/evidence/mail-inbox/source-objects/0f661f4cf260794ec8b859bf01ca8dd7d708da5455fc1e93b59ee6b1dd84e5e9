@@ -1,0 +1,26 @@
+from lab import *
+import tarfile,hashlib
+
+expected=json.loads((P/'candidate03-freeze-hashes.json').read_text())
+assert all(hashlib.sha256((R/name).read_bytes()).hexdigest()==digest for name,digest in expected.items())
+source=P/'source-client-candidate03'
+source.mkdir(mode=0o700)
+files=[R/'Cargo.toml',R/'Cargo.lock',R/'LICENSE']
+for directory in ['crates','tools','native','deploy','themes','gallery','library']:
+ for current,dirs,names in os.walk(R/directory):
+  dirs[:]=[name for name in dirs if name not in {'__pycache__','.git','target'}]
+  for name in names:
+   if name in {'.DS_Store','check_mail_inbox_evidence.py','test_mail_inbox_ci.py','test_mail_inbox_evidence.py'}:continue
+   path=Path(current)/name
+   assert not path.is_symlink()
+   files.append(path)
+manifest={}
+with tarfile.open(P/'source-client-candidate03.tar.gz','w:gz') as archive:
+ for file in sorted(files):
+  name=str(file.relative_to(R));data=file.read_bytes()
+  assert file.name!='.DS_Store' and '__pycache__' not in file.parts
+  manifest[name]=hashlib.sha256(data).hexdigest()
+  dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+  archive.add(dest,arcname=name,recursive=False)
+(P/'source-client-candidate03.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+print('Metadata-clean final public source captured:',len(manifest),'files.')

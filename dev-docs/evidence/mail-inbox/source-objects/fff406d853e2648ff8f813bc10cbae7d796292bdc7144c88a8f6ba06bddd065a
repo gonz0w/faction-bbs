@@ -1,0 +1,59 @@
+from pathlib import Path
+import hashlib,json,re,shutil
+import publish_sources as public
+root=public.OWNED;native=Path('/private/tmp/faction219-native-OWNED');base=public.BASE
+for folder in ['host','native']: (base/folder).mkdir(parents=True,exist_ok=True)
+exports=[]
+index=public.object_index()
+def export(source,destination):
+ raw=source.read_bytes();value=json.loads(raw);assert isinstance(value,(dict,list))
+ ref=public.preserve(raw,index)
+ view=None
+ if raw.endswith(b'\n'):
+  target=base/destination;target.write_bytes(raw);view=destination
+ exports.append(dict(name=destination,**ref,view=view,original_without_final_newline=not raw.endswith(b'\n')))
+ return value
+host={}
+for mode in ['native','network']:
+ host[mode]=export(root/('host-final-'+mode+'-inbox.json'),'host/inbox-'+mode+'.json')
+for mode in ['classic','unicode']:
+ host['visit_'+mode]=export(root/('host-final-visit-'+mode+'.json'),'host/visit-'+mode+'.json')
+export(root/'host-final-versions.json','host/versions.json')
+export(root/'qualified-bins/network/artifacts.json','host/network-artifacts.json')
+export(root/'qualified-bins/native/artifacts.json','host/native-artifacts.json')
+export(root/'red-inbox-01/result.json','host/old-client-red.json')
+export(root/'host-capture-correction.json','host/source-capture-correction.json')
+for name in ['candidate01-failure-summary.json','candidate02-failure-summary.json','candidate03-client-build.json','candidate03-client-test-summary.json','candidate03-storage-summary.json','native-final-identity.json','server-config-proof.json','native-post-runtime-identity.json','teardown-vm-proof.json','native-qualification-handoff.json']:
+ export(native/name,'native/'+name)
+for path in sorted(native.glob('candidate03-native-*.json')):export(path,'native/'+path.name)
+
+def read(path):return json.loads(path.read_bytes())
+def summaries(path):
+ result=[];current=None;last=None
+ for line in path.read_text().splitlines():
+  if 'Running ' in line and ('unittests ' in line or ' tests/' in line or ' examples/' in line):
+   if current is not None and last is not None:result.append(dict(harness=current,**last))
+   current=line.strip();last=None
+  match=re.search(r'test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored',line)
+  if match:last=dict(result=match[1],passed=int(match[2]),failed=int(match[3]),ignored=int(match[4]))
+ if current is not None and last is not None:result.append(dict(harness=current,**last))
+ assert result and all(row['result']=='ok' and row['failed']==0 for row in result)
+ # Harness paths are not authority; retain labels/counts without private paths.
+ return [dict(index=index,passed=row['passed'],failed=row['failed'],ignored=row['ignored']) for index,row in enumerate(result)]
+counts={mode:summaries(root/('host-final-'+mode+'-tests.log')) for mode in ['native','network']}
+(base/'host/test-counts.json').write_text(json.dumps(counts,indent=2)+'\n')
+export(base/'host/test-counts.json','host/test-counts.json')
+record=dict(schema=1,issue=219,base_revision='60fecae20fa4dd786b368ce72632b11c824ea8a5',prior_unread_sha256='219206a2d4643a3e3167d2984dfc6e571bf94ff271385baf15297a8b571c079e',
+ routes=dict(host=dict(offline=host['native'],online=host['network'],visit=host['visit_classic'],visit_unicode=host['visit_unicode'],unit_new_tests=7),
+ netbsd=dict(offline=read(native/'candidate03-native-inbox-offline.json'),online=read(native/'candidate03-native-inbox-online.json'),visit=read(native/'candidate03-native-visit-classic.json'),visit_unicode=read(native/'candidate03-native-visit-unicode.json'),unit_new_tests=7)),
+ build=dict(compiler_mib=2048,fresh_1g_build=False),runtime=dict(netbsd_mib=1024,ncpu=2),
+ claims={name:False for name in ['background_refresh','new_credentials_retained','physical_hardware','capacity','security_audit','production_deployment']},
+ teardown=dict(owned_runtime_removed=True,owned_private_inputs_removed=False,ports_closed=True,saved_playground_stopped=True,saved_playground_unchanged=True),
+ source_stages=read(public.CATALOGUE)+[dict(label='exact-qualification-record-bytes',files=[dict(name=row['name'],path=row['path'],sha256=row['sha256']) for row in exports])]+[dict(label='qualification-recording-driver',files=[dict(name=Path(__file__).name,**public.preserve(Path(__file__).read_bytes(),index))])],published_records=exports,
+ qualification=dict(host_test_harnesses=counts,native_client_test_harnesses=read(native/'candidate03-client-test-summary.json'),native_storage=read(native/'candidate03-storage-summary.json'),host_versions=read(root/'host-final-versions.json'),native_versions=read(native/'native-final-identity.json'),role_model_effort_observed='unverified',
+ source_ingestion_correction='First ingestion safely stopped on a flat capture directory vs logical tools/ path; exact captured bytes were resumed by hash without updating any previous source/result.',
+ raw_logs_or_runtime_settings_published=False,raw_binaries_published=False,guest_binary_copies_removed_with_overlay=True,record_export_correction='One original fixed-schema native output has no final newline. Its exact bytes are preserved as a hash object only; no maintained JSON mirror or prior byte/hash was rewritten.'),
+ original_unread_record_sha256='332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086')
+(root/'draft-results.json').write_text(json.dumps(record,indent=2)+'\n')
+print('Public fixed-schema records copied; private draft prepared with private-input cleanup explicitly false.')
+print('Host outer harness counts:',json.dumps(counts))

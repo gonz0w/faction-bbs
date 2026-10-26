@@ -1,0 +1,38 @@
+{
+  "result": "fail",
+  "candidate": "native-candidate02",
+  "scope": "network-mail-all-targets-two-core-2GiB",
+  "client_source_map": "source-client-candidate02.json",
+  "checkpoint_ui_sha256": "cc8f7db6cf065c0077381a1209c7906633944f62d32e4750af0e1f61fe8f635f",
+  "native_all_targets_passed": true,
+  "network_library_tests": {
+    "passed": 88,
+    "failed": 0,
+    "ignored": 3
+  },
+  "network_binary_tests": {
+    "passed": 38,
+    "failed": 1,
+    "ignored": 0
+  },
+  "new_inbox_tests": {
+    "passed": 7,
+    "failed": 0
+  },
+  "failed_test": "checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input",
+  "existing_test_alone": {
+    "passed": 1,
+    "failed": 0,
+    "filtered": 38,
+    "resource_limit_override": false
+  },
+  "fresh_process_core_limit_read_only": [
+    9223372036854775807,
+    9223372036854775807
+  ],
+  "diagnosis": "new backend-using handler test runs core_off in shared test process; later isolated early-core test inherits the intentionally zero hard limit",
+  "source_old_test_and_production_guard_unchanged": true,
+  "old_source_and_logs_preserved": true,
+  "runtime_executed": false,
+  "private_logs_published": false
+}

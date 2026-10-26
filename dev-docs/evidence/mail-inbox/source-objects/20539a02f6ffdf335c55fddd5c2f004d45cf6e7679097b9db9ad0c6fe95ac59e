@@ -1,0 +1,47 @@
+from pathlib import Path
+import os,subprocess,json,time
+
+root=Path('/home/factionbuild/source219-client')
+target=Path('/home/factionbuild/target219/release')
+proof=Path('/home/factionbuild/proof219')
+device=Path('/home/factionbuild/device219')
+owner=device/'inbox-runtime'
+owner.mkdir(mode=0o700)
+(owner/'OWNERSHIP').write_text('Owned disposable issue #219 inbox PTYs.\n')
+env=os.environ.copy()
+env.update(PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',PYTHONPATH=str(root/'tools'),PYTHONDONTWRITEBYTECODE='1')
+client=str(target/'faction-client-network')
+native=str(target/'faction-client-native')
+seed=str(target/'examples/checkpoint_ui_fixture')
+mail=str(target/'examples/home_mail_fixture')
+ca=str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem')
+python='/usr/pkg/bin/python3.13'
+result={'result':'running','scope':'two-core-1GiB-native-runtime','cores':int(subprocess.check_output(['/sbin/sysctl','-n','hw.ncpu'])),'physmem_bytes':int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem64'])),'stages':[],'physical_hardware':False,'capacity_claim':False,'audit_claim':False,'fresh_1GiB_compile':False}
+assert result['cores']==2 and 1000000000<result['physmem_bytes']<1100000000
+steps=[
+ ('inbox-offline',[python,'tools/probe_mail_inbox.py','--client',native,'--fixture',seed,'--owned-root',str(owner),'--output',str(proof/'native-inbox-offline.json')]),
+ ('inbox-online',[python,'tools/probe_mail_inbox.py','--client',client,'--fixture',seed,'--owned-root',str(owner),'--online','--output',str(proof/'native-inbox-online.json')]),
+ ('checkpoint',[python,'tools/probe_checkpoint_ui.py','--client',native,'--fixture',seed,'--owned-root',str(device/'checkpoint-regression'),'--output',str(proof/'native-checkpoint.json')]),
+ ('unread',[python,'tools/probe_unread_mail.py','--client',native,'--fixture',seed,'--output',str(proof/'native-unread.json')]),
+ ('home',[python,'tools/probe_home_ui.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--output',str(proof/'native-home.json')]),
+ ('archive',[python,'tools/probe_home_archive_ui.py','--client',client,'--fixture',seed,'--output',str(proof/'native-archive.json')]),
+ ('default-off',[python,'tools/probe_picker_home_mail.py','--client',str(target/'faction-client-default'),'--unsupported','--output',str(proof/'native-default-off.json')]),
+ ('native-off',[python,'tools/probe_picker_home_mail.py','--client',native,'--unsupported','--output',str(proof/'native-native-off.json')]),
+ ('picker',[python,'tools/probe_picker_home_mail.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--ca',ca,'--output',str(proof/'native-picker.json')]),
+ ('visit-classic',[python,str(proof/'probe_inbox_visit.py'),'--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--public-ca',ca,'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(proof/'native-visit-classic.json')]),
+ ('visit-unicode',[python,str(proof/'probe_inbox_visit.py'),'--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--public-ca',ca,'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(proof/'native-visit-unicode.json'),'--unicode']),
+]
+(proof/'native-runtime.json').write_text(json.dumps(result,indent=2)+'\n')
+for name,command in steps:
+ started=time.monotonic()
+ with (proof/('runtime-'+name+'.private.log')).open('wb') as log:
+  completed=subprocess.run(command,cwd=root,env=env,stdout=log,stderr=log)
+ stage={'name':name,'command':command,'returncode':completed.returncode,'elapsed_seconds':round(time.monotonic()-started,3)}
+ output=proof/('native-'+name+'.json')
+ if output.exists():stage['controls']=json.loads(output.read_text())
+ result['stages'].append(stage)
+ if completed.returncode:
+  result['result']='fail';(proof/'native-runtime.json').write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(1)
+ (proof/'native-runtime.json').write_text(json.dumps(result,indent=2)+'\n')
+result['result']='pass'
+(proof/'native-runtime.json').write_text(json.dumps(result,indent=2)+'\n')

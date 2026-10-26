@@ -1,0 +1,31 @@
+{
+  "result": "fail",
+  "candidate": "native-candidate01",
+  "scope": "native-mail-all-targets-two-core-2GiB",
+  "client_source_map": "source-client-final.json",
+  "checkpoint_ui_sha256": "bc35db8a87b347341974ef10d0d2fda2e19f6e9fe0cfcf75e06eff3b6e34fa65",
+  "passed_builds": [
+    "default",
+    "native",
+    "network",
+    "fixtures"
+  ],
+  "library_tests": {
+    "passed": 43,
+    "failed": 0,
+    "ignored": 3
+  },
+  "binary_tests": {
+    "passed": 36,
+    "failed": 1,
+    "ignored": 0
+  },
+  "failed_test": "checkpoint_ui::tests::inbox_output_failure_and_input_eof_preserve_unread_and_restore_tty",
+  "six_inbox_model_tests_passed": true,
+  "failure": "restored terminal local modes contained NetBSD PENDIN kernel state bit while baseline did not",
+  "other_local_mode_bits_equal": true,
+  "actual_native_header_observation": "PENDIN 0x20000000U /* re-echo input buffer at next read */",
+  "old_source_and_logs_preserved": true,
+  "runtime_executed": false,
+  "private_logs_published": false
+}

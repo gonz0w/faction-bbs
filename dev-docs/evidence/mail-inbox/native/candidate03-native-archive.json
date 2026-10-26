@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "count": 6,
+  "checks": [
+    "old_v2_catchup_requires_deliberate_local_upgrade_without_network",
+    "declined_schema_upgrade_preserves_canonical_v2_and_restores_terminal",
+    "explicit_schema_upgrade_is_local_and_preserves_member_unlock",
+    "reopen_and_repeated_enable_keep_existing_epoch_and_cursor",
+    "unavailable_home_preserves_cursor_pending_ids_and_readable_classic_history",
+    "cancelled_hidden_home_prompt_locks_without_cursor_mutation"
+  ],
+  "private_fixture_removed": true,
+  "provider_contact": false
+}

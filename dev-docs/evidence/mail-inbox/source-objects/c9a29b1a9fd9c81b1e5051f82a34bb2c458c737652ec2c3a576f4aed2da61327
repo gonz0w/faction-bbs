@@ -1,0 +1,11 @@
+from lab import *
+
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source219-client-candidate03; test ! -e /home/factionbuild/proof219/candidate03; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source219-client-candidate03 /home/factionbuild/proof219/candidate03 /home/factionbuild/proof219/candidate02-artifacts')
+remote('cp /home/factionbuild/target219/release/faction-client-default /home/factionbuild/target219/release/faction-client-native /home/factionbuild/target219/release/faction-client-network /home/factionbuild/proof219/candidate02-artifacts/; cp /home/factionbuild/target219/release/examples/checkpoint_ui_fixture /home/factionbuild/target219/release/examples/home_mail_fixture /home/factionbuild/proof219/candidate02-artifacts/')
+identity=remote("/usr/pkg/bin/python3.13 -c 'from pathlib import Path;import json,hashlib; p=Path(\"/home/factionbuild/proof219/candidate02-artifacts\");print(json.dumps({f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in p.iterdir()},indent=2))'").stdout
+(P/'candidate02-artifact-digests.json').write_bytes(identity)
+remote('tar -xzf - -C /home/factionbuild/source219-client-candidate03; chown -R factionbuild:factionbuild /home/factionbuild/source219-client-candidate03',(P/'source-client-candidate03-qualified.tar.gz').read_bytes(),180)
+for source,dest in [('build_client_candidate03.py','build_client.py'),('native_runtime_candidate03.py','native_runtime.py'),('native_storage_tests_candidate03.py','native_storage_tests.py'),('probe_inbox_visit.py','probe_inbox_visit.py'),('inventory_inbox_visit.py','inventory_inbox_visit.py')]:
+ remote('cat > /home/factionbuild/proof219/candidate03/'+dest+'; chown factionbuild:factionbuild /home/factionbuild/proof219/candidate03/'+dest,(P/source).read_bytes())
+remote("su - factionbuild -c 'cd /home/factionbuild/source219-client-candidate03 && nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof219/candidate03/build_client.py > /home/factionbuild/proof219/candidate03/client-launch.private.log 2>&1 < /dev/null &'")
+print('Separate candidate03 uploaded; old tree/logs and five old binary artifacts preserved; sequential native checks launched.')

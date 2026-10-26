@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "count": 13,
+  "checks": [
+    "explicit_offline_I_inbox_entry_and_back_preserve_checkpoint",
+    "empty_and_single_real_checkpoint_bounds_never_wrap_or_acknowledge",
+    "last_unread_ack_returns_empty_filter_and_repeated_ack_is_idempotent",
+    "seven_record_status_order_arrows_JK_pages_selected_only_and_unread_filter_readonly",
+    "fresh_ack_marks_exact_original_received_record_and_refreshes_filter_selection_durably",
+    "all_64_retained_records_are_eleven_bounded_pages_with_partial_final_page",
+    "disabled_tracking_keeps_unknown_and_rejects_zero_unread_filter_without_upgrade",
+    "classic_and_explicit_unicode_subjects_are_inert_and_fit_40_columns",
+    "CtrlC_and_CtrlD_lock_from_inbox_and_restore_terminal_without_mutation",
+    "queued_open_read_typeahead_and_cancel_after_body_never_acknowledge",
+    "actual_pty_process_death_before_ack_preserves_unread_and_canonical_reopen",
+    "expired_revoked_history_only_inbox_inspection_and_explicit_local_ack_stay_available",
+    "read_ack_write_failure_locks_poisoned_handle_and_preserves_canonical_checkpoint"
+  ],
+  "private_fixture_removed": true,
+  "provider_contact": false,
+  "read_receipt_sent": false
+}

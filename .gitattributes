@@ -128,3 +128,10 @@ dev-docs/evidence/local-unread-mail/qualification/orchestration-source-objects/*
 dev-docs/evidence/local-unread-mail/*.json linguist-generated=true
 dev-docs/evidence/local-unread-mail/host/*.json linguist-generated=true
 dev-docs/evidence/local-unread-mail/qualification/*.json linguist-generated=true
+
+# #219 immutable inbox source and protocol observations.
+dev-docs/evidence/mail-inbox/** -text
+dev-docs/evidence/mail-inbox/source-objects/** linguist-generated=true
+dev-docs/evidence/mail-inbox/*.json linguist-generated=true
+dev-docs/evidence/mail-inbox/host/*.json linguist-generated=true
+dev-docs/evidence/mail-inbox/native/*.json linguist-generated=true

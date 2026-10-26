@@ -1,0 +1,42 @@
+from pathlib import Path
+import hashlib,json,os,shutil,subprocess
+root=Path('/private/tmp/faction219-lead-OWNED');repo=Path('/Users/cam/DEV/faction-bbs')
+old=root/'host-qualified-source-v2';source=root/'host-qualified-source-v3'
+shutil.copytree(old,source,ignore=shutil.ignore_patterns('__pycache__','.DS_Store'))
+name='crates/faction-client/src/checkpoint_ui.rs';raw=(repo/name).read_bytes()
+assert hashlib.sha256(raw).hexdigest()=='669dea471a4707ee3b999b3bad38e309ee4324572864fa610f25ffc257e1454e'
+(source/name).write_bytes(raw)
+previous=json.loads((root/'host-qualified-inputs-v2.json').read_bytes())
+manifest={name:hashlib.sha256((source/name).read_bytes()).hexdigest() for name in previous}
+assert [name for name in manifest if manifest[name]!=previous[name]]==['crates/faction-client/src/checkpoint_ui.rs']
+(root/'host-qualified-inputs-v3.json').write_text(json.dumps(manifest,indent=2)+'\n')
+env=dict(os.environ,CARGO_TARGET_DIR=str(root/'qualified-target'),CARGO_BUILD_JOBS='2')
+steps=[]
+def run(label,args):
+ with (root/(label+'.log')).open('w') as output:
+  result=subprocess.run(args,cwd=source,env=env,stdout=output,stderr=subprocess.STDOUT)
+ steps.append(dict(label=label,command=args,exit_code=result.returncode))
+ (root/'host-final-commands.json').write_text(json.dumps(steps,indent=2)+'\n')
+ assert result.returncode==0,label
+ print(label+' passed',flush=True)
+versions={name:subprocess.check_output([name,'--version'],env=env,text=True).strip() for name in ['rustc','cargo','python3']}
+(root/'host-final-versions.json').write_text(json.dumps(versions,indent=2)+'\n')
+run('host-final-network-tests',['cargo','test','-p','faction-client','-p','faction-omemo','--features','faction-client/network-mail','--all-targets','--release','--locked','--','--test-threads=1'])
+run('host-final-network-clippy',['cargo','clippy','-p','faction-client','-p','faction-omemo','--features','faction-client/network-mail','--all-targets','--release','--locked','--','-D','warnings'])
+run('host-final-network-build',['cargo','build','-p','faction-client','--features','network-mail','--bin','faction-client','--example','checkpoint_ui_fixture','--example','home_mail_fixture','--release','--locked'])
+for graph in ['network','native']:
+ if graph=='native':
+  run('host-final-native-tests',['cargo','test','-p','faction-client','--features','native-mail','--all-targets','--release','--locked','--','--test-threads=1'])
+  run('host-final-native-build',['cargo','build','-p','faction-client','--features','native-mail','--bin','faction-client','--example','checkpoint_ui_fixture','--release','--locked'])
+ target=root/'qualified-bins'/graph;target.mkdir(parents=True)
+ names=['faction-client','examples/checkpoint_ui_fixture']+(['examples/home_mail_fixture'] if graph=='network' else [])
+ artifacts={}
+ for name in names:
+  src=root/'qualified-target/release'/name;dst=target/Path(name).name;shutil.copy2(src,dst)
+  artifacts[name]=hashlib.sha256(dst.read_bytes()).hexdigest()
+ (target/'artifacts.json').write_text(json.dumps(artifacts,indent=2)+'\n')
+ args=['python3','tools/probe_mail_inbox.py','--client',str(target/'faction-client'),'--fixture',str(target/'checkpoint_ui_fixture'),'--owned-root',str(root),'--output',str(root/('host-final-'+graph+'-inbox.json'))]
+ if graph=='network':args.append('--online')
+ run('host-final-'+graph+'-inbox',args)
+assert all(hashlib.sha256((source/name).read_bytes()).hexdigest()==sha for name,sha in manifest.items())
+print('All final host source bytes remain exact.',flush=True)

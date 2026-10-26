@@ -1,0 +1,39 @@
+from pathlib import Path
+import hashlib,json,subprocess
+import publish_sources as public
+ROOT=public.OWNED;NATIVE=Path('/private/tmp/faction219-native-OWNED')
+
+def scan(record):
+ inventories=sorted((NATIVE/'private-marker-inventories').glob('*.private.json'))+sorted(ROOT.glob('marker-inventory-*.private.json'))
+ assert len(inventories)==4
+ markers=set();keys=set();exclusions=[];inventory_hashes=[]
+ for path in inventories:
+  raw=path.read_bytes();data=json.loads(raw);assert data['inspection_failures']==0
+  inventory_hashes.append(hashlib.sha256(raw).hexdigest())
+  for row in data['generated_markers']:
+   value=row['value'];assert isinstance(value,str) and value
+   markers.add(value.encode());markers.add(json.dumps(value,ensure_ascii=True)[1:-1].encode());markers.add(json.dumps(value,ensure_ascii=False)[1:-1].encode())
+  for row in data['private_ssh_keys']:keys.add(row['block'])
+  exclusions.extend(data['excluded_public_static'])
+ assert len(keys)==2
+ paths={public.REPO/row['path'] for stage in record['source_stages'] for row in stage['files']}
+ paths.update(path for path in public.BASE.rglob('*') if path.is_file())
+ for output in [subprocess.check_output(['git','diff','--name-only'],cwd=public.REPO),subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=public.REPO)]:
+  for name in output.decode().splitlines():
+   path=public.REPO/name
+   if path.is_file() and not path.is_symlink():paths.add(path)
+ matched=[]
+ for path in sorted(paths):
+  raw=path.read_bytes()
+  if any(value in raw for value in markers):matched.append(str(path.relative_to(public.REPO)))
+ record_bytes=(json.dumps(record,indent=2)+'\n').encode()
+ if any(value in record_bytes for value in markers):matched.append('proposed-final-record')
+ assert not matched,'private marker found; publication must stop: '+repr(matched)
+ return dict(result='pass',inventories=4,private_ssh_key_blocks=2,literal_marker_variants=len(markers),files_scanned=len(paths),matches=0,private_inventory_sha256=inventory_hashes,static_public_exclusions=len(exclusions),static_exclusion_reason='already-public-static-lab-fixture-constant',marker_values_published=False,raw_private_transcripts_published=False)
+
+if __name__=='__main__':
+ record=json.loads((ROOT/'draft-results.json').read_bytes())
+ index=public.object_index();record['source_stages'].append(dict(label='privacy-scan-driver',files=[dict(name=Path(__file__).name,**public.preserve(Path(__file__).read_bytes(),index))]))
+ result=scan(record);(ROOT/'publication-privacy-preflight.json').write_text(json.dumps(result,indent=2)+'\n')
+ record['privacy']=result;(ROOT/'draft-results.json').write_text(json.dumps(record,indent=2)+'\n')
+ print('Public source/results preflight:',result['files_scanned'],'files, four private inventories, two actual SSH key blocks, zero matches; values remain private.')

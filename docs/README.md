@@ -80,3 +80,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Native home mail from the picker](picker-home-mail.md) — explicit local E entry and locked return between visits.
 
 - [Local unread mail and a parked board visit](local-unread-mail.md) — encrypted local read decisions and explicit Files-desk access.
+
+- [Selectable encrypted-mail inbox](local-mail-inbox.md) — bounded local selection, unread filters and explicit acknowledgements.

@@ -1,0 +1,10 @@
+from lab import *
+import hashlib,json,tarfile
+
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/cargo219; test ! -e /home/factionbuild/source219-server; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/cargo219 /home/factionbuild/target219 /home/factionbuild/proof219 /home/factionbuild/source219-server')
+remote('tar -xzf - -C /home/factionbuild/cargo219; chown -R factionbuild:factionbuild /home/factionbuild/cargo219',(P/'public-registry.tar.gz').read_bytes(),180)
+remote('tar -xf - -C /home/factionbuild/source219-server; chown -R factionbuild:factionbuild /home/factionbuild/source219-server',(P/'source-server-base.tar').read_bytes(),180)
+source=(P/'build_server.py').read_bytes()
+remote('cat > /home/factionbuild/proof219/build_server.py; chown factionbuild:factionbuild /home/factionbuild/proof219/build_server.py',source)
+remote("su - factionbuild -c 'cd /home/factionbuild/source219-server && nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof219/build_server.py > /home/factionbuild/proof219/build-server-launch.log 2>&1 < /dev/null &'")
+print('Frozen committed base server and public-only registry uploaded; native board build launched.')
