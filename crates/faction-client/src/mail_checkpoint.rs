@@ -13,6 +13,7 @@ use zeroize::Zeroizing;
 const MAGIC: &[u8; 8] = b"FACTVLT2";
 const SCHEMA: &[u8; 8] = b"FACTCP02";
 const ARCHIVE_SCHEMA: &[u8; 8] = b"FACTCP03";
+const READ_SCHEMA: &[u8; 8] = b"FACTCP04";
 const NAME: &str = "mail.fkv";
 const HEADER: usize = 184;
 const PREFIX: usize = 208;
@@ -112,6 +113,16 @@ pub struct Record {
     frame: [u8; 32],
     intent: [u8; 32],
 }
+/// Counts from retained authenticated state on this device only. `None` means
+/// read tracking is disabled, never zero unseen mail at a home server.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ReadSummary {
+    pub unread: Option<usize>,
+    pub received: usize,
+    pub retained: usize,
+    pub pending: usize,
+    pub history_only: bool,
+}
 /// Authenticated local presentation metadata. No native private state or ciphertext.
 pub struct Inspection<'a> {
     pub local_device: u32,
@@ -137,6 +148,11 @@ pub struct OutboxInspection<'a> {
     pub sent_at: u64,
 }
 impl Record {
+    /// Stable authenticated received-frame identity for a trusted local read
+    /// decision. Sent records cannot become unread or acquire a read receipt.
+    pub fn received_id(&self) -> Option<[u8; 32]> {
+        (self.direction == Direction::Received).then_some(self.frame)
+    }
     /// A send operation is a local intent ID, never a delivery or read receipt.
     pub fn operation(&self) -> [u8; 16] {
         self.operation
@@ -192,6 +208,7 @@ struct State {
     history: Vec<Record>,
     outbox: Vec<Pending>,
     archive: Option<ArchiveCheckpoint>,
+    read: Option<Vec<bool>>,
 }
 struct Reader<'a>(&'a [u8]);
 impl<'a> Reader<'a> {
@@ -271,6 +288,7 @@ impl State {
             history: vec![],
             outbox: vec![],
             archive: None,
+            read: None,
         })
     }
     fn active(&self, now: u64) -> io::Result<&Peer> {
@@ -295,7 +313,9 @@ impl State {
     fn encode(&self) -> io::Result<Zeroizing<Vec<u8>>> {
         self.validate()?;
         let mut out = Zeroizing::new(
-            if self.archive.is_some() {
+            if self.read.is_some() {
+                READ_SCHEMA
+            } else if self.archive.is_some() {
                 ARCHIVE_SCHEMA
             } else {
                 SCHEMA
@@ -336,6 +356,9 @@ impl State {
             out.extend_from_slice(&p.operation);
             p.wire.encode_into(&mut out)?;
         }
+        if self.read.is_some() {
+            out.push(u8::from(self.archive.is_some()));
+        }
         if let Some(archive) = &self.archive {
             field(&mut out, archive.home.as_bytes());
             num(&mut out, archive.local_device);
@@ -343,6 +366,12 @@ impl State {
             out.push(u8::from(archive.after.is_some()));
             if let Some(after) = &archive.after {
                 field(&mut out, after.as_bytes());
+            }
+        }
+        if let Some(read) = &self.read {
+            num(&mut out, read.len() as u32);
+            for acknowledged in read {
+                out.push(u8::from(*acknowledged));
             }
         }
         if out.len() > MAX_PLAIN {
@@ -356,7 +385,7 @@ impl State {
         }
         let mut r = Reader(raw);
         let schema = r.take(8)?;
-        if schema != SCHEMA && schema != ARCHIVE_SCHEMA {
+        if schema != SCHEMA && schema != ARCHIVE_SCHEMA && schema != READ_SCHEMA {
             return Err(invalid());
         }
         let revision = r.big()?;
@@ -413,7 +442,14 @@ impl State {
                 wire: r.wire()?,
             });
         }
-        let archive = if schema == ARCHIVE_SCHEMA {
+        let has_archive = if schema == ARCHIVE_SCHEMA {
+            true
+        } else if schema == READ_SCHEMA {
+            r.boolean()?
+        } else {
+            false
+        };
+        let archive = if has_archive {
             Some(ArchiveCheckpoint {
                 home: r.string(254)?,
                 local_device: r.number()?,
@@ -424,6 +460,19 @@ impl State {
                     None
                 },
             })
+        } else {
+            None
+        };
+        let read = if schema == READ_SCHEMA {
+            let count = r.number()? as usize;
+            if count > MAX_HISTORY {
+                return Err(invalid());
+            }
+            Some(
+                (0..count)
+                    .map(|_| r.boolean())
+                    .collect::<io::Result<Vec<_>>>()?,
+            )
         } else {
             None
         };
@@ -444,6 +493,7 @@ impl State {
             history,
             outbox,
             archive,
+            read,
         };
         s.validate()?;
         s.device()?;
@@ -462,6 +512,14 @@ impl State {
             || self.history.len() > MAX_HISTORY
             || self.outbox.len() > MAX_OUTBOX
             || self.started && self.peer.is_none()
+        {
+            return Err(invalid());
+        }
+        if let Some(read) = &self.read
+            && (read.len() != self.history.len()
+                || self.history.iter().zip(read).any(|(record, acknowledged)| {
+                    *acknowledged && record.direction != Direction::Received
+                }))
         {
             return Err(invalid());
         }
@@ -843,6 +901,63 @@ impl CheckpointVault {
         self.healthy()?;
         Ok(&self.state.legacy)
     }
+    /// Deliberate local-only FACTCP04 opt-in. Existing received history starts
+    /// unread; no native key, archive cursor, pending frame or wrapper changes.
+    pub fn enable_read_tracking(&mut self) -> io::Result<()> {
+        self.healthy()?;
+        if self.state.read.is_some() {
+            return Ok(());
+        }
+        let mut candidate = self.state.duplicate()?;
+        candidate.read = Some(vec![false; candidate.history.len()]);
+        self.commit(candidate)
+    }
+    /// Local retained-state counts, readable even after protocol expiry,
+    /// revocation or history-only recovery. No home completeness/freshness claim.
+    pub fn read_summary(&self) -> io::Result<ReadSummary> {
+        self.healthy()?;
+        Ok(ReadSummary {
+            unread: self.state.read.as_ref().map(|read| {
+                self.state
+                    .history
+                    .iter()
+                    .zip(read)
+                    .filter(|(record, acknowledged)| {
+                        record.direction == Direction::Received && !**acknowledged
+                    })
+                    .count()
+            }),
+            received: self
+                .state
+                .history
+                .iter()
+                .filter(|r| r.direction == Direction::Received)
+                .count(),
+            retained: self.state.history.len(),
+            pending: self.state.outbox.len(),
+            history_only: self.state.history_only,
+        })
+    }
+    /// Validate both stable identity and position; sent/wrong/stale selections
+    /// cannot acknowledge a different retained received record.
+    pub fn received_read(&self, index: usize, expected: [u8; 32]) -> io::Result<Option<bool>> {
+        self.healthy()?;
+        let record = self.state.history.get(index).ok_or_else(invalid)?;
+        if record.received_id() != Some(expected) {
+            return Err(invalid());
+        }
+        Ok(self.state.read.as_ref().map(|read| read[index]))
+    }
+    /// Explicit trusted-local acknowledgement only. This never contacts a home
+    /// or retires ciphertext, and repeated decisions do not write a checkpoint.
+    pub fn mark_read(&mut self, index: usize, expected: [u8; 32]) -> io::Result<()> {
+        if self.received_read(index, expected)?.ok_or_else(invalid)? {
+            return Ok(());
+        }
+        let mut candidate = self.state.duplicate()?;
+        candidate.read.as_mut().ok_or_else(invalid)?[index] = true;
+        self.commit(candidate)
+    }
     pub fn history(&self) -> io::Result<&[Record]> {
         self.healthy()?;
         Ok(&self.state.history)
@@ -991,6 +1106,9 @@ impl CheckpointVault {
             frame: wire.digest()?,
             intent,
         });
+        if let Some(read) = &mut candidate.read {
+            read.push(false);
+        }
         candidate.outbox.push(Pending {
             operation,
             wire: wire.clone(),
@@ -1108,6 +1226,9 @@ impl CheckpointVault {
             frame,
             intent: [0; 32],
         });
+        if let Some(read) = &mut candidate.read {
+            read.push(false);
+        }
         Ok((
             Some(candidate),
             Receipt {
@@ -1255,6 +1376,7 @@ impl CheckpointVault {
             candidate.archive = Some(fresh);
         }
         candidate.history = old.history;
+        candidate.read = old.read;
         self.commit(candidate)
     }
     /// Official backups are authenticated history-only checkpoints, even with a
@@ -1311,3 +1433,7 @@ impl CheckpointVault {
 #[cfg(test)]
 #[path = "archive_checkpoint_tests.rs"]
 mod archive_checkpoint_tests;
+
+#[cfg(test)]
+#[path = "unread_checkpoint_tests.rs"]
+mod unread_checkpoint_tests;

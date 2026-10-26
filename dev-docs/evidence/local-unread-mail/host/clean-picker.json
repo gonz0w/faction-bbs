@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "count": 17,
+  "checks": [
+    "compact_40x18_local_entry_history_lock_reopen_and_navigation_without_children",
+    "mail_return_preserves_exact_board_selection_and_canonical_checkpoint",
+    "explicit_unicode_override_reaches_existing_authenticated_history",
+    "archive_catchup_and_declined_upgrade_are_explicit_and_nonmutating",
+    "wrong_local_secret_locks_and_returns_without_private_history",
+    "hidden_local_prompt_cancel_locks_and_restores_picker",
+    "hidden_home_prompt_cancel_locks_and_restores_picker",
+    "oversized_hidden_home_input_locks_flushes_and_returns",
+    "queued_picker_or_menu_input_cannot_supply_hidden_home_credentials",
+    "unavailable_home_keeps_history_pending_and_manual_locked_return",
+    "busy_checkpoint_is_not_unlocked_or_replaced",
+    "ambiguous_local_write_poison_drops_handle_then_canonical_reopen_succeeds",
+    "missing_loose_or_symlink_local_references_refuse_without_creation_or_state_change",
+    "unconfigured_E_has_no_unlock_or_connection_authority",
+    "explicit_compose_reuses_durable_queue_and_preserves_existing_pending_ids",
+    "explicit_G_then_A_reuses_existing_archive_path_and_outage_preserves_cursor_and_pending",
+    "nonempty_archive_cursor_epoch_history_and_pending_survive_outage_and_wrong_unlock"
+  ],
+  "private_fixture_removed": true,
+  "provider_contact": false,
+  "listener_opened": false
+}

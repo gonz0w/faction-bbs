@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "previous_inventory": {
+    "path": "final-build-inputs.json",
+    "sha256": "b7c51cd05e50e90801efd00ebf3f4775567f6b7863a8dc3c3f7a40ffdb25b397",
+    "count": 631,
+    "interpretation": "Copied-tree inventory containing 623 public source/tool inputs plus eight non-execution Finder metadata entries; previous observations remain unchanged."
+  },
+  "excluded_metadata": [
+    "tools/.DS_Store",
+    "crates/.DS_Store",
+    "crates/faction-access/.DS_Store",
+    "crates/faction-unix/.DS_Store",
+    "crates/faction-cli/.DS_Store",
+    "crates/faction-core/.DS_Store",
+    "crates/faction-terminal/.DS_Store",
+    "crates/faction-service/.DS_Store"
+  ],
+  "excluded_metadata_count": 8,
+  "metadata_bytes_exported": false,
+  "new_source_map": {
+    "path": "clean-build-inputs.json",
+    "shape": [
+      "base",
+      "files"
+    ],
+    "sha256": "b88ffb3d9d9ad3ed3f83320efd31fb33b86c205cc2394cf0075841ec3250c915",
+    "count": 623
+  },
+  "product_source_bytes_changed": false,
+  "raw_logs_exported": false,
+  "metadata_content_rendered": false,
+  "metadata_hashed_for_inventory_verification": true
+}

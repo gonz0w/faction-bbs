@@ -1,0 +1,203 @@
+{
+  "archive_note_correction": {
+    "actual_error": "executed source bytes changed: dev-docs/evidence/local-unread-mail/README.md",
+    "note": "verification-followup.md",
+    "owned_archive_fixture_removed": true,
+    "rejected_readme": {
+      "path": "dev-docs/evidence/local-unread-mail/source-objects/609acdea684b1432538148b659ec7b74ef0f7897dbab05310c2742635ff2fc57",
+      "sha256": "609acdea684b1432538148b659ec7b74ef0f7897dbab05310c2742635ff2fc57"
+    },
+    "rejected_revision": "d760543",
+    "resolution": "Restore exact prior bound README; keep new verifier note in a separate document. No resolver/manifest/result hash was refreshed.",
+    "restored_readme_sha256": "7bf668a8661be80c5e162d21208833e2627724d98aa01b657621cb16eb32e495",
+    "result": "source-archive-rejected-changed-bound-evidence-README"
+  },
+  "cache_fix": {
+    "artifacts": {
+      "baseline-archive-guard.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/6c6cf6aed1702ddad00fc2253112e31f64f4fa58652a2aff11899a4fff1339be",
+        "sha256": "6c6cf6aed1702ddad00fc2253112e31f64f4fa58652a2aff11899a4fff1339be"
+      },
+      "baseline-guard-timings.json": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/f483c995ab9fbbf8830823bcc1e1b5fd9fbafe0e60b24076b5121ce2492b8ba2",
+        "sha256": "f483c995ab9fbbf8830823bcc1e1b5fd9fbafe0e60b24076b5121ce2492b8ba2"
+      },
+      "baseline-unread-guard.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/aec7fe62ac1d2e48ee972540b28f57fb7756f369e51632594af7f31d63c6dad7",
+        "sha256": "aec7fe62ac1d2e48ee972540b28f57fb7756f369e51632594af7f31d63c6dad7"
+      },
+      "candidate-archive-guard.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/6c6cf6aed1702ddad00fc2253112e31f64f4fa58652a2aff11899a4fff1339be",
+        "sha256": "6c6cf6aed1702ddad00fc2253112e31f64f4fa58652a2aff11899a4fff1339be"
+      },
+      "candidate-guard-timings.json": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/95b15362af8cae9b965a046426fa058a7d930d982a6a7d00c76c150593fb7f95",
+        "sha256": "95b15362af8cae9b965a046426fa058a7d930d982a6a7d00c76c150593fb7f95"
+      },
+      "candidate-unread-guard.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/aec7fe62ac1d2e48ee972540b28f57fb7756f369e51632594af7f31d63c6dad7",
+        "sha256": "aec7fe62ac1d2e48ee972540b28f57fb7756f369e51632594af7f31d63c6dad7"
+      },
+      "documentation-evidence-checks.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/036fee909e5a6a0c842cb07c859516a31991e2517c21e76bbc2d95c1db934c8c",
+        "sha256": "036fee909e5a6a0c842cb07c859516a31991e2517c21e76bbc2d95c1db934c8c"
+      },
+      "full-tool-suite.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/84831f61910872809fa8b216db269f56f0aa215cbb3f165a1256732a0d6416a8",
+        "sha256": "84831f61910872809fa8b216db269f56f0aa215cbb3f165a1256732a0d6416a8"
+      },
+      "green-baseline-tests.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/59d2231bd78df32d16f63ae9af8adbf2250ce2f70081b552e3b544ee0e7cbad0",
+        "sha256": "59d2231bd78df32d16f63ae9af8adbf2250ce2f70081b552e3b544ee0e7cbad0"
+      },
+      "green-guard-tests.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/1c519c1c1452739087dddcf938e629c3111423c9f9cc641659debb29fdb4f243",
+        "sha256": "1c519c1c1452739087dddcf938e629c3111423c9f9cc641659debb29fdb4f243"
+      },
+      "green-publication-tests.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/4dbb4811643bab627b2ce7665b3b5cec3da22e2b8b070b6efb846bee1ef1bf44",
+        "sha256": "4dbb4811643bab627b2ce7665b3b5cec3da22e2b8b070b6efb846bee1ef1bf44"
+      },
+      "green-resolver-tests.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/7d1d9ed7e57b8ff0ec30beac0189584cb420b6c2cb7bf5d7d7d4a887db3a978c",
+        "sha256": "7d1d9ed7e57b8ff0ec30beac0189584cb420b6c2cb7bf5d7d7d4a887db3a978c"
+      },
+      "green-tests-01.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/77936b0e6971f1cb55ef8cce8364001220c3eae91cba614216192856fe919e6a",
+        "sha256": "77936b0e6971f1cb55ef8cce8364001220c3eae91cba614216192856fe919e6a"
+      },
+      "helper-integrity.json": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/231aac3b8bcd66d7d22e2707decbac96ad0e812464b16af0097907b061e66751",
+        "sha256": "231aac3b8bcd66d7d22e2707decbac96ad0e812464b16af0097907b061e66751"
+      },
+      "red-tests.log": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/8b374e45bc4a1cef7f6c5d9b7c0ed3d18c8cb73c1b620f9c82c227740f2d9950",
+        "sha256": "8b374e45bc4a1cef7f6c5d9b7c0ed3d18c8cb73c1b620f9c82c227740f2d9950"
+      },
+      "source-stages.json": {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/c218a6f4e130c495a0d269501016fcc2be0034c76cab17ac9f9c6061f79ceef8",
+        "sha256": "c218a6f4e130c495a0d269501016fcc2be0034c76cab17ac9f9c6061f79ceef8"
+      }
+    },
+    "context_restored_on_exception": true,
+    "documentation_evidence_commands": "All unchanged commands from the Validate documentation, policies, and archive step, with its final full unittest command executed separately; all exited zero.",
+    "every_manifest_read_and_pinned_hash_retained": true,
+    "full_tool_suite": {
+      "command": "python3 -m unittest discover -s tools -p 'test_*.py'",
+      "failures": 0,
+      "passed": 330
+    },
+    "green": [
+      {
+        "passed": 8,
+        "pattern": "test_evidence_decode_cache.py"
+      },
+      {
+        "passed": 12,
+        "pattern": "test_evidence_sources.py"
+      },
+      {
+        "passed": 2,
+        "pattern": "test_unread_baseline.py"
+      },
+      {
+        "passed": 7,
+        "pattern": "test_unread_mail_evidence.py"
+      },
+      {
+        "passed": 3,
+        "pattern": "test_publication_bytes.py"
+      }
+    ],
+    "max_decoded_manifests": 128,
+    "new_native_execution": false,
+    "owned_fixture_removed": true,
+    "preserved_original_record_sha256": "332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086",
+    "preserved_software_record_sha256": "219206a2d4643a3e3167d2984dfc6e571bf94ff271385baf15297a8b571c079e",
+    "private_resolution_context_only": true,
+    "public_helpers_return_fresh_values": true,
+    "publication_driver": {
+      "path": "dev-docs/evidence/local-unread-mail/source-objects/607ead0ba8c4363e2b3e37b06904248339fba79a731cc2b1f9f24c1aa41b420e",
+      "sha256": "607ead0ba8c4363e2b3e37b06904248339fba79a731cc2b1f9f24c1aa41b420e"
+    },
+    "red": {
+      "command": "python3 -m unittest discover -s tools -p test_evidence_decode_cache.py -v",
+      "failures": 4,
+      "passing_controls": 4,
+      "tests": 8
+    },
+    "source_bytes_never_cached": true,
+    "source_stages": [
+      {
+        "base_public_revision": "98c6971c56a9c326f05182e9dd9b9350f502aef9",
+        "files": {
+          "tools/evidence_sources.py": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+          "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+        },
+        "source_paths": {
+          "tools/evidence_sources.py": "dev-docs/evidence/local-unread-mail/source-objects/06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+          "tools/test_evidence_sources.py": "dev-docs/evidence/local-unread-mail/source-objects/02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+        },
+        "stage": "baseline"
+      },
+      {
+        "files": {
+          "tools/evidence_sources.py": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+          "tools/test_evidence_decode_cache.py": "990d18c22602b97d7dec0c4c6c0bb5134ec4b887ba3c600a91b872e26769e988",
+          "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+        },
+        "source_paths": {
+          "tools/evidence_sources.py": "dev-docs/evidence/local-unread-mail/source-objects/06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+          "tools/test_evidence_decode_cache.py": "dev-docs/evidence/local-unread-mail/source-objects/990d18c22602b97d7dec0c4c6c0bb5134ec4b887ba3c600a91b872e26769e988",
+          "tools/test_evidence_sources.py": "dev-docs/evidence/local-unread-mail/source-objects/02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+        },
+        "stage": "red-executed"
+      },
+      {
+        "files": {
+          "tools/evidence_sources.py": "3a659ab446cc199c893120111826e1d1bf9bd854df785a135511f39a92c6eeee",
+          "tools/test_evidence_decode_cache.py": "990d18c22602b97d7dec0c4c6c0bb5134ec4b887ba3c600a91b872e26769e988",
+          "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+        },
+        "source_paths": {
+          "tools/evidence_sources.py": "dev-docs/evidence/local-unread-mail/source-objects/3a659ab446cc199c893120111826e1d1bf9bd854df785a135511f39a92c6eeee",
+          "tools/test_evidence_decode_cache.py": "dev-docs/evidence/local-unread-mail/source-objects/990d18c22602b97d7dec0c4c6c0bb5134ec4b887ba3c600a91b872e26769e988",
+          "tools/test_evidence_sources.py": "dev-docs/evidence/local-unread-mail/source-objects/02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+        },
+        "stage": "candidate-01"
+      }
+    ],
+    "timing_limitations": "Observed host wall times only. Candidate timings overlapped the full tool suite; not isolated benchmarks or CI completion claims."
+  },
+  "cancelled_step": "existing-default-terminal-compatibility-suite",
+  "completed_steps": [
+    "documentation-policy-source-archive",
+    "lua-runtime",
+    "default-rust-workspace-tests"
+  ],
+  "documentation_job": 121363961166,
+  "head_revision": "98c6971c56a9c326f05182e9dd9b9350f502aef9",
+  "inn_step": "not-executed",
+  "issue": 216,
+  "issue_policy": "success-after-test-plan-heading-correction",
+  "job_limit_minutes": 15,
+  "limit_changed": false,
+  "native_mail_prerequisite": "success",
+  "product_rust_changed": false,
+  "result": "cancelled-at-job-deadline",
+  "schema": 1,
+  "source_inputs": [
+    {
+      "path": "dev-docs/evidence/local-unread-mail/source-objects/06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+      "sha256": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+      "source": "tools/evidence_sources.py"
+    },
+    {
+      "path": "dev-docs/evidence/local-unread-mail/source-objects/c92a02ba57da34c2f32bfbe3cbe25e769c9cc85904ea34e8702f8c3591581f85",
+      "sha256": "c92a02ba57da34c2f32bfbe3cbe25e769c9cc85904ea34e8702f8c3591581f85",
+      "source": ".github/workflows/documentation.yml"
+    }
+  ],
+  "tests_removed": false,
+  "workflow_run": 40257292944
+}

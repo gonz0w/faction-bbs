@@ -14,8 +14,10 @@ and acceptance authority is [#211](https://github.com/gonz0w/faction-bbs/issues/
 
 The outer `FACTVLT2` encryption, password/recovery wrappers, keys and v2 associated
 data stay unchanged. The inner `FACTCP02` encoding remains byte-compatible for
-stores that have not opted in. `enable_archive(now)` explicitly writes `FACTCP03`;
-unlock decodes either version and never migrates implicitly. Older implementations
+stores that have not opted in. Without local read tracking, `enable_archive(now)`
+explicitly writes `FACTCP03`; a read-enabled checkpoint retains `FACTCP04` and
+adds the same optional archive state. See [local read state](local-mail-read-state.md).
+Unlock accepts these explicit versions and never migrates implicitly. Older implementations
 cannot decode the new inner version. There is no downgrade API.
 
 The new inner suffix contains the archive home, local device ID, random nonzero
@@ -36,7 +38,7 @@ operation IDs, ciphertext and recovery data. Repeating it on a healthy enabled
 store returns without resetting the epoch or position. Official backups and
 recovery retain the position in history-only state, where it cannot resume native
 keys. Local password/recovery rotation preserves that state. Explicit fresh-device
-creation, after pending retirement, keeps retained history and schema 03 but starts
+creation, after pending retirement, keeps retained history and its enabled schema/read state but starts
 a new device/epoch with no `after`; peer verification must be repeated.
 
 ## Atomic authenticated entry and position

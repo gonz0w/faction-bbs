@@ -1,0 +1,7 @@
+{
+  "returncode": 1,
+  "expected_missing_entry": true,
+  "result_json_created": false,
+  "client_sha256": "3d93e4110668c8b6b3dde0124b969d4c8e4e2e3eb4b415a96a19dd744be12688",
+  "probe_sha256": "68433dd9d2576bc6c80bfad31f2789218d3d68c43c25819891eecd5ec0e63b32"
+}

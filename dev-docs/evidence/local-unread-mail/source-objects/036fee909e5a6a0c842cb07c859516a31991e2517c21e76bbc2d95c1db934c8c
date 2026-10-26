@@ -1,0 +1,88 @@
+Repository checks passed: current doc links, foundation policy, issue provenance, and archive hashes.
+README semantic freshness, transitive dependencies, and runtime support still require review.
+Synthetic payload report matches fixture arithmetic; no network/runtime test was performed.
+Saved text replay provenance and report match; timing not rerun.
+copy: 16386000 requested live bytes; 5 matching runs
+shared: 577536 requested live bytes; 5 matching runs
+Allocation requests only: excludes allocator overhead, RSS, OS, crypto, storage, server state.
+C: 34272 binary bytes; median sampled active RSS 4080 KiB; median READ 1.207 ms
+Rust: 360032 binary bytes; median sampled active RSS 4304 KiB; median READ 1.327 ms
+Go: 2052258 binary bytes; median sampled active RSS 6688 KiB; median READ 0.051 ms
+Rust+Mio: 360912 binary bytes; median sampled active RSS 4288 KiB; median READ 0.040 ms
+Local cleartext synthetic sessions only; no authentication, durable posts, fan-out, TCP or crypto.
+DELETE: read median 0.016 ms; FULL commit median 11.048 ms; all 11 oracles passed in five runs
+WAL: read median 0.006 ms; FULL commit median 3.861 ms; all 11 oracles passed in five runs
+Synthetic local process-crash experiment; no physical power-failure, SBC or encryption proof.
+Saved NetBSD evidence/provenance valid; VM/runtime/security tests were not rerun
+Saved Lua boundary evidence/provenance valid; runtime not rerun
+Forty-nine source snapshots and sixty-two unchanged historical records passed.
+Original LORD evidence passed: unchanged historical parser/record, current native inputs, actual-title SSH play/save/recovery and teardown. Not a VM rerun or capacity claim.
+Native file-area evidence passed: 13 real SSH/SFTP/recovery checks, 90 native Rust tests; RSS observation only, no capacity/physical claim.
+Native-client evidence passed: 10 real client/SSH/SFTP/recovery checks, 100 native Rust tests; no mail, hardware or capacity claim.
+Room/article record passed: 114 host/native Rust tests and 5 native shared controls; no new capacity or wire claim.
+Metadata record passed: 121 host/native Rust tests, 5 shared controls; no hardening/wire/capacity claim.
+Authored article record passed: 127 host/native Rust tests, 7 shared controls; no news-server/capacity/hardening claim.
+Broader article record passed: 133 host/native Rust tests, 12 original INN controls per host, 7 shared controls; no live peer/capacity/hardening claim.
+Unicode subject evidence passed: 140 host/native Rust tests, five local/worker PTY controls per host and twelve native shared controls; classic ASCII display, no capacity/hardening claim.
+Modern terminal evidence passed: 145 host/native Rust tests, five modern PTY controls per host, fifteen shared controls and actual screen fallback; no GUI/bitmap/capacity/hardening claim.
+Kitty evidence passed: 151 host/native Rust tests, seven graphics and three local-gate PTY controls per host, nineteen shared controls and bounded buffers; no GUI/capacity/hardening claim.
+Real terminal evidence passed: 12 qualified profiles, 336 observations, 48 BBS routes, 12 image retention/deletion pairs and 2 live SSH resize controls; no visual/GPU/hardware/capacity claim.
+Menu evidence passed: 154 host/native Rust tests, 109 Python tests, 22 shared controls, 3 restricted member routes and bounded cell redraws; no visual/capacity claim.
+Seasonal evidence passed: 162 host/native Rust, 110 host Python, nine calendar PTY controls per OS, eight actual shared SSH/native controls and 22 shared regressions; no clock/capacity/art-certification claim.
+Custom menus evidence passed: 167 Rust per OS, 111 host Python, four PTY controls per OS, four actual shared SSH/native controls, eight calendar and 22 shared regressions; no capacity/art/font claim.
+Login paging evidence passed: 171 Rust per OS, 112 host Python, eight paging PTY controls per OS, eight actual shared paging controls, calendar/reader regressions; no capacity/font/final-art claim.
+Nightwire evidence passed: 18 render profiles/seven local routes per OS, seven actual SSH/native routes, 157 native input matches and all 144 prior inputs unchanged; no final-art/font/capacity claim.
+Nightwire real-terminal evidence passed: 15 profiles, 240 frames, 2476 cursor checkpoints; no pixel/capacity claim.
+Operator evidence passed: 179 Rust per OS, 6 UI per OS, 10 native shared controls; no capacity/hardening claim.
+Host/console evidence passed: 183 Rust per OS, 8 UI per OS, 10 shared and 4 serial controls; no capacity/hardening claim.
+Recovery evidence passed: 184 Rust per OS, 11 backup checks per OS, 8 UI per OS, 10 shared/4 serial controls; no capacity/hardening claim.
+Directory evidence passed: 188 Rust per OS, 11 directory controls per OS, 12 real SSH/native controls and operator/backup/art regressions; no new capacity claim.
+Board-launcher evidence passed: 191 Rust per OS, 7 local controls per OS, 10 actual two-board controls; server inputs unchanged, no new capacity claim.
+Room-browser evidence passed: 194 Rust per OS, 10 PTY controls per OS, 11 real SSH/native and 22 reader controls; no new capacity claim.
+Writing-desk evidence passed: 199 Rust per OS, 13 PTY controls per OS, 18 real SSH/native/plain and 22 reader controls; no saved drafts or capacity claim.
+Full-screen/checkpoint evidence passed: 213 Rust per OS, 7 editor PTYs per OS, 11 real SSH/native/plain controls, distinct-UID backup and reader/art regressions; no new capacity claim.
+Community-wall evidence passed: 224 Rust per OS, 7 wall PTYs per OS, 11 actual SSH/native/plain controls, complete wall/file recovery and room/art regressions; no capacity claim.
+Member-page evidence passed: 235 Rust per OS, 8 member-page PTYs per OS, 14 actual SSH/native/plain controls, complete member-page/wall/file recovery and room/art regressions; no capacity claim.
+Native local-mail evidence passed: 105 host/native Rust tests, 13 PTY checks each; no network mail, roaming or capacity claim.
+Client/vault integration passed: 241 Rust per OS, 13 vault + 8 local picker PTYs per OS, 14 shared SSH/native/plain checks; no network mail or capacity claim.
+Gathering evidence passed: 256 Rust per OS, 8 PTYs per OS, 11 actual SSH/native controls and 14 recovery controls per OS; no capacity claim.
+Poll evidence passed: 268 Rust per OS, 8 poll PTYs per OS, 12 actual SSH/native controls and 15 recovery controls per OS; no capacity or secret-ballot claim.
+Catch-up evidence passed: 280 Rust per OS, 8 catch-up PTYs per OS, 11 actual SSH/native controls and 16 recovery controls per OS; no capacity or server-mail claim.
+Discussion evidence passed: 292 Rust per OS, 8 Find PTYs per OS, 11 actual SSH/native controls and 17 recovery controls per OS; no capacity or server-mail-search claim.
+Gallery evidence passed: 302 Rust per OS, 8 gallery PTYs per OS, 11 actual SSH/native controls and 17 recovery controls per OS; no capacity or raw-art claim.
+Travel evidence passed: 304 Rust per OS, 6 local travel PTYs per OS, 9 actual native/SSH/SFTP controls and 17 recovery controls per OS; no wire-budget/offline claim.
+Library evidence passed: 313 Rust per OS, 8 local/worker library PTYs per OS, 10 actual SSH/native/SFTP controls and 17 recovery controls per OS; no request-desk/capacity claim.
+File request evidence passed: 321 Rust per OS, 6 request PTYs per OS, 8 actual SSH/native/SFTP and 18 recovery controls per OS; normal budgets unchanged.
+Magazine evidence passed: 327 Rust per OS, 7 magazine PTYs per OS, 9 actual SSH/native/SFTP controls and 18 recovery per OS; owner-reviewed reader only.
+Editorial evidence passed: 336 Rust per OS, 10 editorial PTYs per OS, 9 actual SSH/native/SFTP controls and 19 recovery per OS.
+Social lounge evidence passed: 345 Rust per OS, 8 social PTYs per OS, 7 actual SSH/native controls and 20 recovery per OS; chat-only explicit polling.
+Connection lounge evidence passed: 351 Rust per OS, 8 actual shared controls, 3 real 66-second idle/editor/Lua waits and 20 recovery per OS; legacy remains chat-only.
+Standalone lounge evidence passed: 351 Rust per OS, 12 registered/approved local/worker/plain controls per OS, 3 concurrent real 66-second waits per OS and 20 recovery per OS; no new shared execution claim.
+Optional idle notification evidence passed: 354 Rust per OS, 20 local/worker/plain controls per OS, 12 actual SSH/native/Lua controls and maintained sustained/recovery regressions; no capacity/hardening claim.
+Who evidence passed: 359 Rust per OS, 21 local/worker/plain controls per OS, 12 actual SSH/native/Lua/Files controls, universal privacy and 21 recovery controls per OS; no capacity/hardening claim.
+Connection desk evidence passed: 21 client tests/14 local PTY controls per OS, 361 host workspace tests, 130 Python; 317 non-client source identities unchanged, no live authentication/network/capacity claim.
+Passport evidence passed: 25 client tests/16 local PTYs per OS, 365 host Rust/130 Python, 72 exact native inputs; explicit local souvenirs/notes and unchanged server, no tracking/identity/capacity claim.
+Board-guide evidence passed: 369 Rust per OS, 17 local/worker controls per OS, 10 actual shared SSH/native controls; current themed reference and classic fallback, no capacity/hardening claim.
+Mail research record passed: 12 mail + 11 native verifier controls; 4 signing failures retained, no native product/adoption claim.
+OMEMO qualification evidence passed: rejected baseline, independent corrected host/NetBSD replies, restart/trust/error controls and frozen source identities; no product adoption claim.
+Saved checkpoint evidence verified: host/NetBSD atomic recovery, exact source capture, independent reciprocal controls and owned cleanup; no network/UI/audit/capacity claim.
+Saved member-local checkpoint console evidence verified: source-matched host/NetBSD PTYs, private-fixture teardown and unchanged prior results; no live mail/audit/capacity claim.
+Saved native XMPP research qualification verified: host/NetBSD bounds/TLS/auth/cancel, distinct2GiB build/1GiB runtime and owned cleanup; no product/live-mail/audit/capacity claim.
+Saved native home-mail evidence verified: source-matched host/NetBSD controls, whole-client runtime cost, distinct build budget and owned teardown; no hardware/audit/capacity claim.
+Saved manual archive evidence verified: scoped bounded pages, source-matched host/NetBSD recovery and separate server audits; no complete-history/read-receipt/audit/capacity claim.
+Saved picker-mail evidence verified: exact host/NetBSD outage-to-board/files journey, locked private state, default/classic compatibility and owned teardown; no background/roaming/capacity claim.
+Saved unread/visit software evidence verified: encrypted local decisions, same-SSH parked Files/mail, bounded remote handling, source identity and owned teardown; no background/roaming/capacity claim.
+Saved NetBSD app evidence passed: native tests, 5 PTY flows, 20 SSH oracles, cleanup and preserved executed source hashes. This does not rerun the VM.
+Saved NetBSD lifecycle evidence passed: 7 local + 13 real service/load/fault oracles and preserved executed source hashes. Does not rerun the VM or prove 100/250-member capacity.
+Saved native memory/scaling evidence passed: distinct-account SSH, guarded admission, budget/recovery, integrity, cleanup and executed source hashes. No VM rerun or production-capacity claim.
+Saved native shared/credential evidence passed: matched SSH counts, guard/cleanup/recovery, 16 boundaries, complete calibrated sample matrices and frozen source/binary provenance. No VM rerun or 250-user support claim.
+Saved native transport evidence passed: frozen inputs, allocator readbacks, full SSH accounting, exact guards/batch effects, repeated trials, calibrated high-load credentials, denial/failure/recovery and cleanup. No VM rerun or supported-capacity claim.
+Saved native headroom evidence passed: exact unchanged guards, repeat boots, complete SSH costs, live limits, calibrated member/owner workload, build isolation, failures/recovery and cleanup. No VM rerun or supported-capacity claim.
+Saved shared UI evidence passed: 27 native UI oracles, full SSH costs, three 250-member boots and unchanged sampled headroom guard; minimum 135.09 MiB.
+Installed shared service evidence passed: preserved executed source pins, 250 members across three boots, lifecycle/rollback and unchanged guard; minimum 135.23 MiB.
+Native confinement evidence passed: preserved executed source pins, kernel ceilings/peer denials, three 250-member boots; minimum 137.61 MiB.
+Native isolation evidence passed: sealed controls/UI/lifecycle, rejected candidate retained, three 250-member boots; minimum 132.71 MiB.
+SSH admission evidence passed: key-admission bounds, SSH denials, rejected failures preserved, three 250-member boots; minimum 129.34 MiB.
+Sustained evidence: two fresh 250-member active intervals; 423798 verified non-sender receipts; unsigned lookup and source-fairness limits retained.
+Bounded-key evidence passed: 56 helpers/32 reads+commits in eight known-key probes, two fresh 250-member matrices; minimum stress 130.36 MiB.
+Global gate evidence passed: native pre-fork/state controls, unchanged-penalty private peer separation, two guarded 250-member matrices; minimum stress 132.86 MiB.

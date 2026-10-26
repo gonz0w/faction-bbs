@@ -1,0 +1,46 @@
+from lab import *
+import hashlib
+out=P/'public-result';proposal={}
+for mode,label in [('classic','host-clean-visit-classic'),('unicode','host-clean-visit-unicode'),('off','host-clean-off-paths')]:
+ data=(P/('host-clean-'+mode)/'result.json').read_bytes();j=json.loads(data);assert j['result']=='pass' and j['count']==(3 if mode=='off' else 14);proposal[label+'.json']=data
+proposal['host-clean-unconfigured-summary.json']=json.dumps(dict(result='pass',count=3,graphs=['default','native_only','network']),indent=2).encode()
+proposal['host-clean-execution-inputs.json']=(P/'host-clean-execution-inputs.json').read_bytes()
+origin=Path('/private/tmp/faction216-impl-OWNED');clean_data=(origin/'clean-build-inputs.json').read_bytes();assert hashlib.sha256(clean_data).hexdigest()=='b88ffb3d9d9ad3ed3f83320efd31fb33b86c205cc2394cf0075841ec3250c915';clean=json.loads(clean_data)['files'];assert len(clean)==623
+native=json.loads((P/'source-client-final.json').read_text());assert all(native[n]==h for n,h in clean.items() if n.startswith('crates/'))
+actual=json.loads(proposal['host-clean-execution-inputs.json']);earlier=json.loads((P/'earlier-host-artifacts/manifest.json').read_text());assert all(earlier['final-host-'+n]==h for n,h in actual['artifacts_sha256'].items())
+proposal['host-clean-source-origin.json']=json.dumps({'result':'pass','source_members':623,'source_manifest_sha256':hashlib.sha256(clean_data).hexdigest(),'product_crate_sources_match_native_capture':True,'artifact_digests_identical_to_earlier_copy':True,'distinct_clean_artifact_paths_actually_executed':True,'earlier_records_retained':True},indent=2).encode()
+proposal['host-clean-run-summary.json']=json.dumps({'result':'pass','cases':[json.loads((P/('host-clean-'+mode)/'run-summary.json').read_text()) for mode in ['classic','unicode','off']]},indent=2).encode()
+private=[(P/'sysop-password.private').read_text()]
+for name in ['member-key','lab-admin-key','member-key.pub']:
+ text=(P/name).read_text();private.append(text);private.extend(line for line in text.splitlines() if len(line)>20 and not line.startswith('-----'))
+for path in P.glob('**/private-inputs.json'):
+ if 'public-result' not in path.parts:private.extend(v for v in json.loads(path.read_text()).values() if isinstance(v,str))
+code='''from pathlib import Path
+import json
+out=[]
+for p in Path('/home/factionbuild/device216').glob('*/private-inputs.json'):out.extend(v for v in json.loads(p.read_text()).values() if isinstance(v,str))
+print(json.dumps(out))
+'''
+private.extend(json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout));needles=[v.encode() for v in set(private) if v]
+files=list(P.glob('*.py'))+[V/'serial-controller.py',V/'serial-runtime-controller.py']+[P/'host-clean-code'/n for n in ['smoke_board_launcher.py','smoke_local_console.py','check_restricted_ssh.py']]
+entries=[]
+for f in files:
+ data=f.read_bytes();assert not any(v in data for v in needles),f.name
+ name=('serial/' if f.parent==V else 'helpers/' if f.parent.name=='host-clean-code' else 'orchestration/')+f.name
+ entries.append((name,data,hashlib.sha256(data).hexdigest()))
+for manifest_name,folder in [('source-server-stage.json','source-server-base'),('source-client-final.json','source-client-final')]:
+ for name,h in json.loads((P/manifest_name).read_text()).items():
+  data=(P/folder/name).read_bytes();assert hashlib.sha256(data).hexdigest()==h;assert not any(v in data for v in needles),name;assert '.DS_Store' not in Path(name).parts and '__pycache__' not in Path(name).parts
+for data in [f.read_bytes() for f in out.rglob('*.json')]+list(proposal.values()):assert not any(v in data for v in needles)
+# All old objects/JSON remain byte-for-byte unchanged. Add only new names.
+for name,data in proposal.items():assert not (out/name).exists();(out/name).write_bytes(data)
+old={e['name']:e for e in json.loads((out/'orchestration-source-stages.json').read_text())};refs=[]
+for name,data,h in entries:
+ dest=out/'orchestration-source-objects'/h
+ if dest.exists():assert dest.read_bytes()==data
+ else:dest.write_bytes(data)
+ e=old.get(name,{'name':name,'scope':'executed-orchestration'}).copy();e.update(sha256=h,resolved_path='orchestration-source-objects/'+h)
+ if name.endswith('run_clean_host.py'):e['scope']='clean623-host-classic14-unicode14-unconfigured3-green'
+ refs.append(e)
+(out/'orchestration-source-stages-final.json').write_text(json.dumps(refs,indent=2));(out/'source-publication-audit-final.json').write_text(json.dumps({'result':'pass','known_generated_private_values_checked':len(needles),'generated_full_private_key_blocks_checked':2,'known_private_value_matches':0,'orchestration_source_entries':len(refs),'server_sources':683,'client_sources':691,'finder_metadata_files':0,'raw_logs_settings_keys_and_mail_excluded':True},indent=2))
+manifest={str(f.relative_to(out)):hashlib.sha256(f.read_bytes()).hexdigest() for f in out.rglob('*') if f.is_file() and f.name!='manifest-final.json'};(out/'manifest-final.json').write_text(json.dumps(manifest,indent=2,sort_keys=True));print(json.dumps({'result':'pass','new_clean_host_records':len(proposal),'private_values_checked':len(needles),'private_matches':0,'final_source_entries':len(refs),'manifest_entries':len(manifest)}))

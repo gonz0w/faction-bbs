@@ -1,0 +1,13 @@
+test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup) ... ok
+test_cache_holds_exactly_128_distinct_verified_manifest_decodings (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_cache_holds_exactly_128_distinct_verified_manifest_decodings) ... ok
+test_changed_historical_and_current_source_bytes_are_not_cached (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_changed_historical_and_current_source_bytes_are_not_cached) ... ok
+test_decoder_exception_does_not_change_public_call_context (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_decoder_exception_does_not_change_public_call_context) ... ok
+test_manifest_tamper_after_population_fails_and_context_is_restored (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_manifest_tamper_after_population_fails_and_context_is_restored) ... ok
+test_public_results_are_fresh_and_mutations_cannot_poison_resolution (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_public_results_are_fresh_and_mutations_cannot_poison_resolution) ... ok
+test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time) ... ok
+test_unused_later_manifest_tamper_is_not_skipped_after_cache_population (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_unused_later_manifest_tamper_is_not_skipped_after_cache_population) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.121s
+
+OK

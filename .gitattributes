@@ -120,3 +120,11 @@ dev-docs/evidence/picker-mail/** -text
 dev-docs/evidence/picker-mail/source-objects/** linguist-generated=true
 dev-docs/evidence/picker-mail/native-source-objects/** linguist-generated=true
 dev-docs/evidence/picker-mail/lead-source-objects/** linguist-generated=true
+
+# #216/#217 exact executed source and protocol evidence.
+dev-docs/evidence/local-unread-mail/** -text
+dev-docs/evidence/local-unread-mail/source-objects/** linguist-generated=true
+dev-docs/evidence/local-unread-mail/qualification/orchestration-source-objects/** linguist-generated=true
+dev-docs/evidence/local-unread-mail/*.json linguist-generated=true
+dev-docs/evidence/local-unread-mail/host/*.json linguist-generated=true
+dev-docs/evidence/local-unread-mail/qualification/*.json linguist-generated=true

@@ -1,0 +1,3 @@
+from lab import *
+remote('test -f /etc/faction-disposable-test; test -f /var/db/faction216-board/faction.sqlite3; test -d /var/db/faction216-files; /etc/rc.d/faction_broker onestart; /etc/rc.d/faction_sshd onestart; /etc/rc.d/faction_files_sshd onestart',timeout=60)
+print('Fresh owned services started; normal8/5000; loopback host forwards only.')

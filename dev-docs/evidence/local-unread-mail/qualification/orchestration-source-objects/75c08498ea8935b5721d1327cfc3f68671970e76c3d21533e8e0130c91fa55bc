@@ -1,0 +1,21 @@
+from lab import *
+import hashlib
+source=R/'tools/probe_visit_mail.py';data=source.read_bytes();assert hashlib.sha256(data).hexdigest()=='af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd'
+base=json.loads((P/'source-client-final.json').read_text());composed=dict(base);composed['tools/probe_visit_mail.py']=hashlib.sha256(data).hexdigest()
+(P/'runtime-probe-override.py').write_bytes(data);(P/'source-runtime-composed.json').write_text(json.dumps(composed,indent=2,sort_keys=True));(P/'runtime-overrides.json').write_text(json.dumps({'tools/probe_visit_mail.py':{'before':base['tools/probe_visit_mail.py'],'after':composed['tools/probe_visit_mail.py']}},indent=2))
+remote('cat > /home/factionbuild/source216-client/tools/probe_visit_mail.py',data)
+remote('cat > /home/factionbuild/proof216/off_paths.py; chown factionbuild:factionbuild /home/factionbuild/proof216/off_paths.py',(P/'off_paths.py').read_bytes())
+s=(P/'recovered-214/3-native_runtime.py').read_text().replace('214','216')
+needle=" ('combined',[python,'tools/probe_picker_mail_outage.py'"
+pos=s.index(needle)
+s=s[:pos]+''' ('unread',[python,'tools/probe_unread_mail.py','--client',client,'--fixture',seed,'--output',str(proof/'native-unread.json')]),
+ ('visit-classic',[python,'tools/probe_visit_mail.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--public-ca',ca,'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(proof/'native-visit-classic.json')]),
+ ('visit-unicode',[python,'tools/probe_visit_mail.py','--client',client,'--checkpoint-fixture',seed,'--mail-fixture',mail,'--public-ca',ca,'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(proof/'native-visit-unicode.json'),'--unicode']),
+ ('off-paths',[python,str(proof/'off_paths.py'),'--default',str(target/'faction-client-default'),'--native',str(target/'faction-client-native'),'--network',client,'--settings',str(device/'settings.json'),'--private-root',str(device),'--tools',str(root/'tools'),'--output',str(proof/'native-off-paths.json')]),
+ ('visit-oracle',[python,'-m','unittest','discover','-s','tools','-p','test_probe_visit_mail.py']),
+''' +s[pos:]
+(P/'native_runtime.py').write_text(s)
+remote('cat > /home/factionbuild/proof216/native-runtime.py; chown factionbuild:factionbuild /home/factionbuild/proof216/native-runtime.py',s.encode())
+(P/'reboot_runtime.py').write_text((P/'recovered-214/2-reboot_runtime.py').read_text().replace('214','216'))
+(P/'start_runtime.py').write_text((P/'recovered-214/17-start_runtime.py').read_text().replace('214','216'))
+print('Native runtime matrix prepared; one explicit Python-only runtime override; compiled Rust and server inputs preserved.')

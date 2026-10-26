@@ -1,0 +1,23 @@
+from lab import *
+import hashlib
+for name in ['native-combined-retry','native-runtime-final','legacy-retry-summary']:
+ data=remote('cat /home/factionbuild/proof216/'+name+'.json').stdout;assert json.loads(data)['result']=='pass';(P/(name+'.json')).write_bytes(data)
+expected=json.loads((P/'source-runtime-composed.json').read_text());artifacts=json.loads((P/'native-client-build-proof.json').read_text())['artifacts_sha256'];server=json.loads((P/'server-build-proof.json').read_text())['installed_sha256']
+code='''from pathlib import Path
+import json,sys,hashlib,subprocess,tomllib
+s=json.load(sys.stdin);root=Path('/home/factionbuild/source216-client');actual={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts};assert actual==s['sources']
+target=Path('/home/factionbuild/target216/release');artifacts={n:hashlib.sha256((target/n).read_bytes()).hexdigest() for n in s['artifacts']};assert artifacts==s['artifacts']
+server={n:hashlib.sha256(Path('/usr/local/libexec',n).read_bytes()).hexdigest() for n in s['server']};assert server==s['server']
+active=[]
+for line in subprocess.check_output(['ps','-axo','pid,user,args'],text=True).splitlines():
+ f=line.strip().split(None,2)
+ if len(f)==3 and f[1]=='factionbuild' and any(x in f[2] for x in ['faction-client','home_mail_fixture','checkpoint_ui_fixture','rustc','cargo','native-runtime.py','resume-legacy.py','tools/probe_','off_paths.py']):active.append(int(f[0]))
+assert not active
+config=tomllib.loads(Path('/etc/faction/service.toml').read_text());assert config.get('max_sessions',8)==8 and config.get('launch_ms',5000)==5000 and not config.get('experimental_capacity',False)
+print(json.dumps(dict(result='pass',source_sha256=actual,source_membership_matches=True,artifacts_sha256=artifacts,installed_server_sha256=server,artifacts_unchanged_after_runtime=True,matched_sources=len(actual),no_active_client_compiler_or_test_children=True,cores=int(subprocess.check_output(['/sbin/sysctl','-n','hw.ncpu'])),physmem_bytes=int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem64'])),normal_max_sessions=8,normal_launch_ms=5000,experimental_capacity=False,owned_vm_and_board_kept_live_for_lead=True),indent=2))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(dict(sources=expected,artifacts=artifacts,server=server)).encode());(P/'native-final-proof.json').write_bytes(r.stdout)
+compiled=json.loads((P/'source-client-final.json').read_text());actual={str(f.relative_to(P/'source-client-final')):hashlib.sha256(f.read_bytes()).hexdigest() for f in (P/'source-client-final').rglob('*') if f.is_file() and '__pycache__' not in f.parts};assert actual==compiled
+before=json.loads((P/'saved-before.json').read_text());demo=R/'local/demo';base=demo/'saved/20261022T005925Z';st=(base/'playground.qcow2').stat();after={n:hashlib.sha256((demo/n).read_bytes()).hexdigest() for n in ['CURRENT_PREVIEW','saved/LATEST','known_hosts','ssh-admin.json']};after['disk']=[str(base/'playground.qcow2'),st.st_size,st.st_mtime_ns];cmds=subprocess.check_output(['ps','-axo','command='],text=True).splitlines();after['saved_stopped']=not any(str(demo)+'/' in x and ('qemu-system' in x or 'serial-controller.py' in x) for x in cmds);assert before==after
+(P/'saved-after-runtime.private.json').write_text(json.dumps(after));(P/'saved-preserved-summary.json').write_text(json.dumps({'result':'pass','saved_owner_stopped':True,'metadata_hashes_unchanged':True,'saved_disk_size_mtime_unchanged':True,'owned_overlay_only':True}))
+print('Final runtime source691/artifacts36/server5 unchanged; no native client/compiler/probe children; normal8/5000; savedownerstopped/metadataunchanged. VM/services retained.')

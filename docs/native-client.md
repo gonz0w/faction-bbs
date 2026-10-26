@@ -162,3 +162,7 @@ retains its v1 vault. Files and the offline checkpoint console remain separate.
 Opt-in [archive mode](archive-mail.md) adds an explicit local schema upgrade and
 one-page retained-mail catch-up. N sends pending ciphertext; A reads a bounded
 archive page. It does not add background activity or a remote BBS unlock path.
+
+See [local unread mail](local-unread-mail.md) for explicit encrypted read tracking,
+a mail entry from the parked native Files desk and visit-local opt-in notices.
+These do not add background home polling or server-side mail decryption.

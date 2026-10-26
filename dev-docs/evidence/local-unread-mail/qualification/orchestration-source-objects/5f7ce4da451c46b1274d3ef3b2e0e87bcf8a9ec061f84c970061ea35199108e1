@@ -1,0 +1,22 @@
+from pathlib import Path
+import json,hashlib,shutil,os
+P=Path('/private/tmp/faction216-lab-OWNED');out=P/'public-result';out.mkdir(mode=0o700);os.umask(0o077)
+names=['native-default-off','native-native-only','native-picker-vault','native-online-ui','native-archive-ui','native-checkpoint-ui','native-v1-vault','native-picker','native-unread','native-visit-classic','native-visit-unicode','native-off-paths','native-combined-retry','native-rust-summary','legacy-retry-summary','native-final-proof','server-build-proof','native-client-build-proof','server-config-proof','runtime-environment','saved-preserved-summary','host-off-paths','baseline-red-proof']
+for n in names:
+ data=(P/(n+'.json')).read_bytes();j=json.loads(data)
+ # Fixed public results and relative source/artifact labels only.
+ assert all(x not in data for x in [b'/private/tmp',b'/home/factionbuild',b'/Users/cam',b'sysop_password',b'admin_argv',b'BEGIN OPENSSH PRIVATE KEY'])
+ (out/(n+'.json')).write_bytes(data)
+for mode,stage in [('classic','host-visit-classic-02'),('unicode','host-visit-unicode-01')]:
+ data=(P/stage/'result.json').read_bytes();assert json.loads(data)['count']==14;(out/('host-visit-'+mode+'.json')).write_bytes(data)
+for platform in ['host','native']:
+ j=json.loads((P/(platform+'-off-paths.json')).read_text());assert j['result']=='pass' and j['count']==3
+ (out/(platform+'-unconfigured-summary.json')).write_text(json.dumps(dict(result='pass',count=3,graphs=['default','native_only','network']),indent=2))
+for n in ['source-server-stage','source-client-final','source-runtime-composed','runtime-overrides','server-source-origin']:
+ j=json.loads((P/(n+'.json')).read_text());(out/(n+'.json')).write_text(json.dumps(j,indent=2,sort_keys=True))
+matrix=json.loads((P/'native-runtime-final.json').read_text());(out/'native-runtime-summary.json').write_text(json.dumps({'result':matrix['result'],'cores':matrix['cores'],'physmem_bytes':matrix['physmem_bytes'],'stages':[{'name':s['name'],'returncode':s['returncode']} for s in matrix['stages']],'resumed_after_preserved_admission_failure':True},indent=2))
+corrections={'result':'pass','host_ps_fixture_failure':{'actual_failed_source_sha256':hashlib.sha256((P/'host-visit-classic-01/code/probe_visit_mail.py').read_bytes()).hexdigest(),'phase':'owned-member-TTY-identification-before-mail-entry','observed_netbsd_ps_exit_code':0,'observed_columns':'pid-only-with-comma-suffix-as-header','corrected_source_sha256':hashlib.sha256((P/'probe_visit_mail-candidate04.py').read_bytes()).hexdigest(),'assertions_retained':True},'notice_correction':{'classification':'preflight-not-reached-in-failed-attempt','off_discards_snapshot':True,'enable_starts_unknown':True,'opt_in_precedes_qualifying_graceful_lock':True},'legacy_native_admission_failure':{'observed_message':'Faction SSH: terminal admission denied or session ended.','at_second_pending_member_connection':True,'normal_gate_explanation_is_inference':True,'failed_matrix_sha256':hashlib.sha256((P/'native-runtime-failed.private.json').read_bytes()).hexdigest(),'one_deliberate_retry':True,'limits_unchanged':True,'failed_member_retained':True},'baseline_cleanup_observation':json.loads((P/'baseline-cleanup-followup.json').read_text())}
+(out/'fixture-corrections.json').write_text(json.dumps(corrections,indent=2))
+(out/'source-metadata-audit.json').write_text(json.dumps({'result':'pass','server_members':683,'client_members':691,'runtime_members':691,'finder_metadata_files':0,'python_cache_files':0,'server_source_git_selected':True,'client_capture_explicit_metadata_exclusion':True,'runtime_python_overrides':1},indent=2))
+(out/'normal-bounds.json').write_text(json.dumps({'result':'pass','max_sessions':8,'launch_ms':5000,'experimental_capacity':False,'normal_credential_permits':2,'kernel_slots':2,'owner_helper_budget':3,'file_streams':2,'file_chunk_bytes':32768,'file_max_bytes':16777216,'grant_seconds':300,'output_drain_seconds':5,'server_contract_source_unchanged':True,'loopback_host_forwards_only':True,'builder_cores':2,'builder_memory_mib':2048,'runtime_cores':2,'runtime_physmem_bytes':1054990336,'fresh_1GiB_build_claim':False,'physical_hardware':False,'capacity_claim':False},indent=2))
+manifest={f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(out.glob('*.json'))};(out/'manifest.json').write_text(json.dumps(manifest,indent=2));print('Public fixed JSON objects packaged:',len(manifest),'No raw logs/settings/private data copied.')

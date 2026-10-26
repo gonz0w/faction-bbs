@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "stage": "clean-host-623-source-capture",
+  "base": "8768bb41a49ab1c15c834fbad2102d7522c48937",
+  "source_map": {
+    "path": "clean-build-inputs.json",
+    "shape": [
+      "base",
+      "files"
+    ],
+    "sha256": "b88ffb3d9d9ad3ed3f83320efd31fb33b86c205cc2394cf0075841ec3250c915",
+    "count": 623
+  },
+  "scope": "Captured public project source/tool inputs, excluding Finder metadata. The map is an inventory across feature builds and selected harnesses, not a claim every captured file is a compiler input.",
+  "source_hashes": {
+    "crates/faction-client/src/main.rs": "0c72961f2a5176bbfaa679048ff72ef5e0ce5c3a823fde73a3b4045fd957b1b0",
+    "crates/faction-client/src/visit_mail.rs": "98770e98cdf07bceda811541cc7173f0e5a0dc7c7913ea233c6705c93a6cb8f0",
+    "crates/faction-client/src/launcher.rs": "52f92734b8def4db48f317f4d302d812883ec1a72cda5badddc9b5a5fb15683e",
+    "crates/faction-client/src/mail_checkpoint.rs": "7401014e3ded0a204c259075f477a550b432b3c095790a8593e5b339927c38fe",
+    "crates/faction-client/src/checkpoint_ui.rs": "01ca43255c926ff5a3a5985f2ed09fc3881b7981c48d619960cbf0a7cb3372f2",
+    "crates/faction-client/src/unread_checkpoint_tests.rs": "1e29b853f86560acc8fc24c7033cf10a032012090718e2ca13e0d2605aa70e06",
+    "crates/faction-client/examples/checkpoint_ui_fixture.rs": "e3eda86602e962432b91ca7a84c272d74efc3fece50009502d4fb918f3a68456",
+    "tools/probe_unread_mail.py": "a04b88f40c73d0d5d2d4d5b8f3486d8ebf635ad8f629ce5cb5c49dfc08c6d60c"
+  },
+  "product_sources_changed": false,
+  "metadata_file_count": 0,
+  "raw_logs_exported": false,
+  "private_runtime_exported": false,
+  "source_map_captured_before_build": true,
+  "summary_created_after_initial_network_build": true
+}

@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "known_generated_private_values_checked": 42,
+  "generated_full_private_key_blocks_checked": 2,
+  "known_private_value_matches": 0,
+  "orchestration_source_entries": 47,
+  "server_sources": 683,
+  "client_sources": 691,
+  "finder_metadata_files": 0,
+  "raw_logs_settings_keys_and_mail_excluded": true
+}

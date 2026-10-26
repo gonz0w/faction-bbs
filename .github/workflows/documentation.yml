@@ -40,6 +40,7 @@ jobs:
           cargo test -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- --test-threads=1
           cargo build -p faction-client --features native-mail --bin faction-client --example checkpoint_ui_fixture --release --locked
           python3 tools/probe_checkpoint_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture"
+          python3 tools/probe_unread_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --output "$RUNNER_TEMP/local-unread-mail.json"
           python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported --output "$RUNNER_TEMP/picker-native-only.json"
           cargo metadata --locked --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null
           cargo metadata --locked --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null
@@ -148,6 +149,7 @@ jobs:
           python3 tools/check_home_mail_evidence.py
           python3 tools/check_archive_mail_evidence.py
           python3 tools/check_picker_mail_evidence.py
+          python3 tools/check_unread_mail_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

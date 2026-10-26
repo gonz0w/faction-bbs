@@ -1,0 +1,17 @@
+[
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/70dd8508d84d2b4a3e0dfdd642c06b78f3c985694f199d7803189e297219f46c",
+        "sha256": "70dd8508d84d2b4a3e0dfdd642c06b78f3c985694f199d7803189e297219f46c",
+        "source": "owned-vm-lab-teardown.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/97b3c6a3765667c810328c470f29708b426a878211ef3a442717d3c9426589d6",
+        "sha256": "97b3c6a3765667c810328c470f29708b426a878211ef3a442717d3c9426589d6",
+        "source": "remaining-owned-roots-teardown.py"
+      }
+    ],
+    "label": "ownership-checked-final-teardown"
+  }
+]

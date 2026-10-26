@@ -1,0 +1,50 @@
+"""Archive original observations; publish newline-only JSON mirrors without waivers."""
+from pathlib import Path
+import hashlib,json
+R=Path('/Users/cam/DEV/faction-bbs');D=R/'dev-docs/evidence/local-unread-mail';P=D/'results.json'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+original=P.read_bytes();old_hash='332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086';assert sha(original)==old_hash
+old=json.loads(original)
+def archive(raw):
+ h=sha(raw);p=D/'source-objects'/h
+ if p.exists():assert p.read_bytes()==raw
+ else:p.write_bytes(raw)
+ return p.relative_to(R).as_posix(),h
+prior_path,_=archive(original)
+files={};pending=[]
+for p in sorted(D.rglob('*.json')):
+ raw=p.read_bytes()
+ if not raw.endswith(b'\n'):
+  assert p.parent==D/'qualification';json.loads(raw)
+  raw_path,h=archive(raw);view=raw+b'\n';assert json.loads(raw)==json.loads(view)
+  name=p.relative_to(R).as_posix();files[name]=dict(raw_path=raw_path,raw_sha256=h,view_sha256=sha(view));pending.append((p,view))
+assert len(files)==28
+mapping=dict(schema=1,scope='Original exact JSON bytes archived; maintained views append exactly one final newline.',prior_record=dict(path=prior_path,sha256=old_hash),files=files)
+map_path=D/'publication-byte-map.json';map_raw=(json.dumps(mapping,indent=2,sort_keys=True)+'\n').encode();map_path.write_bytes(map_raw)
+for p,view in pending:p.write_bytes(view)
+# Preserve the actual resolver green implementation before changing its pin.
+stages=json.loads((D/'publication-source-stages.json').read_text());rows=[]
+for source in ['tools/check_unread_mail_evidence.py','tools/test_publication_bytes.py']:
+ raw=(R/source).read_bytes();path,h=archive(raw);rows.append(dict(source=source,path=path,sha256=h))
+path,h=archive(Path(__file__).read_bytes());rows.append(dict(source='publication-repair.py',path=path,sha256=h))
+stages.append(dict(label='newline-publication-resolver-green-and-layout-repair',files=rows))
+stages.append(dict(label='preserved-whole-initial-software-observation-record',files=[dict(source='initial-software-result.json',path=prior_path,sha256=old_hash)]))
+(D/'publication-source-stages.json').write_text(json.dumps(stages,indent=2,sort_keys=True)+'\n')
+# Do not refresh any old observation or manifest fingerprint. New provenance
+# explicitly distinguishes raw originals from byte-identical newline mirrors.
+d=json.loads(original);d['source_stages']=old['source_stages']+stages
+sources={}
+for name,h in old['execution_sources'].items():
+ row=files.get(name)
+ if row is not None:
+  assert row['raw_sha256']==h;sources[row['raw_path']]=h
+ else:sources[name]=h
+for name,row in files.items():sources[name]=row['view_sha256'];sources[row['raw_path']]=row['raw_sha256']
+for p in D.rglob('*'):
+ if p.is_file() and p!=P:sources[p.relative_to(R).as_posix()]=sha(p.read_bytes())
+d['execution_sources']=sources
+d['publication_layout']=dict(kind='newline-only-json-mirrors',previous_record_sha256=old_hash,byte_map_path=map_path.relative_to(R).as_posix(),byte_map_sha256=sha(map_raw),original_json_count=28,no_measurements_refreshed=True,original_manifests_refer_to_archived_original_bytes=True)
+d['source_scopes']['publication_repair_only_no_software_change']=True
+raw=(json.dumps(d,indent=2,sort_keys=True)+'\n').encode();new_hash=sha(raw);P.write_bytes(raw)
+p=R/'tools/check_unread_mail_evidence.py';s=p.read_text();needle=f"RECORD_SHA256 = '{old_hash}'";assert needle in s;s=s.replace(needle,f"RECORD_SHA256 = '{new_hash}'");p.write_text(s)
+print(json.dumps(dict(previous_record_sha256=old_hash,new_record_sha256=new_hash,original_jsons_archived=len(files),old_bytes_preserved=True,measurement_fields_changed=False,source_stages=len(d['source_stages']),source_bindings=len(sources))))

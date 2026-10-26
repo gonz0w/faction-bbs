@@ -14,6 +14,7 @@ mod sftp;
 mod stream;
 mod transport;
 mod travel;
+mod visit_mail;
 use faction_files::invalid;
 use faction_terminal::{Decoder, Key};
 use profile::Profile;
@@ -147,8 +148,8 @@ impl Terminal {
             }
         }
     }
-    fn choice(&mut self) -> io::Result<u8> {
-        const ENTRIES: [(u8, &str); 6] = [
+    fn entries(mail: &visit_mail::VisitMail) -> Vec<(u8, &'static str)> {
+        let mut entries = vec![
             (b'A', "File areas"),
             (b'L', "List area / next page"),
             (b'U', "Upload local file"),
@@ -156,17 +157,32 @@ impl Terminal {
             (b'I', "Inspect file link"),
             (b'B', "Back to the BBS"),
         ];
+        if mail.configured() {
+            entries.extend([(b'E', "Encrypted home mail"), (b'N', "Local mail notices")]);
+        }
+        entries
+    }
+    fn choice(&mut self, mail: &visit_mail::VisitMail) -> io::Result<u8> {
+        let entries = Self::entries(mail);
         let mut focus = 0;
         let mut decoder = Decoder::new();
         loop {
-            self.print("\x1b[2J\x1b[H\x1b[1;36mFaction // Files on your device\x1b[0m\r\nArrows / Enter or hotkeys. Files and keys stay under your control.\r\n\r\n")?;
-            for (i, (key, label)) in ENTRIES.iter().enumerate() {
+            self.print("\x1b[2J\x1b[H\x1b[1;36mFaction // Files on your device\x1b[0m\r\n")?;
+            self.print(if mail.configured() {
+                "Arrows / Enter or hotkeys.\r\n\r\n"
+            } else {
+                "Arrows / Enter or hotkeys. Files and keys stay under your control.\r\n\r\n"
+            })?;
+            for (i, (key, label)) in entries.iter().enumerate() {
                 self.print(&format!(
                     "{} [{}] {}\r\n",
                     if i == focus { ">" } else { " " },
                     *key as char,
                     label
                 ))?;
+            }
+            if let Some(notice) = mail.notice() {
+                self.print(&notice)?;
             }
             loop {
                 if !self.ready(100)? {
@@ -175,18 +191,18 @@ impl Terminal {
                 }
                 if let Some(k) = decoder.feed(self.byte()?, Instant::now()) {
                     match k {
-                        Key::Enter => return Ok(ENTRIES[focus].0),
+                        Key::Enter => return Ok(entries[focus].0),
                         Key::Hotkey(b)
-                            if ENTRIES.iter().any(|(k, _)| *k == b.to_ascii_uppercase()) =>
+                            if entries.iter().any(|(k, _)| *k == b.to_ascii_uppercase()) =>
                         {
                             return Ok(b.to_ascii_uppercase());
                         }
                         Key::Up | Key::Left => {
-                            focus = (focus + ENTRIES.len() - 1) % ENTRIES.len();
+                            focus = (focus + entries.len() - 1) % entries.len();
                             break;
                         }
                         Key::Down | Key::Right | Key::Next => {
-                            focus = (focus + 1) % ENTRIES.len();
+                            focus = (focus + 1) % entries.len();
                             break;
                         }
                         Key::Cancel => return Ok(b'B'),
@@ -341,11 +357,27 @@ fn transfer(
     }
     Ok(())
 }
-fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile, travel: &Travel) -> io::Result<()> {
+fn file_menu(
+    t: &mut Terminal,
+    r: &mut Remote,
+    p: &Profile,
+    travel: &Travel,
+    visit: &mut visit_mail::VisitMail,
+    #[cfg(feature = "network-mail")] home: Option<&visit_mail::Home<'_>>,
+) -> io::Result<()> {
     let mut after = String::new();
     let mut last_area = String::new();
     while r.native {
-        let choice = t.choice()?;
+        let choice = t.choice(visit)?;
+        if choice == b'N' && visit.configured() {
+            visit.toggle();
+            continue;
+        }
+        #[cfg(feature = "network-mail")]
+        if choice == b'E' && visit.configured() {
+            parked_mail(t, r, home.ok_or_else(invalid)?, visit)?;
+            continue;
+        }
         if choice == b'B' {
             r.rpc(&["back"])?;
             break;
@@ -438,6 +470,72 @@ fn file_menu(t: &mut Terminal, r: &mut Remote, p: &Profile, travel: &Travel) -> 
     }
     Ok(())
 }
+#[cfg(feature = "network-mail")]
+fn parked_mail(
+    t: &mut Terminal,
+    r: &mut Remote,
+    home: &visit_mail::Home<'_>,
+    visit: &mut visit_mail::VisitMail,
+) -> io::Result<()> {
+    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+    let confirmation = t.line(
+        "\r\nLOCAL: open encrypted home mail while this board stays parked? [y/N]: ",
+        1,
+    );
+    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+    match confirmation {
+        Ok(value) if value.eq_ignore_ascii_case("y") => (),
+        Ok(_) => return Ok(()),
+        Err(e) if e.kind() == io::ErrorKind::Interrupted => return Ok(()),
+        Err(e) => return Err(e),
+    }
+    // Complete a bounded authenticated RPC before the private view. No remote
+    // pump/render/send runs during run_online_with_status; the existing PTY
+    // provides bounded backpressure, and the peer may disconnect while parked.
+    if let Err(e) = r.rpc(&["areas", "0"]) {
+        r.native = false;
+        return Err(e);
+    }
+    if t.graphics {
+        faction_terminal::graphics::cleanup(&mut t.output);
+    }
+    t.print("\x1b[2J\x1b[H")?;
+    let result =
+        checkpoint_ui::run_online_with_status(&home.paths.store, &home.paths.config, home.unicode);
+    // The console has dropped its vault, secrets and terminal guard before
+    // clearing or reading the board again. Scrollback is not erased.
+    t.print("\x1b[2J\x1b[H")?;
+    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+    visit.record(
+        result
+            .as_ref()
+            .ok()
+            .and_then(|summary| summary.as_ref())
+            .map(|summary| visit_mail::Counts {
+                unread: summary.unread,
+                retained: summary.retained,
+                pending: summary.pending,
+            }),
+    );
+    if let Err(error) = result
+        && error.kind() != io::ErrorKind::Interrupted
+    {
+        t.print("Home mail locked; local operation stopped.\r\n")?;
+        if let Err(error) = t.line("Enter to return to local Files: ", 0)
+            && error.kind() != io::ErrorKind::Interrupted
+        {
+            return Err(error);
+        }
+    }
+    termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
+    // Discard unsolicited remote text only through the existing bounded RPC
+    // parser; stale/forged frames, revoked approval and EOF fail closed.
+    if let Err(e) = r.rpc(&["areas", "0"]) {
+        r.native = false;
+        return Err(e);
+    }
+    Ok(())
+}
 fn run() -> io::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if args.first().is_some_and(|s| s == "--passport-store") {
@@ -525,9 +623,23 @@ fn run() -> io::Result<()> {
     }
     let graphics = kitty && t.probe_graphics()?;
     if let Some(p) = profile {
-        return session(&mut t, &p, graphics, false, &travel).map(|_| ());
+        return session(
+            &mut t,
+            &p,
+            graphics,
+            false,
+            &travel,
+            #[cfg(feature = "network-mail")]
+            None,
+        )
+        .map(|_| ());
     }
     let catalog = catalog.ok_or_else(invalid)?;
+    #[cfg(feature = "network-mail")]
+    let home = catalog.home_mail.as_ref().map(|paths| visit_mail::Home {
+        paths,
+        unicode: mail_unicode,
+    });
     let mut last = 0;
     loop {
         let i = match launcher::choose(&mut t, &catalog, last)? {
@@ -631,7 +743,15 @@ fn run() -> io::Result<()> {
                 return Ok(());
             }
             t.print("Ctrl-] then B: local boards. Ctrl-] twice: send Ctrl-].\r\n")?;
-            let result = session(&mut t, &p, graphics && !travel.compact, true, &travel);
+            let result = session(
+                &mut t,
+                &p,
+                graphics && !travel.compact,
+                true,
+                &travel,
+                #[cfg(feature = "network-mail")]
+                home.as_ref(),
+            );
             if graphics {
                 faction_terminal::graphics::cleanup(&mut t.output);
             }
@@ -659,7 +779,12 @@ fn session(
     graphics: bool,
     boards: bool,
     travel: &Travel,
+    #[cfg(feature = "network-mail")] home: Option<&visit_mail::Home<'_>>,
 ) -> io::Result<()> {
+    #[cfg(feature = "network-mail")]
+    let mut visit = visit_mail::VisitMail::new(home.is_some());
+    #[cfg(not(feature = "network-mail"))]
+    let mut visit = visit_mail::VisitMail::new(false);
     let mut size = termios::tcgetwinsize(&t.input)?;
     if !(18..=100).contains(&size.ws_row) || !(40..=240).contains(&size.ws_col) {
         return Err(io::Error::other("use a terminal from 40x18 to 240x100"));
@@ -677,7 +802,15 @@ fn session(
             return Err(io::Error::other("graphics transfer timeout"));
         }
         if r.native {
-            file_menu(t, &mut r, p, travel)?;
+            file_menu(
+                t,
+                &mut r,
+                p,
+                travel,
+                &mut visit,
+                #[cfg(feature = "network-mail")]
+                home,
+            )?;
         }
         if !r.output.is_empty() {
             faction_terminal::graphics::write_tty(
@@ -795,6 +928,18 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn files_mail_actions_are_local_configured_and_keep_classic_entries() {
+        let off = Terminal::entries(&visit_mail::VisitMail::default());
+        assert_eq!(
+            off.iter().map(|(key, _)| *key).collect::<Vec<_>>(),
+            b"ALUDIB"
+        );
+        let on = Terminal::entries(&visit_mail::VisitMail::new(true));
+        assert!(on.contains(&(b'E', "Encrypted home mail")));
+        assert!(on.contains(&(b'N', "Local mail notices")));
+        assert_eq!(&on[..6], off.as_slice());
+    }
     #[test]
     fn client_pty_preserves_geometry_and_owns_cloexec_descriptors() {
         use rustix::io::{FdFlags, fcntl_getfd};

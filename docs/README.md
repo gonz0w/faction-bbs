@@ -78,3 +78,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Bounded encrypted-mail archive catch-up](archive-mail.md)
 
 - [Native home mail from the picker](picker-home-mail.md) — explicit local E entry and locked return between visits.
+
+- [Local unread mail and a parked board visit](local-unread-mail.md) — encrypted local read decisions and explicit Files-desk access.

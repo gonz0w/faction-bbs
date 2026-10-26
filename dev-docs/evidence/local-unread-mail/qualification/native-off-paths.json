@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "count": 3,
+  "checks": [
+    "default_unconfigured_files_no_mail_authority_rpc_and_restore",
+    "native_only_unconfigured_files_no_mail_authority_rpc_and_restore",
+    "network_mail_unconfigured_files_no_mail_authority_rpc_and_restore"
+  ],
+  "real_ssh": true,
+  "no_home_catalog": true,
+  "ignored_local_e_n": true,
+  "normal_areas_rpc": true,
+  "terminal_restored": true,
+  "physical_hardware": false,
+  "capacity_claim": false
+}

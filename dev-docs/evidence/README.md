@@ -384,3 +384,11 @@ locked return and the combined unavailable-home/approved-BBS/restricted-SFTP
 journey on host/NetBSD. Its baseline reuses 644 exact prior objects; the whole
 previous archive result stays unchanged. Source-only and structured public exports
 exclude runtime private data; compiler/runtime budgets and teardown stay explicit.
+
+[Encrypted local unread and parked Files mail evidence](local-unread-mail/README.md)
+records the finite #216/#217 software controls. Its pinned picker baseline reuses
+all 684 already-preserved inputs and the unchanged #214 result; no old hashes or
+measurements are refreshed.
+
+The local unread evidence [publication layout](local-unread-mail/publication-layout.md)
+retains every original output byte while providing newline-compliant JSON mirrors.

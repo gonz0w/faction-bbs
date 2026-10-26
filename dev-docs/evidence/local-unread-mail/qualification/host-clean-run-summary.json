@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "cases": [
+    {
+      "returncode": 0,
+      "normal_refill_wait_seconds": 40.100602708000224,
+      "limits_unchanged": true,
+      "mode": "classic"
+    },
+    {
+      "returncode": 0,
+      "normal_refill_wait_seconds": 40.10122795801726,
+      "limits_unchanged": true,
+      "mode": "unicode"
+    },
+    {
+      "returncode": 0,
+      "normal_refill_wait_seconds": 40.109339124988765,
+      "limits_unchanged": true,
+      "mode": "off"
+    }
+  ]
+}

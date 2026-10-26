@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "count": 9,
+  "checks": [
+    "explicit_local_online_entry_and_hidden_unlock",
+    "authenticated_history_has_classic_inert_unicode",
+    "unicode_compose_queues_encrypted_state_without_network",
+    "unavailable_home_and_hidden_credential_keep_pending_state",
+    "reopen_preserves_exact_existing_ids_and_new_ciphertext",
+    "unicode_override_and_local_cancel_restore_terminal",
+    "wrong_local_unlock_never_discloses_history",
+    "oversized_hidden_home_credential_locks_and_flushes_terminal",
+    "typeahead_cannot_supply_hidden_home_credential"
+  ],
+  "private_fixture_removed": true,
+  "provider_contact": false
+}

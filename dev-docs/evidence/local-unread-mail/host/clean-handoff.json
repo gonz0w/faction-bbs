@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "scope": "Clean-host provenance correction and requalification; no product change.",
+  "source_map": {
+    "path": "clean-build-inputs.json",
+    "shape": [
+      "base",
+      "files"
+    ],
+    "count": 623,
+    "sha256": "b88ffb3d9d9ad3ed3f83320efd31fb33b86c205cc2394cf0075841ec3250c915"
+  },
+  "source_ledger": {
+    "path": "clean-source-stages.json",
+    "sha256": "26d8193fc83e9408dda785284d26a5051af0042d521620f05765458d27ae6b9b"
+  },
+  "publication_exclusions": {
+    "path": "clean-publication-exclusions.json",
+    "sha256": "5c267eca2e7f205d124b92aae116545aeab06dcbb5b5b82f1e223930d1318a9b",
+    "excluded_metadata_entries": 8,
+    "metadata_bytes_exported": false
+  },
+  "artifacts": {
+    "clean-host-network-client": "e261c4d823e7b5737b7a71a924bfbb6de269d0d5d1be2c2deca2d448a6a78ca2",
+    "clean-host-checkpoint-fixture": "cd5c82aaa0850ac6ee62bc45220ff6fb89dcf15f76309156bab30334c2a97bac",
+    "clean-host-home-fixture": "ba48c16bf968f5f5126d9da084eec0f99c0f55c1866a752647e1d95d03042682",
+    "clean-host-native-only-client": "4a8c97a5a00bab0910b7089850c5bb0d20fcd5b7367b0faf57937bf61885a170",
+    "clean-host-default-client": "86a949f17ab5708690ae6530b1a3dc8cb4318b6c23204d2b7649276e55fb8778"
+  },
+  "checks": {
+    "network-alltargets": {
+      "passed": 157,
+      "failed": 0,
+      "ignored": 3,
+      "suites": 13,
+      "result": "pass",
+      "profile": "release",
+      "serial": true,
+      "original_artifact": "clean-network-alltargets.log",
+      "sha256": "0c5e44acb38638a28568ee5d48809eed0a964db69d3cab3ba2c1829ef6755e53",
+      "raw_log_exported": false
+    },
+    "network-clippy": {
+      "result": "pass",
+      "profile": "release",
+      "deny_warnings": true,
+      "original_artifact": "clean-network-clippy.log",
+      "sha256": "6ce67acb4eca3e9d91b8a0b77c5f32470b7f0a587ec9648bd0a8fedb8d08615b",
+      "raw_log_exported": false
+    },
+    "native-only-alltargets": {
+      "passed": 110,
+      "failed": 0,
+      "ignored": 3,
+      "suites": 12,
+      "result": "pass",
+      "profile": "release",
+      "serial": true,
+      "original_artifact": "clean-native-only-alltargets.log",
+      "sha256": "983a63a53ab444807e336af6ccdb0307bf09b0a0eec4c23e39a15d52e3a28899",
+      "raw_log_exported": false
+    },
+    "native-only-clippy": {
+      "result": "pass",
+      "profile": "release",
+      "deny_warnings": true,
+      "original_artifact": "clean-native-only-clippy.log",
+      "sha256": "e7de86cb0c7503d6b877ef67e9ad040990cb625e69e5945e226491c2c6687806",
+      "raw_log_exported": false
+    },
+    "unread": {
+      "result": "pass",
+      "count": 13,
+      "record": "clean-unread.json",
+      "sha256": "d6b440ff9fcff7b872859a11339ff342852858b6e442945a25d7cac123c180a4",
+      "profile": "release"
+    },
+    "checkpoint": {
+      "result": "pass",
+      "count": 23,
+      "record": "clean-checkpoint.json",
+      "sha256": "f89cb4390ab30c8f96ecdb269a3afc647f42c025f9269be6fde27c47bcab4da1",
+      "profile": "release"
+    },
+    "home": {
+      "result": "pass",
+      "count": 9,
+      "record": "clean-home.json",
+      "sha256": "04bdcfa8514e89ed32598b1b6931b694276e700bdaa29d58a113d31a448f159f",
+      "profile": "release"
+    },
+    "archive": {
+      "result": "pass",
+      "count": 6,
+      "record": "clean-archive.json",
+      "sha256": "a5f78c8703795a8b2d8dad0be7dd94c7521d12d13d5674a561d3cf4df025ddd6",
+      "profile": "release"
+    },
+    "picker": {
+      "result": "pass",
+      "count": 17,
+      "record": "clean-picker.json",
+      "sha256": "36a9bd66fe230ffdf1d87bc6750fedc198d8432847c9b83c3cd2327c9f52326b",
+      "profile": "release"
+    },
+    "v1-picker": {
+      "result": "pass",
+      "count": 8,
+      "record": "clean-v1-picker.json",
+      "sha256": "bc376932983a505ddc2d732b8b41940d48a5c33074982e2788b883350b0d061a",
+      "profile": "release"
+    },
+    "v1-vault": {
+      "result": "pass",
+      "count": 13,
+      "record": "clean-v1-vault.json",
+      "sha256": "3428fab0437562ea13d36d32ba921caa1016afbc5b0c38fc46aed9493c53bd6b",
+      "profile": "release"
+    }
+  },
+  "previous_map_ledger_results_artifacts_preserved": true,
+  "prior_source_ledger_sha256": "c62e0433fbd898ec8e8d7ffd860d6ca58cf1b3348483888f94bf1bade42c40bf",
+  "prior_handoff_sha256": "321afb6d7262c990e9bce63cc3a6f1785c256e5c87c747d9bac8a051648987c6",
+  "new_source_and_harness_count": 623,
+  "ignored_nonexecution_metadata_exclusions": 8,
+  "native_and_same_ssh_results": "Native qualification is already clean and owned by lab; clean artifact host classic/Unicode/feature-off visit reruns are owned by lab.",
+  "git_mutations": false,
+  "vm_actions": false,
+  "product_edits": false,
+  "private_fixture_removed": true,
+  "raw_logs_exported": false,
+  "finder_metadata_exported": false
+}

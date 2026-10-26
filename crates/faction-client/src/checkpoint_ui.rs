@@ -2,6 +2,8 @@
 //! profile, environment variable, or transport control frame. The explicit home-mail
 //! action in the trusted local picker may call run_online between board visits.
 
+#[cfg(feature = "network-mail")]
+use faction_client::mail_checkpoint::ReadSummary;
 use faction_client::{
     mail_checkpoint::{CheckpointVault, Direction, MAX_HISTORY, MAX_OUTBOX},
     mail_data::{Data, hex, invalid, unhex},
@@ -205,11 +207,28 @@ impl Screen<'_> {
     fn pause(&mut self) -> io::Result<()> {
         self.line("Enter to return: ", 0, false).map(|_| ())
     }
+    fn local_read_status(&mut self, v: &CheckpointVault) -> io::Result<()> {
+        let summary = v.read_summary()?;
+        if let Some(unread) = summary.unread {
+            self.print(&format!(
+                "Local unread: {unread} / received {}; retained {}; pending {}\r\n",
+                summary.received, summary.retained, summary.pending
+            ))?;
+        } else {
+            self.print("Local unread: disabled; explicit E upgrade required\r\n")?;
+            self.print(&format!(
+                "Local retained: {}; received {}; pending {}\r\n",
+                summary.retained, summary.received, summary.pending
+            ))?;
+        }
+        self.print("Local retained snapshot only; no background refresh.\r\n")
+    }
     fn menu(&mut self, v: &CheckpointVault) -> io::Result<u8> {
         let state = v.inspection()?;
         self.clear()?;
         self.print("[LOCAL / OFFLINE] Native mail checkpoints\r\nNo network inbox or send. No delivery/read/exactly-once claim.\r\n")?;
         self.show("Home (claimed, not authenticated): ", &v.legacy()?.home)?;
+        self.local_read_status(v)?;
         let current = now()?;
         if state.history_only {
             self.print("HISTORY ONLY: backup/recovery cannot resume old ratchets.\r\n")?;
@@ -235,12 +254,13 @@ impl Screen<'_> {
         {
             self.print("Retire pending ciphertext, then create a fresh device and verify the peer again.\r\n")?;
         }
+        self.print("[E] Enable local read tracking\r\n")?;
         self.print("[P] Public device / peer   [V] Verify peer identity\r\n[H] Authenticated history [O] Durable outbox\r\n[T] Retire ciphertext     [R] Revoke peer locally\r\n[F] Fresh device         [B] History-only encrypted backup\r\n[S] Reset local secrets  [D] Preserved legacy drafts / Curve pins\r\n[L] Lock and exit\r\n")?;
         let mut decoder = Decoder::new();
         loop {
             if let Some(Key::Hotkey(c)) = decoder.feed(self.byte()?, Instant::now()) {
                 let c = c.to_ascii_uppercase();
-                if b"PVHOTRFBSDL".contains(&c) && c != b' ' {
+                if b"PVHOTRFBSDLE".contains(&c) && c != b' ' {
                     return Ok(c);
                 }
             }
@@ -249,6 +269,19 @@ impl Screen<'_> {
     fn action(&mut self, v: &mut CheckpointVault, key: u8) -> io::Result<()> {
         self.clear()?;
         match key {
+            b'E' => {
+                if v.read_summary()?.unread.is_some() {
+                    self.print("Encrypted local read tracking already enabled; existing decisions kept.\r\n")?;
+                } else {
+                    self.print("Explicit encrypted local read metadata upgrade. Older clients cannot open FACTCP04.\r\nRetained received messages start unread; sent messages never count.\r\nNo home read receipt, network cycle, key change or plaintext sidecar.\r\n")?;
+                    self.confirm(
+                        "Type enable to add encrypted local read tracking: ",
+                        "enable",
+                    )?;
+                    v.enable_read_tracking()?;
+                    self.print("Encrypted local read tracking enabled. Existing received history starts unread.\r\n")?;
+                }
+            }
             b'P' => {
                 let state = v.inspection()?;
                 self.print(&format!(
@@ -298,13 +331,18 @@ impl Screen<'_> {
                 }
             }
             b'H' => {
-                let history = v.history()?;
-                let pending = v.inspect_outbox()?;
-                self.print(&format!("Authenticated history: {}/64\r\n", history.len()))?;
-                for r in history {
+                let count = v.history()?.len();
+                let pending = v
+                    .inspect_outbox()?
+                    .into_iter()
+                    .map(|p| p.operation)
+                    .collect::<Vec<_>>();
+                self.print(&format!("Authenticated history: {count}/64\r\n"))?;
+                for index in 0..count {
+                    let r = &v.history()?[index];
                     self.print(match r.direction {
                         Direction::Received => "RECEIVED / authenticated local history\r\n",
-                        Direction::Sent if pending.iter().any(|p| p.operation == r.operation()) => {
+                        Direction::Sent if pending.contains(&r.operation()) => {
                             "PENDING / local ciphertext; delivery unproven\r\n"
                         }
                         Direction::Sent => "RETIRED / local decision; delivery unproven\r\n",
@@ -318,6 +356,32 @@ impl Screen<'_> {
                     }
                     self.show("Subject: ", &r.subject)?;
                     self.show("Body: ", &r.body)?;
+                    if let Some(identity) = r.received_id()
+                        && let Some(acknowledged) = v.received_read(index, identity)?
+                    {
+                        self.print(if acknowledged {
+                            "READ / acknowledged on this device\r\n"
+                        } else {
+                            "UNREAD / retained on this device\r\n"
+                        })?;
+                        // Only a fresh local decision after successful body output
+                        // may mark this exact received record. Drop pasted typeahead.
+                        rustix::termios::tcflush(
+                            &self.term.input,
+                            rustix::termios::QueueSelector::IFlush,
+                        )?;
+                        let answer = self.line(
+                            "Type read to acknowledge locally, or Enter to keep current state: ",
+                            16,
+                            false,
+                        )?;
+                        if answer.as_str() == "read" {
+                            v.mark_read(index, identity)?;
+                            self.print(
+                                "Acknowledged on this device only; no read receipt sent.\r\n",
+                            )?;
+                        }
+                    }
                     self.line("Enter for next record: ", 0, false)?;
                     self.clear()?;
                 }
@@ -447,6 +511,7 @@ impl Screen<'_> {
         self.clear()?;
         self.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\n")?;
         self.show("Home: ", &v.legacy()?.home)?;
+        self.local_read_status(v)?;
         self.print(&format!(
             "History: {}   Pending ciphertext: {}\r\n",
             v.history()?.len(),
@@ -457,6 +522,7 @@ impl Screen<'_> {
         } else {
             "Archive checkpoints: disabled; explicit upgrade required\r\n"
         })?;
+        self.print("[E] Enable local read tracking\r\n")?;
         self.print("[G] Enable archive checkpoints\r\n[A] Catch up one archive page\r\n")?;
         self.print("[U] Publish public keys   [K] Prepare verified peer\r\n")?;
         self.print(if v.inspection()?.archive_enabled {
@@ -469,7 +535,7 @@ impl Screen<'_> {
         loop {
             if let Some(Key::Hotkey(key)) = decoder.feed(self.byte()?, Instant::now()) {
                 let key = key.to_ascii_uppercase();
-                if b"UKCNPVHOTRFBSDLGA".contains(&key) {
+                if b"UKCNPVHOTRFBSDLGAE".contains(&key) {
                     return Ok(key);
                 }
             }
@@ -629,6 +695,17 @@ impl Screen<'_> {
 /// Explicit trusted-local entry only. Remote streams/picker metadata never call it.
 #[cfg(feature = "network-mail")]
 pub fn run_online(path: &Path, config: &Path, unicode: bool) -> io::Result<()> {
+    run_online_with_status(path, config, unicode).map(|_| ())
+}
+/// Return only a healthy local retained-state snapshot after graceful locking.
+/// Cancellation, unlock/configuration failures and poisoned handles return no
+/// successful snapshot. This never establishes home completeness or freshness.
+#[cfg(feature = "network-mail")]
+pub fn run_online_with_status(
+    path: &Path,
+    config: &Path,
+    unicode: bool,
+) -> io::Result<Option<ReadSummary>> {
     if !path.is_absolute() || !config.is_absolute() {
         return Err(invalid());
     }
@@ -662,7 +739,7 @@ pub fn run_online(path: &Path, config: &Path, unicode: bool) -> io::Result<()> {
             }
             s.online_action(&mut vault, &settings, key)?;
         }
-        Ok(())
+        Ok(Some(vault.read_summary()?))
     })();
     let _ = terminal.print(&"\r\n".repeat(32));
     if result.is_err() {

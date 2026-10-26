@@ -1,0 +1,43 @@
+"""Assemble only actual public #216/#217 observations and immutable source bytes."""
+import hashlib,json
+from pathlib import Path
+R=Path('/Users/cam/DEV/faction-bbs');D=R/'dev-docs/evidence/local-unread-mail';Q=D/'qualification';H=D/'host'
+def read(p):return json.loads(p.read_text())
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+# Data is public fixed-schema output. Private runtime roots are already gone.
+assert all(not Path(p).exists() for p in ['/private/tmp/faction216-impl-OWNED','/private/tmp/faction217-lead-OWNED','/private/tmp/faction216-lab-OWNED','/private/tmp/faction216-vm-oksdrpgm'])
+host=read(H/'clean-handoff.json');native=read(Q/'native-rust-summary.json')
+assert host['new_source_and_harness_count']==623 and native['passed']==157 and native['failed']==0 and native['ignored']==3
+stages=[]
+for filename in ['implementation-source-stages.json','native-source-stages.json','lead-source-stages.json','teardown-source-stages.json']:
+ stages.extend(read(D/filename))
+rows=[]
+for row in read(Q/'orchestration-source-stages-final.json'):
+ p=Q/row['resolved_path'];assert digest(p.read_bytes())==row['sha256']
+ rows.append(dict(source=row['name'],path=p.relative_to(R).as_posix(),sha256=row['sha256'],scope=row['scope']))
+stages.append(dict(label='lab-actual-orchestration-and-fixture-versions',files=rows))
+# The assembler has no expected result digest, so its source can be preserved
+# without creating a self-referential result/checker hash cycle.
+raw=Path(__file__).read_bytes();sha=digest(raw);obj=D/'source-objects'/sha;obj.write_bytes(raw)
+stages.append(dict(label='public-observation-record-assembly',files=[dict(source='assemble-public-result.py',path=obj.relative_to(R).as_posix(),sha256=sha)]))
+route_host=dict(unread=read(H/host['checks']['unread']['record']),visit=read(Q/'host-clean-visit-classic.json'),visit_unicode=read(Q/'host-clean-visit-unicode.json'),unconfigured=read(Q/'host-clean-unconfigured-summary.json'))
+route_native=dict(unread=read(Q/'native-unread.json'),visit=read(Q/'native-visit-classic.json'),visit_unicode=read(Q/'native-visit-unicode.json'),unconfigured=read(Q/'native-unconfigured-summary.json'))
+for expected,route in [('Darwin',route_host),('NetBSD',route_native)]:
+ assert route['unread']['platform']==expected and route['unread']['count']==13
+ assert route['visit']['platform']==route['visit_unicode']['platform']==expected
+ assert route['visit']['count']==route['visit_unicode']['count']==14
+ assert route['unconfigured']==dict(result='pass',count=3,graphs=['default','native_only','network'])
+for stage in stages:
+ assert stage['files']
+ for row in stage['files']:assert digest((R/row['path']).read_bytes())==row['sha256'],row['path']
+# Explicit object paths retain exact historical inputs across future edits.
+# The stage ledgers retain their original project-relative names for replay.
+sources={row['path']:row['sha256'] for stage in stages for row in stage['files']}
+for p in D.rglob('*'):
+ if p.is_file() and p.name!='results.json':sources[p.relative_to(R).as_posix()]=digest(p.read_bytes())
+runtime=read(Q/'runtime-environment.json');assert runtime['physmem_bytes']==1054990336 and runtime['cores']==2
+claims={k:False for k in ['background_polling','arbitrary_session_overlay','live_private_chat','roaming','attachments','security_audit','physical_hardware','capacity','production_deployment','indefinite_pause']}
+d=dict(schema=1,issues=[216,217],base_commit='8768bb41a49ab1c15c834fbad2102d7522c48937',routes=dict(host=route_host,netbsd=route_native),runtime=dict(netbsd_mib=1024,ncpu=2,physmem_bytes=runtime['physmem_bytes']),build=dict(compiler_mib=2048,fresh_1g_build=False,host_clean_source_inventory=623,native_server_source_inventory=683,native_client_source_inventory=691,runtime_python_overrides=1),teardown=read(D/'teardown.json'),claims=claims,execution_sources=sources,source_stages=stages,prior_picker_sha256='3f0d85a11e16038da86560293f26a52b5dbb0b6188255fffc38e539c9adf6456',rust=dict(host_network=host['checks']['network-alltargets'],host_native_only=host['checks']['native-only-alltargets'],netbsd_network=native),lead_checks=read(D/'lead-checks.json'),normal_bounds=read(Q/'normal-bounds.json'),source_scopes=dict(inventories_are_not_claims_every_file_was_read_by_compiler=True,preliminary_ui_incomplete_mapping_excluded_from_acceptance=True,previous_host_631_inventory_included_eight_unpublished_nonexecution_metadata_files=True,final_host_clean_tree_requalified=True,qualified_native_maps_exclude_metadata=True,raw_logs_exported=False,private_runtime_files_exported=False),required_pr_ci='separate integration gate; not claimed by this software record')
+raw=(json.dumps(d,indent=2,sort_keys=True)+'\n').encode();(D/'results.json').write_bytes(raw);sha=digest(raw)
+p=R/'tools/check_unread_mail_evidence.py';s=p.read_text();assert "RECORD_SHA256 = 'UNPINNED'" in s;s=s.replace("RECORD_SHA256 = 'UNPINNED'",f"RECORD_SHA256 = '{sha}'");p.write_text(s)
+print(json.dumps(dict(record_sha256=sha,immutable_bindings=len(sources),source_stages=len(stages),stage_bindings=sum(len(s['files']) for s in stages),private_runtime_files_exported=0)))

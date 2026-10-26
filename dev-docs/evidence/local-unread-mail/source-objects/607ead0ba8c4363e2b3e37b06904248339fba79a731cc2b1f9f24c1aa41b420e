@@ -1,0 +1,56 @@
+from pathlib import Path
+import hashlib, json, shutil
+root=Path('/Users/cam/DEV/faction-bbs')
+owned=Path('/private/tmp/faction216-cache-OWNED')
+base=root/'dev-docs/evidence/local-unread-mail'
+objects=base/'source-objects'
+assert owned.is_dir() and not owned.is_symlink() and (owned/'OWNERSHIP').is_file()
+def digest(raw): return hashlib.sha256(raw).hexdigest()
+def preserve(raw):
+    sha=digest(raw); path=objects/sha
+    if path.exists(): assert path.read_bytes()==raw
+    else: path.write_bytes(raw)
+    return {'path':str(path.relative_to(root)),'sha256':sha}
+record=json.loads((base/'verification-ci-followup.json').read_bytes())
+stages=json.loads((owned/'source-stages.json').read_bytes())
+for stage in stages:
+    stage['source_paths']={}
+    for name,sha in stage['files'].items():
+        raw=(owned/stage['stage']/name).read_bytes()
+        assert digest(raw)==sha
+        stage['source_paths'][name]=preserve(raw)['path']
+for name,sha in stages[-1]['files'].items(): assert digest((root/name).read_bytes())==sha
+artifacts={}
+for name in ['source-stages.json','helper-integrity.json','red-tests.log','green-tests-01.log','green-resolver-tests.log','green-baseline-tests.log','green-guard-tests.log','green-publication-tests.log','baseline-guard-timings.json','candidate-guard-timings.json','baseline-unread-guard.log','baseline-archive-guard.log','candidate-unread-guard.log','candidate-archive-guard.log']:
+    artifacts[name]=preserve((owned/name).read_bytes())
+assert 'Ran 8 tests' in (owned/'red-tests.log').read_text()
+assert 'FAILED (failures=4)' in (owned/'red-tests.log').read_text()
+full=Path('/private/tmp/faction216-final-cache-python.txt').read_bytes()
+assert b'Ran 330 tests' in full and b'\nOK\n' in full
+artifacts['full-tool-suite.log']=preserve(full)
+artifacts['documentation-evidence-checks.log']=preserve(Path('/private/tmp/faction216-final-evidence-checks.txt').read_bytes())
+record['cache_fix']={
+    'max_decoded_manifests':128,
+    'private_resolution_context_only':True,
+    'every_manifest_read_and_pinned_hash_retained':True,
+    'public_helpers_return_fresh_values':True,
+    'source_bytes_never_cached':True,
+    'context_restored_on_exception':True,
+    'source_stages':stages,
+    'artifacts':artifacts,
+    'red':{'command':'python3 -m unittest discover -s tools -p test_evidence_decode_cache.py -v','tests':8,'failures':4,'passing_controls':4},
+    'green':[{'pattern':pattern,'passed':count} for pattern,count in [('test_evidence_decode_cache.py',8),('test_evidence_sources.py',12),('test_unread_baseline.py',2),('test_unread_mail_evidence.py',7),('test_publication_bytes.py',3)]],
+    'full_tool_suite':{'command':"python3 -m unittest discover -s tools -p 'test_*.py'",'passed':330,'failures':0},
+    'documentation_evidence_commands':'All unchanged commands from the Validate documentation, policies, and archive step, with its final full unittest command executed separately; all exited zero.',
+    'timing_limitations':'Observed host wall times only. Candidate timings overlapped the full tool suite; not isolated benchmarks or CI completion claims.',
+    'new_native_execution':False,
+    'preserved_software_record_sha256':'219206a2d4643a3e3167d2984dfc6e571bf94ff271385baf15297a8b571c079e',
+    'preserved_original_record_sha256':'332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086',
+    'publication_driver':preserve(Path(__file__).read_bytes())
+}
+assert digest((base/'results.json').read_bytes())==record['cache_fix']['preserved_software_record_sha256']
+shutil.rmtree(owned)
+assert not owned.exists()
+record['cache_fix']['owned_fixture_removed']=True
+(base/'verification-ci-followup.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n')
+print('Preserved exact cache red/green source and results; removed only owned cache fixture; software records unchanged.')

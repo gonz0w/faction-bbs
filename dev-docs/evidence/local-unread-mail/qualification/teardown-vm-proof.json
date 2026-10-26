@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "driver_sha256": "70dd8508d84d2b4a3e0dfdd642c06b78f3c985694f199d7803189e297219f46c",
+  "marked_owned_roots_verified": 2,
+  "current_runtime_process_uids_commands_verified": true,
+  "fresh_owned_services_stopped": true,
+  "owned_vm_shutdown": true,
+  "owned_controller_stopped": true,
+  "fallback_sigterm_count": 0,
+  "loopback_forwards_closed": 3,
+  "owned_vm_root_removed": true,
+  "owned_lab_private_inputs_removed": true,
+  "saved_owner_stopped": true,
+  "saved_metadata_hashes_unchanged": true,
+  "saved_disk_size_mtime_unchanged": true,
+  "saved_full_disk_hash_matches_preserved_manifest": true,
+  "implementation_and_lead_roots_not_targeted": true,
+  "shared_public_cache_not_targeted": true,
+  "caps_or_network_policy_changed": false
+}

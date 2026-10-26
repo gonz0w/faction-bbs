@@ -1,0 +1,39 @@
+"""Saved unread/visit evidence must reject incomplete or overstated acceptance."""
+import copy,hashlib,json,unittest
+from unittest.mock import patch
+import check_unread_mail_evidence as check
+
+class UnreadEvidence(unittest.TestCase):
+    def fixture(self):
+        def row(names):return dict(result='pass',count=len(names),checks=sorted(names))
+        return dict(schema=1,issues=[216,217],routes={os:dict(unread=row(check.UNREAD),visit=dict(row(check.VISIT),same_client=True,same_ssh=True,pending_unchanged=True,cursor_unchanged=True,history_unchanged=True,read_persisted=True,privacy_scan=dict(board_files=1,store_files=1,log_files=1,matches=0,symlinks=0),abuse=dict(remote_hidden=True,bounded_flood=True,disconnect_closed=True))) for os in ['host','netbsd']},runtime=dict(netbsd_mib=1024,ncpu=2),build=dict(compiler_mib=2048,fresh_1g_build=False),teardown={k:True for k in check.TEARDOWN},claims={k:False for k in check.NO_CLAIMS},execution_sources={'current.rs':hashlib.sha256(b'source').hexdigest()},source_stages=[dict(label='actual',files=[dict(path='source-object',sha256=hashlib.sha256(b'source').hexdigest())])],prior_picker_sha256='3f0d85a11e16038da86560293f26a52b5dbb0b6188255fffc38e539c9adf6456')
+    def test_complete_record_and_actual_source_bytes(self):
+        check.validate(self.fixture(),lambda name,digest:b'source')
+    def test_missing_native_controls_or_ssh_continuity_reject(self):
+        for mutate in [lambda d:d['routes'].pop('netbsd'),lambda d:d['routes']['netbsd']['visit'].update(same_ssh=False),lambda d:d['routes']['host']['unread']['checks'].pop()]:
+            d=self.fixture();mutate(d)
+            with self.assertRaises(AssertionError):check.validate(d,lambda n,h:b'source')
+    def test_changed_pending_cursor_private_scan_or_abuse_reject(self):
+        for key in ['pending_unchanged','cursor_unchanged','read_persisted']:
+            d=self.fixture();d['routes']['netbsd']['visit'][key]=False
+            with self.assertRaises(AssertionError):check.validate(d,lambda n,h:b'source')
+        for mutate in [lambda d:d['routes']['host']['visit']['privacy_scan'].update(matches=1),lambda d:d['routes']['host']['visit']['abuse'].update(remote_hidden=False)]:
+            d=self.fixture();mutate(d)
+            with self.assertRaises(AssertionError):check.validate(d,lambda n,h:b'source')
+    def test_source_substitution_and_escaped_paths_reject(self):
+        with self.assertRaises(AssertionError):check.validate(self.fixture(),lambda n,h:b'wrong')
+        d=self.fixture();d['execution_sources']={'../outside':hashlib.sha256(b'source').hexdigest()}
+        with self.assertRaises(AssertionError):check.validate(d,lambda n,h:b'source')
+    def test_cleanup_resource_claim_and_result_tamper_reject(self):
+        for mutate in [lambda d:d['teardown'].update(ports_closed=False),lambda d:d['build'].update(fresh_1g_build=True),lambda d:d['claims'].update(background_polling=True),lambda d:d['runtime'].update(netbsd_mib=2048)]:
+            d=self.fixture();mutate(d)
+            with self.assertRaises(AssertionError):check.validate(d,lambda n,h:b'source')
+        raw=json.dumps(self.fixture()).encode()
+        with patch.object(check,'RECORD_SHA256',hashlib.sha256(raw).hexdigest()):
+            self.assertEqual(check.load_record(raw)['issues'],[216,217])
+            with self.assertRaises(AssertionError):check.load_record(raw+b' ')
+    def test_required_ci_includes_the_real_unread_probe(self):
+        workflow=(check.ROOT/'.github/workflows/documentation.yml').read_text()
+        self.assertIn('python3 tools/probe_unread_mail.py --client',workflow)
+        self.assertIn('python3 tools/check_unread_mail_evidence.py',workflow)
+if __name__=='__main__':unittest.main()

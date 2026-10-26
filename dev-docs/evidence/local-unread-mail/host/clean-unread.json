@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "count": 13,
+  "checks": [
+    "old_schema_count_and_history_inspection_do_not_enable_or_acknowledge",
+    "declined_local_read_upgrade_preserves_exact_old_checkpoint",
+    "confirmed_encrypted_upgrade_adds_local_counts_without_sidecar_or_protocol_changes",
+    "count_only_unlock_and_lock_preserve_unread_and_canonical_bytes",
+    "received_body_output_and_empty_enter_do_not_implicitly_mark_read",
+    "cancel_after_received_body_before_ack_keeps_message_unread",
+    "queued_record_navigation_input_cannot_acknowledge_after_body",
+    "explicit_post_body_read_persists_only_local_received_acknowledgement",
+    "reopen_and_repeated_ack_preserve_read_state_without_another_write",
+    "classic_and_explicit_unicode_history_share_exact_local_read_semantics",
+    "expired_revoked_and_history_only_retained_mail_remains_locally_acknowledgeable",
+    "read_write_failure_poison_locks_then_canonical_reopen_keeps_pending_and_unread",
+    "terminal_session_death_before_explicit_ack_never_marks_read"
+  ],
+  "private_fixture_removed": true,
+  "provider_contact": false,
+  "read_receipt_sent": false
+}

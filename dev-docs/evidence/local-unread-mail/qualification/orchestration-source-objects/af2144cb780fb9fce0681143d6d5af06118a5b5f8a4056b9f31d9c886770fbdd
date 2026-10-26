@@ -1,0 +1,368 @@
+#!/usr/bin/env python3
+"""Same-client, same-SSH parked Files -> local mail -> restricted SFTP proof.
+
+Requires an explicitly marked disposable board and owner-private settings. All
+secrets and raw transcripts remain in a generated private fixture root. The caller
+owns final teardown; only bounded checks/counts are exported. No real mail home.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import re
+import secrets
+import shlex
+import socket
+import stat
+import subprocess
+import tempfile
+import termios
+import select
+import time
+import signal
+
+from check_restricted_ssh import SSHConsole
+from smoke_board_launcher import LauncherConsole, PICK, CONFIRM, RETURN
+
+CHECKS = [
+    'independent_registration_pending_and_explicit_approval',
+    'actual_home_tcp_refusal_preserves_encrypted_state',
+    'local_confirmation_cancel_and_dropped_typeahead_same_ssh',
+    'wrong_unlock_and_canceled_unlock_lock_return_same_ssh',
+    'bounded_hostile_remote_output_quiescent_during_hidden_prompt',
+    'home_outage_history_pending_cursor_exact_same_ssh',
+    'explicit_encrypted_tracking_upgrade_and_skip_preserve_unread',
+    'explicit_post_body_read_acknowledgement_persists_locally',
+    'opt_in_generic_locked_stale_notices_only_at_files',
+    'fresh_hidden_unlock_and_locked_return_same_ssh',
+    'same_ssh_approved_files_restricted_sftp_review_download',
+    'normal_return_to_bbs_and_same_ssh_files_reentry',
+    'private_view_ssh_disconnect_fails_closed_without_redial',
+    'private_markers_absent_remote_transcript_database_store_logs',
+]
+ENTRY = '[E] Encrypted home mail'
+LOCAL_CONFIRM = 'LOCAL: open encrypted home mail while this board stays parked? [y/N]: '
+FILES = 'Back to the BBS'
+
+
+def assert_same_visit(before, after):
+    assert set(before) == set(after) == {'client', 'ssh'}
+    assert all(type(v) is int and v > 0 for v in before.values())
+    assert before == after, 'client or SSH child changed during local mail'
+
+
+def visit_processes(client):
+    lines=subprocess.check_output(['ps','-axo','pid,ppid,comm'],text=True).splitlines()
+    matches=[]
+    for line in lines:
+        fields=line.strip().split(None,2)
+        if len(fields)==3 and fields[0].isdigit() and fields[1].isdigit():
+            if int(fields[1])==client and Path(fields[2]).name=='ssh':matches.append(int(fields[0]))
+    assert len(matches)==1, 'expected exactly one direct live SSH child'
+    assert os.waitpid(client,os.WNOHANG)==(0,0)
+    return {'client':client,'ssh':matches[0]}
+
+
+def require_private_absent(transcript, spans, markers):
+    assert spans, 'remote transcript coverage is empty'
+    last=0
+    for start,end in spans:
+        assert last<=start<end<=len(transcript)
+        assert all(marker not in transcript[start:end] for marker in markers), 'private marker in remote interval'
+        last=end
+
+
+def require_only_read_metadata_changed(before,after):
+    assert set(before)==set(after)=={'canonical','history','pending','archive'}
+    assert before['canonical']!=after['canonical'], 'read decision did not commit'
+    assert all(before[k]==after[k] for k in ['history','pending','archive']), 'read altered protocol state'
+
+PASS = 'checkpoint synthetic fixture password'
+UNLOCK = 'LOCAL checkpoint passphrase (hidden): '
+HOME = 'HOME account password (hidden; never sent to a BBS): '
+MAIL = '[L] Lock and exit'
+
+
+def private_json(path):
+    info=path.lstat()
+    assert stat.S_ISREG(info.st_mode) and info.st_uid==os.getuid() and not info.st_mode & 0o077 and info.st_nlink==1
+    return json.loads(path.read_text())
+
+
+def assert_unchanged(before, after):
+    assert before == after, 'mail state changed across unavailable home or board/files journey'
+
+
+def require_connection_refused(code, out, err):
+    assert code==1 and out==b'' and err==b'Transport(Connect)\n', 'expected actual unavailable TCP home, not local configuration/TLS refusal'
+
+
+def require_closed_endpoint(endpoint):
+    try:
+        connection=socket.create_connection(endpoint,timeout=1)
+    except ConnectionRefusedError:
+        return
+    except OSError as error:
+        raise AssertionError('closed home endpoint must refuse TCP, not time out') from error
+    else:
+        connection.close()
+        raise AssertionError('closed home endpoint unexpectedly accepted a connection')
+
+
+def validate_scan(scan):
+    assert set(scan)=={'board_files','store_files','log_files','matches','symlinks'}
+    assert all(type(v) is int for v in scan.values())
+    assert scan['board_files']>0 and scan['store_files']>0 and scan['log_files']>0
+    assert scan['matches']==0 and scan['symlinks']==0, 'private mail reached board state/logs or unsafe scan'
+    return scan
+
+
+def drain_ready(c, seconds=.2):
+    end=time.monotonic()+seconds
+    while time.monotonic()<end:
+        if select.select([c.fd],[],[],min(.02,max(0,end-time.monotonic())))[0]:
+            data=os.read(c.fd,8192)
+            if not data:break
+            c.transcript+=data;c.buffer+=data
+
+
+TERMINALS = r'''import json,subprocess
+from pathlib import Path
+assert Path('/etc/faction-disposable-test').is_file()
+rows=[]
+for line in subprocess.check_output(['ps','-axo','pid,tty,user,comm'],text=True).splitlines():
+ f=line.strip().split(None,3)
+ if len(f)==4 and f[2]=='factionterm' and f[3]=='/usr/local/libexec/faction-tty':rows.append({'pid':int(f[0]),'tty':f[1]})
+print(json.dumps(rows))
+'''
+HOSTILE = r'''import json,sys,os,time,stat,pwd,subprocess
+from pathlib import Path
+assert Path('/etc/faction-disposable-test').is_file()
+s=json.load(sys.stdin);pid=s['pid'];tty=s['tty'];assert type(pid)is int and pid>1 and tty.startswith('pts/') and tty[4:].isdigit()
+row=subprocess.check_output(['ps','-p',str(pid),'-o','tty,user,comm'],text=True).splitlines()[-1].strip().split(None,2)
+assert row==[tty,'factionterm','/usr/local/libexec/faction-tty']
+path='/dev/'+tty;st=os.stat(path);assert stat.S_ISCHR(st.st_mode) and st.st_uid==pwd.getpwnam('factionterm').pw_uid
+payload=(b'PUBLIC_HOSTILE_VISIT_MARKER\x1b[31m\x1b[0m\r\n'*32768)[:1048576]
+fd=os.open(path,os.O_WRONLY|os.O_NONBLOCK);n=0;deadline=time.monotonic()+.75
+try:
+ while n<len(payload) and time.monotonic()<deadline:
+  try:n+=os.write(fd,payload[n:n+32768])
+  except BlockingIOError:time.sleep(.005)
+finally:os.close(fd)
+assert n>0
+print(json.dumps({'written':n,'maximum':1048576,'chunk':32768,'writer_finished':True,'owned_tty_verified':True}))
+'''
+
+
+SCAN = r'''import json,sys,stat
+from pathlib import Path
+s=json.load(sys.stdin)
+assert Path('/etc/faction-disposable-test').is_file()
+needles=[x.encode() for x in s['markers']]
+result=dict(board_files=0,store_files=0,log_files=0,matches=0,symlinks=0)
+for category in ['board','store','log']:
+ for name in s[category]:
+  root=Path(name)
+  assert root.exists()
+  paths=[root]+(list(root.rglob('*')) if root.is_dir() else [])
+  for p in paths:
+   mode=p.lstat().st_mode
+   if stat.S_ISLNK(mode):result['symlinks']+=1
+   elif stat.S_ISREG(mode):
+    result[category+'_files']+=1
+    data=p.read_bytes()
+    result['matches']+=sum(v in data for v in needles)
+print(json.dumps(result))
+'''
+
+
+def probe(a):
+    root_info=a.private_root.lstat()
+    assert stat.S_ISDIR(root_info.st_mode) and root_info.st_uid==os.getuid() and not root_info.st_mode & 0o077
+    assert (a.private_root/'OWNED').is_file()
+    settings=private_json(a.settings)
+    assert settings['disposable_fixture'] is True
+    root=Path(tempfile.mkdtemp(prefix='visit-mail-',dir=a.private_root)).resolve();root.chmod(0o700)
+    children=[];checks=[];ssh_children=[];spans=[];notices=False;home_password=secrets.token_hex(24);password=secrets.token_hex(24)
+    subject='private-mail-subject-'+secrets.token_hex(12);body='private-mail-body-'+secrets.token_hex(16)
+    marker_values=[PASS,home_password,subject,body,'synthetic private archive id','synthetic-private-archive-id','synthetic subject','synthetic incoming','synthetic received body']
+    def private(path,data):
+        path.write_text(data);path.chmod(0o600)
+    def command(action,*args,extra=(),ok=True):
+        r=subprocess.run([str(a.mail_fixture),action,str(store),*map(str,args)],input=('\n'.join((PASS,*extra))+'\n').encode(),capture_output=True,timeout=30)
+        if ok:assert r.returncode==0,'private mail fixture action failed'
+        return r
+    def snapshot():
+        inspection=json.loads(command('inspect').stdout)
+        return dict(canonical=(store/'mail.fkv').read_bytes(),history=inspection['history'],pending=inspection['pending'],archive=json.loads(command('archive-status').stdout))
+    def remote(code,data=None):
+        r=subprocess.run(settings['admin_argv']+['/usr/pkg/bin/python3.13 -c '+shlex.quote(code)],input=data,capture_output=True,timeout=45)
+        if r.returncode:(root/'admin-failure.private').write_bytes(r.stdout+r.stderr)
+        assert r.returncode==0,'owned board operation failed'
+        return r.stdout
+    def board_menu(c):c.expect('Ctrl-C exits; Esc: Enter to recover.')
+    def login(c,handle,secret,choice='l'):
+        c.expect('[L]ogin [R]egister [Q]uit: ');c.send(choice);c.expect('Handle: ');c.send(handle);c.password(secret)
+        if choice=='r':c.password(secret,'Confirm password (hidden): ')
+        else:c.expect('Press Enter to continue: ');c.send('');board_menu(c)
+    def board():
+        c=SSHConsole(settings['member_argv']);children.append(c);return c
+    def files_command(c,text):
+        mark=len(c.transcript);c.send(text);c.expect('files> ');return c.transcript[mark:]
+    def files_ready(c):
+        start=len(c.transcript)-len(c.buffer)
+        c.expect(FILES);c.expect(ENTRY);c.expect('[N] Local mail notices')
+        c.expect('N turns notices off.' if notices else 'LOCAL MAIL: notices off. E opens mail.')
+        return c.transcript[start:len(c.transcript)-len(c.buffer)]
+    def file_done(c):c.expect('Enter to return to Files: ');c.send('');files_ready(c)
+    def pause_mail(c):c.expect('Enter to return: ');c.send('');c.expect(MAIL)
+    def unlock(c):
+        c.raw(b'e');c.expect(LOCAL_CONFIRM);c.send('y');c.password(PASS,UNLOCK);c.expect(MAIL)
+    def state_check():assert_unchanged(before,snapshot())
+    try:
+        # Select an ephemeral port, then close it: NetBSD can time out while
+        # a non-listening TCP socket remains bound. Verify actual refusal.
+        with socket.socket() as outage:
+            outage.bind(('127.0.0.1',0));closed_endpoint=outage.getsockname();outage.close()
+            require_closed_endpoint(closed_endpoint)
+            endpoint='127.0.0.1:'+str(closed_endpoint[1])
+            store=root/'mail';r=subprocess.run([str(a.checkpoint_fixture),str(store),'archive-pending'],capture_output=True,timeout=30)
+            assert r.returncode==0,'archive seed failed'
+            command('queue',extra=(subject,body))
+            ca=root/'public-ca.pem';ca.write_bytes(a.public_ca.read_bytes());ca.chmod(0o600)
+            config=root/'home.toml';private(config,'version=1\naccount="alice@home.test"\nendpoint='+json.dumps(endpoint)+'\ndomain="home.test"\nca='+json.dumps(str(ca))+'\npin="'+'ab'*32+'"\n')
+            catalog=root/'boards.toml';private(catalog,'version=1\nhome_mail={store='+json.dumps(str(store))+',config='+json.dumps(str(config))+'}\n[[boards]]\nid="approved"\nlabel="Owned approved board"\nprofile='+json.dumps(settings['profile'])+'\n')
+            before=snapshot();assert before['archive']['enabled'] and before['archive']['ready'] and before['archive']['cursor_present']
+            assert before['archive']['checkpoint']['after'] and len(before['history'])==3 and len(before['pending'])==2
+            assert before['pending'][0]['operation']=='01'*16
+            assert all(v.encode() not in before['canonical'] for v in marker_values)
+            # Classify the real adapter failure before the UI proof, preserving state.
+            failure=command('sync',config,extra=(home_password,),ok=False)
+            require_connection_refused(failure.returncode,failure.stdout,failure.stderr);state_check()
+            handle=settings['member_handle']+secrets.token_hex(3);c=board();login(c,handle,password,'r');c.expect('Registration pending; sysop approval required.');c.finish()
+            c=board();c.expect('[L]ogin [R]egister [Q]uit: ');c.send('l');c.expect('Handle: ');c.send(handle);c.password(password);c.expect('Sysop approval required. No community access.');c.finish()
+            sysop=board();login(sysop,'sysop',settings['sysop_password']);sysop.raw(b's');sysop.expect('[C]reate room: ');sysop.send('a');sysop.expect('Member handle: ');sysop.send(handle);sysop.expect('Status updated; previous sessions expired.');sysop.expect('Press Enter to return to menu: ');sysop.send('');board_menu(sysop)
+            sysop.raw(b'f');sysop.expect('files> ')
+            output=files_command(sysop,'create '+handle+' members 1048576 Public synthetic transfer payload')
+            area=int(re.findall(rb'Created file area (\d+)',output)[-1])
+            checks.extend(CHECKS[:2])
+            guest_before={r['pid'] for r in json.loads(remote(TERMINALS))}
+            c=LauncherConsole([a.client,'--boards',catalog]+(['--unicode'] if a.unicode else []));children.append(c);picker_pid=c.pid;c.expect(PICK)
+            c.raw(b'a');c.expect(CONFIRM);c.send('y');login(c,handle,password)
+            c.raw(b'f');c.expect('Faction // Files on your device');files_ready(c)
+            visit=visit_processes(c.pid);ssh_children.append(visit)
+            guest_new=[r for r in json.loads(remote(TERMINALS)) if r['pid'] not in guest_before];assert len(guest_new)==1
+            private(root/'member-tty-identity.json',json.dumps(guest_new[0]))
+            # The old client must fail here in an actual approved Files visit.
+            assert ENTRY.encode() in c.transcript, 'Files lacks explicit encrypted home-mail entry'
+            assert b'[N] Local mail notices' in c.transcript
+            remote_start=0
+            assert b'LOCAL MAIL: notices off. E opens mail.' in c.transcript
+            notices=True;c.raw(b'n');screen=files_ready(c);assert b'LOCAL MAIL / LOCKED: unread unknown.' in screen
+            notices=False;c.raw(b'n');files_ready(c)
+            c.raw(b'ey\n');c.expect(LOCAL_CONFIRM);drain_ready(c)
+            assert UNLOCK.encode() not in c.buffer, 'queued confirmation opened private mail'
+            c.send('n');files_ready(c)
+            assert_same_visit(visit,visit_processes(c.pid));state_check();checks.append(CHECKS[2])
+            def begin_private():
+                c.raw(b'e');c.expect(LOCAL_CONFIRM);c.send('y');c.expect(UNLOCK)
+                assert not termios.tcgetattr(c.fd)[3]&termios.ECHO
+                spans.append((remote_start,len(c.transcript)))
+            begin_private();c.send('wrong synthetic local passphrase');c.expect('Enter to return to local Files: ');remote_start=len(c.transcript);c.send('');files_ready(c)
+            state_check();assert_same_visit(visit,visit_processes(c.pid))
+            begin_private();remote_start=len(c.transcript);c.raw(b'\x03');files_ready(c)
+            state_check();assert_same_visit(visit,visit_processes(c.pid));checks.append(CHECKS[3])
+            begin_private();private_start=len(c.transcript)
+            hostile=json.loads(remote(HOSTILE,json.dumps(guest_new[0]).encode()));drain_ready(c)
+            assert b'PUBLIC_HOSTILE_VISIT_MARKER' not in c.transcript[private_start:]
+            c.send(PASS);c.expect(MAIL)
+            for action,message in [(b'n','Home cycle stopped; pending ciphertext retained.'),(b'a','Catch-up stopped; earlier accepted entries may already be saved.')]:
+                c.raw(action);c.password(home_password,HOME);c.expect(message);pause_mail(c)
+            c.raw(b'h');c.expect('Authenticated history: 3/64')
+            for _ in range(3):c.expect('Enter for next record: ');c.send('')
+            pause_mail(c);assert subject.encode() in c.transcript and body.encode() in c.transcript
+            c.raw(b'o');c.expect('Durable pending ciphertext; delivery remains unproven.')
+            for pending in before['pending']:c.expect('Operation: '+pending['operation'])
+            pause_mail(c);remote_start=len(c.transcript);c.raw(b'l');files_ready(c)
+            assert b'PUBLIC_HOSTILE_VISIT_MARKER' not in c.transcript[private_start:]
+            state_check();assert_same_visit(visit,visit_processes(c.pid));checks.extend(CHECKS[4:6])
+            def unread():
+                r=subprocess.run([str(a.checkpoint_fixture),str(store),'inspect-unread'],capture_output=True,timeout=30)
+                assert r.returncode==0;return json.loads(r.stdout)
+            assert unread()['enabled'] is False
+            begin_private();c.send(PASS);c.expect(MAIL);c.raw(b'e');c.expect('Type enable to add encrypted local read tracking: ');c.send('enable');c.expect('Encrypted local read tracking enabled.');pause_mail(c)
+            remote_start=len(c.transcript);c.raw(b'l');files_ready(c)
+            upgraded=snapshot();require_only_read_metadata_changed(before,upgraded)
+            assert unread()['unread']==1 and unread()['retained']==3 and unread()['pending']==2
+            before=upgraded
+            def history(answer):
+                c.raw(b'h');c.expect('Authenticated history: 3/64')
+                for index in range(3):
+                    if index==1:
+                        c.expect('Type read to acknowledge locally, or Enter to keep current state: ');c.send(answer)
+                        if answer=='read':c.expect('Acknowledged on this device only; no read receipt sent.')
+                    c.expect('Enter for next record: ');c.send('')
+                pause_mail(c)
+            notices=True;c.raw(b'n');screen=files_ready(c);assert b'LOCAL MAIL / LOCKED: unread unknown.' in screen
+            begin_private();c.send(PASS);c.expect(MAIL);history('');remote_start=len(c.transcript);c.raw(b'l');screen=files_ready(c)
+            state_check();assert unread()['unread']==1;checks.append(CHECKS[6])
+            assert all(x in screen for x in [b'LOCAL MAIL / LOCKED',b'stale local snapshot; home not polled.',b'unread: 1',b'retained: 3; pending: 2'])
+            begin_private();c.send(PASS);c.expect(MAIL);history('read');remote_start=len(c.transcript);c.raw(b'l');screen=files_ready(c)
+            acknowledged=snapshot();require_only_read_metadata_changed(before,acknowledged);assert unread()['unread']==0;before=acknowledged
+            checks.append(CHECKS[7])
+            assert b'unread: 0' in screen
+            notices=False;c.raw(b'n');files_ready(c)
+            checks.append(CHECKS[8])
+            notices=True;c.raw(b'n');screen=files_ready(c);assert b'LOCAL MAIL / LOCKED: unread unknown.' in screen
+            begin_private();c.send(PASS);c.expect(MAIL);remote_start=len(c.transcript);c.raw(b'l');screen=files_ready(c);assert b'unread: 0' in screen
+            assert_same_visit(visit,visit_processes(c.pid));state_check();assert unread()['unread']==0;checks.append(CHECKS[9])
+            upload_start=len(c.transcript)
+            payload=bytes(range(256))*513;digest=hashlib.sha256(payload).hexdigest();source=root/'public-transfer.bin';source.write_bytes(payload);source.chmod(0o600)
+            filename=handle+'-public.bin'
+            c.raw(b'u');c.expect('Local file to upload: ');c.send(str(source));c.expect('Area ID: ');c.send(str(area));c.expect('Remote filename [');c.expect(']: ');c.send(filename);c.expect('Description (max 256 bytes): ');c.send('Public synthetic board file, separate from private mail');c.expect('[y/N]: ');c.send('y');c.expect('Transfer complete. SHA256 '+digest);c.expect('Upload awaits sysop review; it is not published yet.');assert b'LOCAL MAIL' not in c.transcript[upload_start:];file_done(c)
+            code="import json,sqlite3,sys; s=json.load(sys.stdin); d=sqlite3.connect(s['database']); r=d.execute('SELECT id,state FROM file_objects WHERE filename=?',(s['filename'],)).fetchone(); print(json.dumps(r))"
+            row=json.loads(remote(code,json.dumps(dict(database=settings['database'],filename=filename)).encode()));assert row[1]=='pending'
+            files_command(sysop,'publish '+row[0]);link_output=files_command(sysop,'link '+row[0]);link=re.findall(rb'faction-file:[0-9a-f]{32}/[0-9a-f]{32}',link_output)[-1].decode()
+            download_start=len(c.transcript)
+            target=root/'download.bin';c.raw(b'd');c.expect('File ID, faction-file link or recent #number: ');c.send(link);c.expect('Save as (new local filename): ');c.send(str(target));c.expect('Download to this local path? [y/N]: ');c.send('y');c.expect('Transfer complete. SHA256 '+digest);assert b'LOCAL MAIL' not in c.transcript[download_start:];file_done(c);assert target.read_bytes()==payload
+            assert_same_visit(visit,visit_processes(c.pid));state_check();checks.append(CHECKS[10])
+            c.raw(b'b');board_menu(c);c.raw(b'f');files_ready(c);assert_same_visit(visit,visit_processes(c.pid));checks.append(CHECKS[11])
+            begin_private();c.send(PASS);c.expect(MAIL)
+            assert_same_visit(visit,visit_processes(c.pid));os.kill(visit['ssh'],signal.SIGTERM)
+            history('');remote_start=len(c.transcript);c.raw(b'l');c.expect('Connection stopped: ');c.expect(RETURN);c.send('');c.expect(PICK)
+            assert os.waitpid(picker_pid,os.WNOHANG)==(0,0)
+            lines=subprocess.check_output(['ps','-axo','pid,ppid,comm'],text=True).splitlines()
+            assert not any(len(f:=line.split())>=3 and f[1]==str(picker_pid) and Path(f[2]).name=='ssh' for line in lines)
+            c.raw(b'q');c.finish();spans.append((remote_start,len(c.transcript)));assert termios.tcgetattr(c.fd)[3]&termios.ECHO
+            checks.append(CHECKS[12])
+            sysop.send('back');board_menu(sysop);sysop.raw(b'q');sysop.expect('Logged out.');sysop.finish()
+            require_private_absent(c.transcript,spans,[v.encode() for v in marker_values])
+            assert all(home_password.encode() not in child.transcript and PASS.encode() not in child.transcript for child in children)
+            scan=validate_scan(json.loads(remote(SCAN,json.dumps(dict(markers=marker_values,board=settings['scan_board'],store=settings['scan_store'],log=settings['scan_logs'])).encode())))
+            checks.append(CHECKS[13]);state_check();require_closed_endpoint(closed_endpoint)
+            assert checks==CHECKS
+            result=dict(result='pass',platform=platform.system(),scope='same-ssh-parked-files-local-mail-restricted-sftp',count=len(checks),checks=checks,unicode=a.unicode,same_client_pid=True,same_ssh_pid_until_explicit_disconnect=True,home_outage_canonical_unchanged=True,history_unchanged=True,pending_ids_unchanged=True,archive_token_unchanged=True,nonempty_cursor=True,local_read_upgrade_and_acknowledgement=True,unread_before_ack=1,unread_after_ack=0,approved_member=True,restricted_sftp=True,payload_bytes=len(payload),payload_sha256=digest,privacy_scan=scan,home_transport_error='Connect',hostile_output=hostile,remote_disconnect_failed_closed=True,no_automatic_redial=True,terminal_restored=True,physical_hardware=False,capacity_claim=False,private_fixture_retained_for_lead=True)
+            private(root/'private-inputs.json',json.dumps(dict(home_password=home_password,subject=subject,body=body,store=str(store))))
+            return result
+    except BaseException:
+        for i,c in enumerate(children):(root/('failure-'+str(i)+'.private')).write_bytes(c.transcript+c.buffer)
+        raise
+    finally:
+        for visit in ssh_children:
+            try:
+                if visit_processes(visit['client'])==visit:os.kill(visit['ssh'],signal.SIGTERM)
+            except (AssertionError,ChildProcessError,ProcessLookupError):pass
+        for c in children:c.close()
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    for name in ['client','checkpoint-fixture','mail-fixture','public-ca','settings','private-root','output']:p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--unicode',action='store_true')
+    a=p.parse_args()
+    for name in ['client','checkpoint_fixture','mail_fixture','public_ca','settings','private_root','output']:setattr(a,name,getattr(a,name).resolve())
+    result=probe(a);a.output.write_text(json.dumps(result,indent=2)+'\n');print('Combined same-SSH visit mail journey passed:',result['count'])
+
+if __name__=='__main__':main()

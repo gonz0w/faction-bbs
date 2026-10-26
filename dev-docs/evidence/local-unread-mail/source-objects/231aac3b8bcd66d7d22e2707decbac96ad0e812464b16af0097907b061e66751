@@ -1,0 +1,6 @@
+{
+  "public_helpers": 55,
+  "every_existing_read_and_hash_statement_unchanged": true,
+  "candidate_collection_order_unchanged": true,
+  "source_read_and_hash_logic_unchanged": true
+}

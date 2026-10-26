@@ -1,0 +1,11 @@
+from lab import *
+import hashlib
+before=json.loads((P/'saved-before.json').read_text());demo=R/'local/demo';base=demo/'saved/20261022T005925Z';st=(base/'playground.qcow2').stat()
+after={n:hashlib.sha256((demo/n).read_bytes()).hexdigest() for n in ['CURRENT_PREVIEW','saved/LATEST','known_hosts','ssh-admin.json']};after['disk']=[str(base/'playground.qcow2'),st.st_size,st.st_mtime_ns]
+commands=subprocess.check_output(['ps','-axo','command='],text=True).splitlines();after['saved_stopped']=not any(str(demo)+'/' in x and ('qemu-system' in x or 'serial-controller.py' in x) for x in commands)
+assert before==after
+q=json.loads((V/'qemu-command.json').read_text());net=q[q.index('-netdev')+1];assert net.count('hostfwd=tcp:127.0.0.1:')==3 and q[q.index('-m')+1]=='2048'
+r=remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source216; test -d /home/factionbuild/cargo216/registry; test -f /usr/include/openssl/ssl.h; test -f /usr/lib/libssl.so; ps -axo comm | /usr/bin/awk \'/faction/ {n++} END {print n+0}\'')
+assert r.stdout.strip()==b'0',r.stdout
+proof={'saved_baseline_unchanged':True,'saved_owner_stopped':True,'owned_overlay':True,'loopback_forwards':3,'compile_memory_mib':2048,'compile_cores':2,'project_source_not_copied':True,'inherited_faction_processes':0,'base_openssl_headers_library':True,'runtime_memory_mib_planned_not_observed':1024}
+(P/'prepared-proof.json').write_text(json.dumps(proof,indent=2));print(json.dumps(proof))

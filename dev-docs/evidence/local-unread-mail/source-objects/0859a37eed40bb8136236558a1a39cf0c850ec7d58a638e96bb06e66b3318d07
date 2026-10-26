@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""Explicit encrypted local read-state PTYs; disposable synthetic state only."""
+import argparse
+import json
+import os
+import platform
+import signal
+import subprocess
+import tempfile
+from pathlib import Path
+
+from smoke_native_client_ssh import NativeConsole
+
+PASS = 'checkpoint synthetic fixture password'
+UNLOCK = 'LOCAL checkpoint passphrase (hidden): '
+MENU = '[L] Lock and exit'
+ENABLE = 'Type enable to add encrypted local read tracking: '
+ACK = 'Type read to acknowledge locally, or Enter to keep current state: '
+
+
+def probe(client, fixture):
+    children, checks = [], []
+    with tempfile.TemporaryDirectory(prefix='faction216-unread-OWNED-') as temp:
+        root = Path(temp).resolve(); root.chmod(0o700)
+        def seed(name, mode='pending'):
+            path = root / name
+            subprocess.run([str(fixture), str(path), mode], check=True, capture_output=True)
+            return path
+        def inspect(path):
+            result = subprocess.run([str(fixture), str(path), 'inspect-unread'], check=True, capture_output=True)
+            value = json.loads(result.stdout)
+            assert set(value) == {'enabled','unread','received','retained','pending','history_only','archive_enabled','archive_cursor_present'}
+            assert all(type(value[k]) is bool for k in ['enabled','history_only','archive_enabled','archive_cursor_present'])
+            assert all(type(value[k]) is int for k in ['received','retained','pending'])
+            assert value['unread'] is None or type(value['unread']) is int
+            return value
+        def start(path, unicode=False):
+            args = [str(client),'--mail-checkpoints',str(path),'open'] + (['--unicode'] if unicode else [])
+            c = NativeConsole(args); children.append(c)
+            c.password(PASS, UNLOCK); c.expect(MENU)
+            assert PASS.encode() not in c.transcript
+            return c
+        def pause(c):
+            c.expect('Enter to return: '); c.send(''); c.expect(MENU)
+        def lock(c):
+            c.raw(b'l'); c.finish()
+        def enable(c):
+            c.raw(b'e'); c.expect(ENABLE); c.send('enable')
+            c.expect('Encrypted local read tracking enabled. Existing received history starts unread.'); pause(c)
+        def received_prompt(c):
+            c.raw(b'h'); c.expect('Enter for next record: '); c.send('')
+            c.expect('RECEIVED / authenticated local history'); c.expect('Body: '); c.expect(ACK)
+        def finish_history(c, answer=''):
+            c.send(answer); c.expect('Enter for next record: '); c.send(''); pause(c)
+        def unchanged(path, expected): assert (path/'mail.fkv').read_bytes() == expected
+        try:
+            path = seed('old-format')
+            before = (path/'mail.fkv').read_bytes()
+            c = start(path)
+            assert b'Local unread: disabled' in c.transcript
+            assert b'[E] Enable local read tracking' in c.transcript
+            c.raw(b'h')
+            for _ in range(2): c.expect('Enter for next record: '); c.send('')
+            pause(c); lock(c); unchanged(path,before)
+            status = inspect(path); assert not status['enabled'] and status['unread'] is None
+            checks.append('old_schema_count_and_history_inspection_do_not_enable_or_acknowledge')
+
+            c = start(path); c.raw(b'e'); c.expect(ENABLE); c.send('no')
+            c.expect('Checkpoint locked: '); c.finish(1); unchanged(path,before)
+            checks.append('declined_local_read_upgrade_preserves_exact_old_checkpoint')
+
+            c = start(path); enable(c)
+            assert b'Local unread: 1 / received 1; retained 2; pending 1' in c.transcript
+            lock(c); enabled = (path/'mail.fkv').read_bytes(); assert enabled != before
+            status = inspect(path); assert status['enabled'] and status['unread']==1 and status['pending']==1
+            assert {p.name for p in path.iterdir()} == {'mail.fkv','mail.lock'}
+            checks.append('confirmed_encrypted_upgrade_adds_local_counts_without_sidecar_or_protocol_changes')
+
+            c = start(path); lock(c); unchanged(path,enabled); assert inspect(path)==status
+            checks.append('count_only_unlock_and_lock_preserve_unread_and_canonical_bytes')
+
+            c = start(path); received_prompt(c); finish_history(c); lock(c)
+            unchanged(path,enabled); assert inspect(path)==status
+            checks.append('received_body_output_and_empty_enter_do_not_implicitly_mark_read')
+
+            c = start(path); received_prompt(c); c.raw(b'\x03')
+            c.expect('Checkpoint locked: '); c.finish(1); unchanged(path,enabled)
+            checks.append('cancel_after_received_body_before_ack_keeps_message_unread')
+
+            c = start(path); c.raw(b'h'); c.expect('Enter for next record: '); c.raw(b'\nread\n')
+            c.expect(ACK); c.raw(b'\x03'); c.expect('Checkpoint locked: '); c.finish(1)
+            unchanged(path,enabled)
+            checks.append('queued_record_navigation_input_cannot_acknowledge_after_body')
+
+            c = start(path); received_prompt(c); finish_history(c,'read')
+            c.expect('Local unread: 0 / received 1; retained 2; pending 1'); lock(c)
+            read = (path/'mail.fkv').read_bytes(); assert read != enabled
+            assert inspect(path)['unread']==0 and inspect(path)['pending']==1
+            checks.append('explicit_post_body_read_persists_only_local_received_acknowledgement')
+
+            c = start(path); received_prompt(c); finish_history(c,'read'); lock(c); unchanged(path,read)
+            checks.append('reopen_and_repeated_ack_preserve_read_state_without_another_write')
+
+            unicode_path = seed('unicode','unread-unicode')
+            original = (unicode_path/'mail.fkv').read_bytes()
+            c = start(unicode_path); received_prompt(c)
+            assert b'Subject: synthetic incoming \\u{3bb}' in c.transcript
+            finish_history(c); lock(c); unchanged(unicode_path,original)
+            c = start(unicode_path,unicode=True); received_prompt(c)
+            assert 'Subject: synthetic incoming λ'.encode() in c.transcript
+            finish_history(c,'read'); lock(c); assert inspect(unicode_path)['unread']==0
+            checks.append('classic_and_explicit_unicode_history_share_exact_local_read_semantics')
+
+            for mode in ['unread-expired','unread-revoked','unread-history-only']:
+                retained = seed(mode,mode)
+                c = start(retained); received_prompt(c); finish_history(c,'read'); lock(c)
+                assert inspect(retained)['unread']==0
+            checks.append('expired_revoked_and_history_only_retained_mail_remains_locally_acknowledgeable')
+
+            poison = seed('poison','unread'); original = (poison/'mail.fkv').read_bytes()
+            c = start(poison); received_prompt(c); poison.chmod(0o500)
+            try:
+                c.send('read'); c.expect('Checkpoint locked: '); c.finish(1)
+            finally:
+                poison.chmod(0o700)
+            unchanged(poison,original); assert inspect(poison)['unread']==1
+            c = start(poison); received_prompt(c); finish_history(c,'read'); lock(c)
+            assert inspect(poison)['unread']==0
+            checks.append('read_write_failure_poison_locks_then_canonical_reopen_keeps_pending_and_unread')
+
+            disconnected = seed('disconnect','unread'); original = (disconnected/'mail.fkv').read_bytes()
+            c = start(disconnected); c.raw(b'h'); c.expect('Enter for next record: ')
+            os.kill(c.pid,signal.SIGKILL); os.waitpid(c.pid,0); c.done=True
+            unchanged(disconnected,original); assert inspect(disconnected)['unread']==1
+            checks.append('terminal_session_death_before_explicit_ack_never_marks_read')
+            assert all(PASS.encode() not in c.transcript for c in children)
+        finally:
+            for c in children: c.close()
+    return dict(result='pass',platform=platform.system(),count=len(checks),checks=checks,
+                private_fixture_removed=True,provider_contact=False,read_receipt_sent=False)
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--client',type=Path,required=True)
+    parser.add_argument('--fixture',type=Path,required=True)
+    parser.add_argument('--output',type=Path,required=True)
+    args=parser.parse_args()
+    result=probe(args.client.resolve(),args.fixture.resolve())
+    args.output.write_text(json.dumps(result,indent=2)+'\n')
+    print('Local unread terminal controls passed:',result['count'])

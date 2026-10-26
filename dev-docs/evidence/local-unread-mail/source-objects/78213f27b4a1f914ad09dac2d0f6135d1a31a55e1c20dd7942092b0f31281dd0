@@ -1,0 +1,2 @@
+#[path="/Users/cam/DEV/faction-bbs/crates/faction-client/src/visit_mail.rs"]
+mod visit_mail;

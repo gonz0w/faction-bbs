@@ -1,0 +1,26 @@
+[
+  {
+    "stage": "baseline",
+    "base_public_revision": "98c6971c56a9c326f05182e9dd9b9350f502aef9",
+    "files": {
+      "tools/evidence_sources.py": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+      "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+    }
+  },
+  {
+    "stage": "red-executed",
+    "files": {
+      "tools/evidence_sources.py": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+      "tools/test_evidence_decode_cache.py": "990d18c22602b97d7dec0c4c6c0bb5134ec4b887ba3c600a91b872e26769e988",
+      "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+    }
+  },
+  {
+    "stage": "candidate-01",
+    "files": {
+      "tools/evidence_sources.py": "3a659ab446cc199c893120111826e1d1bf9bd854df785a135511f39a92c6eeee",
+      "tools/test_evidence_decode_cache.py": "990d18c22602b97d7dec0c4c6c0bb5134ec4b887ba3c600a91b872e26769e988",
+      "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+    }
+  }
+]

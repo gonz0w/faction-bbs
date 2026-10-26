@@ -1,0 +1,14 @@
+from pathlib import Path
+import os,json,time,subprocess,secrets,hashlib
+p=Path('/home/factionbuild/proof216');root=Path('/home/factionbuild/source216-client');device=Path('/home/factionbuild/device216');target=Path('/home/factionbuild/target216/release')
+os.umask(0o077);earlier=json.loads((p/'native-runtime.json').read_text());assert earlier['result']=='fail' and earlier['stages'][-1]['name']=='combined' and all(x['returncode']==0 for x in earlier['stages'][:-1])
+s=json.loads((device/'settings.json').read_text());s['member_handle']='nativecompat'+secrets.token_hex(2);settings=device/'settings-compat-retry.json';assert not settings.exists();settings.write_text(json.dumps(s));settings.chmod(0o600)
+# Respect the existing eight-token/5000ms refill; never reset or tune admission.
+started=time.monotonic();time.sleep(40.1);waited=time.monotonic()-started
+cmd=['/usr/pkg/bin/python3.13','tools/probe_picker_mail_outage.py','--client',str(target/'faction-client-network'),'--checkpoint-fixture',str(target/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(target/'examples/home_mail_fixture'),'--public-ca',str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(settings),'--private-root',str(device),'--output',str(p/'native-combined-retry.json')]
+env=os.environ.copy();env.update(PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',PYTHONDONTWRITEBYTECODE='1')
+with (p/'native-combined-retry.log').open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+result={'result':'pass' if r.returncode==0 else 'fail','returncode':r.returncode,'waited_seconds':waited,'limits_unchanged':True,'failed_member_retained':True,'fresh_retry_member':True,'prior_failure_sha256':hashlib.sha256((p/'native-runtime.json').read_bytes()).hexdigest()}
+(p/'legacy-retry-summary.json').write_text(json.dumps(result,indent=2))
+if r.returncode:raise SystemExit(1)
+final=dict(earlier);final['result']='pass';final['stages']=earlier['stages'][:-1]+[dict(name='combined-retry',returncode=0,command=cmd)];final['resumed_after_preserved_admission_failure']=True;(p/'native-runtime-final.json').write_text(json.dumps(final,indent=2))

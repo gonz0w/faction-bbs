@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "passed": 157,
+  "failed": 0,
+  "ignored": 3,
+  "harnesses": 13,
+  "all_targets": true,
+  "serial_test_threads": 1,
+  "feature": "network-mail",
+  "scope": "native-NetBSD-two-core-1GiB-runtime"
+}
