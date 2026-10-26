@@ -1,0 +1,12 @@
+test_changed_pending_cursor_private_scan_or_abuse_reject (test_unread_mail_evidence.UnreadEvidence.test_changed_pending_cursor_private_scan_or_abuse_reject) ... ok
+test_classic_unicode_and_unconfigured_controls_are_not_optional (test_unread_mail_evidence.UnreadEvidence.test_classic_unicode_and_unconfigured_controls_are_not_optional) ... ok
+test_cleanup_resource_claim_and_result_tamper_reject (test_unread_mail_evidence.UnreadEvidence.test_cleanup_resource_claim_and_result_tamper_reject) ... ok
+test_complete_record_and_actual_source_bytes (test_unread_mail_evidence.UnreadEvidence.test_complete_record_and_actual_source_bytes) ... ok
+test_missing_native_controls_or_ssh_continuity_reject (test_unread_mail_evidence.UnreadEvidence.test_missing_native_controls_or_ssh_continuity_reject) ... ok
+test_required_ci_includes_the_real_unread_probe (test_unread_mail_evidence.UnreadEvidence.test_required_ci_includes_the_real_unread_probe) ... ok
+test_source_substitution_and_escaped_paths_reject (test_unread_mail_evidence.UnreadEvidence.test_source_substitution_and_escaped_paths_reject) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+OK

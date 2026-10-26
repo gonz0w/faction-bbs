@@ -1,0 +1,8 @@
+test_only_one_appended_newline_is_permitted (test_publication_bytes.PublicationBytes.test_only_one_appended_newline_is_permitted) ... ok
+test_original_record_and_original_bytes_remain_resolvable (test_publication_bytes.PublicationBytes.test_original_record_and_original_bytes_remain_resolvable) ... ok
+test_raw_substitution_and_path_escape_fail_closed (test_publication_bytes.PublicationBytes.test_raw_substitution_and_path_escape_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK

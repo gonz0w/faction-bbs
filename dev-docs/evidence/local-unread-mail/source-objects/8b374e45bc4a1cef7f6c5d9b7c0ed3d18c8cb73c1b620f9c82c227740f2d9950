@@ -1,0 +1,49 @@
+test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup) ... FAIL
+test_cache_holds_exactly_128_distinct_verified_manifest_decodings (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_cache_holds_exactly_128_distinct_verified_manifest_decodings) ... FAIL
+test_changed_historical_and_current_source_bytes_are_not_cached (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_changed_historical_and_current_source_bytes_are_not_cached) ... ok
+test_decoder_exception_does_not_change_public_call_context (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_decoder_exception_does_not_change_public_call_context) ... ok
+test_manifest_tamper_after_population_fails_and_context_is_restored (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_manifest_tamper_after_population_fails_and_context_is_restored) ... ok
+test_public_results_are_fresh_and_mutations_cannot_poison_resolution (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_public_results_are_fresh_and_mutations_cannot_poison_resolution) ... FAIL
+test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time) ... FAIL
+test_unused_later_manifest_tamper_is_not_skipped_after_cache_population (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_unused_later_manifest_tamper_is_not_skipped_after_cache_population) ... ok
+
+======================================================================
+FAIL: test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_evidence_decode_cache.py", line 166, in test_all_55_pinned_helpers_still_read_and_hash_on_every_lookup
+    self.assertEqual(loads.call_count, len(raw_values))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 110 != 55
+
+======================================================================
+FAIL: test_cache_holds_exactly_128_distinct_verified_manifest_decodings (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_cache_holds_exactly_128_distinct_verified_manifest_decodings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_evidence_decode_cache.py", line 133, in test_cache_holds_exactly_128_distinct_verified_manifest_decodings
+    self.assertEqual(loads.call_count, 128)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 129 != 128
+
+======================================================================
+FAIL: test_public_results_are_fresh_and_mutations_cannot_poison_resolution (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_public_results_are_fresh_and_mutations_cannot_poison_resolution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_evidence_decode_cache.py", line 68, in test_public_results_are_fresh_and_mutations_cannot_poison_resolution
+    self.assertEqual(loads.call_count, 3)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 5 != 3
+
+======================================================================
+FAIL: test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time (test_evidence_decode_cache.VerifiedManifestDecodeCache.test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_evidence_decode_cache.py", line 53, in test_repeated_lookup_decodes_once_but_reads_manifest_and_source_every_time
+    self.assertEqual(loads.call_count, 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 1
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.081s
+
+FAILED (failures=4)

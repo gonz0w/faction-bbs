@@ -1,0 +1,14 @@
+[
+  {
+    "name": "unread",
+    "script": "tools/check_unread_mail_evidence.py",
+    "exit_code": 0,
+    "elapsed_seconds": 12.265886
+  },
+  {
+    "name": "archive",
+    "script": "tools/check_archive_mail_evidence.py",
+    "exit_code": 0,
+    "elapsed_seconds": 5.749229
+  }
+]
