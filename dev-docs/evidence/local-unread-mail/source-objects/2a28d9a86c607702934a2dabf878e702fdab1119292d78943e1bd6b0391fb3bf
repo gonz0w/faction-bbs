@@ -1,0 +1,68 @@
+{
+  "result": "pass",
+  "cores": 2,
+  "physmem_bytes": 1054990336,
+  "stages": [
+    {
+      "name": "default-off",
+      "returncode": 0
+    },
+    {
+      "name": "native-only",
+      "returncode": 0
+    },
+    {
+      "name": "picker-vault",
+      "returncode": 0
+    },
+    {
+      "name": "online-ui",
+      "returncode": 0
+    },
+    {
+      "name": "archive-ui",
+      "returncode": 0
+    },
+    {
+      "name": "checkpoint-ui",
+      "returncode": 0
+    },
+    {
+      "name": "v1-vault",
+      "returncode": 0
+    },
+    {
+      "name": "client-omemo-tests",
+      "returncode": 0
+    },
+    {
+      "name": "picker",
+      "returncode": 0
+    },
+    {
+      "name": "unread",
+      "returncode": 0
+    },
+    {
+      "name": "visit-classic",
+      "returncode": 0
+    },
+    {
+      "name": "visit-unicode",
+      "returncode": 0
+    },
+    {
+      "name": "off-paths",
+      "returncode": 0
+    },
+    {
+      "name": "visit-oracle",
+      "returncode": 0
+    },
+    {
+      "name": "combined-retry",
+      "returncode": 0
+    }
+  ],
+  "resumed_after_preserved_admission_failure": true
+}

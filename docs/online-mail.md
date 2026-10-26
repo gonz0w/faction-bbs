@@ -124,7 +124,8 @@ peer delivery, reading or exactly-once processing. History remains available.
 
 After publishing and verifying the peer, choose **G** in the local console and
 confirm `upgrade`. This deliberately changes the encrypted checkpoint payload
-from schema 2 to schema 3; older clients reject it. Existing messages, private
+from schema 2 to schema 3; a read-enabled schema-4 checkpoint retains its read
+metadata. Older clients reject formats they do not support. Existing messages, private
 keys, trust, recovery wrappers and pending ciphertext remain. Repeating G keeps
 the existing cursor and epoch.
 
@@ -164,3 +165,7 @@ roaming under [#91](https://github.com/gonz0w/faction-bbs/issues/91), and attach
 under [#88](https://github.com/gonz0w/faction-bbs/issues/88). Multi-device use, a full
 XMPP/OMEMO conformance claim, a security audit and supported-capacity claims are
 outside this adapter. See the [technical contract](../dev-docs/native-home-mail.md).
+
+See [local unread mail](local-unread-mail.md) for explicit encrypted read decisions
+and the parked native Files-desk entry. A stale local count never establishes a
+complete home inbox, and no read receipt is transmitted.

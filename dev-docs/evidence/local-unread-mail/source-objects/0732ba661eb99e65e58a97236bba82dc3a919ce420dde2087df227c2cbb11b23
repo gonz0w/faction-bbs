@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "returncode": 0,
+  "waited_seconds": 43.09754616399999,
+  "limits_unchanged": true,
+  "failed_member_retained": true,
+  "fresh_retry_member": true,
+  "prior_failure_sha256": "9a68fd00bb864882e7776c65ddf5290e9cf45eeaac50d794e9a33d5ae9ea8e0d"
+}

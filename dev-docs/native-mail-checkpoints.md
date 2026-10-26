@@ -35,7 +35,7 @@ keeps v1's offsets, fixed KDF parameters and nonce/key sizes, but uses:
 | Outer magic, bytes 0..8 | `FACTVLT2` |
 | Wrap AAD | `Faction local mail vault v2`, NUL, purpose (`password`/`recovery`), header bytes 0..40 |
 | Payload AAD | `Faction checkpoint payload v2`, NUL, bytes 0..208 |
-| Decoded payload magic | `FACTCP02` |
+| Decoded payload magic | `FACTCP02`; explicit archive/read upgrades use `FACTCP03` / `FACTCP04`. |
 | Decrypted/file caps | 524288 / 524512 bytes |
 
 See [v1 offsets](native-mail-vault.md). No file-controlled KDF algorithm/cost
@@ -182,3 +182,8 @@ envelope. Schema 2 remains exact and has no cursor. Schema 3 atomically carries
 home/device/epoch-scoped cursor progress with protocol/history/outbox state;
 ordinary unlock never silently migrates. Recovery and official backups remain
 history-only, and local secret reset cannot restore live ratchets.
+
+The [encrypted local read-state contract](local-mail-read-state.md) defines the
+explicit FACTCP04 transition, received-frame/index-bound local acknowledgements,
+strict metadata validation and preservation through backup/recovery/fresh devices.
+No read receipt or BBS authority is added.

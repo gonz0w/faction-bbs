@@ -1,0 +1,27 @@
+"""Remove only the two remaining marked #216/#217 test roots after preservation."""
+from pathlib import Path
+import hashlib,json,os,re,shutil,subprocess
+os.umask(0o077)
+repo=Path('/Users/cam/DEV/faction-bbs');out=repo/'dev-docs/evidence/local-unread-mail'
+first=json.loads(Path('/private/tmp/faction216-teardown-proof.json').read_text())
+assert first['result']=='pass' and first['owned_vm_root_removed'] and first['owned_lab_private_inputs_removed']
+assert first['loopback_forwards_closed']==3 and first['saved_owner_stopped'] and first['saved_full_disk_hash_matches_preserved_manifest']
+roots=[(Path('/private/tmp/faction216-impl-OWNED'),'OWNERSHIP',b'Owned issue216 public source/log evidence only; disposable private fixtures are isolated and removed.\n'),(Path('/private/tmp/faction217-lead-OWNED'),'OWNED',b'Owned disposable issue216/217 lead test fixtures.\n')]
+for root,marker,expected in roots:
+ assert root.is_dir() and root.resolve()==root and not root.is_symlink() and root.stat().st_uid==os.getuid()
+ p=root/marker;assert not p.is_symlink() and p.read_bytes()==expected and p.stat().st_uid==os.getuid()
+for line in subprocess.check_output(['ps','-axo','command='],text=True).splitlines():
+ parts=line.split();first_arg=Path(parts[0]).name if parts else ''
+ if first_arg in {'cargo','rustc','faction-client','checkpoint_ui_fixture','home_mail_fixture'}:
+  assert all(str(root) not in line for root,_,_ in roots),'owned test child still active'
+# Recheck actual local counts before dropping private compiler/test logs.
+lead=roots[1][0];s=(lead/'green-menu.txt').read_bytes();assert re.search(rb'test result: ok\. 28 passed; 0 failed; 0 ignored',s)
+py=(lead/'python-all.txt').read_bytes();assert b'Ran 319 tests' in py and b'\nOK\n' in py
+summary=json.loads((out/'lead-checks.json').read_text());summary['default_rust']['private_log_sha256']=hashlib.sha256(s).hexdigest();summary['python']['private_log_sha256']=hashlib.sha256(py).hexdigest();(out/'lead-checks.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+for root,_,_ in roots:shutil.rmtree(root)
+assert all(not root.exists() for root,_,_ in roots)
+assert not Path('/private/tmp/faction216-lab-OWNED').exists() and not Path('/private/tmp/faction216-vm-oksdrpgm').exists()
+proof=dict(owned_vm_removed=True,owned_private_inputs_removed=True,ports_closed=True,saved_playground_stopped=True,saved_playground_unchanged=True)
+(out/'teardown.json').write_text(json.dumps(proof,indent=2,sort_keys=True)+'\n')
+public=dict(result='pass',driver_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),remaining_marked_roots_verified=2,all_four_owned_roots_removed=True,private_logs_exported=False,first_stage_driver_sha256=first['driver_sha256'],saved_full_disk_hash_verified=first['saved_full_disk_hash_matches_preserved_manifest'],shared_public_cache_not_targeted=True)
+Path('/private/tmp/faction216-final-teardown-proof.json').write_text(json.dumps(public,indent=2,sort_keys=True)+'\n');print(json.dumps(public))

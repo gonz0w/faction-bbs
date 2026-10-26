@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "known_generated_private_values_checked": 33,
+  "orchestration_source_entries": 45,
+  "server_project_sources": 683,
+  "client_project_sources": 691,
+  "known_private_value_matches": 0,
+  "generated_full_private_key_blocks_checked": 2,
+  "public_json_objects_checked": 37,
+  "finder_metadata_members": 0,
+  "no_runtime_logs_settings_keys_or_mail_selected": true,
+  "fixed_previously_published_synthetic_constants_are_source": true
+}

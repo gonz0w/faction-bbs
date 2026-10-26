@@ -1,0 +1,15 @@
+from lab import *
+import hashlib,sys
+mode=sys.argv[1];assert mode in {'classic','unicode'}
+stage=P/('host-visit-'+mode+'-01');stage.mkdir(mode=0o700);(stage/'OWNED').write_text('Issue216/217 owned generated sameSSH visit fixture.\n')
+code=stage/'code';code.mkdir();names=['probe_visit_mail.py','smoke_board_launcher.py','smoke_local_console.py','check_restricted_ssh.py']
+manifest={}
+for name in names:
+ source=R/'tools'/name if name=='probe_visit_mail.py' else P/'source-server-base/tools'/name
+ data=source.read_bytes();(code/name).write_bytes(data);manifest[name]=hashlib.sha256(data).hexdigest()
+(stage/'source-inputs.json').write_text(json.dumps(manifest,indent=2));b=Path('/private/tmp/faction216-impl-OWNED');ca=list((P/'source-server-base').rglob('local-ca.pem'));assert len(ca)==1
+cmd=['python3',str(code/'probe_visit_mail.py'),'--client',str(b/'final-host-network-client'),'--checkpoint-fixture',str(b/'final-host-checkpoint-fixture'),'--mail-fixture',str(b/'final-host-home-fixture'),'--public-ca',str(ca[0]),'--settings',str(P/'host-settings.json'),'--private-root',str(stage),'--output',str(stage/'result.json')]+(['--unicode'] if mode=='unicode' else [])
+r=subprocess.run(cmd,capture_output=True,timeout=300,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'));(stage/'run.private').write_bytes(r.stdout+r.stderr)
+summary={'returncode':r.returncode,'result_json_created':(stage/'result.json').exists(),'source_sha256':manifest,'mode':mode}
+if r.returncode:summary['error_class']=r.stderr.decode(errors='replace').splitlines()[-1].split(':',1)[0]
+(stage/'run-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(summary));assert r.returncode==0

@@ -1,0 +1,13 @@
+from pathlib import Path
+import os,subprocess,json,hashlib,shutil
+p=Path('/home/factionbuild/proof216');root=Path('/home/factionbuild/source216-client');target=Path('/home/factionbuild/target216');env=os.environ.copy();env.update(CARGO_HOME='/home/factionbuild/cargo216',CARGO_TARGET_DIR=str(target),CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+result={'result':'running','scope':'two-core-2GiB-compile-only','stages':[]}
+base=['cargo','build','--release','--locked','--offline','-j','1','-p','faction-client','--bin','faction-client']
+steps=[('default',base,'faction-client-default'),('native',base+['--features','native-mail'],'faction-client-native'),('network',base+['--features','network-mail'],'faction-client-network'),('fixtures',['cargo','build','--release','--locked','--offline','-j','1','-p','faction-client','--features','network-mail','--example','checkpoint_ui_fixture','--example','home_mail_fixture'],None),('tests',['cargo','test','--release','--locked','--offline','-j','1','-p','faction-client','-p','faction-omemo','--features','faction-client/network-mail,faction-omemo/native','--all-targets','--no-run'],None)]
+for name,cmd,copy in steps:
+ with (p/('client-'+name+'.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+ result['stages'].append(dict(name=name,command=cmd,returncode=r.returncode))
+ if r.returncode:result['result']='fail';(p/'client-build.json').write_text(json.dumps(result,indent=2));raise SystemExit(1)
+ if copy:shutil.copyfile(target/'release/faction-client',target/'release'/copy);(target/'release'/copy).chmod(0o755)
+ (p/'client-build.json').write_text(json.dumps(result,indent=2))
+result['result']='pass';result['artifacts_sha256']={n:hashlib.sha256((target/'release'/n).read_bytes()).hexdigest() for n in ['faction-client-default','faction-client-native','faction-client-network','examples/checkpoint_ui_fixture','examples/home_mail_fixture']};(p/'client-build.json').write_text(json.dumps(result,indent=2))

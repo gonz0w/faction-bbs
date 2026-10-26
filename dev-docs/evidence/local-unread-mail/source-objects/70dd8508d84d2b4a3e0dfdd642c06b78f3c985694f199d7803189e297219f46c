@@ -1,0 +1,74 @@
+"""Ownership-checked teardown of only the disposable #216/#217 lab and VM."""
+from pathlib import Path
+import hashlib,json,os,signal,shutil,socket,subprocess,sys,time
+os.umask(0o077)
+R=Path('/Users/cam/DEV/faction-bbs');L=Path('/private/tmp/faction216-lab-OWNED');V=Path((L/'vm-path').read_text().strip());D=R/'local/demo';before=json.loads((L/'saved-before.json').read_text());proof_path=Path('/private/tmp/faction216-teardown-proof.json')
+assert V.parent==Path('/private/tmp') and V.name.startswith('faction216-vm-') and V!=L
+roots=[V,L];source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+def ownership():
+ for root in roots:
+  assert root.is_dir() and not root.is_symlink() and root.resolve()==root and root.stat().st_uid==os.getuid()
+  marker=root/'OWNED';assert marker.is_file() and not marker.is_symlink() and marker.stat().st_uid==os.getuid() and b'216' in marker.read_bytes()
+def saved(full_hash=True):
+ for name in ['CURRENT_PREVIEW','saved/LATEST','known_hosts','ssh-admin.json']:assert hashlib.sha256((D/name).read_bytes()).hexdigest()==before[name]
+ name,size,mtime=before['disk'];disk=Path(name);s=disk.stat();assert (s.st_size,s.st_mtime_ns)==(size,mtime)
+ if full_hash:
+  expected='94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062';manifest=json.loads((disk.parent/'manifest.json').read_text());assert manifest['files']['playground.qcow2']=={'bytes':size,'sha256':expected}
+  digest=hashlib.sha256()
+  with disk.open('rb') as handle:
+   for block in iter(lambda:handle.read(1048576),b''):digest.update(block)
+  assert digest.hexdigest()==expected
+ for row in subprocess.check_output(['ps','-axo','command='],text=True).splitlines():
+  first=row.split()[0] if row.split() else ''
+  if 'qemu-system' in first or ('python' in first.lower() and 'serial-controller.py' in row):assert str(D)+'/' not in row
+
+def process(pid):
+ r=subprocess.run(['ps','-p',str(pid),'-o','uid=','-o','command='],capture_output=True,text=True)
+ if r.returncode:return None
+ fields=r.stdout.strip().split(None,1);assert len(fields)==2 and int(fields[0])==os.getuid(),'PID UID ownership changed'
+ return fields[1]
+pids={}
+def owned(name):
+ pid=pids[name];cmd=process(pid)
+ if cmd is None:return None
+ assert str(V) in cmd,'PID directory ownership changed'
+ if name=='qemu':assert 'qemu-system-aarch64' in cmd and str(V/'disk.qcow2') in cmd and '-m 1024' in cmd
+ else:assert 'python' in cmd.lower() and str(V/'serial-runtime-controller.py') in cmd
+ return pid
+ownership();saved()
+for name,file in [('qemu','runtime-qemu.pid'),('controller','runtime-controller.pid')]:
+ path=V/file;assert path.is_file() and not path.is_symlink() and path.stat().st_uid==os.getuid();pids[name]=int(path.read_text());assert pids[name]>1 and owned(name) is not None
+ports=json.loads((V/'ports.json').read_text());assert set(ports)=={'admin','member','files'} and len(set(ports.values()))==3 and all(type(v)is int and 1<=v<=65535 for v in ports.values())
+q=json.loads((V/'runtime-qemu-command.json').read_text());net=q[q.index('-netdev')+1];assert net.count('hostfwd=tcp:127.0.0.1:')==3 and q[q.index('-m')+1]=='1024'
+if sys.argv[1]=='--inspect':print(json.dumps({'result':'owned-only','marked_roots':2,'owned_runtime_processes':2,'loopback_forwards':3,'saved_owner_stopped':True,'saved_metadata_and_full_disk_hash_match':True,'driver_sha256':source_hash}));raise SystemExit()
+assert sys.argv[1]=='--stop-and-remove' and not proof_path.exists()
+a=json.loads((V/'ssh-admin.json').read_text())
+cmd='''set -e
+PATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+/usr/pkg/bin/python3.13 -c 'from pathlib import Path; import tomllib; assert "216" in Path("/etc/faction-disposable-test").read_text(); assert tomllib.loads(Path("/etc/faction/service.toml").read_text())["state_dir"]=="/var/db/faction216-board"; assert tomllib.loads(Path("/etc/faction/files.toml").read_text())["store"]=="/var/db/faction216-files"'
+/etc/rc.d/faction_files_sshd onestop
+/etc/rc.d/faction_sshd onestop
+/etc/rc.d/faction_broker onestop
+'''
+r=subprocess.run(a+[cmd],capture_output=True,timeout=45)
+if r.returncode:Path('/private/tmp/faction216-teardown-error.private').write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned service stop failed; private diagnostics retained')
+r=subprocess.run(a+['/sbin/shutdown -p now'],capture_output=True,timeout=15);assert r.returncode in [0,255]
+signals=0
+for name in ['qemu','controller']:
+ deadline=time.monotonic()+15
+ while owned(name) is not None and time.monotonic()<deadline:time.sleep(.1)
+ pid=owned(name)
+ if pid is not None:
+  os.kill(pid,signal.SIGTERM);signals+=1;deadline=time.monotonic()+5
+  while owned(name) is not None and time.monotonic()<deadline:time.sleep(.1)
+ assert owned(name) is None,'Verified owned runtime process did not stop'
+for port in ports.values():
+ try:connection=socket.create_connection(('127.0.0.1',port),timeout=.5)
+ except ConnectionRefusedError:pass
+ else:connection.close();raise AssertionError('Owned forward is still open')
+ownership();saved(False)
+for root in roots:shutil.rmtree(root)
+assert all(not root.exists() for root in roots);saved();assert hashlib.sha256(Path(__file__).read_bytes()).hexdigest()==source_hash
+proof={'result':'pass','driver_sha256':source_hash,'marked_owned_roots_verified':2,'current_runtime_process_uids_commands_verified':True,'fresh_owned_services_stopped':True,'owned_vm_shutdown':True,'owned_controller_stopped':True,'fallback_sigterm_count':signals,'loopback_forwards_closed':3,'owned_vm_root_removed':True,'owned_lab_private_inputs_removed':True,'saved_owner_stopped':True,'saved_metadata_hashes_unchanged':True,'saved_disk_size_mtime_unchanged':True,'saved_full_disk_hash_matches_preserved_manifest':True,'implementation_and_lead_roots_not_targeted':True,'shared_public_cache_not_targeted':True,'caps_or_network_policy_changed':False}
+proof_path.write_text(json.dumps(proof,indent=2)+'\n');print(json.dumps(proof))

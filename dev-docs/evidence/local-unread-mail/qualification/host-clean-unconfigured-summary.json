@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "count": 3,
+  "graphs": [
+    "default",
+    "native_only",
+    "network"
+  ]
+}

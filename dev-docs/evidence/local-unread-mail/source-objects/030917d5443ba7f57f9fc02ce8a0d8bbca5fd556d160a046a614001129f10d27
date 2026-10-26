@@ -1,0 +1,16 @@
+{
+  "artifacts_sha256": {
+    "network-client": "e261c4d823e7b5737b7a71a924bfbb6de269d0d5d1be2c2deca2d448a6a78ca2",
+    "checkpoint-fixture": "cd5c82aaa0850ac6ee62bc45220ff6fb89dcf15f76309156bab30334c2a97bac",
+    "home-fixture": "ba48c16bf968f5f5126d9da084eec0f99c0f55c1866a752647e1d95d03042682",
+    "default-client": "86a949f17ab5708690ae6530b1a3dc8cb4318b6c23204d2b7649276e55fb8778",
+    "native-only-client": "4a8c97a5a00bab0910b7089850c5bb0d20fcd5b7367b0faf57937bf61885a170"
+  },
+  "sources_sha256": {
+    "smoke_local_console.py": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99",
+    "check_restricted_ssh.py": "dd2d28d58865162d1b6c06967b6884a8dbf913968f942b8c365a1e07a0896404",
+    "probe_visit_mail.py": "af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd",
+    "off_paths.py": "e6e1eef0728ed68c3a17be167b786806764866be772c4aae38792c2748d7c8bc",
+    "smoke_board_launcher.py": "b5d557391f3efac604463fb0888f9125269a36646890593c7473be97dd16404b"
+  }
+}

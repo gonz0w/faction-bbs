@@ -68,3 +68,7 @@ files are sysop-readable community files, separate from encrypted mail attachmen
 This is an explicit action before/between visits. It adds no mail overlay during
 an SSH session, background polling, unread badge, shared login, roaming or
 attachment support. Ordinary SSH does not decrypt member-only mail.
+
+See [local unread mail](local-unread-mail.md) for explicit encrypted read tracking,
+a mail entry from the parked native Files desk and visit-local opt-in notices.
+These do not add background home polling or server-side mail decryption.

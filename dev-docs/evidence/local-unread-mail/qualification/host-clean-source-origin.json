@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "source_members": 623,
+  "source_manifest_sha256": "b88ffb3d9d9ad3ed3f83320efd31fb33b86c205cc2394cf0075841ec3250c915",
+  "product_crate_sources_match_native_capture": true,
+  "artifact_digests_identical_to_earlier_copy": true,
+  "distinct_clean_artifact_paths_actually_executed": true,
+  "earlier_records_retained": true
+}

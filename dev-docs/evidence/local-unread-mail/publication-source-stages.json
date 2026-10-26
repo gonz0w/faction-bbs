@@ -1,0 +1,47 @@
+[
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/896425fd10a12d7fff1dd3348c04a7e42b25ffceb1da17d1db1a89a5b772bc0a",
+        "sha256": "896425fd10a12d7fff1dd3348c04a7e42b25ffceb1da17d1db1a89a5b772bc0a",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/a1b1eeb05051d4b93a74ba074470fa8fb6cfdb3aa64aba06c08063bbbb596241",
+        "sha256": "a1b1eeb05051d4b93a74ba074470fa8fb6cfdb3aa64aba06c08063bbbb596241",
+        "source": "tools/test_publication_bytes.py"
+      }
+    ],
+    "label": "newline-publication-resolver-actual-red"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/433977c9803f8e482ec37249adc66d966348682cbd32e164415a256c76101eab",
+        "sha256": "433977c9803f8e482ec37249adc66d966348682cbd32e164415a256c76101eab",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/a1b1eeb05051d4b93a74ba074470fa8fb6cfdb3aa64aba06c08063bbbb596241",
+        "sha256": "a1b1eeb05051d4b93a74ba074470fa8fb6cfdb3aa64aba06c08063bbbb596241",
+        "source": "tools/test_publication_bytes.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/fe2f33c631d626c319898df7e1e7e1bfa8e9b8e59363664d47d402212e665430",
+        "sha256": "fe2f33c631d626c319898df7e1e7e1bfa8e9b8e59363664d47d402212e665430",
+        "source": "publication-repair.py"
+      }
+    ],
+    "label": "newline-publication-resolver-green-and-layout-repair"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086",
+        "sha256": "332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086",
+        "source": "initial-software-result.json"
+      }
+    ],
+    "label": "preserved-whole-initial-software-observation-record"
+  }
+]

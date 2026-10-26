@@ -10,8 +10,10 @@ Ordinary SSH never decrypts or renders this mail.
 Opt-in [manual archive catch-up](archive-mail.md) requests bounded retained-mail
 pages and atomically stores their cursor with authenticated content. Server
 retention/completeness and recipient reading are not guaranteed.
-Integrated background/picker notifications remain #99, trusted visited-board
-membership binding #91 and attachments #88. Parent #90 stays open. The earlier
+[Local unread decisions and the parked Files-desk entry](local-unread-mail.md)
+add explicit encrypted read state and opt-in stale local notices. Broader
+background notifications/private chat remain #99, trusted visited-board membership
+binding #91 and attachments #88. Native adapter coordination #90 is complete. The earlier
 [two-home reference proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 and [native interoperability qualification](../dev-docs/research/0054-omemo-interop-netbsd.md)
 remain separate immutable evidence; they do not establish full XMPP/OMEMO conformance.
@@ -51,9 +53,9 @@ No replicated password database or automatic local sysop/member privileges.
 A visited board may bind the proven home identity to a local membership record;
 that record does not become an independent copy of the home identity.
 
-The manual mail entry currently runs separately from a board visit. The integrated
-journey in #99 will keep the home inbox available across visits without copying
-mail keys into a board. A new device still needs explicit key enrollment/recovery;
+The manual console can run between visits or from the parked native Files desk
+while the same SSH connection stays open. Broader in-session continuity remains
+#99; mail keys never move into a board. A new device still needs explicit key enrollment/recovery;
 entering a home account password cannot recover old encrypted history.
 
 ## Server-blind means member-side cryptography

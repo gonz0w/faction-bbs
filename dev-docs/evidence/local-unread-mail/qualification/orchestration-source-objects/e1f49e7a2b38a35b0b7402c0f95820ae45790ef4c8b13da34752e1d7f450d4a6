@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,subprocess,shlex,os
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction216-lab-OWNED');V=Path((P/'vm-path').read_text());A=json.loads((V/'ssh-admin.json').read_text());os.umask(0o077)
+def remote(cmd,data=None,timeout=60,check=True):
+ r=subprocess.run(A+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n'+cmd],input=data,capture_output=True,timeout=timeout)
+ if check and r.returncode:
+  (P/'remote-failure.private').write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained')
+ return r
+if __name__=='__main__':
+ r=remote('uname -srm; id factionbuild; /usr/pkg/bin/rustc --version; /usr/pkg/bin/cargo --version; sysctl -n hw.physmem64 hw.ncpu; test -d /home/factionbuild/build; test -d /home/factionbuild/target',check=False)
+ print(r.stdout.decode());print('status',r.returncode)

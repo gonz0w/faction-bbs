@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "max_sessions": 8,
+  "launch_ms": 5000,
+  "experimental_capacity": false,
+  "normal_credential_permits": 2,
+  "kernel_slots": 2,
+  "owner_helper_budget": 3,
+  "file_streams": 2,
+  "file_chunk_bytes": 32768,
+  "file_max_bytes": 16777216,
+  "grant_seconds": 300,
+  "output_drain_seconds": 5,
+  "server_contract_source_unchanged": true,
+  "loopback_host_forwards_only": true,
+  "builder_cores": 2,
+  "builder_memory_mib": 2048,
+  "runtime_cores": 2,
+  "runtime_physmem_bytes": 1054990336,
+  "fresh_1GiB_build_claim": false,
+  "physical_hardware": false,
+  "capacity_claim": false
+}

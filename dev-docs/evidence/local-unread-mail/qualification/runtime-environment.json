@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "cores": 2,
+  "physmem_bytes": 1054990336,
+  "source_build_budget_gib": 2,
+  "runtime_budget_gib": 1,
+  "fresh_board": true,
+  "loopback_forward_only": true,
+  "normal_limits": true,
+  "services_started": true
+}

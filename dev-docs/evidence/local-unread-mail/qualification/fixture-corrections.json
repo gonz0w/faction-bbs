@@ -1,0 +1,32 @@
+{
+  "result": "pass",
+  "host_ps_fixture_failure": {
+    "actual_failed_source_sha256": "016a53b19ff6a864eacb7f056b285a7bad6551a1ed990b3def6493771e95ab53",
+    "phase": "owned-member-TTY-identification-before-mail-entry",
+    "observed_netbsd_ps_exit_code": 0,
+    "observed_columns": "pid-only-with-comma-suffix-as-header",
+    "corrected_source_sha256": "af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd",
+    "assertions_retained": true
+  },
+  "notice_correction": {
+    "classification": "preflight-not-reached-in-failed-attempt",
+    "off_discards_snapshot": true,
+    "enable_starts_unknown": true,
+    "opt_in_precedes_qualifying_graceful_lock": true
+  },
+  "legacy_native_admission_failure": {
+    "observed_message": "Faction SSH: terminal admission denied or session ended.",
+    "at_second_pending_member_connection": true,
+    "normal_gate_explanation_is_inference": true,
+    "failed_matrix_sha256": "9a68fd00bb864882e7776c65ddf5290e9cf45eeaac50d794e9a33d5ae9ea8e0d",
+    "one_deliberate_retry": true,
+    "limits_unchanged": true,
+    "failed_member_retained": true
+  },
+  "baseline_cleanup_observation": {
+    "host_owned_ssh_remaining": 0,
+    "guest_terminal_remaining": 0,
+    "signal_sent": false,
+    "initial_guest_observation_was_transient": true
+  }
+}

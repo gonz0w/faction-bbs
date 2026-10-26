@@ -1,0 +1,13 @@
+from lab import *
+import hashlib
+for name in ['probe_visit_mail.py','test_probe_visit_mail.py']:
+ data=(R/'tools'/name).read_bytes();(P/('baseline-'+name)).write_bytes(data)
+fixture=P/'baseline-private';fixture.mkdir(mode=0o700);(fixture/'OWNED').write_text('Issue217 missing Files E actual RED; private generated state.\n')
+b=Path('/private/tmp/faction216-impl-OWNED/baseline-target/release')
+cmd=['python3',str(R/'tools/probe_visit_mail.py'),'--client',str(b/'faction-client'),'--checkpoint-fixture',str(b/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(b/'examples/home_mail_fixture'),'--public-ca',str(P/'source-server-base/crates/faction-client/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-settings.json'),'--private-root',str(fixture),'--output',str(P/'baseline-result.json')]
+# Locate the already-published fixed CA from the frozen source membership.
+cas=list((P/'source-server-base').rglob('local-ca.pem'));assert len(cas)==1;cmd[cmd.index('--public-ca')+1]=str(cas[0])
+r=subprocess.run(cmd,capture_output=True,timeout=180);(P/'baseline-run.private').write_bytes(r.stdout+r.stderr)
+expected=b'Files lacks explicit encrypted home-mail entry'
+proof={'returncode':r.returncode,'expected_missing_entry':expected in r.stderr,'result_json_created':(P/'baseline-result.json').exists(),'client_sha256':hashlib.sha256((b/'faction-client').read_bytes()).hexdigest(),'probe_sha256':hashlib.sha256((R/'tools/probe_visit_mail.py').read_bytes()).hexdigest()}
+(P/'baseline-red-proof.json').write_text(json.dumps(proof,indent=2));print(json.dumps(proof));assert r.returncode==1 and proof['expected_missing_entry'] and not proof['result_json_created']

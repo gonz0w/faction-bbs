@@ -1,0 +1,20 @@
+from lab import *
+import sys,time,hashlib
+client,checkpoint,mail,default,native=map(Path,sys.argv[1:]);assert all(p.is_file() for p in [client,checkpoint,mail,default,native])
+artifacts={n:hashlib.sha256(p.read_bytes()).hexdigest() for n,p in [('network-client',client),('checkpoint-fixture',checkpoint),('home-fixture',mail),('default-client',default),('native-only-client',native)]}
+code=P/'host-clean-code';code.mkdir(mode=0o700)
+for name in ['probe_visit_mail.py','smoke_board_launcher.py','smoke_local_console.py','check_restricted_ssh.py']:
+ source=R/'tools'/name if name=='probe_visit_mail.py' else P/'source-server-base/tools'/name;(code/name).write_bytes(source.read_bytes())
+(code/'off_paths.py').write_bytes((P/'off_paths.py').read_bytes())
+sources={f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in code.iterdir() if f.is_file()};assert sources['probe_visit_mail.py']=='af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd'
+(P/'host-clean-execution-inputs.json').write_text(json.dumps({'artifacts_sha256':artifacts,'sources_sha256':sources},indent=2))
+ca=list((P/'source-server-base').rglob('local-ca.pem'));assert len(ca)==1
+for mode in ['classic','unicode','off']:
+ stage=P/('host-clean-'+mode);stage.mkdir(mode=0o700);(stage/'OWNED').write_text('Issue216/217 clean-source-artifact host qualification; generated private fixture.\n')
+ start=time.monotonic();time.sleep(40.1);waited=time.monotonic()-start
+ if mode=='off':cmd=['python3',str(code/'off_paths.py'),'--default',str(default),'--native',str(native),'--network',str(client),'--settings',str(P/'host-settings.json'),'--private-root',str(stage),'--tools',str(code),'--output',str(stage/'result.json')]
+ else:cmd=['python3',str(code/'probe_visit_mail.py'),'--client',str(client),'--checkpoint-fixture',str(checkpoint),'--mail-fixture',str(mail),'--public-ca',str(ca[0]),'--settings',str(P/'host-settings.json'),'--private-root',str(stage),'--output',str(stage/'result.json')]+(['--unicode'] if mode=='unicode' else [])
+ r=subprocess.run(cmd,capture_output=True,timeout=300,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'));(stage/'run.private').write_bytes(r.stdout+r.stderr)
+ summary={'returncode':r.returncode,'normal_refill_wait_seconds':waited,'limits_unchanged':True,'mode':mode};(stage/'run-summary.json').write_text(json.dumps(summary,indent=2));print(json.dumps(summary),flush=True);assert r.returncode==0
+assert artifacts=={n:hashlib.sha256(p.read_bytes()).hexdigest() for n,p in [('network-client',client),('checkpoint-fixture',checkpoint),('home-fixture',mail),('default-client',default),('native-only-client',native)]}
+print('Clean-source-artifact host classic14/Unicode14/unconfigured3 complete; earlier records retained.',flush=True)

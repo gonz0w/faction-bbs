@@ -1,0 +1,16 @@
+from lab import *
+import tarfile,hashlib,io
+commit='8768bb41a49ab1c15c834fbad2102d7522c48937'
+paths=['Cargo.toml','Cargo.lock','LICENSE','crates','tools','native','deploy','themes','gallery','library']
+data=subprocess.check_output(['git','archive','--format=tar',commit,*paths],cwd=R)
+archive=P/'source-server-base.tar';archive.write_bytes(data);source=P/'source-server-base';source.mkdir(mode=0o700)
+with tarfile.open(fileobj=io.BytesIO(data)) as t:t.extractall(source,filter='data')
+manifest={str(f.relative_to(source)):hashlib.sha256(f.read_bytes()).hexdigest() for f in source.rglob('*') if f.is_file()}
+(P/'source-server-stage.json').write_text(json.dumps(manifest,indent=2,sort_keys=True))
+(P/'server-source-origin.json').write_text(json.dumps({'commit':commit,'archive_sha256':hashlib.sha256(data).hexdigest(),'source_files':len(manifest),'mutable_worktree_copied':False}))
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source216; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source216; tar -xf - -C /home/factionbuild/source216; chown -R factionbuild:factionbuild /home/factionbuild/source216',data,180)
+script=(P/'recovered-214/28-build-server.py').read_text().replace('214','216')
+(P/'build-server.py').write_text(script)
+remote('cat > /home/factionbuild/proof216/build-server.py; chown factionbuild:factionbuild /home/factionbuild/proof216/build-server.py',script.encode())
+remote("su - factionbuild -c 'cd /home/factionbuild/source216 && nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof216/build-server.py > /home/factionbuild/proof216/build-server-launch.log 2>&1 < /dev/null &'")
+print('Frozen committed server source files:',len(manifest),'native2GiB serial build launched.')

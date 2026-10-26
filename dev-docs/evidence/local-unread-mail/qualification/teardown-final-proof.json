@@ -1,0 +1,10 @@
+{
+  "all_four_owned_roots_removed": true,
+  "driver_sha256": "97b3c6a3765667c810328c470f29708b426a878211ef3a442717d3c9426589d6",
+  "first_stage_driver_sha256": "70dd8508d84d2b4a3e0dfdd642c06b78f3c985694f199d7803189e297219f46c",
+  "private_logs_exported": false,
+  "remaining_marked_roots_verified": 2,
+  "result": "pass",
+  "saved_full_disk_hash_verified": true,
+  "shared_public_cache_not_targeted": true
+}

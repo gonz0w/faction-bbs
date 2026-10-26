@@ -71,6 +71,26 @@ fn main() -> std::io::Result<()> {
     let path = Path::new(&args[0]);
     assert!(path.is_absolute());
     let mode = args[1].as_str();
+    if mode == "inspect-unread" {
+        let v = CheckpointVault::unlock(Store::at(path, false)?, PASS, false)?;
+        let summary = v.read_summary()?;
+        let state = v.inspection()?;
+        println!(
+            "{{\"enabled\":{},\"unread\":{},\"received\":{},\"retained\":{},\"pending\":{},\"history_only\":{},\"archive_enabled\":{},\"archive_cursor_present\":{}}}",
+            summary.unread.is_some(),
+            summary
+                .unread
+                .map(|n| n.to_string())
+                .unwrap_or_else(|| "null".into()),
+            summary.received,
+            summary.retained,
+            summary.pending,
+            summary.history_only,
+            state.archive_enabled,
+            state.archive_cursor_present
+        );
+        return Ok(());
+    }
     if mode == "hostile-stream" {
         return hostile_stream();
     }
@@ -89,12 +109,13 @@ fn main() -> std::io::Result<()> {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs();
-    let created = if mode == "expired" {
+    let created = if mode == "expired" || mode == "unread-expired" {
         current - SESSION_AGE - 10
     } else {
         current
     };
-    let (mut a, _) = CheckpointVault::create(Store::at(path, true)?, data, PASS, 101, created)?;
+    let (mut a, recovery) =
+        CheckpointVault::create(Store::at(path, true)?, data, PASS, 101, created)?;
     let mut b = Device::fresh().unwrap();
     let ab = a.bundle()?;
     let bb = b.bundle().unwrap();
@@ -113,7 +134,7 @@ fn main() -> std::io::Result<()> {
         created,
         created,
     )?;
-    if mode == "archive-pending" {
+    if mode == "archive-pending" || mode.starts_with("unread") {
         a.enable_archive(created)?;
         let token = a.archive_checkpoint(created)?;
         let mut echo = outgoing.clone();
@@ -133,7 +154,11 @@ fn main() -> std::io::Result<()> {
         "bob@away.test",
         "alice@home.test",
         created,
-        "synthetic incoming",
+        if mode == "unread-unicode" {
+            "synthetic incoming λ"
+        } else {
+            "synthetic incoming"
+        },
         "synthetic received body",
     )
     .unwrap();
@@ -166,8 +191,15 @@ fn main() -> std::io::Result<()> {
             a.acknowledge([n; 16])?;
         }
     }
-    if mode == "revoked" {
+    if mode == "revoked" || mode == "unread-revoked" {
         a.revoke()?;
+    }
+    if mode.starts_with("unread") {
+        a.enable_read_tracking()?;
+    }
+    if mode == "unread-history-only" {
+        drop(a);
+        let _ = CheckpointVault::unlock(Store::at(path, false)?, &*recovery, true)?;
     }
     Ok(())
 }

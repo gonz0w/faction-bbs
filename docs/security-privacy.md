@@ -404,3 +404,10 @@ The [board guide](board-guide.md) rechecks approval/current feature gates/role a
 fetches no private resource names, content or counts. References never execute
 actions or unlock device stores. House notes are inert approved-member text;
 keys/invitation secrets do not belong in them. F1 is a main-menu entry only.
+
+[Local unread mail](local-unread-mail.md) keeps read decisions inside the encrypted
+member checkpoint. Explicit acknowledgement sends no receipt. Opt-in Files-desk
+notices contain only stale device-local counts; they never unlock or poll a home.
+Private entry requires local confirmation, parks remote rendering/input, and locks
+before bounded Files access resumes. Scrollback and timing remain visible to the
+member terminal and connection observers under the existing threat model.

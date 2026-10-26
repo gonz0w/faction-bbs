@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,hashlib
+P=Path('/private/tmp/faction216-lab-OWNED');out=P/'public-result';entries=json.loads((P/'public-source-selection.private.json').read_text());proof=json.loads((P/'source-publication-audit.json').read_text());assert proof['result']=='pass' and proof['known_private_value_matches']==0
+objects=out/'orchestration-source-objects';objects.mkdir(mode=0o700)
+refs=[]
+for e in entries:
+ data=Path(e['source_path']).read_bytes();assert hashlib.sha256(data).hexdigest()==e['sha256'];dest=objects/e['sha256']
+ if dest.exists():assert dest.read_bytes()==data
+ else:dest.write_bytes(data)
+ name=e['name'];scope='executed-orchestration-or-matching-execution-input'
+ if 'candidate01' in name or 'baseline-probe' in name:scope='actual-old-client-missing-Files-E-red'
+ elif 'candidate02' in name:scope='oracle-import-three-green-not-a-journey-run'
+ elif 'candidate03' in name:scope='actual-host-TTY-enumeration-fixture-failure'
+ elif 'candidate04' in name or 'runtime-probe' in name:scope='host-native-classic-unicode-fourteen-controls-green'
+ elif 'cleanup_baseline_child' in name:scope='rejected-selector-no-signal-sent-transient-cleanup'
+ elif name.endswith('native_runtime.py'):scope='native-passed-prefix-final-legacy-admission-failure'
+ elif 'resume-legacy' in name:scope='single-normal-window-legacy-retry-green'
+ refs.append({'name':name,'sha256':e['sha256'],'resolved_path':'orchestration-source-objects/'+e['sha256'],'scope':scope})
+(out/'orchestration-source-stages.json').write_text(json.dumps(refs,indent=2));(out/'source-publication-audit.json').write_text(json.dumps(proof,indent=2))
+manifest={str(f.relative_to(out)):hashlib.sha256(f.read_bytes()).hexdigest() for f in out.rglob('*') if f.is_file() and f.name!='manifest-source-extended.json'};(out/'manifest-source-extended.json').write_text(json.dumps(manifest,indent=2,sort_keys=True));print('Public-source-only references:',len(refs),'distinct objects:',len(list(objects.iterdir())),'originalJSONmanifest retained.')

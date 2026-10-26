@@ -1,0 +1,15 @@
+from lab import *
+import time,hashlib
+for _ in range(20):
+ try:
+  r=remote('true',timeout=5,check=False)
+  if r.returncode==0:break
+ except subprocess.TimeoutExpired:pass
+ time.sleep(1)
+else:raise RuntimeError('Owned runtime boot unavailable; inspect serial')
+r=remote('sysctl -n hw.physmem64 hw.ncpu');mem,cores=map(int,r.stdout.split());assert cores==2 and 1000000000<mem<1100000000
+remote('test -f /etc/faction-disposable-test; test -f /var/db/faction216-board/faction.sqlite3; test -d /var/db/faction216-files; /etc/rc.d/faction_broker onestart; /etc/rc.d/faction_sshd onestart; /etc/rc.d/faction_files_sshd onestart',timeout=60)
+r=remote('cat > /home/factionbuild/proof216/native-runtime.py; chown factionbuild:factionbuild /home/factionbuild/proof216/native-runtime.py',(P/'native_runtime.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof216/native-runtime.py > /home/factionbuild/proof216/native-runtime-launch.log 2>&1 < /dev/null &'")
+(P/'runtime-environment.json').write_text(json.dumps(dict(result='pass',cores=cores,physmem_bytes=mem,source_build_budget_gib=2,runtime_budget_gib=1,fresh_board=True,loopback_forward_only=True,normal_limits=True,services_started=True),indent=2))
+print('Owned current BBS/file services started against fresh state at2core/1GiB; native serial runtime qualifications launched.')

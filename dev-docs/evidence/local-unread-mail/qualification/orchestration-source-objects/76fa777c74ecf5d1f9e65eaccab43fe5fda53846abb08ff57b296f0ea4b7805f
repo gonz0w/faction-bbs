@@ -1,0 +1,16 @@
+from lab import *
+import tarfile,hashlib
+cache=Path('/private/tmp/faction209-public-cargo/registry')
+assert (cache.parent/'FACTION209_PUBLIC_ONLY').is_file()
+manifest={}
+for f in cache.rglob('*'):
+ assert not f.is_symlink()
+ if f.is_file():
+  assert f.suffix.lower() not in {'.js','.ts','.mjs','.cjs','.jsx','.tsx'} and 'node_modules' not in f.parts
+  assert f.name not in {'credentials','credentials.toml'}
+  manifest[str(f.relative_to(cache))]=hashlib.sha256(f.read_bytes()).hexdigest()
+archive=P/'public-registry.tar.gz'
+with tarfile.open(archive,'w:gz') as t:t.add(cache,arcname='registry')
+(P/'public-registry-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2))
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/cargo216; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/cargo216 /home/factionbuild/target216 /home/factionbuild/proof216; tar -xzf - -C /home/factionbuild/cargo216; chown -R factionbuild:factionbuild /home/factionbuild/cargo216',archive.read_bytes(),180)
+print('Public registry files verified and uploaded:',len(manifest),'archive bytes:',archive.stat().st_size)

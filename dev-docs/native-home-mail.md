@@ -15,6 +15,9 @@ Both paths are absolute. The caller starts from a trusted local terminal; no
 remote ANSI frame, BBS account or plugin can unlock this path. An explicit
 [private local picker entry](../docs/picker-home-mail.md) reuses the same console
 between visits; only its locally validated catalog may select the store/config.
+The [parked Files entry](local-mail-read-state.md) reuses that same pair during a
+completed native Files visit, with fresh local confirmation and no remote rendering
+or keyboard forwarding during private mail.
 Core dumps are disabled before secret input. The configuration and CA are preloaded
 before connection, using descriptor-relative `NOFOLLOW` on every path component.
 Each final file must be same-UID, regular, mode `0600`, single-link and nonempty;

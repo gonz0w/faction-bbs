@@ -1,0 +1,20 @@
+from pathlib import Path
+p=Path('/Users/cam/DEV/faction-bbs/tools/probe_visit_mail.py');s=p.read_text()
+s=s.replace("'pid=,ppid=,comm='","'pid,ppid,comm'").replace("'pid=,tty=,user=,comm='","'pid,tty,user,comm'").replace("'tty=,user=,comm='","'tty,user,comm'")
+s=s.replace("text=True).strip().split(None,2)\nassert row==", "text=True).splitlines()[-1].strip().split(None,2)\nassert row==")
+s=s.replace("children=[];checks=[];ssh_children=[];spans=[];home_password=", "children=[];checks=[];ssh_children=[];spans=[];notices=False;home_password=")
+s=s.replace("    def file_done(c):c.expect('Enter to return to Files: ');c.send('');c.expect('Back to the BBS')",'''    def files_ready(c):
+        start=len(c.transcript)-len(c.buffer)
+        c.expect(FILES);c.expect(ENTRY);c.expect('[N] Local mail notices')
+        c.expect('N turns notices off.' if notices else 'LOCAL MAIL: notices off. E opens mail.')
+        return c.transcript[start:len(c.transcript)-len(c.buffer)]
+    def file_done(c):c.expect('Enter to return to Files: ');c.send('');files_ready(c)''')
+s=s.replace('c.expect(FILES)','files_ready(c)')
+s=s.replace("        files_ready(c);c.expect(ENTRY);c.expect('[N] Local mail notices')","        c.expect(FILES);c.expect(ENTRY);c.expect('[N] Local mail notices')")
+s=s.replace("            c.raw(b'n');c.expect('LOCAL MAIL / LOCKED: unread unknown.');files_ready(c)\n            c.raw(b'n');c.expect('LOCAL MAIL: notices off. E opens mail.');files_ready(c)","            notices=True;c.raw(b'n');screen=files_ready(c);assert b'LOCAL MAIL / LOCKED: unread unknown.' in screen\n            notices=False;c.raw(b'n');files_ready(c)")
+s=s.replace("            begin_private();c.send(PASS);c.expect(MAIL);history('');remote_start=len(c.transcript);c.raw(b'l');files_ready(c)\n            state_check();assert unread()['unread']==1;checks.append(CHECKS[6])\n            c.raw(b'n');c.expect('LOCAL MAIL / LOCKED');c.expect('stale local snapshot; home not polled.');c.expect('unread: 1');c.expect('retained: 3; pending: 2');files_ready(c)","            notices=True;c.raw(b'n');screen=files_ready(c);assert b'LOCAL MAIL / LOCKED: unread unknown.' in screen\n            begin_private();c.send(PASS);c.expect(MAIL);history('');remote_start=len(c.transcript);c.raw(b'l');screen=files_ready(c)\n            state_check();assert unread()['unread']==1;checks.append(CHECKS[6])\n            assert all(x in screen for x in [b'LOCAL MAIL / LOCKED',b'stale local snapshot; home not polled.',b'unread: 1',b'retained: 3; pending: 2'])")
+s=s.replace("history('read');remote_start=len(c.transcript);c.raw(b'l');files_ready(c)","history('read');remote_start=len(c.transcript);c.raw(b'l');screen=files_ready(c)")
+s=s.replace("            assert b'unread: 0' in c.transcript[-2048:]\n            c.raw(b'n');c.expect('LOCAL MAIL: notices off. E opens mail.');files_ready(c)","            assert b'unread: 0' in screen\n            notices=False;c.raw(b'n');files_ready(c)")
+s=s.replace("            begin_private();c.send(PASS);c.expect(MAIL);remote_start=len(c.transcript);c.raw(b'l');files_ready(c)\n            assert_same_visit", "            notices=True;c.raw(b'n');screen=files_ready(c);assert b'LOCAL MAIL / LOCKED: unread unknown.' in screen\n            begin_private();c.send(PASS);c.expect(MAIL);remote_start=len(c.transcript);c.raw(b'l');screen=files_ready(c);assert b'unread: 0' in screen\n            assert_same_visit")
+s=s.replace("            c.raw(b'n');c.expect('LOCAL MAIL / LOCKED');c.expect('unread: 0');files_ready(c)\n",'')
+p.write_text(s);Path('/private/tmp/faction216-lab-OWNED/probe_visit_mail-candidate04.py').write_text(s)

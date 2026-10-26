@@ -1,0 +1,151 @@
+from pathlib import Path
+p=Path('/private/tmp/faction216-lab-OWNED');s=(p/'probe_visit_mail-candidate01.py').read_text()
+s=s.replace('import termios','import termios\nimport select\nimport time\nimport signal')
+a=s.index('CHECKS = [');b=s.index('ENTRY =',a)
+s=s[:a]+'''CHECKS = [
+    'independent_registration_pending_and_explicit_approval',
+    'actual_home_tcp_refusal_preserves_encrypted_state',
+    'local_confirmation_cancel_and_dropped_typeahead_same_ssh',
+    'wrong_unlock_and_canceled_unlock_lock_return_same_ssh',
+    'bounded_hostile_remote_output_quiescent_during_hidden_prompt',
+    'home_outage_history_pending_cursor_exact_same_ssh',
+    'explicit_encrypted_tracking_upgrade_and_skip_preserve_unread',
+    'explicit_post_body_read_acknowledgement_persists_locally',
+    'opt_in_generic_locked_stale_notices_only_at_files',
+    'fresh_hidden_unlock_and_locked_return_same_ssh',
+    'same_ssh_approved_files_restricted_sftp_review_download',
+    'normal_return_to_bbs_and_same_ssh_files_reentry',
+    'private_view_ssh_disconnect_fails_closed_without_redial',
+    'private_markers_absent_remote_transcript_database_store_logs',
+]
+''' +s[b:]
+pos=s.index('SCAN = ')
+s=s[:pos]+'''def drain_ready(c, seconds=.2):
+    end=time.monotonic()+seconds
+    while time.monotonic()<end:
+        if select.select([c.fd],[],[],min(.02,max(0,end-time.monotonic())))[0]:
+            data=os.read(c.fd,8192)
+            if not data:break
+            c.transcript+=data;c.buffer+=data
+
+
+TERMINALS = r\'''import json,subprocess
+from pathlib import Path
+assert Path('/etc/faction-disposable-test').is_file()
+rows=[]
+for line in subprocess.check_output(['ps','-axo','pid=,tty=,user=,comm='],text=True).splitlines():
+ f=line.strip().split(None,3)
+ if len(f)==4 and f[2]=='factionterm' and f[3]=='/usr/local/libexec/faction-tty':rows.append({'pid':int(f[0]),'tty':f[1]})
+print(json.dumps(rows))
+\'''
+HOSTILE = r\'''import json,sys,os,time,stat,pwd,subprocess
+from pathlib import Path
+assert Path('/etc/faction-disposable-test').is_file()
+s=json.load(sys.stdin);pid=s['pid'];tty=s['tty'];assert type(pid)is int and pid>1 and tty.startswith('pts/') and tty[4:].isdigit()
+row=subprocess.check_output(['ps','-p',str(pid),'-o','tty=,user=,comm='],text=True).strip().split(None,2)
+assert row==[tty,'factionterm','/usr/local/libexec/faction-tty']
+path='/dev/'+tty;st=os.stat(path);assert stat.S_ISCHR(st.st_mode) and st.st_uid==pwd.getpwnam('factionterm').pw_uid
+payload=(b'PUBLIC_HOSTILE_VISIT_MARKER\\x1b[31m\\x1b[0m\\r\\n'*32768)[:1048576]
+fd=os.open(path,os.O_WRONLY|os.O_NONBLOCK);n=0;deadline=time.monotonic()+.75
+try:
+ while n<len(payload) and time.monotonic()<deadline:
+  try:n+=os.write(fd,payload[n:n+32768])
+  except BlockingIOError:time.sleep(.005)
+finally:os.close(fd)
+assert n>0
+print(json.dumps({'written':n,'maximum':1048576,'chunk':32768,'writer_finished':True,'owned_tty_verified':True}))
+\'''
+
+
+''' +s[pos:]
+s=s.replace('children=[];checks=[];home_password=', 'children=[];checks=[];ssh_children=[];spans=[];home_password=')
+s=s.replace("handle=settings['member_handle'];", "handle=settings['member_handle']+secrets.token_hex(3);")
+s=s.replace("            c=LauncherConsole([a.client,'--boards',catalog]);", "            guest_before={r['pid'] for r in json.loads(remote(TERMINALS))}\n            c=LauncherConsole([a.client,'--boards',catalog]+(['--unicode'] if a.unicode else []));")
+s=s.replace("            # The old client must fail here", "            visit=visit_processes(c.pid);ssh_children.append(visit)\n            guest_new=[r for r in json.loads(remote(TERMINALS)) if r['pid'] not in guest_before];assert len(guest_new)==1\n            private(root/'member-tty-identity.json',json.dumps(guest_new[0]))\n            # The old client must fail here")
+a=s.index('            visit=visit_processes(c.pid);spans=[];remote_start=0');b=s.index('            payload=bytes',a)
+s=s[:a]+'''            remote_start=0
+            assert b'LOCAL MAIL: notices off. E opens mail.' in c.transcript
+            c.raw(b'n');c.expect('LOCAL MAIL / LOCKED: unread unknown.');c.expect(FILES)
+            c.raw(b'n');c.expect('LOCAL MAIL: notices off. E opens mail.');c.expect(FILES)
+            c.raw(b'ey\\n');c.expect(LOCAL_CONFIRM);drain_ready(c)
+            assert UNLOCK.encode() not in c.buffer, 'queued confirmation opened private mail'
+            c.send('n');c.expect(FILES)
+            assert_same_visit(visit,visit_processes(c.pid));state_check();checks.append(CHECKS[2])
+            def begin_private():
+                c.raw(b'e');c.expect(LOCAL_CONFIRM);c.send('y');c.expect(UNLOCK)
+                assert not termios.tcgetattr(c.fd)[3]&termios.ECHO
+                spans.append((remote_start,len(c.transcript)))
+            begin_private();c.send('wrong synthetic local passphrase');c.expect('Enter to return to local Files: ');c.send('');c.expect(FILES);remote_start=len(c.transcript)
+            state_check();assert_same_visit(visit,visit_processes(c.pid))
+            begin_private();c.raw(b'\\x03');c.expect(FILES);remote_start=len(c.transcript)
+            state_check();assert_same_visit(visit,visit_processes(c.pid));checks.append(CHECKS[3])
+            begin_private();private_start=len(c.transcript)
+            hostile=json.loads(remote(HOSTILE,json.dumps(guest_new[0]).encode()));drain_ready(c)
+            assert b'PUBLIC_HOSTILE_VISIT_MARKER' not in c.transcript[private_start:]
+            c.send(PASS);c.expect(MAIL)
+            for action,message in [(b'n','Home cycle stopped; pending ciphertext retained.'),(b'a','Catch-up stopped; earlier accepted entries may already be saved.')]:
+                c.raw(action);c.password(home_password,HOME);c.expect(message);pause_mail(c)
+            c.raw(b'h');c.expect('Authenticated history: 3/64')
+            for _ in range(3):c.expect('Enter for next record: ');c.send('')
+            pause_mail(c);assert subject.encode() in c.transcript and body.encode() in c.transcript
+            c.raw(b'o');c.expect('Durable pending ciphertext; delivery remains unproven.')
+            for pending in before['pending']:c.expect('Operation: '+pending['operation'])
+            pause_mail(c);c.raw(b'l');c.expect(FILES);remote_start=len(c.transcript)
+            assert b'PUBLIC_HOSTILE_VISIT_MARKER' not in c.transcript[private_start:]
+            state_check();assert_same_visit(visit,visit_processes(c.pid));checks.extend(CHECKS[4:6])
+            def unread():
+                r=subprocess.run([str(a.checkpoint_fixture),str(store),'inspect-unread'],capture_output=True,timeout=30)
+                assert r.returncode==0;return json.loads(r.stdout)
+            assert unread()['enabled'] is False
+            begin_private();c.send(PASS);c.expect(MAIL);c.raw(b'e');c.expect('Type enable to add encrypted local read tracking: ');c.send('enable');c.expect('Encrypted local read tracking enabled.');pause_mail(c)
+            c.raw(b'l');c.expect(FILES);remote_start=len(c.transcript)
+            upgraded=snapshot();require_only_read_metadata_changed(before,upgraded)
+            assert unread()['unread']==1 and unread()['retained']==3 and unread()['pending']==2
+            before=upgraded
+            def history(answer):
+                c.raw(b'h');c.expect('Authenticated history: 3/64')
+                for index in range(3):
+                    if index==1:
+                        c.expect('Type read to acknowledge locally, or Enter to keep current state: ');c.send(answer)
+                        if answer=='read':c.expect('Acknowledged on this device only; no read receipt sent.')
+                    c.expect('Enter for next record: ');c.send('')
+                pause_mail(c)
+            begin_private();c.send(PASS);c.expect(MAIL);history('');c.raw(b'l');c.expect(FILES);remote_start=len(c.transcript)
+            state_check();assert unread()['unread']==1;checks.append(CHECKS[6])
+            c.raw(b'n');c.expect('LOCAL MAIL / LOCKED');c.expect('stale local snapshot; home not polled.');c.expect('unread: 1');c.expect('retained: 3; pending: 2');c.expect(FILES)
+            begin_private();c.send(PASS);c.expect(MAIL);history('read');c.raw(b'l');c.expect(FILES);remote_start=len(c.transcript)
+            acknowledged=snapshot();require_only_read_metadata_changed(before,acknowledged);assert unread()['unread']==0;before=acknowledged
+            checks.append(CHECKS[7])
+            assert b'unread: 0' in c.transcript[-2048:]
+            c.raw(b'n');c.expect('LOCAL MAIL: notices off. E opens mail.');c.expect(FILES)
+            checks.append(CHECKS[8])
+            begin_private();c.send(PASS);c.expect(MAIL);c.raw(b'l');c.expect(FILES);remote_start=len(c.transcript)
+            assert_same_visit(visit,visit_processes(c.pid));state_check();assert unread()['unread']==0;checks.append(CHECKS[9])
+''' +s[b:]
+a=s.index("            c.raw(b'b');board_menu(c);c.raw(b'q');");b=s.index('            return result',a)
+s=s[:a]+'''            assert_same_visit(visit,visit_processes(c.pid));state_check();checks.append(CHECKS[10])
+            c.raw(b'b');board_menu(c);c.raw(b'f');c.expect(FILES);assert_same_visit(visit,visit_processes(c.pid));checks.append(CHECKS[11])
+            begin_private();c.send(PASS);c.expect(MAIL)
+            assert_same_visit(visit,visit_processes(c.pid));os.kill(visit['ssh'],signal.SIGTERM)
+            history('');c.raw(b'l');c.expect('Connection stopped: ');c.expect(RETURN);remote_start=len(c.transcript);c.send('');c.expect(PICK)
+            assert os.waitpid(picker_pid,os.WNOHANG)==(0,0)
+            lines=subprocess.check_output(['ps','-axo','pid=,ppid=,comm='],text=True).splitlines()
+            assert not any(len(f:=line.split())>=3 and f[1]==str(picker_pid) and Path(f[2]).name=='ssh' for line in lines)
+            c.raw(b'q');c.finish();spans.append((remote_start,len(c.transcript)));assert termios.tcgetattr(c.fd)[3]&termios.ECHO
+            checks.append(CHECKS[12])
+            sysop.send('back');board_menu(sysop);sysop.raw(b'q');sysop.expect('Logged out.');sysop.finish()
+            require_private_absent(c.transcript,spans,[v.encode() for v in marker_values])
+            assert all(home_password.encode() not in child.transcript and PASS.encode() not in child.transcript for child in children)
+            scan=validate_scan(json.loads(remote(SCAN,json.dumps(dict(markers=marker_values,board=settings['scan_board'],store=settings['scan_store'],log=settings['scan_logs'])).encode())))
+            checks.append(CHECKS[13]);state_check();require_closed_endpoint(closed_endpoint)
+            assert checks==CHECKS
+            result=dict(result='pass',platform=platform.system(),scope='same-ssh-parked-files-local-mail-restricted-sftp',count=len(checks),checks=checks,unicode=a.unicode,same_client_pid=True,same_ssh_pid_until_explicit_disconnect=True,home_outage_canonical_unchanged=True,history_unchanged=True,pending_ids_unchanged=True,archive_token_unchanged=True,nonempty_cursor=True,local_read_upgrade_and_acknowledgement=True,unread_before_ack=1,unread_after_ack=0,approved_member=True,restricted_sftp=True,payload_bytes=len(payload),payload_sha256=digest,privacy_scan=scan,home_transport_error='Connect',hostile_output=hostile,remote_disconnect_failed_closed=True,no_automatic_redial=True,terminal_restored=True,physical_hardware=False,capacity_claim=False,private_fixture_retained_for_lead=True)
+            private(root/'private-inputs.json',json.dumps(dict(home_password=home_password,subject=subject,body=body,store=str(store))))
+''' +s[b:]
+s=s.replace('        for c in children:c.close()', '''        for visit in ssh_children:
+            try:
+                if visit_processes(visit['client'])==visit:os.kill(visit['ssh'],signal.SIGTERM)
+            except (AssertionError,ChildProcessError,ProcessLookupError):pass
+        for c in children:c.close()''')
+s=s.replace('    a=p.parse_args()',"    p.add_argument('--unicode',action='store_true')\n    a=p.parse_args()")
+(p/'probe_visit_mail-candidate02.py').write_text(s)

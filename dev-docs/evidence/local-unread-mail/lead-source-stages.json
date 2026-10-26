@@ -1,0 +1,255 @@
+[
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/83caca17366b328391a4e7cb88c24d379732d79d5aba6faf796c5e4e8409b609",
+        "sha256": "83caca17366b328391a4e7cb88c24d379732d79d5aba6faf796c5e4e8409b609",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/11d9ebbb3e9557d0db0894eeaa70826682e9c9d2580742947491101937446594",
+        "sha256": "11d9ebbb3e9557d0db0894eeaa70826682e9c9d2580742947491101937446594",
+        "source": "tools/test_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/c92a02ba57da34c2f32bfbe3cbe25e769c9cc85904ea34e8702f8c3591581f85",
+        "sha256": "c92a02ba57da34c2f32bfbe3cbe25e769c9cc85904ea34e8702f8c3591581f85",
+        "source": ".github/workflows/documentation.yml"
+      }
+    ],
+    "label": "lead-actual-visit-schema-red-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/774d8de5474d268049638bcaed03725f443e1ed46405ea8403063e544af51e06",
+        "sha256": "774d8de5474d268049638bcaed03725f443e1ed46405ea8403063e544af51e06",
+        "source": "tools/test_picker_evidence_bytes.py"
+      },
+      {
+        "path": "dev-docs/evidence/picker-mail/lead-source-objects/84c0e186db07c582f23c7c2bccfbde67d4c7e03ac1f66a038b27fc61a890ab60",
+        "sha256": "84c0e186db07c582f23c7c2bccfbde67d4c7e03ac1f66a038b27fc61a890ab60",
+        "source": ".gitattributes"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/ecc1e9414d4ee037d6ddb2fe418b853f96188e83cb39607caf040b151976fbd8",
+        "sha256": "ecc1e9414d4ee037d6ddb2fe418b853f96188e83cb39607caf040b151976fbd8",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/730783b82c42f7374646dcbc78c4d42b128793389d8186ad5c697b45e4f791ed",
+        "sha256": "730783b82c42f7374646dcbc78c4d42b128793389d8186ad5c697b45e4f791ed",
+        "source": "tools/test_unread_mail_evidence.py"
+      }
+    ],
+    "label": "lead-bytes-pre-attributes-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/83caca17366b328391a4e7cb88c24d379732d79d5aba6faf796c5e4e8409b609",
+        "sha256": "83caca17366b328391a4e7cb88c24d379732d79d5aba6faf796c5e4e8409b609",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/99f7d6631e136e157d796f4984caa9d7759234ec4021a846ddbe0f30b396de7f",
+        "sha256": "99f7d6631e136e157d796f4984caa9d7759234ec4021a846ddbe0f30b396de7f",
+        "source": "tools/test_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+        "sha256": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+        "source": "tools/evidence_sources.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0",
+        "sha256": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0",
+        "source": "tools/test_evidence_sources.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/b994cf8b411d9cbee95c6d14d75c50afa20bb1f2e03e826be90cb2d38b9f7329",
+        "sha256": "b994cf8b411d9cbee95c6d14d75c50afa20bb1f2e03e826be90cb2d38b9f7329",
+        "source": "tools/test_unread_baseline.py"
+      },
+      {
+        "path": "dev-docs/evidence/picker-mail/lead-source-objects/193a168bc86f7fea32127c6ffa3b93685cbdff5a8496b081301c28c62b07b9a9",
+        "sha256": "193a168bc86f7fea32127c6ffa3b93685cbdff5a8496b081301c28c62b07b9a9",
+        "source": ".github/workflows/documentation.yml"
+      }
+    ],
+    "label": "lead-evidence-pre-ci-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/0c72961f2a5176bbfaa679048ff72ef5e0ce5c3a823fde73a3b4045fd957b1b0",
+        "sha256": "0c72961f2a5176bbfaa679048ff72ef5e0ce5c3a823fde73a3b4045fd957b1b0",
+        "source": "crates/faction-client/src/main.rs"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/98770e98cdf07bceda811541cc7173f0e5a0dc7c7913ea233c6705c93a6cb8f0",
+        "sha256": "98770e98cdf07bceda811541cc7173f0e5a0dc7c7913ea233c6705c93a6cb8f0",
+        "source": "crates/faction-client/src/visit_mail.rs"
+      }
+    ],
+    "label": "lead-formatted-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/106238181b5e43d15ddb10d0017db02c8bb97319952af2aa136b42366909e621",
+        "sha256": "106238181b5e43d15ddb10d0017db02c8bb97319952af2aa136b42366909e621",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/dc9f9cf690d2a8f71403172c0fc1f6986a2480524194a4a7c734963fe2227e49",
+        "sha256": "dc9f9cf690d2a8f71403172c0fc1f6986a2480524194a4a7c734963fe2227e49",
+        "source": "tools/test_unread_mail_evidence.py"
+      }
+    ],
+    "label": "lead-full-route-red-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/d95356ac3de4c02b89da22e3f2ea86cff4a0f5b3befa20a75258c46ff31a53e0",
+        "sha256": "d95356ac3de4c02b89da22e3f2ea86cff4a0f5b3befa20a75258c46ff31a53e0",
+        "source": "crates/faction-client/src/visit_mail.rs"
+      }
+    ],
+    "label": "lead-green-compact-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/8383790ff41e9b08bc664a43ee6cbbf6ec4e86b8737fa4970d99d7a6770645a3",
+        "sha256": "8383790ff41e9b08bc664a43ee6cbbf6ec4e86b8737fa4970d99d7a6770645a3",
+        "source": "crates/faction-client/src/main.rs"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/d9b3486236f6a18716a66ff34f357ded01af7671d44c612ffbe7309bb0073186",
+        "sha256": "d9b3486236f6a18716a66ff34f357ded01af7671d44c612ffbe7309bb0073186",
+        "source": "crates/faction-client/src/visit_mail.rs"
+      }
+    ],
+    "label": "lead-green-menu-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/b58a965fdc495a29d6722573ee605d691b7e2760b4436ba6e4b5a26cfd8dad67",
+        "sha256": "b58a965fdc495a29d6722573ee605d691b7e2760b4436ba6e4b5a26cfd8dad67",
+        "source": "crates/faction-client/src/main.rs"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/399d7ac36dec564ae93a6aeaf301338027186c1efb0a0411e0b9f991bd40909f",
+        "sha256": "399d7ac36dec564ae93a6aeaf301338027186c1efb0a0411e0b9f991bd40909f",
+        "source": "crates/faction-client/src/visit_mail.rs"
+      }
+    ],
+    "label": "lead-green-state-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/2345c6e030a420def4ca23bb80bc2de6c1d8af45c66d089211f353ec5b234bc9",
+        "sha256": "2345c6e030a420def4ca23bb80bc2de6c1d8af45c66d089211f353ec5b234bc9",
+        "source": "crates/faction-client/src/visit_mail.rs"
+      }
+    ],
+    "label": "lead-red-compact-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/5c20c051b162c8296e07293e1486e0df0c8f35d4ee1046a070b26dff6d264540",
+        "sha256": "5c20c051b162c8296e07293e1486e0df0c8f35d4ee1046a070b26dff6d264540",
+        "source": "crates/faction-client/src/main.rs"
+      }
+    ],
+    "label": "lead-red-entries-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/b58a965fdc495a29d6722573ee605d691b7e2760b4436ba6e4b5a26cfd8dad67",
+        "sha256": "b58a965fdc495a29d6722573ee605d691b7e2760b4436ba6e4b5a26cfd8dad67",
+        "source": "crates/faction-client/src/main.rs"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/dfff77d88fedc556dea2d045570b66849ac3a500e176127908499b0b1845d289",
+        "sha256": "dfff77d88fedc556dea2d045570b66849ac3a500e176127908499b0b1845d289",
+        "source": "crates/faction-client/src/visit_mail.rs"
+      }
+    ],
+    "label": "lead-red-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/78213f27b4a1f914ad09dac2d0f6135d1a31a55e1c20dd7942092b0f31281dd0",
+        "sha256": "78213f27b4a1f914ad09dac2d0f6135d1a31a55e1c20dd7942092b0f31281dd0",
+        "source": "owned-state-test-wrapper.rs"
+      }
+    ],
+    "label": "lead-state-wrapper-source",
+    "scope": "exact captured local unit/policy test input; actual red/green and correction scope recorded in issues216/217"
+  },
+  {
+    "files": [
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/ecc1e9414d4ee037d6ddb2fe418b853f96188e83cb39607caf040b151976fbd8",
+        "sha256": "ecc1e9414d4ee037d6ddb2fe418b853f96188e83cb39607caf040b151976fbd8",
+        "source": "tools/check_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/730783b82c42f7374646dcbc78c4d42b128793389d8186ad5c697b45e4f791ed",
+        "sha256": "730783b82c42f7374646dcbc78c4d42b128793389d8186ad5c697b45e4f791ed",
+        "source": "tools/test_unread_mail_evidence.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/774d8de5474d268049638bcaed03725f443e1ed46405ea8403063e544af51e06",
+        "sha256": "774d8de5474d268049638bcaed03725f443e1ed46405ea8403063e544af51e06",
+        "source": "tools/test_picker_evidence_bytes.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+        "sha256": "06f1dfc977a273028f2a4c0e1095251ad247c4025f3a7c865ff3b1bdbaf65c23",
+        "source": "tools/evidence_sources.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0",
+        "sha256": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0",
+        "source": "tools/test_evidence_sources.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/b994cf8b411d9cbee95c6d14d75c50afa20bb1f2e03e826be90cb2d38b9f7329",
+        "sha256": "b994cf8b411d9cbee95c6d14d75c50afa20bb1f2e03e826be90cb2d38b9f7329",
+        "source": "tools/test_unread_baseline.py"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/c92a02ba57da34c2f32bfbe3cbe25e769c9cc85904ea34e8702f8c3591581f85",
+        "sha256": "c92a02ba57da34c2f32bfbe3cbe25e769c9cc85904ea34e8702f8c3591581f85",
+        "source": ".github/workflows/documentation.yml"
+      },
+      {
+        "path": "dev-docs/evidence/local-unread-mail/source-objects/e736b1bf4986c5e6bed5294ad18eec5dc6b5ba0b8aba68ea02323a2054486d04",
+        "sha256": "e736b1bf4986c5e6bed5294ad18eec5dc6b5ba0b8aba68ea02323a2054486d04",
+        "source": ".gitattributes"
+      }
+    ],
+    "label": "lead-final-policy-and-tool-inputs-before-result-pin",
+    "scope": "unpinned checker implementation; final reviewed checker differs only in expected result digest"
+  }
+]

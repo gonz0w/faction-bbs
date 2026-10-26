@@ -1,0 +1,44 @@
+{
+  "byte_preservation": {
+    "both_evidence_folders": true,
+    "result": "pass"
+  },
+  "default_clippy": {
+    "all_targets": true,
+    "deny_warnings": true,
+    "profile": "dev",
+    "result": "pass"
+  },
+  "default_rust": {
+    "failed": 0,
+    "passed": 28,
+    "private_log_sha256": "8cc81f4853633d888dc7c683aea69de9a5836594aec2e1935297c085e3edd15b",
+    "profile": "debug"
+  },
+  "evidence_guard": {
+    "failed": 0,
+    "passed": 7
+  },
+  "notice_state": {
+    "compact_columns": 39,
+    "failed": 0,
+    "passed": 4
+  },
+  "oracle": {
+    "failed": 0,
+    "passed": 3
+  },
+  "python": {
+    "failed": 0,
+    "passed": 319,
+    "private_log_sha256": "f8938a89f50643fba6111f8beda436db4e4ba56b96cf21684dfe27615d6a234c",
+    "scope": "full host tool suite before final result pin"
+  },
+  "raw_logs_exported": false,
+  "runtime_fixture_files_exported": false,
+  "source_preservation": {
+    "existing_resolver_tests": 12,
+    "new_baseline_tests": 2,
+    "result": "pass"
+  }
+}

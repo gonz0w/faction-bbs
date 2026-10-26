@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "server_members": 683,
+  "client_members": 691,
+  "runtime_members": 691,
+  "finder_metadata_files": 0,
+  "python_cache_files": 0,
+  "server_source_git_selected": true,
+  "client_capture_explicit_metadata_exclusion": true,
+  "runtime_python_overrides": 1
+}

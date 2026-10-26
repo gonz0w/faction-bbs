@@ -43,7 +43,8 @@ trust a remote terminal-capability claim.
 | --- | --- |
 | P | Inspect your full public Ed25519 identity, device ID and enrolled peer. |
 | V | Enroll one peer after independently comparing the full typed `ed25519:` identity and device ID. |
-| H | Read authenticated local history and retained outbound operation IDs. |
+| H | Read authenticated local history and retained outbound operation IDs; upgraded received records offer explicit local acknowledgement. |
+| E | Deliberately enable encrypted local read tracking after confirmation. |
 | O | Inspect durable pending ciphertext IDs and bounded metadata. |
 | T | Explicitly retire one pending operation or all pending ciphertext. |
 | R | Revoke the enrolled peer locally. This does not revoke their remote device or copies. |
@@ -113,3 +114,7 @@ existing setup, recovery and inspection behavior.
 The online console offers a deliberate [archive schema upgrade](archive-mail.md).
 It retains the v2 encryption envelope and opts into payload schema 3. This offline
 console can read that authenticated history, but opens no archive connection.
+
+[Local unread mail](local-unread-mail.md) describes the separate explicit read-state
+upgrade, received-only local counts and post-body `read` acknowledgement. Enabling
+tracking opens no network connection. Older checkpoints stay unchanged until opt-in.

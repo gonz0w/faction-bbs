@@ -35,7 +35,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   encrypted subject/body exchange and durable pending ciphertext. Keys and
   decryption stay on the member's device. Opt-in [archive catch-up](docs/archive-mail.md)
   saves bounded offline pages with an encrypted cursor. An explicit
-  [picker E entry](docs/picker-home-mail.md) opens native mail between board visits. Background notifications,
+  [picker E entry](docs/picker-home-mail.md) opens native mail between board visits.
+  [Local read tracking and Files-desk mail](docs/local-unread-mail.md) add encrypted
+  unread decisions and a parked in-session entry. Background notifications,
   encrypted attachments and roaming remain incomplete.
 
 ## What you can do

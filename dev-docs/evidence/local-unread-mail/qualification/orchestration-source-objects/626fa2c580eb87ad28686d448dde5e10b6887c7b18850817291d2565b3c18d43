@@ -1,0 +1,10 @@
+from lab import *
+import re
+names=['native-default-off','native-native-only','native-picker-vault','native-online-ui','native-archive-ui','native-checkpoint-ui','native-v1-vault','native-picker','native-unread','native-visit-classic','native-visit-unicode','native-off-paths']
+summary={}
+for name in names:
+ data=remote('cat /home/factionbuild/proof216/'+name+'.json').stdout;j=json.loads(data);assert j['result']=='pass';(P/(name+'.json')).write_bytes(data);summary[name]=j.get('count',len(j.get('checks',[])))
+log=remote('cat /home/factionbuild/proof216/native-client-omemo-tests.log').stdout;(P/'native-rust.private.log').write_bytes(log)
+rows=[tuple(map(int,v)) for v in re.findall(rb'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;',log)];assert rows
+rust={'result':'pass','passed':sum(v[0] for v in rows),'failed':sum(v[1] for v in rows),'ignored':sum(v[2] for v in rows),'harnesses':len(rows),'all_targets':True,'serial_test_threads':1,'feature':'network-mail','scope':'native-NetBSD-two-core-1GiB-runtime'};assert rust['failed']==0
+(P/'native-rust-summary.json').write_text(json.dumps(rust,indent=2));print(json.dumps({'controls':summary,'rust':rust}))

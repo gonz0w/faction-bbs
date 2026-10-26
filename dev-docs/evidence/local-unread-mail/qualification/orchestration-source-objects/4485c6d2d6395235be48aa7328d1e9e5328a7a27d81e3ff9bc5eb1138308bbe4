@@ -1,0 +1,24 @@
+from lab import *
+command='''
+for service in faction_files_sshd faction_sshd faction_broker faction_doors; do
+ if test -x /etc/rc.d/$service; then /etc/rc.d/$service onestop >/dev/null 2>&1 || true; fi
+done
+mkdir -p /etc/rc.conf.d
+for service in faction_files_sshd faction_sshd faction_broker faction_doors; do
+ printf '%s=NO\\n' "$service" > /etc/rc.conf.d/$service
+done
+printf 'Owned disposable issue216/217 software fixture\\n' > /etc/faction-disposable-test
+chmod 644 /etc/faction-disposable-test
+uname -srm
+/usr/pkg/bin/rustc --version
+/usr/pkg/bin/cargo --version
+/usr/pkg/bin/python3.13 --version
+/usr/bin/openssl version
+/sbin/sysctl -n hw.physmem64 hw.ncpu
+id factionbuild
+/usr/sbin/sshd -t
+ps -axo comm | /usr/bin/awk '/faction/ {print}'
+df -k /home/factionbuild
+'''
+r=remote(command,timeout=60);(P/'prepare-guest.private').write_bytes(r.stdout+r.stderr)
+print(r.stdout.decode())

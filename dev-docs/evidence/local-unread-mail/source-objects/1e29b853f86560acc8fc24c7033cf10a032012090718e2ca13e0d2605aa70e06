@@ -1,0 +1,454 @@
+//! Device-local read decisions; synthetic state only, never network receipts.
+use super::*;
+use std::{
+    fs,
+    path::PathBuf,
+    process::{Command, Stdio},
+};
+const PASS: &[u8] = b"unread checkpoint synthetic passphrase";
+const NOW: u64 = 1_792_886_400;
+struct Fixture(PathBuf);
+impl Fixture {
+    fn new() -> Self {
+        Self(std::env::temp_dir().canonicalize().unwrap().join(format!(
+            "faction216-storage-{}",
+            hex(&random::<16>().unwrap())
+        )))
+    }
+    fn store(&self, create: bool) -> Store {
+        Store::at(&self.0, create).unwrap()
+    }
+    fn reopen(&self) -> CheckpointVault {
+        CheckpointVault::unlock(self.store(false), PASS, false).unwrap()
+    }
+    fn bytes(&self) -> Vec<u8> {
+        fs::read(self.0.join(NAME)).unwrap()
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
+fn fresh(f: &Fixture, home: &str, id: u32) -> CheckpointVault {
+    CheckpointVault::create(
+        f.store(true),
+        Data::new(home.into()).unwrap(),
+        PASS,
+        id,
+        NOW,
+    )
+    .unwrap()
+    .0
+}
+fn pair() -> (Fixture, Fixture, CheckpointVault, CheckpointVault, Wire) {
+    let a = Fixture::new();
+    let b = Fixture::new();
+    let mut av = fresh(&a, "alice@home.test", 101);
+    let mut bv = fresh(&b, "bob@away.test", 202);
+    let ab = av.bundle().unwrap();
+    let bb = bv.bundle().unwrap();
+    av.enroll(
+        "bob@away.test",
+        202,
+        &format!("ed25519:{}", hex(&bb.identity)),
+        NOW,
+    )
+    .unwrap();
+    bv.enroll(
+        "alice@home.test",
+        101,
+        &format!("ed25519:{}", hex(&ab.identity)),
+        NOW,
+    )
+    .unwrap();
+    av.start(&bb, NOW).unwrap();
+    let outgoing = av
+        .queue([1; 16], "synthetic sent", "synthetic sent body", NOW, NOW)
+        .unwrap();
+    bv.receive(&outgoing, NOW).unwrap();
+    let reply = bv
+        .queue(
+            [2; 16],
+            "synthetic received",
+            "synthetic received body",
+            NOW,
+            NOW,
+        )
+        .unwrap();
+    av.receive(&reply, NOW).unwrap();
+    (a, b, av, bv, outgoing)
+}
+fn summary(
+    v: &CheckpointVault,
+    unread: Option<usize>,
+    received: usize,
+    retained: usize,
+    pending: usize,
+) {
+    let s = v.read_summary().unwrap();
+    assert_eq!(
+        (s.unread, s.received, s.retained, s.pending),
+        (unread, received, retained, pending)
+    );
+}
+fn received(v: &CheckpointVault) -> (usize, [u8; 32]) {
+    v.history()
+        .unwrap()
+        .iter()
+        .enumerate()
+        .find_map(|(i, r)| r.received_id().map(|id| (i, id)))
+        .unwrap()
+}
+#[test]
+fn unread_explicit_opt_in_preserves_old_schemas_and_all_protocol_state() {
+    for archive in [false, true] {
+        let (a, _b, mut av, _bv, _wire) = pair();
+        if archive {
+            av.enable_archive(NOW).unwrap();
+        }
+        let original = a.bytes();
+        let plain = av.state.encode().unwrap();
+        assert_eq!(&plain[..8], if archive { b"FACTCP03" } else { b"FACTCP02" });
+        summary(&av, None, 1, 2, 1);
+        let pending = av.pending(NOW).unwrap();
+        let header = av.header.clone();
+        let snapshot = av.state.snapshot.clone();
+        let archive_before = av.state.archive.clone();
+        let (i, id) = received(&av);
+        assert_eq!(av.received_read(i, id).unwrap(), None);
+        assert!(av.mark_read(i, id).is_err());
+        assert_eq!(a.bytes(), original);
+        drop(av);
+        let mut av = a.reopen();
+        assert_eq!(a.bytes(), original);
+        summary(&av, None, 1, 2, 1);
+        av.enable_read_tracking().unwrap();
+        assert_eq!(&av.state.encode().unwrap()[..8], b"FACTCP04");
+        assert_eq!(av.header, header);
+        assert_eq!(av.state.snapshot, snapshot);
+        assert_eq!(av.state.archive, archive_before);
+        assert_eq!(av.pending(NOW).unwrap(), pending);
+        summary(&av, Some(1), 1, 2, 1);
+        let enabled = a.bytes();
+        av.enable_read_tracking().unwrap();
+        assert_eq!(a.bytes(), enabled);
+        drop(av);
+        let av = a.reopen();
+        summary(&av, Some(1), 1, 2, 1);
+        assert_eq!(av.pending(NOW).unwrap(), pending);
+    }
+}
+#[test]
+fn unread_received_only_exact_identity_idempotence_and_duplicate_reopen() {
+    let (a, b, mut av, bv, _) = pair();
+    av.enable_read_tracking().unwrap();
+    let (i, id) = received(&av);
+    let original = a.bytes();
+    assert!(av.history().unwrap()[0].received_id().is_none());
+    for (index, frame) in [(0, id), (MAX_HISTORY, id), (i, [9; 32])] {
+        assert!(av.mark_read(index, frame).is_err());
+        assert!(av.received_read(index, frame).is_err());
+        assert_eq!(a.bytes(), original);
+    }
+    av.mark_read(i, id).unwrap();
+    assert_eq!(av.received_read(i, id).unwrap(), Some(true));
+    summary(&av, Some(0), 1, 2, 1);
+    let read = a.bytes();
+    av.mark_read(i, id).unwrap();
+    assert_eq!(a.bytes(), read);
+    let reply = bv.pending(NOW).unwrap()[0].clone();
+    assert!(av.receive(&reply, NOW).unwrap().duplicate);
+    assert_eq!(a.bytes(), read);
+    drop(av);
+    drop(bv);
+    let av = a.reopen();
+    summary(&av, Some(0), 1, 2, 1);
+    assert_eq!(av.received_read(i, id).unwrap(), Some(true));
+    let _ = b;
+}
+#[test]
+fn unread_archive_new_receive_duplicate_and_own_echo_preserve_bits_and_pending() {
+    let (a, _b, mut av, mut bv, mut own) = pair();
+    av.enable_read_tracking().unwrap();
+    av.enable_archive(NOW).unwrap();
+    let (i, id) = received(&av);
+    av.mark_read(i, id).unwrap();
+    let pending = av.pending(NOW).unwrap();
+    let mut duplicate = bv.pending(NOW).unwrap()[0].clone();
+    duplicate.sent_at = 0;
+    let token = av.archive_checkpoint(NOW).unwrap();
+    assert!(
+        av.receive_archive(&token, "duplicate", &duplicate, NOW)
+            .unwrap()
+            .duplicate
+    );
+    summary(&av, Some(0), 1, 2, 1);
+    let mut next = bv
+        .queue([3; 16], "synthetic next", "synthetic next body", NOW, NOW)
+        .unwrap();
+    next.sent_at = 0;
+    let token = av.archive_checkpoint(NOW).unwrap();
+    assert!(
+        !av.receive_archive(&token, "next", &next, NOW)
+            .unwrap()
+            .duplicate
+    );
+    summary(&av, Some(1), 2, 3, 1);
+    own.sent_at = 0;
+    let token = av.archive_checkpoint(NOW).unwrap();
+    assert!(
+        av.receive_archive(&token, "own", &own, NOW)
+            .unwrap()
+            .duplicate
+    );
+    assert_eq!(av.pending(NOW).unwrap(), pending);
+    summary(&av, Some(1), 2, 3, 1);
+    let token = av.archive_checkpoint(NOW).unwrap();
+    assert!(
+        av.receive_archive(&token, "next-again", &next, NOW)
+            .unwrap()
+            .duplicate
+    );
+    summary(&av, Some(1), 2, 3, 1);
+    assert_eq!(av.received_read(i, id).unwrap(), Some(true));
+    drop(av);
+    let av = a.reopen();
+    summary(&av, Some(1), 2, 3, 1);
+    assert_eq!(&av.state.encode().unwrap()[..8], b"FACTCP04");
+}
+#[test]
+fn unread_malformed_length_direction_boolean_and_trailing_metadata_reject() {
+    let (_a, _b, mut av, _bv, _) = pair();
+    av.enable_read_tracking().unwrap();
+    let plain = av.state.encode().unwrap();
+    let flags = av.state.history.len();
+    for position in [plain.len() - flags, plain.len() - 1] {
+        let mut bad = plain.to_vec();
+        bad[position] = 2;
+        assert!(State::decode(&bad).is_err());
+    }
+    let mut sent = plain.to_vec();
+    sent[plain.len() - flags] = 1;
+    assert!(State::decode(&sent).is_err());
+    let mut count = plain.to_vec();
+    let start = count.len() - flags - 4;
+    count[start..start + 4].copy_from_slice(&65_u32.to_be_bytes());
+    assert!(State::decode(&count).is_err());
+    let mut extra = plain.to_vec();
+    extra.push(0);
+    assert!(State::decode(&extra).is_err());
+    assert!(State::decode(&plain[..plain.len() - 1]).is_err());
+    av.state.read.as_mut().unwrap().pop();
+    assert!(av.state.encode().is_err());
+}
+#[test]
+fn unread_history_only_recovery_backup_reset_and_fresh_device_keep_local_decisions() {
+    let (a, _b, mut av, _bv, _) = pair();
+    av.enable_archive(NOW).unwrap();
+    av.enable_read_tracking().unwrap();
+    let (i, id) = received(&av);
+    av.mark_read(i, id).unwrap();
+    let archive = av.state.archive.clone();
+    let pending = av.pending(NOW).unwrap();
+    let backup = Fixture::new();
+    av.backup(&backup.0).unwrap();
+    let mut backed = backup.reopen();
+    summary(&backed, Some(0), 1, 2, 1);
+    assert!(backed.read_summary().unwrap().history_only);
+    backed.mark_read(i, id).unwrap();
+    assert!(backed.pending(NOW).is_err());
+    let recovery = av.reset(PASS).unwrap();
+    drop(av);
+    let mut av = CheckpointVault::unlock(a.store(false), &*recovery, true).unwrap();
+    summary(&av, Some(0), 1, 2, 1);
+    assert!(av.read_summary().unwrap().history_only);
+    assert_eq!(av.state.archive, archive);
+    assert_eq!(av.state.outbox[0].wire, pending[0]);
+    av.mark_read(i, id).unwrap();
+    av.reset(PASS).unwrap();
+    av.discard_pending().unwrap();
+    av.fresh_device(404, NOW).unwrap();
+    summary(&av, Some(0), 1, 2, 0);
+    assert!(!av.read_summary().unwrap().history_only);
+    assert_eq!(av.received_read(i, id).unwrap(), Some(true));
+    assert_eq!(&av.state.encode().unwrap()[..8], b"FACTCP04");
+    assert!(av.archive_checkpoint(NOW).is_err());
+}
+#[test]
+fn unread_local_decisions_survive_protocol_expiry_and_revocation() {
+    let (_a, _b, mut av, _bv, _) = pair();
+    av.revoke().unwrap();
+    av.enable_read_tracking().unwrap();
+    let (i, id) = received(&av);
+    av.mark_read(i, id).unwrap();
+    summary(&av, Some(0), 1, 2, 1);
+    assert!(av.pending(NOW).is_err());
+    assert!(av.pending(NOW + SESSION_AGE + 1).is_err());
+}
+#[test]
+fn unread_write_failures_poison_enable_and_mark_without_partial_state() {
+    for enable in [true, false] {
+        for fault in [
+            Fault::BeforeWrite,
+            Fault::BeforeFileSync,
+            Fault::BeforePublish,
+            Fault::AfterPublish,
+            Fault::DirectorySync,
+        ] {
+            let (a, _b, mut av, _bv, _) = pair();
+            if !enable {
+                av.enable_read_tracking().unwrap();
+            }
+            let (i, id) = received(&av);
+            let pending = av.pending(NOW).unwrap();
+            av.fail_once(fault);
+            assert!(
+                if enable {
+                    av.enable_read_tracking()
+                } else {
+                    av.mark_read(i, id)
+                }
+                .is_err()
+            );
+            assert!(av.read_summary().is_err());
+            assert!(av.mark_read(i, id).is_err());
+            drop(av);
+            let av = a.reopen();
+            let published = matches!(fault, Fault::AfterPublish | Fault::DirectorySync);
+            summary(
+                &av,
+                if enable && !published {
+                    None
+                } else {
+                    Some(usize::from(enable || !published))
+                },
+                1,
+                2,
+                1,
+            );
+            assert_eq!(av.pending(NOW).unwrap(), pending);
+        }
+    }
+}
+#[test]
+#[ignore = "owned subprocess helper, invoked by unread crash controls"]
+fn unread_crash_child() {
+    let path = PathBuf::from(std::env::var_os("FACTION216_STORE").unwrap());
+    assert!(
+        path.file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("faction216-storage-")
+    );
+    let mut v = CheckpointVault::unlock(Store::at(&path, false).unwrap(), PASS, false).unwrap();
+    v.fail_once(
+        if std::env::var("FACTION216_BOUNDARY").unwrap() == "before" {
+            Fault::CrashBeforePublish
+        } else {
+            Fault::CrashAfterPublish
+        },
+    );
+    if std::env::var("FACTION216_ACTION").unwrap() == "enable" {
+        let _ = v.enable_read_tracking();
+    } else {
+        let (i, id) = received(&v);
+        let _ = v.mark_read(i, id);
+    }
+    std::process::exit(76);
+}
+#[test]
+fn unread_process_death_before_and_after_publish_keeps_whole_read_checkpoint() {
+    for action in ["enable", "mark"] {
+        for boundary in ["before", "after"] {
+            let (a, _b, mut av, _bv, _) = pair();
+            if action == "mark" {
+                av.enable_read_tracking().unwrap();
+            }
+            let pending = av.pending(NOW).unwrap();
+            drop(av);
+            let status = Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--ignored",
+                    "--exact",
+                    "mail_checkpoint::unread_checkpoint_tests::unread_crash_child",
+                ])
+                .env("FACTION216_STORE", &a.0)
+                .env("FACTION216_BOUNDARY", boundary)
+                .env("FACTION216_ACTION", action)
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status()
+                .unwrap();
+            assert_eq!(status.code(), Some(75));
+            let av = a.reopen();
+            let published = boundary == "after";
+            summary(
+                &av,
+                if action == "enable" && !published {
+                    None
+                } else {
+                    Some(usize::from(action == "enable" || !published))
+                },
+                1,
+                2,
+                1,
+            );
+            assert_eq!(av.pending(NOW).unwrap(), pending);
+        }
+    }
+}
+
+#[test]
+fn unread_history_only_backup_can_acknowledge_without_changing_active_source() {
+    let (a, _b, av, _bv, _) = pair();
+    let active = a.bytes();
+    let backup = Fixture::new();
+    av.backup(&backup.0).unwrap();
+    let mut backed = backup.reopen();
+    assert!(backed.read_summary().unwrap().history_only);
+    summary(&backed, None, 1, 2, 1);
+    backed.enable_read_tracking().unwrap();
+    let before = backup.bytes();
+    let (i, id) = received(&backed);
+    backed.mark_read(i, id).unwrap();
+    summary(&backed, Some(0), 1, 2, 1);
+    assert_ne!(backup.bytes(), before);
+    assert!(backed.pending(NOW).is_err());
+    drop(backed);
+    let backed = backup.reopen();
+    summary(&backed, Some(0), 1, 2, 1);
+    assert!(backed.read_summary().unwrap().history_only);
+    assert_eq!(a.bytes(), active);
+    summary(&av, None, 1, 2, 1);
+}
+#[test]
+fn unread_full_64_entry_metadata_is_bounded_without_evicting_history() {
+    let (a, _b, mut av, _bv, _) = pair();
+    av.acknowledge([1; 16]).unwrap();
+    for id in 3..=64 {
+        av.queue(
+            [id; 16],
+            "synthetic bounded subject",
+            "synthetic bounded body",
+            NOW,
+            NOW,
+        )
+        .unwrap();
+        av.acknowledge([id; 16]).unwrap();
+    }
+    assert_eq!(av.history().unwrap().len(), MAX_HISTORY);
+    av.enable_read_tracking().unwrap();
+    summary(&av, Some(1), 1, MAX_HISTORY, 0);
+    let (i, id) = received(&av);
+    av.mark_read(i, id).unwrap();
+    summary(&av, Some(0), 1, MAX_HISTORY, 0);
+    let full = a.bytes();
+    assert!(av.queue([65; 16], "blocked", "blocked", NOW, NOW).is_err());
+    assert_eq!(a.bytes(), full);
+    let plain = av.state.encode().unwrap();
+    let decoded = State::decode(&plain).unwrap();
+    assert_eq!(decoded.read.as_ref().unwrap().len(), 64);
+    av.state.read.as_mut().unwrap().push(false);
+    assert!(av.state.encode().is_err());
+}

@@ -96,3 +96,8 @@ provides bounded manual pages with an encrypted atomic cursor. A private local
 [picker entry](../docs/picker-home-mail.md) reuses the console between visits.
 Background mail, roaming and attachments remain separate. The research transport's earlier observations remain
 separate from this integrated implementation.
+
+The optional [local mail read-state contract](local-mail-read-state.md) adds an
+explicit encrypted FACTCP04 transition and received-only local acknowledgements.
+The parked native Files desk can reuse the same private console while retaining
+SSH, with opt-in generic stale local counts and no background home polling.
