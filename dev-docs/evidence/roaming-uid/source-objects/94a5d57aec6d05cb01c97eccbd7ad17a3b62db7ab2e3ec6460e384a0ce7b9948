@@ -1,0 +1,10 @@
+{
+  "checks": 7,
+  "layer": "OpenSSH RFC4252 public-key signature component",
+  "raw": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/c3ff7f1c3147a1eb07e9789a7c70bae694f86f9cd0e8f528c39acf0112909461",
+    "sha256": "c3ff7f1c3147a1eb07e9789a7c70bae694f86f9cd0e8f528c39acf0112909461"
+  },
+  "result": "pass",
+  "wire_replay_claim": false
+}

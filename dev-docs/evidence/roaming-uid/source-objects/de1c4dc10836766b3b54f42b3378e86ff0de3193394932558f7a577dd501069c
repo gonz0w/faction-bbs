@@ -1,0 +1,10 @@
+from pathlib import Path
+import json,os,subprocess
+P=Path(__file__).resolve().parent;V=P/'vm';os.umask(0o077)
+assert (P/'OWNED').is_file() and (V/'OWNED').is_file() and not (V/'qemu.pid').exists()
+q=json.loads((V/'qemu-command.json').read_text());assert str(V/'disk.qcow2') in ' '.join(q)
+with (V/'qemu.log').open('wb') as log:p=subprocess.Popen(q,stdout=log,stderr=log,start_new_session=True)
+(V/'qemu.pid').write_text(str(p.pid)+'\n')
+with (V/'controller.log').open('wb') as log:c=subprocess.Popen(['python3',str(V/'serial-controller.py')],stdout=log,stderr=log,start_new_session=True)
+(V/'controller.pid').write_text(str(c.pid)+'\n')
+print(json.dumps({'owned_vm_pid':p.pid,'controller_pid':c.pid,'ports':json.loads((V/'ports.json').read_text())}))

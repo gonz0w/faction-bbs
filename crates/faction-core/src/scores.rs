@@ -13,6 +13,7 @@ pub struct GameRun {
     board: [u8; 32],
     member: i64,
     epoch: i64,
+    roaming: Option<crate::roaming::Provenance>,
     game: String,
     finished: bool,
 }
@@ -48,6 +49,7 @@ impl Board {
             board: self.identity,
             member: session.member,
             epoch: session.epoch,
+            roaming: session.roaming,
             game: game.into(),
             finished: false,
         })
@@ -67,6 +69,9 @@ impl Board {
         if run.board != self.identity || run.member != session.member || run.epoch != session.epoch
         {
             return Err(Error::Denied);
+        }
+        if let Some(p) = run.roaming {
+            crate::roaming::check(&tx, run.member, p)?;
         }
         if run.finished {
             return Err(Error::RequestConflict);

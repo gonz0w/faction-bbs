@@ -1,0 +1,5 @@
+In file included from experiments/223-roaming-uid/replay-test.c:2:
+/private/tmp/faction223-lead-OWNED/openssh-10.3p1/includes.h:19:10: fatal error: 'config.h' file not found
+   19 | #include "config.h"
+      |          ^~~~~~~~~~
+1 error generated.

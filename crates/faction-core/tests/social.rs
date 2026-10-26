@@ -348,7 +348,7 @@ fn exact_snapshots_keep_preferences_but_remove_live_social_authority_and_schema_
         "unknown"
     );
     drop(b);
-    f.db().execute_batch("DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;PRAGMA user_version=16").unwrap();
+    f.db().execute_batch("DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;PRAGMA user_version=16").unwrap();
     let old = f.0.join("old");
     export_local(&f.path(), &old).unwrap();
     verify_export(&old).unwrap();
@@ -582,7 +582,7 @@ fn schema_seventeen_export_is_read_only_and_owner_open_adds_empty_activity() {
     drop(b);
     f.db()
         .execute_batch(
-            "DROP TABLE directory_submissions;DROP TABLE visit_activity; PRAGMA user_version=17;",
+            "DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;DROP TABLE visit_activity; PRAGMA user_version=17;",
         )
         .unwrap();
     let output = f.0.join("schema17-export");
@@ -599,7 +599,7 @@ fn schema_seventeen_export_is_read_only_and_owner_open_adds_empty_activity() {
         f.db()
             .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        19
+        20
     );
     assert_eq!(
         f.db()

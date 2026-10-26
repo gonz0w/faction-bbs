@@ -346,7 +346,7 @@ fn complete_snapshot_and_exact_schema_thirteen_exports_remain_readonly() {
     let s = b.authenticate("sysop", PASS).unwrap();
     assert_eq!(b.discussion_bookmarks(&s, 99).unwrap().hits[0].id, id);
     drop(b);
-    f.db().execute_batch("DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;PRAGMA user_version=13").unwrap();
+    f.db().execute_batch("DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;PRAGMA user_version=13").unwrap();
     let old = f.0.join("old-export");
     export_local(&f.path(), &old).unwrap();
     verify_export(&old).unwrap();

@@ -1,0 +1,22 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+     Running tests/roaming.rs (target/debug/deps/roaming-35939c982d5be1da)
+
+running 1 test
+test disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid ... FAILED
+
+failures:
+
+---- disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid stdout ----
+
+thread 'disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid' (672792) panicked at crates/faction-core/tests/roaming.rs:861:135:
+called `Result::unwrap()` on an `Err` value: Storage(SqliteFailure(Error { code: ConstraintViolation, extended_code: 2067 }, Some("UNIQUE constraint failed: roaming_bindings.issuer_id, roaming_bindings.subject")))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.60s
+
+error: test failed, to rerun pass `-p faction-core --test roaming`

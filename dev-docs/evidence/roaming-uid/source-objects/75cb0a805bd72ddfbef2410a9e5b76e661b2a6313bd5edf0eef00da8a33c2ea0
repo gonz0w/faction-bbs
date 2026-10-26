@@ -1,0 +1,1 @@
+{"result": "pass", "checks": [{"name": "extra-restriction-certificate", "signer_exit": 0, "independent_parse_and_signature_exit": 0, "sha256": "00ec66aec7c40246133bd4b23f4409853d4bf701c0f7f5daac8282d2ead4ba88"}]}

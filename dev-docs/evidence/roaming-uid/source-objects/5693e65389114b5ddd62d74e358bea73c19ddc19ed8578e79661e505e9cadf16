@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_directory_submissions.py", line 87, in <module>
+    a=p.parse_args();a.binary=a.binary.resolve(strict=True);a.member=a.member.resolve(strict=True);run(a)
+                                                                                                   ~~~^^^
+  File "/Users/cam/DEV/faction-bbs/tools/smoke_directory_submissions.py", line 73, in run
+    assert query('PRAGMA user_version')==[(19,)]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

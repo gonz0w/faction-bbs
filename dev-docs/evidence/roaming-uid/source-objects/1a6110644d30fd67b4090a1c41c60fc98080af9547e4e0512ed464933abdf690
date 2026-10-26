@@ -1,0 +1,95 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+warning: unused import: `super::*`
+ --> crates/faction-service/src/roaming.rs:4:9
+  |
+4 |     use super::*;
+  |         ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0609]: no field `experimental_roaming_manifest` on type `config::Config`
+   --> crates/faction-service/src/config.rs:219:46
+    |
+219 |         assert!(Config::parse(BASE).unwrap().experimental_roaming_manifest.is_none());
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `terminal_uid`, `socket`, `state_dir`, `theme`, `directory` ... and 13 others
+
+error[E0609]: no field `experimental_roaming_manifest` on type `config::Config`
+   --> crates/faction-service/src/config.rs:221:22
+    |
+221 |         assert_eq!(c.experimental_roaming_manifest.unwrap(), Path::new("/etc/faction/roaming.toml"));
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `terminal_uid`, `socket`, `state_dir`, `theme`, `directory` ... and 13 others
+
+error[E0425]: cannot find function `parse` in this scope
+  --> crates/faction-service/src/roaming.rs:11:24
+   |
+11 |         let registry = parse(&good, &reserved()).unwrap();
+   |                        ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `parse` on `&str`
+   |
+11 -         let registry = parse(&good, &reserved()).unwrap();
+11 +         let registry = (&good).parse(&reserved()).unwrap();
+   |
+
+error[E0425]: cannot find function `parse` in this scope
+  --> crates/faction-service/src/roaming.rs:28:21
+   |
+28 |         ] { assert!(parse(&bad, &reserved()).is_err(), "{bad}"); }
+   |                     ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `parse` on `&str`
+   |
+28 -         ] { assert!(parse(&bad, &reserved()).is_err(), "{bad}"); }
+28 +         ] { assert!((&bad).parse(&reserved()).is_err(), "{bad}"); }
+   |
+
+error[E0425]: cannot find function `load` in this scope
+  --> crates/faction-service/src/roaming.rs:36:17
+   |
+36 |         assert!(load(&p, &reserved()).is_err());
+   |                 ^^^^ not found in this scope
+
+error[E0425]: cannot find function `load` in this scope
+  --> crates/faction-service/src/roaming.rs:37:17
+   |
+37 |         assert!(load(std::path::Path::new("relative"), &reserved()).is_err());
+   |                 ^^^^ not found in this scope
+
+error[E0425]: cannot find function `load` in this scope
+  --> crates/faction-service/src/roaming.rs:38:17
+   |
+38 |         assert!(load(std::path::Path::new("/etc/../manifest"), &reserved()).is_err());
+   |                 ^^^^ not found in this scope
+
+error[E0425]: cannot find function `admitted_uid` in this scope
+  --> crates/faction-service/src/roaming.rs:43:17
+   |
+43 |         assert!(admitted_uid(123, &[4242], 123));
+   |                 ^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `admitted_uid` in this scope
+  --> crates/faction-service/src/roaming.rs:44:17
+   |
+44 |         assert!(admitted_uid(123, &[4242], 4242));
+   |                 ^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `admitted_uid` in this scope
+  --> crates/faction-service/src/roaming.rs:45:18
+   |
+45 |         assert!(!admitted_uid(123, &[4242], 4243));
+   |                  ^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `admitted_uid` in this scope
+  --> crates/faction-service/src/roaming.rs:46:18
+   |
+46 |         assert!(!admitted_uid(123, &[], 0));
+   |                  ^^^^^^^^^^^^ not found in this scope
+
+Some errors have detailed explanations: E0425, E0609.
+For more information about an error, try `rustc --explain E0425`.
+warning: `faction-service` (bin "faction-service" test) generated 1 warning
+error: could not compile `faction-service` (bin "faction-service" test) due to 11 previous errors; 1 warning emitted

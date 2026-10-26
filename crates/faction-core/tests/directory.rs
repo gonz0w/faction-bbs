@@ -333,7 +333,7 @@ fn restart_migration18_snapshot_roundtrip_fresh_identity_and_corruption() {
     drop(restarted);
     drop(conflicting);
     f.db()
-        .execute_batch("DROP TABLE directory_submissions;PRAGMA user_version=18")
+        .execute_batch("DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;PRAGMA user_version=18")
         .unwrap();
     let migrated = Board::open(&f.0.join("board")).unwrap();
     drop(migrated);
@@ -341,7 +341,7 @@ fn restart_migration18_snapshot_roundtrip_fresh_identity_and_corruption() {
         f.db()
             .query_row("PRAGMA user_version", [], |r| r.get::<_, i64>(0))
             .unwrap(),
-        19
+        20
     );
 }
 #[test]
@@ -635,7 +635,7 @@ fn all_lifecycle_states_survive_private_export_and_schema18_export_stays_readonl
     drop(rb);
     drop(b);
     f.db()
-        .execute_batch("DROP TABLE directory_submissions;PRAGMA user_version=18")
+        .execute_batch("DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;PRAGMA user_version=18")
         .unwrap();
     let legacy = f.0.join("legacy18.sqlite3");
     faction_core::export_local(&f.0.join("board"), &legacy).unwrap();

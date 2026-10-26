@@ -1,0 +1,24 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.16s
+     Running tests/roaming.rs (target/debug/deps/roaming-35939c982d5be1da)
+
+running 1 test
+test issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority ... FAILED
+
+failures:
+
+---- issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority stdout ----
+
+thread 'issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority' (641253) panicked at crates/faction-core/tests/roaming.rs:30:2:
+assertion `left == right` failed
+  left: 1
+ right: 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.63s
+
+error: test failed, to rerun pass `-p faction-core --test roaming`

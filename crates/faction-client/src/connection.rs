@@ -184,9 +184,9 @@ pub(super) struct Report {
 impl Report {
     pub fn load(path: &Path) -> Self {
         let settings = Settings::load(path).ok();
-        let identity = settings
-            .as_ref()
-            .is_some_and(|s| profile::regular(&s.identity, 65536, false).is_ok());
+        let identity = settings.as_ref().is_some_and(|s| {
+            profile::regular(&s.identity, 65536, false).is_ok() && s.terminal_ready().is_ok()
+        });
         let public = settings.as_ref().is_some_and(|s| s.public_key().is_ok());
         let known = settings
             .as_ref()
@@ -417,6 +417,7 @@ mod tests {
                 identity: "/secret/key".into(),
                 public: "/secret/key.pub".into(),
                 known_hosts: "/secret/hosts".into(),
+                experimental_terminal: None,
             }),
             identity: true,
             public: false,

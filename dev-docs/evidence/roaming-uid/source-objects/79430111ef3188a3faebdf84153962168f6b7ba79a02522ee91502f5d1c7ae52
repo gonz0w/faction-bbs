@@ -1,0 +1,16 @@
+from pathlib import Path
+import hashlib,json,shutil,subprocess,sys,tarfile
+R=Path('/Users/cam/DEV/faction-bbs');P=Path(__file__).resolve().parent
+label=sys.argv[1];dest=P/label;assert not dest.exists();dest.mkdir(mode=0o700)
+names=subprocess.check_output(['git','ls-files','-co','--exclude-standard'],cwd=R,text=True).splitlines()
+names=sorted(set(n for n in names if n in ['Cargo.toml','Cargo.lock'] or n.startswith(('crates/','native/','tools/','themes/','deploy/','gallery/','library/','magazines/','experiments/223-roaming-uid/'))))
+files={}
+for n in names:
+ p=R/n
+ if not p.is_file() or p.name=='.DS_Store' or '__pycache__' in p.parts:continue
+ assert not p.is_symlink();data=p.read_bytes();d=hashlib.sha256(data).hexdigest();out=dest/n;out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(data);files[n]=d
+assert all(hashlib.sha256((R/n).read_bytes()).hexdigest()==d for n,d in files.items()),'source changed during capture'
+(P/(label+'-sources.json')).write_text(json.dumps(files,indent=2,sort_keys=True)+'\n')
+with tarfile.open(P/(label+'.tar'),'w') as archive:
+ for n in files:archive.add(dest/n,arcname=n,recursive=False)
+print('Frozen',label,len(files),'public source inputs.')

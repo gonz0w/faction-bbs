@@ -1,0 +1,53 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "protected_root_owned_manifest",
+      "expected_accept": true,
+      "accepted": true,
+      "result": "pass"
+    },
+    {
+      "name": "member_owned_manifest",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    },
+    {
+      "name": "group_writable_manifest",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    },
+    {
+      "name": "hardlinked_manifest",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    },
+    {
+      "name": "symlink_manifest",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    },
+    {
+      "name": "writable_ancestor",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    },
+    {
+      "name": "oversized_manifest",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    },
+    {
+      "name": "unknown_manifest_key",
+      "expected_accept": false,
+      "accepted": false,
+      "result": "pass"
+    }
+  ]
+}

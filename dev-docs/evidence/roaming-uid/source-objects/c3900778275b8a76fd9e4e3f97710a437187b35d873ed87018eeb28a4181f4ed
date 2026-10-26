@@ -1,0 +1,22 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running tests/roaming.rs (target/debug/deps/roaming-35939c982d5be1da)
+
+running 1 test
+test issuer_disablement_rotates_every_binding_before_reenable ... FAILED
+
+failures:
+
+---- issuer_disablement_rotates_every_binding_before_reenable stdout ----
+
+thread 'issuer_disablement_rotates_every_binding_before_reenable' (641490) panicked at crates/faction-core/tests/roaming.rs:37:230:
+assertion failed: !next.bindings[0].enabled
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    issuer_disablement_rotates_every_binding_before_reenable
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.59s
+
+error: test failed, to rerun pass `-p faction-core --test roaming`

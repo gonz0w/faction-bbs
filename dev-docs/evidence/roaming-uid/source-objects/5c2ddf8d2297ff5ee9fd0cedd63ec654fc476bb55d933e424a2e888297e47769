@@ -1,0 +1,17 @@
+{
+  "admission_refill_ms": 5000,
+  "compile_memory_mib": 2048,
+  "cores": 2,
+  "credential_permits": 2,
+  "drain_seconds": 5,
+  "kernel_slots": 2,
+  "normal_sessions": 8,
+  "owner_helpers": 3,
+  "physmem": 1054990336,
+  "raw": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/4667a7981c20c080bf3bacd94d2fc5f72d27046fab7bbab6e5b82ae893108753",
+    "sha256": "4667a7981c20c080bf3bacd94d2fc5f72d27046fab7bbab6e5b82ae893108753"
+  },
+  "result": "pass",
+  "runtime_memory_mib": 1024
+}

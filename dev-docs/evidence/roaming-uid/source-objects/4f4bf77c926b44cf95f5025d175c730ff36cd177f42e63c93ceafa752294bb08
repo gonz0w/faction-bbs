@@ -1,0 +1,198 @@
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+error[E0432]: unresolved imports `faction_core::RoamingAdmission`, `faction_core::RoamingRegistry`
+ --> crates/faction-core/tests/roaming.rs:1:34
+  |
+1 | use faction_core::{Board, Error, RoamingAdmission, RoamingRegistry, Status, request_id};
+  |                                  ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^ no `RoamingRegistry` in the root
+  |                                  |
+  |                                  no `RoamingAdmission` in the root
+
+error[E0599]: no method named `roaming_add_issuer` found for struct `Board` in the current scope
+ --> crates/faction-core/tests/roaming.rs:6:61
+  |
+6 |  fn binding(&mut self,uid:u32)->i64 { let issuer=self.board.roaming_add_issuer("home-one","SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+  |                                                             ^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_set_issuer_enabled` found for struct `Board` in the current scope
+ --> crates/faction-core/tests/roaming.rs:6:177
+  |
+6 | ...AAA").unwrap(); let issuer=self.board.roaming_set_issuer_enabled(issuer.id,issuer.generation,true).unwrap(); let member=self.board...
+  |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_owner_member_id` found for struct `Board` in the current scope
+ --> crates/faction-core/tests/roaming.rs:6:270
+  |
+6 | ...,true).unwrap(); let member=self.board.roaming_owner_member_id("member").unwrap(); let b=self.board.roaming_link_member(issuer.id,...
+  |                                           ^^^^^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_link_member` found for struct `Board` in the current scope
+ --> crates/faction-core/tests/roaming.rs:6:331
+  |
+6 | ..._id("member").unwrap(); let b=self.board.roaming_link_member(issuer.id,issuer.generation,"stable-subject","board-one:home-one:stab...
+  |                                             ^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_set_binding_enabled` found for struct `Board` in the current scope
+ --> crates/faction-core/tests/roaming.rs:6:485
+  |
+6 | ...l-consent-223").unwrap(); self.board.roaming_set_binding_enabled(b.id,b.generation,true).unwrap().id }
+  |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_owner_state` found for struct `Board` in the current scope
+ --> crates/faction-core/tests/roaming.rs:7:43
+  |
+7 |  fn install(&mut self) { let s=self.board.roaming_owner_state().unwrap(); self.board.configure_roaming_owner(Some(RoamingRegistry {bo...
+  |                                           ^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `configure_roaming_owner` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:7:86
+    |
+  7 |  fn install(&mut self) { let s=self.board.roaming_owner_state().unwrap(); self.board.configure_roaming_owner(Some(RoamingRegistry {...
+    |                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `configure_pages` with a similar name, but with different arguments
+   --> crates/faction-core/src/member_pages.rs:117:5
+    |
+117 |     pub fn configure_pages(&mut self, s: &Session, c: &PageConfig) -> Result<()> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `authenticate_roaming_uid` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:12:44
+    |
+ 12 |  let mut f=Fixture::new(); assert!(f.board.authenticate_roaming_uid(42001).is_err()); let id=f.binding(42001); f.install();
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `authenticate` with a similar name, but with different arguments
+   --> crates/faction-core/src/lib.rs:618:5
+    |
+618 |     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `authenticate_roaming_uid` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:13:22
+    |
+ 13 |  let roaming=f.board.authenticate_roaming_uid(42001).unwrap(); let password=f.board.authenticate("member",&f.secret).unwrap(); asse...
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `authenticate` with a similar name, but with different arguments
+   --> crates/faction-core/src/lib.rs:618:5
+    |
+618 |     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `authenticate_roaming_uid` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:13:261
+    |
+ 13 | ....rooms(&roaming).unwrap().len(),1); assert!(f.board.authenticate_roaming_uid(42002).is_err());
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `authenticate` with a similar name, but with different arguments
+   --> crates/faction-core/src/lib.rs:618:5
+    |
+618 |     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `roaming_owner_state` found for struct `Board` in the current scope
+  --> crates/faction-core/tests/roaming.rs:15:16
+   |
+15 |  let b=f.board.roaming_owner_state().unwrap().bindings.into_iter().find(|b|b.id==id).unwrap(); f.board.roaming_set_binding_enabled(i...
+   |                ^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_set_binding_enabled` found for struct `Board` in the current scope
+  --> crates/faction-core/tests/roaming.rs:15:104
+   |
+15 | ....find(|b|b.id==id).unwrap(); f.board.roaming_set_binding_enabled(id,b.generation,false).unwrap();
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_owner_state` found for struct `Board` in the current scope
+  --> crates/faction-core/tests/roaming.rs:17:16
+   |
+17 |  let b=f.board.roaming_owner_state().unwrap().bindings.remove(0); f.board.roaming_set_binding_enabled(id,b.generation,true).unwrap()...
+   |                ^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `roaming_set_binding_enabled` found for struct `Board` in the current scope
+  --> crates/faction-core/tests/roaming.rs:17:75
+   |
+17 |  let b=f.board.roaming_owner_state().unwrap().bindings.remove(0); f.board.roaming_set_binding_enabled(id,b.generation,true).unwrap()...
+   |                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `authenticate_roaming_uid` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:17:151
+    |
+ 17 | ...led(id,b.generation,true).unwrap(); assert!(f.board.authenticate_roaming_uid(42001).is_err()); assert!(f.board.whoami(&roaming)....
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `authenticate` with a similar name, but with different arguments
+   --> crates/faction-core/src/lib.rs:618:5
+    |
+618 |     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `roaming_owner_state` found for struct `Board` in the current scope
+  --> crates/faction-core/tests/roaming.rs:21:64
+   |
+21 |  let mut f=Fixture::new(); f.binding(42001); let state=f.board.roaming_owner_state().unwrap(); assert!(f.board.configure_roaming_own...
+   |                                                                ^^^^^^^^^^^^^^^^^^^ method not found in `Board`
+
+error[E0599]: no method named `configure_roaming_owner` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:21:112
+    |
+ 21 | ...ard.roaming_owner_state().unwrap(); assert!(f.board.configure_roaming_owner(Some(RoamingRegistry{board_identity:[0;32],entries:v...
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `configure_pages` with a similar name, but with different arguments
+   --> crates/faction-core/src/member_pages.rs:117:5
+    |
+117 |     pub fn configure_pages(&mut self, s: &Session, c: &PageConfig) -> Result<()> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `configure_roaming_owner` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:23:112
+    |
+ 23 | ...bindings[0]; let i=&state.issuers[0]; assert!(fresh.configure_roaming_owner(Some(RoamingRegistry{board_identity:state.board_iden...
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `configure_pages` with a similar name, but with different arguments
+   --> crates/faction-core/src/member_pages.rs:117:5
+    |
+117 |     pub fn configure_pages(&mut self, s: &Session, c: &PageConfig) -> Result<()> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `configure_roaming_owner` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:24:70
+    |
+ 24 |  f.board=Board::open(&f.path).unwrap(); f.install(); assert!(f.board.configure_roaming_owner(None).is_err()); let s=f.board.authent...
+    |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `configure_pages` with a similar name, but with different arguments
+   --> crates/faction-core/src/member_pages.rs:117:5
+    |
+117 |     pub fn configure_pages(&mut self, s: &Session, c: &PageConfig) -> Result<()> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `authenticate_roaming_uid` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:24:125
+    |
+ 24 | ...figure_roaming_owner(None).is_err()); let s=f.board.authenticate_roaming_uid(42001).unwrap(); let root=f.board.authenticate("sys...
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `authenticate` with a similar name, but with different arguments
+   --> crates/faction-core/src/lib.rs:618:5
+    |
+618 |     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `authenticate_roaming_uid` found for struct `Board` in the current scope
+   --> crates/faction-core/tests/roaming.rs:24:386
+    |
+ 24 | ...StaleSession)|Err(Error::Denied))); assert!(f.board.authenticate_roaming_uid(42001).is_err());
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+help: there is a method `authenticate` with a similar name, but with different arguments
+   --> crates/faction-core/src/lib.rs:618:5
+    |
+618 |     pub fn authenticate(&mut self, name: &str, secret: &str) -> Result<Session> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some errors have detailed explanations: E0432, E0599.
+For more information about an error, try `rustc --explain E0432`.
+error: could not compile `faction-core` (test "roaming") due to 22 previous errors

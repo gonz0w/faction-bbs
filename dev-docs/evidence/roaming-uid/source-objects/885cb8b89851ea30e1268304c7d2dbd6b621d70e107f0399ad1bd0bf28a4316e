@@ -1,0 +1,23 @@
+from pathlib import Path
+import errno,json,os,select,time,traceback
+p=Path('/home/factionbuild/proof223');exec((p/'native_runtime_probe.py').read_text().split("\ntry:\n start('a')")[0]);previous=json.loads((p/'native-extra-controls.json').read_text());assert len(previous['checks'])==4 and previous['result']=='fail';checks=previous['checks']
+def result(name):
+ checks.append({'name':name,'result':'pass'});(p/'native-extra-controls.json').write_text(json.dumps({'result':'pass','checks':checks},indent=2)+'\n')
+try:
+ a=argv(B[0],cert='extra-cert.pub')+['printf UNTRUSTED-COMMAND-MARKER'];r=subprocess.run(a,input=b'q\n',capture_output=True,timeout=12);assert r.returncode!=0 and b'UNTRUSTED-COMMAND-MARKER' not in r.stdout and b'Welcome, ' not in r.stdout+r.stderr;result('alternate-command-rejected-before-forced-native-frontend')
+ a=argv(B[0],cert='extra-cert.pub',tty=False);r=subprocess.run(a[:-1]+['-N','-o','ExitOnForwardFailure=yes','-R','127.0.0.1:0:127.0.0.1:22']+[a[-1]],capture_output=True,timeout=12);assert r.returncode!=0;result('remote-forwarding-rejected-before-listener')
+ c=enter(B[0],cert='extra-cert.pub');action(c);stop('a');deadline=time.monotonic()+10
+ while time.monotonic()<deadline:
+  if select.select([c.fd],[],[],.1)[0]:
+   try:c.transcript+=os.read(c.fd,8192)
+   except OSError as e:
+    if e.errno!=errno.EIO:raise
+  pid,status=os.waitpid(c.pid,os.WNOHANG)
+  if pid:c.done=True;break
+ else:raise AssertionError('old SSH transport survived owner shutdown drain')
+ c.close();children.remove(c);result('owner-shutdown-ends-active-bound-ssh-session')
+ start('a');c=enter(B[0],cert='extra-cert.pub');action(c);logout(c);result('fresh-ssh-session-after-owner-restart-reconciles-current-binding');stop('a');print(json.dumps({'result':'pass','checks':len(checks)}))
+except BaseException as e:
+ (p/'native-extra-controls.json').write_text(json.dumps({'result':'fail','checks':checks,'failure':type(e).__name__+': '+str(e)},indent=2)+'\n')
+ for c in children:c.close()
+ raise

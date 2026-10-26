@@ -1,0 +1,4 @@
+from lab import *
+command='\nfor service in faction_files_sshd faction_sshd faction_broker faction_doors; do\n if test -x /etc/rc.d/$service; then /etc/rc.d/$service onestop >/dev/null 2>&1 || true; fi\ndone\nmkdir -p /etc/rc.conf.d\nfor service in faction_files_sshd faction_sshd faction_broker faction_doors; do printf \'%s=NO\\n\' "$service" > /etc/rc.conf.d/$service; done\nprintf \'Owned disposable issue223 software fixture\\n\' > /etc/faction-disposable-test\nchmod 644 /etc/faction-disposable-test\nuname -srm\n/usr/pkg/bin/rustc --version\n/usr/pkg/bin/cargo --version\n/usr/pkg/bin/python3.13 --version\n/usr/bin/openssl version\n/sbin/sysctl -n hw.physmem64 hw.ncpu\nid factionbuild\n/usr/sbin/sshd -t\n'
+r=remote(command,timeout=60);(P/'prepare-guest.private.log').write_bytes(r.stdout+r.stderr)
+print('Guest legacy board services stopped/disabled in owned overlay; build environment checked.')

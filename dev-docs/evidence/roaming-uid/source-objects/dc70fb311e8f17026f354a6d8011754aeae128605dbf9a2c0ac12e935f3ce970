@@ -1,0 +1,4 @@
+#[test]
+fn issuer_disablement_rotates_every_binding_before_reenable() {
+ let mut f=Fixture::new();f.binding(42001);let old=f.board.roaming_owner_state().unwrap();let i=&old.issuers[0];f.board.roaming_set_issuer_enabled(i.id,i.generation,false).unwrap();let next=f.board.roaming_owner_state().unwrap();assert!(!next.bindings[0].enabled);assert!(next.bindings[0].generation>old.bindings[0].generation);
+}

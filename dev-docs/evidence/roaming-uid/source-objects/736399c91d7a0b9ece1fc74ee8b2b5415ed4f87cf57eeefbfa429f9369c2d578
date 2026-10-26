@@ -1,0 +1,10 @@
+{
+  "compile_and_unit_memory_mib": 2048,
+  "passed": 430,
+  "raw": {
+    "path": "dev-docs/evidence/roaming-uid/source-objects/45b00473986989d7560294e5bd28584da43dfc5cd84a61889185420cd509ebb5",
+    "sha256": "45b00473986989d7560294e5bd28584da43dfc5cd84a61889185420cd509ebb5"
+  },
+  "result": "pass",
+  "source_stage": "native-candidate03"
+}

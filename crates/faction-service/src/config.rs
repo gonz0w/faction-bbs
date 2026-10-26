@@ -14,6 +14,7 @@ use toml::{Table, Value};
 
 pub struct Config {
     pub terminal_uid: u32,
+    pub experimental_roaming_manifest: Option<PathBuf>,
     pub socket: PathBuf,
     pub state_dir: PathBuf,
     pub theme: Option<PathBuf>,
@@ -69,6 +70,13 @@ impl Config {
             return Err(denied());
         }
         let state_dir = path(&mut t, "state_dir", Some("/var/db/faction"))?.ok_or_else(denied)?;
+        let experimental_roaming_manifest = path(&mut t, "experimental_roaming_manifest", None)?;
+        if experimental_roaming_manifest
+            .as_ref()
+            .is_some_and(|p| p.as_os_str().as_bytes().len() > 512)
+        {
+            return Err(denied());
+        }
         let theme = path(&mut t, "theme", None)?;
         let directory = path(&mut t, "directory", None)?;
         let gallery = path(&mut t, "gallery", None)?;
@@ -148,6 +156,7 @@ impl Config {
         }
         Ok(Self {
             terminal_uid,
+            experimental_roaming_manifest,
             files_uid,
             files_auth_uid,
             socket,
@@ -214,6 +223,34 @@ mod tests {
         os::unix::fs::{PermissionsExt, symlink},
     };
     const BASE: &str = "version=1\nterminal_uid=123\n";
+    #[test]
+    fn roaming_manifest_is_optional_and_has_a_bounded_absolute_path() {
+        assert!(
+            Config::parse(BASE)
+                .unwrap()
+                .experimental_roaming_manifest
+                .is_none()
+        );
+        let c = Config::parse(&format!(
+            "{BASE}experimental_roaming_manifest='/etc/faction/roaming.toml'\n"
+        ))
+        .unwrap();
+        assert_eq!(
+            c.experimental_roaming_manifest.unwrap(),
+            Path::new("/etc/faction/roaming.toml")
+        );
+        for value in [
+            "'relative'".to_owned(),
+            "'/etc/../roaming'".into(),
+            "true".into(),
+            format!("'/{}'", "a".repeat(512)),
+        ] {
+            assert!(
+                Config::parse(&format!("{BASE}experimental_roaming_manifest={value}\n")).is_err()
+            );
+        }
+    }
+
     #[test]
     fn operator_status_is_strict_and_disabled_by_default() {
         assert!(!Config::parse(BASE).unwrap().operator_status);

@@ -82,3 +82,5 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 - [Local unread mail and a parked board visit](local-unread-mail.md) — encrypted local read decisions and explicit Files-desk access.
 
 - [Selectable encrypted-mail inbox](local-mail-inbox.md) — bounded local selection, unread filters and explicit acknowledgements.
+
+- [Experimental roaming terminal authentication](roaming-authentication.md) — disabled owner-provisioned UID bindings, separate local approval and recovery limits.

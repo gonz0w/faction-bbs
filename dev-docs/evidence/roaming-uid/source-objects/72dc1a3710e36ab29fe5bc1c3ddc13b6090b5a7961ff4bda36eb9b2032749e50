@@ -1,0 +1,43 @@
+from pathlib import Path
+import hashlib,json,os,shutil,socket,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');L=Path('/private/tmp/faction223-lead-OWNED');N=Path('/private/tmp/faction223-native-OWNED');E=R/'dev-docs/evidence/roaming-uid';O=E/'source-objects'
+P=L/'publication-candidate02';r=json.loads((P/'reviewed-index.json').read_text());shutdown=json.loads((L/'shutdown-observations.json').read_text())
+assert all(shutdown[k] is True for k in ('vm_stopped','controller_stopped','forwards_closed','saved_stopped','saved_hashes_unchanged','saved_metadata_unchanged','all_four_transport_uids_drained'))
+for ref in r['sources']:
+ p=R/ref['path'];assert p.resolve().is_relative_to(R.resolve()) and hashlib.sha256(p.read_bytes()).hexdigest()==ref['sha256']
+# Root files and private archives are disposable inputs. Every selected executed
+# source and sanitized observation has already been resolved above in the repo.
+roots=[N,Path('/private/tmp/faction223-core-OWNED'),Path('/private/tmp/faction223-adapter-OWNED'),L]
+for p in roots:assert p.resolve()==p and p.name.endswith('-OWNED') and p.stat().st_uid==os.geteuid() and not p.is_symlink()
+ports=json.loads((N/'vm/ports.json').read_text());base=R/'local/demo';before=json.loads((N/'saved-before.private.json').read_text())
+for name,value in before['metadata_sha256'].items():assert hashlib.sha256((base/name).read_bytes()).hexdigest()==value
+for name,value in before['saved_sha256'].items():
+ h=hashlib.sha256()
+ with (base/'saved/20261022T005925Z'/name).open('rb') as f:
+  while b:=f.read(1024*1024):h.update(b)
+ assert h.hexdigest()==value
+for port in ports.values():
+ if isinstance(port,int):
+  s=socket.socket();s.settimeout(.2);assert s.connect_ex(('127.0.0.1',port))!=0;s.close()
+processes=subprocess.check_output(['ps','-axo','pid=,command='],text=True)
+for line in processes.splitlines():
+ parts=line.split(None,2)
+ if len(parts)<2:continue
+ if Path(parts[1]).name.startswith('qemu-system-'):assert str(N) not in line and str(base/'saved') not in line
+# Preserve this exact non-secret teardown procedure before removing its fixtures.
+def store(raw):
+ d=hashlib.sha256(raw).hexdigest();p=O/d
+ if p.exists():assert p.read_bytes()==raw
+ else:
+  with p.open('xb') as f:f.write(raw)
+ return dict(path=str(p.relative_to(R)),sha256=d)
+source=store(Path(__file__).read_bytes());r['sources'].append(source);r['source_stages'].append(dict(label='owned-teardown',files=[dict(name='finalize-owned.py',**source)]))
+for p in roots:shutil.rmtree(p)
+assert all(not p.exists() for p in roots)
+cleanup=dict(result='pass',owned_removed=True,saved_stopped=True,saved_hashes_unchanged=True,forwards_closed=True,vm_stopped=True,controller_stopped=True,saved_metadata_unchanged=True,all_four_transport_uids_drained=True,temporary_roots_removed=4)
+ref=store((json.dumps(cleanup,indent=2,sort_keys=True)+'\n').encode());r['records']['cleanup']=ref;r['sources'].append(ref)
+r['publication_audit']=dict(result='pass',original_candidate_index_sha256='6f54a67191c6054c2a55301946adda89775e2d9496c836f67a38eb2e27860308',audited_objects=911,actual_credential_matches=0,metadata_excluded=True,independent_payload_review=True,reused_existing_objects=700,new_reviewed_objects=211,subsequent_additions='This explicit teardown source and counts-only cleanup observation.')
+raw=(json.dumps(r,indent=2,sort_keys=True)+'\n').encode();(E/'results.json').write_bytes(raw)
+digest=hashlib.sha256(raw).hexdigest();p=R/'tools/check_roaming_evidence.py';s=p.read_text();assert s.count("RESULT_SHA256='PENDING'")==1;p.write_text(s.replace("RESULT_SHA256='PENDING'","RESULT_SHA256='"+digest+"'"))
+print(json.dumps(dict(result='pass',result_sha256=digest,source_objects=len(r['sources']),temporary_roots_removed=4)))
+Path(__file__).unlink()

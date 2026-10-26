@@ -29,7 +29,7 @@ Export can run while local consoles are connected. SQLite's backup API captures
 committed database state, including WAL content, in a separate private staging
 file. It does not end source sessions or run a migration. A missing, uninitialized,
 foreign or unsupported-schema source fails instead of creating/upgrading a board.
-Schemas 2 through 19 are supported by format 1. Schema 3 includes arcade personal bests
+Schemas 2 through 20 are supported by format 1. Schema 3 includes arcade personal bests
 and completed-run counts; no in-flight game state/run capabilities are exported.
 Schema 4 adds file-area metadata/policy, excluding every transfer grant; file
 bytes are outside SQLite. Use [complete file-area backups](file-areas.md#complete-backup-and-fresh-restore)
@@ -39,7 +39,7 @@ Schema 6 additionally preserves article IDs, generated subjects, timestamp/origi
 metadata and unknown legacy dates. Schema 7 preserves these fields and adds
 [byte-bounded UTF-8 subjects](unicode-subjects.md). Schema-6 verification still
 requires ASCII; schema-7 verification accepts valid UTF-8 without controls.
-Verification is read-only; restored schema-2..18 boards upgrade to schema 19 when
+Verification is read-only; restored schema-2..19 boards upgrade to schema 20 when
 opened by the new build. Follow the
 [stopped-service backup/upgrade](post-metadata.md) procedure. For schema 1 upgrades, stop
 all old consoles and preserve a complete private offline state-directory copy
@@ -56,6 +56,12 @@ Schema 19 adds private directory drafts, pending reviews and published/expired
 local submissions. The separately managed curator pack remains outside the
 export. Restoring an older snapshot can restore withdrawn listings too; review
 their publication and current author approvals before enabling the directory.
+
+Schema 20 adds experimental roaming issuer/binding metadata and immutable UID
+records. Exports and restores disable issuers/bindings and rotate their generations;
+restores also change board identity. Old root manifests cannot enable restored
+associations. Reconcile accounts, policy and consent before deliberate re-enablement.
+See [experimental roaming](roaming-authentication.md).
 
 ## What is included
 

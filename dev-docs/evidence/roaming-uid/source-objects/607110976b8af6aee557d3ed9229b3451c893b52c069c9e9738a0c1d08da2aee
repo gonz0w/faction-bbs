@@ -1,0 +1,392 @@
+//! Experimental owner-only association. A kernel UID is the sole admission input.
+//! None of these configuration/mutation methods may be exposed through member RPC.
+use crate::{Board, Error, Result, Session, current, handle};
+use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RoamingAdmission {
+    pub uid: u32,
+    pub binding_id: i64,
+    pub binding_generation: i64,
+    pub issuer_generation: i64,
+}
+#[derive(Debug, Clone)]
+pub struct RoamingRegistry {
+    pub board_identity: [u8; 32],
+    pub entries: Vec<RoamingAdmission>,
+}
+#[derive(Debug, Clone)]
+pub struct RoamingIssuer {
+    pub id: i64,
+    pub name: String,
+    pub ca_fingerprint: String,
+    pub generation: i64,
+    pub enabled: bool,
+}
+#[derive(Debug, Clone)]
+pub struct RoamingBinding {
+    pub id: i64,
+    pub issuer_id: i64,
+    pub subject: String,
+    pub principal: String,
+    pub member_id: i64,
+    pub uid: u32,
+    pub consent: String,
+    pub generation: i64,
+    pub enabled: bool,
+}
+#[derive(Debug)]
+pub struct RoamingOwnerState {
+    pub board_identity: [u8; 32],
+    pub issuers: Vec<RoamingIssuer>,
+    pub bindings: Vec<RoamingBinding>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct Provenance {
+    pub binding_id: i64,
+    pub binding_generation: i64,
+    pub issuer_id: i64,
+    pub issuer_generation: i64,
+}
+fn ascii(s: &str, max: usize) -> Result<()> {
+    if s.is_empty() || s.len() > max || !s.bytes().all(|b| (33..=126).contains(&b)) {
+        Err(Error::Invalid(
+            "roaming metadata needs bounded non-space ASCII",
+        ))
+    } else {
+        Ok(())
+    }
+}
+fn fingerprint(s: &str) -> Result<()> {
+    if s.len() != 50
+        || !s.starts_with("SHA256:")
+        || !s[7..]
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'+' || b == b'/')
+    {
+        return Err(Error::Invalid(
+            "expected exact OpenSSH SHA256 CA fingerprint",
+        ));
+    }
+    Ok(())
+}
+fn issuer(db: &Connection, id: i64) -> Result<RoamingIssuer> {
+    db.query_row(
+        "SELECT id,name,ca_fingerprint,generation,enabled FROM roaming_issuers WHERE id=?1",
+        [id],
+        |r| {
+            Ok(RoamingIssuer {
+                id: r.get(0)?,
+                name: r.get(1)?,
+                ca_fingerprint: r.get(2)?,
+                generation: r.get(3)?,
+                enabled: r.get(4)?,
+            })
+        },
+    )
+    .optional()?
+    .ok_or(Error::NotFound)
+}
+fn binding(db: &Connection, id: i64) -> Result<RoamingBinding> {
+    db.query_row("SELECT id,issuer_id,subject,principal,member_id,uid,consent,generation,enabled FROM roaming_bindings WHERE id=?1",[id],|r|Ok(RoamingBinding{id:r.get(0)?,issuer_id:r.get(1)?,subject:r.get(2)?,principal:r.get(3)?,member_id:r.get(4)?,uid:r.get(5)?,consent:r.get(6)?,generation:r.get(7)?,enabled:r.get(8)?})).optional()?.ok_or(Error::NotFound)
+}
+pub(crate) fn check(tx: &Transaction<'_>, member: i64, p: Provenance) -> Result<()> {
+    let valid=tx.prepare("SELECT 1 FROM roaming_bindings b JOIN roaming_issuers i ON i.id=b.issuer_id JOIN members m ON m.id=b.member_id WHERE b.id=?1 AND b.generation=?2 AND b.issuer_id=?3 AND i.generation=?4 AND b.enabled=1 AND i.enabled=1 AND b.member_id=?5 AND m.status='approved'")?.exists(params![p.binding_id,p.binding_generation,p.issuer_id,p.issuer_generation,member])?;
+    if valid { Ok(()) } else { Err(Error::Denied) }
+}
+fn rotate(g: i64) -> Result<i64> {
+    g.checked_add(1)
+        .ok_or(Error::Invalid("roaming generation exhausted"))
+}
+fn revoke(tx: &Transaction<'_>, binding_id: Option<i64>, issuer_id: Option<i64>) -> Result<()> {
+    tx.execute("DELETE FROM chat_sessions WHERE id IN(SELECT session FROM roaming_chat WHERE binding_id=?1 OR issuer_id=?2)",params![binding_id,issuer_id])?;
+    tx.execute("UPDATE file_transfers SET state='failed' WHERE id IN(SELECT transfer FROM roaming_transfers WHERE binding_id=?1 OR issuer_id=?2) AND state IN('ready','active')",params![binding_id,issuer_id])?;
+    Ok(())
+}
+impl Board {
+    /// Install once, before any authentication attempt. The trusted owner supplies this
+    /// bounded registry after checking root-owned transport policy; it grants no enrollment.
+    pub fn configure_roaming_owner(&mut self, registry: Option<RoamingRegistry>) -> Result<()> {
+        if self.roaming_configured {
+            return Err(Error::Denied);
+        }
+        if let Some(r) = &registry {
+            if r.board_identity != self.identity || r.entries.len() > 4 {
+                return Err(Error::Denied);
+            }
+            let tx = self.db.transaction()?;
+            let mut uids = std::collections::HashSet::new();
+            for a in &r.entries {
+                if !uids.insert(a.uid) {
+                    return Err(Error::Denied);
+                }
+                let b = binding(&tx, a.binding_id)?;
+                if b.uid != a.uid {
+                    return Err(Error::Denied);
+                }
+                let p = Provenance {
+                    binding_id: b.id,
+                    binding_generation: a.binding_generation,
+                    issuer_id: b.issuer_id,
+                    issuer_generation: a.issuer_generation,
+                };
+                check(&tx, b.member_id, p)?;
+            }
+        }
+        self.roaming_owner = registry;
+        self.roaming_configured = true;
+        Ok(())
+    }
+    /// Call only with the UID obtained by the owner from the kernel peer credentials,
+    /// after verifying the supplied TTY is owned by that UID. No terminal identity input.
+    pub fn authenticate_roaming_uid(&mut self, uid: u32) -> Result<Session> {
+        self.roaming_configured = true;
+        self.directory_configured = true;
+        let a = self
+            .roaming_owner
+            .as_ref()
+            .and_then(|r| r.entries.iter().find(|a| a.uid == uid))
+            .ok_or(Error::Denied)?;
+        let tx = self.db.transaction()?;
+        let b = binding(&tx, a.binding_id)?;
+        if b.uid != uid {
+            return Err(Error::Denied);
+        }
+        let epoch = tx.query_row(
+            "SELECT epoch FROM members WHERE id=?1",
+            [b.member_id],
+            |r| r.get(0),
+        )?;
+        let s = Session {
+            board: self.identity,
+            member: b.member_id,
+            epoch,
+            roaming: Some(Provenance {
+                binding_id: b.id,
+                binding_generation: a.binding_generation,
+                issuer_id: b.issuer_id,
+                issuer_generation: a.issuer_generation,
+            }),
+        };
+        current(&tx, &self.identity, &s, true, false)?;
+        Ok(s)
+    }
+    pub fn roaming_owner_member_id(&self, name: &str) -> Result<i64> {
+        let name = handle(name)?;
+        self.db
+            .query_row("SELECT id FROM members WHERE handle=?1", [name], |r| {
+                r.get(0)
+            })
+            .optional()?
+            .ok_or(Error::NotFound)
+    }
+    pub fn roaming_owner_state(&self) -> Result<RoamingOwnerState> {
+        let issuers = self
+            .db
+            .prepare("SELECT id FROM roaming_issuers ORDER BY id")?
+            .query_map([], |r| r.get(0))?
+            .collect::<std::result::Result<Vec<i64>, _>>()?
+            .into_iter()
+            .map(|id| issuer(&self.db, id))
+            .collect::<Result<_>>()?;
+        let bindings = self
+            .db
+            .prepare("SELECT id FROM roaming_bindings ORDER BY id")?
+            .query_map([], |r| r.get(0))?
+            .collect::<std::result::Result<Vec<i64>, _>>()?
+            .into_iter()
+            .map(|id| binding(&self.db, id))
+            .collect::<Result<_>>()?;
+        Ok(RoamingOwnerState {
+            board_identity: self.identity,
+            issuers,
+            bindings,
+        })
+    }
+    pub fn roaming_add_issuer(
+        &mut self,
+        name: &str,
+        ca_fingerprint: &str,
+    ) -> Result<RoamingIssuer> {
+        ascii(name, 96)?;
+        fingerprint(ca_fingerprint)?;
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let count: i64 = tx.query_row("SELECT count(*) FROM roaming_issuers", [], |r| r.get(0))?;
+        if count >= 2 {
+            return Err(Error::Invalid("roaming issuer limit reached"));
+        }
+        tx.execute(
+            "INSERT INTO roaming_issuers(name,ca_fingerprint,generation,enabled) VALUES(?1,?2,1,0)",
+            params![name, ca_fingerprint],
+        )?;
+        let result = issuer(&tx, tx.last_insert_rowid())?;
+        tx.commit()?;
+        Ok(result)
+    }
+    pub fn roaming_set_issuer_enabled(
+        &mut self,
+        id: i64,
+        expected_generation: i64,
+        enabled: bool,
+    ) -> Result<RoamingIssuer> {
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let old = issuer(&tx, id)?;
+        if old.generation != expected_generation {
+            return Err(Error::RequestConflict);
+        }
+        if !enabled {
+            if tx.prepare("SELECT 1 FROM roaming_bindings WHERE issuer_id=?1 AND generation=9223372036854775807")?.exists([id])? { return Err(Error::Invalid("roaming generation exhausted")); }
+            tx.execute(
+                "UPDATE roaming_bindings SET enabled=0,generation=generation+1 WHERE issuer_id=?1",
+                [id],
+            )?;
+        }
+        tx.execute(
+            "UPDATE roaming_issuers SET enabled=?2,generation=?3 WHERE id=?1",
+            params![id, enabled, rotate(old.generation)?],
+        )?;
+        revoke(&tx, None, Some(id))?;
+        let result = issuer(&tx, id)?;
+        tx.commit()?;
+        Ok(result)
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub fn roaming_link_member(
+        &mut self,
+        issuer_id: i64,
+        expected_issuer_generation: i64,
+        subject: &str,
+        principal: &str,
+        member_id: i64,
+        uid: u32,
+        consent: &str,
+    ) -> Result<RoamingBinding> {
+        ascii(subject, 128)?;
+        ascii(principal, 192)?;
+        ascii(consent, 160)?;
+        if uid == 0 {
+            return Err(Error::Denied);
+        }
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let i = issuer(&tx, issuer_id)?;
+        if i.generation != expected_issuer_generation {
+            return Err(Error::RequestConflict);
+        }
+        if !i.enabled {
+            return Err(Error::Denied);
+        }
+        if !tx
+            .prepare("SELECT 1 FROM members WHERE id=?1 AND status='approved'")?
+            .exists([member_id])?
+        {
+            return Err(Error::Denied);
+        }
+        let count: i64 = tx.query_row("SELECT count(*) FROM roaming_bindings", [], |r| r.get(0))?;
+        if count >= 32 {
+            return Err(Error::Invalid("roaming UID tombstone limit reached"));
+        }
+        tx.execute("INSERT INTO roaming_bindings(issuer_id,subject,principal,member_id,uid,consent,generation,enabled) VALUES(?1,?2,?3,?4,?5,?6,1,0)",params![issuer_id,subject,principal,member_id,uid,consent])?;
+        let result = binding(&tx, tx.last_insert_rowid())?;
+        tx.commit()?;
+        Ok(result)
+    }
+    pub fn roaming_set_binding_enabled(
+        &mut self,
+        id: i64,
+        expected_generation: i64,
+        enabled: bool,
+    ) -> Result<RoamingBinding> {
+        let tx = self
+            .db
+            .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        let old = binding(&tx, id)?;
+        if old.generation != expected_generation {
+            return Err(Error::RequestConflict);
+        }
+        if enabled {
+            if !issuer(&tx, old.issuer_id)?.enabled
+                || !tx
+                    .prepare("SELECT 1 FROM members WHERE id=?1 AND status='approved'")?
+                    .exists([old.member_id])?
+            {
+                return Err(Error::Denied);
+            }
+            let count: i64 = tx.query_row(
+                "SELECT count(*) FROM roaming_bindings WHERE enabled=1 AND id<>?1",
+                [id],
+                |r| r.get(0),
+            )?;
+            if count >= 4 {
+                return Err(Error::Invalid("roaming enabled binding limit reached"));
+            }
+        }
+        tx.execute(
+            "UPDATE roaming_bindings SET enabled=?2,generation=?3 WHERE id=?1",
+            params![id, enabled, rotate(old.generation)?],
+        )?;
+        revoke(&tx, Some(id), None)?;
+        let result = binding(&tx, id)?;
+        tx.commit()?;
+        Ok(result)
+    }
+}
+pub(crate) fn validate(db: &Connection, exported: bool) -> Result<()> {
+    let issuers = db
+        .prepare("SELECT id FROM roaming_issuers")?
+        .query_map([], |r| r.get(0))?
+        .collect::<std::result::Result<Vec<i64>, _>>()?;
+    if issuers.len() > 2 {
+        return Err(Error::Invalid("roaming issuer limit exceeded"));
+    }
+    for id in issuers {
+        let i = issuer(db, id)?;
+        ascii(&i.name, 96)?;
+        fingerprint(&i.ca_fingerprint)?;
+    }
+    let ids = db
+        .prepare("SELECT id FROM roaming_bindings")?
+        .query_map([], |r| r.get(0))?
+        .collect::<std::result::Result<Vec<i64>, _>>()?;
+    let mut enabled = 0;
+    if ids.len() > 32 {
+        return Err(Error::Invalid("roaming tombstone limit exceeded"));
+    }
+    for id in ids {
+        let b = binding(db, id)?;
+        ascii(&b.subject, 128)?;
+        ascii(&b.principal, 192)?;
+        ascii(&b.consent, 160)?;
+        enabled += usize::from(b.enabled);
+    }
+    if enabled > 4 {
+        return Err(Error::Invalid("roaming enabled binding limit exceeded"));
+    }
+    if exported
+        && (db
+            .prepare("SELECT 1 FROM roaming_issuers WHERE enabled=1")?
+            .exists([])?
+            || db
+                .prepare("SELECT 1 FROM roaming_bindings WHERE enabled=1")?
+                .exists([])?
+            || db.prepare("SELECT 1 FROM roaming_chat")?.exists([])?
+            || db.prepare("SELECT 1 FROM roaming_transfers")?.exists([])?)
+    {
+        return Err(Error::Invalid("export retains roaming capabilities"));
+    }
+    // Side-table identity must agree with the parent grant/member, even when a
+    // retained stale grant is already failed. It cannot change who issued authority.
+    if db.prepare("SELECT 1 FROM roaming_transfers p JOIN file_transfers t ON t.id=p.transfer JOIN roaming_bindings b ON b.id=p.binding_id WHERE b.member_id<>t.member_id OR b.issuer_id<>p.issuer_id UNION ALL SELECT 1 FROM roaming_chat p JOIN chat_sessions s ON s.id=p.session JOIN roaming_bindings b ON b.id=p.binding_id WHERE b.member_id<>s.member OR b.issuer_id<>p.issuer_id")?.exists([])? {return Err(Error::Invalid("inconsistent roaming capability provenance"))}
+    Ok(())
+}
+
+/// A copied snapshot owns no live admission, even when the owner later restores it.
+pub(crate) fn disable_snapshot(db: &Connection) -> Result<()> {
+    if db.prepare("SELECT 1 FROM roaming_issuers WHERE generation=9223372036854775807 UNION ALL SELECT 1 FROM roaming_bindings WHERE generation=9223372036854775807")?.exists([])? {return Err(Error::Invalid("roaming generation exhausted"));}
+    db.execute_batch("UPDATE roaming_issuers SET enabled=0,generation=generation+1; UPDATE roaming_bindings SET enabled=0,generation=generation+1;")?;
+    Ok(())
+}

@@ -1,0 +1,8 @@
+from pathlib import Path
+import os,subprocess,json,hashlib,time
+p=Path('/home/factionbuild/proof223');env=os.environ.copy();env.update(CARGO_HOME='/home/factionbuild/cargo223',CARGO_TARGET_DIR='/home/factionbuild/target223',CARGO_BUILD_JOBS='1',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib')
+cmd=['cargo','build','--release','--locked','--offline','-j','1','-p','faction-cli','-p','faction-service','-p','faction-client','-p','faction-access','-p','faction-core','--examples','--bins']
+t=time.monotonic()
+with (p/'server-build-01.private.log').open('wb') as log:r=subprocess.run(cmd,cwd='/home/factionbuild/source223-server',env=env,stdout=log,stderr=log)
+result={'result':'pass' if r.returncode==0 else 'fail','returncode':r.returncode,'command':cmd,'scope':'two-core-2GiB-compile-only','seconds':round(time.monotonic()-t,3)}
+(p/'server-build-01.json').write_text(json.dumps(result,indent=2)+'\n')

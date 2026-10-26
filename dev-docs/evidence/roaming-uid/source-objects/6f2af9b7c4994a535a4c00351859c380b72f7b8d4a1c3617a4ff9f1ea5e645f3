@@ -1,0 +1,26 @@
+from pathlib import Path
+import hashlib,json,os,re,shlex,subprocess,time
+ROOT=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction223-lead-OWNED');TARGET=P/'target'
+build=subprocess.run(['cargo','build','--workspace','--all-targets','--release','--locked','--offline'],cwd=ROOT,env={**os.environ,'CARGO_TARGET_DIR':str(TARGET)},stdout=(P/'final-build.log').open('wb'),stderr=subprocess.STDOUT)
+assert build.returncode==0
+names=set(subprocess.check_output(['git','ls-files'],cwd=ROOT,text=True).splitlines())|set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=ROOT,text=True).splitlines())
+names=sorted(n for n in names if n in {'Cargo.toml','Cargo.lock'} or n.startswith(('crates/','native/','tools/','themes/','deploy/','gallery/','library/','magazines/','experiments/223-roaming-uid/')))
+objects=P/'host-executed-objects';objects.mkdir(exist_ok=True);sources={}
+for n in names:
+ raw=(ROOT/n).read_bytes();digest=hashlib.sha256(raw).hexdigest();sources[n]=digest
+ if not (objects/digest).exists():(objects/digest).write_bytes(raw)
+(P/'host-final-source.json').write_text(json.dumps(sources,indent=2,sort_keys=True)+'\n')
+commands=[['python3','tools/smoke_playground_seed.py',str(TARGET/'release/examples/playground_seed')],['python3','tools/smoke_directory_submissions.py',str(TARGET/'release/faction'),str(TARGET/'release/faction-member')]]
+text=(ROOT/'.github/workflows/documentation.yml').read_text();start=text.index('          python3 tools/smoke_local_console.py');end=text.index('      - name: Validate articles',start)
+for line in text[start:end].splitlines():
+ if line.strip().startswith('python3 tools/smoke_'):
+  commands.append(shlex.split(line.strip().replace('$CARGO_TARGET_DIR',str(TARGET))))
+commands.append(['python3','tools/smoke_backup_recovery.py',str(TARGET/'release/faction'),str(TARGET/'release/faction-sysop'),'--output',str(P/'host-backup.json')])
+results=[]
+for i,cmd in enumerate(commands):
+ before=time.monotonic();r=subprocess.run(cmd,cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
+ (P/f'host-legacy-{i:02d}.log').write_bytes(r.stdout)
+ results.append(dict(command=cmd,returncode=r.returncode,elapsed_ms=round((time.monotonic()-before)*1000),source_sha256=sources[cmd[1]]))
+ (P/'host-legacy.json').write_text(json.dumps(dict(result='pass' if all(x['returncode']==0 for x in results) and len(results)==len(commands) else 'incomplete',checks=results),indent=2)+'\n')
+ print(cmd[1],r.returncode,flush=True)
+ if r.returncode:raise SystemExit(1)

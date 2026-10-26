@@ -54,7 +54,7 @@ def run(a):
         attacker=connect();wall(attacker);attacker.send('p');attacker.expect(TEXT);attacker.raw(b'\x1b[2J');attacker.finish(1);assert query('select count(*) from wall_notes')==[[0]];checks.append('actual_escape_injection_cannot_publish_or_execute_terminal_controls')
         settings(c);c.send('d');c.expect(SETTINGS);back(c);assert query('select enabled from wall_settings')==[[0]];logout(c);checks.append('actual_sysop_disable_returns_to_classic_menu')
         assert query('pragma user_version')==[[19]] and all(password.encode() not in x.transcript for x in children)
-        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=19,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared community-wall checks passed:',len(checks))
+        a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,schema_version=20,normal_sessions=8,admission_refill_ms=5000,capacity_claim=False),indent=2,sort_keys=True)+'\n');print('Actual shared community-wall checks passed:',len(checks))
     except Exception:
         if children:(a.output.parent/'wall-private-transcript').write_bytes(children[-1].transcript)
         raise

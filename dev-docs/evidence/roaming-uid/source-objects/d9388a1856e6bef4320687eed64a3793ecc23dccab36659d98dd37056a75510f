@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "passed": 430,
+  "suites": 85,
+  "command": "cargo test --workspace --all-targets --release --locked --offline -- --test-threads=1",
+  "clippy": "pass",
+  "format": "pass",
+  "note": "Default feature workspace; optional client profile consumer checks recorded separately."
+}

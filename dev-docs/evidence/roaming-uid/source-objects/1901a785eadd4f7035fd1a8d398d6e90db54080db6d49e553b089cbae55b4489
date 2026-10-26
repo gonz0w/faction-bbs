@@ -1,0 +1,9 @@
+from lab import *
+import json
+cmd='cc -Wall -Wextra -Werror -I /home/factionbuild/roaming223-openssh -I /home/factionbuild/roaming223-openssh/openbsd-compat /home/factionbuild/source223-server/experiments/223-roaming-uid/replay-test.c /home/factionbuild/roaming223-openssh/libssh.a /home/factionbuild/roaming223-openssh/openbsd-compat/libopenbsd-compat.a -lcrypto -lz -lutil -o /home/factionbuild/roaming223-replay'
+r=remote("su - factionbuild -c '"+cmd+"'",timeout=90,check=False);(P/'native-oracle-compile.private.log').write_bytes(r.stdout+r.stderr)
+assert r.returncode==0,'native oracle compile failed; retained private diagnostic'
+r=remote("su - factionbuild -c '/home/factionbuild/roaming223-replay'",check=False);(P/'native-oracle.private.log').write_bytes(r.stdout+r.stderr)
+result={'returncode':r.returncode,'observations':json.loads(r.stdout),'layer':'OpenSSH sshkey sign/verify RFC4252 request component, synthetic session identifiers; no network KEX capture'}
+(P/'native-oracle.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result))
+assert r.returncode==0

@@ -1,0 +1,81 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "roam223a-key-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "1029fd7877e310659df5607f30988374b77bb1fd7068a3abaae9c772ae7e02f9"
+    },
+    {
+      "name": "roam223b-key-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "767dfb6637600c1a83a146d3cb3a87e7bb37f33b9a8c3b9c85ee071c558bdbf8"
+    },
+    {
+      "name": "roam223c-key-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "777085334d4b9df9db1b7734a19ef4e11c5045c6cf96f3275ba239437f6eef11"
+    },
+    {
+      "name": "roam223d-key-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "328e25950b18cd2869e13d382a8c8a6d0bb2acf72ab93b98db561ab71132dbdb"
+    },
+    {
+      "name": "wrong-ca-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "a32c30c25fb8b5a799732853554b9a684e5be7ebd383a890f041c318f2983f53"
+    },
+    {
+      "name": "wrong-home-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "f388b1613f866c4af2d5b3cb3564cbfca6e15e99bcd5e0d0d6e4103f2af1444d"
+    },
+    {
+      "name": "wrong-board-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "4006f53108d4109cfc8a5c84f8727fcaa118297253c0d155a8d16f584678dbc9"
+    },
+    {
+      "name": "wrong-principal-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "10a852ede19d8d2dfd15d0d6bbc11e1437cf7e92c8956039bd9b311f522a1b2c"
+    },
+    {
+      "name": "expired-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "4e0217b6880855a9349648ea066671e536cc297c768e66d595ae1ae51d2d6fdb"
+    },
+    {
+      "name": "future-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "601e5aa5f2e491da0a39d3642c26def3aaf0df54a39b4affe0fb486f70b2c38d"
+    },
+    {
+      "name": "fresh-key-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "bf0d773c045ac1f28ab604afc347099813563e53ace26a60013dd2354424adf9"
+    },
+    {
+      "name": "home-b-outage-control-cert",
+      "signer_exit": 0,
+      "independent_parse_and_signature_exit": 0,
+      "sha256": "6956e937e4abef13891c6676717540b7bf70725e6bc2161fca71de4e43289143"
+    }
+  ],
+  "home_a_issuance_unavailable_exit": 255,
+  "home_b_issuance_available": true,
+  "offline_home_fixture": true,
+  "signer": "host OpenSSH; native installed signer remains rejected"
+}

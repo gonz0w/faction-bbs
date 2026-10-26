@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "layer": "real NetBSD kernel peer UID and SCM_RIGHTS TTY ownership",
+  "checks": [
+    {
+      "name": "unregistered-kernel-peer-with-owned-tty",
+      "result": "pass"
+    },
+    {
+      "name": "registered-peer-with-another-uids-tty",
+      "result": "pass"
+    }
+  ]
+}

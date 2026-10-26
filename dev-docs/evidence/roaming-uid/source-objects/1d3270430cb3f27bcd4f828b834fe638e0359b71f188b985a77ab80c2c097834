@@ -1,0 +1,362 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "tools/smoke_playground_seed.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/examples/playground_seed"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 351,
+      "source_sha256": "b08cea7c669ea09b0b2d222ba03dd8826d6c1b6938bfdbad647755062dd54121"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_directory_submissions.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 2092,
+      "source_sha256": "82b43d2d196351489334b2c623cd27b4796315d79b6f24b16df7528dc5c62963"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_local_console.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 2940,
+      "source_sha256": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_room_browser.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 1452,
+      "source_sha256": "58125e23943b0a0da14462d1d04d734f6a22b433b85adb51c83e2cb511f4fc11"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_writing_desk.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 824,
+      "source_sha256": "fbe51e149329a2f010ee52894bc2ab509a46d8d31e177852772a7a934ee5673e"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_social.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 811,
+      "source_sha256": "307611c9cdba79f60c2bea4c1bed6fbd4c07f6d982727f45d3fe1c91387542b7"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_standalone_social.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 71006,
+      "source_sha256": "d1d333faef1a3df9df1d93d76883c8ba33704f2acf83ebd10030f798d7721c17"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_idle_notifications.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 107334,
+      "source_sha256": "11c3e7fdb09bfbd47d7a69fadad5505fae0e22394b3020eef59ee42ef0954572"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_board_guide.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 1954,
+      "source_sha256": "7ae97c2a8e3e7f28b5c4d479f8378db556dde9f1767ec615188bdb91519aa25b"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_who.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 2466,
+      "source_sha256": "8f5597136058635ca2cac98b9a583129ba1c4332ce6657dba8267c857ec9dde0"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_editorial.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 1480,
+      "source_sha256": "94d4b522082749d4f0dd954e554388f4ceddf0cf4f56dfd228e2ce9c63a5c30a"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_magazine.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 827,
+      "source_sha256": "bbd9933bf35268bb877dbe6fc1df1cc1a922e395d6c0411c874c6fdca68e4cc3"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_file_requests.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 807,
+      "source_sha256": "168d66ee90939accea0a92616b0247a1f4770876434465320a5270eb00503fca"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_library.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 937,
+      "source_sha256": "695a809c99a37dd51cba3e0e6c90f8d56f0e45a11834e9fffdee927f85b99748"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_gallery.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 1033,
+      "source_sha256": "10c14a08df10b0d988349c20ed92b8d56312b1d7e98314c6d9b659dbffd0b271"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_discussion.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 918,
+      "source_sha256": "1d74bec7bfa3b2f93745c732ec313eb09dfdf98bbe9981bf34117bb66363fa9f"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_catchup.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 819,
+      "source_sha256": "5e5d411fc948aa66a36332e1651df106ce61a2ea53f8922ea62ea6c4ca7fe3d5"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_polls.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 937,
+      "source_sha256": "2d8b58b7e85ccb68b5d31706fc935d97f3edde2124d526ea603300a95adf1fbe"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_gatherings.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 1033,
+      "source_sha256": "bef65addaae6fbfe5e153e27e7f7605c3e3da8490528887a1158140f7454de80"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_member_pages.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 826,
+      "source_sha256": "a05e0c98a65dc10729060f2985fb453e372b5e0128dec721cb78a4afd06c4633"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_wall.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 823,
+      "source_sha256": "97a6735ee5bd624d0ffe457f5c19ffee413a66e015002ac211fac9d3aa5a186c"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_full_screen.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 929,
+      "source_sha256": "fec6666c688c3c8370ef48f9e4c340934678b1fc02f4bc060a7295feee98aef6"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_room_reader.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 371,
+      "source_sha256": "236fd89ea46e5433162c45566d050de1c59aa861a85739ad3601a5aaf7c761fe"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_unicode_subjects.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 1030,
+      "source_sha256": "ca95bfec40e3c26eddc154f89fa5a57e21dc0a057e59f6f4e8ae4caf846308ad"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_modern_terminals.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 4213,
+      "source_sha256": "332dcbad9bebd25b7137b3b90e5498d9b428afdd5792a6efc30de8cff3b0e2fd"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_kitty_graphics.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 5097,
+      "source_sha256": "e3032c48cf0f6c9778c2ea32fa28c0c02a3f63df5f4a82d91dbcb4cebda26849"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_native_graphics.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-client"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 33633,
+      "source_sha256": "b5053ebc82afd290528ebcf3c6b5c4ec0c62a727efde8062a350def9d84c88a2"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_local_chat.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 3905,
+      "source_sha256": "2d48ff29315d2a7ff4fb0cd42a1fd2f6998dcc417e781cac14b84fd247c40ab7"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_export_restore.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 897,
+      "source_sha256": "b1bd9994c753f532fa2f9f787b911543f8788ee3d4355345a12144f77c50cf7f"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_member_worker.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-member"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 701,
+      "source_sha256": "fa486b671f887315610f3ece37deb295a17ee8e9a1b3665035dc3ecf9ddf7239"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_broker_lifecycle.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-broker"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 6392,
+      "source_sha256": "f5b7117800e2c14b979cdbca30bddb465f195991ad7dbc5c567d2b9187ba679a"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_credential_budget.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 371,
+      "source_sha256": "58ccf359165919a6f46068c05292ba60068a35b89cfd8d7aac7a5cb67199aa3c"
+    },
+    {
+      "command": [
+        "python3",
+        "tools/smoke_backup_recovery.py",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction",
+        "/private/tmp/faction223-lead-OWNED/target/release/faction-sysop",
+        "--output",
+        "/private/tmp/faction223-lead-OWNED/host-backup.json"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 657,
+      "source_sha256": "de3054df81f6ea6e4bdc7b4366ae2804c332adda8cab24ad167ac0277e65d3e5"
+    }
+  ]
+}

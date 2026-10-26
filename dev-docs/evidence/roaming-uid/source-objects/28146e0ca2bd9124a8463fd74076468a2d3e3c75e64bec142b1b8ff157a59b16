@@ -1,0 +1,41 @@
+import json, pathlib, subprocess, tempfile, shutil, hashlib, re
+root=pathlib.Path('/private/tmp/faction223-core-OWNED')
+fixture=pathlib.Path(tempfile.mkdtemp(prefix='cli-final-OWNED-',dir=root));fixture.chmod(0o700)
+exe=pathlib.Path('/Users/cam/DEV/faction-bbs/target/release/examples/roaming_owner_fixture')
+checks=[]
+def run(*args,ok=True):
+ p=subprocess.run([str(exe),str(fixture),*map(str,args)],capture_output=True,text=True)
+ assert (p.returncode==0)==ok,(args,p.returncode,p.stderr)
+ checks.append({'command':list(map(str,args)),'exit_code':p.returncode})
+ return json.loads(p.stdout) if ok else None
+try:
+ run('state',ok=False)
+ (fixture/'.roaming-fixture').touch()
+ run('bootstrap','sysop','fixture-only-secret-223')
+ run('memberadd','member','fixture-only-secret-223')
+ run('member','member','approved')
+ s=run('addissuer','home-one','SHA256:'+'A'*43); i=s['issuers'][0]; assert not i['enabled']
+ s=run('issuer',i['id'],i['generation'],'on');i=s['issuers'][0]
+ s=run('link',i['id'],i['generation'],'subject-one','board-one:home-one:subject-one','member',42001,'consent-223');b=s['bindings'][0];assert not b['enabled']
+ s=run('enable',b['id'],b['generation']);b=s['bindings'][0];assert b['enabled']
+ run('disable',b['id'],b['generation']-1,ok=False)
+ s=run('disable',b['id'],b['generation']);old=s['bindings'][0];assert not old['enabled']
+ run('link',i['id'],i['generation'],'other-subject','other-principal','member',42001,'new-consent',ok=False)
+ s=run('link',i['id'],i['generation'],'subject-one','board-one:home-one:subject-one','member',42002,'fresh-consent-223');new=s['bindings'][1]
+ s=run('enable',new['id'],new['generation']);new=s['bindings'][1];assert new['enabled']
+ run('enable',old['id'],old['generation'],ok=False)
+ s=run('issuer',i['id'],i['generation'],'off');assert all(not b['enabled'] for b in s['bindings']);i=s['issuers'][0]
+ s=run('issuer',i['id'],i['generation'],'on');assert all(not b['enabled'] for b in s['bindings'])
+ s=run('state');assert len(s['bindings'])==2 and s['bindings'][0]['uid']==42001 and s['bindings'][1]['uid']==42002
+ run('member','member','revoked')
+ run('enable',new['id'],s['bindings'][1]['generation'],ok=False)
+finally:
+ shutil.rmtree(fixture)
+assert not fixture.exists()
+(root/'cli-final.json').write_text(json.dumps({'checks':checks,'fixture_removed':True},indent=2)+'\n')
+log=(root/'core-release-alltargets-green.log').read_text()
+counts=[int(n) for n in re.findall(r'test result: ok\. (\d+) passed;',log)]
+print(json.dumps({'core_release_tests_passed':sum(counts),'suite_groups':len(counts),'cli_controls':len(checks),'fixture_removed':True}))
+paths=[p for p in pathlib.Path('crates/faction-core').rglob('*') if p.is_file()]
+manifest={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
+(root/'final-core-sha256.json').write_text(json.dumps(manifest,indent=2)+'\n')

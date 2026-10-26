@@ -85,11 +85,11 @@ def run(a):
             checks.append('sysop_stable_id_remove_requires_delete_and_feature_can_disable')
             c=Console(a.binary,state,'register');children.append(c);c.expect('Handle: ');c.send('pending');c.password(password,'New password (12+ characters, hidden): ');c.password(password,'Confirm password (hidden): ');c.expect('Registered pending sysop approval.');c.finish()
             c=Console(a.binary,state,'login',['--ansi']);children.append(c);c.expect('Handle: ');c.send('pending');c.password(password);c.expect('No community access.');c.finish();assert b'Gatherings>' not in c.transcript
-            assert query('pragma user_version')==[(19,)] and all(password.encode() not in c.transcript for c in children)
+            assert query('pragma user_version')==[(20,)] and all(password.encode() not in c.transcript for c in children)
             checks.append('pending_member_never_sees_gatherings_or_login_reminder')
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,capacity_claim=False,external_calendar=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=20,capacity_claim=False,external_calendar=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker gatherings passed:',len(checks),'controls.')
 if __name__=='__main__':

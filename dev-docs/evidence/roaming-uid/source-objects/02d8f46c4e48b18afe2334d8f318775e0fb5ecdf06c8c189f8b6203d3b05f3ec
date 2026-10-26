@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""Check immutable issue223 observations; never start a service or VM."""
+import hashlib
+import json
+from pathlib import Path
+import re
+ROOT=Path(__file__).resolve().parents[1]
+RESULT_SHA256='PENDING'
+REQUIRED={'host-workspace','native-workspace','native-source-match','host-oracle','native-oracle','runtime','native-manifest','native-ssh','host-legacy','native-legacy','cleanup','tdd'}
+PROFILE=dict(boards=2,homes=2,bindings=4,certificate_seconds=300,sequential_boards=True,default_off=True)
+CLAIMS={'production','wire_replay','leaf_key_pin','physical_hardware','capacity'}
+
+def raw(root,ref):
+    p=Path(ref['path'])
+    assert not p.is_absolute() and '..' not in p.parts
+    assert re.fullmatch('[0-9a-f]{64}',ref['sha256'])
+    path=root/p
+    assert not path.is_symlink() and path.resolve().is_relative_to(root.resolve())
+    data=path.read_bytes()
+    assert hashlib.sha256(data).hexdigest()==ref['sha256'],str(p)
+    return data
+
+def validate(root,r):
+    assert r['schema']==1 and r['issue']==223 and r['result']=='pass'
+    assert r['proof_profile']==PROFILE and set(r['claims'])==CLAIMS
+    assert all(value is False for value in r['claims'].values())
+    assert REQUIRED<=r['records'].keys() and r['sources']
+    for source in r['sources']:raw(root,source)
+    records={name:json.loads(raw(root,ref)) for name,ref in r['records'].items()}
+    assert all(d['result']=='pass' for d in records.values())
+    host=records['host-workspace'];native=records['native-workspace']
+    assert host['passed']==native['passed']>0
+    final=next(s for s in r['source_stages'] if s['label']=='native-final')
+    expected={x['name']:x['sha256'] for x in final['files']}
+    assert len(expected)==len(final['files'])>0
+    assert expected==records['native-source-match']['files']
+    assert records['native-source-match']['all_match'] is True
+    assert set(expected.values())<={s['sha256'] for s in r['sources']}
+    for name in ('host-oracle','native-oracle'):
+        assert records[name]['checks']==7 and records[name]['wire_replay_claim'] is False
+    runtime=records['runtime']
+    for key,value in dict(normal_sessions=8,admission_refill_ms=5000,credential_permits=2,kernel_slots=2,owner_helpers=3,drain_seconds=5).items():assert runtime[key]==value
+    assert 1000*1024*1024<runtime['physmem']<1024*1024*1024
+    assert all(records['cleanup'][key] is True for key in ('owned_removed','saved_stopped','saved_hashes_unchanged','forwards_closed'))
+    return records
+
+def check():
+    data=(ROOT/'dev-docs/evidence/roaming-uid/results.json').read_bytes()
+    assert hashlib.sha256(data).hexdigest()==RESULT_SHA256,'immutable roaming result changed'
+    validate(ROOT,json.loads(data))
+    print('Roaming evidence passed: source-bound host/NetBSD, restricted SSH, component replay, recovery and cleanup; no production claim.')
+
+if __name__=='__main__':check()

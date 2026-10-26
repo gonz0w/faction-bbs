@@ -21,6 +21,7 @@ mod operator;
 mod pages_ui;
 mod policy;
 mod polls_ui;
+mod roaming;
 mod rooms_ui;
 mod social_ui;
 mod ui;
@@ -279,7 +280,7 @@ impl Client {
         // Control is not a member RPC. EOF or any extra byte terminates this connection.
         let _ = &mut control;
         let now = Instant::now();
-        let mut c = Self {
+        let c = Self {
             connection,
             control,
             tty,
@@ -332,8 +333,29 @@ impl Client {
             gallery: None,
             library: None,
         };
-        c.queue("[L]ogin [R]egister [Q]uit: ");
         Ok(c)
+    }
+    fn login_choice(&mut self) {
+        self.queue("[L]ogin [R]egister [Q]uit: ");
+    }
+    fn complete_login(
+        &mut self,
+        s: Session,
+        themes: &faction_terminal::seasons::Themes,
+        board: &mut Board,
+    ) -> faction_core::Result<()> {
+        let m = board.whoami(&s)?;
+        if m.status == Status::Approved {
+            self.session = Some(s);
+            self.sysop_display = m.role == faction_core::Role::Sysop;
+            self.theme_index = themes.select_now();
+            self.identity(themes.get(self.theme_index), &m.handle, board)?;
+        } else {
+            self.success = true;
+            self.queue("Sysop approval required. No community access.\n");
+        }
+        self.prompt_started = Instant::now();
+        Ok(())
     }
     fn queue(&mut self, text: &str) {
         // Count the encoded size before mutating the queue, including CRLF.
@@ -460,6 +482,26 @@ fn run() -> Result<()> {
         return Err(denied());
     }
     let config = Config::load(Path::new(&args[1]))?;
+    let reserved = [
+        Some(0),
+        Some(rustix::process::geteuid().as_raw()),
+        Some(config.terminal_uid),
+        config.files_uid,
+        config.files_auth_uid,
+        config.doors_uid,
+    ]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<_>>();
+    let roaming = config
+        .experimental_roaming_manifest
+        .as_ref()
+        .map(|p| roaming::load(p, &reserved))
+        .transpose()?;
+    let roaming_uids = roaming
+        .as_ref()
+        .map(|r| r.entries.iter().map(|e| e.uid).collect::<Vec<_>>())
+        .unwrap_or_default();
     let base = if let Some(path) = &config.theme {
         Theme::load(path).map_err(|_| denied())?
     } else {
@@ -529,6 +571,7 @@ fn run() -> Result<()> {
             .as_ref()
             .map(|d| faction_pages::directory::owner_keys(d)),
     )?;
+    board.configure_roaming_owner(roaming)?;
     let ansi = config.ansi;
     let max_sessions = config.max_sessions;
     let launch_ms = u128::from(config.launch_ms);
@@ -568,11 +611,14 @@ fn run() -> Result<()> {
                 if stream.set_nonblocking(false).is_err() {
                     continue;
                 }
-                if faction_unix::peer_uid(stream.as_fd()).ok() != Some(terminal_uid) {
+                let Ok(uid) = faction_unix::peer_uid(stream.as_fd()) else {
+                    continue;
+                };
+                if !roaming::admitted_uid(terminal_uid, &roaming_uids, uid) {
                     continue;
                 }
-                if let Ok((tty, term)) = receive_terminal(&stream, terminal_uid) {
-                    let _ = admit_tx.try_send((stream, tty, term));
+                if let Ok((tty, term)) = receive_terminal(&stream, uid) {
+                    let _ = admit_tx.try_send((stream, tty, term, uid));
                 }
             }
         })?;
@@ -628,7 +674,7 @@ fn run() -> Result<()> {
         if let Some(p) = &mut file_policy {
             p.pump(&mut board);
         }
-        while let Ok((control, tty, term)) = admit_rx.try_recv() {
+        while let Ok((control, tty, term, uid)) = admit_rx.try_recv() {
             if clients.len() >= max_sessions {
                 continue;
             }
@@ -648,6 +694,19 @@ fn run() -> Result<()> {
                 client.library = library.as_ref().map(Arc::clone);
                 client.doors_uid = config.doors_uid;
                 client.classic_games = Some(Arc::clone(&classic_games));
+                if uid == terminal_uid {
+                    client.login_choice();
+                } else {
+                    client.state = State::Closing;
+                    match board.authenticate_roaming_uid(uid) {
+                        Ok(s) => {
+                            if let Err(e) = client.complete_login(s, &themes, &mut board) {
+                                client.error(e);
+                            }
+                        }
+                        Err(e) => client.error(e),
+                    }
+                }
                 clients.push(client);
             }
         }
@@ -658,23 +717,11 @@ fn run() -> Result<()> {
             }) {
                 c.state = State::Closing;
                 match auth.result {
-                    Ok(Some(s)) => match board.whoami(&s) {
-                        Ok(m) if m.status == Status::Approved => {
-                            c.session = Some(s);
-                            c.sysop_display = m.role == faction_core::Role::Sysop;
-                            c.theme_index = themes.select_now();
-                            if let Err(e) =
-                                c.identity(themes.get(c.theme_index), &m.handle, &mut board)
-                            {
-                                c.error(e)
-                            }
+                    Ok(Some(s)) => {
+                        if let Err(e) = c.complete_login(s, &themes, &mut board) {
+                            c.error(e);
                         }
-                        Ok(_) => {
-                            c.success = true;
-                            c.queue("Sysop approval required. No community access.\n");
-                        }
-                        Err(e) => c.error(e),
-                    },
+                    }
                     Ok(None) => {
                         c.success = true;
                         c.queue("Registration pending; sysop approval required.\n");

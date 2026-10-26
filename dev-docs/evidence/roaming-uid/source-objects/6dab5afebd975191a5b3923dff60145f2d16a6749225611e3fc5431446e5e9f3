@@ -1,0 +1,37 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "name": "real-kernel-unknown-uid-and-wrong-tty-owner-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "no-pty-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "raw-key-without-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "password-authentication-downgrade-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "alternate-command-rejected-before-forced-native-frontend",
+      "result": "pass"
+    },
+    {
+      "name": "remote-forwarding-rejected-before-listener",
+      "result": "pass"
+    },
+    {
+      "name": "owner-shutdown-ends-active-bound-ssh-session",
+      "result": "pass"
+    },
+    {
+      "name": "fresh-ssh-session-after-owner-restart-reconciles-current-binding",
+      "result": "pass"
+    }
+  ]
+}

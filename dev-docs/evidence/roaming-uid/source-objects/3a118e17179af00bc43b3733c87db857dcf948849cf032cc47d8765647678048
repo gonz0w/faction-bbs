@@ -1,0 +1,36 @@
+import pathlib, sys, unittest
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import roaming_native_fixture as f
+
+class NativeFixtureTests(unittest.TestCase):
+    def setUp(self):
+        self.bindings = [f.Binding('roam223a', 32231, 'home-a', 'subject-a', 'board-a/home-a/subject-a'), f.Binding('roam223b', 32232, 'home-b', 'subject-b', 'board-a/home-b/subject-b')]
+    def test_restricted_root_policy_has_exact_user_and_forced_native_frontend(self):
+        text = f.sshd_config('a', 2222, 1001, self.bindings)
+        for value in ['AllowUsers factionterm roam223a roam223b', 'PasswordAuthentication no', 'KbdInteractiveAuthentication no', 'DisableForwarding yes', 'PermitUserEnvironment no', 'PermitUserRC no', 'ForceCommand /usr/local/libexec/faction-tty --socket /var/run/faction223-a/terminal.sock --owner-uid 1001', 'AuthorizedKeysFile /etc/ssh/faction223-a/keys/%u']:
+            self.assertIn(value, text)
+        self.assertNotIn('TrustedUserCAKeys', text)
+    def test_each_account_ca_and_principal_are_exact(self):
+        text=f.authorized_ca(self.bindings[0], 'ssh-ed25519 AAAATEST fixture')
+        self.assertEqual(text, 'restrict,pty,cert-authority,principals="board-a/home-a/subject-a" ssh-ed25519 AAAATEST fixture\n')
+        self.assertNotIn('home-b', text)
+    def test_invalid_or_ambiguous_identity_is_rejected(self):
+        for bindings in [self.bindings*2, [f.Binding('root',0,'a','a','a')], [f.Binding('roam223a',32231,'a','a','evil"principal')]]:
+            with self.assertRaises(ValueError): f.sshd_config('a',2222,1001,bindings)
+        with self.assertRaises(ValueError): f.sshd_config('../escape',2222,1001,self.bindings)
+    def test_terminal_profile_preserves_distinct_file_credentials(self):
+        text=f.client_profile('10.0.2.15',2222,2223,'/home/factionbuild/device223',self.bindings[0])
+        self.assertIn('identity="/home/factionbuild/device223/files-key"',text)
+        self.assertIn('[experimental_terminal]',text)
+        self.assertIn('identity="/home/factionbuild/device223/roam223a-key"',text)
+        self.assertIn('certificate="/home/factionbuild/device223/roam223a-key-cert.pub"',text)
+    def test_host_signing_is_five_minutes_with_success_checked_by_runner(self):
+        args=f.certificate_argv('/usr/bin/ssh-keygen','/private/tmp/ca','/private/tmp/leaf.pub',self.bindings[0],7)
+        self.assertIn('-5s:+4m55s',args)
+        self.assertEqual(args[args.index('-n')+1],self.bindings[0].principal)
+        self.assertEqual(args[args.index('-z')+1],'7')
+    def test_source_selection_includes_gallery_library_and_excludes_private(self):
+        names=['Cargo.toml','Cargo.lock','crates/a/src/lib.rs','gallery/a.ans','library/a.txt','local/private','tools/a.py','dev-docs/private.json']
+        self.assertEqual(f.public_source_names(names),names[:5]+['tools/a.py'])
+
+if __name__=='__main__': unittest.main()

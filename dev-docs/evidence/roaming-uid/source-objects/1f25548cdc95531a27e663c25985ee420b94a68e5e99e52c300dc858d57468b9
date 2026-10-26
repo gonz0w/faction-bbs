@@ -1,0 +1,9 @@
+#[test]
+fn issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority() {
+ let mut f=Fixture::new(); f.binding(42001);f.install();let old=f.board.roaming_owner_state().unwrap();
+ let export=f.path.join("disabled-authority-export.sqlite3");f.board.export_local(&export).unwrap();let db=rusqlite::Connection::open(&export).unwrap();
+ assert_eq!(db.query_row("SELECT count(*) FROM roaming_bindings WHERE enabled=1",[],|r|r.get::<_,i64>(0)).unwrap(),0);
+ assert_eq!(db.query_row("SELECT count(*) FROM roaming_issuers WHERE enabled=1",[],|r|r.get::<_,i64>(0)).unwrap(),0);
+ let issuer=&old.issuers[0];f.board.roaming_set_issuer_enabled(issuer.id,issuer.generation,false).unwrap();let next=f.board.roaming_owner_state().unwrap();assert!(!next.bindings[0].enabled);assert!(next.bindings[0].generation>old.bindings[0].generation);
+ let issuer=&next.issuers[0];f.board.roaming_set_issuer_enabled(issuer.id,issuer.generation,true).unwrap();assert!(!f.board.roaming_owner_state().unwrap().bindings[0].enabled);
+}

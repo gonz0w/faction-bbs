@@ -1,0 +1,10 @@
+from lab import *
+import hashlib,json,shlex
+manifest=json.loads((P/'candidate03-sources.json').read_text());payload=json.dumps(list(manifest))
+script='import hashlib,json,pathlib;root=pathlib.Path("/home/factionbuild/source223-final");names=json.loads('+repr(payload)+');print(json.dumps({n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in names},sort_keys=True))'
+actual=json.loads(remote('python3.13 -c '+shlex.quote(script),timeout=60).stdout);assert actual==manifest
+source_hash=hashlib.sha256((P/'candidate03-sources.json').read_bytes()).hexdigest()
+(P/'native-source-match.json').write_text(json.dumps({'result':'pass','matched_inputs':len(actual),'files':actual,'source_manifest_sha256':source_hash,'gallery_included':any(n.startswith('gallery/') for n in actual),'library_included':any(n.startswith('library/') for n in actual)},indent=2)+'\n')
+cmd='import hashlib,json,pathlib;root=pathlib.Path("/usr/local/libexec");names=["faction","faction-service","faction-client","faction-tty","faction-daemon","roaming_owner_fixture"];print(json.dumps({n:{"sha256":hashlib.sha256((root/n).read_bytes()).hexdigest(),"bytes":(root/n).stat().st_size} for n in names},sort_keys=True))'
+(P/'native-artifacts.json').write_bytes(remote('python3.13 -c '+shlex.quote(cmd)).stdout)
+print('All717 final native source inputs match frozen host bytes; installed binary identities captured.')

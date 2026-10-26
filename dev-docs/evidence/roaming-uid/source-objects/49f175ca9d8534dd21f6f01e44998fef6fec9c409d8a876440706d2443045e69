@@ -1,0 +1,116 @@
+from pathlib import Path
+import errno,fcntl,hashlib,json,os,pty,select,shlex,signal,struct,subprocess,sys,termios,time,traceback
+ROOT=Path('/home/factionbuild/device223');OUT=Path('/home/factionbuild/proof223');SOURCE=Path('/home/factionbuild/source223-final')
+sys.path.insert(0,str(SOURCE/'tools'));from smoke_local_console import Console
+S=json.loads((ROOT/'settings.private.json').read_text());assert S['disposable_fixture'];B=S['bindings'];checks=[];children=[];timings=[]
+common=['/usr/bin/ssh','-F','/dev/null','-a','-x','-e','none','-o','IdentitiesOnly=yes','-o','BatchMode=yes','-o','ConnectTimeout=5','-o','LogLevel=ERROR','-o','StrictHostKeyChecking=yes','-o','UserKnownHostsFile='+str(ROOT/'known_hosts')]
+admin=common+['-i',str(ROOT/'lab-admin-key'),'root@10.0.2.15']
+def root(cmd,ok=True):
+ r=subprocess.run(admin+['set -e\nPATH=/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin\nexport PATH\n'+cmd],capture_output=True,timeout=30)
+ if ok and r.returncode: (OUT/f'admin-failure-{time.time_ns()}.private.log').write_bytes(r.stdout+r.stderr);raise AssertionError('owned admin fixture operation failed')
+ return r
+
+def owner(label,*args):
+ cmd=shlex.join(['/usr/local/libexec/roaming_owner_fixture','/var/db/faction223-'+label,*map(str,args)])
+ return json.loads(root('su -m factiond -c '+shlex.quote(cmd)).stdout)
+def record(name,**extra):
+ checks.append({'name':name,'result':'pass',**extra});save()
+def save(failure=None):
+ value={'result':'fail' if failure else 'pass','checks':checks,'native_client_connect_ms':timings,'sequential_boards':True,'physical_hardware':False,'capacity_claim':False}
+ if failure:value['failure']=failure
+ (OUT/'native-runtime-controls.json').write_text(json.dumps(value,indent=2)+'\n')
+class ProcessConsole(Console):
+ def __init__(self,argv):
+  self.pid,self.fd=pty.fork()
+  if self.pid==0:
+   fcntl.ioctl(0,termios.TIOCSWINSZ,struct.pack('HHHH',24,80,0,0));os.environ['TERM']='dumb';os.closerange(3,os.sysconf('SC_OPEN_MAX'));os.execv(argv[0],argv)
+  self.buffer,self.transcript,self.done=b'',b'',False;children.append(self)
+def argv(b,cert=None,key=None,user=None,tty=True):
+ label='a' if b['uid']<32233 else 'b'
+ return common+['-i',str(ROOT/(key or b['login']+'-key')),'-o','CertificateFile='+str(ROOT/(cert or b['login']+'-key-cert.pub')),'-p','2222' if label=='a' else '2224']+(['-tt'] if tty else [])+[(user or b['login'])+'@10.0.2.15']
+def enter(b,native=False,cert=None,key=None):
+ time.sleep(5.1);t=time.monotonic()
+ cmd=['/usr/local/libexec/faction-client','--profile',str(ROOT/(b['login']+'.toml'))] if native else argv(b,cert,key)
+ c=ProcessConsole(cmd);member='roama' if b['home']=='home-a' else 'roamb';c.expect('Welcome, '+member+'.');c.expect('Press Enter to continue: ');c.send('');c.expect('Command (then Enter): ')
+ if native:timings.append(round((time.monotonic()-t)*1000))
+ assert b'Password (hidden)' not in c.transcript and b'[L]ogin [R]egister' not in c.transcript
+ return c
+def action(c):
+ c.send('r');c.expect('lobby - Lobby');c.expect('More rooms? [y/N]: ');c.send('n');c.expect('Press Enter to return to menu: ');c.send('');c.expect('Command (then Enter): ')
+def logout(c):
+ c.send('q');c.expect('Logged out.');c.finish();c.close();children.remove(c)
+def denied(b,name,cert=None,key=None,user=None):
+ r=subprocess.run(argv(b,cert,key,user),input=b'q\n',capture_output=True,timeout=12)
+ (OUT/(name+'.private.log')).write_bytes(r.stdout+r.stderr)
+ assert r.returncode!=0 and b'Welcome, ' not in r.stdout+r.stderr,name
+ record(name)
+def stop(label):
+ root(f'if test -f /var/run/faction223-{label}-sshd.pid; then kill -TERM $(cat /var/run/faction223-{label}-sshd.pid) 2>/dev/null || true; fi\nif test -f /var/run/faction/terminal.pid; then p=$(cat /var/run/faction/terminal.pid); kill -TERM "$p" 2>/dev/null || true; n=0; while kill -0 "$p" 2>/dev/null; do n=$((n+1)); test "$n" -lt 70; sleep .1; done; fi')
+def start(label):
+ root('install -d -o factiond -g factionipc -m 710 /var/run/faction')
+ root(f'su -m factiond -c "exec /usr/local/libexec/faction-daemon /usr/local/libexec/faction-service --config /etc/faction223-{label}/service.toml" < /dev/null >> /var/log/faction223-{label}-service.private.log 2>&1 &')
+ for _ in range(40):
+  if root('test -S /var/run/faction/terminal.sock',ok=False).returncode==0:break
+  time.sleep(.1)
+ else:raise AssertionError('owned service did not expose terminal socket')
+ root(f'/usr/sbin/sshd -f /etc/ssh/faction223-{label}/sshd_config -E /var/log/faction223-{label}-sshd.private.log')
+def reconcile(label):
+ state=owner(label,'state');manifest='version=1\nboard_identity="'+state['board_identity']+'"\n'
+ for b in state['bindings']:
+  if not b['enabled']:continue
+  i=next(i for i in state['issuers'] if i['id']==b['issuer_id'])
+  manifest+=f'[[entries]]\nuid={b["uid"]}\nbinding_id={b["id"]}\nbinding_generation={b["generation"]}\nissuer_generation={i["generation"]}\n'
+ if not any(x['enabled'] for x in state['bindings']):manifest='version=1\nboard_identity="'+state['board_identity']+'"\nentries=[]\n'
+ root('python3.13 -c '+shlex.quote('from pathlib import Path;p=Path("/etc/faction223-'+label+'/manifest.toml");p.write_text('+repr(manifest)+');p.chmod(0o644)'))
+def expired_action(c):
+ c.send('r');c.expect('Action failed:');c.close();children.remove(c)
+def restart(label):stop(label);start(label)
+def classic(label):
+ port='2222' if label=='a' else '2224'
+ c=ProcessConsole(common+['-i',str(ROOT/'files-key'),'-p',port,'-tt','factionterm@10.0.2.15']);c.expect('[L]ogin [R]egister [Q]uit: ');c.send('l');c.expect('Handle: ');c.send('roamb');c.password(S['password']);c.expect('Welcome, roamb.');c.expect('Press Enter to continue: ');c.send('');c.expect('Command (then Enter): ');action(c);logout(c)
+try:
+ start('a')
+ for b in B[:2]:
+  c=enter(b,native=True);action(c);logout(c);record('native-client-home-'+b['home']+'-board-a')
+ record('same-home-display-handle-separated-local-members',bindings=4)
+ for name in ['wrong-ca','wrong-home','wrong-board','wrong-principal','expired','future']:denied(B[0],name+'-certificate-rejected',cert=name+'-cert.pub')
+ denied(B[0],'wrong-private-key-rejected',key='roam223b-key')
+ denied(B[0],'wrong-transport-uid-rejected',user='factionterm')
+ for status in ['pending','revoked']:
+  owner('a','member','roama',status);time.sleep(5.1);denied(B[0],'current-'+status+'-member-rejected');owner('a','member','roama','approved')
+ for n in range(2):c=enter(B[0]);action(c);logout(c)
+ record('legitimate-certificate-reuse-two-new-sessions')
+ c=enter(B[0],cert='fresh-key-cert.pub',key='fresh-key');action(c);logout(c);record('fresh-certified-leaf-under-allowed-ca-principal-accepted')
+ c=enter(B[0]);action(c);logout(c);record('already-issued-home-a-certificate-works-with-offline-issuance-authority')
+ c=enter(B[1],cert='home-b-outage-control-cert.pub');action(c);logout(c);record('home-b-independent-during-home-a-issuance-outage')
+ # Ordinary password fallback remains usable while a bound session is invalidated.
+ bound=enter(B[0]);state=owner('a','state');binding=next(x for x in state['bindings'] if x['uid']==B[0]['uid']);owner('a','disable',binding['id'],binding['generation']);expired_action(bound);record('active-unlink-invalidates-protected-action');classic('a');record('classic-password-fallback-after-unlink')
+ stop('a');reconcile('a');state=owner('a','state');binding=next(x for x in state['bindings'] if x['uid']==B[0]['uid']);owner('a','enable',binding['id'],binding['generation']);reconcile('a');start('a')
+ bound=enter(B[0]);owner('a','member','roama','revoked');expired_action(bound);record('active-member-revocation-invalidates-protected-action');owner('a','member','roama','approved')
+ bound=enter(B[0]);state=owner('a','state');i=next(i for i in state['issuers'] if i['name']=='home-a');owner('a','issuer',i['id'],i['generation'],'off');expired_action(bound);record('active-issuer-revocation-invalidates-protected-action')
+ stop('a');state=owner('a','state');i=next(i for i in state['issuers'] if i['name']=='home-a');owner('a','issuer',i['id'],i['generation'],'on');state=owner('a','state');binding=next(x for x in state['bindings'] if x['uid']==B[0]['uid']);owner('a','enable',binding['id'],binding['generation']);reconcile('a');start('a');c=enter(B[0]);action(c);logout(c);record('explicit-reconciliation-after-issuer-disable-and-owner-restart')
+ stop('a');start('b')
+ denied(B[0],'board-a-unavailable-while-board-b-active')
+ for b in B[2:]:c=enter(b,native=True);action(c);logout(c);record('native-client-home-'+b['home']+'-board-b')
+ stop('b');start('a');denied(B[2],'board-b-unavailable-while-board-a-active');c=enter(B[0]);action(c);logout(c);record('board-a-independent-after-board-b-outage')
+ # Real CLI export/restore retains metadata but removes authority, with fresh identity.
+ stop('a');before=owner('a','state');root('su -m factiond -c "/usr/local/libexec/faction --state-dir /var/db/faction223-a export /var/db/faction223-export.sqlite3"');root('su -m factiond -c "/usr/local/libexec/faction --state-dir /var/db/faction223-restored restore /var/db/faction223-export.sqlite3"');root('touch /var/db/faction223-restored/.roaming-fixture; chown factiond:factionipc /var/db/faction223-restored/.roaming-fixture')
+ cmd=shlex.join(['/usr/local/libexec/roaming_owner_fixture','/var/db/faction223-restored','state']);restored=json.loads(root('su -m factiond -c '+shlex.quote(cmd)).stdout)
+ assert restored['board_identity']!=before['board_identity'] and not any(x['enabled'] for x in restored['issuers']+restored['bindings']) and len(restored['bindings'])==2
+ record('real-export-restore-disables-issuer-binding-and-rotates-board-authority')
+ # Wrong restored authority must fail startup before the terminal socket is exposed.
+ original=root('cat /etc/faction223-a/service.toml').stdout.decode();test=original.replace('/var/db/faction223-a','/var/db/faction223-restored')
+ root('python3.13 -c '+shlex.quote('from pathlib import Path;Path("/etc/faction223-a/restored-service.toml").write_text('+repr(test)+')'))
+ r=root('su -m factiond -c "/usr/local/libexec/faction-service --config /etc/faction223-a/restored-service.toml"',ok=False);assert r.returncode!=0;assert root('test -S /var/run/faction/terminal.sock',ok=False).returncode!=0
+ record('restored-board-rejects-old-root-manifest-before-listening')
+ start('a');classic('a');record('classic-native-frontend-password-access-remains')
+ rss=root('ps -p $(cat /var/run/faction/terminal.pid) -o rss=');record('native-owner-runtime-rss',rss_kib=int(rss.stdout))
+ stop('a');record('normal-five-second-owner-drain-and-transport-teardown')
+ for b in B:assert not root("pgrep -u "+str(b['uid']),ok=False).stdout.strip()
+ record('no-processes-under-all-four-transport-uids-after-drain')
+ save();print(json.dumps({'result':'pass','checks':len(checks),'native_client_sessions':len(timings)}))
+except BaseException as e:
+ save(type(e).__name__+': '+str(e));(OUT/f'runtime-failure-{time.time_ns()}.private.log').write_text(traceback.format_exc())
+ for n,c in enumerate(children):
+  (OUT/f'runtime-failed-console-{n}-{time.time_ns()}.private.log').write_bytes(c.transcript);c.close()
+ raise

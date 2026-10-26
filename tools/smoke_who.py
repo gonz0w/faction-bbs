@@ -56,7 +56,7 @@ def run(a):
                 if plain:assert b'\x1b' not in c.transcript
                 passed(handle+'_current_block_logout_and_reconnect_never_restore_visibility')
             cmd(owner,'/quit','Chat closed.');action_end(owner,True);logout(owner,True)
-            assert query('PRAGMA user_version')==[(19,)] and query('SELECT count(*) FROM visit_activity')==[(0,)] and query('SELECT count(*) FROM chat_sessions')==[(0,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children)
+            assert query('PRAGMA user_version')==[(20,)] and query('SELECT count(*) FROM visit_activity')==[(0,)] and query('SELECT count(*) FROM chat_sessions')==[(0,)] and query('SELECT count(*) FROM unread')==[(0,)] and query('SELECT count(*) FROM file_transfers')==[(0,)] and all(password.encode() not in c.transcript for c in children)
             passed('live_activity_cleans_up_without_unread_transfer_or_password_side_effects')
         except Exception:
             if a.diagnostics:
@@ -65,7 +65,7 @@ def run(a):
             raise
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,actual_registration_and_approval=True,universal_visibility_and_availability=True,distinct_interfaces=True,broad_host_activity=True,private_locations=False,capacity_claim=False,hardening_claim=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=20,actual_registration_and_approval=True,universal_visibility_and_availability=True,distinct_interfaces=True,broad_host_activity=True,private_locations=False,capacity_claim=False,hardening_claim=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Who local/worker/plain passed:',len(checks),'controls.',flush=True)
 if __name__=='__main__':

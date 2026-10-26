@@ -58,11 +58,11 @@ def run(a):
             other=Path(tmp)/'other';c=Console(a.binary,other,'init');children.append(c);c.expect('Handle: ');c.send('sysop');c.password(password,'New password (12+ characters, hidden): ');c.password(password,'Confirm password (hidden): ');c.expect('Lobby created.');c.finish()
             with sqlite3.connect(other/'faction.sqlite3') as db:assert db.execute('select enabled,name from wall_settings').fetchall()==[(0,'Community wall')]
             checks.append('independent_board_configuration_is_local')
-            assert query('pragma user_version')==[(19,)]
+            assert query('pragma user_version')==[(20,)]
             assert all(password.encode() not in c.transcript for c in children)
         finally:
             for c in children:c.close()
-    result=dict(result='pass',count=len(checks),checks=checks,schema_version=19,capacity_claim=False)
+    result=dict(result='pass',count=len(checks),checks=checks,schema_version=20,capacity_claim=False)
     if a.output:a.output.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
     print('Local/worker community-wall checks passed:',len(checks))
 if __name__=='__main__':

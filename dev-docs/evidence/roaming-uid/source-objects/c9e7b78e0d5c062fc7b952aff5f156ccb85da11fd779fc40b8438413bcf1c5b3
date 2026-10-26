@@ -1,0 +1,22 @@
+{
+  "result": "fail",
+  "checks": [
+    {
+      "name": "real-kernel-unknown-uid-and-wrong-tty-owner-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "no-pty-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "raw-key-without-certificate-rejected",
+      "result": "pass"
+    },
+    {
+      "name": "password-authentication-downgrade-rejected",
+      "result": "pass"
+    }
+  ],
+  "failure": "AssertionError: console exited before 'Welcome, roama.'"
+}

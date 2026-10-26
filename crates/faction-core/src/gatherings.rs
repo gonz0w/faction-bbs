@@ -510,6 +510,7 @@ pub(crate) fn validate(db: &Connection, deadline: std::time::Instant) -> Result<
             board: [0; 32],
             member: 0,
             epoch: 0,
+            roaming: None,
         };
         place(db, &dummy, Role::Sysop, &p)?;
     }

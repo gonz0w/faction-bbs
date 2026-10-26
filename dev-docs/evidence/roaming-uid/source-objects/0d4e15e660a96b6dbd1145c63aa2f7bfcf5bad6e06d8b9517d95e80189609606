@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "result": "pass",
+      "returncode": 0,
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "1",
+        "-p",
+        "faction-cli",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-client",
+        "-p",
+        "faction-access",
+        "-p",
+        "faction-core",
+        "--examples",
+        "--bins"
+      ],
+      "scope": "two-core-2GiB-compile-and-unit-only",
+      "seconds": 31.02
+    },
+    {
+      "result": "pass",
+      "returncode": 0,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "1"
+      ],
+      "scope": "two-core-2GiB-compile-and-unit-only",
+      "seconds": 72.218
+    }
+  ]
+}

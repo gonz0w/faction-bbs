@@ -1,0 +1,8 @@
+{
+  "result": "observed-red",
+  "reason": "new evidence path would normalize executed CRLF bytes",
+  "path": "dev-docs/evidence/roaming-uid/source-objects/0b7b6186eb16959642743f44d3be1592f8ec9b1bb13662c7245935d9d4c8a953",
+  "filtered": "b823920ae45dbeb886d5322aad312046c4e86b41",
+  "unfiltered": "e92fb542190eff069d63b58d0d1494a9cb6c0c38",
+  "contains_crlf": true
+}

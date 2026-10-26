@@ -9,7 +9,7 @@ all unfinished work; this document describes component boundaries, not a roadmap
 
 `faction-core` owns the local SQLite/WAL data model, current member/sysop roles,
 approval/epochs, rooms/unread/replies, channel/file grants and community actions.
-The current schema is 19; migrations and stopped complete export/verify/restore
+The current schema is 20; migrations and stopped complete export/verify/restore
 must preserve explicit version contracts. Connection-bound sessions cannot import
 caller-supplied identity, role or owner authority. Owner recovery stays outside
 member RPC. See [privacy/security](../docs/security-privacy.md),
@@ -101,3 +101,12 @@ The optional [local mail read-state contract](local-mail-read-state.md) adds an
 explicit encrypted FACTCP04 transition and received-only local acknowledgements.
 The parked native Files desk can reuse the same private console while retaining
 SSH, with opt-in generic stale local counts and no background home polling.
+
+The default-off [roaming authentication experiment](../docs/roaming-authentication.md)
+adds immutable local issuer/subject/member/UID associations and owner-only registry
+installation. Only an observed kernel peer UID and owned TTY can reach its real
+Session factory. Session provenance also follows chat leases, game runs and file
+grants, with current local authority checked on use. Issuer disable clears bound
+authority; ordinary password authority remains independent. Schema-20 exports
+retain metadata with roaming disabled. No online issuer or production SSO profile
+is adopted.

@@ -70,15 +70,15 @@ def run(a):
             c=start(); open_desk(c); review(c,'reject'); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; leave(c); checks.append('sysop_rejection_deletes_pending_without_history')
             c=start(plain=False,compact=True); open_desk(c,False); create(c,'compact'); cmd(c,'w','Submission withdrawn and removed.'); c.expect('Submission command: '); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; leave(c,False); checks.append('compact_ansi_draft_and_author_withdrawal')
             c=start(handle='member'); open_desk(c); cmd(c,'n','Slug: '); approve('member','v'); c.send('revoked'); c.finish(1); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; checks.append('revocation_during_unsaved_input_prevents_mutation')
-            assert query('PRAGMA user_version')==[(19,)]
-            assert hashlib.sha256(source.read_bytes()).hexdigest()==original; checks.append('owner_catalog_bytes_unchanged_schema_nineteen')
+            assert query('PRAGMA user_version')==[(20,)]
+            assert hashlib.sha256(source.read_bytes()).hexdigest()==original; checks.append('owner_catalog_bytes_unchanged_schema_twenty')
             try: conn,_=trap.accept()
             except BlockingIOError: pass
             else: conn.close(); raise AssertionError('directory opened a network connection')
             assert all(password.encode() not in c.transcript for c in children); checks.append('no_secret_echo_or_endpoint_connection')
         finally:
             for c in children: c.close()
-    result={'result':'pass','count':len(checks),'checks':checks,'schema_version':19,'capacity_claim':False,'hardening_claim':False,'automatic_connection':False}
+    result={'result':'pass','count':len(checks),'checks':checks,'schema_version':20,'capacity_claim':False,'hardening_claim':False,'automatic_connection':False}
     if a.output: a.output.write_text(json.dumps(result,indent=2)+'\n')
     print('Directory submission PTYs passed:',len(checks),'controls.')
 
