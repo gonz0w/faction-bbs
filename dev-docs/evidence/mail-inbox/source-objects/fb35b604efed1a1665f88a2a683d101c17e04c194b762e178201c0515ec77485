@@ -1,0 +1,74 @@
+"""Finalize reviewed issue219 evidence and remove only its three marked fixtures."""
+from pathlib import Path
+import copy,hashlib,json,os,shutil,subprocess,sys
+os.umask(0o077)
+REPO=Path('/Users/cam/DEV/faction-bbs');LEAD=Path('/private/tmp/faction219-lead-OWNED')
+ROOTS=[LEAD,Path('/private/tmp/faction219-impl-OWNED'),Path('/private/tmp/faction219-native-OWNED')]
+sys.path[:0]=[str(LEAD),str(REPO/'tools')]
+import publish_sources as public
+import scan_publication
+import check_mail_inbox_evidence as check
+
+record=json.loads((LEAD/'draft-results.json').read_bytes())
+assert record['teardown']['owned_private_inputs_removed'] is False
+index=public.object_index()
+record['source_stages'].append(dict(label='finalization-driver',files=[dict(name=Path(__file__).name,**public.preserve(Path(__file__).read_bytes(),index))]))
+# Preserve the earlier scan as an observation, rather than relabelling its count.
+preflight=LEAD/'publication-privacy-preflight.json'
+record['source_stages'].append(dict(label='earlier-privacy-preflight',files=[dict(name=preflight.name,**public.preserve(preflight.read_bytes(),index))]))
+# Validate the prospective final shape without asserting that cleanup happened.
+prospective=copy.deepcopy(record);prospective['teardown']['owned_private_inputs_removed']=True
+prospective['final_cleanup']=dict(root_names=[path.name for path in ROOTS],all_three_marked_roots_removed=True,no_owned_processes=True)
+check.validate(prospective,lambda name:(REPO/name).read_bytes())
+prospective['privacy']=scan_publication.scan(prospective)
+# Keep marker variants in memory through the last post-publication scan. No
+# marker values enter the result, stdout, backup or public source object.
+needles=set()
+inventories=sorted((ROOTS[2]/'private-marker-inventories').glob('*.private.json'))+sorted(LEAD.glob('marker-inventory-*.private.json'))
+assert len(inventories)==4
+for path in inventories:
+ data=json.loads(path.read_bytes());assert data['inspection_failures']==0
+ for row in data['generated_markers']:
+  value=row['value'];needles.add(value.encode());needles.add(json.dumps(value,ensure_ascii=True)[1:-1].encode());needles.add(json.dumps(value,ensure_ascii=False)[1:-1].encode())
+# Check owner/markers and absence of all owned processes before any removal.
+for path in ROOTS:
+ info=path.lstat();assert path.is_dir() and not path.is_symlink() and info.st_uid==os.getuid()
+ assert path.parent==Path('/private/tmp') and path.name.startswith('faction219-') and path.name.endswith('-OWNED')
+ assert any((path/name).is_file() for name in ['OWNERSHIP','OWNED'])
+rows=[]
+for line in subprocess.check_output(['ps','-axo','pid,ppid,args'],text=True).splitlines()[1:]:
+ fields=line.strip().split(None,2)
+ if len(fields)==3 and fields[0].isdigit() and fields[1].isdigit():rows.append((int(fields[0]),int(fields[1]),fields[2]))
+parents={pid:parent for pid,parent,_ in rows};ancestors=set();pid=os.getpid()
+while pid>1 and pid not in ancestors:
+ ancestors.add(pid);pid=parents.get(pid,1)
+owned=[pid for pid,_,args in rows if pid not in ancestors and any(str(path) in args for path in ROOTS)]
+assert not owned,'owned test processes remain; do not delete fixtures'
+# Recovery backup contains only already-scanned public metadata, never inventories.
+backup=Path('/private/tmp/faction219-final-record-backup.json')
+with backup.open('xb') as output:output.write((json.dumps(prospective,indent=2)+'\n').encode())
+for path in ROOTS:
+ shutil.rmtree(path);assert not path.exists()
+# Mark cleanup complete only after the real removals all succeeded.
+record=prospective
+assert all(not path.exists() for path in ROOTS)
+raw=(json.dumps(record,indent=2)+'\n').encode();sha=hashlib.sha256(raw).hexdigest()
+result=REPO/'dev-docs/evidence/mail-inbox/results.json'
+with result.open('xb') as output:output.write(raw)
+checker=REPO/'tools/check_mail_inbox_evidence.py';source=checker.read_text()
+needle="RECORD_SHA256 = 'pending-final-qualification'";assert source.count(needle)==1
+checker.write_text(source.replace(needle,"RECORD_SHA256 = '"+sha+"'"))
+# Verify final data and the pinned checker after cleanup, using in-memory needles.
+paths={REPO/row['path'] for stage in record['source_stages'] for row in stage['files']}
+paths.update(path for path in public.BASE.rglob('*') if path.is_file())
+for output in [subprocess.check_output(['git','diff','--name-only'],cwd=REPO),subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=REPO)]:
+ for name in output.decode().splitlines():
+  path=REPO/name
+  if path.is_file() and not path.is_symlink():paths.add(path)
+assert all(not any(value in path.read_bytes() for value in needles) for path in paths),'private marker appeared in final publication'
+subprocess.run(['python3','tools/check_mail_inbox_evidence.py'],cwd=REPO,check=True)
+proof=dict(result='pass',record_sha256=sha,owned_roots_removed=[path.name for path in ROOTS],no_owned_processes_before_removal=True,final_private_marker_matches=0,final_files_scanned=len(paths),saved_playground_unchanged=True,raw_private_inputs_retained=False)
+(REPO/'dev-docs/evidence/mail-inbox/finalization.json').write_text(json.dumps(proof,indent=2)+'\n')
+backup.unlink()
+print('Final record pinned: '+sha)
+print('All three marked private roots removed; final marker scan and saved-evidence guard pass.')

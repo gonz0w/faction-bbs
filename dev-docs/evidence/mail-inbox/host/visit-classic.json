@@ -1,0 +1,73 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "scope": "same-ssh-parked-files-local-mail-restricted-sftp",
+  "count": 14,
+  "checks": [
+    "independent_registration_pending_and_explicit_approval",
+    "actual_home_tcp_refusal_preserves_encrypted_state",
+    "local_confirmation_cancel_and_dropped_typeahead_same_ssh",
+    "wrong_unlock_and_canceled_unlock_lock_return_same_ssh",
+    "bounded_hostile_remote_output_quiescent_during_hidden_prompt",
+    "home_outage_history_pending_cursor_exact_same_ssh",
+    "explicit_encrypted_tracking_upgrade_and_skip_preserve_unread",
+    "explicit_post_body_read_acknowledgement_persists_locally",
+    "opt_in_generic_locked_stale_notices_only_at_files",
+    "fresh_hidden_unlock_and_locked_return_same_ssh",
+    "same_ssh_approved_files_restricted_sftp_review_download",
+    "normal_return_to_bbs_and_same_ssh_files_reentry",
+    "private_view_ssh_disconnect_fails_closed_without_redial",
+    "private_markers_absent_remote_transcript_database_store_logs"
+  ],
+  "unicode": false,
+  "same_client_pid": true,
+  "same_ssh_pid_until_explicit_disconnect": true,
+  "home_outage_canonical_unchanged": true,
+  "history_unchanged": true,
+  "pending_ids_unchanged": true,
+  "archive_token_unchanged": true,
+  "nonempty_cursor": true,
+  "local_read_upgrade_and_acknowledgement": true,
+  "unread_before_ack": 1,
+  "unread_after_ack": 0,
+  "approved_member": true,
+  "restricted_sftp": true,
+  "payload_bytes": 131328,
+  "payload_sha256": "91f86bc16210e6eab1715b5e77465cc1a906243e758bcecb884060dbe9a26fe3",
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 5,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "home_transport_error": "Connect",
+  "hostile_output": {
+    "written": 365808,
+    "maximum": 1048576,
+    "chunk": 32768,
+    "writer_finished": true,
+    "owned_tty_verified": true
+  },
+  "remote_disconnect_failed_closed": true,
+  "no_automatic_redial": true,
+  "terminal_restored": true,
+  "physical_hardware": false,
+  "capacity_claim": false,
+  "private_fixture_retained_for_lead": true,
+  "inbox_views": [
+    {
+      "original_history_record": 2,
+      "explicit_read": false
+    },
+    {
+      "original_history_record": 2,
+      "explicit_read": true
+    },
+    {
+      "original_history_record": 2,
+      "explicit_read": false
+    }
+  ],
+  "inbox_scope": "selected-record-2-on-same-SSH-with-explicit-skip-read-skip"
+}

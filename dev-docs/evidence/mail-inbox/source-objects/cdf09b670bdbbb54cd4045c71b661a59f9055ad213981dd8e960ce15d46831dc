@@ -1,0 +1,20 @@
+from pathlib import Path
+import os,subprocess,json,hashlib,shutil
+root=Path('/private/tmp/faction219-lead-OWNED');native=Path('/private/tmp/faction219-native-OWNED')
+(root/'OWNED').write_text('Owned issue219 disposable host journey; saved owner playground excluded.\n')
+wrapper=root/'inventory_inbox_visit.py';shutil.copyfile(native/'inventory_inbox_visit.py',wrapper)
+assert hashlib.sha256(wrapper.read_bytes()).hexdigest()=='d8d2efe4c262e477ac87999018ced37efc93c33525cac2400fea9f9b15219e94'
+variant=root/'probe_inbox_visit.py';assert hashlib.sha256(variant.read_bytes()).hexdigest()=='cb267f7efc3d39f8b59a287d252ec248e5f3e21d8def26ad59cfbe6b06c9891a'
+binaries=root/'qualified-bins/network';env=dict(os.environ,PYTHONPATH=str(root/'host-qualified-source-v3/tools'))
+commands=[]
+for mode in ['classic','unicode']:
+ output=root/('host-final-visit-'+mode+'.json')
+ args=['python3',str(wrapper),'--variant',str(variant),'--key-root',str(native),'--client',str(binaries/'faction-client'),'--checkpoint-fixture',str(binaries/'checkpoint_ui_fixture'),'--mail-fixture',str(binaries/'home_mail_fixture'),'--public-ca',str(native/'source-client-final/crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(native/'host-settings.json'),'--private-root',str(root),'--output',str(output)]
+ if mode=='unicode':args.append('--unicode')
+ with (root/('host-final-visit-'+mode+'.private.log')).open('w') as log:
+  result=subprocess.run(args,env=env,stdout=log,stderr=subprocess.STDOUT)
+ commands.append(dict(mode=mode,command=args,exit_code=result.returncode))
+ (root/'host-final-visit-commands.json').write_text(json.dumps(commands,indent=2)+'\n')
+ assert result.returncode==0,'host '+mode+' journey failed; preserve private diagnostics'
+ data=json.loads(output.read_bytes());assert data['result']=='pass' and len(data['inbox_views'])==3
+ print('Host '+mode+' same-SSH inbox journey passed all14 existing controls plus3 observed inbox views.',flush=True)

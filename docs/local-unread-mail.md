@@ -22,6 +22,7 @@ unchanged; `FACTCP02`, `FACTCP03` and the v1 vault remain separate supported pat
 Tracking can be enabled independently of archive mode. It does not change keys,
 peer verification, pending ciphertext or the archive position.
 
+**I: Local inbox** offers [selection, pages and unread filtering](local-mail-inbox.md).
 **H: History** shows each retained record. After a received body has been output,
 type `read` at its local acknowledgement prompt to mark that one message read.
 Enter leaves its current state alone. Cancellation locks without acknowledging

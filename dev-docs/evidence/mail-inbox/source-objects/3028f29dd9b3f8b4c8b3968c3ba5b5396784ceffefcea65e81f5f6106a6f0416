@@ -1,0 +1,43 @@
+from pathlib import Path
+import json,re
+import publish_sources as public
+root=public.OWNED;native=Path('/private/tmp/faction219-native-OWNED');impl=Path('/private/tmp/faction219-impl-OWNED')
+index=public.object_index();stages=json.loads(public.CATALOGUE.read_bytes())
+def save():public.CATALOGUE.write_text(json.dumps(stages,indent=2)+'\n')
+def add(label,rows):
+ found=[s for s in stages if s['label']==label]
+ if found:
+  assert found[0]['files']==rows,label
+  return
+ stages.append(dict(label=label,files=rows));save()
+def tree(label,folder,manifest):
+ rows=[]
+ for name,sha in json.loads(manifest.read_bytes()).items():
+  public.relative(name);path=folder/name
+  if not path.is_file():path=folder/Path(name).name
+  assert path.is_file() and not path.is_symlink();raw=path.read_bytes();assert public.digest(raw)==sha,name
+  rows.append(dict(name=name,**public.preserve(raw,index)))
+ add(label,rows)
+# Preserve the first ingestion attempt before any replacement. Its safe failure
+# was a physical flat capture directory vs logical tools/ path, not changed bytes.
+add('source-ingestion-attempt01',[dict(name=p.name,**public.preserve(p.read_bytes(),index)) for p in [root/'ingest_sources.py',root/'publish_sources.py']])
+for stage in sorted(root.iterdir()):
+ if stage.is_dir() and (stage/'inputs.json').is_file():tree('lead-'+stage.name,stage,stage/'inputs.json')
+selected=['prepare-source-stage.json','orchestration-source-stage-before-execution.json','cache-source-stage.json','freeze-client-source-stage.json','candidate02-freeze-source-stage.json','candidate02-upload-source-stage.json','candidate02-orchestration-source-stage.json','candidate02-core-isolation-source-stage.json','candidate03-freeze-source-stage.json','candidate03-orchestration-source-stage.json','candidate03-qualification-source-stage.json','storage-test-source-stage.json','inventory-wrapper-final-source-stage.json','failed-artifact-capture-source-stage.json','visit-source-stage.json','teardown-source-stage.json','final-identity-teardown-source-stage.json']
+for filename in selected:
+ manifest=native/filename
+ if not manifest.exists():continue
+ rows=[]
+ for name,sha in json.loads(manifest.read_bytes()).items():
+  public.relative(name);assert re.fullmatch('[a-f0-9]{64}',sha)
+  if name=='inventory_inbox_visit.py' and sha!='d8d2efe4c262e477ac87999018ced37efc93c33525cac2400fea9f9b15219e94':continue
+  path=native/'orchestration-source-objects'/sha
+  if not path.exists():path=native/name
+  assert path.is_file() and not path.is_symlink();raw=path.read_bytes();assert public.digest(raw)==sha,name
+  rows.append(dict(name=name,**public.preserve(raw,index)))
+ if rows:add('native-orchestration-'+filename,rows)
+for label,names in [('lead-qualification-drivers',['qualify_host_final.py','run_host_visits.py','inventory_inbox_visit.py','probe_inbox_visit.py','publish_sources.py']),('lead-real-pty-red',['red-inbox-01/probe_mail_inbox.py'])]:
+ add(label,[dict(name=name,**public.preserve((root/name).read_bytes(),index)) for name in names])
+add('source-ingestion-attempt02',[dict(name=Path(__file__).name,**public.preserve(Path(__file__).read_bytes(),index))])
+assert len({stage['label'] for stage in stages})==len(stages)
+print('Exact public source catalogue complete:',len(stages),'stages; raw private runtime files excluded.')

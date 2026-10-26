@@ -1,0 +1,28 @@
+from lab import *
+import re,shlex
+
+stages={}
+for candidate,logs in [('candidate01',['candidate01-client-native-tests.private.log']),('candidate02',['candidate02-client-native-tests.private.log','candidate02-client-network-tests.private.log'])]:
+ paths=set()
+ for name in logs:
+  text=(P/name).read_text()
+  paths.update(re.findall(r'\((/home/factionbuild/target219/release/[^)\s]+)\)',text))
+ stages[candidate]=sorted(paths)
+code='''from pathlib import Path
+import hashlib,json,shutil,sys
+stages=json.load(sys.stdin);result={}
+for candidate,names in stages.items():
+ result[candidate]={}
+ dest=Path('/home/factionbuild/proof219')/(candidate+'-executed-test-artifacts')
+ dest.mkdir(mode=0o700)
+ for name in names:
+  source=Path(name)
+  assert source.is_file() and str(source).startswith('/home/factionbuild/target219/release/')
+  data=source.read_bytes();digest=hashlib.sha256(data).hexdigest()
+  shutil.copyfile(source,dest/digest)
+  result[candidate][name]={'sha256':digest,'bytes':len(data)}
+print(json.dumps(result,indent=2,sort_keys=True))
+'''
+result=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(stages).encode()).stdout
+(P/'failed-candidate-executed-test-artifacts.json').write_bytes(result)
+print('Executed failed-candidate test binary bytes and SHA-256 identities preserved separately.')

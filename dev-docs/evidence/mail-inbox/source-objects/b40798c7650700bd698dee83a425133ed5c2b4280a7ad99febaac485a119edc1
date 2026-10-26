@@ -1,0 +1,27 @@
+from pathlib import Path
+import hashlib,json,os,shutil,tarfile
+
+P=Path('/private/tmp/faction219-native-OWNED')
+old=P/'source-client-candidate02'
+dest=P/'source-client-candidate03-qualified'
+manifest=json.loads((P/'source-client-candidate02.json').read_text())
+name='crates/faction-client/src/checkpoint_ui.rs'
+replacement=(P/'source-client-candidate03'/name).read_bytes()
+assert hashlib.sha256(replacement).hexdigest()=='669dea471a4707ee3b999b3bad38e309ee4324572864fa610f25ffc257e1454e'
+assert replacement.split(b'#[cfg(test)]')[0]==(old/name).read_bytes().split(b'#[cfg(test)]')[0]
+assert not dest.exists()
+os.umask(0o077)
+dest.mkdir(mode=0o700)
+for filename,digest in manifest.items():
+ data=(old/filename).read_bytes()
+ assert hashlib.sha256(data).hexdigest()==digest
+ if filename==name:data=replacement
+ target=dest/filename;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
+actual={str(path.relative_to(dest)):hashlib.sha256(path.read_bytes()).hexdigest() for path in dest.rglob('*') if path.is_file()}
+assert set(actual)==set(manifest)
+assert [filename for filename in manifest if actual[filename]!=manifest[filename]]==[name]
+(P/'source-client-candidate03-qualified.json').write_text(json.dumps(actual,indent=2,sort_keys=True)+'\n')
+with tarfile.open(P/'source-client-candidate03-qualified.tar.gz','w:gz') as archive:
+ for filename in sorted(actual):archive.add(dest/filename,arcname=filename,recursive=False)
+(P/'candidate03-qualified-origin.json').write_text(json.dumps({'result':'pass','base_source_map':'source-client-candidate02.json','override':{name:actual[name]},'source_files':len(actual),'non_test_ui_prefix_identical':True,'unexecuted_worktree_snapshot_preserved':'source-client-candidate03.json','excluded_unexecuted_guard_change':'tools/test_picker_evidence_bytes.py'},indent=2)+'\n')
+print('Qualified candidate03 frozen as new695-file tree with exactly one authorized test-only override.')

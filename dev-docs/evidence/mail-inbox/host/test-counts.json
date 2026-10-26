@@ -1,0 +1,102 @@
+{
+  "native": [
+    {
+      "index": 0,
+      "passed": 43,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "index": 1,
+      "passed": 37,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "index": 2,
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "network": [
+    {
+      "index": 0,
+      "passed": 88,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "index": 1,
+      "passed": 39,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "index": 2,
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 3,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 4,
+      "passed": 19,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 5,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 6,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 7,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 8,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 9,
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 10,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 11,
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "index": 12,
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  ]
+}

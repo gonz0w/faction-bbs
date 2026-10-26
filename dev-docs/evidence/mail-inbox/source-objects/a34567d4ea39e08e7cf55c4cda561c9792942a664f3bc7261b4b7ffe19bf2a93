@@ -1,0 +1,12 @@
+{
+  "fresh_board": true,
+  "fresh_file_store": true,
+  "service_sha256": "2ae344020f6bc1cb038c40661c004b4f2095be4ff5e3a6d2ffd6c8a7e3622dcf",
+  "files_sha256": "96f9f9497c8fd24df2e42758d110ab85684b9088372a52b0bfe90f9c6cc54624",
+  "max_sessions": 8,
+  "launch_ms": 5000,
+  "experimental_capacity": false,
+  "distinct_uids": true,
+  "loopback_forward_only": true,
+  "services_started": false
+}

@@ -1,0 +1,30 @@
+from lab import *
+import hashlib
+
+command='''/usr/pkg/bin/python3.13 - <<'PY'
+from pathlib import Path
+import hashlib,json,subprocess
+proof=Path('/home/factionbuild/proof219/candidate02')
+root=Path('/home/factionbuild/source219-client-candidate02')
+server=Path('/home/factionbuild/source219-server')
+target=Path('/home/factionbuild/target219/release')
+def version(args):
+ result=subprocess.run(args,capture_output=True,text=True)
+ return {'returncode':result.returncode,'stdout':result.stdout.strip(),'stderr':result.stderr.strip()}
+def inventory(root):
+ files={}
+ for path in sorted(root.rglob('*')):
+  assert not path.is_symlink()
+  if path.is_file():
+   assert path.name!='.DS_Store' and '__pycache__' not in path.parts
+   files[str(path.relative_to(root))]=hashlib.sha256(path.read_bytes()).hexdigest()
+ return files
+result={'result':'pass','platform':version(['uname','-srm']),'rustc':version(['/usr/pkg/bin/rustc','-vV']),'cargo':version(['/usr/pkg/bin/cargo','--version']),'clippy':version(['/usr/pkg/bin/cargo','clippy','--version']),'python':version(['/usr/pkg/bin/python3.13','--version']),'cc':version(['/usr/bin/cc','--version']),'openssl':version(['/usr/bin/openssl','version']),'cores':int(subprocess.check_output(['/sbin/sysctl','-n','hw.ncpu'])),'physmem_bytes':int(subprocess.check_output(['/sbin/sysctl','-n','hw.physmem64'])),'client_source_sha256':inventory(root),'server_source_sha256':inventory(server),'artifacts_sha256':{name:hashlib.sha256((target/name).read_bytes()).hexdigest() for name in ['faction','faction-service','faction-files','faction-tty','faction-daemon','faction-client-default','faction-client-native','faction-client-network','examples/checkpoint_ui_fixture','examples/home_mail_fixture']},'physical_hardware':False,'capacity_claim':False,'audit_claim':False,'role_model_effort_observed':False}
+print(json.dumps(result,indent=2,sort_keys=True))
+PY'''
+result=json.loads(remote(command,timeout=120).stdout)
+assert result['client_source_sha256']==json.loads((P/'source-client-candidate02.json').read_text())
+assert result['server_source_sha256']==json.loads((P/'source-server-stage.json').read_text())
+assert result['cores']==2 and 1000000000<result['physmem_bytes']<1100000000
+(P/'native-final-identity.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+print('Native versions, artifact digests and exact unchanged source inventories collected.')

@@ -1,0 +1,72 @@
+{
+  "result": "pass",
+  "compiler_budget": {
+    "cores": 2,
+    "configured_memory_mib": 2048,
+    "native_client_tests": {
+      "native_passed": 85,
+      "network_passed": 132,
+      "failed": 0,
+      "ignored_per_graph": 4,
+      "new_controls_per_graph": 7
+    },
+    "native_storage_tests": {
+      "passed": 32,
+      "failed": 0,
+      "ignored": 0
+    },
+    "network_client_plus_storage_nonoverlapping_passed": 164,
+    "strict_clippy_both_graphs": true
+  },
+  "runtime_budget": {
+    "cores": 2,
+    "configured_memory_mib": 1024,
+    "physical_memory_bytes": 1054990336
+  },
+  "runtime_controls": {
+    "inbox_offline": 13,
+    "inbox_online": 14,
+    "checkpoint": 23,
+    "unread": 13,
+    "home": 9,
+    "archive": 6,
+    "default_unsupported": 1,
+    "native_unsupported": 1,
+    "picker": 17,
+    "visit_classic": 14,
+    "visit_unicode": 14,
+    "selected_inbox_views_per_visit": 3
+  },
+  "source_maps": {
+    "server": "source-server-stage.json",
+    "failed01": "source-client-final.json",
+    "failed02": "source-client-candidate02.json",
+    "passed03": "source-client-candidate03-qualified.json"
+  },
+  "pre_and_post_runtime_source_and_artifact_identity_equal": true,
+  "teardown": {
+    "result": "pass",
+    "owned_board_service_processes": 0,
+    "owned_qemu_processes": 0,
+    "owned_serial_controllers": 0,
+    "owned_forward_listeners": 0,
+    "owned_vm_root_removed": true,
+    "saved_owner_stopped": true,
+    "saved_metadata_hashes_unchanged": true,
+    "saved_disk_and_kernel_size_mtime_unchanged": true,
+    "saved_disk_full_sha256_matches_original_manifest": true,
+    "saved_kernel_full_sha256_matches_original_manifest": true,
+    "saved_disk_full_sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+    "saved_kernel_full_sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+    "private_host_root_retained_for_lead_review": true,
+    "full_private_fixture_cleanup_claim": false
+  },
+  "private_native_marker_inventories_retained": 2,
+  "physical_hardware": false,
+  "capacity_claim": false,
+  "audit_claim": false,
+  "fresh_1GiB_compile": false,
+  "role_model_effort_observed": false,
+  "guest_binary_bytes_removed_with_owned_overlay": true,
+  "failed_candidate_artifact_sha256_size_and_sources_logs_retained": true
+}

@@ -1,0 +1,83 @@
+//! Bounded local selection metadata. Never copies message text or writes state.
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn rows(n: usize) -> Vec<Entry> {
+        (0..n).map(|index| Entry { index, status: Status::Unread }).collect()
+    }
+    #[test]
+    fn empty_and_single_never_wrap_or_open_out_of_range() {
+        let mut empty = Inbox::new(rows(0));
+        empty.down(); empty.up(); empty.next(); empty.previous();
+        assert_eq!(empty.selected(), None);
+        assert_eq!(empty.page(), (0, 0));
+        assert!(empty.visible().is_empty());
+        let mut one = Inbox::new(rows(1));
+        one.down(); one.next(); one.up(); one.previous();
+        assert_eq!(one.selected().unwrap().index, 0);
+        assert_eq!(one.page(), (1, 1));
+    }
+    #[test]
+    fn newest_first_six_rows_and_partial_page_clamp_selection() {
+        let mut list = Inbox::new(rows(7));
+        assert_eq!(list.visible().iter().map(|e| e.index).collect::<Vec<_>>(), [6,5,4,3,2,1]);
+        assert_eq!(list.selected().unwrap().index, 6);
+        list.up(); list.previous();
+        assert_eq!(list.selected().unwrap().index, 6);
+        list.next();
+        assert_eq!(list.page(), (2,2));
+        assert_eq!(list.visible()[0].index, 0);
+        list.next(); list.down();
+        assert_eq!(list.selected().unwrap().index, 0);
+        list.previous();
+        assert_eq!(list.selected().unwrap().index, 6);
+        for _ in 0..6 { list.down(); }
+        assert_eq!(list.page(), (2,2));
+        list.up();
+        assert_eq!(list.page(), (1,2));
+        assert_eq!(list.selected().unwrap().index, 1);
+    }
+    #[test]
+    fn full_retention_is_eleven_pages_and_only_four_final_rows() {
+        let mut list = Inbox::new(rows(64));
+        for _ in 0..20 { list.next(); }
+        assert_eq!(list.page(), (11,11));
+        assert_eq!(list.visible().iter().map(|e| e.index).collect::<Vec<_>>(), [3,2,1,0]);
+        for _ in 0..80 { list.down(); }
+        assert_eq!(list.selected().unwrap().index, 0);
+        assert!(list.visible().len() <= 6);
+    }
+    #[test]
+    fn unread_filter_excludes_sent_and_read_refresh_keeps_original_indices() {
+        let entries = vec![Entry {index:0,status:Status::Unread},Entry {index:1,status:Status::Pending},Entry {index:2,status:Status::Read},Entry {index:3,status:Status::Retired},Entry {index:4,status:Status::Unread}];
+        let mut list = Inbox::new(entries.clone());
+        assert!(list.filter(Filter::Unread));
+        assert_eq!(list.visible().iter().map(|e| e.index).collect::<Vec<_>>(), [4,0]);
+        let mut updated = entries; updated[4].status = Status::Read;
+        list.refresh(updated.clone());
+        assert_eq!(list.selected().unwrap().index, 0);
+        updated[0].status = Status::Read; list.refresh(updated);
+        assert_eq!(list.selected(), None);
+        assert!(list.filter(Filter::All));
+        assert_eq!(list.selected().unwrap().index, 4);
+    }
+    #[test]
+    fn disabled_tracking_rejects_unread_filter_instead_of_inventing_zero() {
+        let mut list = Inbox::new(vec![Entry {index:0,status:Status::Unknown}]);
+        assert!(!list.filter(Filter::Unread));
+        assert_eq!(list.mode(), Filter::All);
+        assert_eq!(list.selected().unwrap().status, Status::Unknown);
+    }
+    #[test]
+    fn forty_column_subjects_are_inert_and_bounded_in_both_modes() {
+        for unicode in [false,true] {
+            let text = compact("λ界\x1b]52;c;hostile\x07\u{202e}safe\n".repeat(20).as_str(), unicode, 21);
+            assert!(faction_terminal::text::width(&text) <= 21);
+            assert!(!text.contains('\x1b') && !text.contains('\x07') && !text.contains('\u{202e}') && !text.contains('\n'));
+            assert!(text.ends_with('~'));
+        }
+        assert_eq!(compact("abc", false, 3).as_str(), "abc");
+        assert_eq!(compact("界", true, 1).as_str(), "~");
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "record_sha256": "812b136ab8682cfadf8e5466cd32e0b9e04e392e22de5e382ab2901c647525d6",
+  "owned_roots_removed": [
+    "faction219-lead-OWNED",
+    "faction219-impl-OWNED",
+    "faction219-native-OWNED"
+  ],
+  "no_owned_processes_before_removal": true,
+  "final_private_marker_matches": 0,
+  "final_files_scanned": 850,
+  "saved_playground_unchanged": true,
+  "raw_private_inputs_retained": false
+}

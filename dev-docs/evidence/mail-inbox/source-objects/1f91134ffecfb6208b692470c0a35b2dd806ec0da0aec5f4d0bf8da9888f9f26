@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""Verify saved #219 source-bound inbox software controls; starts no runtime."""
+import hashlib
+import json
+import re
+from pathlib import Path, PurePosixPath
+from check_unread_mail_evidence import validate_visit
+
+ROOT = Path(__file__).resolve().parents[1]
+RECORD_SHA256 = 'pending-final-qualification'
+PRIOR_SHA256 = '219206a2d4643a3e3167d2984dfc6e571bf94ff271385baf15297a8b571c079e'
+LOCAL_CONTROLS = {
+    'last_unread_ack_returns_empty_filter_and_repeated_ack_is_idempotent',
+    'actual_pty_process_death_before_ack_preserves_unread_and_canonical_reopen',
+    'explicit_offline_I_inbox_entry_and_back_preserve_checkpoint',
+    'empty_and_single_real_checkpoint_bounds_never_wrap_or_acknowledge',
+    'seven_record_status_order_arrows_JK_pages_selected_only_and_unread_filter_readonly',
+    'fresh_ack_marks_exact_original_received_record_and_refreshes_filter_selection_durably',
+    'all_64_retained_records_are_eleven_bounded_pages_with_partial_final_page',
+    'disabled_tracking_keeps_unknown_and_rejects_zero_unread_filter_without_upgrade',
+    'classic_and_explicit_unicode_subjects_are_inert_and_fit_40_columns',
+    'CtrlC_and_CtrlD_lock_from_inbox_and_restore_terminal_without_mutation',
+    'queued_open_read_typeahead_and_cancel_after_body_never_acknowledge',
+    'expired_revoked_history_only_inbox_inspection_and_explicit_local_ack_stay_available',
+    'read_ack_write_failure_locks_poisoned_handle_and_preserves_canonical_checkpoint',
+}
+ONLINE_CONTROL = 'configured_online_I_uses_same_local_inbox_without_a_home_cycle'
+NO_CLAIMS = {'background_refresh','new_credentials_retained','physical_hardware','capacity','security_audit','production_deployment'}
+TEARDOWN = {'owned_runtime_removed','owned_private_inputs_removed','ports_closed','saved_playground_stopped','saved_playground_unchanged'}
+
+
+def load_record(raw):
+    assert hashlib.sha256(raw).hexdigest() == RECORD_SHA256, 'saved inbox record changed or not pinned'
+    return json.loads(raw)
+
+
+def relative(name):
+    path=PurePosixPath(name)
+    assert name and not path.is_absolute() and '..' not in path.parts and str(path)==name and '\\' not in name
+
+
+def validate(data, read):
+    assert data['schema']==1 and data['issue']==219
+    assert data['base_revision']=='60fecae20fa4dd786b368ce72632b11c824ea8a5'
+    assert data['prior_unread_sha256']==PRIOR_SHA256
+    assert set(data['routes'])=={'host','netbsd'}
+    for route in data['routes'].values():
+        assert {'offline','online','visit','visit_unicode','unit_new_tests'}.issubset(route)
+        for mode in ['offline','online']:
+            row=route[mode];expected=set(LOCAL_CONTROLS)
+            if mode=='online':expected.add(ONLINE_CONTROL)
+            assert row['result']=='pass' and row['private_fixture_removed'] is True
+            assert row['provider_contact'] is False and row['read_receipt_sent'] is False
+            assert type(row['count']) is int and len(set(row['checks']))==len(row['checks'])==row['count']
+            assert expected==set(row['checks'])
+        assert type(route['unit_new_tests']) is int and route['unit_new_tests']>=7
+        for key,unicode in [('visit',False),('visit_unicode',True)]:
+            visit=route[key]
+            validate_visit(visit,unicode)
+            assert visit['inbox_views']==[{'original_history_record':2,'explicit_read':value} for value in [False,True,False]]
+    assert data['build']['compiler_mib']==2048 and data['build']['fresh_1g_build'] is False
+    assert data['runtime']['netbsd_mib']==1024 and data['runtime']['ncpu']==2
+    assert set(data['teardown'])==TEARDOWN and all(value is True for value in data['teardown'].values())
+    assert set(data['claims'])==NO_CLAIMS and all(value is False for value in data['claims'].values())
+    assert data['published_records']
+    for row in data['published_records']:
+        relative(row['name']);relative(row['path'])
+        assert re.fullmatch('[a-f0-9]{64}',row['sha256'])
+        assert row['path'].startswith('dev-docs/evidence/') and PurePosixPath(row['path']).name==row['sha256']
+        raw=read(row['path']);assert hashlib.sha256(raw).hexdigest()==row['sha256']
+        if row['view'] is not None:
+            relative(row['view']);assert row['view']==row['name']
+            assert raw.endswith(b'\n')
+            assert read('dev-docs/evidence/mail-inbox/'+row['view'])==raw
+    assert data['source_stages']
+    labels=set()
+    for stage in data['source_stages']:
+        assert stage['label'] and stage['label'] not in labels and stage['files']
+        labels.add(stage['label'])
+        for row in stage['files']:
+            relative(row['name']);relative(row['path'])
+            assert re.fullmatch('[a-f0-9]{64}',row['sha256'])
+            assert row['path'].startswith('dev-docs/evidence/') and PurePosixPath(row['path']).name==row['sha256']
+            assert hashlib.sha256(read(row['path'])).hexdigest()==row['sha256'],row['name']
+
+
+def check():
+    data=load_record((ROOT/'dev-docs/evidence/mail-inbox/results.json').read_bytes())
+    validate(data,lambda name:(ROOT/name).read_bytes())
+    assert hashlib.sha256((ROOT/'dev-docs/evidence/local-unread-mail/results.json').read_bytes()).hexdigest()==PRIOR_SHA256
+    original='332bf000f982b81a4fc4b4add952fe0b95d085a4e03caeec65d06d15b8383086'
+    assert hashlib.sha256((ROOT/'dev-docs/evidence/local-unread-mail/source-objects'/original).read_bytes()).hexdigest()==original
+    print('Saved local inbox evidence verified: selected read decisions, bounded classic/Unicode navigation, same-SSH host/NetBSD journeys and owned teardown; no background or capacity claim.')
+
+
+if __name__=='__main__':check()

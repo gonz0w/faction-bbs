@@ -1,0 +1,85 @@
+{
+  "result": "pass",
+  "scope": "two-core-2GiB-native-software-tests",
+  "graphs": {
+    "native": {
+      "harnesses": 3,
+      "passed": 85,
+      "failed": 0,
+      "ignored": 4,
+      "new_inbox_tests_passed": 7,
+      "inbox_subprocess_helper_ignored_in_outer_harness_but_exercised_by_control": true,
+      "summaries": [
+        [
+          "ok",
+          "43",
+          "0",
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "37",
+          "0",
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "network": {
+      "harnesses": 4,
+      "passed": 132,
+      "failed": 0,
+      "ignored": 4,
+      "new_inbox_tests_passed": 7,
+      "inbox_subprocess_helper_ignored_in_outer_harness_but_exercised_by_control": true,
+      "summaries": [
+        [
+          "ok",
+          "88",
+          "0",
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "39",
+          "0",
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "5",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  },
+  "serial_test_threads": 1,
+  "strict_clippy_native": true,
+  "strict_clippy_network": true
+}
