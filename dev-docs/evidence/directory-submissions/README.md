@@ -61,3 +61,7 @@ their whole original hashes. No historical measurement is refreshed to schema 19
 Run `python3 tools/check_directory_submissions_evidence.py` to validate the saved
 record and source bytes. It does not start NetBSD. Required PR CI reruns current
 workspace/feature/repository tests separately from these saved observations.
+
+The later [CI schema-oracle correction](ci-schema-oracles.md) retains two old
+expectations and their host red/green checks separately. It changes no product
+code or original native observation.
