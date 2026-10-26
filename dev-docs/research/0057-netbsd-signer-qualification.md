@@ -203,10 +203,10 @@ belongs to a coherent NetBSD system update/rebuild. Neither route is authorized
 or validated by source-build success.
 
 The [roaming handoff contract](0056-roaming-identity-handoff.md) and
-[operator guide](../../docs/roaming-authentication.md) remain binding. A qualified
-manual signer does not settle per-UID account cost, per-device attribution,
-admission-only expiry, issuer operation, enrollment/consent, CA custody or
-production approval. Member authentication keys remain distinct from device-private
+[operator guide](../../docs/roaming-authentication.md) remain binding. The owner subsequently [accepted the per-binding account/shared-device identity
+and admission-only expiry model](https://github.com/gonz0w/faction-bbs/issues/91#issuecomment-6422333314) for the first optional prototype. That
+choice does not settle issuer operation, enrollment/consent, CA custody, package
+installation or production approval. Member authentication keys remain distinct from device-private
 mail keys. No online provider, host-policy change or production issuance follows
 from this research.
 
