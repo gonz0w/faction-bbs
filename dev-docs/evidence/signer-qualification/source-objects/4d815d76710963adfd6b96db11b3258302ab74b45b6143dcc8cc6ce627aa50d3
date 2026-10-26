@@ -1,0 +1,10 @@
+{
+  "system": "NetBSD 11.0 evbarm",
+  "processor": "aarch64",
+  "compiler_target": "aarch64--netbsd",
+  "compiler": "cc (nb3 20260326) 12.5.0",
+  "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+  "physmem": 1054990336,
+  "cores": 2,
+  "result": "pass"
+}

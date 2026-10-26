@@ -1,0 +1,29 @@
+......F.F.......
+======================================================================
+FAIL: test_expired_certificate_cannot_substitute_for_future_control (test_roaming_signer.RoamingSigner.test_expired_certificate_cannot_substitute_for_future_control)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_signer.py", line 170, in test_expired_certificate_cannot_substitute_for_future_control
+    self.assertEqual(result['result'], 'rejected')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'qualified' != 'rejected'
+- qualified
++ rejected
+
+
+======================================================================
+FAIL: test_future_certificate_cannot_substitute_for_expired_control (test_roaming_signer.RoamingSigner.test_future_certificate_cannot_substitute_for_expired_control)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_signer.py", line 186, in test_future_certificate_cannot_substitute_for_expired_control
+    self.assertEqual(result['result'], 'rejected')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'qualified' != 'rejected'
+- qualified
++ rejected
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 2.028s
+
+FAILED (failures=2)

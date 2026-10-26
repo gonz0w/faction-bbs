@@ -1,0 +1,9 @@
+{
+  "absent": [
+    "tools/check_signer_qualification_evidence.py"
+  ],
+  "sha256": {
+    "red.log": "115f8d2b91515e5bef11814ba8ffb3eed64dd71626c1dfcaea8d525b082088ff",
+    "tools/test_signer_qualification_evidence.py": "7816e4f4476605e7ad219939b6c7030c33e48067dbbd79587511ed59a640b1f1"
+  }
+}

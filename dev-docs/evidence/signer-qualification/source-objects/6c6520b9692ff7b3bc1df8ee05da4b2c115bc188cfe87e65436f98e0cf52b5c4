@@ -1,0 +1,11 @@
+{
+  "absent": [
+    "tools/probe_roaming_signer.py"
+  ],
+  "sha256": {
+    "red.log": "58d1b8a70b35136080abf248e7240bf3e17e02ec701e29209eb54c0c4056926d",
+    "tools/probe_signing_exit.py": "e422b3fecb75ae25f6487b8af093d1cc8bb288ef090305602b52020d0e6c33d9",
+    "tools/test_roaming_signer.py": "70727a8dd5be177e121eee16b10f67fafa1215557008acb86404722161a2cd84",
+    "tools/test_signing_exit.py": "049e515043687b6c38b938aea2bd8753579a2be505ebf5844ed477e3d41004f1"
+  }
+}

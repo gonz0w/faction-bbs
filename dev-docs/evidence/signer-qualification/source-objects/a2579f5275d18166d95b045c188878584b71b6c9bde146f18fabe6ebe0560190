@@ -1,0 +1,10 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "log": {
+    "path": "dev-docs/evidence/signer-qualification/source-objects/2acd460b04bf5ada24eec9bf0dda544d2c069af9e8172ac31757193bb657ed5e",
+    "sha256": "2acd460b04bf5ada24eec9bf0dda544d2c069af9e8172ac31757193bb657ed5e"
+  },
+  "result": "pass",
+  "tests": 16
+}

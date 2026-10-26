@@ -1,0 +1,13 @@
+from pathlib import Path
+import json,os,resource,subprocess,time
+P=Path('/home/factionbuild/signer226-results');P.mkdir(mode=0o700);resource.setrlimit(resource.RLIMIT_CORE,(0,0));os.umask(0o077)
+commands=[('baseline','/usr/bin/ssh-keygen'),('portable','/home/factionbuild/signer226/ssh-keygen')]
+summary=[]
+for label,binary in commands:
+    argv=['/usr/bin/time','-l','/usr/pkg/bin/python3.13','/home/factionbuild/signer226-inputs/tools/probe_roaming_signer.py','--disposable-synthetic-fixture','--candidate',binary,'--verifier','/usr/bin/ssh-keygen','--output',str(P/(label+'.json'))]
+    start=time.monotonic()
+    with (P/(label+'.private.log')).open('wb') as log:r=subprocess.run(argv,stdout=log,stderr=log,timeout=120)
+    summary.append(dict(label=label,returncode=r.returncode,elapsed_ms=round((time.monotonic()-start)*1000)))
+    (P/'run-summary.json').write_text(json.dumps(summary,indent=2))
+    if r.returncode:raise SystemExit(r.returncode)
+print(json.dumps(dict(result='pass',runs=summary)))

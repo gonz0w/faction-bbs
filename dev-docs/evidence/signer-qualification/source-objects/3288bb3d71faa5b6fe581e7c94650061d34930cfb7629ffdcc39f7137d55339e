@@ -1,0 +1,69 @@
+# Disposable manual-roaming signer qualification
+
+[Issue #226](https://github.com/gonz0w/faction-bbs/issues/226) compares maintained
+uninstalled signer builds. This harness uses the manual
+[roaming authentication profile](../../docs/roaming-authentication.md), with a
+synthetic destination/home/stable-subject principal and 300-second Ed25519 user
+certificates. It runs no SSH listener and changes no BBS, login, file-transfer or
+private-mail key policy. The installed NetBSD signer remains the rejected baseline;
+a separate native record identifies and qualifies or rejects each selected build.
+
+Use only trusted binaries in a marked owned disposable fixture as an unprivileged
+user. Never point the probe at real keys or install/replace a system executable.
+Run both the preserved baseline and each selected candidate by absolute path:
+
+```sh
+umask 077
+ulimit -c 0
+python3 tools/probe_roaming_signer.py \
+  --disposable-synthetic-fixture \
+  --candidate /absolute/private/uninstalled/ssh-keygen \
+  --verifier /usr/bin/ssh-keygen \
+  --output /absolute/private/signer-observations.json
+```
+
+The verifier must be the independent standard SSH implementation identified by the
+native record. Each run generates and deletes its own private temporary synthetic
+CA/device keys, including on exceptions. The child environment excludes SSH agent
+and askpass variables. Each subprocess has a ten-second timeout and a combined
+65536-byte output limit; timeout or overflow kills and reaps the process group.
+No raw keys, certificates, profiles, stdout or stderr enter the public JSON.
+
+Five fresh valid issuances each require normal exit zero, a bounded certificate
+artifact, independent standard `ssh-keygen -L` parsing with matching CA/leaf
+fingerprints, serial, principal and 300-second validity, then certificate-backed
+`ssh-keygen -Y sign` possession and `-Y verify` authentication. A second signature
+proves legitimate certificate reuse. An artifact after a crash is never parsed or
+accepted. Wrong CA, wrong destination principal, mismatched private key and
+message tampering must fail normally; signals, timeout, output overflow and
+unavailable checks are failures to qualify, never valid denials.
+
+Two additional candidate-issued certificates have past/future 300-second windows.
+The independent verifier must accept each at a standard `verify-time` inside its
+window and reject it at the actual current time. This avoids changing a host clock
+or waiting for expiry. Missing-CA issuance must fail normally without an artifact.
+The component test does not establish actual SSH admission or per-device BBS
+attribution; the existing UID-to-session proof retains those separate boundaries.
+
+A probe exit of zero means observations were collected. Require both
+`result: qualified` and `overall_qualification: true`, plus fixture cleanup, before
+claiming this bounded signer profile passed. A recorded baseline rejection is an
+expected observation. `failure_layer` and per-operation statuses distinguish setup,
+signer/verifier error, signal, timeout, output overflow and unavailable execution.
+Executable/source SHA-256 identities, executable sizes, elapsed time and child CPU
+costs are factual observations, not package adoption or whole-system capacity.
+
+Preserve every executed probe/test/build variant and diagnostics before edits;
+never refresh older evidence to new bytes. Export sanitized observations before
+removing the owned native fixture, then verify cleanup and saved-playground
+integrity. Packaging, update/recovery choices and online issuance/enrollment remain
+separate adoption gates under [#91](https://github.com/gonz0w/faction-bbs/issues/91).
+
+Host regression controls use Python standard library and an existing OpenSSH tool:
+
+```sh
+python3 -m unittest discover -s tools -p test_roaming_signer.py
+```
+
+These host controls qualify the harness behavior only. They do not establish that a
+selected uninstalled NetBSD build works; native source-matched runs are required.

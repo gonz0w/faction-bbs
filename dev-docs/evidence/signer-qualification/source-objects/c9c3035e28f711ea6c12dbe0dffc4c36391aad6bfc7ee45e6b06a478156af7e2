@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "steps": [
+    {
+      "command": [
+        "./configure",
+        "--without-pam",
+        "--without-security-key-builtin",
+        "--disable-pkcs11",
+        "CFLAGS=-O2"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 14527
+    },
+    {
+      "command": [
+        "make",
+        "-j1",
+        "ssh-keygen"
+      ],
+      "returncode": 0,
+      "elapsed_ms": 9581
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "all_match": true,
+  "files": {
+    "tools/probe_roaming_signer.py": "b420838208604fcffb6f18128a36b40f0a3ee6997ce70e76c453ce22ff67f39b",
+    "tools/probe_signing_exit.py": "e422b3fecb75ae25f6487b8af093d1cc8bb288ef090305602b52020d0e6c33d9",
+    "tools/smoke_local_console.py": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99",
+    "tools/test_roaming_signer.py": "a703d3e9c9b324e1076059c8b9ba0f665f0c67bd90eb74578249009bc386b6a0",
+    "tools/test_signing_exit.py": "049e515043687b6c38b938aea2bd8753579a2be505ebf5844ed477e3d41004f1"
+  }
+}

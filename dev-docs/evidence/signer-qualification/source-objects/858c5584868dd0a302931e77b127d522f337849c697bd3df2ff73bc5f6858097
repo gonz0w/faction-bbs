@@ -1,0 +1,511 @@
+{
+  "result": "qualified",
+  "overall_qualification": true,
+  "controls": [
+    {
+      "case": 1,
+      "artifact_produced": true,
+      "accepted": true,
+      "independently_parsed": true,
+      "signature_verified": true,
+      "reuse_verified": true,
+      "wrong_ca_denied": true,
+      "wrong_principal_denied": true,
+      "wrong_private_key_denied": true,
+      "tamper_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 6
+        },
+        "wrong_ca": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "wrong_principal": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "tamper": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "possession-reuse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "reuse_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_private_key": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        }
+      }
+    },
+    {
+      "case": 2,
+      "artifact_produced": true,
+      "accepted": true,
+      "independently_parsed": true,
+      "signature_verified": true,
+      "reuse_verified": true,
+      "wrong_ca_denied": true,
+      "wrong_principal_denied": true,
+      "wrong_private_key_denied": true,
+      "tamper_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 6
+        },
+        "wrong_ca": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "wrong_principal": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "tamper": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "possession-reuse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "reuse_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_private_key": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        }
+      }
+    },
+    {
+      "case": 3,
+      "artifact_produced": true,
+      "accepted": true,
+      "independently_parsed": true,
+      "signature_verified": true,
+      "reuse_verified": true,
+      "wrong_ca_denied": true,
+      "wrong_principal_denied": true,
+      "wrong_private_key_denied": true,
+      "tamper_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 3
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 3
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_ca": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "wrong_principal": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "tamper": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "possession-reuse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "reuse_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_private_key": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        }
+      }
+    },
+    {
+      "case": 4,
+      "artifact_produced": true,
+      "accepted": true,
+      "independently_parsed": true,
+      "signature_verified": true,
+      "reuse_verified": true,
+      "wrong_ca_denied": true,
+      "wrong_principal_denied": true,
+      "wrong_private_key_denied": true,
+      "tamper_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_ca": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 6
+        },
+        "wrong_principal": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "tamper": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 6
+        },
+        "possession-reuse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "reuse_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_private_key": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 4
+        }
+      }
+    },
+    {
+      "case": 5,
+      "artifact_produced": true,
+      "accepted": true,
+      "independently_parsed": true,
+      "signature_verified": true,
+      "reuse_verified": true,
+      "wrong_ca_denied": true,
+      "wrong_principal_denied": true,
+      "wrong_private_key_denied": true,
+      "tamper_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_ca": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "wrong_principal": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "tamper": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        },
+        "possession-reuse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "reuse_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "wrong_private_key": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 5
+        }
+      }
+    }
+  ],
+  "valid_issuance_count": 5,
+  "fixture_setup_complete": true,
+  "failure_layer": null,
+  "expired_denied": true,
+  "future_denied": true,
+  "missing_ca_denied": true,
+  "core_dumps_disabled": true,
+  "candidate_sha256": "2799fb1e89890d58425e9f3b70dfc989a26749e3fb7dd8dc67bcbc40b2758adc",
+  "verifier_sha256": "2799fb1e89890d58425e9f3b70dfc989a26749e3fb7dd8dc67bcbc40b2758adc",
+  "probe_sha256": "af21e2b69f3124439db34bda809621fe9b9bd3d7052d43d9d0591e54a6aefd60",
+  "candidate_bytes": 1060576,
+  "verifier_bytes": 1060576,
+  "rounds": 5,
+  "validity_seconds": 300,
+  "command_timeout_seconds": 10,
+  "command_output_limit_bytes": 65536,
+  "setup_operations": [
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 6
+    },
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 5
+    },
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 5
+    },
+    {
+      "status": "success",
+      "exit": 0,
+      "elapsed_ms": 5
+    }
+  ],
+  "temporal_controls": [
+    {
+      "case": "expired",
+      "independently_parsed": true,
+      "in_window_verified": true,
+      "current_time_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "in_window_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "current_verify": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 6
+        }
+      }
+    },
+    {
+      "case": "future",
+      "independently_parsed": true,
+      "in_window_verified": true,
+      "current_time_denied": true,
+      "operations": {
+        "issue": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "parse": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "ca_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "leaf_fingerprint": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 4
+        },
+        "possession": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 5
+        },
+        "in_window_verify": {
+          "status": "success",
+          "exit": 0,
+          "elapsed_ms": 6
+        },
+        "current_verify": {
+          "status": "normal_error",
+          "exit": 255,
+          "elapsed_ms": 6
+        }
+      }
+    }
+  ],
+  "missing_ca_operation": {
+    "status": "normal_error",
+    "exit": 255,
+    "elapsed_ms": 4
+  },
+  "keys_removed": true,
+  "elapsed_ms": 422,
+  "child_user_ms": 164,
+  "child_system_ms": 102
+}

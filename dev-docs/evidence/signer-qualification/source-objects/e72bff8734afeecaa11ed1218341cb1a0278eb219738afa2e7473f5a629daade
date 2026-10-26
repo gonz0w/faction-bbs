@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "tests": 16,
+  "failures": 0,
+  "errors": 0,
+  "reference_tool": "uninstalled portable10.6p1 for unit fixtures; actual native matrix retains independent base verifier",
+  "source_hashes": {
+    "probe_roaming_signer.py": "b420838208604fcffb6f18128a36b40f0a3ee6997ce70e76c453ce22ff67f39b",
+    "test_roaming_signer.py": "a703d3e9c9b324e1076059c8b9ba0f665f0c67bd90eb74578249009bc386b6a0"
+  }
+}

@@ -1,0 +1,321 @@
+#!/usr/bin/env python3
+"""Qualify a trusted uninstalled signer using disposable synthetic roaming keys.
+
+Exit zero means observations were collected. Only overall_qualification=true and
+result=qualified qualify this bounded software profile; no installer or SSH daemon
+is invoked. Public results contain no raw keys, certificates, profiles or logs.
+"""
+import argparse
+from dataclasses import dataclass
+from datetime import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import resource
+import selectors
+import signal
+import subprocess
+import tempfile
+import time
+
+PRINCIPAL = 'board-a/home-a/subject-a'
+WRONG_PRINCIPAL = 'other-board/home-a/subject-a'
+NAMESPACE = 'faction-roaming-226'
+ROUNDS = 5
+TIMEOUT = 10
+OUTPUT_LIMIT = 65536
+VALIDITIES = {'valid': '-5s:+4m55s', 'expired': '-10m:-5m', 'future': '+5m:+10m'}
+MESSAGE = b'disposable synthetic roaming authentication possession proof\n'
+
+
+@dataclass
+class Command:
+    returncode: int | None
+    stdout: bytes = b''
+    stderr: bytes = b''
+    timed_out: bool = False
+    output_limited: bool = False
+    unavailable: bool = False
+    elapsed_ms: int = 0
+
+    @property
+    def success(self):
+        return self.returncode == 0 and not (self.timed_out or self.output_limited or self.unavailable)
+
+    @property
+    def denied(self):
+        return self.returncode is not None and self.returncode > 0 and not (
+            self.timed_out or self.output_limited or self.unavailable)
+
+    def public(self):
+        if self.unavailable:
+            status = 'unavailable'
+        elif self.timed_out:
+            status = 'timeout'
+        elif self.output_limited:
+            status = 'output_limit'
+        elif self.returncode is not None and self.returncode < 0:
+            status = 'signal'
+        elif self.success:
+            status = 'success'
+        else:
+            status = 'normal_error'
+        return dict(status=status, exit=self.returncode, elapsed_ms=self.elapsed_ms)
+
+
+def _disable_core():
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+
+
+def _run(argv, data=None, timeout=TIMEOUT, output_limit=OUTPUT_LIMIT):
+    """Drain both pipes under one byte/time limit; kill and reap on either limit."""
+    if data is not None and len(data) > 4096:
+        raise ValueError('bounded synthetic input required')
+    started = time.monotonic()
+    env = {k: v for k, v in os.environ.items() if not k.startswith('SSH_')}
+    env.update(LC_ALL='C', TZ='UTC')
+    buffers = {1: bytearray(), 2: bytearray()}
+    timed_out = output_limited = False
+    try:
+        process = subprocess.Popen(list(map(str, argv)), stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env,
+                                   start_new_session=True, preexec_fn=_disable_core)
+    except OSError:
+        return Command(None, unavailable=True, elapsed_ms=int((time.monotonic()-started)*1000))
+    with selectors.DefaultSelector() as selector:
+        selector.register(process.stdout, selectors.EVENT_READ, 1)
+        selector.register(process.stderr, selectors.EVENT_READ, 2)
+        if data is not None:
+            try:
+                process.stdin.write(data)
+                process.stdin.close()
+            except BrokenPipeError:
+                process.stdin.close()
+        while selector.get_map():
+            remaining = timeout-(time.monotonic()-started)
+            if remaining <= 0:
+                timed_out = True
+                break
+            for key, _ in selector.select(min(remaining, .1)):
+                chunk = os.read(key.fileobj.fileno(), 8192)
+                if not chunk:
+                    selector.unregister(key.fileobj)
+                    key.fileobj.close()
+                    continue
+                room = output_limit-sum(map(len, buffers.values()))
+                buffers[key.data].extend(chunk[:room])
+                if len(chunk) > room:
+                    output_limited = True
+                    break
+            if output_limited:
+                break
+        if timed_out or output_limited:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        for key in list(selector.get_map().values()):
+            key.fileobj.close()
+        try:
+            code = process.wait(timeout=max(.1, timeout-(time.monotonic()-started)))
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            code = process.wait()
+    return Command(code, bytes(buffers[1]), bytes(buffers[2]), timed_out, output_limited,
+                   elapsed_ms=int((time.monotonic()-started)*1000))
+
+
+def _digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def _artifact(path):
+    return path.is_file() and not path.is_symlink() and 0 < path.stat().st_size <= OUTPUT_LIMIT
+
+
+def _parse(verifier, cert, ca, device, serial, identity, operations):
+    """Read standard ssh-keygen text, never implement SSH binary/crypto parsing."""
+    listed = _run([verifier, '-L', '-f', cert])
+    authority = _run([verifier, '-l', '-f', ca])
+    leaf = _run([verifier, '-l', '-f', device])
+    operations.update(parse=listed.public(), ca_fingerprint=authority.public(), leaf_fingerprint=leaf.public())
+    if not all(c.success for c in (listed, authority, leaf)):
+        return None
+    text = listed.stdout.decode('ascii', 'replace')
+    fingerprints = [re.search(r'\bSHA256:[A-Za-z0-9+/]+', c.stdout.decode('ascii', 'replace'))
+                    for c in (authority, leaf)]
+    period = re.search(r'Valid: from ([0-9T:-]+) to ([0-9T:-]+)', text)
+    principals = re.search(r'\n\s*Principals:\s*\n(.*?)\n\s*(?:Critical Options|Extensions):', text, re.S)
+    if not all(fingerprints) or period is None or principals is None:
+        return None
+    try:
+        start, end = [datetime.strptime(v, '%Y-%m-%dT%H:%M:%S') for v in period.groups()]
+    except ValueError:
+        return None
+    checks = [
+        'Type: ssh-ed25519-cert-v01@openssh.com user certificate' in text,
+        f'Signing CA: ED25519 {fingerprints[0].group()}' in text,
+        f'Public key: ED25519-CERT {fingerprints[1].group()}' in text,
+        f'Key ID: "{identity}"' in text,
+        re.search(rf'\bSerial: {serial}\s*\n', text) is not None,
+        principals.group(1).split() == [PRINCIPAL],
+        (end-start).total_seconds() == 300,
+    ]
+    return (start, end) if all(checks) else None
+
+
+def _verify(verifier, signature, allowed, body=MESSAGE, principal=PRINCIPAL, at=None):
+    argv = [verifier, '-Y', 'verify', '-f', allowed, '-I', principal,
+            '-n', NAMESPACE, '-s', signature]
+    if at is not None:
+        argv.extend(['-O', 'verify-time='+at.strftime('%Y%m%d%H%M%S')])
+    return _run(argv, body)
+
+
+def _issue(candidate, root, serial, kind):
+    cert = root/'device-cert.pub'
+    cert.unlink(missing_ok=True)
+    identity = f'issue226-{serial}'
+    outcome = _run([candidate, '-q', '-s', root/'ca', '-I', identity, '-z', str(serial),
+                    '-n', PRINCIPAL, '-V', VALIDITIES[kind], root/'device.pub'])
+    return cert, identity, outcome
+
+
+def _proof(verifier, root, cert, operations, suffix=''):
+    signed = _run([verifier, '-q', '-Y', 'sign', '-f', cert, '-n', NAMESPACE], MESSAGE)
+    operations['possession'+suffix] = signed.public()
+    signature = root/('message'+suffix+'.sig')
+    if not signed.success or not signed.stdout:
+        return None
+    signature.write_bytes(signed.stdout)
+    return signature
+
+
+def run(candidate, verifier, parent=None):
+    if not Path(candidate).is_absolute() or not Path(verifier).is_absolute():
+        raise ValueError('absolute executable paths required')
+    if os.geteuid() == 0:
+        raise PermissionError('run as an unprivileged disposable fixture user')
+    candidate, verifier = Path(candidate).resolve(strict=True), Path(verifier).resolve(strict=True)
+    _disable_core()
+    started = time.monotonic()
+    before = resource.getrusage(resource.RUSAGE_CHILDREN)
+    result = dict(result='rejected', overall_qualification=False, controls=[], valid_issuance_count=0,
+                  fixture_setup_complete=False, failure_layer='fixture_setup', expired_denied=False,
+                  future_denied=False, missing_ca_denied=False, core_dumps_disabled=True,
+                  candidate_sha256=_digest(candidate), verifier_sha256=_digest(verifier),
+                  probe_sha256=_digest(Path(__file__)), candidate_bytes=candidate.stat().st_size,
+                  verifier_bytes=verifier.stat().st_size, rounds=ROUNDS, validity_seconds=300,
+                  command_timeout_seconds=TIMEOUT, command_output_limit_bytes=OUTPUT_LIMIT)
+    with tempfile.TemporaryDirectory(prefix='faction226-synthetic-', dir=parent) as tmp:
+        root = Path(tmp)
+        os.chmod(root, 0o700)
+        setup = []
+        for name in ('ca', 'device', 'wrong-ca', 'wrong-device'):
+            key = _run([verifier, '-q', '-t', 'ed25519', '-N', '', '-f', root/name])
+            setup.append(key.public())
+            if not key.success or not _artifact(root/name) or not _artifact(root/(name+'.pub')):
+                break
+        result['setup_operations'] = setup
+        if len(setup) == 4 and all(c['status'] == 'success' for c in setup):
+            result['fixture_setup_complete'] = True
+            result['failure_layer'] = 'qualification'
+            allowed, wrong = root/'allowed', root/'wrong'
+            for target, ca in ((allowed, 'ca.pub'), (wrong, 'wrong-ca.pub')):
+                target.write_text(f'{PRINCIPAL} cert-authority,namespaces="{NAMESPACE}" '+(root/ca).read_text())
+            for serial in range(1, ROUNDS+1):
+                cert, identity, issued = _issue(candidate, root, serial, 'valid')
+                operations = dict(issue=issued.public())
+                control = dict(case=serial, artifact_produced=_artifact(cert), accepted=False,
+                               independently_parsed=False, signature_verified=False, reuse_verified=False,
+                               wrong_ca_denied=False, wrong_principal_denied=False,
+                               wrong_private_key_denied=False, tamper_denied=False, operations=operations)
+                # A crashed/timed out signer cannot reach parsing or signature checks.
+                if issued.success and control['artifact_produced']:
+                    period = _parse(verifier, cert, root/'ca.pub', root/'device.pub', serial, identity, operations)
+                    control['independently_parsed'] = period is not None
+                    signature = _proof(verifier, root, cert, operations) if period else None
+                    if signature:
+                        verified = _verify(verifier, signature, allowed)
+                        operations['verify'] = verified.public()
+                        control['signature_verified'] = verified.success
+                        for label, body, principal, authority in (
+                            ('wrong_ca', MESSAGE, PRINCIPAL, wrong),
+                            ('wrong_principal', MESSAGE, WRONG_PRINCIPAL, allowed),
+                            ('tamper', b'tampered synthetic message\n', PRINCIPAL, allowed)):
+                            denied = _verify(verifier, signature, authority, body, principal)
+                            operations[label] = denied.public()
+                            control[label+'_denied'] = denied.denied
+                        # A fresh signature under the same certificate must also work.
+                        reused = _proof(verifier, root, cert, operations, '-reuse')
+                        if reused:
+                            verified = _verify(verifier, reused, allowed)
+                            operations['reuse_verify'] = verified.public()
+                            control['reuse_verified'] = verified.success
+                        mismatched = root/'wrong-device-cert.pub'
+                        mismatched.write_bytes(cert.read_bytes())
+                        mismatch = _run([verifier, '-q', '-Y', 'sign', '-f', mismatched, '-n', NAMESPACE], MESSAGE)
+                        operations['wrong_private_key'] = mismatch.public()
+                        control['wrong_private_key_denied'] = mismatch.denied and not mismatch.stdout
+                control['accepted'] = all(control[k] for k in (
+                    'artifact_produced', 'independently_parsed', 'signature_verified', 'reuse_verified',
+                    'wrong_ca_denied', 'wrong_principal_denied', 'wrong_private_key_denied', 'tamper_denied'))
+                result['controls'].append(control)
+            result['temporal_controls'] = []
+            for serial, kind in ((ROUNDS+1, 'expired'), (ROUNDS+2, 'future')):
+                cert, identity, issued = _issue(candidate, root, serial, kind)
+                operations = dict(issue=issued.public())
+                control = dict(case=kind, independently_parsed=False, in_window_verified=False,
+                               current_time_denied=False, operations=operations)
+                if issued.success and _artifact(cert):
+                    period = _parse(verifier, cert, root/'ca.pub', root/'device.pub', serial, identity, operations)
+                    control['independently_parsed'] = period is not None
+                    signature = _proof(verifier, root, cert, operations) if period else None
+                    if signature:
+                        inside = period[0]+(period[1]-period[0])/2
+                        valid = _verify(verifier, signature, allowed, at=inside)
+                        denied = _verify(verifier, signature, allowed)
+                        operations.update(in_window_verify=valid.public(), current_verify=denied.public())
+                        control.update(in_window_verified=valid.success, current_time_denied=denied.denied)
+                result[kind+'_denied'] = all(control[k] for k in (
+                    'independently_parsed', 'in_window_verified', 'current_time_denied'))
+                result['temporal_controls'].append(control)
+            cert = root/'device-cert.pub'
+            cert.unlink(missing_ok=True)
+            missing = _run([candidate, '-q', '-s', root/'absent-ca', '-I', 'issue226-missing',
+                            '-n', PRINCIPAL, '-V', VALIDITIES['valid'], root/'device.pub'])
+            result['missing_ca_operation'] = missing.public()
+            result['missing_ca_denied'] = missing.denied and not cert.exists()
+            result['valid_issuance_count'] = sum(c['accepted'] for c in result['controls'])
+            result['overall_qualification'] = (result['valid_issuance_count'] == ROUNDS and
+                result['expired_denied'] and result['future_denied'] and result['missing_ca_denied'])
+            if result['overall_qualification']:
+                result.update(result='qualified', failure_layer=None)
+    after = resource.getrusage(resource.RUSAGE_CHILDREN)
+    result.update(keys_removed=not root.exists(), elapsed_ms=int((time.monotonic()-started)*1000),
+                  child_user_ms=int((after.ru_utime-before.ru_utime)*1000),
+                  child_system_ms=int((after.ru_stime-before.ru_stime)*1000))
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--disposable-synthetic-fixture', action='store_true', required=True)
+    parser.add_argument('--candidate', type=Path, required=True)
+    parser.add_argument('--verifier', type=Path, default=Path('/usr/bin/ssh-keygen'))
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    observations = run(args.candidate, args.verifier)
+    args.output.write_text(json.dumps(observations, indent=2)+'\n')
+    print('Synthetic signer observations:', observations['result'], '; no keys exported.')
+
+
+if __name__ == '__main__':
+    main()

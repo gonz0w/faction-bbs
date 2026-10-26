@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "subject_result": "rejected",
+  "qualification_harness_elapsed_ms": 377,
+  "qualification_child_user_ms": 137,
+  "qualification_child_system_ms": 21,
+  "time_l_maxrss_kib": 21288,
+  "scope": "Python qualification command and child resource accounting; not isolated signer RSS or simultaneous aggregate memory"
+}

@@ -1,0 +1,26 @@
+......FE......
+======================================================================
+ERROR: test_hashing_works_without_python311_file_digest (test_roaming_signer.RoamingSigner.test_hashing_works_without_python311_file_digest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_signer.py", line 135, in test_hashing_works_without_python311_file_digest
+    self.assertEqual(probe._digest(path), expected)
+                     ~~~~~~~~~~~~~^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/probe_roaming_signer.py", line 136, in _digest
+    return hashlib.file_digest(stream, 'sha256').hexdigest()
+           ^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'hashlib' has no attribute 'file_digest'
+
+======================================================================
+FAIL: test_fourth_keygen_exit_zero_without_artifacts_is_setup_failure (test_roaming_signer.RoamingSigner.test_fourth_keygen_exit_zero_without_artifacts_is_setup_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_roaming_signer.py", line 145, in test_fourth_keygen_exit_zero_without_artifacts_is_setup_failure
+    self.assertFalse(result['fixture_setup_complete'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.588s
+
+FAILED (failures=1, errors=1)

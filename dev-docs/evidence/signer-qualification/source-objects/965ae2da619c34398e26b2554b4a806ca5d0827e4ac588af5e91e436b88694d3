@@ -1,0 +1,4 @@
+  File "/home/factionbuild/build-signer226.py", line 11
+    (P/'build-result.json').write_text(json.dumps(result,indent=2)+'
+                                                                   ^
+SyntaxError: unterminated string literal (detected at line 11)

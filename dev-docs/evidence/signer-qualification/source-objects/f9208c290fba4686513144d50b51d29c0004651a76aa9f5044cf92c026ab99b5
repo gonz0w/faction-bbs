@@ -1,0 +1,10 @@
+{
+  "result": "failed_setup",
+  "reason": "nested Python string encoded newline inside a string literal; native build wrapper could not parse",
+  "product_failure": false,
+  "source_hashes": {
+    "executed-build-source.py": "0136bb8668364f7311bd1b75103b6fe245a01357627a6adf155b43296dc5d40b",
+    "diagnostic.private.log": "965ae2da619c34398e26b2554b4a806ca5d0827e4ac588af5e91e436b88694d3",
+    "build_candidate.py": "8b33d6aadd3dfded745d341dd760ebe76fb9bcc1ba55038abfe1a745a9ecd555"
+  }
+}

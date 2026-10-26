@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "archive_sha256": "a9dc9565dffe8640f64d863cd29a32bc4a3dbdec0566a7fc44c5d6ee767d5f39",
+  "release_signature_verified": true,
+  "archive_paths_safe": true,
+  "no_js_ts_archive_members": true,
+  "selected_candidates": 1,
+  "archive_members": 932,
+  "regular_source_files": 893,
+  "qualified_scope": "Unpatched portable source build, explicit manual profile; pkgsrc/base installation not qualified",
+  "release_key_fingerprint": "7168B983815A5EEF59A4ADFD2A3F414E736060BA",
+  "key_trust": "Official HTTPS release key; independent prior key trust not established"
+}

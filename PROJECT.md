@@ -166,6 +166,21 @@ no generic emulator/native launch under the BBS owner/frontend. Additional game
 expansion, hardening #106–#111 and advanced combined 250-member experiments are
 owner-deferred. Existing defenses remain; deferral never authorizes weakening them.
 
+## Accepted first optional roaming model
+
+The owner [selected this model](https://github.com/gonz0w/faction-bbs/issues/91#issuecomment-6422333314) on
+2026-10-26 for the first optional prototype: one restricted OS transport account
+per independently approved home/local-member binding. Devices sharing that
+binding have one BBS identity; the UID path does not attest individual leaf keys.
+Certificate expiry governs new SSH admission. Current local binding/issuer/member
+revocation and normal session rules govern established access.
+
+Keep independent local consent/approval, root-managed transport policy/manifest,
+immutable UID history and device-private mail keys. This choice does not increase
+resource/experiment caps, adopt a package or online issuer, authorize host changes
+or a public listener, or establish production support. Remaining enrollment,
+issuance and operational work stays issue-scoped under #91.
+
 ## Resource and evidence contracts
 
 Preserve the normal eight sessions/5000-ms admission, two credential permits

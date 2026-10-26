@@ -1,0 +1,13 @@
+import hashlib,json,pathlib,subprocess
+P=pathlib.Path('/home/factionbuild/signer226')
+files=['config.h','config.log','config.status','Makefile','ssh-keygen.c','version.h','ssh-keygen','libssh.a','openbsd-compat/libopenbsd-compat.a']
+identity={n:{'sha256':hashlib.sha256((P/n).read_bytes()).hexdigest(),'bytes':(P/n).stat().st_size} for n in files}
+linked=subprocess.run(['ldd',str(P/'ssh-keygen')],capture_output=True,text=True,check=True).stdout
+libs={}
+for line in linked.splitlines():
+    words=line.split()
+    for word in words:
+        if word.startswith('/') and pathlib.Path(word).is_file():
+            path=pathlib.Path(word);libs[word]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'bytes':path.stat().st_size}
+make=(P/'Makefile').read_text();selected=[line for line in make.splitlines() if any(line.startswith(k+'=') for k in ['CC','CFLAGS','CPPFLAGS','LDFLAGS','LIBS','CHANNELLIBS','SSHKEYGEN_OBJS','LIBCOMPAT'])]
+print(json.dumps(dict(result='pass',candidate=identity,linked_output=linked,linked_library_identities=libs,make_assignments=selected),indent=2))

@@ -1,0 +1,4 @@
+from pathlib import Path
+import hashlib,json,subprocess
+commands={'system':['uname','-srm'],'processor':['uname','-p'],'compiler_target':['cc','-dumpmachine'],'compiler':['cc','--version'],'openssl':['/usr/bin/openssl','version'],'physmem':['/sbin/sysctl','-n','hw.physmem64'],'cores':['/sbin/sysctl','-n','hw.ncpu']}
+r={k:subprocess.check_output(v,text=True).strip() for k,v in commands.items()};r['compiler']=r['compiler'].splitlines()[0];r['result']='pass';r['physmem']=int(r['physmem']);r['cores']=int(r['cores']);print(json.dumps(r,indent=2))

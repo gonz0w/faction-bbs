@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,secrets,tempfile
+from smoke_local_console import Console
+binary=Path('/usr/local/libexec/faction');children=[];secret=secrets.token_hex(20)
+with tempfile.TemporaryDirectory(prefix='faction226-compat-') as directory:
+    state=Path(directory)/'board'
+    try:
+        c=Console(binary,state,'init');children.append(c);c.expect('Handle: ');c.send('sysop');c.password(secret,'New password (12+ characters, hidden): ');c.password(secret,'Confirm password (hidden): ');c.expect('Lobby created.');c.finish()
+        c=Console(binary,state,'login',['--plain']);children.append(c);c.expect('Handle: ');c.send('sysop');c.password(secret);c.expect('Command (then Enter): ');c.send('q');c.expect('Logged out.');c.finish()
+        assert all(secret.encode() not in c.transcript for c in children)
+    finally:
+        for c in children:c.close()
+assert not state.parent.exists()
+print(json.dumps(dict(result='pass',local_init_login_logout=True,secret_echoed=False,keys_or_state_retained=False,scope='preserved saved-image baseline CLI; no current-feature claim')))

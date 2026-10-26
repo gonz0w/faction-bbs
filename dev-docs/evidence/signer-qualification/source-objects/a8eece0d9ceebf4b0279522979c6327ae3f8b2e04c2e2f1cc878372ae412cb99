@@ -1,0 +1,12 @@
+{
+  "controller_stopped": true,
+  "forwards_closed": true,
+  "owned_removed": true,
+  "result": "pass",
+  "saved_hashes_unchanged": true,
+  "saved_metadata_unchanged": true,
+  "saved_stopped": true,
+  "temporary_key_agents_stopped": true,
+  "temporary_roots_removed": 4,
+  "vm_stopped": true
+}

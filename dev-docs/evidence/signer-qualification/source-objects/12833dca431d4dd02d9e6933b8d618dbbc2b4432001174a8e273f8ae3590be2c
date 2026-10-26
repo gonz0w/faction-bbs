@@ -1,0 +1,123 @@
+{
+  "relative": [
+    [
+      "../../docs/roaming-authentication.md",
+      true
+    ],
+    [
+      "0052-netbsd-signing-exit.md",
+      true
+    ],
+    [
+      "0056-roaming-identity-handoff.md",
+      true
+    ]
+  ],
+  "remote": [
+    {
+      "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc",
+      "status": 200,
+      "final": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/RELEASE_KEY.asc"
+    },
+    {
+      "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz",
+      "status": 200,
+      "final": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz"
+    },
+    {
+      "url": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz.asc",
+      "status": 200,
+      "final": "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz.asc"
+    },
+    {
+      "url": "https://github.com/NetBSD/pkgsrc/blob/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/Makefile",
+      "status": 200,
+      "final": "https://github.com/NetBSD/pkgsrc/blob/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/Makefile"
+    },
+    {
+      "url": "https://github.com/NetBSD/pkgsrc/blob/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/distinfo",
+      "status": 200,
+      "final": "https://github.com/NetBSD/pkgsrc/blob/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/distinfo"
+    },
+    {
+      "url": "https://github.com/NetBSD/pkgsrc/blob/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/options.mk",
+      "status": 200,
+      "final": "https://github.com/NetBSD/pkgsrc/blob/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/options.mk"
+    },
+    {
+      "url": "https://github.com/NetBSD/pkgsrc/commit/a41868e500da86345080d97ed45dac65b2b241a6",
+      "status": 200,
+      "final": "https://github.com/NetBSD/pkgsrc/commit/a41868e500da86345080d97ed45dac65b2b241a6"
+    },
+    {
+      "url": "https://github.com/NetBSD/pkgsrc/commit/ae5a7a8218f9f9ed307c05200d830ebe0a939acb",
+      "status": 200,
+      "final": "https://github.com/NetBSD/pkgsrc/commit/ae5a7a8218f9f9ed307c05200d830ebe0a939acb"
+    },
+    {
+      "url": "https://github.com/NetBSD/pkgsrc/tree/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches",
+      "status": 200,
+      "final": "https://github.com/NetBSD/pkgsrc/tree/a41868e500da86345080d97ed45dac65b2b241a6/security/openssh/patches"
+    },
+    {
+      "url": "https://github.com/NetBSD/src/commit/5c6b80a579fcae9cf883a80f606d8a8df6e0f54f",
+      "status": 200,
+      "final": "https://github.com/NetBSD/src/commit/5c6b80a579fcae9cf883a80f606d8a8df6e0f54f"
+    },
+    {
+      "url": "https://github.com/NetBSD/src/commit/f73dc21d75578cecd73546d9cfb13dc51bd9f07c",
+      "status": 200,
+      "final": "https://github.com/NetBSD/src/commit/f73dc21d75578cecd73546d9cfb13dc51bd9f07c"
+    },
+    {
+      "url": "https://github.com/gonz0w/faction-bbs/issues/226",
+      "status": 200,
+      "final": "https://github.com/gonz0w/faction-bbs/issues/226"
+    },
+    {
+      "url": "https://github.com/gonz0w/faction-bbs/issues/91",
+      "status": 200,
+      "final": "https://github.com/gonz0w/faction-bbs/issues/91"
+    },
+    {
+      "url": "https://github.com/openssh/openssh-portable/blob/a8c72b842423f0774f542d3c2197247c3dd28d74/INSTALL",
+      "status": 200,
+      "final": "https://github.com/openssh/openssh-portable/blob/a8c72b842423f0774f542d3c2197247c3dd28d74/INSTALL"
+    },
+    {
+      "url": "https://github.com/openssh/openssh-portable/blob/a8c72b842423f0774f542d3c2197247c3dd28d74/LICENCE",
+      "status": 200,
+      "final": "https://github.com/openssh/openssh-portable/blob/a8c72b842423f0774f542d3c2197247c3dd28d74/LICENCE"
+    },
+    {
+      "url": "https://github.com/openssh/openssh-portable/blob/a8c72b842423f0774f542d3c2197247c3dd28d74/Makefile.in",
+      "status": 200,
+      "final": "https://github.com/openssh/openssh-portable/blob/a8c72b842423f0774f542d3c2197247c3dd28d74/Makefile.in"
+    },
+    {
+      "url": "https://github.com/openssh/openssh-portable/commit/a8c72b842423f0774f542d3c2197247c3dd28d74",
+      "status": 200,
+      "final": "https://github.com/openssh/openssh-portable/commit/a8c72b842423f0774f542d3c2197247c3dd28d74"
+    },
+    {
+      "url": "https://www.netbsd.org/releases/formal.html",
+      "status": 200,
+      "final": "https://www.netbsd.org/releases/formal.html"
+    },
+    {
+      "url": "https://www.openssh.org/txt/release-10.6",
+      "status": 200,
+      "final": "https://www.openssh.org/txt/release-10.6"
+    },
+    {
+      "url": "https://www.pkgsrc.org/news/2026Q3/",
+      "status": 200,
+      "final": "https://www.pkgsrc.org/news/2026Q3/"
+    },
+    {
+      "url": "https://www.pkgsrc.org/quarterly/",
+      "status": 200,
+      "final": "https://www.pkgsrc.org/quarterly/"
+    }
+  ]
+}
