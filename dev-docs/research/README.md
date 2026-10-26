@@ -91,3 +91,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0054: Two-way native OMEMO-2 and NetBSD qualification](0054-omemo-interop-netbsd.md) — rejected original candidate, explicit corrected-source independent interoperability and typed-device/state controls; no product mail adoption.
 
 - [0055: Native XMPP transport](0055-native-xmpp-transport.md) — pinned reuse comparison and actual NetBSD software qualification.
+
+- [0056: Roaming identity handoff](0056-roaming-identity-handoff.md) — proposed SSH-certificate/transport-UID proof, private OAuth/OIDC comparison and explicit local approval/adoption gates; no roaming runtime adoption.
