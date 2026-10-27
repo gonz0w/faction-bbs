@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "issue": 230,
+  "packaging_attempts": [
+    {
+      "script": "package_sources.failed01.py",
+      "log": "package_sources.failed01.log",
+      "result": "refused omitted native C source prefix before manifest creation"
+    },
+    {
+      "script": "package_sources.py",
+      "result": "current attempt"
+    }
+  ],
+  "scope": "Immutable public source/log export only; no product tests or native runs were executed by this packaging script.",
+  "host_default_workspace": {
+    "counts": {
+      "passed": 473,
+      "failed": 0,
+      "ignored": 0
+    },
+    "log": "logs/lead/host-integrated-2.log",
+    "checks": "metadata/lead/host-integrated.json"
+  },
+  "host_optional_client": {
+    "default": {
+      "passed": 42,
+      "failed": 0,
+      "ignored": 0
+    },
+    "network_mail": {
+      "passed": 137,
+      "failed": 0,
+      "ignored": 4
+    },
+    "logs": [
+      "logs/client/final02-default.log",
+      "logs/client/final02-network.log"
+    ]
+  },
+  "host_python_base": {
+    "tests": 391,
+    "log": "logs/lead/host-python.log",
+    "boundary": "This 391-test run predates later guard-test additions; focused guard runs are separate records."
+  },
+  "focused_python_runs": {
+    "logs/lead/guard-registration-green.log": {
+      "tests": 6,
+      "result": "pass"
+    },
+    "logs/lead/guard-registration-red.log": {
+      "tests": 6,
+      "result": "observed failure; see original log"
+    },
+    "logs/lead/host-python.log": {
+      "tests": 391,
+      "result": "pass"
+    },
+    "logs/lead/menu-evidence-green01.log": {
+      "tests": 5,
+      "result": "pass"
+    },
+    "logs/lead/menu-evidence-green02.log": {
+      "tests": 5,
+      "result": "pass"
+    },
+    "logs/lead/menu-evidence-red.log": {
+      "tests": 5,
+      "result": "observed failure; see original log"
+    },
+    "logs/lead/names-green.log": {
+      "tests": 9,
+      "result": "pass"
+    },
+    "logs/lead/names-red.log": {
+      "tests": 9,
+      "result": "observed failure; see original log"
+    },
+    "logs/lead/platform-green.log": {
+      "tests": 7,
+      "result": "pass"
+    },
+    "logs/lead/platform-red.log": {
+      "tests": 7,
+      "result": "observed failure; see original log"
+    },
+    "logs/lead/supplement-green.log": {
+      "tests": 8,
+      "result": "observed failure; see original log"
+    },
+    "logs/lead/supplement-green02.log": {
+      "tests": 8,
+      "result": "pass"
+    },
+    "logs/lead/supplement-red.log": {
+      "tests": 8,
+      "result": "observed failure; see original log"
+    }
+  },
+  "native_client_reported": {
+    "passed": 137,
+    "ignored": 4,
+    "unused_decoder_fixture_tests": 7,
+    "boundary": "Reported by native acceptance agent; actual native logs/source maps belong to its separate immutable export and must be integrated independently."
+  },
+  "historical_failures": {
+    "retained": true,
+    "boundary": "Names containing green may still contain observed failures. Original logs/status values are authoritative; no historical source/result hashes were refreshed."
+  },
+  "server_context_drift": [
+    {
+      "stage": "server/20261026T162219-fmt-owned",
+      "paths": [
+        "crates/faction-cli/src/lib.rs",
+        "crates/faction-service/src/native_mail.rs",
+        "crates/faction-service/src/native_mail_tests.rs",
+        "crates/faction-service/src/ui.rs",
+        "crates/faction-terminal/src/home_mail.rs",
+        "crates/faction-terminal/tests/home_mail.rs",
+        "crates/faction-terminal/tests/terminal.rs"
+      ],
+      "boundary": "Formatting stages intentionally mutate input bytes. Client transport and proof-driver drift lie outside the server/terminal/CLI compiled dependency graph; they are retained without a whole-context stability claim."
+    },
+    {
+      "stage": "server/20261026T162343-fmt-refactor",
+      "paths": [
+        "crates/faction-service/src/native_mail_tests.rs"
+      ],
+      "boundary": "Formatting stages intentionally mutate input bytes. Client transport and proof-driver drift lie outside the server/terminal/CLI compiled dependency graph; they are retained without a whole-context stability claim."
+    },
+    {
+      "stage": "server/20261026T162344-green-refactor",
+      "paths": [
+        "tools/probe_menu_mail.py"
+      ],
+      "boundary": "Formatting stages intentionally mutate input bytes. Client transport and proof-driver drift lie outside the server/terminal/CLI compiled dependency graph; they are retained without a whole-context stability claim."
+    },
+    {
+      "stage": "server/20261026T163115-fmt-content-fix",
+      "paths": [
+        "crates/faction-service/src/native_mail_tests.rs"
+      ],
+      "boundary": "Formatting stages intentionally mutate input bytes. Client transport and proof-driver drift lie outside the server/terminal/CLI compiled dependency graph; they are retained without a whole-context stability claim."
+    },
+    {
+      "stage": "server/20261026T163116-green-content-fix",
+      "paths": [
+        "crates/faction-client/src/transport.rs"
+      ],
+      "boundary": "Formatting stages intentionally mutate input bytes. Client transport and proof-driver drift lie outside the server/terminal/CLI compiled dependency graph; they are retained without a whole-context stability claim."
+    },
+    {
+      "stage": "server/20261026T164623-fmt-dumb-offer",
+      "paths": [
+        "crates/faction-service/src/native_mail_tests.rs"
+      ],
+      "boundary": "Formatting stages intentionally mutate input bytes. Client transport and proof-driver drift lie outside the server/terminal/CLI compiled dependency graph; they are retained without a whole-context stability claim."
+    }
+  ],
+  "privacy": {
+    "export_policy": "Only public source snapshots, public execution scripts, logs and source/hash metadata; binaries, archives, runtime configurations and private key material excluded.",
+    "private_key_block_and_binary_scan": "pass",
+    "actual_private_value_scan": "pending separately coordinated native/combined publication scan; no private inventory is exported"
+  },
+  "platform_binding_summary_failure": {
+    "record": "metadata/lead/platform-binding.json",
+    "description": "Original summary writer shadowed CompletedProcess with Path after successful GREEN; original script, logs and honest descriptor are preserved."
+  },
+  "source_object_count": 739,
+  "source_stage_count": 110
+}

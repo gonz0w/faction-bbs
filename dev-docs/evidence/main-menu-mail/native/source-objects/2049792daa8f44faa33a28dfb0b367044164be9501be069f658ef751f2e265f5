@@ -1,0 +1,14 @@
+from lab import *
+import tarfile,tomllib,hashlib
+registry=Path('/Users/cam/.cargo/registry/index');lock=tomllib.loads((R/'Cargo.lock').read_text());manifest={};archive=P/'public-index-resolution.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for pkg in lock['package']:
+  if not pkg.get('source','').startswith('registry+'):continue
+  n=pkg['name'];i=n if len(n)==1 else '2/'+n if len(n)==2 else '3/'+n[0]+'/'+n if len(n)==3 else n[:2]+'/'+n[2:4]+'/'+n
+  fs=list(registry.glob('*/.cache/'+i));assert len(fs)==1,n
+  f=fs[0];arc='registry/index/'+f.relative_to(registry).as_posix();t.add(f,arcname=arc,recursive=False);manifest[arc]=hashlib.sha256(f.read_bytes()).hexdigest()
+(P/'public-index-resolution-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+remote('test -f /etc/faction-disposable-test; tar -xzf - -C /home/factionbuild/cargo230; chown -R factionbuild:factionbuild /home/factionbuild/cargo230',archive.read_bytes(),120)
+remote('mkdir /home/factionbuild/proof230/build-attempt01; cp /home/factionbuild/proof230/build-result.json /home/factionbuild/proof230/server-build.log /home/factionbuild/proof230/build-launch.log /home/factionbuild/proof230/native-build.py /home/factionbuild/proof230/build-attempt01/; chown -R factionbuild:factionbuild /home/factionbuild/proof230/build-attempt01')
+for n in ['build-result.json','server-build.log','build-launch.log']:(P/('native-attempt01-'+n)).write_bytes(remote('cat /home/factionbuild/proof230/build-attempt01/'+n).stdout)
+print('Public metadata needed by Cargo cross-target resolution staged; no unrelated crate archives fetched. Failed first build retained.')

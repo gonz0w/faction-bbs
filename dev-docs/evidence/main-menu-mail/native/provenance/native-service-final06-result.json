@@ -1,0 +1,73 @@
+{
+  "result": "pass",
+  "scope": "two-core-1GiB-cached-incremental-service-and-focused-tests",
+  "physmem_bytes": 1054990336,
+  "cores": 2,
+  "full_client_build_claim": false,
+  "client_origin": "source-final05 two-core2GiB builds/tests",
+  "steps": [
+    {
+      "name": "dependency-scope",
+      "command": [
+        "cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "-p",
+        "faction-service",
+        "--edges",
+        "normal,build",
+        "--prefix",
+        "none"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.07566140200003701
+    },
+    {
+      "name": "build",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-service"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 11.873893962000011
+    },
+    {
+      "name": "tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-terminal",
+        "--all-targets",
+        "--",
+        "--test-threads=1"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 7.901324901999942
+    }
+  ],
+  "unchanged_reused_artifacts": {
+    "faction-client-default": "239c21eb44b02e341695b81d013513b680be1ce029dafb045e6153c0d19abd5f",
+    "faction-client-network": "31359349d101bc48f0a3c00443e461981fd28c462dd61435370194f5dbf5513d",
+    "examples/checkpoint_ui_fixture": "2c5b100c3f3d5686761a224a2afab3fbac0e472a741b02d57ba8cb892d7d0b71",
+    "examples/home_mail_fixture": "53032fcaa3f0ec625b5c4ce31c21265b0a3ef72cfcd1e5cfc16ba01a23adfe6a",
+    "faction": "cd3d604f10b1fefa0e85b3e26272708560114133dc476bbe1ec0c2b963a66ae3",
+    "faction-member": "b8262f22b6042512489290ef99a9e28fca94bb9598bd841fd04e8fea10e4b6ee"
+  },
+  "service_sha256": "8d08e81d95b988fce351c9c05fe80da2429e8aaa2b9691ffa733e0e4d1d30fc0"
+}

@@ -1,0 +1,2 @@
+from integrate import *
+refs=copy_export(Path('/private/tmp/faction230-native-OWNED/public'),'native','manifest-final.json');print('Imported',len(refs),'frozen native public files.')

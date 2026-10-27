@@ -1,0 +1,55 @@
+"""Guards for the main-menu mail acceptance probe's observable contract."""
+import unittest
+import probe_menu_mail as proof
+
+def dump(payload,fd=6,direction='read',pid=42,declared=None):
+    header=f'{pid} {pid} faction-service GIO fd {fd} {direction} {len(payload) if declared is None else declared} bytes\n'
+    lines=[]
+    for offset in range(0,len(payload),16):
+        chunk=payload[offset:offset+16]
+        field=' '.join(f'{b:02x}' for b in chunk[:8])
+        if len(chunk)>8:field+='  '+' '.join(f'{b:02x}' for b in chunk[8:])
+        ascii=''.join(chr(b) if 33<=b<=126 else '.' for b in chunk)
+        lines.append(f'\t{offset:03x}   {field:<48} {ascii}\n')
+    return (header+''.join(lines)).encode()
+
+class MenuMailOracle(unittest.TestCase):
+    def test_files_disabled_requires_explicit_mail_and_no_transfer_capability(self):
+        proof.require_menu_mail(b'[M] Home mail\r\n', b'\x1b]7770;FACTION-MAIL1;offer\x07')
+        for menu,offer in [(b'[F] Files', b''), (b'[M] Home mail',b'\x1b]7770;FACTION1;files;key\x07'),(b'[M] Home mail', b'\x1b]7770;FACTION-MAIL1;offer\x07\x1b]7770;FACTION1;namespace;x\x07')]:
+            with self.assertRaises(AssertionError):proof.require_menu_mail(menu,offer)
+
+    def test_same_connected_visit_requires_same_client_and_ssh(self):
+        proof.assert_same_visit({'client':41,'ssh':42},{'client':41,'ssh':42})
+        with self.assertRaises(AssertionError):proof.assert_same_visit({'client':41,'ssh':42},{'client':41,'ssh':43})
+
+    def test_private_capture_checks_each_board_bound_byte_and_marker(self):
+        proof.require_board_bound_private_absent(dump(b'login\n@MAIL1 park '+b'a'*32+b'\n'),[b'private body',b'home password'])
+        for data in [b'private body\n', b'home password\n']:
+            with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(dump(data),[b'private body',b'home password'])
+        with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(b'', [b'private body'])
+
+    def test_bytewise_and_interleaved_gio_records_cannot_hide_private_marker(self):
+        marker=b'private body'
+        for trace in [b''.join(dump(bytes([b])) for b in marker),dump(marker[:5])+dump(b'noise',fd=7)+dump(marker[5:])]:
+            with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(trace,[marker])
+
+    def test_hex_bytes_are_scanned_after_decoding_including_nonprintable_bytes(self):
+        for marker in [b'private body',b'private\x00body\xff']:
+            with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(dump(marker),[marker])
+
+    def test_unrelated_fd_pid_and_opposite_directions_are_separate_streams(self):
+        for trace in [dump(b'private')+dump(b' body',fd=7),dump(b'private')+dump(b' body',pid=43),dump(b'private')+dump(b' body',direction='wrote')]:
+            proof.require_board_bound_private_absent(trace,[b'private body'])
+
+    def test_malformed_truncated_or_unrecognized_dump_never_means_absence(self):
+        good=dump(b'safe')
+        for trace in [dump(b'x',declared=2),dump(b'x',declared=0),b'42 faction-service GIO fd 6 read 1 bytes\n',good.replace(b'000   ',b'010   '),good.replace(b'73 61',b'zz 61'),b'42 faction-service GIO fd 6 read 4 bytes\n       "safe"\n',b'unknown header\n'+good]:
+            with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(trace,[b'private body'])
+
+    def test_only_versioned_bounded_nonce_controls_are_public(self):
+        proof.require_mail_control(b'@MAIL1 park '+b'a'*32+b'\n', 'park')
+        for value in [b'@MAIL1 park '+b'A'*32+b'\n', b'@MAIL1 park '+b'a'*33+b'\n', b'@MAIL1 park '+b'a'*32+b' extra\n',b'@FACTION1 key secret\n']:
+            with self.assertRaises(AssertionError):proof.require_mail_control(value,'park')
+
+if __name__=='__main__':unittest.main()

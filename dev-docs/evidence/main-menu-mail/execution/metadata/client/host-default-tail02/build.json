@@ -1,0 +1,21 @@
+{
+  "CARGO_BUILD_JOBS": "2",
+  "binaries": {
+    "/private/tmp/faction230-client-OWNED/host-default-tail02/faction-client": "046e3570e443e40e0ba12ed91cf6cf7a84d1cdd4bc5983b3a2dc77e9eabc115d"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "-p",
+    "faction-client",
+    "--bin",
+    "faction-client"
+  ],
+  "cwd": "/Users/cam/DEV/faction-bbs",
+  "end_utc": "2026-10-26T22:32:58Z",
+  "exit_code": 0,
+  "source_manifest_sha256": "df3838d4fe21b16c5a9c5eda3b3e6051a3936503084164b4ee6d9afb55ea90da",
+  "sources_unchanged": true,
+  "start_utc": "2026-10-26T22:32:56Z"
+}

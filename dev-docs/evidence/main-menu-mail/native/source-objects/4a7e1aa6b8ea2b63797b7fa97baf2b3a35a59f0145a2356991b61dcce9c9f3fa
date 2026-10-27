@@ -1,0 +1,24 @@
+from lab import *
+import tarfile,hashlib,tomllib,io,urllib.request
+lock=tomllib.loads((R/'Cargo.lock').read_text());registry=Path('/Users/cam/.cargo/registry');packages=[x for x in lock['package'] if x.get('source','').startswith('registry+')]
+archive=P/'public-registry.tar.gz';manifest={}
+with tarfile.open(archive,'w:gz') as t:
+ for pkg in packages:
+  n=pkg['name'];v=pkg['version'];candidates=list((registry/'cache').glob('*/'+n+'-'+v+'.crate'))
+  if not candidates:
+   if n not in {'foreign-types','foreign-types-shared','openssl','openssl-macros','openssl-probe','openssl-sys','serde'}:continue
+   public=P/'downloaded-public-crates';public.mkdir(exist_ok=True,mode=0o700)
+   f=public/(n+'-'+v+'.crate');url='https://static.crates.io/crates/'+n+'/'+n+'-'+v+'.crate';f.write_bytes(urllib.request.urlopen(url,timeout=30).read());assert hashlib.sha256(f.read_bytes()).hexdigest()==pkg['checksum']
+   candidates=[f]
+  assert len(candidates)==1,(n,v)
+  f=candidates[0];h=hashlib.sha256(f.read_bytes()).hexdigest();assert h==pkg['checksum'];arc='registry/cache/index.crates.io-1949cf8c6b5b557f/'+f.name;t.add(f,arcname=arc,recursive=False);manifest[arc]=h
+  index=n if len(n)==1 else '2/'+n if len(n)==2 else '3/'+n[0]+'/'+n if len(n)==3 else n[:2]+'/'+n[2:4]+'/'+n
+  candidates=list((registry/'index').glob('*/.cache/'+index));assert len(candidates)==1,(n,index)
+  f=candidates[0];arc='registry/index/'+f.parents[len(Path(index).parts)].name+'/.cache/'+index
+  arc='registry/index/'+f.relative_to(registry/'index').as_posix();t.add(f,arcname=arc,recursive=False);manifest[arc]=hashlib.sha256(f.read_bytes()).hexdigest()
+ names={x.split('/')[2] for x in manifest if x.startswith('registry/index/')}
+ for name in names:
+  data=b'{"dl":"https://static.crates.io/crates","api":"https://crates.io"}\n';entry=tarfile.TarInfo('registry/index/'+name+'/config.json');entry.size=len(data);entry.mode=0o600;t.addfile(entry,io.BytesIO(data));manifest[entry.name]=hashlib.sha256(data).hexdigest()
+(P/'public-registry-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/cargo230; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/cargo230 /home/factionbuild/target230 /home/factionbuild/proof230; tar -xzf - -C /home/factionbuild/cargo230; chown -R factionbuild:factionbuild /home/factionbuild/cargo230',archive.read_bytes(),180)
+print('Pinned public Cargo package/cache inputs staged:',len(manifest),'files; no credentials/config copied.')

@@ -1,0 +1,30 @@
+from lab import *
+import sys,time,signal,hashlib
+sys.path.insert(0,str(P/'host-main-final02/code'))
+from smoke_board_launcher import LauncherConsole
+from probe_visit_mail import visit_processes
+from owned_fixture_cleanup import close_console
+run=P/'force-close-characterization02';run.mkdir(mode=0o700)
+def row(pid):
+ r=subprocess.run(['ps','-p',str(pid),'-o','pid,ppid,uid,lstart,command'],capture_output=True,text=True)
+ if r.returncode:return None
+ lines=r.stdout.splitlines()
+ if len(lines)<2:return None
+ f=lines[-1].strip().split(None,8)
+ if len(f)!=9:return None
+ return dict(pid=int(f[0]),ppid=int(f[1]),uid=int(f[2]),start=' '.join(f[3:8]),command=f[8])
+c=LauncherConsole(['/private/tmp/faction230-client-OWNED/host-network-tail02/faction-client','--profile',P/'host-profile.toml']);original=None
+try:
+ c.expect('[L]ogin [R]egister [Q]uit: ');visit=visit_processes(c.pid);original=row(visit['ssh']);assert original and original['ppid']==c.pid and original['uid']==os.getuid() and ' -i '+str(P/'member-key')+' ' in original['command']
+ (run/'owned-before.private.json').write_text(json.dumps(original,indent=2)+'\n');close_console(c,json.loads((P/'host-settings.json').read_text())['member_argv'],run);time.sleep(.5);after=row(original['pid']);(run/'owned-after.private.json').write_text(json.dumps(after,indent=2)+'\n')
+ live=after is not None and all(after[k]==original[k] for k in ['pid','uid','start','command'])
+ (run/'result.json').write_text(json.dumps(dict(result='fail' if live else 'pass',scope='actual-owned-native-client-forced-close-characterization',owned_ssh_survived_client_forceclose=live,identity_starttime_profile_verified=True,cleanup_performed_only_if_exact_owned_identity=True),indent=2)+'\n')
+ assert not live,'owned SSH child outlived forcibly closed native client'
+ print('Forced-close characterization passed: no surviving owned SSH child observed.')
+finally:
+ if not c.done:
+  try:c.close()
+  except OSError:pass
+ if original:
+  current=row(original['pid'])
+  if current and all(current[k]==original[k] for k in ['pid','uid','start','command']):os.kill(original['pid'],signal.SIGTERM)

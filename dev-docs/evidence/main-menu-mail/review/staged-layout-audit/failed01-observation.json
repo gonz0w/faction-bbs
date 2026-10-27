@@ -1,0 +1,6 @@
+{
+  "result": "audit script assertion failed",
+  "cause": "Reviewer assumed stage-details consisted only of labelled source-stage entries; it also contains 75 separately recorded execution phase summaries. No imported artifact mismatch observed before failure.",
+  "script": "audit_staged_layout.py",
+  "exit_code": 1
+}

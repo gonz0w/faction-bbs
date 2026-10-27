@@ -1,0 +1,5 @@
+from lab import *
+roots=sorted(P.glob('hostile-*'),key=lambda p:p.stat().st_mtime_ns)
+for p in roots[-1].glob('*.private'):
+ data=p.read_bytes();print('failure bytes',len(data),'normal admission denied',b'terminal admission denied' in data)
+r=remote('cat /home/factionbuild/proof230/native-final01/progress.json; tail -12 /home/factionbuild/proof230/native-final01/driver-launch.raw.log',check=False);print(r.stdout.decode())

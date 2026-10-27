@@ -703,6 +703,9 @@ pub fn menu(board: &mut Board, s: &Session, theme: &Theme, ansi: bool) -> Result
         ansi,
     )
 }
+fn home_mail_explanation() -> &'static str {
+    "Private home mail opens on your device with the native client connected to the shared BBS service. This standalone console cannot park a native mail visit."
+}
 fn menu_with_library(
     board: &mut Board,
     s: &Session,
@@ -799,7 +802,7 @@ fn menu_with_library(
                     Action::Gallery => A::Gallery,
                     Action::Library => A::Library,
                     Action::Contacts => A::Directory,
-                    Action::Quit => A::Menu,
+                    Action::Quit | Action::HomeMail => A::Menu,
                     _ => A::Community,
                 };
                 board.set_activity(activity)?;
@@ -813,6 +816,7 @@ fn menu_with_library(
                     Action::Who => "Who is here",
                     Action::Doors => "Doors",
                     Action::Files => "File areas",
+                    Action::HomeMail => "Home mail",
                     Action::Quit => "Disconnect",
                     Action::Terminal => "Terminal settings",
                     Action::Contacts => "Other BBSes",
@@ -838,6 +842,18 @@ fn menu_with_library(
                 )
             );
             let result = match action {
+                Some(Action::HomeMail) => {
+                    if board.whoami(s)?.status != Status::Approved {
+                        return Err(Error::Denied.into());
+                    }
+                    println!("{}", home_mail_explanation());
+                    board.line("Press Enter to return to menu: ", 1)?;
+                    if board.whoami(s)?.status != Status::Approved {
+                        return Err(Error::Denied.into());
+                    }
+                    skip_pause = true;
+                    Ok(())
+                }
                 Some(Action::Quit) => {
                     println!("{}\nLogged out.", theme.logout());
                     return Ok(());
@@ -961,5 +977,20 @@ mod tests {
         assert!(bounded_line(&mut &b"approveextra\n"[..], 7).is_err());
         assert_eq!(bounded_line(&mut &b"hello\n"[..], 5).unwrap(), "hello");
         assert!(bounded_line(&mut &b"missing newline"[..], 32).is_err());
+    }
+}
+
+#[cfg(test)]
+mod home_mail_tests {
+    use super::*;
+    #[test]
+    fn standalone_home_mail_explains_shared_native_entry_without_control_frames() {
+        let text = home_mail_explanation();
+        assert!(text.contains("native client"));
+        assert!(text.contains("shared"));
+        assert!(text.contains("device"));
+        assert!(!text.contains('\x1b'));
+        assert!(!text.contains("@MAIL1"));
+        assert!(!text.contains("FACTION"));
     }
 }

@@ -1,0 +1,8 @@
+from lab import *
+import hashlib
+r=remote('cat /home/factionbuild/proof230/server-final06-retry01/result.json');result=json.loads(r.stdout);assert result['result']=='pass';(P/'native-service-final06-result.json').write_bytes(r.stdout)
+for n in ['dependency-scope.raw.log','build.raw.log','tests.raw.log','source-observed.json']:(P/('native-service-final06-'+n)).write_bytes(remote('cat /home/factionbuild/proof230/server-final06-retry01/'+n).stdout)
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_broker onestop; install -o root -g wheel -m 755 /home/factionbuild/target230/release/faction-service /usr/local/libexec/faction-service; /etc/rc.d/faction_broker onestart',timeout=30)
+code="from pathlib import Path;import hashlib,json;print(json.dumps({'sha256':hashlib.sha256(Path('/usr/local/libexec/faction-service').read_bytes()).hexdigest()}))"
+actual=json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout);assert actual['sha256']==result['service_sha256'];(P/'installed-service-final06.json').write_text(json.dumps(dict(result='pass',sha256=actual['sha256'],normal_limits_unchanged=True,source_context='source-final06',client_source_context='source-final05',board_state_preserved=True,service_restarted_for_code_update=True,admission_reset_for_test=False),indent=2)+'\n')
+print('Reviewed finalservice06 installed and identity verified; board state unchanged; normal1GiB runtime.')

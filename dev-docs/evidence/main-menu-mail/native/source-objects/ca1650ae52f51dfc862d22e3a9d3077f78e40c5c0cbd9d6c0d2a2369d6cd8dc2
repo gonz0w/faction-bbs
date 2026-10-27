@@ -1,0 +1,46 @@
+"""Actual dumb/plain and compact native main-menu mail compatibility."""
+import argparse,json,os,secrets,sys,pty,fcntl,termios,struct,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent/'code'))
+from check_restricted_ssh import SSHConsole
+from smoke_board_launcher import LauncherConsole
+from probe_visit_mail import private_json,visit_processes,assert_same_visit,drain_ready
+class TermSSH(SSHConsole):
+ def __init__(self,argv,term):
+  self.pid,self.fd=pty.fork()
+  if self.pid==0:
+   fcntl.ioctl(0,termios.TIOCSWINSZ,struct.pack('HHHH',24,80,0,0));os.environ['TERM']=term;os.closerange(3,os.sysconf('SC_OPEN_MAX'));os.execv('/usr/bin/ssh',argv)
+  self.buffer,self.transcript,self.done=b'',b'',False
+ANSI='Ctrl-C exits; Esc: Enter to recover.';PLAIN='Command (then Enter): ';OFFER='\x1b]7770;FACTION-MAIL1;offer\x07'
+def run(a):
+ s=private_json(a.settings);assert s['disposable_fixture'] and s['files_disabled'];root=a.private_root/('classic-'+secrets.token_hex(4));root.mkdir(mode=0o700);children=[];checks=[];password=secrets.token_hex(24);handle=s['member_handle']+'plain'+secrets.token_hex(2)
+ (root/'private-markers.json').write_text(json.dumps([password,s['sysop_password']]));(root/'private-markers.json').chmod(0o600)
+ def board():c=SSHConsole(s['member_argv']);children.append(c);return c
+ def login(c,h,p,plain=False,reg=False):
+  c.expect('[L]ogin [R]egister [Q]uit: ');c.send('r' if reg else 'l');c.expect('Handle: ');c.send(h);c.password(p)
+  if reg:c.password(p,'Confirm password (hidden): ')
+  else:c.expect('Press Enter to continue: ');c.send('');c.expect(PLAIN if plain else ANSI)
+ try:
+  c=board();login(c,handle,password,reg=True);c.expect('Registration pending; sysop approval required.');c.finish()
+  c=board();login(c,'sysop',s['sysop_password']);c.raw(b's');c.expect('[C]reate room: ');c.send('a');c.expect('Member handle: ');c.send(handle);c.expect('Status updated; previous sessions expired.');c.expect('Press Enter to return to menu: ');c.send('');c.expect(ANSI);c.raw(b'q');c.expect('Logged out.');c.finish()
+  for term in ['dumb','faction-compact']:
+   time.sleep(5.1);c=TermSSH(s['member_argv'],term);children.append(c);login(c,handle,password,plain=True);assert b'Home mail' in c.transcript
+   for back in ['', 'back'] if term=='dumb' else ['back']:
+    c.send('m');c.expect('Ordinary SSH: press Enter or type back to return to the main menu.');drain_ready(c)
+    if term=='dumb':assert b'\x1b' not in c.transcript and b'FACTION-MAIL1' not in c.transcript
+    else:c.expect(OFFER)
+    c.send(back);c.expect(PLAIN);assert os.waitpid(c.pid,os.WNOHANG)==(0,0)
+   if term=='dumb':assert b'\x1b' not in c.transcript
+   c.send('q');c.expect('Logged out.');c.finish();checks.append(term+'_mail_action_explanation_and_same_connection_return')
+  time.sleep(5.1);c=LauncherConsole([a.client,'--profile',s['profile'],'--compact']);children.append(c);login(c,handle,password,plain=True);visit=visit_processes(c.pid);c.send('m');c.expect('Home mail is not configured in this local board catalog.');c.expect('Enter to return to the board: ');c.send('');c.expect(PLAIN);assert_same_visit(visit,visit_processes(c.pid));assert b'LOCAL checkpoint passphrase' not in c.transcript;c.send('q');c.expect('Logged out.');c.finish();checks.append('actual_compact_native_client_routes_offer_and_returns_same_ssh')
+  assert all(password.encode() not in c.transcript for c in children)
+  a.output.write_text(json.dumps(dict(result='pass',scope='actual-classic-and-compact-ssh-mail',count=len(checks),checks=checks,dumb_output_no_escape=True,dumb_output_no_mail_offer=True,compact_offer_preserved=True,capacity_claim=False,physical_hardware=False),indent=2)+'\n');print('Classic/compact actual SSH controls passed:',len(checks))
+ except BaseException:
+  for i,c in enumerate(children):(root/(str(i)+'.private')).write_bytes(c.transcript+c.buffer)
+  raise
+ finally:
+  for c in children:c.close()
+if __name__=='__main__':
+ p=argparse.ArgumentParser()
+ for n in ['settings','private-root','client','output']:p.add_argument('--'+n,type=Path,required=True)
+ run(p.parse_args())

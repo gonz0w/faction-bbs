@@ -1,0 +1,58 @@
+{
+  "association_limit": "Unique successful private-inputs timestamp within one second before each result on the same filesystem plus serialized driver order; this is not an original embedded route identifier.",
+  "authored_product_changes": false,
+  "corrected_rescan_result_sha256": "a290b9ee52071052c2520d0b74fbc18f6227ad169447abb96668569168f7d27e",
+  "file_protocol_prefix_matches": 0,
+  "four_route_marker_counts": {
+    "host_classic": 11,
+    "host_unicode": 11,
+    "netbsd_classic": 11,
+    "netbsd_unicode": 11
+  },
+  "independent_corrected_rescan_audit": {
+    "path": "corrected-rescan-audit/result.json",
+    "sha256": "107e2009f01efe0dcf9c2d5f2c1688eed7f65a047c46c5fea91322af0f87ab02"
+  },
+  "issue": 230,
+  "pending_final_acceptance": [
+    "frozen root evidence audit",
+    "exact owned teardown and saved-playground integrity binding"
+  ],
+  "prior_export_preserved": true,
+  "private_marker_matches": 0,
+  "private_material_in_export": false,
+  "remaining_actionable_findings_in_reviewed_scope": [],
+  "requested_effort": "high",
+  "requested_model": "gpt-6.1-sol",
+  "resolved_evidence_findings": [
+    "host and NetBSD main-route identity bound",
+    "supplemental control names and scopes bound",
+    "private markers checked in reconstructed GIO byte streams across record boundaries"
+  ],
+  "resolved_product_findings": [
+    "ordinary content and password input preserved",
+    "already-started trailing controls validated before local handoff",
+    "plain dispatch and escape-free dumb-terminal fallback preserved"
+  ],
+  "result": "pass",
+  "review_execution_boundary": "Saved offline guard reproduction and independent retained-capture rescan only; no UI/runtime tests, builds, VM operations or private fixture creation by reviewer.",
+  "reviewed_final_oracle_sources": {
+    "tools/probe_menu_mail.py": "63298f7aaf97b76f2d995202bdf7a2e5869b094cc4b74816e9636f85b529dccb",
+    "tools/test_probe_menu_mail.py": "65802a5e5472329458f14fa3425474fa9981de4fc4c6880d32d5c3d1b776b71c"
+  },
+  "reviewed_final_product_sources": {
+    "crates/faction-client/src/main.rs": "be98cd35c3cfed6cff7ce84f5442260330c6557da913ad5ba47c7f5a0215d624",
+    "crates/faction-client/src/stream.rs": "667e4ea2c90f8979038d3a234bd72eeb4f801e66e499678a7f109341fa44488b",
+    "crates/faction-client/src/transport.rs": "0e94270b1db6831774a7106b16bc18160798736b01d982d57da56670b693c9cd",
+    "crates/faction-service/src/native_mail.rs": "3693cbcf0495c8a5a3a6e342c8c361fa693afb5366f2da94577b6d3e39406540",
+    "crates/faction-service/src/native_mail_tests.rs": "cb770e01fbb5019d2c7badbd9a716def3c95369e3b3df331e5205a99a97a6fba",
+    "crates/faction-service/src/ui.rs": "a54a324c04b2df708e37d9b7fff2940f9157938470024e297e64c920e42925e9"
+  },
+  "runtime_model_verified": false,
+  "schema": 1,
+  "scope": "separate final product review, staged immutable exports, strict decoder and four linked retrospective trace rescans",
+  "staged_layout_audit": {
+    "path": "staged-layout-audit02/result.json",
+    "sha256": "42222f8524432159211442e6e4cd2c5360ba9ca583f420ac9e0678b39bcb60ce"
+  }
+}

@@ -1,0 +1,5 @@
+from lab import *
+r=remote("test -f /etc/faction-disposable-test; ps -axo pid,user,comm; test -f /usr/include/openssl/ssl.h; test -f /usr/lib/libssl.so; find /home/factionbuild -maxdepth 2 -type d -name '*cargo*'; cat /etc/rc.conf",check=False)
+(P/'guest-initial.private.log').write_bytes(r.stdout+r.stderr)
+assert r.returncode==0
+print('Private environment snapshot retained; base OpenSSL headers/library present.')

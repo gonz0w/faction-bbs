@@ -1,0 +1,47 @@
+"""Stop only the fingerprinted issue230 disposable VM; verify saved owner state."""
+from pathlib import Path
+import hashlib,json,os,shlex,signal,socket,subprocess,sys,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction230-native-OWNED');V=P/'vm';O=Path('/private/tmp/faction230-integration-OWNED')
+sys.path.insert(0,str(R/'tools'));from playground import process,same_process
+assert (P/'OWNED').is_file() and (V/'OWNED').is_file()
+D=R/'local/demo';B=D/'saved/20261022T005925Z';expected=json.loads((P/'saved-before.private.json').read_bytes())
+def digest(path):
+ h=hashlib.sha256()
+ with path.open('rb') as f:
+  for chunk in iter(lambda:f.read(1048576),b''):h.update(chunk)
+ return h.hexdigest()
+def saved():
+ for name,value in expected.items():
+  path=(B/name) if name in {'playground.qcow2','kernel.img'} else D/name;stat=path.stat();assert dict(sha256=digest(path),size=stat.st_size,mtime_ns=stat.st_mtime_ns)==value
+ for line in subprocess.check_output(['ps','-axo','command'],text=True).splitlines():
+  try:argv=shlex.split(line)
+  except ValueError:continue
+  if not argv:continue
+  if Path(argv[0]).name.startswith('qemu-system'):assert not any(x.startswith(str(D)+'/') or 'file='+str(D)+'/' in x for x in argv)
+  if Path(argv[0]).name.lower().startswith('python'):assert not any(x.startswith(str(D)+'/') and x.endswith('serial-controller.py') for x in argv)
+saved();records={}
+for kind,file in [('vm','runtime-qemu.pid'),('controller','runtime-controller.pid')]:
+ record=process(int((V/file).read_text()));assert record is not None
+ if kind=='vm':assert str(V/'disk.qcow2') in record['command'] and 'qemu-system' in record['command']
+ else:assert str(V/'serial-controller.py') in record['command']
+ records[kind]=record
+(P/'teardown-processes.private.json').write_text(json.dumps(records,indent=2)+'\n')
+ports=json.loads((V/'ports.json').read_bytes());assert set(ports)=={'admin','member','files','mail'}
+for kind in ['vm','controller']:
+ record=records[kind]
+ if same_process(record):os.kill(record['pid'],signal.SIGTERM)
+ deadline=time.monotonic()+10
+ while same_process(record) and time.monotonic()<deadline:time.sleep(.1)
+ assert not same_process(record),'owned process did not stop; no broad kill attempted'
+for port in ports.values():
+ with socket.socket() as s:s.settimeout(.25);assert s.connect_ex(('127.0.0.1',port))!=0
+saved()
+# Any fixture SSH child should exit on VM close; never kill unrelated SSH processes.
+remaining=[]
+for line in subprocess.check_output(['ps','-axo','command'],text=True).splitlines():
+ try:argv=shlex.split(line)
+ except ValueError:continue
+ if argv and Path(argv[0]).name=='ssh' and any(str(P) in x for x in argv):remaining.append(True)
+assert not remaining,'owned SSH remains; retain fixture for exact inspection'
+result=dict(result='pass',owned_vm_stopped=True,owned_controller_stopped=True,owned_ssh_children_remaining=0,forwards_closed=True,closed_loopback_forwards=4,saved_stopped=True,saved_hashes_unchanged=True,saved_size_mtime_unchanged=True,saved_files_checked=len(expected),saved_disk_sha256=expected['playground.qcow2']['sha256'],saved_kernel_sha256=expected['kernel.img']['sha256'],pid_uid_birth_command_fingerprints_checked=True)
+(O/'vm-teardown.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n');print('Owned VM/controller stopped;4forwards closed; no owned SSH children; saved owner disk/kernel/metadata unchanged and stopped.')

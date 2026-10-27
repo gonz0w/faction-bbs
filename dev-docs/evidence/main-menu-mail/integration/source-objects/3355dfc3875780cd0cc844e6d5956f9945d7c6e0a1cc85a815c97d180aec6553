@@ -1,0 +1,29 @@
+"""Explicitly reviewed oracle source/manifests/unit-test logs only; no capture exports."""
+from pathlib import Path
+import runpy,json,hashlib,re
+ns=runpy.run_path('/private/tmp/faction230-integration-OWNED/export_public_sources.py');put=ns['put'];stage=ns['stage'];safe=ns['safe'];p=ns['p'];out=ns['out']
+base=Path('/private/tmp/faction230-oracle-OWNED')
+# Python files are public test and decoder source, scanned before copying.
+stage('oracle-final-delivery',sorted(base.rglob('*.py')),base)
+manifests=['before-single-repeat-tests/manifest.json','before-repeat-tests/manifest.json','repeat-green/manifest.json','final-source-manifest.json','before-single-repeat-fix/manifest.json','repeat-red/manifest.json','before-repeat-fix/manifest.json','single-repeat-green/manifest.json','single-repeat-red/manifest.json']
+logs=['repeat-red.log','single-repeat-red.log','repeat-green.log','single-repeat-green.log','first-hex-decode-final.log']
+metadata=['first-hex-layout-failure.json','first-hex-decode-attempt01.json','first-hex-decode-final.json']
+for name in manifests:
+ raw=(base/name).read_bytes();value=json.loads(raw);assert isinstance(value,dict) and all(re.fullmatch('[0-9a-f]{64}',h) for h in value.values());put('provenance/oracle/'+name,raw)
+for name in logs:
+ raw=(base/name).read_bytes();assert len(raw)<16384 and not re.search(rb'(?m)^\t[0-9a-f]{3,}\s',raw) and b'faction-service GIO' not in raw
+ put('logs/oracle/'+name,raw)
+for name in metadata:
+ raw=(base/name).read_bytes();value=json.loads(raw)
+ assert set(value)<={'ascii_column_length','exception_class','field_spaces','field_token_lengths','line_length','line_number','non_hex_nonspace_positions','capture_sha256','reason','result','decoded_bytes','read_bytes','records','repeated_row_markers','streams','write_bytes'}
+ for key,v in value.items():
+  if isinstance(v,str):assert re.fullmatch('[0-9a-f]{64}',v) or v in {'AssertionError','invalid GIO hex byte','rejected','decoded'}
+  else:assert isinstance(v,int) or isinstance(v,list) and all(isinstance(x,int) for x in v)
+ put('provenance/oracle/'+name,raw)
+run=p/'privacy-postrun-rescan02';stage('postrun-rescan02',[(run/'code'/name) for name in ['probe_menu_mail.py','probe_visit_mail.py','check_restricted_ssh.py','smoke_board_launcher.py','smoke_local_console.py']],run/'code')
+# This is the metadata-only four-route verdict; capture bytes and associations.private are never selected.
+raw=(run/'privacy-postrun-rescan.json').read_bytes();verdict=json.loads(raw);assert verdict['result']=='pass' and set(verdict['routes'])=={'host_classic','host_unicode','netbsd_classic','netbsd_unicode'}
+assert all(v['private_marker_matches']==v['file_protocol_prefix_matches']==0 for v in verdict['routes'].values())
+put('provenance/postrun-rescan02/privacy-postrun-rescan.json',raw)
+put('provenance/postrun-rescan02/source-manifest.json',(run/'source-manifest.json').read_bytes())
+print('Explicit source/manifests/unit-test logs/count-only metadata and corrected four-route verdict exported; no raw captures selected.')

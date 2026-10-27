@@ -1,0 +1,7 @@
+from pathlib import Path
+import hashlib,json,shutil,sys
+root=Path('/Users/cam/DEV/faction-bbs');dest=Path('/private/tmp/faction230-oracle-OWNED')/sys.argv[1];dest.mkdir(exist_ok=False)
+m={}
+for p in sorted((root/'tools').glob('*.py')):
+ q=dest/'tools'/p.name;q.parent.mkdir(exist_ok=True);shutil.copyfile(p,q);m[str(p.relative_to(root))]=hashlib.sha256(q.read_bytes()).hexdigest()
+(dest/'manifest.json').write_text(json.dumps(m,sort_keys=True,indent=2)+'\n');(dest/'OWNED').write_text('Issue230 disposable decoder-only exact source evidence.\n');print(sys.argv[1],hashlib.sha256((dest/'manifest.json').read_bytes()).hexdigest())

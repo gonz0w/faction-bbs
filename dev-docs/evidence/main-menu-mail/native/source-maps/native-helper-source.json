@@ -1,0 +1,11 @@
+{
+  "native/faction-admission/README.md": "46b8beecebc4930448a3716b626f081f1f354ec7f70c2003da32b5a16e903b3b",
+  "native/faction-admission/main.c": "f591902a305662555bdb1bb48a848f14aa61351fbd04c08f30dcfab264f5bc00",
+  "native/faction-daemon/main.c": "f3bca24d3265f990b5d54acd0454065990a449bd67f2d81763be8d7764689420",
+  "native/faction-doors/main.c": "0bfef4b5b1ddf055b8697d714d201dfba5ae56e9bc11dd4a76eb384d6c6396d0",
+  "native/faction-isolation/startup.c": "cd1b35fca68c10391bff6919c05e8c7d81468de51e4465f6a5c8859cee77b9a0",
+  "native/faction-key-admission/README.md": "3cc3f1336d256c49e35d07d25c13f5d20c7381f4eb24b7b9056042bad4860095",
+  "native/faction-key-admission/main.c": "935da89635c1fe6b2fffe7d70b26a68926322029b5031dba2f999aaa1fa98e8e",
+  "native/faction-ssh-gate/gate.c": "0426680eefc211cf6beef29a5c195ad8e4888b5f8805ede141b616bfa9fe65d9",
+  "native/faction-tty/main.c": "01e6712bd2be797d2f3c4fc46f447cef5d5596fdf767345cce9730690ad997d5"
+}

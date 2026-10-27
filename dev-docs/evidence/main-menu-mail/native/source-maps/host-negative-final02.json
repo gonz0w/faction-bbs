@@ -1,0 +1,10 @@
+{
+  "20_remote_controls.py": "cc1992dc163a24bf08e9beea583624acebec2dd4b4ca5b754ed0edc766c5343c",
+  "21_hostile_controls.py": "c1d6a271dc7ca473a3f9c0dd3523d6f045e0790d08c4e8439622303cab7d7442",
+  "code/check_restricted_ssh.py": "dd2d28d58865162d1b6c06967b6884a8dbf913968f942b8c365a1e07a0896404",
+  "code/owned_fixture_cleanup.py": "9b3f06da53024733eba36ba713c46241fd16c737f4c4c14812a39591a70e78f4",
+  "code/probe_menu_mail.py": "99bbed672542822daef8501d8635e89da2529bccb0d7556d915de781b30267ae",
+  "code/probe_visit_mail.py": "af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd",
+  "code/smoke_board_launcher.py": "b5d557391f3efac604463fb0888f9125269a36646890593c7473be97dd16404b",
+  "code/smoke_local_console.py": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99"
+}

@@ -1,0 +1,3 @@
+from lab import *
+r=remote('ls -ld /var/run/faction /var/db/faction230-board /var/db/faction230-themes; ls -l /etc/faction/service.toml /var/db/faction230-themes/theme.toml; cat /etc/faction/service.toml; id factiond; ls -l /var/run/faction; ls -l /etc/rc.d/faction_broker',check=False)
+(P/'config-inspection.private.log').write_bytes(r.stdout+r.stderr);print(r.stdout.decode())

@@ -1,0 +1,2 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof230/native-files-final01/progress.json; if test -f /home/factionbuild/proof230/native-files-final01/execution.json; then cat /home/factionbuild/proof230/native-files-final01/execution.json; fi; tail -16 /home/factionbuild/proof230/native-files-final01/driver-launch.raw.log',check=False);print(r.stdout.decode())

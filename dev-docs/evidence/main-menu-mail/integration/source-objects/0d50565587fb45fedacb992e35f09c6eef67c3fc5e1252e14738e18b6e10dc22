@@ -1,0 +1,12 @@
+"""Stage completed disposable test observations privately; no publication writes."""
+from pathlib import Path
+import json,sys
+sys.path.insert(0,'/private/tmp/faction230-native-OWNED')
+from lab import remote,P
+out=P/'late-files-private';out.mkdir(mode=0o700)
+for label in ['native-files-final01','native-files-final02']:
+ for name in ['classic.json','unicode.json','legacy.json','execution.json','progress.json','classic.raw.log','unicode.raw.log','legacy.raw.log']:
+  result=remote('if test -f /home/factionbuild/proof230/'+label+'/'+name+'; then cat /home/factionbuild/proof230/'+label+'/'+name+'; else exit 3; fi',check=False)
+  if result.returncode==0:
+   target=out/label/name;target.parent.mkdir(mode=0o700,parents=True,exist_ok=True);target.write_bytes(result.stdout);target.chmod(0o600)
+print('Completed observations staged privately; no public export performed.')

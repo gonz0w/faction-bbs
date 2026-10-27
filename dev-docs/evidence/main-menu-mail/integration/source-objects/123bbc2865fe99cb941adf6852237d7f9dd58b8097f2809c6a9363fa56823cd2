@@ -1,0 +1,17 @@
+"""Publish only exact bytes that passed the private prepublication scan."""
+from pathlib import Path
+import hashlib,json
+p=Path('/private/tmp/faction230-native-OWNED');own=Path('/private/tmp/faction230-integration-OWNED');out=p/'public';scan=json.loads((own/'files-publication-scan.json').read_bytes());assert scan['result']=='pass' and scan['secret_matches']==scan['private_key_matches']==0
+for relative,digest in scan['files'].items():
+ source=p/'late-files-private'/relative;raw=source.read_bytes();assert hashlib.sha256(raw).hexdigest()==digest
+ part=Path(relative);target=out/('logs' if part.name.endswith('.log') else 'results')/part;target.parent.mkdir(parents=True,exist_ok=True)
+ if target.exists():assert target.read_bytes()==raw
+ else:target.write_bytes(raw)
+(out/'provenance/files-prepublication-scan.json').write_bytes((own/'files-publication-scan.json').read_bytes())
+# Host late legacy records are byte-identical to scanned native counterparts.
+for name in ['legacy.json','legacy.raw.log']:
+ path=p/'host-files-final01'/name;raw=path.read_bytes();assert any(hashlib.sha256(raw).hexdigest()==h for h in scan['files'].values())
+ dest=out/('logs' if name.endswith('.log') else 'results')/'host-files-final01'/name
+ if dest.exists():assert dest.read_bytes()==raw
+ else:dest.write_bytes(raw)
+print('Only pre-scanned hash-pinned Files results/logs exported; zero private values/key material.')

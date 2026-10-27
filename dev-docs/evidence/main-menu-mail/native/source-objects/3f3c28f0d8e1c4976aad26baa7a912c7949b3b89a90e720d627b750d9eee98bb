@@ -1,0 +1,3 @@
+from lab import *
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-final02/driver.py > /home/factionbuild/proof230/native-final02/driver-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Native remaining matrix retry launched alone after full normal admission refill; source/assertions/state unchanged.')

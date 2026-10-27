@@ -1,0 +1,34 @@
+"""Remove exact marked issue230 fixtures after preservation; freeze truthful root."""
+from pathlib import Path
+import hashlib,json,os,shlex,shutil,socket,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');O=Path('/private/tmp/faction230-integration-OWNED');P=Path('/private/tmp/faction230-native-OWNED');OUT=R/'dev-docs/evidence/main-menu-mail'
+record=json.loads((O/'root-ready-cleanup.json').read_bytes());expected=json.loads((P/'saved-before.private.json').read_bytes());ports=json.loads((P/'vm/ports.json').read_bytes());vm=json.loads((O/'vm-teardown.json').read_bytes());assert vm['result']=='pass' and vm['owned_vm_stopped'] and vm['forwards_closed']
+D=R/'local/demo';B=D/'saved/20261022T005925Z'
+def digest(path):
+ h=hashlib.sha256()
+ with path.open('rb') as f:
+  for block in iter(lambda:f.read(1048576),b''):h.update(block)
+ return h.hexdigest()
+def verify():
+ for name,value in expected.items():
+  path=(B/name) if name in {'playground.qcow2','kernel.img'} else D/name;stat=path.stat();assert dict(sha256=digest(path),size=stat.st_size,mtime_ns=stat.st_mtime_ns)==value
+ for port in ports.values():
+  with socket.socket() as sock:sock.settimeout(.25);assert sock.connect_ex(('127.0.0.1',port))!=0
+ for line in subprocess.check_output(['ps','-axo','command'],text=True).splitlines():
+  try:argv=shlex.split(line)
+  except ValueError:continue
+  if not argv:continue
+  if Path(argv[0]).name.startswith('qemu-system'):assert not any(str(P/'vm/disk.qcow2') in x or x.startswith(str(D)+'/') or 'file='+str(D)+'/' in x for x in argv)
+  if Path(argv[0]).name.lower().startswith('python'):assert not any(x.startswith(str(D)+'/') and x.endswith('serial-controller.py') for x in argv)
+verify()
+roots=[Path('/private/tmp')/('faction230-'+name+'-OWNED') for name in ['native','client','server','lead','packaging','oracle','review','integration']]
+for root in roots:assert root.is_dir() and not root.is_symlink() and (root/'OWNED').is_file(),root.name
+# Every named source hash was copied before removal. Never remove a saved-owner path.
+for item in record['sources']:assert digest(R/item['path'])==item['sha256'],item['path']
+for root in roots:shutil.rmtree(root)
+assert all(not root.exists() for root in roots);verify()
+cleanup=dict(result='pass',owned_removed=True,owned_roots_removed=len(roots),saved_stopped=True,saved_hashes_unchanged=True,saved_size_mtime_unchanged=True,saved_files_checked=len(expected),forwards_closed=True,closed_loopback_forwards=4,vm_controller_stopped=True,owned_ssh_children_remaining=0,scope='exact marked fixture roots only; saved owner files verified before/after removal')
+path=OUT/'observations/cleanup.json';path.write_text(json.dumps(cleanup,indent=2,sort_keys=True)+'\n');ref=dict(path=str(path.relative_to(R)),sha256=digest(path));record['records']['cleanup']=ref;record['sources'].append(ref)
+path=OUT/'results.json';path.write_text(json.dumps(record,indent=2,sort_keys=True)+'\n');proofhash=digest(path)
+guard=R/'tools/check_menu_mail_evidence.py';text=guard.read_text();assert text.count('RESULT_SHA256=None')==1;guard.write_text(text.replace('RESULT_SHA256=None',"RESULT_SHA256='"+proofhash+"'"))
+print('Removed8exact marked fixture roots; saved owner unchanged/stopped; final root SHA256',proofhash)

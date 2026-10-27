@@ -1,0 +1,40 @@
+from lab import *
+import hashlib,tarfile,re
+S=P/'source-final06';S.mkdir(mode=0o700);manifest={};allowed={'.rs','.toml','.c','.h','.md','.py','.sh','.txt','.ans','.pem','.in','.sql','.article','.lock'}
+paths=[R/'Cargo.toml',R/'Cargo.lock',R/'LICENSE']
+for top in ['crates','tools','native','deploy/netbsd','themes']:
+ for f in (R/top).rglob('*'):
+  if not f.is_file() or f.is_symlink() or any(x in f.parts for x in ['.git','target','__pycache__','.DS_Store']):continue
+  if f.name.startswith('.') or ('key' in f.name.lower() and f != R/'crates/faction-terminal/src/keys.rs') or f.suffix in {'.der','.pk8'}:continue
+  if f.suffix in allowed or f.name.startswith('LICENSE') or f.name in {'SHA256SUMS','faction_broker','faction_sshd','faction_files_sshd','faction_doors'}:paths.append(f)
+for f in paths:
+ data=f.read_bytes();assert not re.search(rb'(?m)^-----BEGIN (?:OPENSSH |RSA |EC )?PRIVATE KEY-----',data)
+ n=f.relative_to(R);p=S/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data);manifest[str(n)]=hashlib.sha256(data).hexdigest()
+old=json.loads((P/'source-final05-manifest.json').read_text());changed={n for n in old.keys()|manifest.keys() if old.get(n)!=manifest.get(n)};assert all(n.startswith(('crates/faction-service/','tools/')) for n in changed),changed
+(P/'source-final06-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n');(P/'source-final06-changes.json').write_text(json.dumps(sorted(changed),indent=2)+'\n')
+archive=P/'source-final06.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for n in sorted(manifest):t.add(S/n,arcname=n,recursive=False)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23006; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source23006; tar -xzf - -C /home/factionbuild/source23006; chown -R factionbuild:factionbuild /home/factionbuild/source23006',archive.read_bytes(),120)
+script=r'''from pathlib import Path
+import os,json,subprocess,hashlib,time
+p=Path('/home/factionbuild/proof230/server-final06');p.mkdir();root=Path('/home/factionbuild/source23006');target=Path('/home/factionbuild/target230/release');env=dict(os.environ,PATH='/home/factionbuild/proof230/test-retry01/bin:/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo230',CARGO_TARGET_DIR='/home/factionbuild/target230',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+expected=json.loads(Path('/home/factionbuild/proof230/expected-source06.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(p/'source-observed.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+mem,cores=map(int,subprocess.check_output(['sysctl','-n','hw.physmem64','hw.ncpu']).split());assert cores==2 and 1000000000<mem<1100000000
+names=['faction-client-default','faction-client-network','examples/checkpoint_ui_fixture','examples/home_mail_fixture','faction','faction-member'];before={n:hashlib.sha256((target/n).read_bytes()).hexdigest() for n in names}
+result=dict(result='running',scope='two-core-1GiB-cached-incremental-service-and-focused-tests',physmem_bytes=mem,cores=cores,full_client_build_claim=False,client_origin='source-final05 two-core2GiB builds/tests',steps=[])
+steps=[('dependency-scope',['cargo','tree','--locked','--offline','-p','faction-service','--edges','normal,build','--prefix','none']),('build',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-service']),('tests',['cargo','test','--release','--locked','--offline','-j','2','-p','faction-service','-p','faction-terminal','--all-targets','--','--test-threads=1'])]
+for name,cmd in steps:
+ start=time.monotonic()
+ with (p/(name+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,cwd=root,env=env,stdout=f,stderr=f)
+ result['steps'].append(dict(name=name,command=cmd,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(p/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+ if r.returncode:result['result']='fail';(p/'result.json').write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(r.returncode)
+after={n:hashlib.sha256((target/n).read_bytes()).hexdigest() for n in names};assert before==after
+result.update(result='pass',unchanged_reused_artifacts=after,service_sha256=hashlib.sha256((target/'faction-service').read_bytes()).hexdigest());(p/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+'''
+(P/'native-server-final06.py').write_text(script)
+remote('cat > /home/factionbuild/proof230/expected-source06.json; chown factionbuild:factionbuild /home/factionbuild/proof230/expected-source06.json',(P/'source-final06-manifest.json').read_bytes())
+remote('cat > /home/factionbuild/proof230/native-server-final06.py; chown factionbuild:factionbuild /home/factionbuild/proof230/native-server-final06.py',script.encode())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-server-final06.py > /home/factionbuild/proof230/native-server-final06-launch.log 2>&1 < /dev/null &'",timeout=10)
+print('Final service06 public source context captured:',len(manifest),'inputs; approved1GiB cached incremental build+focusedtests launched.')

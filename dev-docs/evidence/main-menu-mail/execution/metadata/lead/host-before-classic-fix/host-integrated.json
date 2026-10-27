@@ -1,0 +1,47 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 0.381
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--release",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 4.223
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--release",
+        "--locked",
+        "--",
+        "--test-threads=1"
+      ],
+      "returncode": 0,
+      "result": "pass",
+      "seconds": 68.171
+    }
+  ]
+}

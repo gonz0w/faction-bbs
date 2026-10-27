@@ -1,0 +1,16 @@
+from pathlib import Path
+import os,json,subprocess,hashlib,time
+p=Path('/home/factionbuild/proof230/server-final06-retry01');p.mkdir();root=Path('/home/factionbuild/source23006');target=Path('/home/factionbuild/target230/release');env=dict(os.environ,PATH='/home/factionbuild/proof230/test-retry01/bin:/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo230',CARGO_TARGET_DIR='/home/factionbuild/target230',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+expected=json.loads(Path('/home/factionbuild/proof230/expected-source06.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(p/'source-observed.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+mem,cores=map(int,subprocess.check_output(['/sbin/sysctl','-n','hw.physmem64','hw.ncpu']).split());assert cores==2 and 1000000000<mem<1100000000
+names=['faction-client-default','faction-client-network','examples/checkpoint_ui_fixture','examples/home_mail_fixture','faction','faction-member'];before={n:hashlib.sha256((target/n).read_bytes()).hexdigest() for n in names}
+result=dict(result='running',scope='two-core-1GiB-cached-incremental-service-and-focused-tests',physmem_bytes=mem,cores=cores,full_client_build_claim=False,client_origin='source-final05 two-core2GiB builds/tests',steps=[])
+steps=[('dependency-scope',['cargo','tree','--locked','--offline','-p','faction-service','--edges','normal,build','--prefix','none']),('build',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-service']),('tests',['cargo','test','--release','--locked','--offline','-j','2','-p','faction-service','-p','faction-terminal','--all-targets','--','--test-threads=1'])]
+for name,cmd in steps:
+ start=time.monotonic()
+ with (p/(name+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,cwd=root,env=env,stdout=f,stderr=f)
+ result['steps'].append(dict(name=name,command=cmd,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(p/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+ if r.returncode:result['result']='fail';(p/'result.json').write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(r.returncode)
+after={n:hashlib.sha256((target/n).read_bytes()).hexdigest() for n in names};assert before==after
+result.update(result='pass',unchanged_reused_artifacts=after,service_sha256=hashlib.sha256((target/'faction-service').read_bytes()).hexdigest());(p/'result.json').write_text(json.dumps(result,indent=2)+'\n')

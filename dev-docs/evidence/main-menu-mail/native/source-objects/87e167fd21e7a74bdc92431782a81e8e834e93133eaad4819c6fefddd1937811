@@ -1,0 +1,24 @@
+from lab import *
+import time
+rows=subprocess.check_output(['ps','-axo','pid,ppid,lstart,command'],text=True);(P/'host-connection-audit.private.log').write_text(rows)
+host_owned=[l for l in rows.splitlines() if '/usr/bin/ssh ' in l and ' -i '+str(P/'member-key')+' ' in l]
+code=r'''import subprocess,json
+from pathlib import Path
+assert Path('/etc/faction-disposable-test').is_file()
+rows=subprocess.check_output(['ps','-axo','pid,ppid,uid,lstart,command'],text=True)
+owned=[];frontends=[]
+for line in rows.splitlines():
+ f=line.strip().split(None,8)
+ if len(f)==9 and f[0].isdigit():
+  command=f[8]
+  if command.startswith('/usr/bin/ssh ') and ' -i /home/factionbuild/device230/member-key ' in command:owned.append({'pid':int(f[0]),'ppid':int(f[1]),'uid':int(f[2]),'lstart':' '.join(f[3:8]),'command':command})
+  if command.startswith('/usr/local/libexec/faction-tty'):frontends.append({'pid':int(f[0]),'ppid':int(f[1]),'uid':int(f[2]),'lstart':' '.join(f[3:8]),'command':command})
+Path('/root/issue230-connection-audit.private.log').write_text(rows)
+net=subprocess.check_output(['netstat','-an','-f','inet'],text=True);Path('/root/issue230-tcp-audit.private.log').write_text(net)
+port=[l for l in net.splitlines() if '.2222' in l and 'ESTABLISHED' in l]
+pid=int(Path('/var/run/faction/terminal.pid').read_text());fds=subprocess.check_output(['fstat','-p',str(pid)],text=True);Path('/root/issue230-service-fds.private.log').write_text(fds)
+print(json.dumps({'owned_ssh':owned,'frontends':frontends,'established_bbs_tcp_rows':len(port),'service_fstat_rows':len(fds.splitlines())}))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));data=json.loads(r.stdout);(P/'native-connection-audit.private.json').write_bytes(r.stdout)
+summary=dict(result='observed',host_owned_ssh_count=len(host_owned),native_owned_ssh_count=len(data['owned_ssh']),native_frontend_count=len(data['frontends']),established_bbs_tcp_rows=data['established_bbs_tcp_rows'],service_fstat_rows=data['service_fstat_rows'],admission_token_level_measured=False,active_slot_count_directly_measured=False,private_pid_starttime_and_identity_snapshots_retained=True)
+(P/'connection-audit-summary.json').write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary,indent=2))

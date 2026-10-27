@@ -1,0 +1,477 @@
+[
+  {
+    "run": "20261026T161625-red-terminal",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "--test",
+      "home_mail",
+      "--test",
+      "terminal"
+    ],
+    "context_drift": "post-context-not-captured"
+  },
+  {
+    "run": "20261026T161648-green-terminal",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "--test",
+      "home_mail",
+      "--test",
+      "terminal"
+    ],
+    "context_drift": "post-context-not-captured"
+  },
+  {
+    "run": "20261026T161754-red-service",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "native_mail_tests"
+    ],
+    "context_drift": "post-context-not-captured"
+  },
+  {
+    "run": "20261026T161827-red-cli",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-cli",
+      "--lib",
+      "home_mail_tests"
+    ],
+    "context_drift": "post-context-not-captured"
+  },
+  {
+    "run": "20261026T161909-red-history",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "native_mail_tests"
+    ],
+    "context_drift": "post-context-not-captured"
+  },
+  {
+    "run": "20261026T162020-red-request-bound",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "--test",
+      "home_mail",
+      "oversized_mail_requests"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162047-red-history-routing",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "native_mail_tests"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162102-green-owned",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162219-fmt-owned",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli"
+    ],
+    "context_drift": [
+      "crates/faction-service/src/native_mail_tests.rs",
+      "crates/faction-terminal/tests/terminal.rs",
+      "crates/faction-terminal/tests/home_mail.rs",
+      "crates/faction-service/src/ui.rs",
+      "crates/faction-service/src/native_mail.rs",
+      "crates/faction-cli/src/lib.rs",
+      "crates/faction-terminal/src/home_mail.rs"
+    ]
+  },
+  {
+    "run": "20261026T162219-green-owned-final",
+    "status": 0,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162308-clippy-owned",
+    "status": 101,
+    "command": [
+      "cargo",
+      "clippy",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162311-fmt-check-owned",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--check"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162343-fmt-refactor",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli"
+    ],
+    "context_drift": [
+      "crates/faction-service/src/native_mail_tests.rs"
+    ]
+  },
+  {
+    "run": "20261026T162344-green-refactor",
+    "status": 0,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "native_mail_tests",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": [
+      "tools/probe_menu_mail.py"
+    ]
+  },
+  {
+    "run": "20261026T162350-clippy-final",
+    "status": 0,
+    "command": [
+      "cargo",
+      "clippy",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162517-fmt-portable-fixture",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-service"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162517-green-portable-fixture",
+    "status": 0,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "native_mail_tests",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162550-clippy-frozen",
+    "status": 0,
+    "command": [
+      "cargo",
+      "clippy",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T162551-fmt-frozen",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--check"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T163053-red-content-prefix",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "mail_control_text_is_ordinary",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T163115-fmt-content-fix",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-service"
+    ],
+    "context_drift": [
+      "crates/faction-service/src/native_mail_tests.rs"
+    ]
+  },
+  {
+    "run": "20261026T163116-green-content-fix",
+    "status": 0,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": [
+      "crates/faction-client/src/transport.rs"
+    ]
+  },
+  {
+    "run": "20261026T163210-clippy-content-frozen",
+    "status": 0,
+    "command": [
+      "cargo",
+      "clippy",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T163211-fmt-content-frozen",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--check"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T164517-red-dumb-offer",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "mail_initial_offer",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T164556-red-dumb-escape",
+    "status": 101,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-service",
+      "mail_initial_offer",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T164623-fmt-dumb-offer",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-service"
+    ],
+    "context_drift": [
+      "crates/faction-service/src/native_mail_tests.rs"
+    ]
+  },
+  {
+    "run": "20261026T164624-green-dumb-offer",
+    "status": 0,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--test-threads=2"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T164703-clippy-dumb-frozen",
+    "status": 0,
+    "command": [
+      "cargo",
+      "clippy",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "context_drift": []
+  },
+  {
+    "run": "20261026T164703-fmt-dumb-frozen",
+    "status": 0,
+    "command": [
+      "cargo",
+      "fmt",
+      "-p",
+      "faction-terminal",
+      "-p",
+      "faction-service",
+      "-p",
+      "faction-cli",
+      "--",
+      "--check"
+    ],
+    "context_drift": []
+  }
+]

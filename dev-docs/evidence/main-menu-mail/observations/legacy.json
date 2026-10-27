@@ -1,0 +1,33 @@
+{
+  "result": "pass",
+  "routes": {
+    "host": {
+      "classic": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-files-final01/classic.json",
+        "sha256": "95ec0e6c318a858d2f9b44c383ae6bf91698b3b2bbf4cd983d3f233aa1e35671"
+      },
+      "legacy": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-files-final01/legacy.json",
+        "sha256": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8"
+      },
+      "unicode": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-files-final01/unicode.json",
+        "sha256": "de41a0bbb025085d09c9fbaba0307516e1d481755b43b5b9a99f3e50a62bf962"
+      }
+    },
+    "netbsd": {
+      "classic": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-files-final02/classic.json",
+        "sha256": "4782d905fe83a78e5b86646c587d89e779c4a36488d324245c9e0a90bd74fa74"
+      },
+      "legacy": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-files-final02/legacy.json",
+        "sha256": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8"
+      },
+      "unicode": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-files-final02/unicode.json",
+        "sha256": "6392081629976324c987f260b9fe348225cbf1a22086c14e12e599437c59884b"
+      }
+    }
+  }
+}

@@ -116,6 +116,10 @@ The protocols have separate jobs:
   with invited independent home boards. Keys and decryption stay on the member's
   device. An ordinary SSH BBS session never receives private-mail plaintext or keys.
 
+Sysops can add an optional [main-menu encrypted home-mail entry](docs/main-menu-mail.md).
+The native client unlocks locally and returns to the same board visit; ordinary
+SSH keeps an explanatory fallback, and Files/SFTP need not be enabled.
+
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual
 association, revocation and reviewed manifest export. Root transport provisioning,

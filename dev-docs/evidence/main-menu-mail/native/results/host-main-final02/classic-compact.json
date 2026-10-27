@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "scope": "actual-classic-and-compact-ssh-mail",
+  "count": 3,
+  "checks": [
+    "dumb_mail_action_explanation_and_same_connection_return",
+    "faction-compact_mail_action_explanation_and_same_connection_return",
+    "actual_compact_native_client_routes_offer_and_returns_same_ssh"
+  ],
+  "dumb_output_no_escape": true,
+  "dumb_output_no_mail_offer": true,
+  "compact_offer_preserved": true,
+  "capacity_claim": false,
+  "physical_hardware": false
+}

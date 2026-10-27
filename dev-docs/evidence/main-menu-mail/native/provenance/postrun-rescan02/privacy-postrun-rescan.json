@@ -1,0 +1,110 @@
+{
+  "result": "pass",
+  "scope": "postrun-retained-ktrace-hex-stream-reconstruction",
+  "fresh_ui_execution": false,
+  "checker_sha256": "63298f7aaf97b76f2d995202bdf7a2e5869b094cc4b74816e9636f85b529dccb",
+  "driver_sha256": "d93a241e962de0f09b3ba41d3e6b8ea9ef86b8972654327f26153cacb3887885",
+  "stream_key": [
+    "pid",
+    "fd",
+    "direction"
+  ],
+  "hex_export_command_template": [
+    "kdump",
+    "-X",
+    "1",
+    "-m",
+    "1048576",
+    "-f",
+    "RETAINED_PRIVATE_KTRACE"
+  ],
+  "original_runs_used_presentation_scan": true,
+  "fd_reuse_conservatively_joined": true,
+  "unknown_truncated_mismatched_input_rejected": true,
+  "routes": {
+    "host_classic": {
+      "result": "pass",
+      "original_route_result_sha256": "24765421b0118192288a1f8f80ecc7061b32330dc8ac158f1008f36c991357f7",
+      "original_dump_sha256": "e971522de9979de15641bb40f4d9c1e84722330e2e2fb588c64017432291d555",
+      "ktrace_sha256": "d05906a9fdb9ed11986b570057c807786dd83b6c7acffe15022196d253874c67",
+      "hex_dump_sha256": "ce20b095083f79cf22a35deaa6c159e341322317c67963ba678e04d91a2948c3",
+      "generated_marker_count": 11,
+      "private_marker_matches": 0,
+      "file_protocol_prefix_matches": 0,
+      "input_trace_unchanged": true,
+      "park_and_back_present": true,
+      "association": {
+        "kind": "unique successful private-inputs mtime within one second before original result on same filesystem; serialized driver order",
+        "delta_ns": 29274727
+      },
+      "records": 108,
+      "streams": 3,
+      "decoded_bytes": 15693,
+      "read_bytes": 854,
+      "write_bytes": 14839
+    },
+    "host_unicode": {
+      "result": "pass",
+      "original_route_result_sha256": "56d3fdddb18b8fd51ca37bb611f72d27d2d236f1c7830f165b81e37351107559",
+      "original_dump_sha256": "5450d7032055053ad4061a5d3fe38ddedd5a1f3a675a86a8ad54f0766283b461",
+      "ktrace_sha256": "40144cc1a167955113f065004315b6aca66a6b1909179c792dfada065fd98438",
+      "hex_dump_sha256": "84c1d2b92e74e24cf29193f43be917a95c82ed8a44596591cc89bdddeb18143b",
+      "generated_marker_count": 11,
+      "private_marker_matches": 0,
+      "file_protocol_prefix_matches": 0,
+      "input_trace_unchanged": true,
+      "park_and_back_present": true,
+      "association": {
+        "kind": "unique successful private-inputs mtime within one second before original result on same filesystem; serialized driver order",
+        "delta_ns": 29763355
+      },
+      "records": 113,
+      "streams": 2,
+      "decoded_bytes": 15708,
+      "read_bytes": 870,
+      "write_bytes": 14838
+    },
+    "netbsd_classic": {
+      "result": "pass",
+      "original_route_result_sha256": "80256a4987bbff4df250553c1d216952e20bde51e55c0792efff41d7e2376068",
+      "original_dump_sha256": "9452ff91c3cbdf7e0f3cb9e80b067655aa6649457a26c36d82b85d904e67872e",
+      "ktrace_sha256": "fa3af496fbd12ec00de39211338fd045fff190de32fd06e35e6ef78dd35a1947",
+      "hex_dump_sha256": "13aadbfed9eabc597bf855d0ef0d3b93ab6ab173b45733797040de41ca54943a",
+      "generated_marker_count": 11,
+      "private_marker_matches": 0,
+      "file_protocol_prefix_matches": 0,
+      "input_trace_unchanged": true,
+      "park_and_back_present": true,
+      "association": {
+        "kind": "unique successful private-inputs mtime within one second before original result on same filesystem; serialized driver order",
+        "delta_ns": 3038562
+      },
+      "records": 129,
+      "streams": 3,
+      "decoded_bytes": 15829,
+      "read_bytes": 990,
+      "write_bytes": 14839
+    },
+    "netbsd_unicode": {
+      "result": "pass",
+      "original_route_result_sha256": "3658266dc641abf69a980d67d0452707ce8626e75657ede6374ec27127125636",
+      "original_dump_sha256": "3342ae746794b486f00d5ce6672252ce42e56d595ac16811fb679477b480375d",
+      "ktrace_sha256": "d74a318dad9170fe5b750fa2eade27bc6e62d8602033ed34698661621c312942",
+      "hex_dump_sha256": "74649d426a895f9f627198e1de45786fe308343d054d78690e7b58b3e284ec6f",
+      "generated_marker_count": 11,
+      "private_marker_matches": 0,
+      "file_protocol_prefix_matches": 0,
+      "input_trace_unchanged": true,
+      "park_and_back_present": true,
+      "association": {
+        "kind": "unique successful private-inputs mtime within one second before original result on same filesystem; serialized driver order",
+        "delta_ns": 3221650
+      },
+      "records": 125,
+      "streams": 3,
+      "decoded_bytes": 15797,
+      "read_bytes": 958,
+      "write_bytes": 14839
+    }
+  }
+}

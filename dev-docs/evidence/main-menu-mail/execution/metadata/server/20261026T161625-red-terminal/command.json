@@ -1,0 +1,1 @@
+["cargo", "test", "-p", "faction-terminal", "--test", "home_mail", "--test", "terminal"]

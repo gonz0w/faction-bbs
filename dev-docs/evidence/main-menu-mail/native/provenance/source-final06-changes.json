@@ -1,0 +1,7 @@
+[
+  "crates/faction-service/src/native_mail.rs",
+  "crates/faction-service/src/native_mail_tests.rs",
+  "crates/faction-service/src/ui.rs",
+  "tools/check_menu_mail_evidence.py",
+  "tools/test_menu_mail_evidence.py"
+]

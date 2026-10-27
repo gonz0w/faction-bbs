@@ -1,0 +1,36 @@
+from lab import *
+import time,signal,hashlib
+result=json.loads(remote('cat /home/factionbuild/proof230/build-attempt05/build-result.json').stdout);assert all(step['returncode']==0 for step in result['steps'][:3])
+retry=json.loads(remote('cat /home/factionbuild/proof230/test-retry01/result.json').stdout);assert retry['result']=='pass'
+(P/'native-final-test-result.json').write_text(json.dumps(retry,indent=2)+'\n')
+(P/'native-final-test-raw.log').write_bytes(remote('cat /home/factionbuild/proof230/test-retry01/raw.log').stdout)
+for attempt in ['01','02','03','04','05']:
+ r=remote('if test -d /home/factionbuild/proof230/build-attempt'+attempt+'; then tar -czf - -C /home/factionbuild/proof230 build-attempt'+attempt+'; fi',check=False)
+ if r.stdout:(P/('native-build-attempt'+attempt+'.private.tar.gz')).write_bytes(r.stdout)
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_sshd onestop; /etc/rc.d/faction_broker onestop; install -o root -g wheel -m 755 /home/factionbuild/target230/release/faction /home/factionbuild/target230/release/faction-member /home/factionbuild/target230/release/faction-service /home/factionbuild/target230/release/faction-files /usr/local/libexec/',timeout=30)
+code=r'''from pathlib import Path
+import re
+p=Path('/etc/rc.conf');s=p.read_text();Path('/root/issue230-rc-before.private').write_text(s)
+for n in ['faction_broker','faction_sshd','faction_files_sshd','faction_doors']:
+ s=re.sub(r'(?m)^'+n+r'=.*$',n+'="NO"',s)
+p.write_text(s)
+'''
+remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code))
+art=json.loads(remote("/usr/pkg/bin/python3.13 -c 'import json,hashlib;from pathlib import Path; p=Path(\"/home/factionbuild/target230/release\"); print(json.dumps({n:hashlib.sha256((p/n).read_bytes()).hexdigest() for n in [\"faction\",\"faction-member\",\"faction-service\",\"faction-files\",\"faction-client-default\",\"faction-client-network\",\"examples/checkpoint_ui_fixture\",\"examples/home_mail_fixture\"]}))'").stdout)
+(P/'native-final-artifacts.json').write_text(json.dumps(art,sort_keys=True,indent=2)+'\n')
+(P/'native-final-build-result.json').write_text(json.dumps(result,indent=2)+'\n')
+remote('/sbin/shutdown -p now',check=False,timeout=10)
+pid=int((V/'qemu.pid').read_text());controller=int((V/'controller.pid').read_text())
+for _ in range(60):
+ if subprocess.run(['ps','-p',str(pid),'-o','comm='],capture_output=True).returncode:break
+ time.sleep(.25)
+else:raise RuntimeError('Owned guest did not cleanly power off')
+for n in ['serial.sock','console.in']:
+ p=V/n
+ if p.exists():p.unlink()
+q=json.loads((V/'qemu-command.private.json').read_text());assert q[q.index('-m')+1]=='2048';q[q.index('-m')+1]='1024'
+with (V/'qemu-runtime.log').open('wb') as f:p=subprocess.Popen(q,stdout=f,stderr=f,start_new_session=True)
+(V/'runtime-qemu.pid').write_text(str(p.pid));(V/'runtime-qemu-command.private.json').write_text(json.dumps(q))
+with (V/'controller-runtime.log').open('wb') as f:p=subprocess.Popen(['python3',str(V/'serial-controller.py')],stdout=f,stderr=f,start_new_session=True)
+(V/'runtime-controller.pid').write_text(str(p.pid))
+print('Owned overlay cleanly rebooting: two cores/1GiB runtime; compiler/test scope retained separately.')

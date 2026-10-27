@@ -1,0 +1,41 @@
+"""Actual standalone/inherited ANSI/plain PTY main-menu explanation checks."""
+import argparse,json,os,secrets,sys,select,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent/'code'))
+from smoke_local_console import Console
+from smoke_member_worker import Worker
+MENU='Ctrl-C exits; Esc: Enter to recover.'
+EXPLAIN='Private home mail opens on your device with the native client connected to the shared BBS service. This standalone console cannot park a native mail visit.'
+def run(a):
+ assert (a.private_root/'OWNED').is_file();root=a.private_root/('standalone-'+secrets.token_hex(4));root.mkdir(mode=0o700);state=root/'board';theme=root/'theme';theme.mkdir(mode=0o700)
+ text='version=1\nid="menu-mail"\nboard="Owned mail board"\n'
+ for action,key,label in [('rooms','R','Rooms'),('new','N','New messages'),('history','H','Room history'),('post','P','Post'),('sysop','S','Sysop'),('home_mail','M','Home mail'),('quit','Q','Log out')]:text+=f'[[menu]]\naction="{action}"\nkey="{key}"\nlabel="{label}"\n'
+ (theme/'theme.toml').write_text(text);(theme/'theme.toml').chmod(0o600);children=[];checks=[];password=secrets.token_hex(24)
+ def start(plain,worker):
+  c=Worker(a.member,state,extra=['--theme',str(theme)],term='dumb' if plain else 'xterm') if worker else Console(a.binary,state,'login',['--plain' if plain else '--ansi','--theme',str(theme)])
+  children.append(c)
+  if worker:c.expect('[L]ogin [R]egister [Q]uit: ');c.send('l')
+  c.expect('Handle: ');c.send('sysop');c.password(password);target='Command (then Enter): ' if plain else MENU;end=time.monotonic()+15
+  while target.encode() not in c.buffer:
+   if b'Press Enter to continue: ' in c.buffer:c.expect('Press Enter to continue: ');c.send('')
+   assert time.monotonic()<end
+   if select.select([c.fd],[],[],.05)[0]:data=os.read(c.fd,8192);assert data;c.buffer+=data;c.transcript+=data
+  c.expect(target);return c,target
+ try:
+  c=Console(a.binary,state,'init');children.append(c);c.expect('Handle: ');c.send('sysop');c.password(password,'New password (12+ characters, hidden): ');c.password(password,'Confirm password (hidden): ');c.expect('Lobby created.');c.finish()
+  for worker in [False,True]:
+   for plain in [False,True]:
+    c,target=start(plain,worker);c.send('m') if plain else c.raw(b'm');c.expect(EXPLAIN);c.expect('Press Enter to return to menu: ');c.send('');c.expect(target)
+    assert b'FACTION-MAIL1' not in c.transcript and b'LOCAL checkpoint passphrase' not in c.transcript
+    c.send('q') if plain else c.raw(b'q');c.expect('Logged out.');c.finish();assert password.encode() not in c.transcript
+    checks.append(('inherited' if worker else 'standalone')+'_'+('plain' if plain else 'ansi')+'_explanation_same_menu_no_handoff')
+  a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,scope='local-and-inherited-real-pty-main-menu-mail-explanation',no_shared_handoff_claim=True,capacity_claim=False,physical_hardware=False),indent=2)+'\n');print('Standalone/inherited menu mail passed:',len(checks))
+ except BaseException:
+  for i,c in enumerate(children):(root/(str(i)+'.private')).write_bytes(c.transcript+c.buffer)
+  raise
+ finally:
+  for c in children:c.close()
+if __name__=='__main__':
+ p=argparse.ArgumentParser()
+ for n in ['binary','member','private-root','output']:p.add_argument('--'+n,type=Path,required=True)
+ run(p.parse_args())

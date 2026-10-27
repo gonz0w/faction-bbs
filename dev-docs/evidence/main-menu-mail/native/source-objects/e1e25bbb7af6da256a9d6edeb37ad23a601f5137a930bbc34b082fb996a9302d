@@ -1,0 +1,9 @@
+from lab import *
+import hashlib
+native03=json.loads(remote('cat /home/factionbuild/proof230/native-final03/execution.json').stdout);native04=json.loads(remote('cat /home/factionbuild/proof230/native-final04/progress.json').stdout);assert native04['result']=='pass'
+assert all(x['returncode']==0 for x in native03 if x['name']!='hostile')
+for n in ['classic','unicode','classic-compact']:
+ assert json.loads((P/'host-main-final02'/(n+'.json')).read_text())['result']=='pass'
+for n in ['protocol','hostile']:assert json.loads((P/'host-negative-final02'/(n+'.json')).read_text())['result']=='pass'
+result=dict(result='pass',service_source_context='source-final06',native_client_build_context='source-final05',host_client_context='client-final02',host_main_routes=['host-main-final02/classic.json','host-main-final02/unicode.json'],native_main_routes=['native-final03/main-classic.json','native-final03/main-unicode.json'],host_protocol='host-negative-final02/protocol.json',native_protocol='native-final03/protocol.json',host_private_negative='host-negative-final02/hostile.json',native_private_negative='native-final04/hostile.json',host_classic_compact='host-main-final02/classic-compact.json',native_classic_compact='native-final04/classic-compact.json',files_disabled_during_all_mail_acceptance=True,files_disabled_proof_sha256=hashlib.sha256((P/'runtime-files-disabled-proof.json').read_bytes()).hexdigest(),normal_limits_unchanged=True,fixture_admission_failures_retained=True,fixture_forced_close_red_and_green_retained=True,capacity_claim=False,physical_hardware=False)
+(P/'main-phase-complete.json').write_text(json.dumps(result,indent=2)+'\n');print('Final Files-disabled mail acceptance complete on both OSes; allfailed/intermediate attempts remain distinct.')

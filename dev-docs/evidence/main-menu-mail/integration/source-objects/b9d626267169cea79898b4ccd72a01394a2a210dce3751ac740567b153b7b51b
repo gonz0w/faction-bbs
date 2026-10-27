@@ -1,0 +1,25 @@
+"""Import immutable public exports; never reads private captures or mutates old proofs."""
+from pathlib import Path
+import hashlib,json,shutil
+ROOT=Path('/Users/cam/DEV/faction-bbs');OUT=ROOT/'dev-docs/evidence/main-menu-mail'
+OWN=Path('/private/tmp/faction230-integration-OWNED')
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def save(path,value):
+ path.parent.mkdir(parents=True,exist_ok=True);data=(json.dumps(value,indent=2,sort_keys=True)+'\n').encode()
+ if path.exists():assert path.read_bytes()==data,str(path)
+ else:path.write_bytes(data)
+ return ref(path)
+def ref(path):return dict(path=str(path.relative_to(ROOT)),sha256=sha(path.read_bytes()))
+def copy_export(source,prefix,manifest_name):
+ manifest=json.loads((source/manifest_name).read_bytes());refs=[]
+ for relative,digest in sorted(manifest.items()):
+  part=Path(relative);assert not part.is_absolute() and '..' not in part.parts
+  src=source/part;assert src.is_file() and not src.is_symlink();raw=src.read_bytes();assert sha(raw)==digest
+  assert '.DS_Store' not in part.parts
+  dst=OUT/prefix/part;dst.parent.mkdir(parents=True,exist_ok=True)
+  if dst.exists():assert dst.read_bytes()==raw,str(dst)
+  else:dst.write_bytes(raw)
+  refs.append(ref(dst))
+ return refs
+if __name__=='__main__':
+ raise SystemExit('Library only; final manifest paths must be selected explicitly after export freeze.')

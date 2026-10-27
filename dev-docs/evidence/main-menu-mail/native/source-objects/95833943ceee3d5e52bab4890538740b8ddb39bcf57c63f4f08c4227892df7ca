@@ -1,0 +1,3 @@
+from lab import *
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-final01/driver.py > /home/factionbuild/proof230/native-final01/driver-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Native final1GiB runtime matrix launched; same-source classic/Unicode real-SSH journeys first.')

@@ -1,0 +1,3 @@
+from lab import *
+r=remote('kdump -?; ktrace -?',check=False);(P/'trace-help.private.log').write_bytes(r.stdout+r.stderr)
+print((r.stdout+r.stderr).decode())

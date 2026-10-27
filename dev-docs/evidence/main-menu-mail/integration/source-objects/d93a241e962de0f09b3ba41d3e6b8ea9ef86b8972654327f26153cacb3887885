@@ -1,0 +1,46 @@
+from lab import *
+import hashlib,sys,re
+run=P/'privacy-postrun-rescan02';run.mkdir(mode=0o700);code=run/'code';code.mkdir()
+for n in ['probe_menu_mail.py','probe_visit_mail.py','check_restricted_ssh.py','smoke_board_launcher.py','smoke_local_console.py']:(code/n).write_bytes((R/'tools'/n).read_bytes())
+manifest={n.name:hashlib.sha256(n.read_bytes()).hexdigest() for n in code.iterdir()};(run/'source-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n');sys.path.insert(0,str(code));import probe_menu_mail as proof
+checker=manifest['probe_menu_mail.py'];driver=hashlib.sha256(Path(__file__).read_bytes()).hexdigest();routes={};private_associations={}
+def sha(data):return hashlib.sha256(data).hexdigest()
+def local_association(mode):
+ result=P/'host-main-final02'/(mode+'.json');stamp=result.stat().st_mtime_ns
+ matches=[f for f in P.glob('menu-mail-*/private-inputs.json') if 0<=stamp-f.stat().st_mtime_ns<1000000000];assert len(matches)==1,(mode,len(matches))
+ f=matches[0];root=f.parent;markers=json.loads((root/'private-markers.json').read_text());markers.extend(json.loads(f.read_text())[k] for k in ['home_password','subject','body']);markers.append((P/'sysop-password.private').read_text())
+ return dict(root=str(root),result_sha256=sha(result.read_bytes()),association_delta_ns=stamp-f.stat().st_mtime_ns,original_dump_sha256=sha((root/'board-io.private.log').read_bytes()),trace=json.loads((root/'board-trace.private.json').read_text()),markers=markers)
+remote_association=r'''from pathlib import Path
+import json,hashlib,sys
+assert Path('/etc/faction-disposable-test').is_file()
+mode=sys.argv[1];assert mode in ['classic','unicode'];p=Path('/home/factionbuild/proof230/native-final03')/('main-'+mode+'.json');stamp=p.stat().st_mtime_ns
+matches=[f for f in Path('/home/factionbuild/device230').glob('menu-mail-*/private-inputs.json') if 0<=stamp-f.stat().st_mtime_ns<1000000000];assert len(matches)==1
+f=matches[0];root=f.parent;x=json.loads(f.read_text());markers=json.loads((root/'private-markers.json').read_text());markers.extend(x[k] for k in ['home_password','subject','body']);markers.append(json.loads(Path('/home/factionbuild/device230/settings.json').read_text())['sysop_password'])
+print(json.dumps(dict(root=str(root),result_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),association_delta_ns=stamp-f.stat().st_mtime_ns,original_dump_sha256=hashlib.sha256((root/'board-io.private.log').read_bytes()).hexdigest(),trace=json.loads((root/'board-trace.private.json').read_text()),markers=markers)))
+'''
+trace_digest=r'''from pathlib import Path
+import hashlib,sys,json
+p=Path(sys.argv[1]);assert str(p).startswith('/root/issue230-board-') and p.suffix=='.ktrace' and p.is_file();print(hashlib.sha256(p.read_bytes()).hexdigest())
+'''
+for platform in ['host','netbsd']:
+ for mode in ['classic','unicode']:
+  label=platform+'_'+mode
+  if platform=='host':a=local_association(mode)
+  else:a=json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(remote_association)+' '+mode).stdout)
+  private_associations[label]=a
+  trace=a['trace']['path'];assert re.fullmatch(r'/root/issue230-board-[0-9a-f]{16}\.ktrace',trace)
+  before=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(trace_digest)+' '+shlex.quote(trace)).stdout.decode().strip()
+  command=['kdump','-X','1','-m','1048576','-f',trace]
+  r=remote(' '.join(map(shlex.quote,command)),check=False);assert r.returncode==0 and r.stderr==b'', 'hex kdump export failed/warned'
+  data=r.stdout;(run/(label+'.post-hex.private.log')).write_bytes(data)
+  markers=sorted({v.encode() for v in a['markers'] if v});stats=proof.require_board_bound_private_absent(data,markers)
+  streams,_=proof.reconstruct_kdump_streams(data)
+  prefixes=[b'FACTION1;',b'@FACTION1'];assert all(p not in value for value in streams.values() for p in prefixes), 'split file-protocol prefix appeared'
+  assert all(any(token in value for key,value in streams.items() if key[2]=='read') for token in [b'@MAIL1 park ',b'@MAIL1 back ']), 'decoded original capture lacks park/back'
+  after=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(trace_digest)+' '+shlex.quote(trace)).stdout.decode().strip();assert before==after
+  if platform=='host':assert sha((Path(a['root'])/'board-io.private.log').read_bytes())==a['original_dump_sha256']
+  pub=P/'public/results'/('host-main-final02' if platform=='host' else 'native-final03')/((mode if platform=='host' else 'main-'+mode)+'.json');assert sha(pub.read_bytes())==a['result_sha256']
+  routes[label]=dict(result='pass',original_route_result_sha256=a['result_sha256'],original_dump_sha256=a['original_dump_sha256'],ktrace_sha256=before,hex_dump_sha256=sha(data),generated_marker_count=len(markers),private_marker_matches=0,file_protocol_prefix_matches=0,input_trace_unchanged=True,park_and_back_present=True,association={'kind':'unique successful private-inputs mtime within one second before original result on same filesystem; serialized driver order','delta_ns':a['association_delta_ns']},**stats)
+(run/'associations.private.json').write_text(json.dumps(private_associations,indent=2)+'\n')
+result=dict(result='pass',scope='postrun-retained-ktrace-hex-stream-reconstruction',fresh_ui_execution=False,checker_sha256=checker,driver_sha256=driver,stream_key=['pid','fd','direction'],hex_export_command_template=['kdump','-X','1','-m','1048576','-f','RETAINED_PRIVATE_KTRACE'],original_runs_used_presentation_scan=True,fd_reuse_conservatively_joined=True,unknown_truncated_mismatched_input_rejected=True,routes=routes)
+(run/'privacy-postrun-rescan.json').write_text(json.dumps(result,indent=2)+'\n');print('Retained actual four-route traces reconstructed and rescanned: PASS; private markers and file-protocol prefixes absent; original inputs unchanged.')

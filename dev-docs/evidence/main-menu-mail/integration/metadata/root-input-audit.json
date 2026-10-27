@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "all_references_resolved": true,
+  "source_stages": 144,
+  "source_references": 2219,
+  "all_current_crates_match_native_final06": true,
+  "cleanup_still_required": true
+}

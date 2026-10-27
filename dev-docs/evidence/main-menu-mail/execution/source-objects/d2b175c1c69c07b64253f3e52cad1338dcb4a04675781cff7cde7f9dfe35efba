@@ -1,0 +1,39 @@
+name: Finite research or architecture question
+description: Resolve one uncertainty with sourced, falsifiable evidence.
+labels: ["type:research", "status:needs-triage"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: State one decision/question and the finite deliverable. This is not a standing implementation epic.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and constraints
+      description: Relevant alternatives, existing decisions, no-JS/NetBSD/privacy/classic/resource limits and non-goals. Do not restart accepted decisions without a named failure gate.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Markdown checkboxes for a sourced comparison/experiment, explicit pass/fail/proceed/defer outcome and honest unsupported claims.
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan
+      description: Define falsifiable oracles, reproducible commands/environment, costs and cleanup. Prototype behavior uses red/green tests; prose-only research names actual source/link validation instead of fabricated TDD.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and primary sources
+      description: Link issues/docs and dated upstream sources. Plan/handoff lives in issue comments, not repository task files.
+    validations:
+      required: true

@@ -152,3 +152,14 @@ dev-docs/evidence/signer-qualification/source-objects/** linguist-generated=true
 # Issue228 source-bound owner CLI observations retain exact executed bytes.
 dev-docs/evidence/roaming-owner/** -text
 dev-docs/evidence/roaming-owner/source-objects/** linguist-generated=true whitespace=-blank-at-eof
+
+# Issue230 exact executed source and protocol observations.
+dev-docs/evidence/main-menu-mail/** -text
+dev-docs/evidence/main-menu-mail/**/*.json linguist-generated=true
+dev-docs/evidence/main-menu-mail/**/source-objects/** linguist-generated=true
+dev-docs/evidence/main-menu-mail/**/logs/** linguist-generated=true
+# Preserve measured article CRLF, ANSI padding and historical probe bytes.
+dev-docs/evidence/main-menu-mail/**/source-objects/** whitespace=-blank-at-eol
+dev-docs/evidence/main-menu-mail/review/corrected-rescan-audit/tools/probe_menu_mail.py whitespace=-blank-at-eol
+dev-docs/evidence/main-menu-mail/review/evidence-guard-audit/tools/probe_menu_mail.py whitespace=-blank-at-eol
+dev-docs/evidence/main-menu-mail/review/final-review-sources/tools/probe_menu_mail.py whitespace=-blank-at-eol

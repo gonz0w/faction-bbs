@@ -1,0 +1,3 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof230/build-result.json; tail -8 /home/factionbuild/proof230/server-build.log; tail -8 /home/factionbuild/proof230/build-launch.log',check=False)
+print(r.stdout.decode());print(r.stderr.decode())

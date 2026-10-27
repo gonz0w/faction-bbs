@@ -1,0 +1,19 @@
+{
+  "default_client_passed": 42,
+  "final_guard": 10,
+  "final_oracle": 12,
+  "network_client_passed": 137,
+  "network_existing_ignored": 4,
+  "python_before_final_guard_additions": 391,
+  "result": "pass",
+  "summary": {
+    "path": "dev-docs/evidence/main-menu-mail/execution/summary.json",
+    "sha256": "7e1a69f584348f6fcedb3dd8465a0505eba64738bfe6d7da8ae741b8db942214"
+  },
+  "workspace": {
+    "path": "dev-docs/evidence/main-menu-mail/execution/metadata/lead/host-integrated.json",
+    "sha256": "8c3e0fc4478c071a2ceab13b59575e6bb2dcd81d2b02e86e5601e9d461c2d2b2"
+  },
+  "workspace_ignored": 0,
+  "workspace_passed": 473
+}

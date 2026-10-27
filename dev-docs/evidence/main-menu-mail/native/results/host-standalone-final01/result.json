@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "count": 4,
+  "checks": [
+    "standalone_ansi_explanation_same_menu_no_handoff",
+    "standalone_plain_explanation_same_menu_no_handoff",
+    "inherited_ansi_explanation_same_menu_no_handoff",
+    "inherited_plain_explanation_same_menu_no_handoff"
+  ],
+  "scope": "local-and-inherited-real-pty-main-menu-mail-explanation",
+  "no_shared_handoff_claim": true,
+  "capacity_claim": false,
+  "physical_hardware": false
+}

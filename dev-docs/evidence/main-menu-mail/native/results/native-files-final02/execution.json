@@ -1,0 +1,17 @@
+[
+  {
+    "name": "classic",
+    "returncode": 0,
+    "elapsed_seconds": 13.641303720999986
+  },
+  {
+    "name": "unicode",
+    "returncode": 0,
+    "elapsed_seconds": 13.377635705000102
+  },
+  {
+    "name": "legacy",
+    "returncode": 0,
+    "elapsed_seconds": 91.70267945299975
+  }
+]

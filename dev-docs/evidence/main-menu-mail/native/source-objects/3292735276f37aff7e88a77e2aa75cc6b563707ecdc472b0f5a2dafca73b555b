@@ -1,0 +1,3 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof230/native-final01/execution.json; cat /home/factionbuild/proof230/native-final01/main-unicode.raw.log',check=False)
+(P/'native-final01-failure.raw.log').write_bytes(r.stdout+r.stderr);print(r.stdout.decode())

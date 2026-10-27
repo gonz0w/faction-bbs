@@ -1,0 +1,13 @@
+from lab import *
+code=r'''from pathlib import Path
+import json,tomllib,subprocess,hashlib
+assert Path('/etc/faction-disposable-test').is_file()
+c=tomllib.loads(Path('/etc/faction/service.toml').read_text());assert 'files_uid' not in c and 'files_auth_uid' not in c
+assert not Path('/var/run/faction/file-policy.sock').exists()
+rows=subprocess.check_output(['ps','-axo','command'],text=True).splitlines();listeners=[r for r in rows if r.strip().startswith('sshd: /usr/sbin/sshd ') and 'files_sshd_config' in r];assert not listeners
+assert c['max_sessions']==8 and c['launch_ms']==5000 and c['experimental_capacity'] is False
+print(json.dumps({'result':'pass','files_uid_present':False,'files_auth_uid_present':False,'file_policy_socket_exists':False,'files_ssh_listeners':0,'max_sessions':c['max_sessions'],'launch_ms':c['launch_ms'],'experimental_capacity':False,'service_sha256':hashlib.sha256(Path('/usr/local/libexec/faction-service').read_bytes()).hexdigest(),'theme_sha256':hashlib.sha256(Path('/var/db/faction230-themes/theme.toml').read_bytes()).hexdigest()}))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'runtime-files-disabled-proof.json').write_bytes(r.stdout)
+r=remote('/etc/rc.d/faction_doors onestop',check=False);(P/'runtime-door-stop.private.log').write_bytes(r.stdout+r.stderr)
+print('Independently proved Files UID/config/socket/listener all absent; normal limits exact; final executable identity retained.')

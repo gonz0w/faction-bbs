@@ -1,0 +1,8 @@
+from lab import *
+(P/'runtime-start-failure02.log').write_bytes((P/'remote-failure.private').read_bytes())
+r=remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_sshd onestart',timeout=30);(P/'runtime-ssh-start.private.log').write_bytes(r.stdout+r.stderr)
+r=remote('test ! -S /var/run/faction/file-policy.sock; pgrep -fl "/usr/sbin/sshd.*files_sshd_config"',check=False);assert r.returncode!=0
+r=remote('sysctl -n hw.physmem64 hw.ncpu');mem,cores=map(int,r.stdout.split());assert cores==2 and 1000000000<mem<1100000000
+(P/'runtime-environment.json').write_text(json.dumps(dict(result='pass',cores=cores,physmem_bytes=mem,build_memory_mib=2048,runtime_memory_mib=1024,files_disabled=True,files_sftp_listener_stopped=True,loopback_only=True,normal_limits=True,physical_hardware=False,capacity_claim=False),indent=2)+'\n')
+r=remote('ls -l /home/factionbuild/target/release/faction-client',check=False);(P/'old-native-availability.private.log').write_bytes(r.stdout+r.stderr)
+print('Final1GiB owned board runtime ready; Files/SFTP disabled; physical bytes',mem,'old native available',r.returncode==0)

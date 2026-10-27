@@ -1,0 +1,14 @@
+.........F..
+======================================================================
+FAIL: test_rejects_publication_measurement_refresh (test_menu_mail_evidence.Evidence.test_rejects_publication_measurement_refresh)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_evidence.py", line 93, in test_rejects_publication_measurement_refresh
+    with self.assertRaises(AssertionError):self.module.validate(self.root,current)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.089s
+
+FAILED (failures=1)

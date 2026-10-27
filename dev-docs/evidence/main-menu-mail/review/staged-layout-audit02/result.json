@@ -1,0 +1,23 @@
+{
+  "execution": {
+    "extra_or_missing_files": false,
+    "files": 1086,
+    "imported_bytes_match": true,
+    "manifest_sha256": "38508efb7350132ce8277faa3a5ede80c506dc8d6488f956ac36dcec2d1d96e9"
+  },
+  "execution_source_objects": 739,
+  "execution_source_stages": 110,
+  "issue": 230,
+  "privacy_boundary": "Only public source/log/hash exports inspected; private inventory and native retrospective capture verdict remain separately pending.",
+  "result": "pass",
+  "review": {
+    "extra_or_missing_files": false,
+    "files": 64,
+    "imported_bytes_match": true,
+    "manifest_sha256": "4015e75961f6aad6d78238cc0134de0583709f86624855660688eabbab6c3586"
+  },
+  "root_record_audit": "pending assembly",
+  "runtime_tests_executed": false,
+  "schema": 1,
+  "source_identity_and_types": "pass"
+}

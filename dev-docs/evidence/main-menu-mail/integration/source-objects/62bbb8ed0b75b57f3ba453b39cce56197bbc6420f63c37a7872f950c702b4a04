@@ -1,0 +1,17 @@
+"""Final actual-private-value/key scan over already selected public evidence only."""
+from pathlib import Path
+import runpy,json,hashlib,re
+ns=runpy.run_path('/private/tmp/faction230-integration-OWNED/export_public_sources.py');safe=ns['safe'];p=ns['p'];own=Path('/private/tmp/faction230-integration-OWNED')
+roots={'native':p/'public','execution':Path('/private/tmp/faction230-packaging-OWNED'),'review':Path('/private/tmp/faction230-review-OWNED/public')}
+report={}
+for label,root in roots.items():
+ count=0
+ for path in root.rglob('*'):
+  if not path.is_file() or path.name=='OWNED' or '__pycache__' in path.parts:continue
+  raw=path.read_bytes();safe(raw)
+  assert not raw.startswith((b'\x7fELF',b'QFI\xfb',b'\x1f\x8b',b'PK\x03\x04')),'binary/archive publication refused'
+  assert '.DS_Store' not in path.parts
+  count+=1
+ report[label]=count
+result=dict(result='pass',files_scanned=report,actual_generated_values_scanned=True,secret_matches=0,private_key_material_matches=0,binaries_archives_metadata_excluded=True,static_public_fixture_values_not_secret=True)
+(own/'combined-publication-scan.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n');print(result)

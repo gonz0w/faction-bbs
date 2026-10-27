@@ -1,0 +1,8 @@
+{
+  "faction_broker": "0d096bfbf756b150300f79a4fa5f15b30040ec04e5287173b1c87e575e762733",
+  "faction_files_sshd": "a121e2113b7af4781170f641d54a8467925afa25898a2c5ce5e3c564a2d437bb",
+  "faction_sshd": "5de07c9a82c1aaaf229b05ae4a67dc38c332a77ef46121f15db6bd77dc48a7b2",
+  "files_sshd_config.in": "8a36216d5b1f153c9dbb1156c7c31d709bfb01a12c343e521946add33f2e230a",
+  "service.toml.in": "4e09f4854089f5e224338c1302018e2eee23b320a94c8efcc77da729625e32ce",
+  "sshd_config.in": "085d1b6c068d7c5e43e860bbf18388436f38e2cd16333700ba45a8a682b0da4b"
+}

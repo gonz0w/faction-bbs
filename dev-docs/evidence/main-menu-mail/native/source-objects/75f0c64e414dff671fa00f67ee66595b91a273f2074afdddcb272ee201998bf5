@@ -1,0 +1,10 @@
+from lab import *
+import hashlib
+run=P/'host-standalone-final01';run.mkdir(mode=0o700);code=run/'code';code.mkdir()
+for n in ['smoke_local_console.py','smoke_member_worker.py']:(code/n).write_bytes((R/'tools'/n).read_bytes())
+(run/'23_standalone.py').write_bytes((P/'23_standalone.py').read_bytes())
+(run/'source-manifest.json').write_text(json.dumps({str(f.relative_to(run)):hashlib.sha256(f.read_bytes()).hexdigest() for f in run.rglob('*') if f.is_file()},sort_keys=True,indent=2)+'\n')
+cmd=['python3',str(run/'23_standalone.py'),'--binary',str(P/'host-cli-final/faction'),'--member',str(P/'host-cli-final/faction-member'),'--private-root',str(P),'--output',str(run/'result.json')]
+with (run/'raw.log').open('wb') as f:r=subprocess.run(cmd,stdout=f,stderr=f,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+(run/'execution.json').write_text(json.dumps({'returncode':r.returncode,'command':cmd,'source_manifest':'source-final05-manifest.json'},indent=2)+'\n')
+print((run/'raw.log').read_text());print('Host standalone final returncode',r.returncode)

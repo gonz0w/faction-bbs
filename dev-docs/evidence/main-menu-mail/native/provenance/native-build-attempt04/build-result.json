@@ -1,0 +1,68 @@
+{
+  "scope": "two-cores-2GiB-native-build",
+  "result": "pass",
+  "steps": [
+    {
+      "name": "server",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-cli",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-files"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 14.834999632000063
+    },
+    {
+      "name": "default",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-client",
+        "--bin",
+        "faction-client"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 2.8055267769999546
+    },
+    {
+      "name": "network",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-client",
+        "--features",
+        "network-mail",
+        "--bin",
+        "faction-client",
+        "--example",
+        "checkpoint_ui_fixture",
+        "--example",
+        "home_mail_fixture"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 71.51060252399998
+    }
+  ]
+}

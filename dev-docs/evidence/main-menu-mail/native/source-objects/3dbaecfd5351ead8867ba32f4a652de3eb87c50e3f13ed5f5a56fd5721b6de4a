@@ -1,0 +1,5 @@
+from lab import *
+r=remote("find /home/factionbuild/.cargo /home/factionbuild/build/.cargo -maxdepth 4 -type f -name 'openssl*'; ps -axo pid,user,comm",check=False)
+(P/'guest-cache.private.log').write_bytes(r.stdout+r.stderr)
+for l in r.stdout.decode().splitlines():
+ if 'openssl' in l or 'faction' in l:print(l)

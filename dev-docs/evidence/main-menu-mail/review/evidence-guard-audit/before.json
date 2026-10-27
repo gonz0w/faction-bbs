@@ -1,0 +1,6 @@
+{
+  "tools/check_menu_mail_evidence.py": "46d9edc36c20b2fc22fb0f1074ff456f38ecfa1e55824a307c2340917dd899d5",
+  "tools/test_menu_mail_evidence.py": "defbd61a0b628242f194c77bb0fb70163bde46885c0afa1a47cf5fcd7ebfba5e",
+  "tools/probe_menu_mail.py": "99bbed672542822daef8501d8635e89da2529bccb0d7556d915de781b30267ae",
+  "tools/test_probe_menu_mail.py": "e4df682ba3fff3dac6a516b3045361a10a0b2af4236c72910b33c8c2822f9349"
+}

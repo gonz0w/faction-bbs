@@ -1,0 +1,10 @@
+{
+  "cleanup_script_unchanged": true,
+  "current_uid_verified": true,
+  "exact_preserved_manifest_matches": 2,
+  "initial_assumption": "Two delegated source roots had explicit OWNED directory names but no marker file",
+  "initial_cleanup_refused_before_deletion": true,
+  "marker_files_created_before_cleanup": true,
+  "result": "pass",
+  "symlinks_rejected": true
+}

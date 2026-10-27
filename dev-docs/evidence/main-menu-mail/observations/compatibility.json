@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "routes": {
+    "host": {
+      "compact": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-main-final02/classic-compact.json",
+        "sha256": "a06d75c3b2651bbe6b5183a7777ebb889d27dd966b8f3d5ebc7c046a78110b70"
+      },
+      "fallback": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-standalone-final01/result.json",
+        "sha256": "a8c47d4fd8c96ba92667bd53001a6c9b031fe003e426b5912d04bff3cadd929d"
+      }
+    },
+    "netbsd": {
+      "compact": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-final04/classic-compact.json",
+        "sha256": "a06d75c3b2651bbe6b5183a7777ebb889d27dd966b8f3d5ebc7c046a78110b70"
+      },
+      "fallback": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-final03/standalone.json",
+        "sha256": "a8c47d4fd8c96ba92667bd53001a6c9b031fe003e426b5912d04bff3cadd929d"
+      }
+    }
+  }
+}

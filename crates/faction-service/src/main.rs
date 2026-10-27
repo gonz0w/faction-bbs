@@ -17,6 +17,7 @@ mod gatherings_ui;
 mod guide_ui;
 mod library_ui;
 mod native_files;
+mod native_mail;
 mod operator;
 mod pages_ui;
 mod policy;
@@ -63,6 +64,8 @@ enum State {
     Identity,
     IdentityArt(usize),
     Menu,
+    MailOffer,
+    MailParked(String),
     Guide(faction_terminal::guide::View),
     Lounge(Box<faction_pages::social::Desk>),
     Who(Box<faction_pages::who::Desk>),
@@ -236,6 +239,7 @@ struct Client {
     classic: Option<classic::Connection>,
     files_enabled: bool,
     native: Option<native_files::Native>,
+    mail_history: native_mail::History,
     directory: Option<Arc<faction_terminal::directory::Directory>>,
     gallery: Option<Arc<faction_gallery::Catalog>>,
     library: Option<Arc<faction_library::Catalog>>,
@@ -329,6 +333,7 @@ impl Client {
             classic: None,
             files_enabled: false,
             native: None,
+            mail_history: Default::default(),
             directory: None,
             gallery: None,
             library: None,
@@ -1007,3 +1012,6 @@ mod dispatch_tests {
         ));
     }
 }
+
+#[cfg(test)]
+mod native_mail_tests;

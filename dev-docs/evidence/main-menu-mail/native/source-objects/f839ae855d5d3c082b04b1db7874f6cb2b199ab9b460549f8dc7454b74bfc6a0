@@ -1,0 +1,4 @@
+from lab import *
+assert json.loads((P/'host-files-final01/progress.json').read_text())['result']=='pass'
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-files-final01/driver.py > /home/factionbuild/proof230/native-files-final01/driver-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Final required native Files/SFTP classic+Unicode and old/defaultnative-v1 rounds launched serially;40s refill beforeeachmatrix.')

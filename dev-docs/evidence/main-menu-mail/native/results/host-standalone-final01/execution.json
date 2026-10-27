@@ -1,0 +1,16 @@
+{
+  "returncode": 0,
+  "command": [
+    "python3",
+    "/private/tmp/faction230-native-OWNED/host-standalone-final01/23_standalone.py",
+    "--binary",
+    "/private/tmp/faction230-native-OWNED/host-cli-final/faction",
+    "--member",
+    "/private/tmp/faction230-native-OWNED/host-cli-final/faction-member",
+    "--private-root",
+    "/private/tmp/faction230-native-OWNED",
+    "--output",
+    "/private/tmp/faction230-native-OWNED/host-standalone-final01/result.json"
+  ],
+  "source_manifest": "source-final05-manifest.json"
+}

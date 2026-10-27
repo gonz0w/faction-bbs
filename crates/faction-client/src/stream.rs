@@ -5,6 +5,7 @@ use std::io;
 pub enum Event {
     Text(Vec<u8>),
     Frame(Vec<String>),
+    Mail(faction_terminal::home_mail::Frame),
 }
 #[derive(Default)]
 enum State {
@@ -23,6 +24,13 @@ pub struct Filter {
     pub graphics: faction_terminal::graphics::Gate,
 }
 impl Filter {
+    pub fn control_pending(&self) -> bool {
+        !matches!(self.state, State::Ground)
+    }
+    pub fn reset_boundary(&mut self) {
+        self.state = State::Ground;
+        self.utf8.clear();
+    }
     fn printable(&mut self, b: u8, text: &mut Vec<u8>) {
         if self.utf8.is_empty() && b < 128 {
             if b >= 32 || b"\r\n\t\x08\x07".contains(&b) {
@@ -97,6 +105,20 @@ impl Filter {
                                 out.push(Event::Text(std::mem::take(&mut text)));
                             }
                             out.push(Event::Frame(frame));
+                        } else if let Some(payload) =
+                            v.strip_prefix(faction_terminal::home_mail::PREFIX.as_bytes())
+                        {
+                            // MAIL1 requires the frozen BEL terminator, unlike Files OSC.
+                            if b != 7 || esc {
+                                return Err(invalid());
+                            }
+                            let payload = std::str::from_utf8(payload).map_err(|_| invalid())?;
+                            let frame = faction_terminal::home_mail::parse_frame(payload)
+                                .map_err(|_| invalid())?;
+                            if !text.is_empty() {
+                                out.push(Event::Text(std::mem::take(&mut text)));
+                            }
+                            out.push(Event::Mail(frame));
                         }
                     } else if v.len() < 5520 {
                         if esc {
@@ -168,7 +190,7 @@ mod tests {
             for e in filter.feed(&[b]).unwrap() {
                 match e {
                     Event::Text(t) => text.extend(t),
-                    Event::Frame(_) => panic!("unexpected local action"),
+                    Event::Frame(_) | Event::Mail(_) => panic!("unexpected local action"),
                 }
             }
         }
@@ -189,6 +211,7 @@ mod tests {
                 match e {
                     Event::Text(t) => text.extend(t),
                     Event::Frame(f) => frames.push(f),
+                    Event::Mail(_) => panic!("unexpected mail action"),
                 }
             }
         }
@@ -316,5 +339,32 @@ mod graphics_tests {
         // A truncated stream is never emitted; teardown sends only a trusted delete.
         assert!(text(filter.feed(b"\x1b]52;c;bad\x07").unwrap()).is_empty());
         assert!(filter.feed(b"\x1b\\").is_err());
+    }
+}
+
+#[cfg(test)]
+mod home_mail_tests {
+    use super::*;
+    use faction_terminal::home_mail::{self, Frame};
+    #[test]
+    fn home_mail_control_is_separate_and_preserves_text_order() {
+        let mut filter = Filter::default();
+        let wire = format!(
+            "before{}after",
+            home_mail::encode_frame(&Frame::Offer).unwrap()
+        );
+        let events = filter.feed(wire.as_bytes()).unwrap();
+        assert!(
+            matches!(&events[..], [Event::Text(a), Event::Mail(Frame::Offer), Event::Text(b)] if a == b"before" && b == b"after")
+        );
+    }
+    #[test]
+    fn malformed_trailing_mail_frame_rejects_the_entire_read() {
+        let good = home_mail::encode_frame(&Frame::Offer).unwrap();
+        assert!(
+            Filter::default()
+                .feed(format!("{good}\x1b]7770;FACTION-MAIL1;parked;bad\x07").as_bytes())
+                .is_err()
+        );
     }
 }

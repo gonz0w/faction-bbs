@@ -1,0 +1,1 @@
+["cargo", "test", "-p", "faction-terminal", "-p", "faction-service", "-p", "faction-cli", "--", "--test-threads=2"]

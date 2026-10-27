@@ -1,0 +1,11 @@
+{
+  "result": "observed",
+  "host_owned_ssh_count": 0,
+  "native_owned_ssh_count": 0,
+  "native_frontend_count": 0,
+  "established_bbs_tcp_rows": 0,
+  "service_fstat_rows": 14,
+  "admission_token_level_measured": false,
+  "active_slot_count_directly_measured": false,
+  "private_pid_starttime_and_identity_snapshots_retained": true
+}

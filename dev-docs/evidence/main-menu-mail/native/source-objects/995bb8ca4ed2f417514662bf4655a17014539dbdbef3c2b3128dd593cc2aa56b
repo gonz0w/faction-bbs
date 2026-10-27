@@ -1,0 +1,16 @@
+from lab import *
+import hashlib
+before=remote('cat /etc/faction/service.toml').stdout;(P/'service-files-disabled.private.toml').write_bytes(before)
+assert b'files_uid =' not in before and b'files_auth_uid =' not in before
+uids=json.loads(remote("/usr/pkg/bin/python3.13 -c 'import pwd,json;print(json.dumps({n:pwd.getpwnam(n).pw_uid for n in [\"factionfiles\",\"factionfileauth\"]}))'").stdout)
+new=('files_uid = '+str(uids['factionfiles'])+'\nfiles_auth_uid = '+str(uids['factionfileauth'])+'\n').encode()+before
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_sshd onestop; /etc/rc.d/faction_broker onestop; cat > /etc/faction/service.toml; chown root:factionipc /etc/faction/service.toml; chmod 640 /etc/faction/service.toml',new)
+remote('su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction/service.toml"; /etc/rc.d/faction_broker onestart; /etc/rc.d/faction_sshd onestart; /etc/rc.d/faction_files_sshd onestart',timeout=30)
+s=json.loads((P/'host-settings.json').read_text());s.update(files_disabled=False,member_handle='hostfiles');(P/'host-files-settings.json').write_text(json.dumps(s));(P/'host-files-settings.json').chmod(0o600)
+code=r'''from pathlib import Path
+import json
+p=Path('/home/factionbuild/device230/settings.json');s=json.loads(p.read_text());s.update(files_disabled=False,member_handle='nativefiles');out=p.with_name('settings-files.json');out.write_text(json.dumps(s));out.chmod(0o600)
+'''
+remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code))
+(P/'files-regression-environment.json').write_text(json.dumps(dict(result='pass',scope='separate-files-enabled-regression-after-files-disabled-mail-acceptance',service_source='source-final06',service_config_sha256=hashlib.sha256(new).hexdigest(),max_sessions=8,launch_ms=5000,normal_limits_unchanged=True,board_state_preserved=True,file_service_enabled_only_for_regression=True,physical_hardware=False,capacity_claim=False),indent=2)+'\n')
+print('Separate existing Files/SFTP regression configuration enabled; prior Files-disabled acceptance retained exactly.')

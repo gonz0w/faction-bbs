@@ -1,0 +1,21 @@
+{
+  "actual_needles": 85,
+  "files": {
+    "native-files-final01/classic.raw.log": "27d142dd200cadebf489eeaea3e5b82ee6faebbbbaee13db1e230c22edd2c367",
+    "native-files-final01/execution.json": "013228b2f7841098587d44bcd4418c348f257a8adb1af1d12585639fbf23bfd1",
+    "native-files-final01/progress.json": "74d5c88c2ba62b1f9d97f4ed0ad92ea72d1b8ddccbf98cfbda36c55ac786da5c",
+    "native-files-final02/classic.json": "4782d905fe83a78e5b86646c587d89e779c4a36488d324245c9e0a90bd74fa74",
+    "native-files-final02/classic.raw.log": "f28d2a1cab9afd8ed0d5e812c56e88d5ea48de723b5149422bccef2397d76725",
+    "native-files-final02/execution.json": "82fa81955c6c1c47ff9e3f7701f8ff71e7ae2ddab01aa659fe5d6c61b3352ea5",
+    "native-files-final02/legacy.json": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8",
+    "native-files-final02/legacy.raw.log": "d9ece3534cb0d7e63f8c4c0241658b2b526ebf260863c2ce30b67262d32b5a25",
+    "native-files-final02/progress.json": "4dadeeeb4fef9e01824c3fbfcd9d6a0607630c2fe5cfef74b865c3bbe7d7ce27",
+    "native-files-final02/unicode.json": "6392081629976324c987f260b9fe348225cbf1a22086c14e12e599437c59884b",
+    "native-files-final02/unicode.raw.log": "f28d2a1cab9afd8ed0d5e812c56e88d5ea48de723b5149422bccef2397d76725"
+  },
+  "final_route_values_match_known_public_schema": true,
+  "private_key_matches": 0,
+  "result": "pass",
+  "scope": "prepublication-private-staging-actual-generated-secrets-and-known-result-schema",
+  "secret_matches": 0
+}

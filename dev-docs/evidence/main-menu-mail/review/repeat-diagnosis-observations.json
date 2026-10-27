@@ -1,0 +1,14 @@
+{
+  "diagnostic_output_boundary": "Only structure, counts and offsets were reported. No captured private payload or marker values were displayed or copied to this export.",
+  "execution_provenance": "This observation document is newly written from actual diagnostic outputs reported to the lead; the saved diagnostic scripts are preserved, with no reconstructed run scripts or fabricated captured logs.",
+  "issue": 230,
+  "observations": [
+    "First retained hex capture had 12 exact tab-plus-three-asterisk rows; each observed next explicit offset verified omitted complete repeated rows.",
+    "After repeat-marker support, 20 rows had a blank 48-character hex field and a 16-character ASCII field; NetBSD source identifies its exactly-one-duplicate branch.",
+    "Final decoder reconstructs only verified repeat extents and verifies a single blank repeat against the previous complete row and its ASCII rendering."
+  ],
+  "result": "structural diagnosis completed; final corrected decoder separately reviewed",
+  "schema": 1,
+  "source": "https://raw.githubusercontent.com/NetBSD/src/trunk/usr.bin/kdump/kdump.c",
+  "source_function": "hexdump_buf"
+}

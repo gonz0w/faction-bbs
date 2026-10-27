@@ -1,0 +1,6 @@
+from lab import *
+r=remote('ps -axo pid,ppid,etime,stat,wchan,comm; wc -c /home/factionbuild/proof230/native-final01/main-unicode.raw.log; cat /home/factionbuild/proof230/native-final01/execution.json',check=False)
+(P/'native-progress-inspection.private.log').write_bytes(r.stdout+r.stderr)
+for l in r.stdout.decode().splitlines():
+ if 'python' in l or 'faction' in l or 'sshd' in l or 'ssh ' in l or 'main-unicode' in l:print(l)
+print(r.stderr.decode())

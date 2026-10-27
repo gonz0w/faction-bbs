@@ -1,0 +1,24 @@
+{
+  "review_drift": [],
+  "evidence": {
+    "20261026T164517-red-dumb-offer": {
+      "drift": []
+    },
+    "20261026T164556-red-dumb-escape": {
+      "drift": []
+    },
+    "20261026T164624-green-dumb-offer": {
+      "drift": [],
+      "review_source_mismatch": []
+    },
+    "20261026T164703-clippy-dumb-frozen": {
+      "drift": [],
+      "review_source_mismatch": []
+    },
+    "20261026T164703-fmt-dumb-frozen": {
+      "drift": [],
+      "review_source_mismatch": []
+    }
+  },
+  "reviewer_runtime_tests_executed": false
+}

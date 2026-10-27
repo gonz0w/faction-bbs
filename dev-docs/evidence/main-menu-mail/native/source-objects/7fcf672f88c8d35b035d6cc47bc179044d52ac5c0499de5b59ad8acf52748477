@@ -1,0 +1,3 @@
+from lab import *
+r=remote('if test -f /home/factionbuild/proof230/build-attempt05/build-result.json; then cat /home/factionbuild/proof230/build-attempt05/build-result.json; fi; tail -10 /home/factionbuild/proof230/build-attempt05/tests-build.log; tail -5 /home/factionbuild/proof230/build-launch05.log',check=False)
+print(r.stdout.decode());print(r.stderr.decode())

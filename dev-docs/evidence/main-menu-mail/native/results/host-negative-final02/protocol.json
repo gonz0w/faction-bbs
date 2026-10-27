@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "scope": "actual-ssh-mail-protocol-and-compatibility-files-disabled",
+  "count": 12,
+  "checks": [
+    "actual_versioned_park_and_offer_cancel_same_connection_without_files",
+    "stale_nonce_reuse_after_completed_return_closes_connection",
+    "malformed_uppercase_nonce_closes_connection",
+    "wrong_parked_return_closes_connection",
+    "duplicate_park_closes_connection",
+    "trailing_request_field_closes_connection",
+    "out_of_state_mail_control_closes_connection",
+    "current_approval_revocation_before_park_denied",
+    "current_approval_revocation_after_park_denied",
+    "old_native_explanation_same_ssh_return",
+    "default_build_explanation_same_ssh_return",
+    "network_unconfigured_explanation_same_ssh_return"
+  ],
+  "files_disabled": true,
+  "no_private_unlock": true,
+  "normal_limits_unchanged": true,
+  "capacity_claim": false,
+  "physical_hardware": false
+}

@@ -1,0 +1,5 @@
+from pathlib import Path
+import hashlib,json
+p=Path('/private/tmp/faction230-native-OWNED/76_postrun_rescan.py');out=Path('/private/tmp/faction230-integration-OWNED/retained_rescan02.py');raw=p.read_bytes();assert raw.count(b"P/'privacy-postrun-rescan'")==1
+out.write_bytes(raw.replace(b"P/'privacy-postrun-rescan'",b"P/'privacy-postrun-rescan02'"))
+Path('/private/tmp/faction230-integration-OWNED/retained-rescan02-source.json').write_text(json.dumps(dict(original_source_sha256=hashlib.sha256(raw).hexdigest(),executed_source_sha256=hashlib.sha256(out.read_bytes()).hexdigest(),change='fresh private output directory only; original candidate and first trace retained'),indent=2)+'\n')

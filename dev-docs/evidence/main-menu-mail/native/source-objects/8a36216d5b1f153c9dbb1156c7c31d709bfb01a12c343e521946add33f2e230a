@@ -1,0 +1,39 @@
+# Optional single-object SFTP service; independent of BBS/admin SSH.
+Port @PORT@
+ListenAddress @LISTEN_ADDRESS@
+HostKey /etc/ssh/ssh_host_ed25519_key
+PidFile /var/run/faction-files-sshd.pid
+AllowUsers factionfiles
+AuthorizedKeysFile none
+AuthorizedKeysCommand /usr/local/libexec/faction-files key %t %k
+AuthorizedKeysCommandUser factionfileauth
+PubkeyAcceptedAlgorithms ssh-ed25519
+AuthenticationMethods publickey
+PubkeyAuthentication yes
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+PermitUserEnvironment no
+PermitUserRC no
+PermitTTY no
+DisableForwarding yes
+AllowTcpForwarding no
+AllowStreamLocalForwarding no
+AllowAgentForwarding no
+X11Forwarding no
+PermitTunnel no
+MaxAuthTries 3
+MaxSessions 1
+MaxStartups 2:30:4
+LoginGraceTime 20
+ClientAliveInterval 30
+ClientAliveCountMax 1
+ChannelTimeout session=5m
+UnusedConnectionTimeout 20s
+PrintMotd no
+PrintLastLog no
+UseDNS no
+LogLevel ERROR
+Subsystem sftp /usr/local/libexec/faction-files subsystem
+# Each authorized key supplies a fixed one-use command. No static member keys.

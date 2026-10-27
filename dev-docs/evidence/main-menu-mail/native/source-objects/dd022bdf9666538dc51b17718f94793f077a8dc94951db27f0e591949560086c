@@ -1,0 +1,367 @@
+//! Bounded remote terminal filter. File controls are data, never local actions.
+use faction_files::{invalid, native};
+use std::io;
+#[derive(Debug)]
+pub enum Event {
+    Text(Vec<u8>),
+    Frame(Vec<String>),
+    Mail(faction_terminal::home_mail::Frame),
+}
+#[derive(Default)]
+enum State {
+    #[default]
+    Ground,
+    Escape,
+    Csi(Vec<u8>),
+    Osc(Vec<u8>, bool),
+    Apc(Vec<u8>, bool),
+    Discard(bool, usize),
+}
+#[derive(Default)]
+pub struct Filter {
+    state: State,
+    utf8: Vec<u8>,
+    pub graphics: faction_terminal::graphics::Gate,
+}
+impl Filter {
+    pub fn reset_boundary(&mut self) {
+        self.state = State::Ground;
+        self.utf8.clear();
+    }
+    fn printable(&mut self, b: u8, text: &mut Vec<u8>) {
+        if self.utf8.is_empty() && b < 128 {
+            if b >= 32 || b"\r\n\t\x08\x07".contains(&b) {
+                text.push(b);
+            }
+            return;
+        }
+        self.utf8.push(b);
+        match std::str::from_utf8(&self.utf8) {
+            Ok(s) => {
+                for c in s.chars() {
+                    if !c.is_control() {
+                        let mut bytes = [0; 4];
+                        text.extend_from_slice(c.encode_utf8(&mut bytes).as_bytes());
+                    }
+                }
+                self.utf8.clear();
+            }
+            Err(e) if e.error_len().is_some() || self.utf8.len() >= 4 => {
+                text.push(b'?');
+                self.utf8.clear();
+            }
+            Err(_) => (),
+        }
+    }
+    pub fn feed(&mut self, bytes: &[u8]) -> io::Result<Vec<Event>> {
+        let mut out = Vec::new();
+        let mut text = Vec::new();
+        for &b in bytes {
+            match std::mem::take(&mut self.state) {
+                State::Ground => {
+                    if b == 27 {
+                        self.utf8.clear();
+                        self.state = State::Escape;
+                    } else {
+                        self.printable(b, &mut text);
+                    }
+                }
+                State::Escape => match b {
+                    b'[' => self.state = State::Csi(Vec::new()),
+                    b']' => self.state = State::Osc(Vec::new(), false),
+                    b'_' if self.graphics.enabled => {
+                        let mut v = Vec::with_capacity(4096);
+                        v.extend_from_slice(b"\x1b_");
+                        self.state = State::Apc(v, false)
+                    }
+                    b'P' | b'_' | b'^' => self.state = State::Discard(false, 0),
+                    _ => (),
+                },
+                State::Csi(mut v) => {
+                    if (0x40..=0x7e).contains(&b) {
+                        let valid = v.iter().all(|b| b.is_ascii_digit() || b";?".contains(b))
+                            && (b"mHfABCDGdJKsu".contains(&b)
+                                || (b"hl".contains(&b) && v == b"?25"));
+                        if valid {
+                            text.extend_from_slice(b"\x1b[");
+                            text.extend(v);
+                            text.push(b);
+                        }
+                    } else if v.len() < 64 {
+                        v.push(b);
+                        self.state = State::Csi(v);
+                    } else {
+                        return Err(invalid());
+                    }
+                }
+                State::Osc(mut v, esc) => {
+                    if b == 7 || (esc && b == b'\\') {
+                        if let Some(payload) = v.strip_prefix(b"7770;FACTION1;") {
+                            let frame = native::unframe(payload)?;
+                            if !text.is_empty() {
+                                out.push(Event::Text(std::mem::take(&mut text)));
+                            }
+                            out.push(Event::Frame(frame));
+                        } else if let Some(payload) =
+                            v.strip_prefix(faction_terminal::home_mail::PREFIX.as_bytes())
+                        {
+                            // MAIL1 requires the frozen BEL terminator, unlike Files OSC.
+                            if b != 7 || esc {
+                                return Err(invalid());
+                            }
+                            let payload = std::str::from_utf8(payload).map_err(|_| invalid())?;
+                            let frame = faction_terminal::home_mail::parse_frame(payload)
+                                .map_err(|_| invalid())?;
+                            if !text.is_empty() {
+                                out.push(Event::Text(std::mem::take(&mut text)));
+                            }
+                            out.push(Event::Mail(frame));
+                        }
+                    } else if v.len() < 5520 {
+                        if esc {
+                            v.push(27);
+                        }
+                        if b != 27 {
+                            v.push(b);
+                        }
+                        self.state = State::Osc(v, b == 27);
+                    } else {
+                        return Err(invalid());
+                    }
+                }
+                State::Apc(mut v, esc) => {
+                    if esc && b == b'\\' {
+                        if v.len() + 2 > faction_terminal::graphics::MAX_COMMAND {
+                            return Err(invalid());
+                        }
+                        v.extend_from_slice(b"\x1b\\");
+                        let command = std::str::from_utf8(&v).map_err(|_| invalid())?;
+                        if let Some(trusted) = self
+                            .graphics
+                            .accept(command, std::time::Instant::now())
+                            .map_err(|_| invalid())?
+                        {
+                            if !text.is_empty() {
+                                out.push(Event::Text(std::mem::take(&mut text)));
+                            }
+                            out.push(Event::Text(trusted.into_bytes()));
+                        }
+                    } else {
+                        if v.len() >= faction_terminal::graphics::MAX_COMMAND - 4 {
+                            return Err(invalid());
+                        }
+                        if esc {
+                            v.push(27);
+                        }
+                        if b != 27 {
+                            v.push(b);
+                        }
+                        self.state = State::Apc(v, b == 27);
+                    }
+                }
+                State::Discard(esc, n) => {
+                    if !(esc && b == b'\\') {
+                        if n >= 8192 {
+                            return Err(invalid());
+                        }
+                        self.state = State::Discard(b == 27, n + 1);
+                    }
+                }
+            }
+        }
+        if !text.is_empty() {
+            out.push(Event::Text(text));
+        }
+        Ok(out)
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered() {
+        let mut filter = Filter::default();
+        let mut text = Vec::new();
+        let input = "café 界\x1b[38;2;190;80;255mRGB\x1b[0m\x1b[?2026$p\x1b[?2026hframe\x1b[?2026l\x1b_Ga=T,t=f;L2V0Yy9wYXNzd2Q=\x1b\\\x1bPqgraphics\x1b\\\x1b]52;c;clipboard\x07";
+        for b in input.bytes() {
+            for e in filter.feed(&[b]).unwrap() {
+                match e {
+                    Event::Text(t) => text.extend(t),
+                    Event::Frame(_) | Event::Mail(_) => panic!("unexpected local action"),
+                }
+            }
+        }
+        assert_eq!(
+            String::from_utf8(text).unwrap(),
+            "café 界\x1b[38;2;190;80;255mRGB\x1b[0mframe"
+        );
+    }
+    #[test]
+    fn fragmented_frames_and_terminal_queries_cannot_become_local_actions() {
+        let frame = native::frame(&["ready"]).unwrap();
+        let input = format!("hi\x1b]52;c;clipboard\x07\x1b[6n\x1bPbad\x1b\\{frame}世界\x1b[31mred");
+        let mut filter = Filter::default();
+        let mut text = Vec::new();
+        let mut frames = Vec::new();
+        for b in input.bytes() {
+            for e in filter.feed(&[b]).unwrap() {
+                match e {
+                    Event::Text(t) => text.extend(t),
+                    Event::Frame(f) => frames.push(f),
+                    Event::Mail(_) => panic!("unexpected mail action"),
+                }
+            }
+        }
+        assert_eq!(frames, vec![vec!["ready"]]);
+        assert_eq!(String::from_utf8(text).unwrap(), "hi世界\x1b[31mred");
+        assert!(
+            Filter::default()
+                .feed(&[b"\x1b]".as_slice(), &vec![b'x'; 6000]].concat())
+                .is_err()
+        );
+    }
+}
+
+/// Bounded convenience history only. Remembering a reference grants no authority.
+#[derive(Default)]
+pub struct Recent {
+    tail: Vec<u8>,
+    pub items: Vec<String>,
+}
+impl Recent {
+    pub fn feed(&mut self, bytes: &[u8]) {
+        const PREFIX: &[u8] = b"faction-file:";
+        const LENGTH: usize = 78;
+        for chunk in bytes.chunks(4096) {
+            let mut b = std::mem::take(&mut self.tail);
+            b.extend_from_slice(chunk);
+            for start in 0..b.len().saturating_sub(LENGTH - 1) {
+                let token = &b[start..start + LENGTH];
+                if token.starts_with(PREFIX) && token[PREFIX.len() + 32] == b'/' {
+                    let ns = std::str::from_utf8(&token[PREFIX.len()..PREFIX.len() + 32]);
+                    let id = std::str::from_utf8(&token[PREFIX.len() + 33..]);
+                    if ns.is_ok_and(faction_files::id) && id.is_ok_and(faction_files::id) {
+                        let text = String::from_utf8_lossy(token).into_owned();
+                        self.items.retain(|s| s != &text);
+                        self.items.insert(0, text);
+                        self.items.truncate(8);
+                    }
+                }
+            }
+            self.tail = b[b.len().saturating_sub(LENGTH - 1)..].to_vec();
+        }
+    }
+}
+
+#[cfg(test)]
+mod recent_tests {
+    use super::*;
+    #[test]
+    fn recent_links_are_bounded_deduplicated_and_survive_fragmented_output() {
+        let mut r = Recent::default();
+        for i in 0..20 {
+            let link = format!("faction-file:{}/{i:032x}", "a".repeat(32));
+            for b in link.bytes() {
+                r.feed(&[b]);
+            }
+            r.feed(b" ");
+        }
+        assert_eq!(r.items.len(), 8);
+        let newest = r.items[0].clone();
+        r.feed(newest.as_bytes());
+        assert_eq!(r.items.len(), 8);
+        assert_eq!(r.items[0], newest);
+        r.feed(b"faction-file:bad/path");
+        assert_eq!(r.items.len(), 8);
+    }
+}
+
+#[cfg(test)]
+mod graphics_tests {
+    use super::*;
+    use faction_terminal::graphics::{self, Gate};
+    fn text(events: Vec<Event>) -> Vec<u8> {
+        events
+            .into_iter()
+            .flat_map(|e| match e {
+                Event::Text(t) => t,
+                _ => panic!("graphics became file authority"),
+            })
+            .collect()
+    }
+    #[test]
+    fn native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate() {
+        let mut filter = Filter::default();
+        assert!(text(filter.feed(graphics::QUERY.as_bytes()).unwrap()).is_empty());
+        filter.graphics = Gate::default();
+        filter.graphics.enabled = true;
+        let mut input = String::from(graphics::QUERY);
+        input.push_str(graphics::DELETE);
+        for i in 0..graphics::CHUNKS {
+            input.push_str(&graphics::chunk(i).unwrap());
+        }
+        input.push_str(graphics::DELETE);
+        let mut output = Vec::new();
+        for b in input.bytes() {
+            output.extend(text(filter.feed(&[b]).unwrap()));
+        }
+        assert_eq!(output, input.as_bytes());
+        assert!(
+            text(
+                filter
+                    .feed(b"\x1b]52;c;secret\x07\x1bPqSIXEL\x1b\\")
+                    .unwrap()
+            )
+            .is_empty()
+        );
+    }
+    #[test]
+    fn native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks() {
+        for malicious in [
+            "\x1b_Gt=f;AAAA\x1b\\".to_owned(),
+            "\x1b_Gt=s;AAAA\x1b\\".into(),
+            "\x1b_Gf=100;AAAA\x1b\\".into(),
+            graphics::chunk(1).unwrap(),
+            format!("\x1b_G{}\x1b\\", "x".repeat(4097)),
+            graphics::chunk(0).unwrap().replace("s=160", "s=161"),
+        ] {
+            let mut filter = Filter::default();
+            filter.graphics.enabled = true;
+            assert!(filter.feed(malicious.as_bytes()).is_err());
+        }
+        let mut filter = Filter::default();
+        filter.graphics.enabled = true;
+        let command = graphics::chunk(0).unwrap();
+        assert!(text(filter.feed(&command.as_bytes()[..2000]).unwrap()).is_empty());
+        // A truncated stream is never emitted; teardown sends only a trusted delete.
+        assert!(text(filter.feed(b"\x1b]52;c;bad\x07").unwrap()).is_empty());
+        assert!(filter.feed(b"\x1b\\").is_err());
+    }
+}
+
+#[cfg(test)]
+mod home_mail_tests {
+    use super::*;
+    use faction_terminal::home_mail::{self, Frame};
+    #[test]
+    fn home_mail_control_is_separate_and_preserves_text_order() {
+        let mut filter = Filter::default();
+        let wire = format!(
+            "before{}after",
+            home_mail::encode_frame(&Frame::Offer).unwrap()
+        );
+        let events = filter.feed(wire.as_bytes()).unwrap();
+        assert!(
+            matches!(&events[..], [Event::Text(a), Event::Mail(Frame::Offer), Event::Text(b)] if a == b"before" && b == b"after")
+        );
+    }
+    #[test]
+    fn malformed_trailing_mail_frame_rejects_the_entire_read() {
+        let good = home_mail::encode_frame(&Frame::Offer).unwrap();
+        assert!(
+            Filter::default()
+                .feed(format!("{good}\x1b]7770;FACTION-MAIL1;parked;bad\x07").as_bytes())
+                .is_err()
+        );
+    }
+}

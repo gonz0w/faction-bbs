@@ -1,0 +1,1 @@
+["cargo", "test", "-p", "faction-cli", "--lib", "home_mail_tests"]

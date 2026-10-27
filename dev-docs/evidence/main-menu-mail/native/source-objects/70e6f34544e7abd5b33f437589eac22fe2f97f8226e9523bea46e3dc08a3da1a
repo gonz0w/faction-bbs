@@ -1,0 +1,10 @@
+from lab import *
+import shutil,hashlib
+run=P/'host-preflight01';run.mkdir(mode=0o700);code=run/'code';code.mkdir()
+for n in ['probe_menu_mail.py','probe_visit_mail.py','check_restricted_ssh.py','smoke_board_launcher.py','smoke_local_console.py']:(code/n).write_bytes((R/'tools'/n).read_bytes())
+(run/'source-manifest.json').write_text(json.dumps({p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in code.iterdir()},sort_keys=True,indent=2)+'\n')
+b=Path('/private/tmp/faction230-client-OWNED/host-network')
+argv=['python3',str(code/'probe_menu_mail.py'),'--client',str(b/'faction-client'),'--checkpoint-fixture',str(b/'checkpoint_ui_fixture'),'--mail-fixture',str(b/'home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-settings.json'),'--private-root',str(P),'--output',str(run/'result.json')]
+with (run/'raw.log').open('wb') as f:r=subprocess.run(argv,stdout=f,stderr=f,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+(run/'execution.json').write_text(json.dumps({'scope':'intermediate-preflight-only-two-core-2GiB','returncode':r.returncode,'client_sha256':hashlib.sha256((b/'faction-client').read_bytes()).hexdigest()},indent=2)+'\n')
+print((run/'raw.log').read_text());print('Preflight returncode',r.returncode)

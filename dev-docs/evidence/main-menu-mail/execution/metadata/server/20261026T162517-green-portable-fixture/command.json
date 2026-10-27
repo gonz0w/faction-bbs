@@ -1,0 +1,1 @@
+["cargo", "test", "-p", "faction-service", "native_mail_tests", "--", "--test-threads=2"]
