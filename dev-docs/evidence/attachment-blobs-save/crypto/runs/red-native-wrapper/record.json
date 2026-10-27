@@ -1,0 +1,41 @@
+{
+  "command": [
+    "cargo",
+    "+1.96.0",
+    "test",
+    "-p",
+    "faction-omemo",
+    "--features",
+    "native",
+    "--test",
+    "blob_guard",
+    "--locked",
+    "--offline",
+    "--",
+    "--test-threads=1"
+  ],
+  "cwd": "/Users/cam/DEV/faction-bbs",
+  "environment": {
+    "OPENSSL_INCLUDE_DIR": "/opt/homebrew/opt/openssl@3/include",
+    "OPENSSL_LIB_DIR": "/opt/homebrew/opt/openssl@3/lib",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/private/tmp/faction254-crypto-OWNED/target",
+    "TMPDIR": "/private/tmp/faction254-crypto-OWNED"
+  },
+  "started_at_epoch": 1793141899.866529,
+  "elapsed_seconds": 0.32592105865478516,
+  "exit": 101,
+  "source_sha256": {
+    "Cargo.lock": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+    "crates/faction-omemo/Cargo.toml": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650",
+    "crates/faction-omemo/build.rs": "a46259dfaa8c6edfe8f4a5793d83aaadb362e4ff7e57009c939bacf03d6d6688",
+    "crates/faction-omemo/src/lib.rs": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb",
+    "crates/faction-omemo/src/attachment.rs": "0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac",
+    "crates/faction-omemo/src/native.rs": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c",
+    "crates/faction-omemo/tests/blob_contract.rs": "c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa",
+    "crates/faction-omemo/tests/blob_native.rs": "66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead",
+    "crates/faction-omemo/tests/blob_guard.rs": "1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e",
+    "crates/faction-omemo/tests/blob_guard.c": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097",
+    "crates/faction-omemo/src/blob_tests.rs": "aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7"
+  }
+}

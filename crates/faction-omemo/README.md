@@ -26,7 +26,7 @@ cargo test -p faction-omemo --features native
 cargo clippy -p faction-omemo --all-targets --features native -- -D warnings
 ```
 
-Only [six byte-pinned files](vendor/SHA256SUMS) compile. Builds never download,
+The [six byte-pinned upstream vendor files](vendor/SHA256SUMS) remain unchanged; the owned adapter and `native/attachment.c` also compile. Builds never download,
 generate, patch, or accept source/profile overrides. [Provenance and update
 requirements](VENDOR.md) and [third-party notices](NOTICE.md) accompany the files.
 
@@ -63,8 +63,7 @@ bounded SCE subset, not a claim of complete XMPP/SCE extension support.
 
 The native-only [experimental attachment metadata codec](../../dev-docs/attachment-metadata.md)
 handles one bounded descriptor inside authenticated SCE. The existing text-only
-SCE APIs and current checkpoint reject that extension. It does not provide blob
-verification, storage or attachment delivery; default features remain empty.
+SCE APIs and current checkpoint reject that extension. Separate [experimental blob primitives](../../dev-docs/attachment-blobs-save.md) encrypt and verify bounded bytes; explicit local save is provided by `faction-client`. Neither provides attachment delivery or durable attachment mailbox state or keys. Default features remain empty.
 
 The `interop_probe` Cargo example is a laboratory-only, uninstalled raw-state
 channel for the unchanged [independent reference](../../experiments/200-omemo-interop/reference.py).

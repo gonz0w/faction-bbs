@@ -122,8 +122,7 @@ matched bounded historical AES-256-GCM inputs with an unchanged reference on one
 macOS host ([saved evidence](../dev-docs/evidence/attachment-bytes/README.md)). It also retained reference chunk decryption failures; it does not qualify
 streaming or private delivery. An [experimental native metadata codec](../dev-docs/attachment-metadata.md)
 now handles one bounded descriptor inside authenticated SCE; current mail
-checkpoints reject it and attachments are not available for delivery. It does not
-verify file bytes or establish modern-client interoperability. Authenticated private
+checkpoints reject it and attachments are not available for delivery. Separate [experimental device-library primitives](../dev-docs/attachment-blobs-save.md) encrypt and verify bounded bytes and explicitly save verified bytes locally, but do not make attachments available in mail or establish modern-client interoperability. Authenticated private
 storage, recipient authorization and durable attachment keys remain unproven.
 Historical XEP-0454 is a byte-level comparison, not the candidate format. Necessary
 routing, sizes and timing can still be visible; there is no plaintext fallback.

@@ -1,0 +1,63 @@
+   Compiling typenum v1.20.1
+   Compiling libc v0.2.191
+   Compiling hybrid-array v0.4.15
+   Compiling crypto-common v0.2.2
+   Compiling cmov v0.5.4
+   Compiling ctutils v0.4.3
+   Compiling cfg-if v1.0.5
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling block-buffer v0.12.1
+   Compiling cc v1.9.0
+   Compiling serde_core v1.0.229
+   Compiling getrandom v0.4.3
+   Compiling const-oid v0.10.2
+   Compiling digest v0.11.3
+   Compiling faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+   Compiling inout v0.2.5
+   Compiling winnow v1.0.4
+   Compiling zeroize v1.9.1
+   Compiling rustix v1.1.5
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling errno v0.3.14
+   Compiling base64ct v1.8.3
+   Compiling bitflags v2.13.2
+   Compiling phc v0.6.1
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling cipher v0.5.2
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+   Compiling universal-hash v0.6.1
+   Compiling cpufeatures v0.3.1
+   Compiling base64 v0.23.1
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling memchr v2.8.3
+   Compiling roxmltree v0.21.1
+   Compiling sha2 v0.11.1
+   Compiling poly1305 v0.9.1
+   Compiling chacha20 v0.10.2
+   Compiling password-hash v0.6.1
+   Compiling aead v0.6.1
+   Compiling blake2 v0.11.0
+   Compiling unicode-width v0.2.2
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling argon2 v0.6.0
+   Compiling chacha20poly1305 v0.11.0
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0432]: unresolved import `faction_client::attachment_save`
+ --> crates/faction-client/tests/attachment_save.rs:2:21
+  |
+2 | use faction_client::attachment_save::{SaveError, save_verified};
+  |                     ^^^^^^^^^^^^^^^ could not find `attachment_save` in `faction_client`
+
+error[E0432]: unresolved import `faction_omemo::blob`
+ --> crates/faction-client/tests/attachment_save.rs:3:45
+  |
+3 | use faction_omemo::{attachment::Descriptor, blob};
+  |                                             ^^^^ no `blob` in the root
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `faction-client` (test "attachment_save") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

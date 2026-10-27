@@ -1,0 +1,1006 @@
+{
+  "schema": 1,
+  "note": "Later curation map from original execution-time source paths to unchanged public source objects/observations; not an original execution log.",
+  "aliases": {
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/logs/crypto.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/logs/crypto.json",
+      "sha256": "8ceacbc992a68786fab09ec03405cbb24b46cb590f4e9a10b1cb301935d0576b"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/logs/crypto.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/logs/crypto.log",
+      "sha256": "3682ecddedfad46810f2b1b8f533fee65c4fdcde9f87a911895012bb73346113"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/logs/save-integration.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/logs/save-integration.json",
+      "sha256": "bcf4de0d5c49d7b5bb4e347063642da5218ae72cfb6e75f3944f8edf6206560f"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/logs/save-integration.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/logs/save-integration.log",
+      "sha256": "459adcf524ae89d74c9b6254efbbf6fee8c87584d060c2bde3c668f9f966a00e"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/logs/save-unit.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/logs/save-unit.json",
+      "sha256": "7db51a66e490c044fbd2887a6f51e957ee5631ca2625c52542f9c1e4d87f59e1"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/logs/save-unit.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/logs/save-unit.log",
+      "sha256": "401eeb0f138a382296fe2a2a2b728bacbe1dcef058f4017914efb5b628820233"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/replay-summary.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/replay-summary.json",
+      "sha256": "28c3beaf911cfe4aaf907a23508f0208665b6017aba9e107a7896ae19463c6a4"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/review-outcome.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/review-outcome.json",
+      "sha256": "321cf4be0e7d106462e599244e2c6ceb5cfdc910b73a5e346d81325777f0059d"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/source-manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/review/source-manifest.json",
+      "sha256": "1053cc1a19a3b31d2f0003f02d53b2c4ef336f54b8d34c6c70cc4b544675c803"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-client/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/f4a5afdbe7e12495e2f0cbf54a8bb64b6ca337b34625d9e50556eb4b368428c8.toml",
+      "sha256": "f4a5afdbe7e12495e2f0cbf54a8bb64b6ca337b34625d9e50556eb4b368428c8"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-client/src/attachment_save.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/d0244fb05ddf2b74c9efd41c4e2fa583bd7b9d9f5154bdca1b2066a8a6e104cc.rs",
+      "sha256": "d0244fb05ddf2b74c9efd41c4e2fa583bd7b9d9f5154bdca1b2066a8a6e104cc"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-client/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288.rs",
+      "sha256": "e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-client/tests/attachment_save.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132.rs",
+      "sha256": "f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8.rs",
+      "sha256": "974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930.rs",
+      "sha256": "bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7.rs",
+      "sha256": "57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0.rs",
+      "sha256": "37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0"
+    },
+    "/private/tmp/faction254-255-review-OWNED-20261027-01/sources/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309.rs",
+      "sha256": "2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309"
+    },
+    "/private/tmp/faction254-crypto-OWNED/attachment-analysis.plist": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/attachment-analysis.plist",
+      "sha256": "58b0f3df64f54ffc4387afe61f7dc9984e7fb63070b2ccd4fd6d1729aca1047e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/99c918fade5c9f4a757e81fdf32855250c7fa5d188cd366242a5811d56be247f.rs",
+      "sha256": "99c918fade5c9f4a757e81fdf32855250c7fa5d188cd366242a5811d56be247f"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7.rs",
+      "sha256": "aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa.rs",
+      "sha256": "c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e.rs",
+      "sha256": "1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead.rs",
+      "sha256": "66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/after-first-green-before-format/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/after-first-green-before-format/manifest.json",
+      "sha256": "0542c72599fee4da43e9de6167ea9181b9ff96f245d83dab9513f167f9cec642"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8.rs",
+      "sha256": "974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930.rs",
+      "sha256": "bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7.rs",
+      "sha256": "57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0.rs",
+      "sha256": "37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309.rs",
+      "sha256": "2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/c-static-analysis/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/c-static-analysis/manifest.json",
+      "sha256": "3c7d886cc1eb9734d5e43b1f6be9703f77d5354e3b5f7641b0318f2e1c8a0f0e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8.rs",
+      "sha256": "974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930.rs",
+      "sha256": "bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7.rs",
+      "sha256": "57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0.rs",
+      "sha256": "37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309.rs",
+      "sha256": "2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/clippy-native/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/clippy-native/manifest.json",
+      "sha256": "3c7d886cc1eb9734d5e43b1f6be9703f77d5354e3b5f7641b0318f2e1c8a0f0e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8.rs",
+      "sha256": "974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930.rs",
+      "sha256": "bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7.rs",
+      "sha256": "57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0.rs",
+      "sha256": "37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309.rs",
+      "sha256": "2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatted-source-check/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/formatted-source-check/manifest.json",
+      "sha256": "3c7d886cc1eb9734d5e43b1f6be9703f77d5354e3b5f7641b0318f2e1c8a0f0e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/cd569467065662f17a4b59e8dfb1c831c8d314d366cb8aa41e40a1ac48f3385c.rs",
+      "sha256": "cd569467065662f17a4b59e8dfb1c831c8d314d366cb8aa41e40a1ac48f3385c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7.rs",
+      "sha256": "aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71e9fd4bb4b2c164d64e0838fe297a0e364f1150d11cb6afc1b44659d7f81971.rs",
+      "sha256": "71e9fd4bb4b2c164d64e0838fe297a0e364f1150d11cb6afc1b44659d7f81971"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/e2c0a61539b25f2b70acbfb97661f2e09d232f20aeaa470278ba80f824c7e56e.rs",
+      "sha256": "e2c0a61539b25f2b70acbfb97661f2e09d232f20aeaa470278ba80f824c7e56e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead.rs",
+      "sha256": "66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/formatting-write-failure/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/formatting-write-failure/manifest.json",
+      "sha256": "f214473ea527180fccfa124449751e586769b404a25bfea0c0c7db0d7136682c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8.rs",
+      "sha256": "974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930.rs",
+      "sha256": "bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7.rs",
+      "sha256": "57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0.rs",
+      "sha256": "37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309.rs",
+      "sha256": "2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-formatted/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/green-formatted/manifest.json",
+      "sha256": "3c7d886cc1eb9734d5e43b1f6be9703f77d5354e3b5f7641b0318f2e1c8a0f0e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa.rs",
+      "sha256": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/native/attachment.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9.c",
+      "sha256": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e.rs",
+      "sha256": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/src/blob.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/99c918fade5c9f4a757e81fdf32855250c7fa5d188cd366242a5811d56be247f.rs",
+      "sha256": "99c918fade5c9f4a757e81fdf32855250c7fa5d188cd366242a5811d56be247f"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7.rs",
+      "sha256": "aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867.rs",
+      "sha256": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa.rs",
+      "sha256": "c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e.rs",
+      "sha256": "1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead.rs",
+      "sha256": "66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/green-initial/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/green-initial/manifest.json",
+      "sha256": "0542c72599fee4da43e9de6167ea9181b9ff96f245d83dab9513f167f9cec642"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/a46259dfaa8c6edfe8f4a5793d83aaadb362e4ff7e57009c939bacf03d6d6688.rs",
+      "sha256": "a46259dfaa8c6edfe8f4a5793d83aaadb362e4ff7e57009c939bacf03d6d6688"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac.rs",
+      "sha256": "0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa.rs",
+      "sha256": "c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead.rs",
+      "sha256": "66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-interface/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/red-interface/manifest.json",
+      "sha256": "adfce32e8f2e808897d11470d0710b9bd79f2f59e30437e202a7edee928759da"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/Cargo.lock": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/Cargo.toml": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/build.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/a46259dfaa8c6edfe8f4a5793d83aaadb362e4ff7e57009c939bacf03d6d6688.rs",
+      "sha256": "a46259dfaa8c6edfe8f4a5793d83aaadb362e4ff7e57009c939bacf03d6d6688"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/src/attachment.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac.rs",
+      "sha256": "0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/src/blob_tests.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7.rs",
+      "sha256": "aea30e396422f1928bfe213d885033e2f4c1b24238370af31f69fd1290b3b2a7"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/src/lib.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/src/native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c.rs",
+      "sha256": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/tests/blob_contract.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa.rs",
+      "sha256": "c920dc1a4d4b069d8dd619a744a8c29c5d7113abd8e15f8984ac52db88e9acaa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/tests/blob_guard.c": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097.c",
+      "sha256": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/tests/blob_guard.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e.rs",
+      "sha256": "1f27b1ee4383874b26c2f02e71e36a4da45282d6e0dc0add012afa8d3160679e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/crates/faction-omemo/tests/blob_native.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead.rs",
+      "sha256": "66a9bcb3856c152c5f3f50fc3c99fe5020838b87a57b718c1f04b2f96adfaead"
+    },
+    "/private/tmp/faction254-crypto-OWNED/captures/red-native-wrapper/manifest.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/captures/red-native-wrapper/manifest.json",
+      "sha256": "2935aa1b126a9c02d72d5f98a82725cb4020240a109f727328dab78523973a55"
+    },
+    "/private/tmp/faction254-crypto-OWNED/format-write-failure.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/format-write-failure.json",
+      "sha256": "86d3530a4d9da2e3dc713b06f9db960800c8922b0c5c0f4f91c91ff5fde8fd8d"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-build-consumer/after-before-format.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/16d481a0cefa309f67f0d16598e74a8119106f7c92dce73db23d30b3562b430a.rs",
+      "sha256": "16d481a0cefa309f67f0d16598e74a8119106f7c92dce73db23d30b3562b430a"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-build-consumer/after-formatted.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/a073d87e2150617017ed310c436748e069fa9a1b17e7ea783f26843010ddf94e.rs",
+      "sha256": "a073d87e2150617017ed310c436748e069fa9a1b17e7ea783f26843010ddf94e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-build-consumer/before.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/6f14aaba9ea6f93c03b0fdc8e0978e96290bf4106f4960eb6411cb4204f49f0c.rs",
+      "sha256": "6f14aaba9ea6f93c03b0fdc8e0978e96290bf4106f4960eb6411cb4204f49f0c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-build-consumer/change.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-build-consumer/change.json",
+      "sha256": "446d126819df7a278d57d71854d6da3d2e7b83dc26ba45080c72f66e777e2291"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-cost/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/record.json",
+      "sha256": "2dc2aa2698d30704902145ed201dfcd4060bc3ce90e0f5cabb0b213da8bc60ef"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-cost/resource.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/resource.log",
+      "sha256": "782975c0010d748f4282398c23b32f48fe7eeb48cdf72ffdfcbd57b862365aaa"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-cost/stdout.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/stdout.log",
+      "sha256": "3c60a5591d1e1ea1867e345636abd6603aa412fe4dccfca2c725e0fee3fe9553"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-final-checks/build-before-edition-format.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/a073d87e2150617017ed310c436748e069fa9a1b17e7ea783f26843010ddf94e.rs",
+      "sha256": "a073d87e2150617017ed310c436748e069fa9a1b17e7ea783f26843010ddf94e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-final-checks/build-final.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/8dd4b563fd69bba5265412cffb546d976a05db90143679698fd6ff2fec21717b.rs",
+      "sha256": "8dd4b563fd69bba5265412cffb546d976a05db90143679698fd6ff2fec21717b"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-final-checks/command0.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command0.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-final-checks/command1.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command1.log",
+      "sha256": "d628433a9c67352bd57ae3cce7df7d27ab430f60fd0c3357d294e512e0feda37"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-final-checks/command2.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command2.log",
+      "sha256": "20327de5fea790d66b2a90380b1a52103408f3bbcb4f4f08529076458728115e"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-final-checks/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/record.json",
+      "sha256": "9cd15fd208a0093e4d9e803b570b8abe009d1bc115b4d2c866b8b45a7e5d9065"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-policy/command0.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-policy/command0.log",
+      "sha256": "9f2da40b9a52bbfaff1b4352567f5f3410cb97eb4aa14672a2c82f84f98ed6cb"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-policy/command1.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-policy/command1.log",
+      "sha256": "bc1b22ab9c0a65a0267c0e232410138eb482858659d50518f5f0f50410addac8"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-policy/command2.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-policy/command2.log",
+      "sha256": "74fb42a22c155e451d4402b68c13e624cc9257d1155c67308e3dfb820dd9f973"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-policy/command3.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-policy/command3.log",
+      "sha256": "b4d3aba1d8601f568c81a8463f54d3c79281797d16344b72f81cd91e0fc3a35a"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-policy/command4.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-policy/command4.log",
+      "sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-policy/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-policy/record.json",
+      "sha256": "d5ea8354a29649d8bac9b6cf363bfa4a1c0404683f9b3d3b0ee967dd00a78a19"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions-corrected/command0.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command0.log",
+      "sha256": "3c386d4cc54dd0c96668a6972326d79cf788bc049b5c8a4070643bf689fd7aa1"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions-corrected/command1.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command1.log",
+      "sha256": "79a43b60f52126f63e536ed6763201a86933f452500b0e3c97e63dc40527c38d"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions-corrected/command2.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command2.log",
+      "sha256": "cd3c086fa517be26d749c2ad2b673da3a31a55568b13fdd83c9d5105f186859d"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions-corrected/command3.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command3.log",
+      "sha256": "5f1963dae15de99511509ed05faa0f326f7b82786b8d92d2527a7b02d148e69c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions-corrected/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/record.json",
+      "sha256": "d718f0da88fe3265de42306ee4a0b76c72c7dd7dba02392390752a01284eadfe"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions/command0.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions/command0.log",
+      "sha256": "d76a4e7b476e954cadbba3a3d0d503bc14d500e02d80007d2d191e2e50a493e9"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-regressions/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions/record.json",
+      "sha256": "fbc247f319df613f35069d12c3117ce76d28e7c0c6c5228472209a09cc217354"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-temper-check/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-temper-check/record.json",
+      "sha256": "352447d94b6b5b0a819761ecb067dcd97541383278c41ad49e81f082af1f108d"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-temper-check/stderr.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-temper-check/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/private/tmp/faction254-crypto-OWNED/lead-temper-check/stdout.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/lead-temper-check/stdout.txt",
+      "sha256": "9ddd12c979e628acfd4d180de642dd8a370a9126e200f1ec6030b856915d0886"
+    },
+    "/private/tmp/faction254-crypto-OWNED/product-docs-before-clarification/attachment-blobs-save.md": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/b6b68c15eee2379f603d0823843e66328e2626cba6c909fe97d87b132f51a78f.md.txt",
+      "sha256": "b6b68c15eee2379f603d0823843e66328e2626cba6c909fe97d87b132f51a78f"
+    },
+    "/private/tmp/faction254-crypto-OWNED/product-docs-before-clarification/omemo-README.md": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/1de9ced7de3e16363e3ab180b0938ba8ec4fc82fc6e8c8022d93b898307b1088.md.txt",
+      "sha256": "1de9ced7de3e16363e3ab180b0938ba8ec4fc82fc6e8c8022d93b898307b1088"
+    },
+    "/private/tmp/faction254-crypto-OWNED/run-initial.py": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/80ab33594443c73a1b301d8dd8bbccc79dc84f9ea885b4c37296d48e885a018f.py",
+      "sha256": "80ab33594443c73a1b301d8dd8bbccc79dc84f9ea885b4c37296d48e885a018f"
+    },
+    "/private/tmp/faction254-crypto-OWNED/run.py": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/227425b8a9e12510af659b712482afc10562c2fe05579c8578511b2b0824e064.py",
+      "sha256": "227425b8a9e12510af659b712482afc10562c2fe05579c8578511b2b0824e064"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/c-static-analysis/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/c-static-analysis/command.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/c-static-analysis/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/c-static-analysis/record.json",
+      "sha256": "e52e7b6628b7f9efe0bee3875d286bab111e2c3b80a4bfa7a81d0613563d78e1"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/clippy-native/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/clippy-native/command.log",
+      "sha256": "b4b53e194e0e6d270c1093c884b367c8c4284ac2d80d4344d337e9c9a50e0fd5"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/clippy-native/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/clippy-native/record.json",
+      "sha256": "631691d6679e73aef3babada13853a103720c5b67740dd4f5674b5e3fc9ab48a"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/formatted-source-check/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/formatted-source-check/command.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/formatted-source-check/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/formatted-source-check/record.json",
+      "sha256": "b94184ad64b29a5b5f81447d0b503126bd9136d58b6382c0cdcd5d10c539711b"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/green-formatted/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/command.log",
+      "sha256": "dd8f928cc4bc7a77a7e43f4d470eff55b4fec0a99008705495d4e88a9fc82e03"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/green-formatted/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/record.json",
+      "sha256": "2333b6fb55ab5a41637f2d6ed1a9d50992ed04d4a636bba3a534b706ab7b9ae1"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/green-initial/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/green-initial/command.log",
+      "sha256": "2f1c075a138fdd4fba718b092a2fd982515d864616955ca983109b92ea90bb63"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/green-initial/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/green-initial/record.json",
+      "sha256": "e684de372d2cdbfc387beaf2c05166e80b27e039a9f0c1388036a0ba4d7793f8"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/red-interface/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/red-interface/command.log",
+      "sha256": "fff6a6190015dc95038b9fc4411edfaf47e104749d187fc22be7b7a6db3efa0c"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/red-interface/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/red-interface/record.json",
+      "sha256": "8c5d5e3addfb0052d71d2448d388f548475a2e55657ab9da8ba4999937a10433"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/red-native-wrapper/command.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/red-native-wrapper/command.log",
+      "sha256": "d6dbebb1dedc75e76dc3db144bb17a51a4194041fedebba35da51b030f4959e4"
+    },
+    "/private/tmp/faction254-crypto-OWNED/runs/red-native-wrapper/record.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/crypto/runs/red-native-wrapper/record.json",
+      "sha256": "e30a35c8579e8472d1ccaec4b2f4a7e91d041d02b0b844bdab879d3391d88f4d"
+    },
+    "/private/tmp/faction255-save-OWNED0700/baseline-sha256.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/baseline-sha256.txt",
+      "sha256": "279e53c3c147d2276bb4146bf6756c594c2c636414af6463d5178a39a4349d7e"
+    },
+    "/private/tmp/faction255-save-OWNED0700/baseline-status.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/baseline-status.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/private/tmp/faction255-save-OWNED0700/classifier-characterization-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/classifier-characterization-command.txt",
+      "sha256": "307237e62cc3b559002506064a3b31fd2b32f2fe220047976b430a562265e99f"
+    },
+    "/private/tmp/faction255-save-OWNED0700/classifier-characterization.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/classifier-characterization.log",
+      "sha256": "9d03600953d5840fa96c74d032e5730e087731183fe209f1001236b75898e829"
+    },
+    "/private/tmp/faction255-save-OWNED0700/classifier-timeout-red-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/classifier-timeout-red-command.txt",
+      "sha256": "a60fbf64cd3be6695e2db610d0336026c4e157a910e9a75fe13db48698a186f6"
+    },
+    "/private/tmp/faction255-save-OWNED0700/classifier-timeout-red.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/classifier-timeout-red.log",
+      "sha256": "0a2d7a2f365f8b1af6e308571f5f8ec376e2c6d93bdfd874925f6c817f4cf7a5"
+    },
+    "/private/tmp/faction255-save-OWNED0700/client-lib-baseline.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/30d9ad61cb1791093b23a45a6eb90a9f3f6338e0e598111aec81043d746d340a.rs",
+      "sha256": "30d9ad61cb1791093b23a45a6eb90a9f3f6338e0e598111aec81043d746d340a"
+    },
+    "/private/tmp/faction255-save-OWNED0700/client-lib-green-candidate1.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288.rs",
+      "sha256": "e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288"
+    },
+    "/private/tmp/faction255-save-OWNED0700/client-lib-v1.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288.rs",
+      "sha256": "e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288"
+    },
+    "/private/tmp/faction255-save-OWNED0700/clippy-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/clippy-command.txt",
+      "sha256": "52abae0a1d5c248684e16b71452446cec16079677c9d02fecf46b3e8730fe137"
+    },
+    "/private/tmp/faction255-save-OWNED0700/clippy-final.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/clippy-final.log",
+      "sha256": "b97d398dad165b67f767d69e40d57ece3e3a46bdcaed84703302b7069161af6d"
+    },
+    "/private/tmp/faction255-save-OWNED0700/clippy-initial.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/clippy-initial.log",
+      "sha256": "98f8efbdde4c5c3f35f67c18efe1dbf9fdafa77bd81e46c6498667d1efc1b770"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-cargo-version.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-cargo-version.txt",
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-integration-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-integration-command.txt",
+      "sha256": "730883beacd112567720137ac26a1825eda288049e27327d124a556f6233e443"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-integration.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-integration.log",
+      "sha256": "11e0a20db3247c8eede543b66db1b1025e10b19bb3c56a48501421a3e6cdc6bf"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-openssl-version.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-openssl-version.txt",
+      "sha256": "376eb262422a1ddc4ec25c980dd62a5da76f12d7eaa9fdf79dddaf9191ae3de6"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-rust-version.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-rust-version.txt",
+      "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-source-sha256.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-source-sha256.txt",
+      "sha256": "cec1f293998951812a020d3328963525c2650a91262b8bccd7c5e6e8be091b42"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-status.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-status.txt",
+      "sha256": "c97b6f7096ad56b219b33c1b029dcdf720355fe7e285cf3e1549fec8b0e5746b"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-unit-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-unit-command.txt",
+      "sha256": "3459e2020548c12375e38eab99c33973026c8d8aa11da10d2bbf989976c6a13d"
+    },
+    "/private/tmp/faction255-save-OWNED0700/final-unit.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/final-unit.log",
+      "sha256": "ce4a0798a01fd8d976a54d147dcaaf4fac7b81b353652c3ca621e403e1a2ee39"
+    },
+    "/private/tmp/faction255-save-OWNED0700/first-green-source-sha256.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/first-green-source-sha256.txt",
+      "sha256": "937f33699cab634d88f675437326e185202685d1223ffb38d0b57f6624aa56ca"
+    },
+    "/private/tmp/faction255-save-OWNED0700/fixture-cleanup.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/fixture-cleanup.json",
+      "sha256": "fd6122d8580191e0654cc1a9f79bb55878cd2cd0fe8998a552ccd85d99360406"
+    },
+    "/private/tmp/faction255-save-OWNED0700/green-candidate1-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/green-candidate1-command.txt",
+      "sha256": "b5e43abf60ff0f37ed60f3ea1be5de82076e02bd226d6f1e39e89c73f4819252"
+    },
+    "/private/tmp/faction255-save-OWNED0700/green-candidate1.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/green-candidate1.log",
+      "sha256": "db4dfd87fff9b2cd517a42c041046729fe4bc985c942122120d4cb8b1122ce20"
+    },
+    "/private/tmp/faction255-save-OWNED0700/green-integration-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/green-integration-command.txt",
+      "sha256": "730883beacd112567720137ac26a1825eda288049e27327d124a556f6233e443"
+    },
+    "/private/tmp/faction255-save-OWNED0700/green-integration.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/green-integration.log",
+      "sha256": "581d6026391d1eaed0919bb790b6e04a1b07a3a66d289f4f30e864bf3b9e9c75"
+    },
+    "/private/tmp/faction255-save-OWNED0700/lead-before-local-fs-doc.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/470d6826d789640267ba90c88efb3152953b3ac0a55429e835316d6e5879fe83.rs",
+      "sha256": "470d6826d789640267ba90c88efb3152953b3ac0a55429e835316d6e5879fe83"
+    },
+    "/private/tmp/faction255-save-OWNED0700/lead-local-fs-doc.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/lead-local-fs-doc.json",
+      "sha256": "7cb9282efb8743581cc0022e4a2206f8166820ae2698a45dffb76b260dcafac9"
+    },
+    "/private/tmp/faction255-save-OWNED0700/lead-local-fs-doc.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/d0244fb05ddf2b74c9efd41c4e2fa583bd7b9d9f5154bdca1b2066a8a6e104cc.rs",
+      "sha256": "d0244fb05ddf2b74c9efd41c4e2fa583bd7b9d9f5154bdca1b2066a8a6e104cc"
+    },
+    "/private/tmp/faction255-save-OWNED0700/red-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/red-command.txt",
+      "sha256": "730883beacd112567720137ac26a1825eda288049e27327d124a556f6233e443"
+    },
+    "/private/tmp/faction255-save-OWNED0700/red-sha256.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/red-sha256.txt",
+      "sha256": "59e6f0337fade84151553d50c9b21e7850bd8082293523a4effe1aa848e9cca3"
+    },
+    "/private/tmp/faction255-save-OWNED0700/red.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/red.log",
+      "sha256": "a90a3110713b8c21779c933da31949a221d295082470af4939f93fbb5c5650b2"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-clippy-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-clippy-command.txt",
+      "sha256": "52abae0a1d5c248684e16b71452446cec16079677c9d02fecf46b3e8730fe137"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-clippy.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-clippy.log",
+      "sha256": "6c17f23bbe225862760e291b55ec5ed6d3528f90a75675959b904ba3c34cb0c3"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-integration-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-integration-command.txt",
+      "sha256": "730883beacd112567720137ac26a1825eda288049e27327d124a556f6233e443"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-integration.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-integration.log",
+      "sha256": "2f27f05e74f798d424b71e39996ed9df3fcb0a065209e8078a34c8431cd568e0"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-sha256.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-sha256.txt",
+      "sha256": "b557bde861a62d731df16fe252bbc4af0e2ba3537b11bb108802583eb44191f8"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-unit-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-unit-command.txt",
+      "sha256": "3459e2020548c12375e38eab99c33973026c8d8aa11da10d2bbf989976c6a13d"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-final-unit.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-final-unit.log",
+      "sha256": "401dbfb0c687372e593dd28a1c343dfe6e038fab948e81600177b69d2bf0001f"
+    },
+    "/private/tmp/faction255-save-OWNED0700/review-fixture-cleanup.json": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/review-fixture-cleanup.json",
+      "sha256": "c44cdf7d03a150a768295ae5cb3bb5977d67b9daff277ae3b043e58d62fbe1ba"
+    },
+    "/private/tmp/faction255-save-OWNED0700/rust-version.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/rust-version.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-before-clippy-fix.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/86d9750439bca7986c64379d32aa22b5c57542b617af03220b574e5e1bafcaab.rs",
+      "sha256": "86d9750439bca7986c64379d32aa22b5c57542b617af03220b574e5e1bafcaab"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-final-candidate.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/7ef472d895498d342d43288ad48eaf800fe5520b7b3f3b90b46f28a35178a8d6.rs",
+      "sha256": "7ef472d895498d342d43288ad48eaf800fe5520b7b3f3b90b46f28a35178a8d6"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-green-candidate1.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/86d9750439bca7986c64379d32aa22b5c57542b617af03220b574e5e1bafcaab.rs",
+      "sha256": "86d9750439bca7986c64379d32aa22b5c57542b617af03220b574e5e1bafcaab"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-producer-v1.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/58c6140f4b5f9c398b4b0430e94f12fb6300236cfada82183adcc23da9779194.rs",
+      "sha256": "58c6140f4b5f9c398b4b0430e94f12fb6300236cfada82183adcc23da9779194"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-review-classifier-characterization.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/a029f40dd2cbcf5d3711cf5d9aac2645fd1678aadb362e67f7435a9d241540c9.rs",
+      "sha256": "a029f40dd2cbcf5d3711cf5d9aac2645fd1678aadb362e67f7435a9d241540c9"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-review-final.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/470d6826d789640267ba90c88efb3152953b3ac0a55429e835316d6e5879fe83.rs",
+      "sha256": "470d6826d789640267ba90c88efb3152953b3ac0a55429e835316d6e5879fe83"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-review-timeout-red.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/ef004f4e49a45fc46e36e309933e4c5d126d1c28ebae28d073d460714332008b.rs",
+      "sha256": "ef004f4e49a45fc46e36e309933e4c5d126d1c28ebae28d073d460714332008b"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-tests-green-candidate1.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132.rs",
+      "sha256": "f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-tests-red.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/ce0816e166b76769f54ebbb8d7231f98b5fd36613064ac996933d9c22f60679d.rs",
+      "sha256": "ce0816e166b76769f54ebbb8d7231f98b5fd36613064ac996933d9c22f60679d"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-tests-v2.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/e37f773459157e4e44aa75c9209f3d49ce212fa8fc04743fd35650a9b0ec7adc.rs",
+      "sha256": "e37f773459157e4e44aa75c9209f3d49ce212fa8fc04743fd35650a9b0ec7adc"
+    },
+    "/private/tmp/faction255-save-OWNED0700/save-umask-red.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/7fbd98919da0bf0378e0d7db945a04d7d8157d2d06dc97321eb4b82182a9504a.rs",
+      "sha256": "7fbd98919da0bf0378e0d7db945a04d7d8157d2d06dc97321eb4b82182a9504a"
+    },
+    "/private/tmp/faction255-save-OWNED0700/tests-before-clippy-fix.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132.rs",
+      "sha256": "f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132"
+    },
+    "/private/tmp/faction255-save-OWNED0700/tests-final-candidate.rs": {
+      "path": "dev-docs/evidence/attachment-blobs-save/objects/f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132.rs",
+      "sha256": "f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132"
+    },
+    "/private/tmp/faction255-save-OWNED0700/umask-red-command.txt": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/umask-red-command.txt",
+      "sha256": "00077131d6c9d3b3a0de1cf218d0047cd11e2badf86c46cc915cfb752e6dd3b7"
+    },
+    "/private/tmp/faction255-save-OWNED0700/umask-red.log": {
+      "path": "dev-docs/evidence/attachment-blobs-save/save/umask-red.log",
+      "sha256": "e243a0dc9da6b59ef5cae7d61e9112b57003920265dfdf749567ffdcd3b0707e"
+    }
+  }
+}

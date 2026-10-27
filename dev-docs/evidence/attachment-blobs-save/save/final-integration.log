@@ -1,0 +1,12 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s
+     Running tests/attachment_save.rs (target/debug/deps/attachment_save-88f9addb59c4b52e)
+
+running 4 tests
+test authenticated_peer_descriptor_then_real_blob_verification_then_explicit_save ... ok
+test existing_objects_and_unsafe_paths_remain_untouched ... ok
+test explicit_private_save_preserves_exact_zero_small_and_cap_bytes ... ok
+test invalid_blob_and_canceled_selection_make_no_save_call ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+

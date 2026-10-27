@@ -1,0 +1,14 @@
+warning: faction-unix@0.1.0-alpha.1: 2026-10-27 17:11:32.713 xcodebuild[13669:4260812]  DVTFilePathFSEvents: Failed to start fs event stream.
+warning: faction-unix@0.1.0-alpha.1: 2026-10-27 17:11:32.907 xcodebuild[13669:4260809] [MT] DVTDeveloperPaths: Failed to get length of DARWIN_USER_CACHE_DIR from confstr(3), error = Error Domain=NSPOSIXErrorDomain Code=5 "Input/output error". Using NSCachesDirectory instead.
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.30s
+     Running tests/attachment_save.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/attachment_save-88f9addb59c4b52e)
+
+running 4 tests
+test authenticated_peer_descriptor_then_real_blob_verification_then_explicit_save ... ok
+test existing_objects_and_unsafe_paths_remain_untouched ... ok
+test explicit_private_save_preserves_exact_zero_small_and_cap_bytes ... ok
+test invalid_blob_and_canceled_selection_make_no_save_call ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+

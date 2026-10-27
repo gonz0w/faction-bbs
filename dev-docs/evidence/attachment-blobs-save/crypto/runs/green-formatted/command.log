@@ -1,0 +1,64 @@
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s
+     Running unittests src/lib.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/faction_omemo-af483896b967fd1d)
+
+running 21 tests
+test blob::tests::native_authentication_failure_wipes_entire_provisional_output ... ok
+test blob::tests::retained_nist_cavs_vectors_match_exact_ciphertext_and_tag ... ok
+test native::network_tests::network_public_prekeys_active_role_preserves_own_equal_id ... ok
+test native::network_tests::network_public_prekeys_all_open_and_used_key_disappears_only_after_commit ... ok
+test native::network_tests::network_public_prekeys_are_bounded_distinct_and_survive_import ... ok
+test native::tests::all_raw_error_buffers_are_cleared ... ok
+test native::tests::altered_signature_and_wrong_bundle_reject_without_state_change ... ok
+test native::tests::empty_and_maximum_plaintext_roundtrip ... ok
+test native::tests::existing_session_prekey_outer_identity_change_rejects ... ok
+test native::tests::explicit_ed25519_pin_required_and_immutable ... ok
+test native::tests::generated_library_first_message_and_reply ... ok
+test native::tests::hex_decoder_has_exact_bounds_and_no_ambiguous_text ... ok
+test native::tests::independent_edwards_to_montgomery_vectors_and_sign_pin ... ok
+test native::tests::initiation_role_serializes_and_malformed_or_missing_role_rejects ... ok
+test native::tests::max_skip_and_aggregate_cache_are_bounded_with_rollback ... ok
+test native::tests::payload_failure_and_truncation_roll_back_entire_context ... ok
+test native::tests::pending_sce_acceptance_commits_or_aborts_whole_transaction ... ok
+test native::tests::raw_ffi_error_zeroes_entire_output_and_length ... ok
+test native::tests::skipped_keys_survive_restart_and_are_consumed_once ... ok
+test native::tests::snapshot_rejects_truncation_trailing_bytes_and_invalid_header ... ok
+test native::tests::wrong_inbound_pin_and_wrong_payload_key_never_commit ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/blob_contract.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/blob_contract-fd12c4230b80c980)
+
+running 5 tests
+test bounded_cap_operation_observation ... bounded synthetic complete-buffer observation: plaintext_bytes=1048576 ciphertext_bytes=1048592 encrypt_seconds=0.010460 verify_seconds=0.000575; one host test process, not throughput/capacity qualification
+ok
+test complete_buffers_have_exact_framing_and_verified_plaintext ... ok
+test corrupted_bytes_and_incorrect_assertions_never_return_verified_values ... ok
+test generated_material_differs_and_hash_matches_independent_sha256_values ... ok
+test supplied_and_declared_oversize_are_refused ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/blob_guard.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/blob_guard-2735d5b9a3ca2012)
+
+running 3 tests
+test blob_only_guard_child ... ignored, isolated blob-only subprocess, invoked by blob_only_public_entry_establishes_core_guard
+test blob_only_public_entry_establishes_core_guard ... 
+running 1 test
+test blob_only_guard_child ... blob-only process without Device creation: core_disabled_before=0, after=1
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+ok
+test native_guards_and_capacity_refusals_precede_context_allocation ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/blob_native.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/blob_native-970e1d8fed0b359d)
+
+running 1 test
+test authenticated_descriptor_bad_blob_aborts_then_valid_blob_commits ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

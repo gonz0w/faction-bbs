@@ -1,0 +1,15 @@
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.44s
+     Running unittests src/lib.rs (target/debug/deps/faction_client-b265dbd55516606c)
+
+running 6 tests
+test attachment_save::tests::bounded_child_death_before_and_after_publication_retains_recoverable_private_temp ... ok
+test attachment_save::tests::death_child ... ok
+test attachment_save::tests::deterministic_failures_keep_publication_phase_and_complete_output ... ok
+test attachment_save::tests::exclusive_owned_file_is_exactly_private_even_with_restrictive_umask ... ok
+test attachment_save::tests::racing_destination_and_unknown_temporary_are_never_removed ... ok
+test attachment_save::tests::strict_umask_child ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 46 filtered out; finished in 0.13s
+

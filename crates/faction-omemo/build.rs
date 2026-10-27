@@ -75,6 +75,7 @@ fn main() {
     println!("cargo:rerun-if-env-changed=AR");
     println!("cargo:rerun-if-env-changed=PKG_CONFIG_PATH");
     println!("cargo:rerun-if-changed=native/adapter.c");
+    println!("cargo:rerun-if-changed=native/attachment.c");
     let source = PathBuf::from("vendor");
     for (file, expected) in CORRECTED {
         verify(&source.join(file), expected);
@@ -103,6 +104,7 @@ fn main() {
         ("hacl", source.join("hacl.c")),
         ("openssl", source.join("openssl.c")),
         ("proof", Path::new("native/adapter.c").to_path_buf()),
+        ("attachment", Path::new("native/attachment.c").to_path_buf()),
     ] {
         let obj = out.join(format!("{name}.o"));
         let mut compiler = Command::new(env::var_os("CC").unwrap_or_else(|| "cc".into()));

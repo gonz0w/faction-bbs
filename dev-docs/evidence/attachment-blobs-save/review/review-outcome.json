@@ -1,0 +1,30 @@
+{
+  "review_type": "separate peer-agent focused behavior replay and source/docs review",
+  "commands_exit_zero": 3,
+  "source_files_captured_and_unchanged": 16,
+  "crypto_counts": {
+    "library_normal_entries": 21,
+    "new_blob_library_entries_included": 2,
+    "blob_contract_normal_entries": 5,
+    "blob_guard_normal_parent_entries": 2,
+    "blob_guard_ignored_helper_in_main_run": 1,
+    "blob_guard_controlled_child_entries_executed": 1,
+    "blob_native_normal_entries": 1
+  },
+  "save_counts": {
+    "private_normal_behavior_entries": 6,
+    "private_helper_entries_return_without_env_in_main_run": 2,
+    "controlled_child_executions": {
+      "death_before": 1,
+      "death_after": 1,
+      "strict_umask": 1
+    },
+    "public_normal_entries": 4
+  },
+  "runtime_entries_remaining": [
+    "xcrun_db"
+  ],
+  "local_links_checked": 29,
+  "qualification": "host local filesystem only; no network/NFS or NetBSD qualification; no broader regression or CI replay",
+  "compiler_warning": "Apple xcodebuild reported DARWIN_USER_CACHE_DIR confstr EIO and fallback during faction-unix build; all test commands completed successfully"
+}

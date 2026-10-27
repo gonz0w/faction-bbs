@@ -1,0 +1,12 @@
+{
+  "command": [
+    "shasum",
+    "-a",
+    "256",
+    "-c",
+    "SHA256SUMS"
+  ],
+  "cwd": ".agent-temper",
+  "exit": 0,
+  "note": "Earlier interactive command used repository root and could not resolve these relative manifest entries; this command checks the declared bundle directory. Earlier console failure is not a bundle-integrity failure or behavior RED."
+}

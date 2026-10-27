@@ -1,0 +1,1 @@
+env OPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include OPENSSL_LIB_DIR=/opt/homebrew/opt/openssl@3/lib CARGO_BUILD_JOBS=2 cargo +1.96.0 test --locked --offline -p faction-client --features native-mail --lib attachment_save::tests::exclusive_owned_file_is_exactly_private_even_with_restrictive_umask -- --test-threads=1

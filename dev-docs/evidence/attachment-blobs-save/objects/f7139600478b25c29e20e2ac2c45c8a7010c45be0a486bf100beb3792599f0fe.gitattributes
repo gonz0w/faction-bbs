@@ -1,0 +1,267 @@
+* text=auto
+*.md text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
+dev-docs/archive/** -text
+
+# Preserve the exact measured theme fixture, including its trailing blank line.
+experiments/055-shared-ui/fixtures/base/theme.toml whitespace=-blank-at-eof
+
+# Frozen executed build inputs retain exact bytes.
+dev-docs/evidence/sources/** -text whitespace=-blank-at-eof,-blank-at-eol
+
+# Preserve rejected executed inputs; collapse generated matrices in GitHub review.
+dev-docs/evidence/admission-ledger/** -text
+dev-docs/evidence/ssh-inetd/** -text
+dev-docs/research/results/*.json linguist-generated=true
+
+# Unified-diff context preserves upstream tabs and mandatory prefix spaces.
+dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Historical source copies are generated evidence, not new runtime implementation.
+dev-docs/evidence/sources/** linguist-generated=true
+# A unified diff's required context prefix may precede upstream indentation tabs.
+dev-docs/evidence/sources/*/dev-docs/compatibility/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# Article fixtures retain protocol-mandated CRLF bytes.
+crates/faction-articles/tests/fixtures/*.article -text whitespace=cr-at-eol
+
+# Preserve the exact executed terminal compatibility baseline.
+dev-docs/evidence/sources/pre25/** -text
+
+dev-docs/evidence/sources/pre25-calendar/** -text
+
+# ANSI templates preserve authored CRLF and canonical import bytes.
+themes/seasons/**/*.ans -text whitespace=cr-at-eol
+
+# Preserve executed seasonal art/source bytes before custom layout work.
+dev-docs/evidence/sources/pre25-layouts/** -text
+
+# Original CP437/SAUCE asset: binary byte encoding and CRLF are intentional.
+themes/grid/login.ans -text
+
+# Exact executed custom-menu inputs before long-form art.
+dev-docs/evidence/sources/pre25-paging/** -text
+
+# Intentional original CP437/SAUCE bytes.
+themes/longform/login.ans -text whitespace=cr-at-eol
+
+# Original Nightwire CP437/SAUCE artwork: preserve binary bytes.
+themes/nightwire*/**/*.ans -text whitespace=cr-at-eol
+
+dev-docs/evidence/sources/pre95-operator/** -text
+
+dev-docs/evidence/sources/pre95-hoststats/** -text
+dev-docs/evidence/sources/pre95-recovery/** -text
+dev-docs/evidence/sources/pre27-directory/** -text
+dev-docs/evidence/sources/pre27-launcher/** -text
+dev-docs/evidence/sources/pre21-room-browser/** -text
+dev-docs/evidence/sources/pre141-writing-desk/** -text
+dev-docs/evidence/sources/pre141-full-screen/** -text
+
+dev-docs/evidence/sources/pre134-wall/** -text
+
+dev-docs/evidence/sources/pre135-members/** -text
+
+/dev-docs/evidence/sources/pre94-community-integration/** -text
+/dev-docs/evidence/sources/pre94-vault-integration/** -text
+
+/dev-docs/evidence/sources/pre136-gatherings/** -text
+
+/dev-docs/evidence/sources/pre139-polls/** -text
+
+/dev-docs/evidence/sources/pre138-catchup/** -text
+
+/dev-docs/evidence/sources/pre142-discussion-search/** -text
+
+/dev-docs/evidence/sources/pre144-scene-gallery/** -text
+
+/dev-docs/evidence/sources/pre159-native-travel/** -text
+
+/dev-docs/evidence/sources/pre140-library-shelves/** -text
+
+/dev-docs/evidence/sources/pre140-file-requests/** -text
+
+/dev-docs/evidence/sources/pre143-magazine/** -text
+
+/dev-docs/evidence/sources/pre143-editorial/** -text
+
+dev-docs/evidence/sources/pre137-social/** -text
+
+dev-docs/evidence/sources/pre137-boardwide/** -text
+
+dev-docs/evidence/sources/pre137-standalone/** -text
+
+dev-docs/evidence/sources/pre137-idle/** -text
+
+dev-docs/evidence/sources/pre176-who/** -text
+
+# Exact Who execution inputs before the local connection desk.
+dev-docs/evidence/sources/pre158-connection-desk/** -text
+
+# Exact connection-desk inputs before the optional passport.
+dev-docs/evidence/sources/pre161-passport/** -text
+
+# Exact passport software inputs before the board guide.
+dev-docs/evidence/sources/pre21-guide/** -text
+
+# #211 immutable evidence includes exact protocol CRLF and compiler output.
+dev-docs/evidence/archive-mail/** -text
+# Captured source objects are generated evidence, not current implementation.
+dev-docs/evidence/archive-mail/sources/** linguist-generated=true
+dev-docs/evidence/archive-mail/native-source-objects/** linguist-generated=true
+dev-docs/evidence/archive-mail/final-source-objects/** linguist-generated=true
+
+# #214 native protocol/source evidence retains exact executed bytes.
+dev-docs/evidence/picker-mail/** -text
+dev-docs/evidence/picker-mail/source-objects/** linguist-generated=true
+dev-docs/evidence/picker-mail/native-source-objects/** linguist-generated=true
+dev-docs/evidence/picker-mail/lead-source-objects/** linguist-generated=true
+
+# #216/#217 exact executed source and protocol evidence.
+dev-docs/evidence/local-unread-mail/** -text
+dev-docs/evidence/local-unread-mail/source-objects/** linguist-generated=true
+dev-docs/evidence/local-unread-mail/qualification/orchestration-source-objects/** linguist-generated=true
+dev-docs/evidence/local-unread-mail/*.json linguist-generated=true
+dev-docs/evidence/local-unread-mail/host/*.json linguist-generated=true
+dev-docs/evidence/local-unread-mail/qualification/*.json linguist-generated=true
+
+# #219 immutable inbox source and protocol observations.
+dev-docs/evidence/mail-inbox/** -text
+dev-docs/evidence/mail-inbox/source-objects/** linguist-generated=true
+dev-docs/evidence/mail-inbox/*.json linguist-generated=true
+dev-docs/evidence/mail-inbox/host/*.json linguist-generated=true
+dev-docs/evidence/mail-inbox/native/*.json linguist-generated=true
+
+# #184 exact executed directory source and software observations.
+dev-docs/evidence/directory-submissions/** -text
+dev-docs/evidence/directory-submissions/source-objects/** linguist-generated=true
+dev-docs/evidence/directory-submissions/*.json linguist-generated=true
+
+# Issue223 immutable execution inputs retain protocol and compiler bytes.
+dev-docs/evidence/roaming-uid/** -text
+dev-docs/evidence/roaming-uid/source-objects/** linguist-generated=true whitespace=-blank-at-eof
+
+# Exact issue226 compiler/probe inputs retain their original bytes.
+dev-docs/evidence/signer-qualification/** -text
+dev-docs/evidence/signer-qualification/source-objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+
+# Issue228 source-bound owner CLI observations retain exact executed bytes.
+dev-docs/evidence/roaming-owner/** -text
+dev-docs/evidence/roaming-owner/source-objects/** linguist-generated=true whitespace=-blank-at-eof
+
+# Issue230 exact executed source and protocol observations.
+dev-docs/evidence/main-menu-mail/** -text
+dev-docs/evidence/main-menu-mail/**/*.json linguist-generated=true
+dev-docs/evidence/main-menu-mail/**/source-objects/** linguist-generated=true
+dev-docs/evidence/main-menu-mail/**/logs/** linguist-generated=true
+# Preserve measured article CRLF, ANSI padding and historical probe bytes.
+dev-docs/evidence/main-menu-mail/**/source-objects/** whitespace=-blank-at-eol
+dev-docs/evidence/main-menu-mail/review/corrected-rescan-audit/tools/probe_menu_mail.py whitespace=-blank-at-eol
+dev-docs/evidence/main-menu-mail/review/evidence-guard-audit/tools/probe_menu_mail.py whitespace=-blank-at-eol
+dev-docs/evidence/main-menu-mail/review/final-review-sources/tools/probe_menu_mail.py whitespace=-blank-at-eol
+# Captured compiler/test logs retain their original final blank lines.
+dev-docs/evidence/main-menu-mail/**/logs/** whitespace=-blank-at-eof
+
+# Issue233 exact execution inputs and logs retain original bytes.
+dev-docs/evidence/inbox-reply/** -text
+dev-docs/evidence/inbox-reply/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+dev-docs/evidence/inbox-reply/**/logs/** linguist-generated=true whitespace=-blank-at-eof
+dev-docs/evidence/inbox-reply/**/*.json linguist-generated=true
+
+# Issue235 immutable source variants and original test/diagnostic bytes.
+dev-docs/evidence/mail-correspondents/** -text
+dev-docs/evidence/mail-correspondents/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+dev-docs/evidence/mail-correspondents/**/*.json linguist-generated=true
+dev-docs/evidence/mail-correspondents/**/logs/** linguist-generated=true whitespace=-blank-at-eof
+dev-docs/evidence/mail-correspondents/**/*.log whitespace=-blank-at-eof
+
+# Preserve the actual pre-implementation diagnostic trailing space.
+dev-docs/evidence/mail-correspondents/client/logs/actual-interface-red.log whitespace=-blank-at-eol,-blank-at-eof
+
+# Issue239 exact measured sources, logs and protocol observations.
+dev-docs/evidence/menu-mail-notices/** -text
+dev-docs/evidence/menu-mail-notices/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+dev-docs/evidence/menu-mail-notices/**/logs/** linguist-generated=true whitespace=-blank-at-eof
+dev-docs/evidence/menu-mail-notices/**/*.json linguist-generated=true
+
+# Preserve the exact executed reviewer audit trailing spaces.
+dev-docs/evidence/menu-mail-notices/review/audit_host_shared.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_host_v2.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_host_v3.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_host_v4.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_native.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_native_shared.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_native_v2.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/host-audit-sources/check_restricted_ssh.py whitespace=-blank-at-eol
+
+# Issue242 exact executed source variants, compiler logs and software observations.
+dev-docs/evidence/mail-search/** -text
+dev-docs/evidence/mail-search/**/objects/** linguist-generated=true
+dev-docs/evidence/mail-search/**/source-objects/** linguist-generated=true
+dev-docs/evidence/mail-search/**/*.json linguist-generated=true
+
+# Preserve observed compiler/test diagnostics without changing captured bytes.
+dev-docs/evidence/mail-search/**/stages/**/*.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/mail-search/native/logs/native-tests.log whitespace=-blank-at-eof
+
+# Issue250 exact executed source and observed diagnostic bytes.
+dev-docs/evidence/attachment-bytes/** -text
+dev-docs/evidence/attachment-bytes/source-objects/** linguist-generated=true
+dev-docs/evidence/attachment-bytes/**/*.json linguist-generated=true
+
+# Preserve observed trailing spaces in the original captured diagnostics.
+dev-docs/evidence/attachment-bytes/proof/logs/native-missing-interface-red.log whitespace=-blank-at-eol
+dev-docs/evidence/attachment-bytes/qualification/logs/host-perl.log whitespace=-blank-at-eol
+dev-docs/evidence/attachment-bytes/qualification/logs/openssl-build-generated.log whitespace=-blank-at-eol
+dev-docs/evidence/attachment-bytes/qualification/logs/openssl-configdata.log whitespace=-blank-at-eol
+
+# Issue252 exact executed variants and original observations.
+dev-docs/evidence/attachment-metadata/** -text
+dev-docs/evidence/attachment-metadata/objects/** linguist-generated=true
+dev-docs/evidence/attachment-metadata/**/*.json linguist-generated=true
+
+# Keep only these observed diagnostic final blank lines unchanged.
+dev-docs/evidence/attachment-metadata/lead-regressions/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/lead-regressions/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run02/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run02/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run03-characterization/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run03-characterization/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run04-final/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run04-final/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run04-final/command2.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run05-final/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run05-final/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run05-final/command2.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/review/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/review/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/review/command2.log whitespace=-blank-at-eof
+
+# Issues254/255 immutable executed source and observed diagnostic bytes.
+dev-docs/evidence/attachment-blobs-save/** -text
+dev-docs/evidence/attachment-blobs-save/objects/** linguist-generated=true
+dev-docs/evidence/attachment-blobs-save/**/*.json linguist-generated=true
+
+# Preserve only the actual observed final blank lines/trailing spaces.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/stdout.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command2.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command3.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/command.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-initial/command.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/review/logs/crypto.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/attachment-blobs-save/review/logs/save-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/review/logs/save-unit.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/classifier-characterization.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/final-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/final-unit.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/green-candidate1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/green-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/review-final-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/review-final-unit.log whitespace=-blank-at-eof

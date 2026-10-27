@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit": 2,
+  "stdout": "dev-docs/evidence/attachment-blobs-save/metadata/staged-whitespace-before.txt:7: trailing whitespace.\n++ \ndev-docs/evidence/attachment-blobs-save/metadata/staged-whitespace-before.txt:10: trailing whitespace.\n++test blob_only_public_entry_establishes_core_guard ... \ndev-docs/evidence/attachment-blobs-save/metadata/staged-whitespace-before.txt:14: trailing whitespace.\n++test blob_only_public_entry_establishes_core_guard ... \n",
+  "stderr": "",
+  "note": "The unchanged captured diagnostic itself includes the original offending trailing spaces. Apply an exact-path blank-at-eol attribute to that captured diagnostic only."
+}

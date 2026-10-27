@@ -1,0 +1,7 @@
+{
+  "change": "API documentation only; explicit tested local-filesystem scope, no runtime logic/assertion change",
+  "old_sha256": "470d6826d789640267ba90c88efb3152953b3ac0a55429e835316d6e5879fe83",
+  "new_sha256": "d0244fb05ddf2b74c9efd41c4e2fa583bd7b9d9f5154bdca1b2066a8a6e104cc",
+  "old_source": "lead-before-local-fs-doc.rs",
+  "new_source": "lead-local-fs-doc.rs"
+}

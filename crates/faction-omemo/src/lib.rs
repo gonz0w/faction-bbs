@@ -8,5 +8,8 @@ pub use native::*;
 /// Experimental attachment metadata proof; no checkpoint or delivery integration.
 #[cfg(feature = "native")]
 pub mod attachment;
+/// Experimental bounded attachment byte encryption/verification, without I/O.
+#[cfg(feature = "native")]
+pub mod blob;
 #[cfg(feature = "native")]
 pub mod sce;
