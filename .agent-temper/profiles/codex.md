@@ -19,6 +19,7 @@ Agent Temper performance results. Check availability in the actual client/accoun
 | Role | Appropriate assignment | Model | Effort |
 | --- | --- | --- | --- |
 | `temper_workflow` | Bounded inspection, issue summaries, evidence collection | `gpt-6-luna` | `medium` |
+| `temper_product` | Documentation, visual inspection, bounded browser tasks, small specified UI fixes | `gpt-6.1-terra` | `medium` |
 | `temper_implementer` | Accepted implementation, tests, ordinary debugging | `gpt-6.1-sol` | `high` |
 | `temper_analyst` | Ambiguous requirements, architecture, difficult debugging or review | `gpt-6-astra` | `high` |
 | `temper_reviewer` | Separate examination of the final change and evidence | `gpt-6.1-sol` | `high` |
@@ -27,6 +28,20 @@ Route by difficulty and consequence. A routine summary can use the workflow role
 scope, permission, acceptance, and release decisions remain with the authorized
 lead or owner. A stronger model does not grant decision authority. A complex review
 can use an analyst who did not author the change, with the same review requirements.
+
+The product role supplements the existing routes. Use it for accepted product-facing
+work with supplied facts, clear requirements, and observable acceptance. Keep
+substantial implementation with the implementer and ambiguous design with the
+analyst. Product work still needs the project's separate final review. If Terra
+or its required tools are unavailable, the lead may assign the bounded task to
+`temper_implementer` with Sol/high under the same permissions and resource limits.
+Record the fallback explicitly; setting a spawn model does not override a named
+role file. The product role does not change models or delegate its own fallback.
+
+Check Terra access in the intended client/account. OpenAI documents Codex CLI
+0.159.0 or newer for Terra; desktop support depends on the client and workspace.
+See [current client guidance](https://learn.chatgpt.com/docs/models). Model access
+does not install tools or grant browser, desktop, or external-write permissions.
 
 The lead coordinates work, checks returned evidence, and owns integration. This
 profile does not select the primary chat's model. The project may use its current

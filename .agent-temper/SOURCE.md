@@ -2,8 +2,10 @@
 
 Repository: https://github.com/gonz0w/agent-temper
 
-Revision: `c07af93dc99e770bf4f3ec6f30a0536cb2ae14c5`
+Revision: `fcfb819f62d1a1091010db1df8fc5b7560cd1b8a`
 
-Source: https://github.com/gonz0w/agent-temper/tree/c07af93dc99e770bf4f3ec6f30a0536cb2ae14c5
+Source: https://github.com/gonz0w/agent-temper/tree/fcfb819f62d1a1091010db1df8fc5b7560cd1b8a
 
 Manifest: `SHA256SUMS` (SHA-256 per upstream file).
+
+Terra update work: https://github.com/gonz0w/faction-bbs/issues/236
