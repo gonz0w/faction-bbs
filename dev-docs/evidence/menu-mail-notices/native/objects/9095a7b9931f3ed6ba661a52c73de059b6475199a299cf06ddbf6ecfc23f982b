@@ -1,0 +1,19 @@
+from pathlib import Path
+import json,os,subprocess,hashlib,time,shutil
+P=Path('/private/tmp/faction239-native-OWNED');R=Path('/Users/cam/DEV/faction-bbs');T=Path('/private/tmp/faction239-client-OWNED0700/target');os.umask(0o077)
+expected=json.loads((P/'sources/native-final01-before.json').read_text());production={n:h for n,h in expected.items() if n.startswith(('crates/','native/')) or n in {'Cargo.toml','Cargo.lock'}}
+def source():return {n:hashlib.sha256((R/n).read_bytes()).hexdigest() for n in production}
+assert source()==production;(P/'sources/host-compile-before.json').write_text(json.dumps(production,sort_keys=True,indent=2)+'\n')
+env=dict(os.environ,CARGO_TARGET_DIR=str(T),CARGO_BUILD_JOBS='2',PYTHONDONTWRITEBYTECODE='1');results=[]
+steps=[('network',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-client','--features','network-mail','--bin','faction-client','--example','checkpoint_ui_fixture','--example','home_mail_fixture','--example','mail_reply_fixture','--example','mail_correspondents_fixture']),('default',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-client','--bin','faction-client'])]
+for name,command in steps:
+ start=time.monotonic()
+ with (P/'logs'/('host-'+name+'-build.log')).open('wb') as log:r=subprocess.run(command,cwd=R,env=env,stdout=log,stderr=log)
+ results.append(dict(name=name,command=command,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(P/'host-build-results.json').write_text(json.dumps(results,indent=2)+'\n');assert r.returncode==0
+ d=P/'bin'/('host-'+name);d.mkdir(mode=0o700);names=['faction-client']+(['checkpoint_ui_fixture','home_mail_fixture','mail_reply_fixture','mail_correspondents_fixture'] if name=='network' else [])
+ hashes={}
+ for file in names:
+  data=(T/'release'/('examples' if file!='faction-client' else '')/file).read_bytes();out=d/file;out.write_bytes(data);out.chmod(0o755);hashes[file]=hashlib.sha256(data).hexdigest()
+ (P/('host-'+name+'-binaries.json')).write_text(json.dumps(hashes,sort_keys=True,indent=2)+'\n')
+assert source()==production;(P/'sources/host-compile-after.json').write_text(json.dumps(source(),sort_keys=True,indent=2)+'\n')
+print('Pinned normal host default/network binaries and existing fixtures from final source; no full test rerun.')

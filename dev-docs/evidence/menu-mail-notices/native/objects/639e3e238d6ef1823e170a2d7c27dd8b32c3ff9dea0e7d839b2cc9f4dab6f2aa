@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""Notice controls in owned real encrypted-mail PTYs and approved SSH visits.
+
+Generated private values, canonical inspections and raw traces remain private.
+The caller preserves executed sources and owns fixture teardown.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import re
+import secrets
+import socket
+import subprocess
+import tempfile
+
+from probe_mail_reply import PASS, UNLOCK, HOME, MENU, private_root
+from smoke_native_client_ssh import NativeConsole
+
+CHECKS = [
+    'real_encrypted_tracking_counts_and_disabled_unknown',
+    'fresh_hidden_unlock_graceful_lock_and_canonical_preservation',
+    'actual_home_tcp_refusal_preserves_canonical_state',
+]
+MAIN_CHECKS = [
+    'fixed_O_B_N_and_safe_back_defaults',
+    'local_toggle_no_unlock_home_or_protocol',
+    'unknown_stale_off_cleared_on_unknown',
+    'canceled_wrong_unlock_unknown',
+    'fresh_confirmation_typeahead_discard',
+    'canonical_snapshot_unchanged',
+    'same_SSH_lock_return_new_visit_off',
+    'corrected_GIO_and_board_files_private_markers_absent',
+]
+
+
+def notice_lines(state, context, counts=None):
+    assert context in {'main', 'files'} and state in {'off', 'unknown', 'stale'}
+    key = 'O' if context == 'main' else 'E'
+    if state == 'off':
+        assert counts is None
+        return [f'LOCAL MAIL: notices off. {key} opens mail.']
+    if state == 'unknown':
+        assert counts is None
+        return ['LOCAL MAIL / LOCKED: unread unknown.', f'Notices on; {key} unlocks manually.', 'N turns notices off.']
+    assert isinstance(counts, tuple) and len(counts) == 3
+    unread, retained, pending = counts
+    assert type(retained) is int and 0 <= retained <= 64
+    assert type(pending) is int and 0 <= pending <= 8
+    assert unread is None or type(unread) is int and 0 <= unread <= retained
+    return ['LOCAL MAIL / LOCKED', 'stale local snapshot; home not polled.',
+            'tracking disabled; unread unknown' if unread is None else f'unread: {unread}',
+            f'retained: {retained}; pending: {pending}', 'N turns notices off.']
+
+
+def require_notice(screen, state, context, counts=None):
+    expected = notice_lines(state, context, counts)
+    assert all(len(line) <= 39 for line in expected)
+    assert screen == ('\r\n'.join(expected) + '\r\n').encode(), 'notice contains wrong context/counts, metadata or terminal controls'
+
+
+def require_choice(screen):
+    text = re.sub(rb'\x1b\[[0-9;?]*[ -/]*[@-~]', b'', screen)
+    choices = re.findall(rb'(?m)^([> ]) \[([A-Z])\] ([^\r\n]*)\r?$', text)
+    assert choices == [(b' ', b'O', b'Open encrypted home mail'), (b'>', b'B', b'Back to the BBS'), (b' ', b'N', b'Local notices')], 'choice set or safe Back default differs'
+
+
+def require_mail_cycles(data, parks, direct_backs):
+    assert type(parks) is int and parks >= 0 and type(direct_backs) is int and direct_backs >= 0
+    rows = data.splitlines(keepends=True)
+    active, consumed = None, set()
+    observed_parks = observed_backs = 0
+    for row in rows:
+        match = re.fullmatch(rb'@MAIL1 (park|back) ([0-9a-f]{32})\r?\n', row)
+        assert match, 'unexpected board input during local choice/console'
+        action, nonce = match.groups()
+        if action == b'park':
+            assert active is None and nonce not in consumed, 'replayed nonce or nested park'
+            consumed.add(nonce); active = nonce; observed_parks += 1
+        else:
+            if active is None:
+                assert nonce not in consumed, 'replayed direct return nonce'
+                consumed.add(nonce)
+            else:
+                assert active == nonce, 'return nonce changed'
+                active = None
+            observed_backs += 1
+    assert active is None and observed_parks == parks and observed_backs == parks + direct_backs
+    assert len(consumed) == parks + direct_backs
+    return dict(parks=observed_parks, backs=observed_backs, nonces=len(consumed))
+
+
+def require_local_toggle(before, after, board_input, screen):
+    assert before == after, 'notice toggle changed canonical mail state'
+    assert board_input == b'', 'notice toggle emitted board input'
+    assert UNLOCK.encode() not in screen and HOME.encode() not in screen, 'notice toggle opened credentials'
+
+
+def private_write(path, data):
+    path.write_bytes(data if isinstance(data, bytes) else data.encode())
+    path.chmod(0o600)
+    return path
+
+
+def probe(client, fixture, owned_root, unicode=False):
+    """Real local console controls; actual main handoff is the --settings proof."""
+    from probe_visit_mail import require_closed_endpoint
+    root = Path(tempfile.mkdtemp(prefix='notices-console-OWNED-', dir=private_root(owned_root)))
+    root.chmod(0o700)
+    children = []
+    subject, body = 'subject-' + secrets.token_hex(12), 'body-' + secrets.token_hex(16)
+    peer, other = 'peer-' + secrets.token_hex(8) + '@away.test', 'other-' + secrets.token_hex(8) + '@away.test'
+    private_write(root / 'private-markers.json', json.dumps([subject, body, peer, other, PASS]))
+    with socket.socket() as reserved:
+        reserved.bind(('127.0.0.1', 0)); endpoint = reserved.getsockname()
+    require_closed_endpoint(endpoint)
+    ca = private_write(root / 'unused-ca.pem', 'synthetic unused CA\n')
+    config = private_write(root / 'home.toml', 'version=1\naccount="alice@home.test"\nendpoint=' + json.dumps('127.0.0.1:' + str(endpoint[1])) + '\ndomain="home.test"\nca=' + json.dumps(str(ca)) + '\npin="' + '00' * 32 + '"\n')
+    def command(action, store, mode=None):
+        r = subprocess.run([str(fixture), action, str(store)] + ([mode] if mode else []), input=('\n'.join([subject, body, peer, other]) + '\n').encode() if action == 'seed' else b'', capture_output=True, timeout=90)
+        if r.returncode: private_write(root / 'fixture-failure.private.log', r.stdout + r.stderr)
+        assert r.returncode == 0
+        return json.loads(r.stdout) if action == 'inspect' else None
+    try:
+        for mode in ['ready', 'unknown']:
+            store = root / mode; command('seed', store, mode)
+            before = command('inspect', store); canonical = (store / 'mail.fkv').read_bytes()
+            private_write(root / (mode + '-canonical-before.private.json'), json.dumps(before))
+            c = NativeConsole([str(client), '--mail-online', str(store), str(config)] + (['--unicode'] if unicode else [])); children.append(c)
+            c.password(PASS, UNLOCK); c.expect(MENU)
+            c.raw(b'i'); c.expect('[LOCAL INBOX]'); c.expect('[B] Back')
+            if mode == 'ready':
+                assert sum(row['read'] is False for row in before['history']) == 3
+            else: assert all(row['read'] is None for row in before['history'])
+            c.raw(b'b'); c.expect(MENU); c.raw(b'l'); c.finish()
+            assert command('inspect', store) == before and (store / 'mail.fkv').read_bytes() == canonical
+            private_write(root / (mode + '-canonical-after.private.json'), json.dumps(command('inspect', store)))
+        require_closed_endpoint(endpoint)
+        return dict(result='pass', platform=platform.system(), machine=platform.machine(), scope='device-local-mail-notice-fixture-controls', unicode=unicode, count=2, checks=CHECKS[:2], source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), private_fixture_retained_for_lead=True, configured_home_endpoint_was_closed=True, main_menu_handoff_observed=False)
+    finally:
+        for i, c in enumerate(children):
+            private_write(root / ('terminal-' + str(i) + '.private'), c.transcript + c.buffer); c.close()
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    for name in ['client', 'fixture', 'owned-root', 'output']: p.add_argument('--' + name, type=Path, required=True)
+    p.add_argument('--unicode', action='store_true'); p.add_argument('--settings', type=Path)
+    p.add_argument('--mail-fixture', type=Path); p.add_argument('--public-ca', type=Path)
+    a = p.parse_args()
+    if a.settings:
+        assert a.mail_fixture and a.public_ca
+        result = probe_main_menu(a)
+    else: result = probe(a.client.resolve(), a.fixture.resolve(), a.owned_root.resolve(), a.unicode)
+    a.output.write_text(json.dumps(result, indent=2) + '\n')
+    print('Owned mail-notice controls passed:', result['count'], result['platform'])
+
+
+if __name__ == '__main__': main()

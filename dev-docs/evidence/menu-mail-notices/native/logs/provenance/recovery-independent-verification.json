@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "original_session_filename": "rollout-2026-10-27T08-03-35-01a17dac-7247-76e1-bce2-e1b94cfa62ea.jsonl",
+  "original_record_lines": [
+    160,
+    162,
+    166,
+    168,
+    169
+  ],
+  "selected_records_sha256": "0e70c0f33b537f33547253e45c89c506f60d37b5c699b836f56174878e704c62",
+  "recovered_source_sha256": "ffe873a3fd04776f2c60bde59236156f4025de73803f8d21572d7ba6cf2732a2",
+  "independent_agent": "/root/temper_239_analyst",
+  "no_pre_edit_file_hash": true
+}

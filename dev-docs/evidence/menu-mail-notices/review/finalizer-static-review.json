@@ -1,0 +1,31 @@
+{
+  "time_utc": "2026-10-27T14:37:13Z",
+  "review_type": "separate read-only finalizer and guard/source/binary-binding audit",
+  "sources": {
+    "dev-docs/evidence/menu-mail-notices/integration/finalize.py": "590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed",
+    "tools/check_menu_mail_notices_evidence.py": "77a1280b35ed10b1965f7aec5d146703b4b8ae6ee2d99cec01891d54bafcba9d",
+    "tools/test_menu_mail_notices_evidence.py": "9003ae98af947fe6a81d336053dd74d94c1f608c2bf88a4d8c7dac034b57cfcc"
+  },
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools",
+    "-p",
+    "test_menu_mail_notices_evidence.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "log_sha256": "63ce275042647d081bf70756fc7777c1c2d073407cb4c0b60d8f45a312851a63",
+  "no_finalizer_execution": true,
+  "repository_edits": false,
+  "actual_cleanup": false,
+  "findings": [],
+  "limits": [
+    "Original capture review, selection scan, observed stop/saved state and finalization acceptance remain pending.",
+    "This review covers frozen finalizer and guard sources only; later deltas require review."
+  ]
+}

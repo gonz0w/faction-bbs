@@ -1,0 +1,17 @@
+F.......
+======================================================================
+FAIL: test_actual_terminal_CR_and_normal_LF_CRLF_protocol_terminators (test_probe_menu_mail_notices.NoticeOracle.test_actual_terminal_CR_and_normal_LF_CRLF_protocol_terminators)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail_notices.py", line 90, in test_actual_terminal_CR_and_normal_LF_CRLF_protocol_terminators
+    self.assertEqual(proof.require_mail_cycles(data, 1, 0),
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/probe_menu_mail_notices.py", line 71, in require_mail_cycles
+    assert match, 'unexpected board input during local choice/console'
+           ^^^^^
+AssertionError: unexpected board input during local choice/console
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+FAILED (failures=1)

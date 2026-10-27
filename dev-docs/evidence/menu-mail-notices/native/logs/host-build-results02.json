@@ -1,0 +1,48 @@
+[
+  {
+    "name": "network",
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "--offline",
+      "-j",
+      "2",
+      "-p",
+      "faction-client",
+      "--features",
+      "network-mail",
+      "--bin",
+      "faction-client",
+      "--example",
+      "checkpoint_ui_fixture",
+      "--example",
+      "home_mail_fixture",
+      "--example",
+      "mail_reply_fixture",
+      "--example",
+      "mail_correspondents_fixture"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 4.355128124996554
+  },
+  {
+    "name": "default",
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "--offline",
+      "-j",
+      "2",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 1.984383875009371
+  }
+]

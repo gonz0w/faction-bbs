@@ -1,0 +1,77 @@
+.............EEEEEE
+======================================================================
+ERROR: test_complete_actual_review_scan_and_stop_preconditions (test_menu_mail_notices_evidence.Finalization.test_complete_actual_review_scan_and_stop_preconditions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 117, in setUp
+    self.finalizer=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.finalizer)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/menu-mail-notices/integration/finalize.py'
+
+======================================================================
+ERROR: test_owned_roots_require_exact_names_mode_and_markers (test_menu_mail_notices_evidence.Finalization.test_owned_roots_require_exact_names_mode_and_markers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 117, in setUp
+    self.finalizer=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.finalizer)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/menu-mail-notices/integration/finalize.py'
+
+======================================================================
+ERROR: test_parent_command_or_live_owned_process_prevents_removal (test_menu_mail_notices_evidence.Finalization.test_parent_command_or_live_owned_process_prevents_removal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 117, in setUp
+    self.finalizer=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.finalizer)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/menu-mail-notices/integration/finalize.py'
+
+======================================================================
+ERROR: test_rejects_live_or_changed_saved_state (test_menu_mail_notices_evidence.Finalization.test_rejects_live_or_changed_saved_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 117, in setUp
+    self.finalizer=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.finalizer)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/menu-mail-notices/integration/finalize.py'
+
+======================================================================
+ERROR: test_rejects_pending_or_missing_original_capture_review (test_menu_mail_notices_evidence.Finalization.test_rejects_pending_or_missing_original_capture_review)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 117, in setUp
+    self.finalizer=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.finalizer)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/menu-mail-notices/integration/finalize.py'
+
+======================================================================
+ERROR: test_rejects_wrong_selection_capture_ids_and_unscanned_values (test_menu_mail_notices_evidence.Finalization.test_rejects_wrong_selection_capture_ids_and_unscanned_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 117, in setUp
+    self.finalizer=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.finalizer)
+                                                         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/dev-docs/evidence/menu-mail-notices/integration/finalize.py'
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.070s
+
+FAILED (errors=6)

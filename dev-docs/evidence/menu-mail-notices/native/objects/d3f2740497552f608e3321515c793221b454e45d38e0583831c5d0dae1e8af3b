@@ -1,0 +1,20 @@
+from pathlib import Path
+import os,json,subprocess,time,hashlib
+root=Path('/home/factionbuild/source23903');p=Path('/home/factionbuild/proof239/build-final03');p.mkdir(exist_ok=True)
+ownedbin=p/'bin';ownedbin.mkdir(exist_ok=True);(ownedbin/'python3').symlink_to('/usr/pkg/bin/python3.13')
+env=os.environ.copy();env.update(PATH=str(ownedbin)+':/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo239',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+manifest=json.loads(Path('/home/factionbuild/proof239/expected-source03.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==manifest
+(p/'source-observed.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+result={'scope':'two-cores-2GiB-native-build','result':'running','steps':[]}
+steps=[('server','target239',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-cli','-p','faction-service','-p','faction-files']),('default','target239-default',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-client','--bin','faction-client']),('network','target239-network',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-client','--features','network-mail','--bin','faction-client','--example','checkpoint_ui_fixture','--example','home_mail_fixture','--example','mail_reply_fixture','--example','mail_correspondents_fixture']),('tests','target239-network',['cargo','test','--release','--locked','--offline','-j','2','-p','faction-service','-p','faction-terminal','-p','faction-client','--features','faction-client/network-mail','--all-targets','--','--test-threads=1'])]
+for name,targetname,cmd in steps:
+ env['CARGO_TARGET_DIR']='/home/factionbuild/'+targetname
+ start=time.monotonic()
+ with (p/(name+'-build.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+ result['steps'].append({'name':name,'command':cmd,'target':targetname,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(p/'build-result.json').write_text(json.dumps(result,indent=2)+'\n')
+ if r.returncode:
+  result['result']='fail';(p/'build-result.json').write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(r.returncode)
+ if name in {'default','network'}:
+  binary=Path(env['CARGO_TARGET_DIR'])/'release/faction-client';data=binary.read_bytes();p.joinpath('faction-client-'+name).write_bytes(data);p.joinpath('faction-client-'+name).chmod(0o755)
+actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==manifest
+(p/'source-after.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n');result['result']='pass';(p/'build-result.json').write_text(json.dumps(result,indent=2)+'\n')

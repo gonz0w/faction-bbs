@@ -1,0 +1,37 @@
+{
+  "change": "Test harness completion wait drains PTY output until Terminal worker finishes. Product prefix, visit_mail.rs,3second deadline and all behavioral assertions unchanged.",
+  "old_main_sha256": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+  "old_main_source": "../public-candidate/source/final-main.rs",
+  "new_main_sha256": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+  "visit_mail_sha256": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61",
+  "visit_mail_source": "../public-candidate/source/final-visit_mail.rs",
+  "native_before_after_map_refs": [
+    "/private/tmp/faction239-native-OWNED/native-targeted02/source-before.json",
+    "/private/tmp/faction239-native-OWNED/native-targeted02/source-after.json"
+  ],
+  "native_targeted_pass": 5,
+  "host_bin_pass": {
+    "default": 44,
+    "native": 58,
+    "network": 62
+  },
+  "host_existing_ignored_helpers_per_optional_bin": 2,
+  "host_checks": "Strict Clippy all-target default/native/network and workspacefmt pass; see shutdown1-checks.json",
+  "host_targeted_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "-p",
+    "faction-client",
+    "--bin",
+    "faction-client",
+    "--release",
+    "--locked",
+    "main_mail_pty",
+    "--",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "host_targeted_result": "5passed,0failed,0ignored",
+  "limits": "Separate review and full native integration remain with assigned owners; prior full feature matrices remain historical at old test-only main source."
+}

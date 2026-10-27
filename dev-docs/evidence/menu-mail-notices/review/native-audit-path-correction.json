@@ -1,0 +1,5 @@
+{
+  "observed_error": "Copied private input map paths are relative to owned native root; first audit resolved them against repository cwd and stopped without mutation.",
+  "first_script_sha256": "73c1886e3584f9bdee43a82785d252473211d7bd33ce6b45608ff9ebfff2ff2e",
+  "corrected_script_sha256": "8328c059d6ff10c0fc44b7d2b8636ddafa5f780d4e3515e81b05d3ea42fa3151"
+}

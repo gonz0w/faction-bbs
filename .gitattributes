@@ -181,3 +181,19 @@ dev-docs/evidence/mail-correspondents/**/*.log whitespace=-blank-at-eof
 
 # Preserve the actual pre-implementation diagnostic trailing space.
 dev-docs/evidence/mail-correspondents/client/logs/actual-interface-red.log whitespace=-blank-at-eol,-blank-at-eof
+
+# Issue239 exact measured sources, logs and protocol observations.
+dev-docs/evidence/menu-mail-notices/** -text
+dev-docs/evidence/menu-mail-notices/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+dev-docs/evidence/menu-mail-notices/**/logs/** linguist-generated=true whitespace=-blank-at-eof
+dev-docs/evidence/menu-mail-notices/**/*.json linguist-generated=true
+
+# Preserve the exact executed reviewer audit trailing spaces.
+dev-docs/evidence/menu-mail-notices/review/audit_host_shared.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_host_v2.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_host_v3.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_host_v4.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_native.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_native_shared.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/audit_native_v2.py whitespace=-blank-at-eol
+dev-docs/evidence/menu-mail-notices/review/host-audit-sources/check_restricted_ssh.py whitespace=-blank-at-eol

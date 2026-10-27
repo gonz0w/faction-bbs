@@ -1,0 +1,13 @@
+{
+  "result": "source-resolution-incomplete",
+  "behavioral_red": false,
+  "source": {
+    "path": "dev-docs/evidence/menu-mail-notices/integration/objects/b2373c2ed0e75d3720c3169bc9df60bbb0d33979857215281c0a662aaa7999df",
+    "sha256": "b2373c2ed0e75d3720c3169bc9df60bbb0d33979857215281c0a662aaa7999df"
+  },
+  "log": {
+    "path": "dev-docs/evidence/menu-mail-notices/integration/logs/assembly-attempt02-setup.log",
+    "sha256": "3c0d34b13e26e7a6e03809ae532d0129d98ee32994937b7d7f123262e5a2dc52"
+  },
+  "reason": "Client baseline source hashes were in committed inbox-reply objects but not yet included in the combined resolver."
+}

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction239-native-OWNED/runtime-code02/probe_menu_mail_notices.py", line 306, in <module>
+    if __name__ == '__main__': main()
+                               ~~~~^^
+  File "/private/tmp/faction239-native-OWNED/runtime-code02/probe_menu_mail_notices.py", line 301, in main
+    a = p.parse_args(); result = probe_main_menu(a)
+                                 ~~~~~~~~~~~~~~~^^^
+  File "/private/tmp/faction239-native-OWNED/runtime-code02/probe_menu_mail_notices.py", line 274, in probe_main_menu
+    protocol = require_mail_cycles(b''.join(requests), parks, direct_backs)
+  File "/private/tmp/faction239-native-OWNED/runtime-code02/probe_menu_mail_notices.py", line 84, in require_mail_cycles
+    assert active is None and observed_parks == parks and observed_backs == parks + direct_backs
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

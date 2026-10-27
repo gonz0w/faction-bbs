@@ -1,0 +1,55 @@
+{
+  "actual_fixed_choice_red": {
+    "path": "dev-docs/evidence/menu-mail-notices/client/public-candidate/logs/actual-red-entries.log",
+    "sha256": "83042ecec9a2696112416b1c03df7992f7ecd04bbcd2078e97f5332814dc0aa1"
+  },
+  "actual_product_ui_red": {
+    "path": "dev-docs/evidence/menu-mail-notices/client/public-candidate/logs/actual-red-pty.log",
+    "sha256": "7b867b05f150cfbafa12f0ef1f9414ea3985fee6192a3668aaf5168a443da42c"
+  },
+  "captured_before_edit": true,
+  "final_corrected_product_green": {
+    "path": "dev-docs/evidence/menu-mail-notices/client/public-shutdown-candidate/logs/shutdown1-host-network.log",
+    "sha256": "cff00102ae3979e800abacbd7ff8f9b0720b0e4c7ac2467abef962ecaac32aa3"
+  },
+  "green_exit": 0,
+  "guard_green": {
+    "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/runtime-composition-green.log",
+    "sha256": "a192fb149b01873c3ecdb2391bcbce111c5961a2142c82900ca4a430bfb98058"
+  },
+  "guard_red": {
+    "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/binary-source-bindings-red.log",
+    "sha256": "9f8090d1aec9f31108b23ad19d568ced3562319409d4a59f258521c3eaf04e30"
+  },
+  "historical_gap": {
+    "later_reds_qualify_only_their_own_changes": true,
+    "oracle_and_expected_bytes_changed_together": true,
+    "original_record": 283,
+    "pre_correction_red_available": false,
+    "retrospective_red_claimed": false,
+    "scope": "already-green stale O/E notice oracle correction"
+  },
+  "limits": [
+    "Raw ciphertext equality was an exact-source in-memory assertion; retained logical inspections agree.",
+    "Board-file scan response survives in the source-bound route verdict, not an independent historical filesystem rescan."
+  ],
+  "original_five_test_probe_interface_red": {
+    "executed_assertion_bodies": 0,
+    "kind": "missing-module",
+    "loader_failures": 1
+  },
+  "owner_decision": {
+    "current_project_source": {
+      "path": "dev-docs/evidence/menu-mail-notices/policy/objects/bf53e107414c1e6829c8eca2b6b5bf9e352676279bebe71814cc4dfb447f7d8a",
+      "sha256": "bf53e107414c1e6829c8eca2b6b5bf9e352676279bebe71814cc4dfb447f7d8a"
+    },
+    "one_time": true,
+    "other_gates_unchanged": true,
+    "scope": "one stale O/E verification-helper correction only",
+    "url": "https://github.com/gonz0w/faction-bbs/issues/239#issuecomment-6445428781"
+  },
+  "policy_satisfied": true,
+  "red_exit": 101,
+  "result": "pass",
+  "strict_tdd_complete": false
+}

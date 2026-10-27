@@ -1,0 +1,20 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests src/main.rs (/private/tmp/faction239-client-OWNED0700/target/debug/deps/faction_client-e38c5cd7c9581673)
+
+running 1 test
+
+thread 'tests::main_menu_mail_offers_exact_fixed_local_choices' (3079184) panicked at crates/faction-client/src/main.rs:1079:9:
+assertion `left == right` failed
+  left: [(79, "Open encrypted home mail"), (66, "Back to the BBS")]
+ right: [(79, "Open encrypted home mail"), (66, "Back to the BBS"), (78, "Local notices")]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test tests::main_menu_mail_offers_exact_fixed_local_choices ... FAILED
+
+failures:
+
+failures:
+    tests::main_menu_mail_offers_exact_fixed_local_choices
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

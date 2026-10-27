@@ -1,0 +1,14 @@
+E.....
+======================================================================
+ERROR: test_capture_association_requires_frozen_id_source_markers_and_scan_input (test_probe_menu_mail_notices.NoticeOracle.test_capture_association_requires_frozen_id_source_markers_and_scan_input)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail_notices.py", line 60, in test_capture_association_requires_frozen_id_source_markers_and_scan_input
+    proof.require_capture_association(inputs, trace, result)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_menu_mail_notices' has no attribute 'require_capture_association'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (errors=1)

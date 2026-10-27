@@ -1,0 +1,53 @@
+{
+  "review": "All six original notice captures; publication binding remains pending",
+  "result": "pass",
+  "capture_ids": [
+    "0cd01e5c506284e2fab4c925331c0178",
+    "4ca7f3eb04292c314d2f1c0e6687f358",
+    "5c18f37f7f865b6ea5e3ea3a2521ec9d",
+    "6e261d1ec5eca644b85b944e65f4b95e",
+    "95a2a66c9d2e1271c5b3128eb1e55833",
+    "ef93c294297ba4595aea95dce0752a9a"
+  ],
+  "original_private_captures_reviewed": true,
+  "private_input_hashes_verified": true,
+  "source_binary_result_bindings_verified": true,
+  "corrected_stream_reconstruction_verified": true,
+  "canonical_state_invariants_verified": true,
+  "generated_private_inventory_reviewed": true,
+  "previous_receipts": [
+    {
+      "path": "/private/tmp/faction239-review-OWNED/host-original-capture-review.json",
+      "sha256": "cb5ac7fa59e6f9b2323dbd87d33675cdb7d9b1c818336cf5fde59c2eef57c116"
+    },
+    {
+      "path": "/private/tmp/faction239-review-OWNED/native-original-capture-review.json",
+      "sha256": "a9368355602c96756cd157f02360ba8fd2e5c4f0d4bfcf3ef3f7222ace08cfd8"
+    },
+    {
+      "path": "/private/tmp/faction239-review-OWNED/host-shared-original-capture-review.json",
+      "sha256": "b38847ce4d3174340f671422a7b296d4afa6b526fa4fe457f6464dddf7f3a80b"
+    },
+    {
+      "path": "/private/tmp/faction239-review-OWNED/native-shared-original-capture-review.json",
+      "sha256": "775ec11dc8b6132058cf073699313a71a5e01d976e7165e4d144c2faf87baa60"
+    }
+  ],
+  "final_prose_review": {
+    "path": "/private/tmp/faction239-review-OWNED/final-prose-review.json",
+    "sha256": "719696372db2ca8b0fb750123077401a6a68aa13968f5583b198292949e1871e"
+  },
+  "limitations": [
+    "Before/after logical mail inspections are independently preserved; raw ciphertext equality was checked in memory by exact executed probe source.",
+    "Board-file scan request/markers/source and result bindings verified; scan response is retained only inside route result, not independently rescanned historically."
+  ],
+  "pending": [
+    "Exact reviewed draft SHA",
+    "Exact publication selection manifest SHA matching scanner",
+    "Actual publication scan",
+    "Final Files/SFTP/default regressions",
+    "Observed stop/saved-state proof",
+    "Actual owned root removal and pinned final result"
+  ],
+  "no_originals_modified": true
+}

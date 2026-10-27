@@ -1,0 +1,14 @@
+from lab import *
+import hashlib,tarfile
+names=['probe_menu_mail_notices.py','test_probe_menu_mail_notices.py','probe_mail_correspondents.py','probe_mail_reply.py','probe_mail_inbox.py','probe_menu_mail.py','probe_visit_mail.py','smoke_native_client_ssh.py','smoke_board_launcher.py','smoke_local_console.py','check_restricted_ssh.py']
+code=P/'runtime-code03';code.mkdir(mode=0o700);manifest={}
+for name in names:
+ data=(R/'tools'/name).read_bytes();h=hashlib.sha256(data).hexdigest();(P/'objects'/h).write_bytes(data);(code/name).write_bytes(data);manifest['tools/'+name]=h
+(P/'sources/runtime-code03.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/'runtime-code03.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for name in names:t.add(code/name,arcname=name,recursive=False)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/proof239/runtime-code03; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/proof239/runtime-code03; tar -xzf - -C /home/factionbuild/proof239/runtime-code03; chown -R factionbuild:factionbuild /home/factionbuild/proof239/runtime-code03',archive.read_bytes())
+code="from pathlib import Path;import json,hashlib;p=Path('/home/factionbuild/proof239/runtime-code03');print(json.dumps({'tools/'+f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in p.iterdir() if f.is_file()}))"
+observed=json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout);assert observed==manifest;(P/'sources/runtime-guest-match03.json').write_text(json.dumps(observed,sort_keys=True,indent=2)+'\n')
+print('Frozen runtime helpers match guest exactly:',len(manifest))

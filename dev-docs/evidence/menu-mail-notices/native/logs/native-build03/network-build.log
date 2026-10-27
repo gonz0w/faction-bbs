@@ -1,0 +1,8 @@
+   Compiling faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-unix)
+   Compiling faction-client-pty v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-client-pty)
+   Compiling faction-omemo v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-omemo)
+   Compiling faction-files v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-files)
+   Compiling faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-terminal)
+   Compiling faction-xmpp v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-xmpp)
+   Compiling faction-client v0.1.0-alpha.1 (/home/factionbuild/source23903/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 13.10s

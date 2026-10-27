@@ -148,13 +148,14 @@ impl Terminal {
             }
         }
     }
-    fn mail_entries() -> [(u8, &'static str); 2] {
+    fn mail_entries() -> [(u8, &'static str); 3] {
         [
             (b'O', "Open encrypted home mail"),
             (b'B', "Back to the BBS"),
+            (b'N', "Local notices"),
         ]
     }
-    fn mail_choice(&mut self) -> io::Result<u8> {
+    fn mail_choice(&mut self, visit: &mut visit_mail::VisitMail) -> io::Result<u8> {
         let entries = Self::mail_entries();
         let mut focus = 1; // A bare Enter returns safely.
         let mut decoder = Decoder::new();
@@ -170,26 +171,43 @@ impl Terminal {
                     label
                 ))?;
             }
+            if let Some(notice) = visit.notice(visit_mail::NoticeContext::MainMenu) {
+                self.print(&notice)?;
+            }
             loop {
                 if !self.ready(100)? {
                     decoder.expire(Instant::now());
                     continue;
                 }
                 if let Some(key) = decoder.feed(self.byte()?, Instant::now()) {
-                    match key {
-                        Key::Enter => return Ok(entries[focus].0),
+                    let choice = match key {
+                        Key::Enter => entries[focus].0,
                         Key::Hotkey(key)
                             if entries.iter().any(|(k, _)| *k == key.to_ascii_uppercase()) =>
                         {
-                            return Ok(key.to_ascii_uppercase());
+                            key.to_ascii_uppercase()
                         }
-                        Key::Cancel => return Ok(b'B'),
-                        Key::Up | Key::Down | Key::Left | Key::Right | Key::Next => {
-                            focus = 1 - focus;
+                        Key::Cancel => b'B',
+                        Key::Up | Key::Left => {
+                            focus = (focus + entries.len() - 1) % entries.len();
                             break;
                         }
-                        _ => (),
+                        Key::Down | Key::Right | Key::Next => {
+                            focus = (focus + 1) % entries.len();
+                            break;
+                        }
+                        _ => continue,
+                    };
+                    if choice != b'N' {
+                        return Ok(choice);
                     }
+                    visit.toggle();
+                    // Notice consent is local; a redraw never opens mail or returns
+                    // to the board. Drop queued input and restore the safe default.
+                    termios::tcflush(&self.input, termios::QueueSelector::IFlush)?;
+                    decoder = Decoder::new();
+                    focus = 1;
+                    break;
                 }
             }
         }
@@ -227,7 +245,7 @@ impl Terminal {
                     label
                 ))?;
             }
-            if let Some(notice) = mail.notice() {
+            if let Some(notice) = mail.notice(visit_mail::NoticeContext::Files) {
                 self.print(&notice)?;
             }
             loop {
@@ -613,7 +631,7 @@ fn main_menu_mail(
     let configured = false;
     let mut open = false;
     if configured {
-        open = t.mail_choice()? == b'O';
+        open = t.mail_choice(visit)? == b'O';
         termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
         if open {
             let answer = t.line(
@@ -1075,13 +1093,197 @@ fn main() {
 mod tests {
     use super::*;
     #[test]
-    fn main_menu_mail_offers_only_fixed_local_open_and_back() {
+    fn main_menu_mail_offers_exact_fixed_local_choices() {
         assert_eq!(
-            Terminal::mail_entries(),
+            Terminal::mail_entries().as_slice(),
             [
                 (b'O', "Open encrypted home mail"),
-                (b'B', "Back to the BBS")
+                (b'B', "Back to the BBS"),
+                (b'N', "Local notices")
             ]
+        );
+    }
+    // Exercise the actual raw-terminal choice loop without a board or mail store.
+    fn main_mail_pty(
+        mut visit: visit_mail::VisitMail,
+        script: &[(&str, &[u8])],
+    ) -> (u8, visit_mail::VisitMail, String) {
+        let (master, slave) = faction_client_pty::open(24, 80).unwrap();
+        let mut master = File::from(master);
+        let slave = File::from(slave);
+        let saved = termios::tcgetattr(&slave).unwrap();
+        let mut raw = saved.clone();
+        raw.make_raw();
+        termios::tcsetattr(&slave, OptionalActions::Now, &raw).unwrap();
+        let worker = std::thread::spawn(move || {
+            let mut terminal = Terminal {
+                output: slave.try_clone().unwrap(),
+                input: slave,
+                saved,
+                graphics: false,
+            };
+            let choice = terminal.mail_choice(&mut visit);
+            (choice, visit)
+        });
+        let mut transcript = String::new();
+        for (expected, input) in script {
+            let start = transcript.len();
+            let until = Instant::now() + Duration::from_secs(3);
+            loop {
+                if transcript[start..].contains(expected) {
+                    break;
+                }
+                let mut fds = [PollFd::new(&master, PollFlags::IN)];
+                poll(
+                    &mut fds,
+                    Some(&Timespec {
+                        tv_sec: 0,
+                        tv_nsec: 20_000_000,
+                    }),
+                )
+                .unwrap();
+                if fds[0].revents().contains(PollFlags::IN) {
+                    let mut bytes = [0; 4096];
+                    let n = master.read(&mut bytes).unwrap();
+                    transcript.push_str(std::str::from_utf8(&bytes[..n]).unwrap());
+                }
+                if Instant::now() >= until {
+                    // Closing the PTY wakes the terminal worker before reporting failure.
+                    drop(master);
+                    let _ = worker.join();
+                    panic!("missing local output {expected:?}: {transcript:?}");
+                }
+            }
+            master.write_all(input).unwrap();
+        }
+        let until = Instant::now() + Duration::from_secs(3);
+        while !worker.is_finished() {
+            if Instant::now() >= until {
+                drop(master);
+                let _ = worker.join();
+                panic!("local choice did not finish: {transcript:?}");
+            }
+            // Continue consuming output while Terminal resets and closes the
+            // slave. A PTY close may wait for its queued output to be drained.
+            let mut fds = [PollFd::new(&master, PollFlags::IN)];
+            poll(
+                &mut fds,
+                Some(&Timespec {
+                    tv_sec: 0,
+                    tv_nsec: 20_000_000,
+                }),
+            )
+            .unwrap();
+            let ready = fds[0].revents();
+            if ready.contains(PollFlags::IN) && !ready.intersects(PollFlags::HUP | PollFlags::ERR) {
+                let mut bytes = [0; 4096];
+                let n = master.read(&mut bytes).unwrap();
+                transcript.push_str(std::str::from_utf8(&bytes[..n]).unwrap());
+            }
+        }
+        let (choice, visit) = worker.join().unwrap();
+        (choice.unwrap(), visit, transcript)
+    }
+    #[test]
+    fn main_mail_pty_renders_notices_and_keeps_enter_safe() {
+        let (choice, _, text) = main_mail_pty(
+            visit_mail::VisitMail::new(true),
+            &[("LOCAL MAIL: notices off. O opens mail.\r\n", b"\r")],
+        );
+        assert_eq!(choice, b'B');
+        assert!(text.contains("> [B] Back to the BBS"));
+        assert!(text.contains("[N] Local notices"));
+        assert!(text.contains("notices off. O opens mail."));
+        assert!(!text.contains("E opens mail"));
+    }
+    #[test]
+    fn main_mail_pty_n_redraws_unknown_and_resets_back_default() {
+        let (choice, visit, text) = main_mail_pty(
+            visit_mail::VisitMail::new(true),
+            &[
+                ("LOCAL / ENCRYPTED HOME MAIL", b"n"),
+                ("Notices on; O unlocks manually.", b"\r"),
+            ],
+        );
+        assert_eq!(choice, b'B');
+        assert!(text.contains("LOCKED: unread unknown"));
+        assert!(
+            visit
+                .notice(visit_mail::NoticeContext::Files)
+                .unwrap()
+                .contains("unread unknown")
+        );
+    }
+    #[test]
+    fn main_mail_pty_preserves_open_back_cancel_and_invalid_input() {
+        for (input, expected) in [
+            (b"o".as_slice(), b'O'),
+            (b"B".as_slice(), b'B'),
+            (b"\x03".as_slice(), b'B'),
+            (b"x?\r".as_slice(), b'B'),
+            (b"\x1b[A\r".as_slice(), b'O'),
+            (b"\x1b[D\r".as_slice(), b'O'),
+        ] {
+            let (choice, _, _) = main_mail_pty(
+                visit_mail::VisitMail::new(true),
+                &[("O opens mail.\r\n", input)],
+            );
+            assert_eq!(choice, expected, "{input:?}");
+        }
+    }
+    #[test]
+    fn main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead() {
+        let (choice, visit, text) = main_mail_pty(
+            visit_mail::VisitMail::new(true),
+            &[
+                ("O opens mail.\r\n", b"\x1b[B"),
+                ("> [N] Local notices", b"\x1b[C"),
+                ("> [O] Open encrypted home mail", b"\x1b[D"),
+                ("> [N] Local notices", b"\rOy\r"),
+                ("Notices on; O unlocks manually.", b"\t"),
+                ("> [N] Local notices", b"\t"),
+                ("> [O] Open encrypted home mail", b"\x1b[B"),
+                ("> [B] Back to the BBS", b"\r"),
+            ],
+        );
+        assert_eq!(choice, b'B');
+        assert!(
+            visit
+                .notice(visit_mail::NoticeContext::Files)
+                .unwrap()
+                .contains("E unlocks manually")
+        );
+        assert!(!text.contains("open encrypted home mail while"));
+    }
+    #[test]
+    fn main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it() {
+        let mut visit = visit_mail::VisitMail::new(true);
+        // Existing Files consent and an explicit successful lock feed this visit.
+        visit.toggle();
+        visit.record(Some(visit_mail::Counts {
+            unread: Some(2),
+            retained: 4,
+            pending: 1,
+        }));
+        let (choice, visit, text) = main_mail_pty(
+            visit,
+            &[
+                ("O opens mail; N turns notices off.", b"N"),
+                ("notices off. O opens mail.", b"N"),
+                ("Notices on; O unlocks manually.", b"b"),
+            ],
+        );
+        assert_eq!(choice, b'B');
+        assert!(text.contains("unread: 2"));
+        assert!(text.contains("stale local snapshot"));
+        let files = visit.notice(visit_mail::NoticeContext::Files).unwrap();
+        assert!(files.contains("unread unknown"));
+        assert!(!files.contains("unread: 2"));
+        assert!(
+            visit_mail::VisitMail::new(true)
+                .notice(visit_mail::NoticeContext::MainMenu)
+                .unwrap()
+                .contains("notices off")
         );
     }
     #[test]

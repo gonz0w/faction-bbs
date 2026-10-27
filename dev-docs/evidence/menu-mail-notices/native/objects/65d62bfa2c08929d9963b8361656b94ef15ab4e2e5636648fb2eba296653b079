@@ -1,0 +1,26 @@
+from lab import *
+import hashlib,tarfile
+names=set(json.loads((P/'sources/native-final01-before.json').read_text()));manifest={};source=P/'source-final02';source.mkdir(mode=0o700)
+for name in sorted(names):
+ data=(R/name).read_bytes();h=hashlib.sha256(data).hexdigest();(P/'objects'/h).write_bytes(data);manifest[name]=h;dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+assert manifest['crates/faction-client/src/main.rs']=='4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11';assert manifest['crates/faction-client/src/visit_mail.rs'].startswith('164b')
+(P/'sources/native-final02-before.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/'native-source-final02.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for name in sorted(manifest):t.add(source/name,arcname=name,recursive=False)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23902; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source23902; tar -xzf - -C /home/factionbuild/source23902; chown -R factionbuild:factionbuild /home/factionbuild/source23902',archive.read_bytes(),180)
+script='''from pathlib import Path
+import os,json,subprocess,hashlib,time
+root=Path('/home/factionbuild/source23902');p=Path('/home/factionbuild/proof239/targeted-shutdown02');p.mkdir(mode=0o700)
+expected=json.loads(Path('/home/factionbuild/proof239/expected-source02.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(p/'source-before.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\\n')
+env=dict(os.environ,PATH='/home/factionbuild/proof239/build-final01/bin:/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo239',CARGO_TARGET_DIR='/home/factionbuild/target239-network',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib')
+cmd=['cargo','test','--release','--locked','--offline','-j','2','-p','faction-client','--features','network-mail','--bin','faction-client','main_mail_pty','--','--test-threads=1','--nocapture'];start=time.monotonic()
+with (p/'targeted.log').open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected;(p/'source-after.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\\n');(p/'result.json').write_text(json.dumps(dict(result='pass' if r.returncode==0 else 'fail',command=cmd,returncode=r.returncode,elapsed_seconds=time.monotonic()-start),indent=2)+'\\n')
+'''
+(P/'native_targeted02.py').write_text(script)
+remote('cat > /home/factionbuild/proof239/expected-source02.json; chown factionbuild:factionbuild /home/factionbuild/proof239/expected-source02.json',(P/'sources/native-final02-before.json').read_bytes())
+remote('cat > /home/factionbuild/proof239/native-targeted02.py; chown factionbuild:factionbuild /home/factionbuild/proof239/native-targeted02.py',script.encode())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof239/native-targeted02.py > /home/factionbuild/proof239/targeted-launch02.log 2>&1 < /dev/null &'",timeout=10)
+print('Exact candidate4f39 frozen704inputs; five native PTY tests launched serial unchanged timeouts/assertions.')

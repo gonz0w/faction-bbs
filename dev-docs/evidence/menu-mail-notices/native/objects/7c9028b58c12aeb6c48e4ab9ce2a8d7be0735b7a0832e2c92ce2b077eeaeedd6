@@ -1,0 +1,9 @@
+from pathlib import Path
+import os,json,subprocess,time,platform
+native=platform.system()=='NetBSD';P=Path('/home/factionbuild/proof239') if native else Path('/private/tmp/faction239-native-OWNED');D=Path('/home/factionbuild/device239') if native else P;C=P/'runtime-code03';B=Path('/home/factionbuild/target239-network/release') if native else P/'bin/host-network02';client=P/'build-final03/faction-client-network' if native else B/'faction-client';fixtures=B/'examples' if native else B;out=P/'main-regressions';out.mkdir(mode=0o700);steps=[];os.umask(0o077)
+for mode in ['classic','unicode']:
+ command=[os.sys.executable,str(C/'probe_menu_mail.py'),'--client',str(client),'--checkpoint-fixture',str(fixtures/'checkpoint_ui_fixture'),'--mail-fixture',str(fixtures/'home_mail_fixture'),'--public-ca',str(Path('/home/factionbuild/source23903')/'crates/faction-xmpp/tests/fixtures/local-ca.pem') if native else '/Users/cam/DEV/faction-bbs/crates/faction-xmpp/tests/fixtures/local-ca.pem','--settings',str(D/'settings.json') if native else str(P/'host-settings.json'),'--private-root',str(D),'--output',str(out/(mode+'.json'))]+(['--unicode'] if mode=='unicode' else []);start=time.monotonic()
+ with (out/(mode+'.raw.log')).open('wb') as log:r=subprocess.run(command,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ steps.append(dict(name=mode,command=command,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.private.json').write_text(json.dumps(steps,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Existing main-menu/ordinarySSH/freshreturn/hostileoutput controls passed:',platform.system())

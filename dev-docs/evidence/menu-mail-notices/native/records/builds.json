@@ -1,0 +1,41 @@
+{
+  "platforms": {
+    "host": {
+      "build_log": {
+        "path": "dev-docs/evidence/menu-mail-notices/native/logs/host-network-build02.log",
+        "sha256": "ea0366ea0b143d69ca967ed141ce4ef2ca97cf475b1ffde30b1a32c21f04d2a9"
+      },
+      "build_source_match": true,
+      "client_binary_sha256": "9da3df9d86b086934af4357d5b0b5376e1b90659c3385a2f2caef35950370e2e",
+      "compiled_manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/native/maps/host-compiled02.json",
+        "sha256": "f300641535c4fc4be3091896dbca064756e62bb25cae28fa1d524e73ea99bd37"
+      },
+      "fixture_binary_sha256": "91c2e44a904e158a0f31722f51e9a558a6724e458bc73d8ffcd96fbfe0b3a104",
+      "runtime_overrides": {
+        "tools/probe_menu_mail_notices.py": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+        "tools/test_probe_menu_mail_notices.py": "38e0bd05f688ae12897232846e37e88eca982df5a17825751f835ace6a98d723"
+      },
+      "source_manifest_sha256": "934ca39bc14b6ffd6bf7c3fc824a9c07c76133901a42e8fd139dadc0a15b538e"
+    },
+    "netbsd": {
+      "build_log": {
+        "path": "dev-docs/evidence/menu-mail-notices/native/logs/native-build03/network-build.log",
+        "sha256": "210a37862aebffec54cd541dea5a6ae82c71dfc0d40f8dccace937575551501b"
+      },
+      "build_source_match": true,
+      "client_binary_sha256": "43f715c95525201aa64a6f3cc387543714665b8c7cfbc119a450218e80fa988a",
+      "compiled_manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/native/maps/native-compiled03.json",
+        "sha256": "b14fb943b770c53d9ecf3810f490940f81aec27b33017083b8a68a8029a5bc66"
+      },
+      "fixture_binary_sha256": "e6aa7b3d7e8b2cb1d5eb46f55666a6f7811935f32578ddee6ae33b66d9dd75fc",
+      "runtime_overrides": {
+        "tools/probe_menu_mail_notices.py": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+        "tools/test_probe_menu_mail_notices.py": "38e0bd05f688ae12897232846e37e88eca982df5a17825751f835ace6a98d723"
+      },
+      "source_manifest_sha256": "dc9ab638b678a2f25fb8b902a9b497f17240484a665650fcd31d56ac7283eb14"
+    }
+  },
+  "result": "pass"
+}

@@ -1,0 +1,10 @@
+from pathlib import Path
+import os,subprocess,json,time,hashlib
+P=Path('/home/factionbuild/proof239');R=P/'runtime-code03';B=P/'build-final03';D=Path('/home/factionbuild/device239');out=P/'native-main02';out.mkdir(mode=0o700);ids=json.loads((P/'capture-ids02.private.json').read_text());steps=[]
+for mode in ['classic','unicode']:
+ command=['/usr/pkg/bin/python3.13',str(R/'probe_menu_mail_notices.py'),'--client',str(B/'faction-client-network'),'--fixture','/home/factionbuild/target239-network/release/examples/mail_correspondents_fixture','--owned-root',str(D),'--settings',str(D/'settings.json'),'--mail-fixture','/home/factionbuild/target239-network/release/examples/home_mail_fixture','--public-ca','/home/factionbuild/source23903/crates/faction-xmpp/tests/fixtures/local-ca.pem','--capture-id',ids['netbsd_'+mode],'--output',str(out/(mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])
+ start=time.monotonic()
+ with (out/(mode+'.raw.log')).open('wb') as log:r=subprocess.run(command,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ steps.append(dict(name=mode,command=command,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.private.json').write_text(json.dumps(steps,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Actual native classic/Unicode main notices passed.')

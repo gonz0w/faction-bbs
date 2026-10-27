@@ -1,0 +1,6 @@
+{
+  "observed_error": "Second audit wrongly expected ssh executable in private profile TOML; executable is fixed by compiled Profile::ssh_command source.",
+  "first_script_sha256": "7a38d53d6b2a50a5b5984399f371b144b794d1a5e348fb9c4941dc73b951ddcc",
+  "correction": "Verify compiled profile.rs source identity and fixed /usr/bin/ssh command instead.",
+  "corrected_script_sha256": "0e1d12feeb8fbad71f4708dba8de9462a1421315403e866851f5bdf840aa4be3"
+}

@@ -9,7 +9,9 @@ private [picker home-mail paths](picker-home-mail.md). The default build and
 ordinary SSH do not decrypt member mail.
 
 A separate optional [main-menu mail entry](main-menu-mail.md) opens the same local
-console without entering Files. The Files workflow below remains available.
+console without entering Files. Its **N: Local notices** action shares the
+setting and snapshot described below with Files during the same board visit.
+The Files workflow below remains available.
 
 ## Enable local read tracking
 
@@ -70,12 +72,22 @@ retain the existing Files menu.
 
 ## What a notice means
 
-With notices enabled, a graceful mail lock can leave a counts-only snapshot at the
-local Files desk: unread, retained history and pending ciphertext. It is labelled
+With notices enabled, a successful explicit mail lock can leave a counts-only
+snapshot at the local Files desk or main-menu mail entry: unread, retained history
+and pending ciphertext. It is labelled
 **LOCKED** and **stale local snapshot**. It contains no sender, subject or body.
 A locked checkpoint with no snapshot says **unread unknown**; disabled tracking
-also remains unknown, not zero. Opting out clears the snapshot. Notices reset off
-for each new board visit.
+also remains unknown, not zero. A cancelled unlock or unsuccessful console run
+leaves unread unknown. Declining the Open confirmation leaves the snapshot
+unchanged. A home refresh failure inside a healthy unlocked console can
+still leave stale local counts after a graceful lock. Opting out clears the
+snapshot; enabling notices again cannot restore it. Notices reset off for each
+new board visit.
+
+The main-menu entry uses **O** to open mail; Files uses **E**. A main-menu mail
+lock returns directly to the BBS menu, so select its mail entry again to view the
+snapshot. A Files mail lock returns to its local Files desk. Toggling notices at
+either entry does not unlock mail or contact your home.
 
 These are retained-device counts, not a complete or fresh home-inbox total. No
 background timer, polling, bell, desktop notification or shared BBS badge is added.

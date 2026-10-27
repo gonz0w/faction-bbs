@@ -249,3 +249,20 @@ ending at merge or abandonment. This exception expires at that PR's merge or
 abandonment; all other configuration and behavior retain strict TDD. No CI
 infrastructure, checker/test/assertion, product, permission/protection, future
 bypass or runtime-routing authority changes.
+
+## One-time issue #239 oracle TDD disposition
+
+On 2026-10-27, the owner explicitly approved [this limited disposition](https://github.com/gonz0w/faction-bbs/issues/239#issuecomment-6445428781)
+for issue #239's stale O/E notice verification-helper correction. The already-green
+oracle and its expected bytes were changed together without an observed
+pre-correction failing run. That historical strict-test-first gap remains explicit;
+no retrospective RED or complete strict chronology is claimed for it.
+
+For this correction only, accept the preserved source/execution history,
+substantive final tests, actual host/NetBSD routes and separate review as the
+alternative evidence. Existing product/interface and later helper REDs qualify
+only their own changes. All other tests, source preservation, privacy checks,
+actual fixture cleanup, separate review and unchanged current-head CI/merge gates
+remain required. No other change or future work receives an exception. This
+one-time authority ends when the issue's PR merges or is abandoned; its historical
+record remains. Further changes to the helper retain strict test-first delivery.

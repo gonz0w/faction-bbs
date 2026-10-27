@@ -1,0 +1,27 @@
+--- final01-main.rs
++++ shutdown-candidate1-main.rs
+@@ -1163,7 +1163,23 @@
+                 let _ = worker.join();
+                 panic!("local choice did not finish: {transcript:?}");
+             }
+-            std::thread::sleep(Duration::from_millis(10));
++            // Continue consuming output while Terminal resets and closes the
++            // slave. A PTY close may wait for its queued output to be drained.
++            let mut fds = [PollFd::new(&master, PollFlags::IN)];
++            poll(
++                &mut fds,
++                Some(&Timespec {
++                    tv_sec: 0,
++                    tv_nsec: 20_000_000,
++                }),
++            )
++            .unwrap();
++            let ready = fds[0].revents();
++            if ready.contains(PollFlags::IN) && !ready.intersects(PollFlags::HUP | PollFlags::ERR) {
++                let mut bytes = [0; 4096];
++                let n = master.read(&mut bytes).unwrap();
++                transcript.push_str(std::str::from_utf8(&bytes[..n]).unwrap());
++            }
+         }
+         let (choice, visit) = worker.join().unwrap();
+         (choice.unwrap(), visit, transcript)

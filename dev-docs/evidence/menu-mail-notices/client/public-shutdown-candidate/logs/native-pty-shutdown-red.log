@@ -1,0 +1,125 @@
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... ok
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... ok
+test mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id ... ok
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... ok
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... ok
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_language_namespace_shape_and_bounds ... ok
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_rejects_underfilled_discovery_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+test mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys ... ok
+test network_checkpoint_tests::authenticated_network_timestamp_and_delayed_duplicate_survive_reopen ... ok
+test network_checkpoint_tests::published_prekeys_come_from_the_durable_current_identity_only ... ok
+test network_checkpoint_tests::unauthenticated_timestamp_substitution_and_tampering_never_mutate_checkpoint ... ok
+
+test result: ok. 88 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 40.54s
+
+     Running unittests src/main.rs (/home/factionbuild/target239-network/release/deps/faction_client-34560294589c2505)
+
+running 64 tests
+test checkpoint_ui::inbox::tests::correspondent_empty_single_and_sixty_four_groups_clamp_pages ... ok
+test checkpoint_ui::inbox::tests::correspondent_rows_preserve_device_digits_and_are_inert_at_thirty_nine_cells ... ok
+test checkpoint_ui::inbox::tests::correspondents_group_exact_account_and_device_newest_first ... ok
+test checkpoint_ui::inbox::tests::disabled_tracking_rejects_unread_filter_instead_of_inventing_zero ... ok
+test checkpoint_ui::inbox::tests::empty_and_single_never_wrap_or_open_out_of_range ... ok
+test checkpoint_ui::inbox::tests::forty_column_subjects_are_inert_and_bounded_in_both_modes ... ok
+test checkpoint_ui::inbox::tests::full_retention_is_eleven_pages_and_only_four_final_rows ... ok
+test checkpoint_ui::inbox::tests::newest_first_six_rows_and_partial_page_clamp_selection ... ok
+test checkpoint_ui::inbox::tests::reply_refresh_keeps_original_source_and_selected_group ... ok
+test checkpoint_ui::inbox::tests::unread_filter_excludes_sent_and_read_refresh_keeps_original_indices ... ok
+test checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals ... ok
+test checkpoint_ui::reply::tests::suggested_subject_keeps_ascii_prefix_and_scalar_boundaries ... ok
+test checkpoint_ui::tests::correspondents_actual_interface_helper ... ignored, owned subprocess helper, exercised by the correspondent interface control
+test checkpoint_ui::tests::correspondents_opens_from_actual_inbox_and_backs_to_global ... ok
+test checkpoint_ui::tests::inactivity_locks_without_remote_connection ... ok
+test checkpoint_ui::tests::inbox_output_failure_and_input_eof_helper ... ignored, owned subprocess helper, exercised by the inbox failure control
+test checkpoint_ui::tests::inbox_output_failure_and_input_eof_preserve_unread_and_restore_tty ... ok
+test checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input ... ok
+test checkpoint_ui::tests::private_text_is_inert_in_classic_and_unicode_modes ... ok
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test launcher::tests::home_mail_is_visible_local_explicit_and_fits_with_existing_entries ... ok
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test tests::files_mail_actions_are_local_configured_and_keep_classic_entries ... ok
+test tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead ... FAILED
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... FAILED
+test tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input ... FAILED
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... FAILED
+test tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it ... FAILED
+test tests::main_menu_mail_offers_exact_fixed_local_choices ... ok
+test transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority ... ok
+test transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits ... ok
+test transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls ... ok
+test transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo ... ok
+test transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail ... ok
+test transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline ... ok
+test transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+test visit_mail::tests::context_hints_match_the_local_entry_in_every_notice_state ... ok
+test visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count ... ok
+test visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears ... ok
+test visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads ... ok
+test visit_mail::tests::only_configured_visits_offer_mail_and_notices ... ok
+
+failures:
+
+---- tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead stdout ----
+
+thread 'tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead' (12328) panicked at crates/faction-client/src/main.rs:1164:17:
+local choice did not finish: "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n  [B] Back to the BBS\r\n> [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n> [O] Open encrypted home mail\r\n  [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n  [B] Back to the BBS\r\n> [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL / LOCKED: unread unknown.\r\nNotices on; O unlocks manually.\r\nN turns notices off.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n  [B] Back to the BBS\r\n> [N] Local notices\r\nLOCAL MAIL / LOCKED: unread unknown.\r\nNotices on; O unlocks manually.\r\nN turns notices off.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n> [O] Open encrypted home mail\r\n  [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL / LOCKED: unread unknown.\r\nNotices on; O unlocks manually.\r\nN turns notices off.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL / LOCKED: unread unknown.\r\nNotices on; O unlocks manually.\r\nN turns notices off.\r\n"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- tests::main_mail_pty_n_redraws_unknown_and_resets_back_default stdout ----
+
+thread 'tests::main_mail_pty_n_redraws_unknown_and_resets_back_default' (16739) panicked at crates/faction-client/src/main.rs:1164:17:
+local choice did not finish: "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL / LOCKED: unread unknown.\r\nNotices on; O unlocks manually.\r\nN turns notices off.\r\n"
+
+---- tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input stdout ----
+
+thread 'tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input' (14416) panicked at crates/faction-client/src/main.rs:1164:17:
+local choice did not finish: "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n"
+
+---- tests::main_mail_pty_renders_notices_and_keeps_enter_safe stdout ----
+
+thread 'tests::main_mail_pty_renders_notices_and_keeps_enter_safe' (12134) panicked at crates/faction-client/src/main.rs:1164:17:
+local choice did not finish: "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n"
+
+---- tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it stdout ----
+
+thread 'tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it' (15661) panicked at crates/faction-client/src/main.rs:1164:17:
+local choice did not finish: "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL / LOCKED\r\nstale local snapshot; home not polled.\r\nunread: 2\r\nretained: 4; pending: 1\r\nO opens mail; N turns notices off.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL: notices off. O opens mail.\r\n\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n  [N] Local notices\r\nLOCAL MAIL / LOCKED: unread unknown.\r\nNotices on; O unlocks manually.\r\nN turns notices off.\r\n"
+
+
+failures:
+    tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead
+    tests::main_mail_pty_n_redraws_unknown_and_resets_back_default
+    tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input
+    tests::main_mail_pty_renders_notices_and_keeps_enter_safe
+    tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it
+
+test result: FAILED. 57 passed; 5 failed; 2 ignored; 0 measured; 0 filtered out; finished in 38.79s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

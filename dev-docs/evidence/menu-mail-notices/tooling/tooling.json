@@ -1,0 +1,493 @@
+{
+  "schema": 1,
+  "issue": 239,
+  "result": "pass",
+  "scope": "stored-evidence-guard-and-existing-PTY-CI-contract",
+  "root_pin_pending_real_cleanup": true,
+  "role_requested": "temper_implementer",
+  "model_requested": "gpt-6.1-sol",
+  "effort_requested": "high",
+  "backend_routing_observed": false,
+  "sources": [
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/c41afc3c7f44ac4ea8fbacba450bccf9bb274b2c27f2520aa315f9fe4f4879a6",
+      "sha256": "c41afc3c7f44ac4ea8fbacba450bccf9bb274b2c27f2520aa315f9fe4f4879a6"
+    },
+    {
+      "path": "dev-docs/evidence/mail-correspondents/lead/objects/0cf654110f28749ca6f39433321e1938bbced5096d0c30f2332e5af5df5c3b74",
+      "sha256": "0cf654110f28749ca6f39433321e1938bbced5096d0c30f2332e5af5df5c3b74"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/f33aa879cf7bf77cc6880289ef3a5fe88df36a3aa384bc1de7df183630143106",
+      "sha256": "f33aa879cf7bf77cc6880289ef3a5fe88df36a3aa384bc1de7df183630143106"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/2be2723d1cea0ca64aadf8a7a9a55049bd0a25f41429b775dbc33b17186e97f2",
+      "sha256": "2be2723d1cea0ca64aadf8a7a9a55049bd0a25f41429b775dbc33b17186e97f2"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/a04ea45cec8648b53109be9b5f02234ada9b139b562e5c3dad67ef1904b6fa73",
+      "sha256": "a04ea45cec8648b53109be9b5f02234ada9b139b562e5c3dad67ef1904b6fa73"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/7b182ea439a4f441497f53ad4aba80b0ad123c269295b6630fc68f2178677674",
+      "sha256": "7b182ea439a4f441497f53ad4aba80b0ad123c269295b6630fc68f2178677674"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/64684af10caaf3284251a925de6f19e00c73c8ad01a6e67187d459090e66f8b3",
+      "sha256": "64684af10caaf3284251a925de6f19e00c73c8ad01a6e67187d459090e66f8b3"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/2d3226082f150e34bf2e697d923fa12e7e368c8507307d00e0398a904a928dab",
+      "sha256": "2d3226082f150e34bf2e697d923fa12e7e368c8507307d00e0398a904a928dab"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/4c4ff1d79d4dfb9d3514350a30c68ba77a6f51439281567c8cb1ef1d85736832",
+      "sha256": "4c4ff1d79d4dfb9d3514350a30c68ba77a6f51439281567c8cb1ef1d85736832"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/81340164d1a4763e8483e61bfa2f134d87d53810ed8f61153768ae367e90a797",
+      "sha256": "81340164d1a4763e8483e61bfa2f134d87d53810ed8f61153768ae367e90a797"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/aaf7a9b39eed9244e7f6f3d859e973b0aede5d0bdf1d667f25f1556dbcbd616f",
+      "sha256": "aaf7a9b39eed9244e7f6f3d859e973b0aede5d0bdf1d667f25f1556dbcbd616f"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/c5cb51c444d72c443b4fbfaa3d6445c4e9957750553229fc8231f03ec532c643",
+      "sha256": "c5cb51c444d72c443b4fbfaa3d6445c4e9957750553229fc8231f03ec532c643"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/dd93405a3cafdd1cfc1cfb028483b973e564c612c006e1c8514f1ff0dc868023",
+      "sha256": "dd93405a3cafdd1cfc1cfb028483b973e564c612c006e1c8514f1ff0dc868023"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/77a1280b35ed10b1965f7aec5d146703b4b8ae6ee2d99cec01891d54bafcba9d",
+      "sha256": "77a1280b35ed10b1965f7aec5d146703b4b8ae6ee2d99cec01891d54bafcba9d"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/9003ae98af947fe6a81d336053dd74d94c1f608c2bf88a4d8c7dac034b57cfcc",
+      "sha256": "9003ae98af947fe6a81d336053dd74d94c1f608c2bf88a4d8c7dac034b57cfcc"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed",
+      "sha256": "590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/c658d31e2ae4d5dfce97856b0a20939c010ac9fe51b1aa9f6fe2917dda5d2a88",
+      "sha256": "c658d31e2ae4d5dfce97856b0a20939c010ac9fe51b1aa9f6fe2917dda5d2a88"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/62e693c9d3f1130130457b00416f48bf1c8d3736aff0a6763bc9ccaea8f30423",
+      "sha256": "62e693c9d3f1130130457b00416f48bf1c8d3736aff0a6763bc9ccaea8f30423"
+    },
+    {
+      "path": "dev-docs/evidence/menu-mail-notices/tooling/objects/d3b118709a66fe08bbe0aaf2abbda21648041ea1b8a7287db9f13b67d0c2b724",
+      "sha256": "d3b118709a66fe08bbe0aaf2abbda21648041ea1b8a7287db9f13b67d0c2b724"
+    }
+  ],
+  "source_stages": [
+    {
+      "label": "missing-interface-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/missing-interface-red.json",
+        "sha256": "2645efcd64a8716bf4ea5d15ae9efb521a5d911cd05c954a420a1324f5c933b5"
+      }
+    },
+    {
+      "label": "guard-before-ci",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/guard-before-ci.json",
+        "sha256": "0fd6f2e8d8db71f43808032475d99e763c613d66392d4df5d09d8a2ee2e4dd46"
+      }
+    },
+    {
+      "label": "guard-ci-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/guard-ci-green.json",
+        "sha256": "7de3ddd7321fe38b9f97756234a78c565e900c127a9dea5efd42caad54b077e4"
+      }
+    },
+    {
+      "label": "probe-source-binding-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/probe-source-binding-red.json",
+        "sha256": "1172e932fae42d42d8636b76c198df70fae381e1b377d280b473c580559e74b0"
+      }
+    },
+    {
+      "label": "probe-source-binding-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/probe-source-binding-green.json",
+        "sha256": "dd97f54c0d54996257397bd5ddbfbaaaadd6db2a2c1f3648b241ea6a109811f1"
+      }
+    },
+    {
+      "label": "file-protocol-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/file-protocol-red.json",
+        "sha256": "b24c7eb0eddbe04e733f3437965323a6ee5918f73c42965f1fa95017e7f6c449"
+      }
+    },
+    {
+      "label": "file-protocol-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/file-protocol-green.json",
+        "sha256": "879f96728041b1597ab02188cf73c4f06875edebab678e57528ce2a4129c13e1"
+      }
+    },
+    {
+      "label": "shared-file-protocol-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/shared-file-protocol-red.json",
+        "sha256": "041e8f85c42d32b52b9b381957ace98f46c433d1fe6c4a9b59e4d77b96ea8d1e"
+      }
+    },
+    {
+      "label": "shared-file-protocol-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/shared-file-protocol-green.json",
+        "sha256": "bbd4d9f00cfe8b61a2c709722552825c6bbdb81e58194c8c25a33e757cef67f6"
+      }
+    },
+    {
+      "label": "pre-capture-bindings-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/pre-capture-bindings-red.json",
+        "sha256": "bbb0a1a60ab24f86a5a7ddf6f47b01d00c4fa7e2930293a1d59d0b02cff93257"
+      }
+    },
+    {
+      "label": "pre-capture-bindings-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/pre-capture-bindings-green.json",
+        "sha256": "1ccd6714a96ec1ede71c34e18b0d43d1b53d5d4a30b8c0c90345f8a5630295c0"
+      }
+    },
+    {
+      "label": "binary-source-bindings-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/binary-source-bindings-red.json",
+        "sha256": "3397d9b41593c63c4165e66a2eca5d3bd53fa2c3b2fccfea8f62df79c7b48dfb"
+      }
+    },
+    {
+      "label": "binary-source-bindings-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/binary-source-bindings-green.json",
+        "sha256": "56f0534c23711c3e8d6c80ba54db8bdc6cc7e246582d0aa344cc6f54c74af5d1"
+      }
+    },
+    {
+      "label": "finalizer-interface-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/finalizer-interface-red.json",
+        "sha256": "8e1d22b7db4ccb4e86623ca00b73dca5b752bbea054241a88336977caf9328a6"
+      }
+    },
+    {
+      "label": "finalizer-interface-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/finalizer-interface-green.json",
+        "sha256": "1760bf268d922d8d6d7a658783d138f497ab819eceaf0dddd7680d5b5c9fe670"
+      }
+    },
+    {
+      "label": "runtime-composition-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/runtime-composition-red.json",
+        "sha256": "60a2c6b80c3dbbd2a6e9e007db9b0cc0b29608ed218367bc6fc5d56efbff003f"
+      }
+    },
+    {
+      "label": "runtime-composition-coherent-red",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/runtime-composition-coherent-red.json",
+        "sha256": "59f1d0c2af9771cf3e37b111bc8cf140f56af8aa080c8770af4d6331835ca36c"
+      }
+    },
+    {
+      "label": "runtime-composition-green",
+      "manifest": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/runtime-composition-green.json",
+        "sha256": "7844124c2d63204d70181e6d560a4d62f6eec6d223d62ad08987e671ecabd09e"
+      }
+    }
+  ],
+  "runs": {
+    "missing-interface-red": {
+      "exit": 1,
+      "tests": 10,
+      "errors": 8,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/missing-interface-red.json",
+        "sha256": "2645efcd64a8716bf4ea5d15ae9efb521a5d911cd05c954a420a1324f5c933b5"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/missing-interface-red.log",
+        "sha256": "3553ab5c090216bfffb12897f52e36aa79196754cea1b2ef1124532ba6c9f337"
+      },
+      "classification": "missing module loader errors; not executed behavioral assertions"
+    },
+    "guard-before-ci": {
+      "exit": 1,
+      "tests": 10,
+      "errors": 0,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/guard-before-ci.json",
+        "sha256": "0fd6f2e8d8db71f43808032475d99e763c613d66392d4df5d09d8a2ee2e4dd46"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/guard-before-ci.log",
+        "sha256": "824d33cac1c191544f8248adcfb56c4209669c2b7597f6667b2b51db720c6e22"
+      }
+    },
+    "guard-ci-green": {
+      "exit": 0,
+      "tests": 10,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/guard-ci-green.json",
+        "sha256": "7de3ddd7321fe38b9f97756234a78c565e900c127a9dea5efd42caad54b077e4"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/guard-ci-green.log",
+        "sha256": "8e8c40f14485e374a450c9c5f2dd65b58e8b74300fa0563f8ed8dfc1b535ec9d"
+      }
+    },
+    "probe-source-binding-red": {
+      "exit": 1,
+      "tests": 11,
+      "errors": 0,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/probe-source-binding-red.json",
+        "sha256": "1172e932fae42d42d8636b76c198df70fae381e1b377d280b473c580559e74b0"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/probe-source-binding-red.log",
+        "sha256": "1a2f33e34db696bc0d80f2e304417611c308c11b2ca5ed223607f61baf301236"
+      }
+    },
+    "probe-source-binding-green": {
+      "exit": 0,
+      "tests": 11,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/probe-source-binding-green.json",
+        "sha256": "dd97f54c0d54996257397bd5ddbfbaaaadd6db2a2c1f3648b241ea6a109811f1"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/probe-source-binding-green.log",
+        "sha256": "1ab5546329c2181a220edbbeaf99fbda859d171835676a99754b7a1dbe40cab1"
+      }
+    },
+    "file-protocol-red": {
+      "exit": 1,
+      "tests": 11,
+      "errors": 0,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/file-protocol-red.json",
+        "sha256": "b24c7eb0eddbe04e733f3437965323a6ee5918f73c42965f1fa95017e7f6c449"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/file-protocol-red.log",
+        "sha256": "cda897708a2979dda521882cad0499f6bfeed059c300f30e6f29b6946a332b6a"
+      }
+    },
+    "file-protocol-green": {
+      "exit": 0,
+      "tests": 11,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/file-protocol-green.json",
+        "sha256": "879f96728041b1597ab02188cf73c4f06875edebab678e57528ce2a4129c13e1"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/file-protocol-green.log",
+        "sha256": "5e765c14cb31806ec19aa555dca730c7006c90817928b2b8c24f5e110aab020a"
+      }
+    },
+    "shared-file-protocol-red": {
+      "exit": 1,
+      "tests": 11,
+      "errors": 0,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/shared-file-protocol-red.json",
+        "sha256": "041e8f85c42d32b52b9b381957ace98f46c433d1fe6c4a9b59e4d77b96ea8d1e"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/shared-file-protocol-red.log",
+        "sha256": "9925a51a52cde7f47d24d8bf9b182ddefd07d57e23c6dbebaad431226d107117"
+      }
+    },
+    "shared-file-protocol-green": {
+      "exit": 0,
+      "tests": 11,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/shared-file-protocol-green.json",
+        "sha256": "bbd4d9f00cfe8b61a2c709722552825c6bbdb81e58194c8c25a33e757cef67f6"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/shared-file-protocol-green.log",
+        "sha256": "5e765c14cb31806ec19aa555dca730c7006c90817928b2b8c24f5e110aab020a"
+      }
+    },
+    "pre-capture-bindings-red": {
+      "exit": 1,
+      "tests": 12,
+      "errors": 0,
+      "failures": 5,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/pre-capture-bindings-red.json",
+        "sha256": "bbb0a1a60ab24f86a5a7ddf6f47b01d00c4fa7e2930293a1d59d0b02cff93257"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/pre-capture-bindings-red.log",
+        "sha256": "fa341d11230e12f6d15f3b0071ad6bb0e542fc261210427db34f23d12a7493fc"
+      }
+    },
+    "pre-capture-bindings-green": {
+      "exit": 0,
+      "tests": 12,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/pre-capture-bindings-green.json",
+        "sha256": "1ccd6714a96ec1ede71c34e18b0d43d1b53d5d4a30b8c0c90345f8a5630295c0"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/pre-capture-bindings-green.log",
+        "sha256": "56fa0545e3ce473290a8eaebeede7d7134b6003fd9cfba880ccb2fd9b4b0fc13"
+      }
+    },
+    "binary-source-bindings-red": {
+      "exit": 1,
+      "tests": 13,
+      "errors": 0,
+      "failures": 7,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/binary-source-bindings-red.json",
+        "sha256": "3397d9b41593c63c4165e66a2eca5d3bd53fa2c3b2fccfea8f62df79c7b48dfb"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/binary-source-bindings-red.log",
+        "sha256": "9f8090d1aec9f31108b23ad19d568ced3562319409d4a59f258521c3eaf04e30"
+      }
+    },
+    "binary-source-bindings-green": {
+      "exit": 0,
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/binary-source-bindings-green.json",
+        "sha256": "56f0534c23711c3e8d6c80ba54db8bdc6cc7e246582d0aa344cc6f54c74af5d1"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/binary-source-bindings-green.log",
+        "sha256": "4361a1eef72c15a62d54df6715a793de1d8094f77b2fa5b01360560d80e80509"
+      }
+    },
+    "finalizer-interface-red": {
+      "exit": 1,
+      "tests": 19,
+      "errors": 6,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/finalizer-interface-red.json",
+        "sha256": "8e1d22b7db4ccb4e86623ca00b73dca5b752bbea054241a88336977caf9328a6"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/finalizer-interface-red.log",
+        "sha256": "8ea1071e20bda9a4510368aa708b1a4355c2467071d590c340776fb3fb386edb"
+      },
+      "classification": "missing module loader errors; not executed behavioral assertions"
+    },
+    "finalizer-interface-green": {
+      "exit": 0,
+      "tests": 19,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/finalizer-interface-green.json",
+        "sha256": "1760bf268d922d8d6d7a658783d138f497ab819eceaf0dddd7680d5b5c9fe670"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/finalizer-interface-green.log",
+        "sha256": "649a49b1e0e51f3368099920466df512bb0edfbe2c99ed63dd6fc3ae0829dbd4"
+      }
+    },
+    "runtime-composition-red": {
+      "exit": 1,
+      "tests": 20,
+      "errors": 0,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/runtime-composition-red.json",
+        "sha256": "60a2c6b80c3dbbd2a6e9e007db9b0cc0b29608ed218367bc6fc5d56efbff003f"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/runtime-composition-red.log",
+        "sha256": "fe4027c02b09b5c2d205e2d3a07da7966a056f1f9b8b6ef4eb70cb11e4984fbe"
+      },
+      "classification": "test-fixture-native-map-association-error; not semantic RED"
+    },
+    "runtime-composition-coherent-red": {
+      "exit": 1,
+      "tests": 20,
+      "errors": 0,
+      "failures": 1,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/runtime-composition-coherent-red.json",
+        "sha256": "59f1d0c2af9771cf3e37b111bc8cf140f56af8aa080c8770af4d6331835ca36c"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/runtime-composition-coherent-red.log",
+        "sha256": "d2b137125a3a25f3e0155959cdf5c4d935cba57a772ed626f1bdea660ac31ebe"
+      }
+    },
+    "runtime-composition-green": {
+      "exit": 0,
+      "tests": 20,
+      "errors": 0,
+      "failures": 0,
+      "command": "python3 -m unittest discover -s tools -p test_menu_mail_notices_evidence.py",
+      "stage": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/stages/runtime-composition-green.json",
+        "sha256": "7844124c2d63204d70181e6d560a4d62f6eec6d223d62ad08987e671ecabd09e"
+      },
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/tooling/logs/runtime-composition-green.log",
+        "sha256": "a192fb149b01873c3ecdb2391bcbce111c5961a2142c82900ca4a430bfb98058"
+      }
+    }
+  },
+  "initial_write_denial": "setup failure; no repo edit; not behavioral RED"
+}

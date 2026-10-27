@@ -1,0 +1,113 @@
+"""Stored notice evidence rejects coherent but invalid observations."""
+import copy
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import tempfile
+import unittest
+ROOT=Path(__file__).resolve().parents[1]
+SPEC=importlib.util.spec_from_file_location('notice_guard',Path(__file__).with_name('check_menu_mail_notices_evidence.py'))
+MAIN={'fixed_O_B_N_and_safe_back_defaults','local_toggle_no_unlock_home_or_protocol','unknown_stale_off_cleared_on_unknown','canceled_wrong_unlock_unknown','fresh_confirmation_typeahead_discard','canonical_snapshot_unchanged','same_SSH_lock_return_new_visit_off','corrected_GIO_and_board_files_private_markers_absent'}
+SHARED={'main_to_files_shares_consent_and_stale_snapshot','files_to_main_opt_out_clears_snapshot_and_on_is_unknown','corrected_GIO_and_board_files_private_markers_absent'}
+PRODUCTION=('crates/faction-client/src/main.rs','crates/faction-client/src/visit_mail.rs')
+
+class Evidence(unittest.TestCase):
+ def save(self,value):
+  self.serial+=1;data=value if isinstance(value,bytes) else (json.dumps(value)+'\n').encode()
+  path=f'{self.serial}.raw';(self.root/path).write_bytes(data)
+  return dict(path=path,sha256=hashlib.sha256(data).hexdigest())
+ def read(self,ref):return json.loads((self.root/ref['path']).read_bytes())
+ def setUp(self):
+  self.guard=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.guard)
+  temp=tempfile.TemporaryDirectory();self.addCleanup(temp.cleanup);self.root=Path(temp.name);self.serial=0
+  self.source=self.save(b'executed source\r\n');files={name:self.source['sha256'] for name in PRODUCTION+('tools/probe_menu_mail_notices.py',)}
+  self.record=dict(schema=1,issue=239,result='pass',profile=dict(normal_sessions=8,launch_ms=5000,credential_permits=2,kernel_slots=2,owner_helpers=3,drain_seconds=5,parked_prompt_seconds=120,nonce_budget=64),claims={k:False for k in ('background_polling','credential_lease','automatic_read_ack','schema_change','new_dependency','new_crypto','remote_notices','physical_hardware','capacity','production_deployment')},sources=[self.source],prior_records=[self.save(b'prior evidence')],production=files,source_stages=[dict(label=label,manifest=self.save(files)) for label in ('host-final','native-final')],routes=dict(main={},shared={}),records={})
+  associations={}
+  for kind,keys in [('main',('host_classic','host_unicode','netbsd_classic','netbsd_unicode')),('shared',('host','netbsd'))]:
+   associations[kind]={}
+   for key in keys:
+    controls=MAIN if kind=='main' else SHARED
+    data=dict(result='pass',platform='Darwin' if key.startswith('host') else 'NetBSD',scope='same-ssh-main-menu-mail-notices' if kind=='main' else 'same-ssh-shared-main-files-mail-notices',unicode=key.endswith('_unicode'),count=len(controls),checks=sorted(controls),source_sha256=self.source['sha256'],client_binary_sha256='7'*64,fixture_binary_sha256='8'*64,profile_sha256='9'*64,ssh_executable='/usr/bin/ssh',capture_id=f'{self.serial:032x}',marker_count=10,private_matches=0,file_protocol_matches=0,files_disabled=kind=='main',actual_home_transport_error='Connect',same_ssh_pid_until_normal_close=True,automatic_redial_observed=False,private_input_hashes=dict(trace_sha256='1'*64,marker_set_sha256='2'*64,file_scan_input_sha256='3'*64),board_io_reconstruction=dict(records=10,streams=3,decoded_bytes=100,read_bytes=20,write_bytes=80),privacy_scan=dict(matches=0,symlinks=0,board_files=4,store_files=1,log_files=2),notice_toggle_local_only=True,canonical_state_unchanged=True,consent_off_on_reenable_unknown=True,new_visit_notices_off=True,safe_back_default_after_redraw=True,locked_return_same_ssh=True,notice_cells_max=39,main_open_hint='O')
+    if kind=='shared':data.update(files_open_hint='E',file_protocol_matches=2)
+    ref=self.save(data);self.record['routes'][kind][key]=ref
+    associations[kind][key]=dict(client_binary_sha256=data['client_binary_sha256'],fixture_binary_sha256=data['fixture_binary_sha256'],profile_sha256=data['profile_sha256'],capture_id=data['capture_id'],source_sha256=data['source_sha256'],result_sha256=ref['sha256'],private_input_hashes=data['private_input_hashes'],generated_before_capture=True,input_trace_unchanged=True,pre_input_record_sha256='4'*64,trace_input_record_sha256='5'*64,result_association_record_sha256='6'*64,marker_file_sha256_at_trace_start='2'*64,scan_input_sha256_at_trace_start='3'*64)
+  records=dict(builds=dict(result='pass',platforms={platform:dict(source_manifest_sha256=self.record['source_stages'][index]['manifest']['sha256'],client_binary_sha256='7'*64,fixture_binary_sha256='8'*64,build_source_match=True,build_log=self.save(b'Finished release source-matched build\n')) for index,platform in enumerate(('host','netbsd'))}),associations=dict(result='pass',routes=associations),native=dict(result='pass',files=files,source_count=len(files),all_source_match=True,compile_memory_mib=2048,runtime_physmem=1054990336),cleanup=dict(result='pass',owned_removed=True,saved_stopped=True,saved_hashes_unchanged=True,saved_sizes_mtimes_unchanged=True,forwards_closed=True),tdd=dict(result='pass',captured_before_edit=True,red_exit=101,green_exit=0),publication=dict(result='pass',generated_private_values_scanned=12,private_matches=0,raw_private_key_or_vault_matches=0,explicit_manifests_verified=True),rust=dict(result='pass',runs={k:dict(passed=5,ignored=0,log=self.save(b'test result: ok. 5 passed; 0 failed; 0 ignored;\n')) for k in ('workspace','network','native','netbsd')}))
+  for name,data in records.items():self.record['records'][name]=self.save(data)
+ def change_record(self,name,change):
+  data=self.read(self.record['records'][name]);change(data);self.record['records'][name]=self.save(data)
+ def change_route(self,kind,key,change):
+  data=self.read(self.record['routes'][kind][key]);change(data);ref=self.save(data);self.record['routes'][kind][key]=ref
+  # Coherently rebind every association field: stale hashes must not mask a missing semantic check.
+  self.change_record('associations',lambda a:a['routes'][kind][key].update(client_binary_sha256=data['client_binary_sha256'],fixture_binary_sha256=data['fixture_binary_sha256'],profile_sha256=data['profile_sha256'],result_sha256=ref['sha256'],capture_id=data['capture_id'],source_sha256=data['source_sha256'],private_input_hashes=data['private_input_hashes']))
+ def reject(self):
+  with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+ def test_complete_matrix(self):self.guard.validate(self.root,self.record)
+ def test_route_semantics_with_coherent_associations(self):
+  original=copy.deepcopy(self.record)
+  changes=[('scope','other'),('checks',sorted(MAIN)[:-1]),('count',99),('actual_home_transport_error','Config'),('files_disabled',False),('notice_toggle_local_only',False),('canonical_state_unchanged',False),('consent_off_on_reenable_unknown',False),('new_visit_notices_off',False),('safe_back_default_after_redraw',False),('locked_return_same_ssh',False),('main_open_hint','E'),('notice_cells_max',40),('private_matches',1),('file_protocol_matches',1),('marker_count',0),('same_ssh_pid_until_normal_close',False),('automatic_redial_observed',True),('capture_id','bad'),('source_sha256','f'*64),('private_input_hashes',dict(trace_sha256='1'*64))]
+  for field,value in changes:
+   with self.subTest(field=field):
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d.update({field:value}));self.reject()
+  self.record=copy.deepcopy(original);self.change_route('shared','host',lambda d:d.update(files_open_hint='O'));self.reject()
+  self.record=copy.deepcopy(original);self.change_route('shared','host',lambda d:d.update(file_protocol_matches=0));self.reject()
+ def test_positive_io_and_privacy_scan(self):
+  original=copy.deepcopy(self.record)
+  for group,field,value in [('privacy_scan','matches',1),('privacy_scan','board_files',0),('privacy_scan','symlinks',1),('board_io_reconstruction','streams',0),('board_io_reconstruction','write_bytes',0),('board_io_reconstruction','decoded_bytes',101)]:
+   with self.subTest(field=field):
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d[group].update({field:value}));self.reject()
+ def test_route_requires_executed_probe_not_any_available_source(self):
+  other=self.save(b'unrelated available source');self.record['sources'].append(other)
+  self.change_route('main','host_classic',lambda d:d.update(source_sha256=other['sha256']));self.reject()
+ def test_capture_association_mismatches(self):
+  original=copy.deepcopy(self.record)
+  for field,value in [('result_sha256','f'*64),('generated_before_capture',False),('input_trace_unchanged',False)]:
+   self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+ def test_pre_capture_input_hashes_and_original_record_identity(self):
+  original=copy.deepcopy(self.record)
+  for field,value in [('pre_input_record_sha256','bad'),('trace_input_record_sha256','bad'),('result_association_record_sha256','bad'),('marker_file_sha256_at_trace_start','f'*64),('scan_input_sha256_at_trace_start','f'*64)]:
+   with self.subTest(field=field):
+    self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+ def test_binary_profile_and_build_source_bindings(self):
+  original=copy.deepcopy(self.record)
+  for field,value in [('client_binary_sha256','f'*64),('fixture_binary_sha256','f'*64),('profile_sha256','bad'),('ssh_executable','ssh')]:
+   with self.subTest(field=field):
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d.update({field:value}));self.reject()
+  for field,value in [('source_manifest_sha256','f'*64),('build_source_match',False),('client_binary_sha256','e'*64)]:
+   with self.subTest(build_field=field):
+    self.record=copy.deepcopy(original);self.change_record('builds',lambda d:d['platforms']['host'].update({field:value}));self.reject()
+ def test_duplicate_capture_or_substituted_native(self):
+  original=copy.deepcopy(self.record);capture=self.read(self.record['routes']['main']['host_classic'])['capture_id']
+  self.change_route('main','netbsd_classic',lambda d:d.update(capture_id=capture));self.reject()
+  self.record=copy.deepcopy(original);self.record['routes']['main']['netbsd_classic']=self.record['routes']['main']['host_classic'];self.reject()
+  self.record=copy.deepcopy(original);del self.record['routes']['shared']['netbsd'];self.reject()
+ def test_source_drift_escape_and_symlink(self):
+  for path in ('../escape','/tmp/escape'):
+   with self.assertRaises(AssertionError):self.guard.raw(self.root,dict(self.source,path=path))
+  (self.root/'link').symlink_to(self.root/self.source['path'])
+  with self.assertRaises(AssertionError):self.guard.raw(self.root,dict(self.source,path='link'))
+  (self.root/self.source['path']).write_bytes(b'drift');self.reject()
+ def test_final_sources_native_count_and_limits(self):
+  original=copy.deepcopy(self.record)
+  self.record['production'][PRODUCTION[0]]='f'*64;self.reject()
+  self.record=copy.deepcopy(original);self.change_record('native',lambda d:d.update(source_count=1));self.reject()
+  self.record=copy.deepcopy(original);self.record['source_stages'][1]['manifest']=self.save({PRODUCTION[0]:'f'*64});self.reject()
+  self.record=copy.deepcopy(original);self.record['profile']['normal_sessions']=250;self.reject()
+  self.record=copy.deepcopy(original);self.record['claims']['background_polling']=True;self.reject()
+ def test_cleanup_tdd_publication_and_log_count_lies(self):
+  original=copy.deepcopy(self.record)
+  for name,change in [('cleanup',lambda d:d.update(owned_removed=False)),('cleanup',lambda d:d.update(saved_sizes_mtimes_unchanged=False)),('tdd',lambda d:d.update(red_exit=0)),('tdd',lambda d:d.update(captured_before_edit=False)),('publication',lambda d:d.update(private_matches=1)),('publication',lambda d:d.update(generated_private_values_scanned=0)),('rust',lambda d:d['runs']['netbsd'].update(passed=6))]:
+   self.record=copy.deepcopy(original);self.change_record(name,change);self.reject()
+
+class CI(unittest.TestCase):
+ def test_ci_registration(self):
+  self.assertIn('python3 tools/check_menu_mail_notices_evidence.py',(ROOT/'.github/workflows/documentation.yml').read_text())
+ def test_real_pty_tests_use_existing_all_target_network_command(self):
+  native=(ROOT/'.github/workflows/documentation.yml').read_text().split('  native_mail:',1)[1].split('  documentation:',1)[0]
+  self.assertIn('cargo test -p faction-client -p faction-omemo --features faction-client/network-mail --all-targets --release --locked -- --test-threads=1',native)
+  source=(ROOT/'crates/faction-client/src/main.rs').read_text()
+  for suffix in ('renders_notices_and_keeps_enter_safe','n_redraws_unknown_and_resets_back_default','preserves_open_back_cancel_and_invalid_input','arrows_traverse_three_choices_and_toggle_drops_typeahead','shares_snapshot_with_files_and_opt_out_clears_it'):
+   self.assertRegex(source,r'#\[test\]\s+fn main_mail_pty_'+suffix+r'\(')
+  self.assertNotIn('python3 tools/probe_menu_mail_notices.py ',native)
+
+if __name__=='__main__':unittest.main()

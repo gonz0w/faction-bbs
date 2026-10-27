@@ -1,0 +1,89 @@
+..FFFFFFF..........
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (field='client_binary_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 75, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d.update({field:value}));self.reject()
+                                                                                                                  ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (field='fixture_binary_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 75, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d.update({field:value}));self.reject()
+                                                                                                                  ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (field='profile_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 75, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d.update({field:value}));self.reject()
+                                                                                                                  ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (field='ssh_executable')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 75, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_route('main','host_classic',lambda d:d.update({field:value}));self.reject()
+                                                                                                                  ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (build_field='source_manifest_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 78, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_record('builds',lambda d:d['platforms']['host'].update({field:value}));self.reject()
+                                                                                                                           ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (build_field='build_source_match')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 78, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_record('builds',lambda d:d['platforms']['host'].update({field:value}));self.reject()
+                                                                                                                           ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) (build_field='client_binary_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 78, in test_binary_profile_and_build_source_bindings
+    self.record=copy.deepcopy(original);self.change_record('builds',lambda d:d['platforms']['host'].update({field:value}));self.reject()
+                                                                                                                           ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.072s
+
+FAILED (failures=7)

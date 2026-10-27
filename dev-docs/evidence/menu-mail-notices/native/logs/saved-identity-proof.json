@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "before": {
+    "playground.qcow2": {
+      "sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+      "size": 3298164736,
+      "mtime_ns": 1792630766409312748
+    },
+    "kernel.img": {
+      "sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+      "size": 16902116,
+      "mtime_ns": 1792628245371937972
+    },
+    "CURRENT_PREVIEW": {
+      "sha256": "9a4d14b777c628cf1edcdd6c2c8388dba3b4ea6401f45f81aef031b82fa0ad62",
+      "size": 55,
+      "mtime_ns": 1792724221922155906
+    },
+    "saved/LATEST": {
+      "sha256": "f29db95057b7d25671487708f9241c1a66ca9957d5f509d878c1d568149e6ab6",
+      "size": 17,
+      "mtime_ns": 1792630768024855809
+    },
+    "known_hosts": {
+      "sha256": "39f4ebf32f3e0a4d5ec2fbc20eac0d32cba205255a091942e3c969f44f67fac3",
+      "size": 295,
+      "mtime_ns": 1792628565540220490
+    },
+    "ssh-admin.json": {
+      "sha256": "8039957ff4fc6195288e3c0c5cf2f270b1711b33399db3674a4f4eadf00f1ba6",
+      "size": 289,
+      "mtime_ns": 1792628318608888574
+    }
+  },
+  "after": {
+    "playground.qcow2": {
+      "sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+      "size": 3298164736,
+      "mtime_ns": 1792630766409312748
+    },
+    "kernel.img": {
+      "sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+      "size": 16902116,
+      "mtime_ns": 1792628245371937972
+    },
+    "CURRENT_PREVIEW": {
+      "sha256": "9a4d14b777c628cf1edcdd6c2c8388dba3b4ea6401f45f81aef031b82fa0ad62",
+      "size": 55,
+      "mtime_ns": 1792724221922155906
+    },
+    "saved/LATEST": {
+      "sha256": "f29db95057b7d25671487708f9241c1a66ca9957d5f509d878c1d568149e6ab6",
+      "size": 17,
+      "mtime_ns": 1792630768024855809
+    },
+    "known_hosts": {
+      "sha256": "39f4ebf32f3e0a4d5ec2fbc20eac0d32cba205255a091942e3c969f44f67fac3",
+      "size": 295,
+      "mtime_ns": 1792628565540220490
+    },
+    "ssh-admin.json": {
+      "sha256": "8039957ff4fc6195288e3c0c5cf2f270b1711b33399db3674a4f4eadf00f1ba6",
+      "size": 289,
+      "mtime_ns": 1792628318608888574
+    }
+  },
+  "saved_stopped_before": true,
+  "saved_stopped_after": true
+}

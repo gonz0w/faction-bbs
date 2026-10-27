@@ -1,0 +1,9 @@
+from pathlib import Path
+import os,json,subprocess,hashlib,time
+root=Path('/home/factionbuild/source23902');p=Path('/home/factionbuild/proof239/targeted-shutdown02');p.mkdir(mode=0o700)
+expected=json.loads(Path('/home/factionbuild/proof239/expected-source02.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(p/'source-before.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+env=dict(os.environ,PATH='/home/factionbuild/proof239/build-final01/bin:/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo239',CARGO_TARGET_DIR='/home/factionbuild/target239-network',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib')
+cmd=['cargo','test','--release','--locked','--offline','-j','2','-p','faction-client','--features','network-mail','--bin','faction-client','main_mail_pty','--','--test-threads=1','--nocapture'];start=time.monotonic()
+with (p/'targeted.log').open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected;(p/'source-after.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n');(p/'result.json').write_text(json.dumps(dict(result='pass' if r.returncode==0 else 'fail',command=cmd,returncode=r.returncode,elapsed_seconds=time.monotonic()-start),indent=2)+'\n')

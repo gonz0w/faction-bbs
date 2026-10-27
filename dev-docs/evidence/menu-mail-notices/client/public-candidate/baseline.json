@@ -1,0 +1,10 @@
+{
+  "crates/faction-client/src/main.rs": {
+    "sha256": "be98cd35c3cfed6cff7ce84f5442260330c6557da913ad5ba47c7f5a0215d624",
+    "committed_source": "53502816100152714c99d6c9a94aef052575c31a:crates/faction-client/src/main.rs"
+  },
+  "crates/faction-client/src/visit_mail.rs": {
+    "sha256": "98770e98cdf07bceda811541cc7173f0e5a0dc7c7913ea233c6705c93a6cb8f0",
+    "committed_source": "53502816100152714c99d6c9a94aef052575c31a:crates/faction-client/src/visit_mail.rs"
+  }
+}

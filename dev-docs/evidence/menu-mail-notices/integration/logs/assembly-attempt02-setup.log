@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction239-evidence-OWNED/assemble-draft.py", line 136, in <module>
+    for stage in stages:assert all(h in available for h in value(stage['manifest']).values()),stage['label']
+                               ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: client-red

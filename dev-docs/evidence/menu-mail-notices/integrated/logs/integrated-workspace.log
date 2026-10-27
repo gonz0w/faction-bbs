@@ -1,0 +1,838 @@
+   Compiling bitflags v2.13.2
+   Compiling typenum v1.20.1
+   Compiling cmov v0.5.4
+   Compiling base64 v0.23.1
+   Compiling cfg-if v1.0.5
+   Compiling const-oid v0.10.2
+   Compiling zeroize v1.9.1
+   Compiling base64ct v1.8.3
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling smallvec v1.16.4
+   Compiling winnow v1.0.4
+   Compiling fallible-iterator v0.3.0
+   Compiling unicode-width v0.2.2
+   Compiling libc v0.2.191
+   Compiling faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+   Compiling serde_core v1.0.229
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling libsqlite3-sys v0.38.2
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+   Compiling ctutils v0.4.3
+   Compiling faction-articles v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-articles)
+   Compiling rusqlite v0.40.1
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling errno v0.3.14
+   Compiling getrandom v0.4.3
+   Compiling hybrid-array v0.4.15
+   Compiling rustix v1.1.5
+   Compiling phc v0.6.1
+   Compiling cpufeatures v0.3.1
+   Compiling password-hash v0.6.1
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling inout v0.2.5
+   Compiling digest v0.11.3
+   Compiling universal-hash v0.6.1
+   Compiling cipher v0.5.2
+   Compiling aead v0.6.1
+   Compiling poly1305 v0.9.1
+   Compiling blake2 v0.11.0
+   Compiling sha2 v0.11.1
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling chacha20 v0.10.2
+   Compiling chacha20poly1305 v0.11.0
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling argon2 v0.6.0
+   Compiling faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+   Compiling faction-access v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-access)
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+   Compiling faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+   Compiling faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+   Compiling faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+   Compiling faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+   Compiling faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+   Compiling faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+   Compiling faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+   Compiling faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+   Compiling faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `release` profile [optimized] target(s) in 7.94s
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_access-b52814668510791a)
+
+running 4 tests
+test tests::extra_descriptors_and_invalid_metadata_are_rejected ... ok
+test tests::incomplete_or_descriptorless_handoff_is_denied ... ok
+test tests::nonterminal_descriptor_cannot_become_a_worker_input ... ok
+test tests::terminal_names_cannot_carry_environment_or_controls ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/broker.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_broker-724542d88edf5698)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/frontend.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_ssh-29ba573647132669)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_articles-dc98e14139bc5f30)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/articles.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/articles-1077c18a1db66b80)
+
+running 10 tests
+test article_roundtrip_preserves_text_identity_replies_and_trailing_blank_lines ... ok
+test attachments_html_and_unsupported_transfer_encoding_are_rejected ... ok
+test byte_line_reference_and_group_limits_are_enforced ... ok
+test casefolded_headers_and_folded_references_have_one_canonical_encoding ... ok
+test controls_invalid_utf8_and_line_ending_injection_are_rejected ... ok
+test date_profile_checks_calendar_leap_year_time_and_timezone ... ok
+test duplicate_identity_compares_normalized_headers_and_all_content_strictly ... ok
+test duplicate_missing_unknown_and_authority_headers_fail_closed ... ok
+test handwritten_article_fixture_and_unsupported_header_encodings ... ok
+test malformed_ids_groups_paths_and_reply_cycles_are_not_authority ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/broader.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/broader-e8adfbbb82b1fc47)
+
+running 5 tests
+test base64_7bit_8bit_defaults_and_quoted_charset_are_bounded_text_only ... ok
+test decoded_subject_controls_unknown_charsets_and_malformed_words_fail ... ok
+test malformed_mime_decoded_controls_overflow_and_bad_weekdays_fail ... ok
+test quoted_printable_preserves_long_lines_whitespace_and_every_final_newline ... ok
+test utf8_encoded_subjects_roundtrip_and_adjacent_words_preserve_spaces ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_catchup-99cc5507f778fdcb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/desk.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/desk-9be1785e59b9ee32)
+
+running 2 tests
+test explicit_checkpoint_cancel_busy_retry_and_concurrent_revision_leave_unread_alone ... ok
+test plain_optional_modules_safe_ids_and_disabled_held_content ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_cli-d7665e0de5d98c31)
+
+running 9 tests
+test home_mail_tests::standalone_home_mail_explains_shared_native_entry_without_control_frames ... ok
+test operator::host::tests::cpu_and_network_deltas_measure_intervals_not_lifetime ... ok
+test operator::host::tests::first_failed_or_changed_scope_never_fabricates_activity ... ok
+test operator::tests::compact_lines_are_inert_and_leave_right_margin ... ok
+test operator::tests::histories_keep_recent_tail_and_fixed_bounds ... ok
+test operator::tests::owner_lifetime_is_separate_from_sample_age_and_resets_on_failed_read ... ok
+test operator::tests::stale_future_and_unavailable_never_look_fresh ... ok
+test tests::line_limit_does_not_accept_truncated_command ... ok
+test tests::member_output_is_inert ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction-b946bd679df52b9a)
+
+running 1 test
+test roaming::tests::literal_metadata_preserves_field_values_and_rejects_non_graphical_stored_text ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/member.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_member-09811ffd6e432ea7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/faction-sysop.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_sysop-924970884ba45f4c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/roaming_owner.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/roaming_owner-760e08d353bc0949)
+
+running 9 tests
+test actual_cli_revokes_sessions_chat_games_and_files_without_password_revocation ... ok
+test cli_preserves_four_enabled_and_thirty_two_immutable_records ... ok
+test current_approval_generations_immutable_uids_and_independent_homes ... ok
+test initialized_private_state_and_strict_arguments_are_required ... ok
+test manifest_output_is_private_new_only_and_rejects_unsafe_paths ... ok
+test maximal_valid_metadata_remains_complete_and_unambiguous_within_output_cap ... ok
+test member_id_lookup_is_local_readonly_and_grants_no_association ... ok
+test owner_inspection_and_exact_manifest_are_readonly_and_default_off ... ok
+test restore_stays_disabled_and_real_member_entry_rejects_owner_commands ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.26s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_client-9ec53860f2ecc5bf)
+
+running 4 tests
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.22s
+
+     Running unittests src/main.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_client-e00295e26aea8594)
+
+running 44 tests
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test tests::files_mail_actions_are_local_configured_and_keep_classic_entries ... ok
+test tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead ... ok
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... ok
+test tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input ... ok
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... ok
+test tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it ... ok
+test tests::main_menu_mail_offers_exact_fixed_local_choices ... ok
+test transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority ... ok
+test transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits ... ok
+test transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls ... ok
+test transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo ... ok
+test transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail ... ok
+test transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline ... ok
+test transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+test visit_mail::tests::context_hints_match_the_local_entry_in_every_notice_state ... ok
+test visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count ... ok
+test visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears ... ok
+test visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads ... ok
+test visit_mail::tests::only_configured_visits_offer_mail_and_notices ... ok
+
+test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.25s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_client_pty-b546b8259b302496)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_core-d938d3357c68f5dd)
+
+running 3 tests
+test operator::backup::tests::records_attempt_and_last_success_separately_without_content ... ok
+test operator::tests::aggregate_budget_restores_normal_queries_and_busy_timeout ... ok
+test operator::tests::strict_versioned_aggregate_protocol ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/catchup.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/catchup-c450521795c5228a)
+
+running 9 tests
+test busy_reads_stay_available_and_explicit_checkpoint_retries ... ok
+test favorites_are_member_owned_bounded_and_revision_checked ... ok
+test file_access_and_stale_targets_are_rechecked_without_private_metadata ... ok
+test file_window_is_publication_order_and_cannot_skip_later_publications ... ok
+test long_absences_are_capped_without_a_second_post_ledger ... ok
+test modules_notice_and_gathering_visibility_are_current_and_local ... ok
+test optional_policy_current_membership_and_no_automatic_activity_tracking ... ok
+test preview_counts_replies_and_checkpoint_never_acknowledge_posts ... ok
+test snapshot_publication_baseline_and_exact_schema_twelve_recovery ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+     Running tests/chat.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/chat-7951dbdec6879822)
+
+running 11 tests
+test channel_authority_rechecks_role_even_without_epoch_change ... ok
+test channel_join_and_lease_caps ... ok
+test concurrent_send_serializes_channel_sequence ... ok
+test names_are_paginated_and_account_based ... ok
+test pending_revoked_reapproved_and_foreign_leases_deny ... ok
+test presence_close_expiry_and_clock_rollback ... ok
+test private_channels_history_floor_and_regrant_are_current ... ok
+test retention_and_lag_are_bounded_and_explicit ... ok
+test schema_one_migration_preserves_identity_rooms_and_unread ... ok
+test slash_commands_are_bounded_and_not_irc_wire_commands ... ok
+test two_connections_chronology_retry_and_control_bounds ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.66s
+
+     Running tests/core.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/core-ef1946ab4ddf0735)
+
+running 17 tests
+test bootstrap_only_once_and_registration_never_squats_sysop ... ok
+test bounded_pages_and_control_rejection ... ok
+test busy_bootstrap_retries_preserve_single_owner ... ok
+test busy_post_retries_reconcile_after_writer_releases ... ok
+test busy_retries_are_finite_and_never_retry_other_errors ... ok
+test concurrent_bootstrap_and_duplicate_submit_are_atomic ... ok
+test database_and_sidecar_symlinks_are_rejected ... ok
+test foreign_database_rejected_before_write_configuration ... ok
+test member_cannot_manage_users_or_rooms ... ok
+test pending_cannot_access_community_or_admin ... ok
+test posts_unread_and_retry_survive_reopen ... ok
+test private_files_symlinks_and_future_schema ... ok
+test retry_reconcile_reply_and_sql_parameters ... ok
+test role_is_checked_from_database_not_cached_session ... ok
+test salted_hashes_and_owner_recovery ... ok
+test session_cannot_move_between_boards ... ok
+test stale_sessions_do_not_revive_after_reapproval ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.62s
+
+     Running tests/credential_budget.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/credential_budget-784ba96276837777)
+
+running 4 tests
+test all_credential_paths_share_two_slots_and_release_on_return ... ok
+test credential_lock_symlinks_hardlinks_and_permissions_fail_closed ... ok
+test stored_costs_cannot_request_more_memory_or_weaker_work ... ok
+test unrelated_boards_do_not_share_credential_budget ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/directory.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/directory-1582750036b08354)
+
+running 15 tests
+test all_lifecycle_states_survive_private_export_and_schema18_export_stays_readonly ... ok
+test canonical_conflicts_reserved_on_submit_only_login_case_sensitive ... ok
+test configuration_seals_before_authentication ... ok
+test controls_invalid_endpoints_dates_and_actions_rejected_and_expiry_rotates ... ok
+test curator_capacity_endpoint_canonicalization_and_pending_conflicts_are_rechecked ... ok
+test disabled_pending_revoked_cross_board_and_current_sysop_authority ... ok
+test nonce_private_idempotent_content_checked_and_pending_immutable ... ok
+test per_author_snapshot_quota_and_full_retained_row_bound ... ok
+test private_drafts_are_author_only ... ok
+test published_capacity_includes_hidden_expired_and_curator_rows ... ok
+test restart_migration18_snapshot_roundtrip_fresh_identity_and_corruption ... ok
+test simultaneous_submission_reserves_one_endpoint_and_stale_other_writer_fails ... ok
+test snapshot_rejects_revision_dates_state_bounds_duplicates_and_extra_schema ... ok
+test submit_never_publishes_and_exact_approval_publishes_once ... ok
+test unpublished_count_limits_and_four_record_pages ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.67s
+
+     Running tests/discussion.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/discussion-dbe94ffd8529bac1)
+
+running 9 tests
+test bookmarks_are_member_owned_idempotent_bounded_and_newest_first ... ok
+test bounded_sparse_search_pages_do_not_skip_older_hits_or_new_publications ... ok
+test busy_readers_continue_but_bookmark_writes_retry_and_disable_hides_every_path ... ok
+test complete_snapshot_and_exact_schema_thirteen_exports_remain_readonly ... ok
+test default_optional_policy_current_roles_sessions_and_unicode_query_validation ... ok
+test explicit_bookmark_reference_export_is_lossless_scoped_and_not_an_unread_ack ... ok
+test file_projection_precedes_matching_snippets_and_exact_source_views ... ok
+test literal_subject_body_room_and_exact_author_filters_are_useful ... ok
+test removed_posts_never_leave_stale_titles_sources_or_export_rows ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s
+
+     Running tests/editorial.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/editorial-877c4e61dd63105e)
+
+running 7 tests
+test busy_retry_bounds_quota_paging_and_explicit_live_retention ... ok
+test exact_issue_and_proposal_edits_invalidate_all_authors_until_reapproval ... ok
+test export_rejects_forged_publication_approval_and_inert_text_failures ... ok
+test private_drafts_submit_retry_owner_editor_and_selection_boundaries ... ok
+test revocation_role_sessions_foreign_boards_and_approval_withdrawal_are_current ... ok
+test snapshot_export_owner_edition_and_readonly_schema_fifteen_recovery ... ok
+test source_changes_drafts_withdrawal_and_published_snapshot_retention ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.85s
+
+     Running tests/existing_state.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/existing_state-c82afb71248dabdc)
+
+running 3 tests
+test existing_state_never_initializes_or_migrates_missing_empty_or_old_state ... ok
+test existing_state_reads_current_schema_from_real_wal_after_explicit_migration ... ok
+test existing_state_rejects_unsafe_paths_and_unrecognized_application ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/files.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/files-cf00b19a76ba487c)
+
+running 12 tests
+test approval_private_scope_review_and_search_are_local ... ok
+test concurrent_reservations_cannot_overspend_one_area ... ok
+test expired_grant_denies_lookup_and_claim_but_does_not_free_partial_quota ... ok
+test member_can_abandon_own_ready_or_active_grant_without_releasing_reserved_bytes ... ok
+test ordinary_text_about_file_link_syntax_remains_readable ... ok
+test private_deny_regrant_does_not_revive_a_transfer ... ok
+test public_file_namespace_and_references_survive_restore_but_sessions_do_not ... ok
+test quotas_remain_reserved_after_failure_and_remove_until_reclaimed ... ok
+test room_and_chat_links_do_not_grant_file_access_or_disclose_private_metadata ... ok
+test snapshot_keeps_catalog_and_scores_but_discards_transfer_authority ... ok
+test transfers_are_key_bound_one_shot_and_recheck_approval ... ok
+test unsafe_names_keys_sizes_and_metadata_are_rejected ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.31s
+
+     Running tests/gatherings.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/gatherings-43362766118c64d7)
+
+running 11 tests
+test calendar_inputs_are_explicit_utc_and_round_trip_invalid_dates ... ok
+test changing_schedule_or_destination_clears_responses_and_stale_votes_fail ... ok
+test creation_retry_is_exact_and_bounded_by_retained_events ... ok
+test default_disabled_current_local_approval_and_epoch_are_required ... ok
+test export_restore_preserves_gathering_policy_and_responses_and_upgrades_old_ten ... ok
+test member_and_response_quotas_are_bounded_without_exercising_capacity_claims ... ok
+test moderation_is_independent_of_author_edits_and_uses_revision_and_stable_id ... ok
+test organizer_policy_and_edit_revision_cannot_rewrite_other_authors ... ok
+test private_channel_metadata_and_jump_recheck_current_grants ... ok
+test reminders_are_opt_in_visible_only_and_do_not_change_unread ... ok
+test rsvp_upsert_change_clear_and_private_counts_never_list_attendees ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s
+
+     Running tests/member_pages.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/member_pages-3e63aeacc700cf5e)
+
+running 9 tests
+test bounded_dated_history_retry_retention_and_delete ... ok
+test busy_plan_retry_is_once_and_invalid_snapshot_is_refused ... ok
+test delete_conflict_and_authority_remove_page_and_all_plans ... ok
+test explicit_approval_cross_board_and_revocation_hide_authors ... ok
+test hidden_fields_page_and_plans_do_not_escape_local_visibility ... ok
+test malformed_fields_and_update_limits_are_atomic ... ok
+test owner_edits_conflict_and_disabled_field_policy_preserves_authorship ... ok
+test owner_export_restore_private_visibility_and_schema9_readonly_upgrade ... ok
+test sysop_hide_preserves_text_and_author_cannot_unhide ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s
+
+     Running tests/operator.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/operator-905434cc9b49eb7a)
+
+running 6 tests
+test aggregate_owner_snapshot_excludes_content_and_keeps_export_independent ... ok
+test failed_publication_leaves_last_good_sample_readable ... ok
+test instance_snapshot_protocol_is_strict_and_keeps_legacy_unverified ... ok
+test lease_readers_never_create_files_and_unsafe_claims_are_unavailable ... ok
+test publisher_lease_distinguishes_live_dead_and_reused_pid_samples ... ok
+test unsafe_snapshot_links_modes_and_unbounded_input_are_denied ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/polls.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/polls-e47c7261b64bfd98)
+
+running 9 tests
+test bounded_distinct_inert_questions_choices_and_descriptions ... ok
+test busy_readers_remain_available_while_votes_refuse_without_unread_changes ... ok
+test closure_cancellation_and_reviewed_ballots_are_transactional_and_final ... ok
+test creation_retry_editor_conflicts_and_first_ballot_permanently_lock_wording ... ok
+test current_export_ballots_and_exact_readonly_schema_eleven_recovery ... ok
+test moderation_preserves_authorship_and_hide_survives_own_edits ... ok
+test optional_policy_current_approval_board_and_epoch_gate_every_action ... ok
+test quotas_and_choice_bounds_limit_storage_without_a_concurrency_claim ... ok
+test result_visibility_is_counts_only_and_applies_to_authors_and_sysops ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+     Running tests/post_metadata.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/post_metadata-409229e646128345)
+
+running 10 tests
+test conflicting_schema_rolls_back_migration_without_changing_legacy_data ... ok
+test metadata_checks_approval_and_snapshot_missing_rows ... ok
+test new_metadata_is_atomic_stable_on_retry_and_survives_reopen ... ok
+test old_contract_rejects_unicode_and_new_snapshots_reject_malformed_utf8 ... ok
+test old_exports_are_read_only_and_new_snapshots_preserve_public_ids ... ok
+test readonly_export_of_a_legacy_live_store_never_upgrades_it ... ok
+test schema_five_migration_preserves_posts_replies_unread_and_unknown_dates ... ok
+test schema_six_is_read_only_in_exports_and_upgrades_without_changing_metadata ... ok
+test unicode_subjects_preserve_bytes_retries_replies_authority_and_restore ... ok
+test unknown_schema_six_metadata_catalog_is_not_silently_replaced ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.96s
+
+     Running tests/requests.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/requests-9a6f1be38699f387)
+
+running 5 tests
+test create_retry_conflicts_bounds_pages_close_delete_and_current_roles ... ok
+test fulfillment_requires_both_members_current_catalog_access_and_filters_every_view ... ok
+test snapshot_rejects_request_text_quotas_and_malformed_keys ... ok
+test snapshot_roundtrip_preserves_requests_and_exact_schema_fourteen_stays_readonly ... ok
+test stale_reviews_busy_retry_revoked_requester_foreign_sessions_and_inert_text ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+     Running tests/roaming.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/roaming-f909e4a8a82070e3)
+
+running 15 tests
+test bound_transfer_grants_recheck_after_disable_without_revoking_password_grants ... ok
+test bounded_owner_registry_and_uid_tombstones_survive_restart ... ok
+test disabled_identity_relinks_with_fresh_uid_consent_and_never_reuses_old_uid ... ok
+test generation_exhaustion_is_atomic_and_never_wraps_or_exports ... ok
+test independent_issuers_keep_same_member_password_and_other_home_authority ... ok
+test issuer_disablement_rotates_every_binding_before_reenable ... ok
+test issuer_revocation_removes_only_exact_bound_leases_and_ready_grants ... ok
+test issuer_revoke_disables_bindings_and_export_carries_no_enabled_authority ... ok
+test owner_association_needs_approval_consent_exact_generation_and_permanent_unused_uid ... ok
+test owner_registry_authenticates_real_sessions_and_revokes_exact_provenance ... ok
+test owner_registry_is_once_before_auth_and_rejects_wrong_board_or_generation ... ok
+test restart_and_restore_require_manual_reconciliation_and_fresh_board_identity ... ok
+test schema19_stays_readonly_on_export_and_migrates_atomically_to20 ... ok
+test snapshot_rejects_malformed_identity_metadata_authority_and_catalog ... ok
+test trusted_registry_is_default_off_late_locked_and_checks_all_entry_fields ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.22s
+
+     Running tests/room_articles.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/room_articles-bbeeb848081785c6)
+
+running 6 tests
+test authored_subjects_reply_defaults_retries_and_restore_are_stable ... ok
+test legacy_unknown_dates_and_inaccessible_links_fail_but_long_lines_roundtrip ... ok
+test projection_roundtrips_without_private_identity_and_keeps_chronological_cursors ... ok
+test reply_pruning_keeps_root_and_nearest_ancestors_with_a_fixed_work_cap ... ok
+test reply_reference_work_is_bounded_and_cross_room_replies_stay_denied ... ok
+test subjects_are_bounded_inert_and_current_approval_is_required ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running tests/room_drafts.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/room_drafts-13755de5f1d2e308)
+
+running 8 tests
+test checkpoints_are_owned_persistent_and_revisions_do_not_overwrite_each_other ... ok
+test export_restore_preserves_room_drafts_without_importing_old_sessions ... ok
+test owner_recovery_invalidates_saved_sysop_drafts ... ok
+test pending_other_members_and_revoked_sessions_cannot_recover_a_checkpoint ... ok
+test quotas_expiry_and_body_limits_keep_saved_data_bounded ... ok
+test schema_seven_exports_stay_readonly_and_upgrade_adds_no_invented_drafts ... ok
+test send_removes_only_its_checkpoint_atomically_and_retry_never_duplicates ... ok
+test snapshots_reject_malformed_drafts_and_cross_room_reply_bindings ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+     Running tests/scores.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/scores-e10a30a187608e9d)
+
+running 5 tests
+test bests_order_ties_personal_counts_and_top_ten_survive_reopen ... ok
+test failed_commit_can_retry_and_personal_game_keys_are_bounded ... ok
+test migration_failure_rolls_back_and_exports_reject_invalid_score_data ... ok
+test runs_are_one_shot_member_board_and_epoch_bound_with_current_approval ... ok
+test scores_export_restore_and_schema_two_exports_stay_readable ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s
+
+     Running tests/snapshot.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/snapshot-de307ebb34c80355)
+
+running 10 tests
+test busy_offline_source_fails_without_publishing_then_recovers ... ok
+test concurrent_restore_publish_has_one_winner_and_no_partial_database ... ok
+test export_and_restore_never_overwrite_existing_paths ... ok
+test exported_bytes_exclude_discarded_chat_receipts_and_freelist_content ... ok
+test readonly_export_never_initializes_or_migrates_source ... ok
+test reject_truncated_corrupt_foreign_future_and_executable_catalogs ... ok
+test reject_unsafe_files_parents_and_sidecars ... ok
+test size_cap_refuses_sparse_large_artifacts_without_allocating_them ... ok
+test snapshot_during_concurrent_wal_writes_is_consistent ... ok
+test wal_roundtrip_preserves_durable_records_and_drops_live_authority ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.65s
+
+     Running tests/social.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/social-0a5b390d1a683598)
+
+running 13 tests
+test blocked_hidden_muted_quiet_unknown_and_non_sysop_targets_do_not_leak ... ok
+test board_visit_pages_work_without_channel_joins_and_end_on_disconnect ... ok
+test bodyless_page_response_is_recipient_only_and_never_changes_channels ... ok
+test cooldown_survives_mode_changes_reconnect_and_busy_transaction_retry ... ok
+test current_activity_cascades_on_close_and_never_survives_export_restore ... ok
+test default_hidden_explicit_optin_and_current_board_approval ... ok
+test disconnect_stale_future_and_expired_requests_do_not_revive ... ok
+test exact_snapshots_keep_preferences_but_remove_live_social_authority_and_schema_sixteen_is_readonly ... ok
+test host_activity_is_current_cross_connection_and_uses_universal_visibility ... ok
+test leaving_chat_keeps_connection_presence_but_clears_joins_receipt_and_history_floor ... ok
+test malformed_status_config_quiet_hours_and_forged_lease_snapshot_fail ... ok
+test privacy_block_and_request_storage_budgets_are_bounded ... ok
+test schema_seventeen_export_is_read_only_and_owner_open_adds_empty_activity ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s
+
+     Running tests/wall.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/wall-1c0994ca52a6c348)
+
+running 9 tests
+test bounded_ascii_control_and_size_validation ... ok
+test busy_transaction_does_not_lose_request_or_duplicate ... ok
+test chronological_limits_retention_and_two_board_policies ... ok
+test cooldown_retry_deleted_receipt_and_edit_conflict ... ok
+test disabled_approval_epoch_and_board_boundaries ... ok
+test export_restore_wall_and_readonly_schema8_upgrade ... ok
+test invalid_snapshot_content_and_quota_are_rejected ... ok
+test own_edit_delete_sysop_moderation_and_stable_selected_id ... ok
+test weekly_rotation_explicit_archives_no_clock_change_and_readonly_edits ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_files-af7728c0cca0a8ea)
+
+running 2 tests
+test native::tests::native_controls_are_versioned_bounded_and_strictly_framed ... ok
+test tests::malformed_or_unbounded_policy_frames_have_no_interpretation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_files-33bf99bdf17df3bc)
+
+running 1 test
+test transfer::tests::file_store_refuses_symlink_hardlink_and_untrusted_mode ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_find-82f91d28d67d3005)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/desk.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/desk-06494e9188ad78a2)
+
+running 2 tests
+test exact_source_view_plain_paging_disable_and_deleted_room_recovery ... ok
+test preview_cancel_busy_retry_and_export_leave_the_read_ledger_untouched ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_gallery-6baf723e5c852a55)
+
+running 9 tests
+test tests::active_controls_and_ascii_escape_sequences_never_enter_cells ... ok
+test tests::disabled_or_filtered_formats_hide_assets_without_reading_them ... ok
+test tests::download_reference_requires_separate_permission_and_canonical_local_id ... ok
+test tests::explicit_rights_provenance_and_known_metadata_are_mandatory ... ok
+test tests::live_download_resolution_rechecks_grants_and_namespace ... ok
+test tests::originals_parse_to_bounded_canonical_pages ... ok
+test tests::text_fallback_budgets_and_aggregate_page_budget_are_enforced ... ok
+test tests::unsafe_paths_links_permissions_and_file_sizes_are_rejected ... ok
+test tests::workflow_paging_resizes_plaintext_and_current_approval_are_bounded ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_gatherings-2696f1b9a8cd78af)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/desk.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/desk-48e5cfda35e18edf)
+
+running 3 tests
+test a_frame_error_is_recoverable_but_revocation_is_not ... ok
+test disabling_an_open_desk_hides_its_content_and_returns_to_main ... ok
+test opt_in_settings_creation_preview_ascii_and_explicit_save ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_library-71930bf179906493)
+
+running 19 tests
+test tests::approval_epochs_foreign_sessions_and_disabled_packs_never_grant_access ... ok
+test tests::catalog_bounds_books_shelves_and_disabled_capability ... ok
+test tests::file_and_discussion_jumps_recheck_exact_current_sources ... ok
+test tests::invisible_selected_source_is_not_replaced_and_unavailable_transfers_stay_disabled ... ok
+test tests::long_request_review_pages_and_resize_never_send_unseen_tail ... ok
+test tests::magazine_body_pack_and_issue_limits_reject_oversize_duplicate_or_empty_editions ... ok
+test tests::magazine_current_approval_unpublished_selection_and_file_grants_are_independent ... ok
+test tests::magazine_owner_export_is_bounded_inert_and_starter_edition_is_original ... ok
+test tests::magazine_plain_complete_read_credits_toc_pages_resize_and_no_unread_ack ... ok
+test tests::magazine_strict_roles_of_declared_consent_states_and_unknown_fields ... ok
+test tests::manifest_requires_version_rights_provenance_and_exact_local_references ... ok
+test tests::maximum_article_reads_beyond_rewind_capacity_on_narrow_terminals ... ok
+test tests::notes_links_resize_and_previews_are_bounded_and_leave_unread_alone ... ok
+test tests::pack_load_checks_owned_regular_files_and_input_caps ... ok
+test tests::request_review_never_silently_adopts_changed_revision_or_withdrawn_file ... ok
+test tests::requests_only_pack_preview_cancel_create_fulfill_close_and_classic_frames ... ok
+test tests::shelves_and_notes_filter_before_display_and_recheck_grants ... ok
+test tests::workshop_plain_pages_bound_output_and_require_fresh_review_after_resize ... ok
+test tests::workshop_requires_complete_review_and_cannot_forge_another_authors_consent ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_omemo-2e6fb0e1f887786a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/build_contract.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/build_contract-953905b59824726a)
+
+running 1 test
+test disabled_has_no_native_tools_cross_rejects_and_source_tampering_fails ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+     Running tests/core_dump_guard.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/core_dump_guard-8508e58b957d72f4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/core_dump_refusal.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/core_dump_refusal-8f37997369f7ac61)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/native_contract.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/native_contract-1e61dabee431e2d9)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/network_sce.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/network_sce-d18927270b01d7cf)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/openssl_runtime_refusal.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/openssl_runtime_refusal-c9f23b5dc8214171)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/sce_contract.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/sce_contract-90e7281e4c661486)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_pages-887f13bf4fa02c23)
+
+running 1 test
+test social::tests::quiet_time_parser_rejects_extra_fields_and_invalid_clock_values ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/directory.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/directory-5b5a0deaa581f6f4)
+
+running 6 tests
+test current_role_filters_review_and_revocation_denies_draft_input ... ok
+test pending_accounts_and_untrusted_input_never_create_a_saved_row ... ok
+test preview_cancel_and_save_require_explicit_publication ... ok
+test publication_conversion_preserves_literal_quotes_and_hides_revoked_authors ... ok
+test review_requires_explicit_confirmation_then_can_expire_remove_or_reject ... ok
+test review_uses_shown_revision_and_recovery_reopens_current_list ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+     Running tests/pages.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/pages-6f70f99eb0583bd3)
+
+running 2 tests
+test optional_member_action_preserves_classic_menu_with_all_optional_services ... ok
+test preview_visibility_hidden_plan_history_and_explicit_delete ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/social.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/social-22cda7a7543c22ea)
+
+running 6 tests
+test board_lounge_refetches_roster_and_signals_instead_of_replaying_cached_command_output ... ok
+test notification_consent_is_default_off_visit_only_bounded_and_not_availability ... ok
+test notification_poll_announces_only_explicit_outgoing_answers_and_rechecks_disable ... ok
+test notification_poll_coalesces_current_pending_pages_and_never_resurrects_muted_signals ... ok
+test shared_visit_panel_is_opt_in_and_scoped_help_does_not_change_legacy_chat_lifetime ... ok
+test who_and_group_command_share_privacy_and_availability_but_lounge_keeps_its_own_desk ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running unittests src/lib.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_polls-aef711a688add8e0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/desk.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/desk-86b5095407162223)
+
+running 2 tests
+test preview_cancel_and_busy_save_keep_explicit_intent_and_plain_inert_text ... ok
+test stale_choice_review_does_not_index_changed_choices_or_save_a_ballot ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running unittests src/main.rs (/private/tmp/faction239-evidence-OWNED/target/release/deps/faction_service-9b555240d491c7ee)
+
+running 37 tests
+test classic::tests::fragmented_ansi_cp437_and_hidden_controls_are_filtered ... ok
+test classic::tests::original_lord_rip_probe_is_discarded_and_art_can_return_to_column_one ... ok
+test classic::tests::protocol_buffers_and_terminal_commands_are_bounded ... ok
+test classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots ... FAILED
+test classic::tests::telnet_fragmentation_negotiates_only_minimal_options_without_identity ... ok
+test config::tests::classic_destinations_are_fixed_bounded_and_disabled_by_default ... ok
+test config::tests::defaults_and_explicit_capacity ... ok
+test config::tests::operator_status_is_strict_and_disabled_by_default ... ok
+test config::tests::owner_file_permissions_links_and_size ... ok
+test config::tests::reject_ambiguous_unbounded_or_unknown_settings ... ok
+test config::tests::roaming_manifest_is_optional_and_has_a_bounded_absolute_path ... ok
+test dispatch_tests::two_jobs_before_receivers_wait_and_permits_cover_work_and_results ... ok
+test doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results ... FAILED
+test doors::tests::scores_require_one_bounded_terminal_completion ... ok
+test doors::tests::validate_complete_screen_and_only_allowed_actions ... ok
+test native_mail_tests::mail_control_text_is_ordinary_chat_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_hidden_password_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_post_subject_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_writing_body_input ... ok
+test native_mail_tests::mail_controls_through_real_pty_input_do_not_become_ansi_menu_or_files_actions ... ok
+test native_mail_tests::mail_full_history_returns_actual_client_to_menu_and_reused_nonce_closes ... ok
+test native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work ... ok
+test native_mail_tests::mail_initial_offer_supports_ansi_menu_selection ... ok
+test native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi ... ok
+test native_mail_tests::mail_malformed_wrong_duplicate_stale_and_out_of_state_controls_fail_closed ... ok
+test native_mail_tests::mail_nonce_history_refuses_reuse_and_has_a_fixed_connection_budget ... ok
+test native_mail_tests::mail_old_client_empty_back_and_new_client_cancel_return_only_from_offer ... ok
+test native_mail_tests::mail_park_return_needs_no_file_area_key_namespace_or_grant ... ok
+test native_mail_tests::mail_real_pty_roundtrip_preserves_menu_presence_and_orders_ack_before_menu ... ok
+test native_mail_tests::mail_rechecks_binding_and_issuer_provenance_without_revoking_password_access ... ok
+test native_mail_tests::mail_rechecks_current_approval_before_offer_park_and_both_returns ... ok
+test operator::tests::disabled_publisher_creates_no_lifetime_authority ... ok
+test operator::tests::optional_publication_failure_never_steals_a_live_lease ... ok
+test policy::tests::key_lookup_uid_cannot_claim_or_complete_valid_transfer_authority ... ok
+test roaming::tests::manifest_loader_rejects_untrusted_ancestors_and_paths ... ok
+test roaming::tests::manifest_parser_accepts_only_exact_bounded_identity_and_bindings ... ok
+test roaming::tests::only_observed_shared_or_registered_uids_enter_handoff ... ok
+
+failures:
+
+---- classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots stdout ----
+
+thread 'classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots' (3141415) panicked at crates/faction-service/src/classic.rs:548:57:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results stdout ----
+
+thread 'doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results' (3141424) panicked at crates/faction-service/src/doors.rs:295:50:
+called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+
+
+failures:
+    classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots
+    doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results
+
+test result: FAILED. 35 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.86s
+
+error: test failed, to rerun pass `-p faction-service --bin faction-service`

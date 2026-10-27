@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction239-evidence-OWNED/assemble-draft.py", line 93, in <module>
+    checks[platform][name]=dict(result=v,count=data['count'],scope=data['scope'])
+                                                                   ~~~~^^^^^^^^^
+KeyError: 'scope'

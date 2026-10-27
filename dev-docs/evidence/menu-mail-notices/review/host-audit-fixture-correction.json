@@ -1,0 +1,6 @@
+{
+  "observed_error": "Third audit assumed reply fixture name; original recorded fixture binary hash matches mail_correspondents_fixture in exact host build receipt.",
+  "prior_script_sha256": "0e1d12feeb8fbad71f4708dba8de9462a1421315403e866851f5bdf840aa4be3",
+  "correction": "Bind actual fixture hash to exact built mail_correspondents_fixture bytes.",
+  "corrected_script_sha256": "3649d87c29144e6978cdb672b6a5ea1c83de739e642560869afa250781b13060"
+}
