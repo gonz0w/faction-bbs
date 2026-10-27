@@ -1,0 +1,7 @@
+{
+  "tools/probe_mail_reply.py": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854",
+  "tools/test_probe_mail_reply.py": "18da0d324379a4c73edb73339a0fa7713706c24191c7ac6b3b10a311d80f91e2",
+  "tools/probe_menu_mail.py": "ce153e5020b84d6db1d4335b12cd382861b95fef06a722d1884ecafcb6e5db3d",
+  "tools/test_probe_menu_mail.py": "65802a5e5472329458f14fa3425474fa9981de4fc4c6880d32d5c3d1b776b71c",
+  "crates/faction-client/examples/mail_reply_fixture.rs": "ac25374146900cd59a8c21bc874d3e6f1d9aaddf22151ad1e6e629bface58be8"
+}

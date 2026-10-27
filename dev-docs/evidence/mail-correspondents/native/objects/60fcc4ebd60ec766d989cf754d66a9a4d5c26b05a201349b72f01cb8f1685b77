@@ -1,0 +1,19 @@
+from lab import *
+import hashlib,tarfile
+names=set(json.loads((R/'dev-docs/evidence/inbox-reply/native/maps/native-final01-before.json').read_text()))
+names.update(['crates/faction-client/examples/mail_correspondents_fixture.rs','tools/probe_mail_correspondents.py','tools/test_probe_mail_correspondents.py'])
+manifest={};source=P/'source-final01';source.mkdir(mode=0o700)
+for name in sorted(names):
+ data=(R/name).read_bytes();h=hashlib.sha256(data).hexdigest();(P/'objects'/h).write_bytes(data);manifest[name]=h
+ dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+(P/'sources/native-final01-before.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/'native-source-final01.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for name in sorted(manifest):t.add(source/name,arcname=name,recursive=False)
+assert manifest['crates/faction-client/src/checkpoint_ui.rs']=='70774661d7a11cc2ba04ae53a92054736b1729f9abcf33c707474de158eba797'
+assert manifest['crates/faction-client/src/checkpoint_ui_inbox.rs']=='be6e91424bef640a671c2888f215f4a1b786b0fb122801ea59b34a6b1c29436e'
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23501; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source23501; tar -xzf - -C /home/factionbuild/source23501; chown -R factionbuild:factionbuild /home/factionbuild/source23501',archive.read_bytes(),180)
+remote('cat > /home/factionbuild/proof235/expected-source01.json; chown factionbuild:factionbuild /home/factionbuild/proof235/expected-source01.json',(P/'sources/native-final01-before.json').read_bytes())
+remote('cat > /home/factionbuild/proof235/native-build01.py; chown factionbuild:factionbuild /home/factionbuild/proof235/native-build01.py',(P/'native_build.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof235/native-build01.py > /home/factionbuild/proof235/build-launch01.log 2>&1 < /dev/null &'",timeout=10)
+print('Native final source freeze/build launched:',len(manifest),'inputs; 2cores/2GiB/jobs2; separate pinned targets.')

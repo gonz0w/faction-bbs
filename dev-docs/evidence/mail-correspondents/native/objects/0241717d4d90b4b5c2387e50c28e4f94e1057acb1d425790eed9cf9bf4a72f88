@@ -1,0 +1,12 @@
+from pathlib import Path
+import os,sys,subprocess,json,time,hashlib
+P=Path('/private/tmp/faction235-native-OWNED');R=Path('/Users/cam/DEV/faction-bbs');B=P/'host-bin';out=P/'host-regressions';out.mkdir(mode=0o700)
+steps=[]
+for mode in ['classic','unicode']:
+ for name,script,fixture in [('inbox','probe_mail_inbox.py','checkpoint_ui_fixture'),('reply','probe_mail_reply.py','mail_reply_fixture')]:
+  cmd=['python3',str(R/'tools'/script),'--client',str(B/'faction-client'),'--fixture',str(B/fixture),'--owned-root',str(P),'--output',str(out/(name+'-'+mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])
+  start=time.monotonic()
+  with (out/(name+'-'+mode+'.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+  steps.append(dict(name=name,mode=mode,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.json').write_text(json.dumps(steps,indent=2)+'\n')
+  if r.returncode:raise SystemExit(r.returncode)
+print('Existing inbox14/reply11 per-mode regressions complete.')

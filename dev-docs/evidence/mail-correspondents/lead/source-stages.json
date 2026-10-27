@@ -1,0 +1,58 @@
+[
+  {
+    "label": "host-before",
+    "manifest": {
+      "relativepath": "maps/host-before.json",
+      "sha256": "681fa73cde48643761e1e26ce6e4bbfbc147277390e84148f03d2b750b720519"
+    }
+  },
+  {
+    "label": "host-after",
+    "manifest": {
+      "relativepath": "maps/host-after.json",
+      "sha256": "681fa73cde48643761e1e26ce6e4bbfbc147277390e84148f03d2b750b720519"
+    }
+  },
+  {
+    "label": "python-before",
+    "manifest": {
+      "relativepath": "maps/python-before.json",
+      "sha256": "b095c75c94ca1081af9da3833e3310cb1d55f620613272e4325e92faae73b8c3"
+    }
+  },
+  {
+    "label": "python-after",
+    "manifest": {
+      "relativepath": "maps/python-after.json",
+      "sha256": "b095c75c94ca1081af9da3833e3310cb1d55f620613272e4325e92faae73b8c3"
+    }
+  },
+  {
+    "label": "guard-red",
+    "manifest": {
+      "relativepath": "maps/guard-red.json",
+      "sha256": "aff7b62b406285de71835c436d6ab8a481910024c4ffff8d919139ef99e16428"
+    }
+  },
+  {
+    "label": "guard-before-ci",
+    "manifest": {
+      "relativepath": "maps/guard-before-ci.json",
+      "sha256": "c30ca193b5d0aa2b1dd7885e750b8a503229942181cf3c158493c01384fbbc1c"
+    }
+  },
+  {
+    "label": "guard-green",
+    "manifest": {
+      "relativepath": "maps/guard-green.json",
+      "sha256": "3f0c9e5cb9a4cb99e002148c799b468d6642afb120c8889dceacafab7cf0f86e"
+    }
+  },
+  {
+    "label": "lead-executed-helpers",
+    "manifest": {
+      "relativepath": "maps/lead-executed-helpers.json",
+      "sha256": "090822810384681362cc7c1057763a7176bcc47254225f360341ef6d39dbf5de"
+    }
+  }
+]

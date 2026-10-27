@@ -1,0 +1,24 @@
+from pathlib import Path
+import os,subprocess,json,time,hashlib
+P=Path('/home/factionbuild/proof235');D=Path('/home/factionbuild/device235');B=Path('/home/factionbuild/target235-network/release');C=P/'runtime-code';out=P/'runtime01';out.mkdir(mode=0o700);os.umask(0o077)
+expected=json.loads((P/'expected-source01.json').read_text());root=Path('/home/factionbuild/source23501');actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(out/'source-before.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+commands=[]
+for mode in ['classic','unicode']:
+ suffix=['--unicode'] if mode=='unicode' else []
+ commands.append(('local-'+mode,['/usr/pkg/bin/python3.13',str(C/'probe_mail_correspondents.py'),'--client',str(P/'build-final03/faction-client-network'),'--fixture',str(B/'examples/mail_correspondents_fixture'),'--owned-root',str(D),'--output',str(out/('local-'+mode+'.json'))]+suffix,False))
+for mode in ['classic','unicode']:
+ commands.append(('main-'+mode,['/usr/pkg/bin/python3.13',str(C/'probe_mail_correspondents.py'),'--client',str(P/'build-final03/faction-client-network'),'--fixture',str(B/'examples/mail_correspondents_fixture'),'--owned-root',str(D),'--settings',str(D/'settings.json'),'--mail-fixture',str(B/'examples/home_mail_fixture'),'--public-ca',str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--output',str(out/('main-'+mode+'.json'))]+(['--unicode'] if mode=='unicode' else []),True))
+commands.append(('inbox',['/usr/pkg/bin/python3.13',str(C/'probe_mail_inbox.py'),'--client',str(P/'build-final03/faction-client-network'),'--fixture',str(B/'examples/checkpoint_ui_fixture'),'--owned-root',str(D),'--online','--output',str(out/'inbox.json')],False))
+for mode in ['classic','unicode']:
+ commands.append(('reply-'+mode,['/usr/pkg/bin/python3.13',str(C/'probe_mail_reply.py'),'--client',str(P/'build-final03/faction-client-network'),'--fixture',str(B/'examples/mail_reply_fixture'),'--owned-root',str(D),'--output',str(out/('reply-'+mode+'.json'))]+(['--unicode'] if mode=='unicode' else []),False))
+results=[]
+for name,cmd,board in commands:
+ (out/'progress.json').write_text(json.dumps(dict(result='running',running=name,completed=results),indent=2)+'\n')
+ if board:time.sleep(40)
+ start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:(out/'progress.json').write_text(json.dumps(dict(result='fail',completed=results),indent=2)+'\n');raise SystemExit(r.returncode)
+actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(out/'source-after.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n');(out/'progress.json').write_text(json.dumps(dict(result='pass',completed=results),indent=2)+'\n')

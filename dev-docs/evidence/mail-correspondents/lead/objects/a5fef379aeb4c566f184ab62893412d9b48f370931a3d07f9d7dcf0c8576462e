@@ -1,0 +1,43 @@
+"""Select exact public code and validation bytes; reuse verified committed objects."""
+from pathlib import Path
+import hashlib,json,re,subprocess
+P=Path('/private/tmp/faction235-lead-OWNED');R=Path('/Users/cam/DEV/faction-bbs');OUT=P/'public-staging';OUT.mkdir(mode=0o700)
+(OUT/'OWNED').write_text('Issue235 lead public-source selection; generated-private-value scan pending\n')
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def put(relative,raw):
+ target=OUT/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw);return dict(relativepath=relative,sha256=sha(raw))
+old={}
+for group in ('native','client','lead'):
+ for path in (R/'dev-docs/evidence/inbox-reply'/group/'objects').glob('*'):
+  if path.is_file() and re.fullmatch('[0-9a-f]{64}',path.name):
+   raw=path.read_bytes();assert sha(raw)==path.name
+   old.setdefault(path.name,dict(repository_path=str(path.relative_to(R)),sha256=path.name))
+reuse={}
+def obj(raw):
+ h=sha(raw)
+ if h in old:reuse[h]=old[h]
+ else:put('objects/'+h,raw)
+ return h
+stages=[]
+for directory in ('host-objects','python-objects'):
+ for path in (P/directory).iterdir():
+  assert path.is_file() and not path.is_symlink() and sha(path.read_bytes())==path.name
+  obj(path.read_bytes())
+for name in ('host-before.json','host-after.json','python-before.json','python-after.json'):
+ stages.append(dict(label=name[:-5],manifest=put('maps/'+name,(P/name).read_bytes())))
+for name in ('guard-red','guard-before-ci','guard-green'):
+ folder=P/name
+ for path in folder.iterdir():
+  if re.fullmatch('[0-9a-f]{64}',path.name):obj(path.read_bytes())
+  else:put('guard-stages/'+name+'/'+path.name,path.read_bytes())
+ stages.append(dict(label=name,manifest=put('maps/'+name+'.json',(folder/'sources.json').read_bytes())))
+variants={}
+for path in P.glob('*.py'):variants[path.name]=obj(path.read_bytes())
+stages.append(dict(label='lead-executed-helpers',manifest=put('maps/lead-executed-helpers.json',(json.dumps(variants,indent=2,sort_keys=True)+'\n').encode())))
+for name in ('host-0.log','host-1.log','host-2.log','python.log'):put('logs/'+name,(P/name).read_bytes())
+for name in ('host-result.json','python-result.json'):put('metadata/'+name,(P/name).read_bytes())
+put('reuse.json',(json.dumps(reuse,indent=2,sort_keys=True)+'\n').encode());put('source-stages.json',(json.dumps(stages,indent=2,sort_keys=True)+'\n').encode())
+put('summary.json',(json.dumps(dict(result='pass',issue=235,workspace_passed=473,workspace_ignored=0,python_passed=435,guard_tests=9,source_stable=True,publication_scan='pending actual generated-private-value scan',tdd='actual missing guard module RED; later CI registration/live commands RED; nine GREEN tests',raw_private_fixtures_selected=False),indent=2)+'\n').encode())
+manifest={str(p.relative_to(OUT)):sha(p.read_bytes()) for p in OUT.rglob('*') if p.is_file()}
+put('manifest.json',(json.dumps(manifest,indent=2,sort_keys=True)+'\n').encode())
+print(json.dumps(dict(selected_files=len(manifest)+1,reused_objects=len(reuse),new_objects=len(list((OUT/'objects').iterdir())),manifest_sha256=sha((OUT/'manifest.json').read_bytes()))))

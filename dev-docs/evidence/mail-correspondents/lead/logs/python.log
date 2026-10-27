@@ -1,0 +1,8 @@
+...................................................................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 435 tests in 67.551s
+
+OK
+Preview already running; data preserved.
+Roaming evidence passed: source-bound host/NetBSD, restricted SSH, component replay, recovery and cleanup; no production claim.
+Signer evidence passed: source-bound host/NetBSD qualification, preserved rejected baseline, compatibility and cleanup; no production claim.

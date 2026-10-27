@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "generated_private_values_scanned": 467,
+  "private_inventory_sha256": "77f4a4ed0b49e3d1705809374e6d620b2f6268d0cf06c5fb03ee612a71292d3e",
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "explicit_manifests_verified": true,
+  "bundles": {
+    "native": {
+      "files": 161,
+      "manifest_sha256": "6f63848e9cfaa13b21120ae7c89f4009ac3f01153e29002561b4864c6538cef7"
+    },
+    "client": {
+      "files": 33,
+      "manifest_sha256": "0603dcd0fb85922c0b55d417054556e91e6334b7b3a9c16062213a49eb7166c7"
+    },
+    "lead": {
+      "files": 40,
+      "manifest_sha256": "1551c9f9af85c5acaf8f46ff590a48230b2f71b9061647ae3b22cc12c054ef03"
+    },
+    "lead_final": {
+      "files": 28,
+      "manifest_sha256": "d9906e56e85ed631490cba693c0223abb77b6330a1b81b03f0d6ac4809fc2802"
+    },
+    "review": {
+      "files": 9,
+      "manifest_sha256": "d646b5de73440523de3e13691668e3df15f8c99c56229341d9e919e715db0f30"
+    }
+  },
+  "reused_committed_source_objects_scanned": 712,
+  "scanned_extra_sha256": {
+    "scan_publication04.py": "2f1fd727105bcd02a42217586db4bde0f6112a11945dad72630fe8576efbcddf"
+  },
+  "known_public_synthetic_fixture_literals_excluded": true,
+  "private_poison_control_rejected": true
+}

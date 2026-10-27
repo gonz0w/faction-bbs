@@ -1,0 +1,12 @@
+[
+  {
+    "mode": "classic",
+    "returncode": 0,
+    "elapsed_seconds": 12.715154999998049
+  },
+  {
+    "mode": "unicode",
+    "returncode": 0,
+    "elapsed_seconds": 12.399029874999542
+  }
+]

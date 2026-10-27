@@ -1,0 +1,16 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "faction-client",
+    "--features",
+    "network-mail",
+    "--example",
+    "mail_correspondents_fixture"
+  ],
+  "returncode": 101,
+  "meaning": "new example target interface absent; not a Rust UI behavior RED"
+}

@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "owned_vm_stopped": true,
+  "owned_controller_stopped": true,
+  "identity_checked_before_stop": true,
+  "uid_start_command_fingerprints_matched": true,
+  "forwards_closed": true,
+  "forward_count": 4,
+  "checked_saved_files": 6,
+  "saved_stopped": true,
+  "saved_hashes_unchanged": true,
+  "saved_sizes_mtimes_unchanged": true,
+  "native_root_retained": true,
+  "owned_removed": false
+}

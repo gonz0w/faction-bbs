@@ -1,0 +1,128 @@
+{
+  "checks": {
+    "diff_whitespace": "passed assigned-file git diff --check",
+    "fmt": "passed assigned-file rustfmt check",
+    "strict_clippy_all_targets": {
+      "fixture_before_after": "09fad2779af4aac64b941ef6b3faca4a5a8ee9fc9739969d786bb9ad3249fa5e",
+      "native": 0,
+      "network": 0
+    },
+    "strict_clippy_lib_bins": {
+      "default": 0,
+      "native": 0,
+      "network": 0
+    }
+  },
+  "commands": {
+    "actual_interface_red": "cargo test -p faction-client --features native-mail --bin faction-client --release --locked correspondents_opens_from_actual_inbox_and_backs_to_global -- --nocapture",
+    "actual_interface_red_direct_helper": "actual-interface-red-bin --ignored --exact checkpoint_ui::tests::correspondents_actual_interface_helper --nocapture",
+    "environment": "CARGO_TARGET_DIR=/private/tmp/faction235-client-OWNED/target CARGO_BUILD_JOBS=2",
+    "format": "rustfmt --edition 2024 --check crates/faction-client/src/checkpoint_ui.rs crates/faction-client/src/checkpoint_ui_inbox.rs",
+    "full_tests": [
+      "cargo test -p faction-client --lib --bins --release --locked -- --test-threads=1",
+      "cargo test -p faction-client --lib --bins --features native-mail --release --locked -- --test-threads=1",
+      "cargo test -p faction-client --lib --bins --features network-mail --release --locked -- --test-threads=1"
+    ],
+    "model_red_and_focused_green": "cargo test -p faction-client --features native-mail --bin faction-client --release --locked correspondent -- --nocapture",
+    "strict_clippy_all_targets": [
+      "cargo clippy -p faction-client --features native-mail --all-targets --release --locked -- -D warnings",
+      "cargo clippy -p faction-client --features network-mail --all-targets --release --locked -- -D warnings"
+    ],
+    "strict_clippy_lib_bins": [
+      "cargo clippy -p faction-client --lib --bins --release --locked -- -D warnings",
+      "cargo clippy -p faction-client --lib --bins --features native-mail --release --locked -- -D warnings",
+      "cargo clippy -p faction-client --lib --bins --features network-mail --release --locked -- -D warnings"
+    ]
+  },
+  "distinct_setup_results": [
+    {
+      "classification": "setup only: test was absent after sandbox write rejection; zero tests ran; not RED",
+      "log": "interface-red.log"
+    },
+    {
+      "classification": "implementation borrow-check error E0502, not behavioral RED",
+      "log": "green-candidate1.log",
+      "source_map": "green-candidate1-source-map.json"
+    }
+  ],
+  "frozen_source_maps": [
+    "source-maps/baseline.json",
+    "source-maps/actual-interface-red.json",
+    "source-maps/group-red.json",
+    "source-maps/green-candidate1.json",
+    "source-maps/green-candidate2.json",
+    "source-maps/all-target-fixture.json"
+  ],
+  "issue": 235,
+  "limits": [
+    "Host focused Rust lib/bin controls only; native colleague owns real PTYs and NetBSD",
+    "No claims of physical hardware, graphical, production, capacity, or independent review qualification",
+    "Lead owns integrated workspace gates, required CI and separate review."
+  ],
+  "logs_sha256": {
+    "actual-interface-red-helper.log": "d1ebdad05bb58847a4fd52765b03f291549d03c816445dc3b8ba487510204946",
+    "actual-interface-red.log": "e47124e6e34e0a28894b4d863661626b7ea3a2bd1ee18c6680f7978ad1889899",
+    "clippy-all-targets-native.log": "7052293e51cfe291d90dee808dce8bc246af1ced3a286af7e462677d6041e8c1",
+    "clippy-all-targets-network.log": "576300598bb9e722306e7ccbd738d01727c73e690cc972ca63491dc62dff0480",
+    "clippy-default.log": "71ef03178b7b591d767f85ce9b67546e7cc0e2bbf1c60e863e5e950d860ec4e3",
+    "clippy-native.log": "370adb08619e1579ed284a24f0511d56955b0491f81987c62f8cafe7c95d768b",
+    "clippy-network.log": "b120362590621274589bce9661586ea495fd34497caac92a6230641c31d7f0be",
+    "default-tests.log": "0dd9595a8722fe72ace36fd8de4bfcef597eb2a7373787ea613de1b5943c562b",
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "green-candidate1.log": "29908c1306a6cc08d73f60628dc2dc588a82efd9610e5c9ee69ccc9e672b8f20",
+    "green-candidate2.log": "fdb6eb4edf62d0c31f9bd54d8c3fca7e2d4be85c98912bd7daf6ffe74b575f82",
+    "group-red.log": "ca34e78a48c3063f391c4b31dda8adb3648f0ac5cafebacc926867c767849f5b",
+    "interface-red.log": "a24e21cd997f39065e68b490c9fb72a94ad27635b2da36b2ae31c3eb67a9daf1",
+    "native-tests.log": "260063e0b6dc49eebb0ab553d89ba1aa0564b5000a36463f2ed24bccea1c364c",
+    "network-tests.log": "56ecd1f1e11cedc748662f1f1edb3d037d3aec7f46840e497d4787842cf582fe"
+  },
+  "observed_runtime_metadata": "unavailable",
+  "private_root": "/private/tmp/faction235-client-OWNED",
+  "production_files": {
+    "crates/faction-client/src/checkpoint_ui.rs": "70774661d7a11cc2ba04ae53a92054736b1729f9abcf33c707474de158eba797",
+    "crates/faction-client/src/checkpoint_ui_inbox.rs": "be6e91424bef640a671c2888f215f4a1b786b0fb122801ea59b34a6b1c29436e"
+  },
+  "publication_inventory_scan": "Pending actual generated-private-fixture inventory scan by native/lead; not claimed by client.",
+  "red": {
+    "actual_interface": {
+      "exit": 101,
+      "expected_actual_failure": "C must open the correspondent picker",
+      "log": "actual-interface-red-helper.log",
+      "preserved_binary": "actual-interface-red-bin",
+      "source_map": "actual-interface-red-source-map.json"
+    },
+    "model_api": {
+      "exit": 101,
+      "expected_actual_failure": "missing Correspondents/within_group/correspondent_row interface symbols",
+      "log": "group-red.log",
+      "source_map": "group-red-source-map.json"
+    }
+  },
+  "requested_effort": "high",
+  "requested_model": "gpt-6.1-sol",
+  "role": "temper_implementer",
+  "root_mode": "0o700",
+  "root_uid": 501,
+  "setup_source_identity": {
+    "interface-red-source-map.json": "identical to baseline-source-map.json; preserved privately, public baseline map is exact"
+  },
+  "test_runs": {
+    "default": {
+      "bin_pass": 38,
+      "ignored": 0,
+      "lib_pass": 4
+    },
+    "native": {
+      "baseline_ignored_helpers": 4,
+      "bin_pass": 52,
+      "lib_pass": 43,
+      "new_ignored_but_invoked_helper": 1
+    },
+    "network": {
+      "baseline_ignored_helpers": 4,
+      "bin_pass": 56,
+      "lib_pass": 88,
+      "new_ignored_but_invoked_helper": 1
+    }
+  }
+}

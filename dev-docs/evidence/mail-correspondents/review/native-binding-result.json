@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "scope": "separate-review-native-source-and-observation-binding",
+  "review_source_sha256": "0a6145412f19805299b148e6a0d71ee13b2e5aa51bf7d07ac116a4f18b16e580",
+  "source_count": 702,
+  "maps_sha256": {
+    "sources/native-final01-before.json": "d4a08793b21418d78896df0e4f15e930492de355d2158eadb4d7a441cc7f654e",
+    "native-runtime/source-before.json": "d4a08793b21418d78896df0e4f15e930492de355d2158eadb4d7a441cc7f654e",
+    "native-runtime/source-after.json": "d4a08793b21418d78896df0e4f15e930492de355d2158eadb4d7a441cc7f654e",
+    "native-build/source-observed.json": "d4a08793b21418d78896df0e4f15e930492de355d2158eadb4d7a441cc7f654e",
+    "native-build/source-after.json": "d4a08793b21418d78896df0e4f15e930492de355d2158eadb4d7a441cc7f654e"
+  },
+  "production_sha256": {
+    "crates/faction-client/src/checkpoint_ui.rs": "70774661d7a11cc2ba04ae53a92054736b1729f9abcf33c707474de158eba797",
+    "crates/faction-client/src/checkpoint_ui_inbox.rs": "be6e91424bef640a671c2888f215f4a1b786b0fb122801ea59b34a6b1c29436e"
+  },
+  "runtime_harness_count": 12,
+  "native_passed": 277,
+  "native_ignored": 5,
+  "build_memory_mib": 2048,
+  "runtime_memory_mib": 1024,
+  "native_runtime_returncodes_all_zero": true,
+  "limits": [
+    "Reviews saved source/build/runtime observations; no fresh build, runtime or hardware claim."
+  ]
+}

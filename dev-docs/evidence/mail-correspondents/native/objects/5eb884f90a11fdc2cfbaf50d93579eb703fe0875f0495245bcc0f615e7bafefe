@@ -1,0 +1,10 @@
+from pathlib import Path
+import os,subprocess,json,time
+P=Path('/private/tmp/faction235-native-OWNED');R=Path('/Users/cam/DEV/faction-bbs');B=P/'host-bin';out=P/'host-main';out.mkdir(mode=0o700);results=[]
+for mode in ['classic','unicode']:
+ time.sleep(40);cmd=['python3',str(R/'tools/probe_mail_correspondents.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'mail_correspondents_fixture'),'--owned-root',str(P),'--settings',str(P/'host-settings.json'),'--mail-fixture',str(B/'home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--output',str(out/(mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])
+ start=time.monotonic()
+ with (out/(mode+'.raw.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append(dict(mode=mode,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Host sameSSH4controls perdisplaymode passed.')

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction235-native-OWNED/repair_cache_build02.py", line 13, in <module>
+    remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(manifest).encode())
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction235-native-OWNED/lab.py", line 7, in remote
+    (P/'remote-failure.private').write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained')
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned lab command failed; private diagnostic retained

@@ -1,0 +1,8 @@
+from pathlib import Path
+import sys,json
+P=Path('/home/factionbuild/proof235');sys.path.insert(0,str(P/'runtime-code'))
+from audit_main_capture import audit
+routes={}
+for mode in ['classic','unicode']:
+ _,routes['netbsd_'+mode]=audit(Path('/home/factionbuild/device235'),(P/'runtime01'/('main-'+mode+'.json')).read_bytes(),P/'runtime-code/probe_mail_correspondents.py')
+(P/'capture-associations.json').write_text(json.dumps(dict(result='pass',routes=routes),indent=2)+'\n');print('NetBSD2private source/capture/canonical associations verified.')

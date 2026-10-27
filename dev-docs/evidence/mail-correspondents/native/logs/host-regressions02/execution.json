@@ -1,0 +1,17 @@
+[
+  {
+    "name": "inbox",
+    "returncode": 0,
+    "elapsed_seconds": 70.10267416699207
+  },
+  {
+    "name": "reply-classic",
+    "returncode": 0,
+    "elapsed_seconds": 91.21401041699573
+  },
+  {
+    "name": "reply-unicode",
+    "returncode": 0,
+    "elapsed_seconds": 88.53849775000708
+  }
+]

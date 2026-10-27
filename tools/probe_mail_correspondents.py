@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+"""Real encrypted retained-correspondent PTYs in explicitly marked owned fixtures.
+
+Raw generated labels, canonical inspections and terminal captures remain private.
+The caller freezes executed sources and owns final teardown.
+"""
+import argparse
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import re
+import secrets
+import shlex
+import socket
+import stat
+import subprocess
+import tempfile
+import termios
+import unicodedata
+
+from probe_mail_reply import (PASS, UNLOCK, MENU, INBOX, ACK, REPLY, SUBJECT,
+    BODY, QUEUE, private_root, require_reply_commit)
+from smoke_native_client_ssh import NativeConsole
+from probe_menu_mail import (require_board_bound_private_absent, reconstruct_kdump_streams,
+    TRACE_START, TRACE_STOP, TITLE, OPEN, BACK, CONFIRM_MAIL, MENU as BOARD_MENU)
+from probe_visit_mail import (require_closed_endpoint, require_connection_refused, private_json,
+    assert_same_visit, visit_processes, SCAN, validate_scan, HOME)
+from check_restricted_ssh import SSHConsole
+from smoke_board_launcher import LauncherConsole, PICK, CONFIRM, RETURN
+
+PICKER = '[LOCAL CORRESPONDENTS]'
+GROUP = '[LOCAL CORRESPONDENT INBOX]'
+CHECKS = [
+    'encrypted_interleaved_exact_account_device_groups_newest_first',
+    'six_row_pages_and_empty_single_64_group_clamps',
+    'grouped_original_indices_and_U_A_stay_exact_group',
+    'grouped_last_unread_ack_stays_empty_without_peer_hop',
+    'current_peer_reply_cancel_queue_preserves_selected_source',
+    'mismatched_peer_and_history_only_reply_authority_unchanged',
+    'offline_has_no_reply_and_unknown_read_stays_unknown',
+    'navigation_no_home_prompt_or_canonical_mutation',
+]
+MAIN_CHECKS = [
+    'actual_home_outage_then_grouped_readonly_navigation',
+    'grouped_ack_and_reply_cancel_keep_exact_canonical_scope',
+    'fresh_unlock_locked_return_same_SSH',
+    'corrected_GIO_and_board_files_private_markers_absent',
+]
+
+
+def require_group_records(snapshot, address, device, indices):
+    expected = [i for i, row in reversed(list(enumerate(snapshot['history'])))
+                if (row['address'], row['device']) == (address, device)]
+    assert indices == expected, 'group lost exact account/device or canonical append order'
+
+
+def require_only_read_change(before, after, index):
+    expected = copy.deepcopy(before)
+    row = expected['history'][index]
+    assert row['direction'] == 'received' and row['received_id'] and row['read'] is False
+    row['read'] = True
+    assert after == expected, 'acknowledgement changed more than the selected authenticated read bit'
+
+
+def require_visible_indices(screen, indices, selected):
+    rows = re.findall(rb'(?m)^([> ]) (\d{2}) (?:UNREAD|READ|UNKNOWN|PENDING|RETIRED) ', screen)
+    assert [int(number) for _, number in rows] == indices, 'visible records crossed exact group scope'
+    assert [int(number) for mark, number in rows if mark == b'>'] == ([selected] if selected else []), 'selection changed original canonical index'
+
+
+def expect_screen(c, title):
+    start, buffered = len(c.transcript), c.buffer
+    c.expect(title); c.expect('[B] Back')
+    return buffered + c.transcript[start:]
+
+
+def act(c, key, title):
+    c.raw(key)
+    return expect_screen(c, title)
+
+
+def require_picker(screen, ordinals, selected, devices=None):
+    rows = re.findall(rb'(?m)^([> ]) (\d{2}) D(\d+) (.*)\r?$', screen)
+    assert [int(row[1]) for row in rows] == ordinals
+    assert [int(row[1]) for row in rows if row[0] == b'>'] == ([selected] if selected else [])
+    if devices is not None: assert [int(row[2]) for row in rows] == devices
+    for row in screen.decode().splitlines():
+        if re.match(r'^[> ] \d{2} D\d+ ', row):
+            cells = sum(0 if unicodedata.combining(c) else 2 if unicodedata.east_asian_width(c) in 'WF' else 1 for c in row)
+            assert cells <= 39 and '\x1b' not in row and '\u202e' not in row
+
+
+def probe(client, fixture, owned_root, unicode=False):
+    owned_root = private_root(owned_root)
+    capture = Path(tempfile.mkdtemp(prefix='correspondents-capture-OWNED-', dir=owned_root))
+    capture.chmod(0o700)
+    children = []
+    subject, body = 'subject-' + secrets.token_hex(8), 'body-' + secrets.token_hex(16)
+    peer, other = 'peer-' + secrets.token_hex(6) + '@away.test', 'other-' + secrets.token_hex(6) + '@away.test'
+    replacement = 'reply-' + secrets.token_hex(10)
+    markers = [subject, body, peer, other, replacement, PASS]
+    (capture / 'markers.private.json').write_text(json.dumps(markers)); (capture / 'markers.private.json').chmod(0o600)
+    with tempfile.TemporaryDirectory(prefix='correspondents-OWNED-', dir=owned_root) as name:
+        root = Path(name)
+        ca = root / 'unused-ca.pem'; ca.write_text('synthetic unused CA\n'); ca.chmod(0o600)
+        with socket.socket() as unused:
+            unused.bind(('127.0.0.1', 0)); endpoint = unused.getsockname()
+        require_closed_endpoint(endpoint)
+        config = root / 'home.toml'
+        config.write_text('version=1\naccount="alice@home.test"\nendpoint=' + json.dumps('127.0.0.1:' + str(endpoint[1])) + '\ndomain="home.test"\nca=' + json.dumps(str(ca)) + '\npin="' + '00' * 32 + '"\n'); config.chmod(0o600)
+
+        def command(action, path, mode=None):
+            result = subprocess.run([str(fixture), action, str(path)] + ([mode] if mode else []),
+                input=('\n'.join([subject, body, peer, other]) + '\n').encode() if action == 'seed' else b'',
+                capture_output=True, timeout=90)
+            if result.returncode: (capture / 'fixture-failure.private.log').write_bytes(result.stdout + result.stderr)
+            assert result.returncode == 0, 'synthetic canonical correspondent fixture failed'
+            return json.loads(result.stdout) if action == 'inspect' else None
+
+        def seed(name, mode='ready'):
+            path = root / name; command('seed', path, mode); return path
+
+        def start(path, online=True):
+            args = [str(client), '--mail-online', str(path), str(config)] if online else [str(client), '--mail-checkpoints', str(path), 'open']
+            c = NativeConsole(args + (['--unicode'] if unicode else [])); children.append(c); c.resize(40, 24)
+            c.password(PASS, UNLOCK); c.expect(MENU); return c
+
+        def global_inbox(c): return act(c, b'i', INBOX)
+        def picker(c): return act(c, b'c', PICKER)
+        def group(c): return act(c, b'o', GROUP)
+        def to_menu(c):
+            act(c, b'b', PICKER); act(c, b'b', INBOX); c.raw(b'b'); c.expect(MENU)
+        def lock(c):
+            c.raw(b'l'); c.finish()
+            assert HOME.encode() not in c.transcript
+        def unchanged(path, raw, before):
+            assert (path / 'mail.fkv').read_bytes() == raw and command('inspect', path) == before
+            assert {x.name for x in path.iterdir()} == {'mail.fkv', 'mail.lock'}
+        def open_received(c, acknowledge='', online=True, tracking=True):
+            c.raw(b'o'); c.expect('[LOCAL INBOX RECORD]')
+            if tracking: c.expect(ACK); c.send(acknowledge)
+            if online: c.expect(REPLY)
+            else:
+                c.expect('Enter to return: '); c.send('')
+        def compose(c):
+            c.raw(b'r'); c.expect('CURRENT recipient: ' + peer); c.expect('CURRENT device: 202 / ed25519:')
+            c.expect(SUBJECT); c.send(replacement); c.expect(BODY); c.send(body); c.expect(QUEUE)
+
+        try:
+            # Each console route observes the same encrypted canonical interleaving.
+            for online in [False, True]:
+                path = seed('navigation-' + str(online)); before = command('inspect', path); raw = (path / 'mail.fkv').read_bytes()
+                require_group_records(before, peer, 202, [7, 6, 1, 0]); require_group_records(before, other, 202, [5, 4]); require_group_records(before, peer, 203, [3, 2])
+                assert [r['read'] for r in before['history']] == [False, None, True, None, False, None, False, None]
+                c = start(path, online); screen = global_inbox(c); require_visible_indices(screen, [8, 7, 6, 5, 4, 3], 8)
+                screen = picker(c); require_picker(screen, [1, 2, 3], 1, [202, 202, 203])
+                # Account strings are intentionally truncated, with the complete device first.
+                assert b'No contact or key-continuity claim.' in screen
+                screen = group(c); require_visible_indices(screen, [8, 7, 2, 1], 8)
+                screen = act(c, b'u', GROUP); require_visible_indices(screen, [7, 1], 7)
+                screen = act(c, b'a', GROUP); require_visible_indices(screen, [8, 7, 2, 1], 8)
+                screen = act(c, b'\x1b[B', GROUP); require_visible_indices(screen, [8, 7, 2, 1], 7)
+                screen = act(c, b'k', GROUP); require_visible_indices(screen, [8, 7, 2, 1], 8)
+                screen = act(c, b'b', PICKER); require_picker(screen, [1, 2, 3], 1)
+                screen = act(c, b'j', PICKER); require_picker(screen, [1, 2, 3], 2)
+                screen = group(c); require_visible_indices(screen, [6, 5], 6)
+                screen = act(c, b'a', GROUP); require_visible_indices(screen, [6, 5], 6)
+                to_menu(c); lock(c); unchanged(path, raw, before)
+
+            for mode in ['empty', 'single', 'full']:
+                path = seed('bounds-' + mode, mode); before = command('inspect', path); raw = (path / 'mail.fkv').read_bytes(); c = start(path)
+                global_inbox(c); screen = picker(c)
+                if mode == 'empty':
+                    assert b'No retained correspondents.' in screen; require_picker(screen, [], None)
+                    for key in [b'j', b'k', b'n', b'p', b'o', b'\r']: require_picker(act(c, key, PICKER), [], None)
+                elif mode == 'single':
+                    require_picker(screen, [1], 1, [202])
+                    for key in [b'j', b'\x1b[B', b'k', b'n', b'p']: require_picker(act(c, key, PICKER), [1], 1)
+                    require_visible_indices(group(c), [2, 1], 2); act(c, b'b', PICKER)
+                else:
+                    require_picker(screen, list(range(1, 7)), 1)
+                    require_picker(act(c, b'n', PICKER), list(range(7, 13)), 7)
+                    require_picker(act(c, b'p', PICKER), list(range(1, 7)), 1)
+                    for _ in range(11): screen = act(c, b'n', PICKER)
+                    require_picker(screen, [61, 62, 63, 64], 61)
+                    for _ in range(5): screen = act(c, b'j', PICKER)
+                    require_picker(screen, [61, 62, 63, 64], 64)
+                    require_picker(act(c, b'n', PICKER), [61, 62, 63, 64], 64)
+                    require_visible_indices(group(c), [1], 1); act(c, b'b', PICKER)
+                act(c, b'b', INBOX); c.raw(b'b'); c.expect(MENU); lock(c); unchanged(path, raw, before)
+
+            path = seed('ack'); before = command('inspect', path); c = start(path); global_inbox(c); picker(c); act(c, b'j', PICKER); group(c)
+            require_visible_indices(act(c, b'u', GROUP), [5], 5)
+            open_received(c, 'read'); c.raw(b'b'); screen = expect_screen(c, GROUP)
+            assert b'No unread received records.' in screen; require_visible_indices(screen, [], None)
+            require_visible_indices(act(c, b'a', GROUP), [6, 5], 6)
+            to_menu(c); lock(c); require_only_read_change(before, command('inspect', path), 4)
+
+            path = seed('reply'); before = command('inspect', path); raw = (path / 'mail.fkv').read_bytes(); c = start(path)
+            global_inbox(c); picker(c); group(c); act(c, b'j', GROUP); open_received(c); compose(c); c.send('')
+            require_visible_indices(expect_screen(c, GROUP), [8, 7, 2, 1], 7)
+            to_menu(c); lock(c); unchanged(path, raw, before)
+            c = start(path); global_inbox(c); picker(c); group(c); act(c, b'j', GROUP); open_received(c); compose(c); c.send('queue')
+            require_visible_indices(expect_screen(c, GROUP), [9, 8, 7, 2, 1], 7)
+            to_menu(c); lock(c); after = command('inspect', path); require_reply_commit(before, after, peer, 202, replacement, body)
+            # An old key in the same exact group still requires CURRENT target review.
+            c = start(path); global_inbox(c); picker(c); group(c)
+            for _ in range(4): act(c, b'j', GROUP)
+            open_received(c); c.raw(b'r'); c.expect('CURRENT recipient: ' + peer)
+            c.expect('CURRENT device: 202 / ed25519:' + after['history'][6]['identity'])
+            c.expect(SUBJECT); c.send(''); c.expect(BODY); c.send(body); c.expect(QUEUE); c.send('')
+            expect_screen(c, GROUP); to_menu(c); lock(c); assert command('inspect', path) == after
+
+            for mode in ['ready', 'history-only', 'revoked']:
+                path = seed('refusal-' + mode, mode); before = command('inspect', path); raw = (path / 'mail.fkv').read_bytes(); c = start(path)
+                global_inbox(c); picker(c)
+                if mode == 'ready': act(c, b'j', PICKER)
+                group(c); act(c, b'j', GROUP); open_received(c); c.raw(b'r'); c.expect('Reply unavailable;'); expect_screen(c, GROUP)
+                to_menu(c); lock(c); unchanged(path, raw, before)
+
+            for mode in ['ready', 'unknown']:
+                path = seed('offline-' + mode, mode); before = command('inspect', path); raw = (path / 'mail.fkv').read_bytes(); c = start(path, False)
+                global_inbox(c); picker(c); group(c); act(c, b'j', GROUP)
+                if mode == 'unknown':
+                    screen = act(c, b'u', GROUP); require_visible_indices(screen, [8, 7, 2, 1], 7)
+                    assert b'UNKNOWN' in screen
+                open_received(c, online=False, tracking=mode != 'unknown'); expect_screen(c, GROUP)
+                assert REPLY.encode() not in c.transcript
+                to_menu(c); lock(c); unchanged(path, raw, before)
+            require_closed_endpoint(endpoint)
+            return dict(result='pass', platform=platform.system(), machine=platform.machine(),
+                scope='device-local-mail-correspondents', unicode=unicode, count=len(CHECKS), checks=CHECKS,
+                private_fixture_removed=True, configured_home_endpoint_was_closed=True,
+                source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                navigation_readonly_preserved=True,
+                home_password_prompt_observed=False)
+        finally:
+            for i, child in enumerate(children):
+                path = capture / ('terminal-' + str(i) + '.private'); path.write_bytes(child.transcript + child.buffer); path.chmod(0o600); child.close()
+
+
+def probe_main_menu(a):
+    private_root(a.owned_root)
+    settings = private_json(a.settings)
+    assert settings['disposable_fixture'] is True and settings['files_disabled'] is True
+    root = Path(tempfile.mkdtemp(prefix='correspondents-menu-OWNED-', dir=a.owned_root)).resolve(); root.chmod(0o700)
+    children, trace, visit = [], None, None
+    subject, body = 'subject-' + secrets.token_hex(8), 'body-' + secrets.token_hex(16)
+    peer, other = 'peer-' + secrets.token_hex(6) + '@away.test', 'other-' + secrets.token_hex(6) + '@away.test'
+    replacement = 'reply-' + secrets.token_hex(10)
+    password, home_password = secrets.token_hex(24), secrets.token_hex(24)
+    markers = [subject, body, peer, other, replacement, PASS, home_password, 'alice@home.test',
+        '[LOCAL CORRESPONDENTS]', '[LOCAL CORRESPONDENT INBOX]', 'Local unread:', 'CURRENT recipient:']
+    capture_id = secrets.token_hex(16); probe_hash = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+    def save(name, data):
+        path = root / name; path.write_bytes(data if isinstance(data, bytes) else data.encode()); path.chmod(0o600); return path
+    def remote(code, data=None):
+        result = subprocess.run(settings['admin_argv'] + ['/usr/pkg/bin/python3.13 -c ' + shlex.quote(code)], input=data, capture_output=True, timeout=45)
+        if result.returncode: save('admin-failure.private', result.stdout + result.stderr)
+        assert result.returncode == 0, 'owned correspondent board operation failed'
+        return result.stdout
+    def inspect():
+        result = subprocess.run([str(a.fixture), 'inspect', str(store)], capture_output=True, timeout=30)
+        assert result.returncode == 0; return json.loads(result.stdout)
+    def login(c, handle, secret, register=False):
+        c.expect('[L]ogin [R]egister [Q]uit: '); c.send('r' if register else 'l'); c.expect('Handle: '); c.send(handle); c.password(secret)
+        if register: c.password(secret, 'Confirm password (hidden): ')
+        else: c.expect('Press Enter to continue: '); c.send(''); c.expect(BOARD_MENU)
+    def board():
+        c = SSHConsole(settings['member_argv']); children.append(c); return c
+    def same(): assert_same_visit(visit, visit_processes(c.pid))
+    def enter():
+        c.raw(b'm'); c.expect(TITLE); c.expect(OPEN); c.expect(BACK); c.raw(b'o'); c.expect(CONFIRM_MAIL); c.send('y'); c.expect(UNLOCK)
+        assert not termios.tcgetattr(c.fd)[3] & termios.ECHO
+        c.send(PASS); c.expect(MENU)
+    def leave_group():
+        act(c, b'b', PICKER); act(c, b'b', INBOX); c.raw(b'b'); c.expect(MENU); c.raw(b'l'); c.expect(BOARD_MENU); same()
+    try:
+        store = root / 'mail'
+        result = subprocess.run([str(a.fixture), 'seed', str(store), 'ready'], input=('\n'.join([subject, body, peer, other]) + '\n').encode(), capture_output=True, timeout=90)
+        assert result.returncode == 0
+        before = inspect(); canonical = (store / 'mail.fkv').read_bytes()
+        for row in before['history']: markers.extend([row['identity'], row['subject'], row['body'], row['address']])
+        markers = list(dict.fromkeys(markers)); marker_file = save('private-markers.json', json.dumps(markers)); marker_hash = hashlib.sha256(marker_file.read_bytes()).hexdigest()
+        save('private-input-association.json', json.dumps(dict(marker_set_sha256=marker_hash, capture_id=capture_id, source_sha256=probe_hash, generated_before_capture=True)))
+        with socket.socket() as unused:
+            unused.bind(('127.0.0.1', 0)); endpoint = unused.getsockname()
+        require_closed_endpoint(endpoint)
+        ca = save('public-ca.pem', a.public_ca.read_bytes())
+        config = save('home.toml', 'version=1\naccount="alice@home.test"\nendpoint=' + json.dumps('127.0.0.1:' + str(endpoint[1])) + '\ndomain="home.test"\nca=' + json.dumps(str(ca)) + '\npin="' + 'ab' * 32 + '"\n')
+        catalog = save('boards.toml', 'version=1\nhome_mail={store=' + json.dumps(str(store)) + ',config=' + json.dumps(str(config)) + '}\n[[boards]]\nid="approved"\nlabel="Owned correspondent board"\nprofile=' + json.dumps(settings['profile']) + '\n')
+        outage = subprocess.run([str(a.mail_fixture), 'sync', str(store), str(config)], input=(PASS + '\n' + home_password + '\n').encode(), capture_output=True, timeout=30)
+        require_connection_refused(outage.returncode, outage.stdout, outage.stderr)
+        assert inspect() == before and (store / 'mail.fkv').read_bytes() == canonical
+        handle = settings['member_handle'] + secrets.token_hex(3)
+        registration = board(); login(registration, handle, password, True); registration.expect('Registration pending; sysop approval required.'); registration.finish()
+        sysop = board(); login(sysop, 'sysop', settings['sysop_password']); sysop.raw(b's'); sysop.expect('[C]reate room: '); sysop.send('a'); sysop.expect('Member handle: '); sysop.send(handle)
+        sysop.expect('Status updated; previous sessions expired.'); sysop.expect('Press Enter to return to menu: '); sysop.send(''); sysop.expect(BOARD_MENU); sysop.raw(b'q'); sysop.expect('Logged out.'); sysop.finish()
+        c = LauncherConsole([str(a.client), '--boards', str(catalog)] + (['--unicode'] if a.unicode else [])); children.append(c)
+        c.expect(PICK); c.raw(b'a'); c.expect(CONFIRM); c.send('y'); login(c, handle, password); visit = visit_processes(c.pid)
+        trace = json.loads(remote(TRACE_START.replace('issue230-board-', 'issue235-board-')))
+        save('trace-input-association.private.json', json.dumps(dict(trace=trace, capture_id=capture_id, source_sha256=probe_hash, marker_set_sha256=marker_hash, marker_file_sha256_at_trace_start=hashlib.sha256(marker_file.read_bytes()).hexdigest())))
+        enter(); c.raw(b'n'); c.password(home_password, HOME); c.expect('Home cycle stopped; pending ciphertext retained.'); c.expect('Enter to return: '); c.send(''); c.expect(MENU)
+        start = len(c.transcript); act(c, b'i', INBOX); require_picker(act(c, b'c', PICKER), [1, 2, 3], 1)
+        require_visible_indices(act(c, b'o', GROUP), [8, 7, 2, 1], 8)
+        require_visible_indices(act(c, b'u', GROUP), [7, 1], 7); require_visible_indices(act(c, b'a', GROUP), [8, 7, 2, 1], 8)
+        assert HOME.encode() not in c.transcript[start:]
+        leave_group(); assert inspect() == before and (store / 'mail.fkv').read_bytes() == canonical
+        enter(); act(c, b'i', INBOX); act(c, b'c', PICKER); act(c, b'j', PICKER); act(c, b'o', GROUP); act(c, b'u', GROUP)
+        c.raw(b'o'); c.expect('[LOCAL INBOX RECORD]'); c.expect(ACK); c.send('read'); c.expect(REPLY); c.raw(b'b')
+        screen = expect_screen(c, GROUP); require_visible_indices(screen, [], None); assert b'No unread received records.' in screen
+        act(c, b'b', PICKER); act(c, b'k', PICKER); act(c, b'o', GROUP); act(c, b'j', GROUP)
+        c.raw(b'o'); c.expect(ACK); c.send(''); c.expect(REPLY); c.raw(b'r'); c.expect('CURRENT recipient: ' + peer)
+        c.expect('CURRENT device: 202 / ed25519:' + before['history'][6]['identity']); c.expect(SUBJECT); c.send(replacement); c.expect(BODY); c.send(body); c.expect(QUEUE); c.send('')
+        require_visible_indices(expect_screen(c, GROUP), [8, 7, 2, 1], 7); leave_group(); after = inspect(); require_only_read_change(before, after, 4)
+        enter(); act(c, b'i', INBOX); act(c, b'c', PICKER); act(c, b'o', GROUP); leave_group(); assert inspect() == after
+        same(); c.raw(b'q'); c.expect('Logged out.'); c.expect(RETURN); c.send(''); c.expect(PICK); c.raw(b'q'); c.finish()
+        scan_input = json.dumps(dict(markers=markers, board=settings['scan_board'], store=settings['scan_store'], log=settings['scan_logs'])).encode(); save('board-file-scan-input.private.json', scan_input)
+        scan = validate_scan(json.loads(remote(SCAN, scan_input)))
+        board_io = remote(TRACE_STOP.replace('issue230-board-', 'issue235-board-'), json.dumps(trace).encode()); trace = None; save('board-io.private.log', board_io)
+        hashes = dict(trace_sha256=hashlib.sha256(board_io).hexdigest(), marker_set_sha256=marker_hash, file_scan_input_sha256=hashlib.sha256(scan_input).hexdigest()); save('capture-hash-association.private.json', json.dumps(hashes))
+        reconstruction = require_board_bound_private_absent(board_io, [m.encode() for m in markers]); streams, _ = reconstruct_kdump_streams(board_io)
+        assert all(any(token in value for key, value in streams.items() if key[2] == 'read') for token in [b'@MAIL1 park ', b'@MAIL1 back '])
+        assert all(b'FACTION1;' not in value and b'@FACTION1' not in value for value in streams.values())
+        require_closed_endpoint(endpoint); assert all(m.encode() not in (store / 'mail.fkv').read_bytes() for m in markers)
+        save('canonical-before.private.json', json.dumps(before)); save('canonical-after.private.json', json.dumps(after))
+        result = dict(result='pass', platform=platform.system(), machine=platform.machine(), scope='same-ssh-main-menu-device-local-correspondents', unicode=a.unicode,
+            count=len(MAIN_CHECKS), checks=MAIN_CHECKS, private_input_hashes=hashes, board_io_reconstruction=reconstruction, privacy_scan=scan,
+            files_disabled=True, actual_home_transport_error='Connect', private_fixture_retained_for_lead=True, capture_id=capture_id,
+            source_sha256=probe_hash, marker_count=len(markers), private_matches=scan['matches'], file_protocol_matches=0,
+            exact_canonical_ack_invariants=True, same_ssh_pid_until_normal_close=True, automatic_redial_observed=False)
+        save('capture-result-association.private.json', json.dumps(dict(capture_id=capture_id, source_sha256=probe_hash, result_sha256=hashlib.sha256((json.dumps(result, indent=2) + '\n').encode()).hexdigest(), **hashes)))
+        return result
+    finally:
+        if trace is not None:
+            try: save('board-io-failure.private.log', remote(TRACE_STOP.replace('issue230-board-', 'issue235-board-'), json.dumps(trace).encode()))
+            except (AssertionError, subprocess.SubprocessError): pass
+        if visit is not None:
+            try:
+                if visit_processes(visit['client']) == visit: os.kill(visit['ssh'], 15)
+            except (AssertionError, ChildProcessError, ProcessLookupError): pass
+        for i, child in enumerate(children): save('terminal-' + str(i) + '.private', child.transcript + child.buffer); child.close()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--client', type=Path, required=True); parser.add_argument('--fixture', type=Path, required=True)
+    parser.add_argument('--owned-root', type=Path, required=True); parser.add_argument('--unicode', action='store_true'); parser.add_argument('--output', type=Path)
+    parser.add_argument('--settings', type=Path); parser.add_argument('--mail-fixture', type=Path); parser.add_argument('--public-ca', type=Path)
+    args = parser.parse_args()
+    if args.settings:
+        assert args.mail_fixture and args.public_ca
+        result = probe_main_menu(args)
+    else: result = probe(args.client.resolve(), args.fixture.resolve(), args.owned_root.resolve(), args.unicode)
+    if args.output: args.output.write_text(json.dumps(result, indent=2) + '\n')
+    print('Retained-correspondent PTY controls passed:', result['count'], result['platform'], result['machine'])

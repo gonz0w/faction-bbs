@@ -1,0 +1,52 @@
+from lab import *
+import re
+private=P/'private';private.mkdir(mode=0o700,exist_ok=True)
+values=[]
+static={'checkpoint synthetic fixture password','source body','unrelated pending subject','unrelated pending body','synthetic-reply-archive-position','alice@home.test','bob@away.test','CURRENT recipient:','[LOCAL INBOX]','Local unread:','[LOCAL CORRESPONDENTS]','[LOCAL CORRESPONDENT INBOX]'}
+def add(value):
+ if isinstance(value,str) and value not in static and len(value)>=20:values.append(value)
+ elif isinstance(value,list):
+  for child in value:add(child)
+ elif isinstance(value,dict):
+  for key in ['home_password','subject','body','replacement']:
+   if key in value:add(value[key])
+def markers(parent):
+ for child in parent.iterdir():
+  if child.is_dir() and not child.is_symlink() and child.name.startswith(('correspondents-menu-OWNED-','correspondents-capture-OWNED-','local-reply-capture-OWNED-','files-v1-','visit-mail-')):
+   for name in ['private-markers.json','markers.private.json','private-inputs.json','private-input-association.json']:
+    f=child/name
+    if f.is_file():
+     data=json.loads(f.read_text());add(data)
+     if child.name.startswith('correspondents-capture-OWNED-'):
+      peers=[x for x in data if isinstance(x,str) and x.startswith('peer-') and x.endswith('@away.test')];assert len(peers)==1
+      for phase in range(64):add(f'p{phase:02}.'+peers[0])
+markers(P);markers(P/'native-private')
+for f in P.glob('fixture02-*-inspection.private.json'):
+ for row in json.loads(f.read_text())['history']:add(row['identity'])
+for name in ['generated-classic.private.json']:
+ f=P/name
+ if f.is_file():add(json.loads(f.read_text()))
+add((P/'sysop-password.private').read_text())
+for name in ['member-key','lab-admin-key']:
+ data=(P/name).read_text();add(data)
+ for line in data.splitlines():
+  if line and not line.startswith('-----'):add(line)
+code='''from pathlib import Path
+import json
+D=Path('/home/factionbuild/device235');P=Path('/home/factionbuild/proof235');values=[]
+for child in D.iterdir():
+ if child.is_dir() and not child.is_symlink() and child.name.startswith(('correspondents-menu-OWNED-','correspondents-capture-OWNED-','local-reply-capture-OWNED-','files-v1-','visit-mail-')):
+  for name in ['private-markers.json','markers.private.json','private-inputs.json','private-input-association.json']:
+   p=child/name
+   if p.is_file():
+    data=json.loads(p.read_text());values.append(data)
+    if child.name.startswith('correspondents-capture-OWNED-'):
+     peers=[x for x in data if isinstance(x,str) and x.startswith('peer-') and x.endswith('@away.test')];assert len(peers)==1
+     values.extend(f'p{phase:02}.'+peers[0] for phase in range(64))
+p=P/'generated-classic.private.json'
+if p.is_file():values.append(json.loads(p.read_text()))
+print(json.dumps(values))
+'''
+data=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout;(private/'native-generated-values.private.json').write_bytes(data);add(json.loads(data))
+unique=sorted(set(values));out=private/'generated-private-values.private.json';out.write_text(json.dumps(unique,indent=2)+'\n');out.chmod(0o600)
+print('Actual generated private-value inventory assembled:',len(unique),'values; all raw values stay private.')

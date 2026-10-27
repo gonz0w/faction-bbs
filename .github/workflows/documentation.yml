@@ -52,11 +52,15 @@ jobs:
           python3 tools/check_xmpp_transport_dependencies.py
           cargo clippy -p faction-client -p faction-omemo --features faction-client/network-mail --all-targets --release --locked -- -D warnings
           cargo test -p faction-client -p faction-omemo --features faction-client/network-mail --all-targets --release --locked -- --test-threads=1
-          cargo build -p faction-client --features network-mail --bin faction-client --example checkpoint_ui_fixture --example home_mail_fixture --example mail_reply_fixture --release --locked
+          cargo build -p faction-client --features network-mail --bin faction-client --example checkpoint_ui_fixture --example home_mail_fixture --example mail_reply_fixture --example mail_correspondents_fixture --release --locked
           mkdir -m 700 "$RUNNER_TEMP/reply-owned"
           printf 'CI owned reply fixtures\n' > "$RUNNER_TEMP/reply-owned/OWNED"
           python3 tools/probe_mail_reply.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture" --owned-root "$RUNNER_TEMP/reply-owned" --output "$RUNNER_TEMP/reply-classic.json"
           python3 tools/probe_mail_reply.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture" --owned-root "$RUNNER_TEMP/reply-owned" --unicode --output "$RUNNER_TEMP/reply-unicode.json"
+          mkdir -m 700 "$RUNNER_TEMP/correspondents-owned"
+          printf 'CI owned correspondent fixtures\n' > "$RUNNER_TEMP/correspondents-owned/OWNED"
+          python3 tools/probe_mail_correspondents.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_correspondents_fixture" --owned-root "$RUNNER_TEMP/correspondents-owned" --output "$RUNNER_TEMP/correspondents-classic.json"
+          python3 tools/probe_mail_correspondents.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_correspondents_fixture" --owned-root "$RUNNER_TEMP/correspondents-owned" --unicode --output "$RUNNER_TEMP/correspondents-unicode.json"
           python3 tools/probe_mail_inbox.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --owned-root "$RUNNER_TEMP/inbox-owned" --online --output "$RUNNER_TEMP/inbox-network.json"
           python3 tools/probe_home_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --checkpoint-fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --mail-fixture "$CARGO_TARGET_DIR/release/examples/home_mail_fixture"
           python3 tools/probe_home_archive_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --output "$RUNNER_TEMP/archive-ui.json"
@@ -162,6 +166,7 @@ jobs:
           python3 tools/check_mail_inbox_evidence.py
           python3 tools/check_menu_mail_evidence.py
           python3 tools/check_reply_evidence.py
+          python3 tools/check_correspondents_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

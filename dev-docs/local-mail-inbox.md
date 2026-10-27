@@ -75,3 +75,33 @@ quoted body, threading header, background credential or BBS metadata is added.
 
 [Reply software observations](evidence/inbox-reply/README.md) preserve the executed
 source stages, actual failures, host/NetBSD controls and compatibility limits.
+
+
+## Retained correspondent navigation
+
+Issue [#235](https://github.com/gonz0w/faction-bbs/issues/235) adds C inside the local
+inbox in both offline and manual network-mail consoles. A derived index list
+identifies the newest retained record for each exact account/device tuple. At
+most 64 groups share the six-row, clamped navigation model. Peer strings remain
+borrowed while grouping; only original indices survive in selection metadata.
+No subject/body copy, persisted index, contact record or new checkpoint field is
+introduced. Label scratch is zeroized and uses inert terminal-cell truncation;
+the full device number appears before the account preview.
+
+A selected group scopes the input entries before the existing inbox model applies
+All/Unread. Original canonical indices survive filtering and refresh. Therefore
+All cannot escape that group, an empty unread result cannot hop to another peer,
+and explicit read decisions still bind the original received frame. Append-only
+reply refresh retains the selected source where eligible. Nested Back returns to
+the picker, then the original global inbox, then the mail menu.
+
+Grouping is not threading, historical-key verification or peer enrollment. The
+existing record viewer and online reply checks remain authoritative, including
+current verified-identity review and mismatched/history-only refusal. Offline
+inspection gains no Reply. Navigation changes no canonical ciphertext, cursor,
+pending intent, read decision or trust, and performs no network work. Existing
+private-console routing, locked return and normal approval/resource limits apply.
+
+[Correspondent software observations](evidence/mail-correspondents/README.md)
+retain executed variants, actual failures and host/NetBSD controls separately
+from the earlier inbox and reply records.

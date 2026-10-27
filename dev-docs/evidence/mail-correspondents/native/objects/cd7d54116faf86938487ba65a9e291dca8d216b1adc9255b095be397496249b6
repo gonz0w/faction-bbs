@@ -1,0 +1,6 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof235/build-final03/build-result.json',check=False)
+if r.returncode:print('Native build active; no step completed yet.');raise SystemExit(0)
+v=json.loads(r.stdout);print(json.dumps(v))
+if v['result']=='fail':
+ name=v['steps'][-1]['name'];data=remote('tail -40 /home/factionbuild/proof235/build-final03/'+name+'-build.log').stdout;(P/'native-build-failure03.log').write_bytes(data);print(data.decode())

@@ -1,0 +1,6 @@
+{
+  "result": "fail",
+  "error_type": "AssertionError",
+  "assertion": "fresh-unlock-reentries",
+  "line": 22
+}

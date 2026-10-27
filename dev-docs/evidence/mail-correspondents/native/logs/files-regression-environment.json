@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "scope": "separate-files-enabled-regression-after-files-disabled-mail-acceptance",
+  "service_source": "source-final01",
+  "service_config_sha256": "4f230de9235b71cfdeadac1681a4a88679eddac42e7ce797768903cd0f920093",
+  "max_sessions": 8,
+  "launch_ms": 5000,
+  "normal_limits_unchanged": true,
+  "board_state_preserved": true,
+  "file_service_enabled_only_for_regression": true,
+  "physical_hardware": false,
+  "capacity_claim": false
+}

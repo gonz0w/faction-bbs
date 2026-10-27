@@ -1,0 +1,4 @@
+from lab import *
+remote('cat > /home/factionbuild/proof235/native_runtime.py; chown factionbuild:factionbuild /home/factionbuild/proof235/native_runtime.py',(P/'native_runtime.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof235/native_runtime.py > /home/factionbuild/proof235/runtime-launch01.log 2>&1 < /dev/null &'",timeout=10)
+print('Frozen NetBSD classic/Unicode local+sameSSH+existingglobal/reply controls launched serially.')

@@ -1,0 +1,20 @@
+from lab import *
+import hashlib
+manifest=json.loads((P/'public-registry-manifest.json').read_text())
+code='''from pathlib import Path
+import json,hashlib,sys
+p=Path('/home/factionbuild/cargo233');m=json.load(sys.stdin)
+assert {str(f.relative_to(p)):hashlib.sha256(f.read_bytes()).hexdigest() for f in p.rglob('*') if f.is_file()}==m
+q=Path('/home/factionbuild/cargo235')
+assert all(f.name in {'.package-cache'} and f.stat().st_size==0 for f in q.rglob('*') if f.is_file())
+q.rename('/home/factionbuild/cargo235-failed-empty')
+p.rename('/home/factionbuild/cargo235')
+'''
+remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),json.dumps(manifest).encode())
+(P/'native-build-result01.json').write_bytes(remote('cat /home/factionbuild/proof235/build-final01/build-result.json').stdout)
+(P/'native-server-build01.log').write_bytes(remote('cat /home/factionbuild/proof235/build-final01/server-build.log').stdout)
+original=(P/'native_build.py').read_bytes();(P/'objects'/hashlib.sha256(original).hexdigest()).write_bytes(original)
+script=original.replace(b'build-final01',b'build-final02');(P/'native_build02.py').write_bytes(script)
+remote('cat > /home/factionbuild/proof235/native-build02.py; chown factionbuild:factionbuild /home/factionbuild/proof235/native-build02.py',script)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof235/native-build02.py > /home/factionbuild/proof235/build-launch02.log 2>&1 < /dev/null &'",timeout=10)
+print('Verified336public cache inputs, corrected owned cache path; preserved failed candidate; native02 launched.')

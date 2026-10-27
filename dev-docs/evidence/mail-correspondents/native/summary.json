@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "issue": 235,
+  "scope": "software-host-netbsd-retained-correspondent-acceptance",
+  "source_count": 702,
+  "selected_source_objects": 762,
+  "reused_committed_source_objects": 701,
+  "new_source_objects": 61,
+  "requested_role": "temper_implementer",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "observed_runtime_metadata": "unavailable",
+  "private_captures_selected": false,
+  "physical_hardware": false,
+  "capacity_claim": false,
+  "production_claim": false
+}
