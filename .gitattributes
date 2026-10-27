@@ -171,3 +171,13 @@ dev-docs/evidence/inbox-reply/** -text
 dev-docs/evidence/inbox-reply/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
 dev-docs/evidence/inbox-reply/**/logs/** linguist-generated=true whitespace=-blank-at-eof
 dev-docs/evidence/inbox-reply/**/*.json linguist-generated=true
+
+# Issue235 immutable source variants and original test/diagnostic bytes.
+dev-docs/evidence/mail-correspondents/** -text
+dev-docs/evidence/mail-correspondents/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+dev-docs/evidence/mail-correspondents/**/*.json linguist-generated=true
+dev-docs/evidence/mail-correspondents/**/logs/** linguist-generated=true whitespace=-blank-at-eof
+dev-docs/evidence/mail-correspondents/**/*.log whitespace=-blank-at-eof
+
+# Preserve the actual pre-implementation diagnostic trailing space.
+dev-docs/evidence/mail-correspondents/client/logs/actual-interface-red.log whitespace=-blank-at-eol,-blank-at-eof

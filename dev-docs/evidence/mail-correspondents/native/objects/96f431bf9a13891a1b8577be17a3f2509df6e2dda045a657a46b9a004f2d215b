@@ -1,0 +1,5 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof235/compatibility/execution.json',check=False)
+print(r.stdout.decode() if r.returncode==0 else 'Native compatibility normal refill or initial Files probe in progress.')
+r=remote('cat /home/factionbuild/proof235/compatibility/result.json',check=False)
+if r.returncode==0:print(r.stdout.decode())

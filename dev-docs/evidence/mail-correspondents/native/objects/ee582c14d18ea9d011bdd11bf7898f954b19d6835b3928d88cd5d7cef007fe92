@@ -1,0 +1,19 @@
+from lab import *
+import tarfile,io
+code='''from pathlib import Path
+import tarfile,sys
+p=Path('/home/factionbuild/device235')
+with tarfile.open(fileobj=sys.stdout.buffer,mode='w|gz') as t:
+ for f in sorted(p.glob('correspondents-menu-OWNED-*')):
+  assert f.is_dir() and not f.is_symlink();t.add(f,arcname=f.name)
+'''
+data=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout;archive=P/'native-main-captures.private.tar.gz';archive.write_bytes(data);archive.chmod(0o600)
+out=P/'native-private';out.mkdir(mode=0o700)
+with tarfile.open(fileobj=io.BytesIO(data),mode='r:gz') as t:
+ for member in t:
+  path=Path(member.name);assert not path.is_absolute() and '..' not in path.parts and not member.issym() and not member.islnk()
+  dest=out/path
+  if member.isdir():dest.mkdir(mode=0o700,parents=True,exist_ok=True)
+  elif member.isfile():dest.parent.mkdir(mode=0o700,parents=True,exist_ok=True);dest.write_bytes(t.extractfile(member).read());dest.chmod(0o600)
+  else:raise AssertionError('Unexpected private capture type')
+print('Two native private main captures retained privately for review; no values printed.')

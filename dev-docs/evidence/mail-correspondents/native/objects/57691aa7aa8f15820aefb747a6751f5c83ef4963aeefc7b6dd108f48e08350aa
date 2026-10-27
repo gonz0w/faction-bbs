@@ -1,0 +1,37 @@
+"""Select public source/verdict bytes explicitly, reusing committed source objects."""
+from pathlib import Path
+import hashlib,json,re,shutil
+P=Path('/private/tmp/faction235-native-OWNED');R=Path('/Users/cam/DEV/faction-bbs');S=P/'public-staging';assert not S.exists();S.mkdir(mode=0o700)
+def digest(data):return hashlib.sha256(data).hexdigest()
+def copy(name,path):
+ data=path.read_bytes();dest=S/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data);return digest(data)
+programs={}
+for f in sorted(P.glob('*.py')):
+ data=f.read_bytes();h=digest(data);(P/'objects'/h).write_bytes(data);programs['orchestration/'+f.name]=h
+(P/'sources/orchestration-final.json').write_text(json.dumps(programs,sort_keys=True,indent=2)+'\n')
+objects=set();stages=[]
+for source in sorted((P/'sources').glob('*.json')):
+ m=json.loads(source.read_text());assert m and all(isinstance(h,str) and re.fullmatch('[0-9a-f]{64}',h) for h in m.values())
+ objects.update(m.values());h=copy('maps/'+source.name,source);label='native-final' if source.name=='native-final01-before.json' else source.stem
+ stages.append(dict(label=label,manifest=dict(relativepath='maps/'+source.name,sha256=h)))
+existing={}
+for f in (R/'dev-docs/evidence/inbox-reply').rglob('*'):
+ if f.is_file() and not f.is_symlink() and re.fullmatch('[0-9a-f]{64}',f.name):existing.setdefault(f.name,f)
+reuse={};new=[]
+for h in sorted(objects):
+ data=(P/'objects'/h).read_bytes();assert digest(data)==h
+ if h in existing:
+  f=existing[h];assert f.read_bytes()==data;reuse[h]=dict(repository_path=str(f.relative_to(R)),sha256=h)
+ else:copy('objects/'+h,P/'objects'/h);new.append(h)
+(S/'reuse.json').write_text(json.dumps(reuse,sort_keys=True,indent=2)+'\n')
+(S/'source-stages.json').write_text(json.dumps(stages,indent=2)+'\n')
+logs=['probe-interface-red.log','fixture-interface-red.log','fixture-interface-red.json','probe-unit-green01.log','fixture-build01.log','fixture-build02.log','fixture-contract02.log','fixture-contract-green.json','host-feature-build01.log','host-default-build01.log','host-local-classic01.json','host-local-unicode01.json','host-local-classic01.log','host-local-unicode01.log','boot-restricted-failure.log','boot.log','freeze-build.log','cache-repair-build02.log','cache-repair-build03.log','build-verified-cache.log','index-launch03.log','native-server-build01.log','native-build-result01.json','native-build02-build-result.json','native-build02-server-build.log','configure01.log','configure02.log','runtime-ready01.log','runtime-ready02.log','runtime-reboot01.log','archive-main-private.log','archive-main-private02.log','capture-associations.json','runtime-environment.json','server-config-proof.json','files-regression-environment.json','old-client-origin.json','host-default-binary.json','host-binaries.json','native-binaries.json','native-summary.json','native-compat-files-failure01.log','compat-repair02.log']
+for name in logs:copy('logs/'+name,P/name)
+for name in ['native-build','native-runtime','host-regressions02','host-main','host-compatibility','native-compatibility']:
+ allowed={f.name for f in (P/name).iterdir() if f.is_file() and (f.suffix=='.json' or (name in {'native-build','host-regressions02','host-main','host-compatibility','native-compatibility'} and f.suffix=='.log'))}
+ assert allowed
+ for n in sorted(allowed):copy('logs/'+name+'/'+n,P/name/n)
+(S/'summary.json').write_text(json.dumps(dict(result='pass',issue=235,scope='software-host-netbsd-retained-correspondent-acceptance',source_count=len(json.loads((P/'sources/native-final01-before.json').read_text())),selected_source_objects=len(objects),reused_committed_source_objects=len(reuse),new_source_objects=len(new),requested_role='temper_implementer',requested_model='gpt-6.1-sol',requested_effort='high',observed_runtime_metadata='unavailable',private_captures_selected=False,physical_hardware=False,capacity_claim=False,production_claim=False),indent=2)+'\n')
+(S/'OWNED').write_text('Issue235 explicit public source/verdict candidate; private artifacts excluded.\n')
+files={str(f.relative_to(S)):digest(f.read_bytes()) for f in S.rglob('*') if f.is_file() and f.name!='manifest.json'}
+(S/'manifest.json').write_text(json.dumps(files,sort_keys=True,indent=2)+'\n');print(json.dumps(dict(selected_files=len(files),reused_objects=len(reuse),new_objects=len(new),manifest_sha256=digest((S/'manifest.json').read_bytes()))))

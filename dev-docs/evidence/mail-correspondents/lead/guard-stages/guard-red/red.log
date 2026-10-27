@@ -1,0 +1,113 @@
+EEEEEEEEE
+======================================================================
+ERROR: test_changed_bytes_or_unsafe_paths (test_correspondents_evidence.Evidence.test_changed_bytes_or_unsafe_paths)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_ci_registers_guard_and_live_display_modes (test_correspondents_evidence.Evidence.test_ci_registers_guard_and_live_display_modes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_complete_source_bound_matrix (test_correspondents_evidence.Evidence.test_complete_source_bound_matrix)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_missing_controls_and_private_network_regressions (test_correspondents_evidence.Evidence.test_missing_controls_and_private_network_regressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_missing_or_host_substituted_native_route (test_correspondents_evidence.Evidence.test_missing_or_host_substituted_native_route)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_no_relaxed_limits_or_new_authority_claim (test_correspondents_evidence.Evidence.test_no_relaxed_limits_or_new_authority_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_rejects_cleanup_tdd_publication_and_count_lies (test_correspondents_evidence.Evidence.test_rejects_cleanup_tdd_publication_and_count_lies)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_rejects_source_count_lie (test_correspondents_evidence.Evidence.test_rejects_source_count_lie)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+======================================================================
+ERROR: test_unbound_association_and_false_source_count (test_correspondents_evidence.Evidence.test_unbound_association_and_false_source_count)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 15, in setUp
+    SPEC.loader.exec_module(self.guard)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_correspondents_evidence.py'
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.001s
+
+FAILED (errors=9)

@@ -1,0 +1,13 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 2.03s
+     Running unittests src/main.rs (/private/tmp/faction235-client-OWNED/target/release/deps/faction_client-7f3742fae855ebcc)
+
+running 5 tests
+test checkpoint_ui::tests::correspondents_actual_interface_helper ... ignored, owned subprocess helper, exercised by the correspondent interface control
+test checkpoint_ui::inbox::tests::correspondents_group_exact_account_and_device_newest_first ... ok
+test checkpoint_ui::inbox::tests::correspondent_empty_single_and_sixty_four_groups_clamp_pages ... ok
+test checkpoint_ui::inbox::tests::correspondent_rows_preserve_device_digits_and_are_inert_at_thirty_nine_cells ... ok
+test checkpoint_ui::tests::correspondents_opens_from_actual_inbox_and_backs_to_global ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 49 filtered out; finished in 0.10s
+

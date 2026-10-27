@@ -1,0 +1,6 @@
+from lab import *
+for name in ['build-result.json','server-build.log']:(P/('native-build02-'+name)).write_bytes(remote('cat /home/factionbuild/proof235/build-final02/'+name).stdout)
+exec(compile((P/'public_index_complete.py').read_bytes(),str(P/'public_index_complete.py'),'exec'))
+remote('cat > /home/factionbuild/proof235/native-build03.py; chown factionbuild:factionbuild /home/factionbuild/proof235/native-build03.py',(P/'native_build03.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof235/native-build03.py > /home/factionbuild/proof235/build-launch03.log 2>&1 < /dev/null &'",timeout=10)
+print('Prior preserved cross-target Cargo index supplement reused; frozen source build03 launched with owned python3 fixture alias.')

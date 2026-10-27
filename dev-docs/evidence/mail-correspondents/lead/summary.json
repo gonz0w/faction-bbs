@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "issue": 235,
+  "workspace_passed": 473,
+  "workspace_ignored": 0,
+  "python_passed": 435,
+  "guard_tests": 9,
+  "source_stable": true,
+  "publication_scan": "pending actual generated-private-value scan",
+  "tdd": "actual missing guard module RED; later CI registration/live commands RED; nine GREEN tests",
+  "raw_private_fixtures_selected": false
+}

@@ -1,0 +1,64 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0433]: cannot find type `Correspondents` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:172:26
+    |
+172 |         let mut groups = Correspondents::new(&peers);
+    |                          ^^^^^^^^^^^^^^ use of undeclared type `Correspondents`
+
+error[E0425]: cannot find function `within_group` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:185:35
+    |
+185 |         let mut list = Inbox::new(within_group(records.clone(), &peers, 7));
+    |                                   ^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `within_group` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:192:22
+    |
+192 |         list.refresh(within_group(updated, &peers, 7));
+    |                      ^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `within_group` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:198:35
+    |
+198 |         let mut list = Inbox::new(within_group(unknown, &peers, 7));
+    |                                   ^^^^^^^^^^^^ not found in this scope
+
+error[E0433]: cannot find type `Correspondents` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:205:25
+    |
+205 |         let mut empty = Correspondents::new(&[]);
+    |                         ^^^^^^^^^^^^^^ use of undeclared type `Correspondents`
+
+error[E0433]: cannot find type `Correspondents` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:210:23
+    |
+210 |         let mut one = Correspondents::new(&[("one@away.test", 1)]);
+    |                       ^^^^^^^^^^^^^^ use of undeclared type `Correspondents`
+
+error[E0433]: cannot find type `Correspondents` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:214:26
+    |
+214 |         let mut groups = Correspondents::new(&peers);
+    |                          ^^^^^^^^^^^^^^ use of undeclared type `Correspondents`
+
+error[E0425]: cannot find function `correspondent_row` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:231:27
+    |
+231 |                 let row = correspondent_row(64, device, &"λ界\x1b\u{202e}\nlong@away.test".repeat(30), true, unicode);
+    |                           ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `correspondent_row` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:238:20
+    |
+238 |         assert_ne!(correspondent_row(1, 202, "same@away.test", false, false),
+    |                    ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `correspondent_row` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:239:13
+    |
+239 |             correspondent_row(1, 203, "same@away.test", false, false));
+    |             ^^^^^^^^^^^^^^^^^ not found in this scope
+
+Some errors have detailed explanations: E0425, E0433.
+For more information about an error, try `rustc --explain E0425`.
+error: could not compile `faction-client` (bin "faction-client" test) due to 10 previous errors

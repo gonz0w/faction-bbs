@@ -1,0 +1,4 @@
+from lab import *
+for n in ['execution.json','result.json']:
+ r=remote('cat /home/factionbuild/proof235/compatibility02/'+n,check=False)
+ if r.returncode==0:print(r.stdout.decode())

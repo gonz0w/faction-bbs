@@ -406,3 +406,5 @@ current approval and hostile-output controls, retained oracle corrections and
 existing Files/SFTP regressions.
 
 - [Selected-record encrypted replies](inbox-reply/README.md) — source-bound host/NetBSD classic/Unicode queue, private-I/O, compatibility and teardown observations for #233.
+
+- [Retained encrypted-mail correspondents](mail-correspondents/README.md) — bounded account/device navigation with source-bound host/NetBSD classic/Unicode, same-SSH privacy and compatibility observations for #235.

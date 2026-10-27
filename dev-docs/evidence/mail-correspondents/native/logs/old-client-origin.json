@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "host_sha256": "e994b13550736b16aececa6d51521c44725f2d2d8567a904671bd1821fc35b03",
+  "saved_manifest_hash_matches": true,
+  "saved_source_commit": "5fcd5090fed5130e37aca207d8e33a2f6a32200f",
+  "guest_source_note": "Guest build includes native client/vault PR #94; documentation branch commit is not the guest build identity.",
+  "source_commit_is_guest_build_identity": false
+}

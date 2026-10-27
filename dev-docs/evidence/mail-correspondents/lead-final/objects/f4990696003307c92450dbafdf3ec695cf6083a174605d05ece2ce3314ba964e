@@ -1,0 +1,32 @@
+"""Select actual corrected-guard and final tool-suite bytes without changing earlier evidence."""
+from pathlib import Path
+import hashlib,json,re
+P=Path('/private/tmp/faction235-lead-OWNED');R=Path('/Users/cam/DEV/faction-bbs');OUT=P/'public-final';OUT.mkdir(mode=0o700);(OUT/'OWNED').write_text('Issue235 final guard/tool source selection; scan pending\n')
+def sha(data):return hashlib.sha256(data).hexdigest()
+def put(name,data):
+ p=OUT/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data);return dict(relativepath=name,sha256=sha(data))
+old={}
+for group in ('native','client','lead'):
+ for p in (R/'dev-docs/evidence/inbox-reply'/group/'objects').glob('*'):
+  if p.is_file() and re.fullmatch('[0-9a-f]{64}',p.name):assert sha(p.read_bytes())==p.name;old.setdefault(p.name,dict(repository_path=str(p.relative_to(R)),sha256=p.name))
+reuse={}
+def obj(raw):
+ h=sha(raw)
+ if h in old:reuse[h]=old[h]
+ else:put('objects/'+h,raw)
+ return h
+stages=[]
+for name in ('guard-ack-red','guard-ack-green'):
+ for p in (P/name).iterdir():
+  if re.fullmatch('[0-9a-f]{64}',p.name):obj(p.read_bytes())
+  else:put('guard-stages/'+name+'/'+p.name,p.read_bytes())
+ stages.append(dict(label=name,manifest=put('maps/'+name+'.json',(P/name/'sources.json').read_bytes())))
+for p in (P/'python-final/python-objects').iterdir():assert sha(p.read_bytes())==p.name;obj(p.read_bytes())
+for name in ('python-before.json','python-after.json'):
+ stages.append(dict(label='final-'+name[:-5],manifest=put('maps/'+name,(P/'python-final'/name).read_bytes())))
+put('logs/python-final.log',(P/'python-final/python.log').read_bytes());put('metadata/python-final-result.json',(P/'python-final/python-result.json').read_bytes())
+helpers={name:obj((P/name).read_bytes()) for name in ('guard_ack_tdd.py','python_final_checks.py','package_final.py')}
+stages.append(dict(label='final-lead-executed-helpers',manifest=put('maps/helpers.json',(json.dumps(helpers,indent=2,sort_keys=True)+'\n').encode())))
+put('source-stages.json',(json.dumps(stages,indent=2,sort_keys=True)+'\n').encode());put('reuse.json',(json.dumps(reuse,indent=2,sort_keys=True)+'\n').encode())
+put('summary.json',(json.dumps(dict(result='pass',issue=235,python_passed=436,guard_tests=10,source_stable=True,earlier_435_run_unchanged=True,guard_fix='coherent capture-association negative test RED then exact_canonical_ack_invariants assertion GREEN',publication_scan='pending actual private-value scan'),indent=2)+'\n').encode())
+m={str(p.relative_to(OUT)):sha(p.read_bytes()) for p in OUT.rglob('*') if p.is_file()};put('manifest.json',(json.dumps(m,indent=2,sort_keys=True)+'\n').encode());print(json.dumps(dict(files=len(m)+1,reused=len(reuse),newobjects=len(list((OUT/'objects').iterdir())),manifest_sha256=sha((OUT/'manifest.json').read_bytes()))))

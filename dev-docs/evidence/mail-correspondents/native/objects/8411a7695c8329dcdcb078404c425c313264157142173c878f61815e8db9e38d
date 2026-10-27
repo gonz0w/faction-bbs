@@ -1,0 +1,2 @@
+from lab import *
+r=remote('tail -8 /home/factionbuild/proof235/build-final03/tests-build.log',check=False);print(r.stdout.decode())

@@ -1,0 +1,11 @@
+from lab import *
+r=json.loads(remote('cat /home/factionbuild/proof235/runtime01/progress.json').stdout);assert r['result']=='pass'
+out=P/'native-runtime';out.mkdir(mode=0o700)
+for n in ['local-classic.json','local-unicode.json','main-classic.json','main-unicode.json','inbox.json','reply-classic.json','reply-unicode.json','source-before.json','source-after.json','execution.json','progress.json']:(out/n).write_bytes(remote('cat /home/factionbuild/proof235/runtime01/'+n).stdout)
+for n in ['audit_main_capture.py','native_audit.py']:
+ remote('cat > /home/factionbuild/proof235/'+n+'; chown factionbuild:factionbuild /home/factionbuild/proof235/'+n,(P/n).read_bytes())
+r=remote("su - factionbuild -c '/usr/pkg/bin/python3.13 /home/factionbuild/proof235/native_audit.py'");(P/'native-capture-audit.log').write_bytes(r.stdout)
+(P/'native-capture-associations.json').write_bytes(remote('cat /home/factionbuild/proof235/capture-associations.json').stdout)
+merged={**json.loads((P/'host-capture-associations.json').read_text())['routes'],**json.loads((P/'native-capture-associations.json').read_text())['routes']};assert len({x['capture_id'] for x in merged.values()})==4
+(P/'capture-associations.json').write_text(json.dumps(dict(result='pass',routes=merged),indent=2)+'\n')
+print('Native8local+4sameSSHpermode, globalinbox14+reply11permode and all4private capture associations verified.')

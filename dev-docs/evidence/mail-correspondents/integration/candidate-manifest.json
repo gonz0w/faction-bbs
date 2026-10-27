@@ -1,0 +1,74 @@
+{
+  "result": "pass",
+  "files": [
+    {
+      "path": "/private/tmp/faction235-native-OWNED/scan_publication05.py",
+      "sha256": "2080fa293db227b866ecd11dfc9c1ac216070b32717a6c646030613994de8c06"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/scan_publication02.py",
+      "sha256": "2d18738bbcedc1eea8b973ad43a46756c54f1479ea131f06e0ccb7989bf41894"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/scan_publication03.py",
+      "sha256": "074fbcf97a740b81bba9095768f0190a1530f136a5680cd52c1dc7805febf918"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/scan_publication04.py",
+      "sha256": "2f1fd727105bcd02a42217586db4bde0f6112a11945dad72630fe8576efbcddf"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-initial.log",
+      "sha256": "5439616b70b6700572d1f0a0a1646480857c9fcba3d1bc8c39011aed7d3c263d"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-initial02.log",
+      "sha256": "26133dc23df98cc9a729be8136f8f9ef3db4056f32f614f5b579fe82fabeef65"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-initial03.log",
+      "sha256": "56ca461b424c2f5268e15de5e9c0250854eb78bba42e6510951ac24b894bc3ef"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-initial04.log",
+      "sha256": "68183adeb5cce18bffe1db4edea2140fa7fd51ceef1412a8cb25ae29a9548bcf"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-initial.json",
+      "sha256": "745e8e956cb94bf76816882fe1110f2b94b7872b904e5e025905af24b6950ec4"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/owned_stop.py",
+      "sha256": "5128525790a8c4653a571105e33462117e020351132313e5cb367468e6f75a55"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/owned-stop-result.json",
+      "sha256": "705bf83bbb357366b5c8db0538015d9bb5721816d4887d1caa218a7943ed8dda"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/owned-stop.log",
+      "sha256": "84c48e0492f5d09d591ca006b132a57f291151f6ee52c42a2b5389b123b38411"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/saved-identity-proof.json",
+      "sha256": "c23350c81b49b20e9971b04f91409e7dd848db17ea697c2e8c9fd5d23748b223"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-final.json",
+      "sha256": "45a079c0f5c654e7765a9edc4dffbcf2871cb435db3769d0a24f6aa36a878cd9"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/publication-scan-final.log",
+      "sha256": "68183adeb5cce18bffe1db4edea2140fa7fd51ceef1412a8cb25ae29a9548bcf"
+    },
+    {
+      "path": "/private/tmp/faction235-native-OWNED/make_extra_candidates.py",
+      "sha256": "f72df8a45d5c74dd4793affec85c6c6125e10257dd5df85074c12fc14120d8a9"
+    }
+  ],
+  "generated_private_values_scanned": 467,
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "frozen_native_manifest_sha256": "6f63848e9cfaa13b21120ae7c89f4009ac3f01153e29002561b4864c6538cef7",
+  "native_root_retained": true
+}

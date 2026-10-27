@@ -1,0 +1,13 @@
+from pathlib import Path
+import os,subprocess,json,time
+P=Path('/private/tmp/faction235-native-OWNED');R=Path('/Users/cam/DEV/faction-bbs');B=P/'host-bin';out=P/'host-regressions02';out.mkdir(mode=0o700)
+commands=[('inbox',['python3',str(R/'tools/probe_mail_inbox.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'checkpoint_ui_fixture'),'--owned-root',str(P),'--online','--output',str(out/'inbox.json')])]
+for mode in ['classic','unicode']:
+ commands.append(('reply-'+mode,['python3',str(R/'tools/probe_mail_reply.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'mail_reply_fixture'),'--owned-root',str(P),'--output',str(out/('reply-'+mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])))
+steps=[]
+for name,cmd in commands:
+ start=time.monotonic()
+ with (out/(name+'.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ steps.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.json').write_text(json.dumps(steps,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Global inbox14(internalclassic+Unicode/offline+online) and reply11permode regressions complete.')

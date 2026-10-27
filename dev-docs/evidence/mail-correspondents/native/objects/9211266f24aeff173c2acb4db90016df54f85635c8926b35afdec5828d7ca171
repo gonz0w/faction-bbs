@@ -1,0 +1,3 @@
+from lab import *
+data=remote('cat /home/factionbuild/proof235/compatibility/files.raw.log').stdout;(P/'native-compat-files-failure01.log').write_bytes(data)
+print(data.decode()[-2000:])

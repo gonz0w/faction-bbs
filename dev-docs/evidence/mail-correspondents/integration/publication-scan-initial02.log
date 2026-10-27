@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction235-native-OWNED/scan_publication02.py", line 16, in <module>
+    assert root.is_dir() and not root.is_symlink();raw=(root/'manifest.json').read_bytes();manifest=json.loads(raw);actual={str(f.relative_to(root)) for f in root.rglob('*') if f.is_file()};assert actual==set(manifest)|{'manifest.json'}
+                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 777, in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction235-client-OWNED/public-staging/manifest.json'

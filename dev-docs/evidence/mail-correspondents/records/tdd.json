@@ -1,0 +1,26 @@
+{
+  "actual_ui_red": {
+    "path": "dev-docs/evidence/mail-correspondents/client/logs/actual-interface-red.log",
+    "sha256": "e47124e6e34e0a28894b4d863661626b7ea3a2bd1ee18c6680f7978ad1889899"
+  },
+  "actual_ui_red_helper": {
+    "path": "dev-docs/evidence/mail-correspondents/client/logs/actual-interface-red-helper.log",
+    "sha256": "d1ebdad05bb58847a4fd52765b03f291549d03c816445dc3b8ba487510204946"
+  },
+  "captured_before_edit": true,
+  "corrected_guard_green": {
+    "path": "dev-docs/evidence/mail-correspondents/lead-final/guard-stages/guard-ack-green/test.log",
+    "sha256": "1173b97f3b4a9b80377ede8e18f44a77ef68eeaa7f7ab530e66e86335111ef8a"
+  },
+  "corrected_guard_red": {
+    "path": "dev-docs/evidence/mail-correspondents/lead-final/guard-stages/guard-ack-red/test.log",
+    "sha256": "505208aebc8b7783d118d665eccc0a030db1cbbfb7f9220a9a14a96b8106a93e"
+  },
+  "green_exit": 0,
+  "missing_model_red": {
+    "path": "dev-docs/evidence/mail-correspondents/client/logs/group-red.log",
+    "sha256": "ca34e78a48c3063f391c4b31dda8adb3648f0ac5cafebacc926867c767849f5b"
+  },
+  "red_exit": 101,
+  "result": "pass"
+}

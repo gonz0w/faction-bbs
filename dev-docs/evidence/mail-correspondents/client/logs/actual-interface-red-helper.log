@@ -1,0 +1,15 @@
+
+running 1 test
+
+thread 'checkpoint_ui::tests::correspondents_actual_interface_helper' (2793182) panicked at crates/faction-client/src/checkpoint_ui.rs:1350:17:
+C must open the correspondent picker
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test checkpoint_ui::tests::correspondents_actual_interface_helper ... FAILED
+
+failures:
+
+failures:
+    checkpoint_ui::tests::correspondents_actual_interface_helper
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.09s
+

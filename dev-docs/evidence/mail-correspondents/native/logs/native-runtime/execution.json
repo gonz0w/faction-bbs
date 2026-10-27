@@ -1,0 +1,37 @@
+[
+  {
+    "name": "local-classic",
+    "returncode": 0,
+    "elapsed_seconds": 5.933914487999999
+  },
+  {
+    "name": "local-unicode",
+    "returncode": 0,
+    "elapsed_seconds": 6.225206582999988
+  },
+  {
+    "name": "main-classic",
+    "returncode": 0,
+    "elapsed_seconds": 4.509547124999983
+  },
+  {
+    "name": "main-unicode",
+    "returncode": 0,
+    "elapsed_seconds": 4.663271291000001
+  },
+  {
+    "name": "inbox",
+    "returncode": 0,
+    "elapsed_seconds": 5.608861542
+  },
+  {
+    "name": "reply-classic",
+    "returncode": 0,
+    "elapsed_seconds": 8.485209083999962
+  },
+  {
+    "name": "reply-unicode",
+    "returncode": 0,
+    "elapsed_seconds": 8.409789708000005
+  }
+]

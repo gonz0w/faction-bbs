@@ -1,0 +1,11 @@
+from lab import *
+import time
+B=P/'host-bin';out=P/'host-compatibility';out.mkdir(mode=0o700)
+commands=[('files',['python3',str(P/'files_driver.py'),'--client',str(B/'faction-client'),'--checkpoint-fixture',str(B/'checkpoint_ui_fixture'),'--mail-fixture',str(B/'home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-files-settings.json'),'--private-root',str(P),'--output',str(out/'files.json')]),('legacy',['python3',str(P/'files_v1.py'),'--settings',str(P/'host-files-settings.json'),'--private-root',str(P),'--old-client',str(B/'faction-client-older-v1'),'--default-client',str(B/'faction-client-default'),'--output',str(out/'legacy.json')])]
+results=[]
+for name,cmd in commands:
+ time.sleep(40);start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Host Files14 and actualolder/default native-v1 controls2 passed.')

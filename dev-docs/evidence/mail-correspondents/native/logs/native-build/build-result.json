@@ -1,0 +1,101 @@
+{
+  "scope": "two-cores-2GiB-native-build",
+  "result": "pass",
+  "steps": [
+    {
+      "name": "server",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-cli",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-files"
+      ],
+      "target": "target235",
+      "returncode": 0,
+      "elapsed_seconds": 31.199411076000047
+    },
+    {
+      "name": "default",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-client",
+        "--bin",
+        "faction-client"
+      ],
+      "target": "target235-default",
+      "returncode": 0,
+      "elapsed_seconds": 10.219132671000011
+    },
+    {
+      "name": "network",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-client",
+        "--features",
+        "network-mail",
+        "--bin",
+        "faction-client",
+        "--example",
+        "checkpoint_ui_fixture",
+        "--example",
+        "home_mail_fixture",
+        "--example",
+        "mail_reply_fixture",
+        "--example",
+        "mail_correspondents_fixture"
+      ],
+      "target": "target235-network",
+      "returncode": 0,
+      "elapsed_seconds": 72.54831664800008
+    },
+    {
+      "name": "tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-terminal",
+        "-p",
+        "faction-client",
+        "--features",
+        "faction-client/network-mail",
+        "--all-targets",
+        "--",
+        "--test-threads=1"
+      ],
+      "target": "target235-network",
+      "returncode": 0,
+      "elapsed_seconds": 100.17422448499997
+    }
+  ]
+}

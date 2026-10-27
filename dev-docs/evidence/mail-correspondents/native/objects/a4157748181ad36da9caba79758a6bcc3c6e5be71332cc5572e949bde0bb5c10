@@ -1,0 +1,14 @@
+from lab import *
+code='''from pathlib import Path
+import json
+p=Path('/etc/rc.conf');print(json.dumps({'faction_lines':[line for line in p.read_text().splitlines() if line.startswith('faction_')], 'rc_conf_d':[str(f) for f in Path('/etc/rc.conf.d').glob('*')]}))
+'''
+(P/'runtime-rc-observed.private.json').write_bytes(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout)
+# The cold image's rc.d overrides start the freshly installed board automatically.
+# Keep these exact owned services, verify the current config and stop only its door.
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_doors onestop; test -S /var/run/faction/terminal.sock; test -f /var/run/faction/terminal.pid; su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction/service.toml"',timeout=30)
+r=remote('test ! -S /var/run/faction/file-policy.sock; pgrep -fl "/usr/sbin/sshd.*files_sshd_config"',check=False);assert r.returncode!=0
+r=remote('sysctl -n hw.physmem64 hw.ncpu');mem,cores=map(int,r.stdout.split());assert cores==2 and 1000000000<mem<1073741824
+remote("printf 'Owned issue235 global inbox fixture\\n' > /home/factionbuild/device235/OWNERSHIP; chown factionbuild:factionbuild /home/factionbuild/device235/OWNERSHIP; chmod 600 /home/factionbuild/device235/OWNERSHIP")
+(P/'runtime-environment.json').write_text(json.dumps(dict(result='pass',cores=cores,physmem_bytes=mem,build_memory_mib=2048,runtime_memory_mib=1024,files_disabled=True,files_sftp_listener_stopped=True,loopback_only=True,normal_limits=True),indent=2)+'\n')
+print('Owned2core/1GiB runtime currentfresh board verified; disabled Files/door; normal limits.')

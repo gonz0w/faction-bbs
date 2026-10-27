@@ -1,0 +1,13 @@
+from lab import *
+code='''from pathlib import Path
+import pwd,os,stat
+p=Path('/home/factionbuild/device235/settings-files.json');parent=p.parent;u=pwd.getpwnam('factionbuild')
+s=p.lstat();assert stat.S_ISREG(s.st_mode) and s.st_uid==0 and stat.S_IMODE(s.st_mode)==0o600 and s.st_nlink==1
+assert parent.stat().st_uid==u.pw_uid and (parent/'OWNED').is_file()
+os.chown(p,u.pw_uid,u.pw_gid)
+'''
+remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code))
+original=(P/'native_compat_runtime.py').read_bytes();script=original.replace(b"out=P/'compatibility'",b"out=P/'compatibility02'");(P/'native_compat_runtime02.py').write_bytes(script)
+remote('cat > /home/factionbuild/proof235/native_compat_runtime02.py; chown factionbuild:factionbuild /home/factionbuild/proof235/native_compat_runtime02.py',script)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof235/native_compat_runtime02.py > /home/factionbuild/proof235/compat-launch02.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Owned settings file UID corrected only after ownership guard; failed run retained; native compatibility02 launched.')

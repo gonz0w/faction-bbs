@@ -1,0 +1,44 @@
+{
+  "result": "pass",
+  "scope": "explicit-source-and-safe-review-verdict-public-candidates",
+  "files": [
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit.py",
+      "sha256": "1b785804109737ee81af100bf7a2f58ba12827fc80fdcf3e5c233c7978007fb7"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit-result.json",
+      "sha256": "11bb736e169bed7187c15067d4a045457cafe1df42bad661f56132c03938f50d"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit.log",
+      "sha256": "8b2a551e5bc409e6596cf85b846ee07e8d9fe0b3c0d18bb62e3172b701d03d41"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit-initial-source.py",
+      "sha256": "93f4e321c35b5ed4b50cb04b2d2430364cb057d89162f530f046fe3189604e2d"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit-initial.log",
+      "sha256": "be5f68e9c38f5d0c439a26f48628192ef5e30f86a3474a2781d253054145bb94"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit-initial-status.json",
+      "sha256": "f64bf19f70af0b8185dd1d58c033adb64346d50a394a32ebb497d70ed18c42a0"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/audit-native-bindings.py",
+      "sha256": "0a6145412f19805299b148e6a0d71ee13b2e5aa51bf7d07ac116a4f18b16e580"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/native-binding-result.json",
+      "sha256": "9a7d8c2ceb40ac1cbc01430f556fd5a9969e0dab50178578e1bd87b9c44113bf"
+    },
+    {
+      "path": "/private/tmp/faction235-review-OWNED/native-binding.log",
+      "sha256": "839c154172270992c07759b9f288f6c526db9c92dfece8fa2708b24b8b415fcd"
+    }
+  ],
+  "exclusions": "No configurations, binaries, raw traces, marker sets, canonical inspections or terminal captures are included.",
+  "preserved_reviewer_setup_mismatch": "Initial audit used an incorrect unlock-prompt literal. Its unchanged source and failure are retained separately; the corrected audit uses the frozen actual prompt constant. This is not behavioral RED."
+}
