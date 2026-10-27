@@ -1,0 +1,6 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof235/runtime01/progress.json',check=False)
+if r.returncode:print('Native runtime progress unavailable');raise SystemExit(1)
+v=json.loads(r.stdout);print(json.dumps(v))
+if v['result']=='fail':
+ name=v['completed'][-1]['name'];data=remote('cat /home/factionbuild/proof235/runtime01/'+name+'.raw.log').stdout;(P/('native-runtime-'+name+'-failure.log')).write_bytes(data);print(data.decode()[-2000:])

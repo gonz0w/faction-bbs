@@ -1,0 +1,5 @@
+from lab import *
+r=subprocess.run(['python3',str(P/'host_compat_runtime.py')],stdout=(P/'host-compatibility-launch.log').open('wb'),stderr=subprocess.STDOUT,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'));assert r.returncode==0
+remote('cat > /home/factionbuild/proof235/native_compat_runtime.py; chown factionbuild:factionbuild /home/factionbuild/proof235/native_compat_runtime.py',(P/'native_compat_runtime.py').read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof235/native_compat_runtime.py > /home/factionbuild/proof235/compat-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Host Files14+old/default2 passed; native serial compatibility controls launched.')

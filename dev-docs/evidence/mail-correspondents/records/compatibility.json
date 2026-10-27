@@ -1,0 +1,49 @@
+{
+  "result": "pass",
+  "routes": {
+    "host": {
+      "files": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/host-compatibility/files.json",
+        "sha256": "95ec0e6c318a858d2f9b44c383ae6bf91698b3b2bbf4cd983d3f233aa1e35671"
+      },
+      "inbox": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/host-regressions02/inbox.json",
+        "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+      },
+      "legacy": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/host-compatibility/legacy.json",
+        "sha256": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8"
+      },
+      "reply_classic": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/host-regressions02/reply-classic.json",
+        "sha256": "81971c2f8bef55c169913e769691f722247a56adcfc8f69853edcfe591640473"
+      },
+      "reply_unicode": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/host-regressions02/reply-unicode.json",
+        "sha256": "829406389d0365e9c30695f2a3f5499db93809ec1ff60bbe5c9d370704b0ffe2"
+      }
+    },
+    "netbsd": {
+      "files": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/native-compatibility/files.json",
+        "sha256": "a4502cbc6b70b824ebd28ba76089c2bf7581f45ebea54d2b8b0d10e4728ac4ee"
+      },
+      "inbox": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/native-runtime/inbox.json",
+        "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+      },
+      "legacy": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/native-compatibility/legacy.json",
+        "sha256": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8"
+      },
+      "reply_classic": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/native-runtime/reply-classic.json",
+        "sha256": "f33d57ceda649988555dacc65eddb2d6cc9e9f3deed55e5638d560128943ae00"
+      },
+      "reply_unicode": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/native-runtime/reply-unicode.json",
+        "sha256": "042d67a1852e476086f65e1b634dd335eb176c76f3b614cd6d17c27c95ff48e7"
+      }
+    }
+  }
+}

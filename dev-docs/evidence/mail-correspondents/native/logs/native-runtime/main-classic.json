@@ -1,0 +1,44 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "machine": "evbarm",
+  "scope": "same-ssh-main-menu-device-local-correspondents",
+  "unicode": false,
+  "count": 4,
+  "checks": [
+    "actual_home_outage_then_grouped_readonly_navigation",
+    "grouped_ack_and_reply_cancel_keep_exact_canonical_scope",
+    "fresh_unlock_locked_return_same_SSH",
+    "corrected_GIO_and_board_files_private_markers_absent"
+  ],
+  "private_input_hashes": {
+    "trace_sha256": "fdc2eecf563738c327fce64581c6a25fc7288c4a21c667d2eb17fdf8baa895c0",
+    "marker_set_sha256": "cec746936eac1eb4d4653d0833b4c54435ae7867d2ca1b6b9aaa7335488c4d50",
+    "file_scan_input_sha256": "ab9c2e1ca9c43cb9396e2cec5145f06339981a355b3b04496045ca399c11f755"
+  },
+  "board_io_reconstruction": {
+    "records": 57,
+    "streams": 3,
+    "decoded_bytes": 7886,
+    "read_bytes": 418,
+    "write_bytes": 7468
+  },
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 1,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "files_disabled": true,
+  "actual_home_transport_error": "Connect",
+  "private_fixture_retained_for_lead": true,
+  "capture_id": "c1ca350763dca9e34bbed3a786754219",
+  "source_sha256": "318c8daa5f9918c17f3c4f18588ef0f855f6e24d81d27e99884d59f565778599",
+  "marker_count": 24,
+  "private_matches": 0,
+  "file_protocol_matches": 0,
+  "exact_canonical_ack_invariants": true,
+  "same_ssh_pid_until_normal_close": true,
+  "automatic_redial_observed": false
+}

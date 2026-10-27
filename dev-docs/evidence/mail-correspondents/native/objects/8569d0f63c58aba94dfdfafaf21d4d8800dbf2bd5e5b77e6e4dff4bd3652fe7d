@@ -1,0 +1,9 @@
+from lab import *
+import hashlib
+oldroot=R/'local/demo/saved/20261022T005925Z';m=json.loads((oldroot/'manifest.json').read_text());data=(oldroot/'faction-client').read_bytes();h=hashlib.sha256(data).hexdigest();assert h==m['files']['faction-client']['sha256'];old=P/'host-bin/faction-client-older-v1';old.write_bytes(data);old.chmod(0o700)
+(P/'old-client-origin.json').write_text(json.dumps(dict(result='pass',host_sha256=h,saved_manifest_hash_matches=True,saved_source_commit=m['source_commit'],guest_source_note=m['guest_source_note'],source_commit_is_guest_build_identity=False),indent=2)+'\n')
+data=(P/'target-host-default/debug/faction-client').read_bytes();target=P/'host-bin/faction-client-default';target.write_bytes(data);target.chmod(0o700)
+(P/'host-default-binary.json').write_text(json.dumps(dict(result='pass',sha256=hashlib.sha256(data).hexdigest(),separate_target=True),indent=2)+'\n')
+for n in ['files_driver.py','files_v1.py','owned_fixture_cleanup.py']:
+ remote('cat > /home/factionbuild/proof235/'+n+'; chown factionbuild:factionbuild /home/factionbuild/proof235/'+n,(P/n).read_bytes())
+print('Actual manifest-verified older host client and separate currentdefault binary pinned; unchanged compatibility drivers staged.')

@@ -1,0 +1,79 @@
+[
+  {
+    "label": "baseline-owned-inputs",
+    "manifest": {
+      "relativepath": "maps/baseline-owned-inputs.json",
+      "sha256": "a4d5925f4cbd289a7a94164adc9ea6b8f23dd5e329a83ace69030e65992eb4ec"
+    }
+  },
+  {
+    "label": "bootstrap-executed",
+    "manifest": {
+      "relativepath": "maps/bootstrap-executed.json",
+      "sha256": "363c3cab8c966dddd90f36e8b8e2a537d8f48398117c4b4b816910078216326f"
+    }
+  },
+  {
+    "label": "fixture-corrected-archive-order",
+    "manifest": {
+      "relativepath": "maps/fixture-corrected-archive-order.json",
+      "sha256": "7400eb44f2921dc637377166761f1c30a673e016ddf9cd5ff57da1dd4efd1f6a"
+    }
+  },
+  {
+    "label": "native-final",
+    "manifest": {
+      "relativepath": "maps/native-final01-before.json",
+      "sha256": "d4a08793b21418d78896df0e4f15e930492de355d2158eadb4d7a441cc7f654e"
+    }
+  },
+  {
+    "label": "orchestration-current",
+    "manifest": {
+      "relativepath": "maps/orchestration-current.json",
+      "sha256": "a8a93a43c1b10edfb3b7748f683afdb7b237f1ce0d6a2a0345855cf927def451"
+    }
+  },
+  {
+    "label": "orchestration-final",
+    "manifest": {
+      "relativepath": "maps/orchestration-final.json",
+      "sha256": "96cada3fdec2070d5dc2691fe985a540e3dd04e6c3001f63680ebf6e4ff05483"
+    }
+  },
+  {
+    "label": "prepared-cache",
+    "manifest": {
+      "relativepath": "maps/prepared-cache.json",
+      "sha256": "434291a93b76f8693fe3ec8b3cf486ee56db83379acd2be3634c381377ec2a1c"
+    }
+  },
+  {
+    "label": "probe-first-green",
+    "manifest": {
+      "relativepath": "maps/probe-first-green.json",
+      "sha256": "4347acff208690633106e58ea6d5af28031a0c4c1db73ed513209f9e1de4a0e9"
+    }
+  },
+  {
+    "label": "probe-interface-red",
+    "manifest": {
+      "relativepath": "maps/probe-interface-red.json",
+      "sha256": "52d6f59503eefdb26a76f87522338b34ff9e1ffc64da30c5fb1ae844e047dbb1"
+    }
+  },
+  {
+    "label": "runtime-code01",
+    "manifest": {
+      "relativepath": "maps/runtime-code01.json",
+      "sha256": "5e324e3cc67e6c61b7b0ce4ac0a932a8b2ebf0ca00b441d25162ce219e1b9083"
+    }
+  },
+  {
+    "label": "runtime-guest-match01",
+    "manifest": {
+      "relativepath": "maps/runtime-guest-match01.json",
+      "sha256": "5e324e3cc67e6c61b7b0ce4ac0a932a8b2ebf0ca00b441d25162ce219e1b9083"
+    }
+  }
+]

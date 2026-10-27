@@ -1,0 +1,37 @@
+[
+  {
+    "label": "guard-ack-red",
+    "manifest": {
+      "relativepath": "maps/guard-ack-red.json",
+      "sha256": "c13608b580233ccf94248228c94e0ea7fcfacabd7935bbbfd19aa7fdb7cb0d24"
+    }
+  },
+  {
+    "label": "guard-ack-green",
+    "manifest": {
+      "relativepath": "maps/guard-ack-green.json",
+      "sha256": "d45349cfe2f795bd14d0bb3e54db0e761291276d9821e2531621b22684da5c94"
+    }
+  },
+  {
+    "label": "final-python-before",
+    "manifest": {
+      "relativepath": "maps/python-before.json",
+      "sha256": "3f4fdbfca4d0db8021cbd4adb03045e704c682c0eada2e8bbb1e1eecb88e637c"
+    }
+  },
+  {
+    "label": "final-python-after",
+    "manifest": {
+      "relativepath": "maps/python-after.json",
+      "sha256": "3f4fdbfca4d0db8021cbd4adb03045e704c682c0eada2e8bbb1e1eecb88e637c"
+    }
+  },
+  {
+    "label": "final-lead-executed-helpers",
+    "manifest": {
+      "relativepath": "maps/helpers.json",
+      "sha256": "943713e9307c6aaa227269d4367a26a12b92438f1e3d1a82861f14d422dd4160"
+    }
+  }
+]

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction235-native-OWNED/freeze_build.py", line 16, in <module>
+    remote('cat > /home/factionbuild/proof235/expected-source01.json; chown factionbuild:factionbuild /home/factionbuild/proof235/expected-source01.json',(P/'sources/native-final01-before.json').read_bytes())
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction235-native-OWNED/lab.py", line 7, in remote
+    (P/'remote-failure.private').write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained')
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned lab command failed; private diagnostic retained

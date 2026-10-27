@@ -1,0 +1,14 @@
+from pathlib import Path
+import hashlib,json,subprocess,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction235-lead-OWNED');P=P/'python-final';P.mkdir();O=P/'python-objects';O.mkdir()
+def snapshot():
+ result={}
+ for path in sorted(list((R/'tools').glob('*.py'))+list((R/'.github/workflows').glob('*.yml'))):
+  data=path.read_bytes();h=hashlib.sha256(data).hexdigest();(O/h).write_bytes(data);result[str(path.relative_to(R))]=h
+ return result
+before=snapshot();(P/'python-before.json').write_text(json.dumps(before,indent=2,sort_keys=True)+'\n');start=time.monotonic()
+cmd=['python3','-m','unittest','discover','-s','tools','-p','test_*.py']
+with (P/'python.log').open('wb') as f:r=subprocess.run(cmd,cwd=R,stdout=f,stderr=subprocess.STDOUT)
+after=snapshot();(P/'python-after.json').write_text(json.dumps(after,indent=2,sort_keys=True)+'\n')
+result=dict(result='pass' if r.returncode==0 and before==after else 'fail',command=cmd,returncode=r.returncode,source_stable=before==after,elapsed_seconds=time.monotonic()-start)
+(P/'python-result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));assert result['result']=='pass'

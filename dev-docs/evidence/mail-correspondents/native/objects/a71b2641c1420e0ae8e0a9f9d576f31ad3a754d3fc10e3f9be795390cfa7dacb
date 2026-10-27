@@ -1,0 +1,3 @@
+from lab import *
+r=remote("sysctl -n hw.physmem64 hw.ncpu; ls -l /var/run/faction; pgrep -fl faction; rg '^faction_' /etc/rc.conf; ls /etc/rc.conf.d",check=False)
+(P/'runtime-setup-inspection.private.log').write_bytes(r.stdout+r.stderr);print(r.stdout.decode())

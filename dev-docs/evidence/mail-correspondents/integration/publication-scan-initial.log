@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction235-native-OWNED/scan_publication.py", line 14, in <module>
+    inspect('private-poison-control',needles[0]);assert matches==[('private-poison-control','generated-private-value')];matches.clear();seen.clear()
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

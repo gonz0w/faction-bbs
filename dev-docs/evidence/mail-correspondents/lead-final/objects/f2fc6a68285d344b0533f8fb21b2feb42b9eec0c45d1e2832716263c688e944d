@@ -1,0 +1,10 @@
+from pathlib import Path
+import hashlib,json,subprocess,sys
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction235-lead-OWNED');stage=P/sys.argv[1];stage.mkdir()
+files={}
+for name in ('tools/check_correspondents_evidence.py','tools/test_correspondents_evidence.py'):
+ raw=(R/name).read_bytes();h=hashlib.sha256(raw).hexdigest();(stage/h).write_bytes(raw);files[name]=h
+(stage/'sources.json').write_text(json.dumps(files,indent=2)+'\n')
+with (stage/'test.log').open('wb') as f:r=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_correspondents_evidence.py'],cwd=R,stdout=f,stderr=subprocess.STDOUT)
+(stage/'status.json').write_text(json.dumps(dict(returncode=r.returncode))+'\n');print('Actual',sys.argv[1],r.returncode);print((stage/'test.log').read_text()[-950:])
+assert (r.returncode!=0) if sys.argv[1].endswith('red') else (r.returncode==0)

@@ -1,0 +1,51 @@
+from lab import *
+import secrets,sys,hashlib
+S=P/'source-final01';sys.path.insert(0,str(S/'tools'));from check_restricted_ssh import SSHConsole
+inputs=P/'config-inputs02';inputs.mkdir(mode=0o700)
+for n in ['service.toml.in','sshd_config.in','files_sshd_config.in','faction_broker','faction_sshd','faction_files_sshd']:
+ (inputs/n).write_bytes((R/'deploy/netbsd'/n).read_bytes())
+(P/'config-inputs02-manifest.json').write_text(json.dumps({n.name:hashlib.sha256(n.read_bytes()).hexdigest() for n in inputs.iterdir()},sort_keys=True,indent=2)+'\n')
+remote("su - factionbuild -c 'cd /home/factionbuild/source23501 && python3.13 tools/build_terminal_frontend.py --output /home/factionbuild/target235/release/faction-tty && python3.13 tools/build_service_daemon.py --output /home/factionbuild/target235/release/faction-daemon'",timeout=120)
+remote('test -f /etc/faction-disposable-test; test ! -e /var/db/faction235-board; test ! -e /var/db/faction235-files; test ! -S /var/run/faction/terminal.sock; install -o root -g wheel -m 755 /home/factionbuild/target235/release/faction /home/factionbuild/target235/release/faction-service /home/factionbuild/target235/release/faction-files /home/factionbuild/target235/release/faction-tty /home/factionbuild/target235/release/faction-daemon /usr/local/libexec/; install -d -o factiond -g factionipc -m 700 /var/db/faction235-board /var/db/faction235-themes; install -d -o factionfiles -g factionfiles -m 700 /var/db/faction235-files; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/device235')
+uids=json.loads(remote("/usr/pkg/bin/python3.13 -c 'import pwd,json; print(json.dumps({n:pwd.getpwnam(n).pw_uid for n in [\"factiond\",\"factionterm\",\"factionfiles\",\"factionfileauth\"]}))'").stdout);assert len(set(uids.values())|{0})==5
+service=(inputs/'service.toml.in').read_text().replace('@FACTION_TERMINAL_UID@',str(uids['factionterm'])).replace('state_dir = "/var/db/faction"','state_dir = "/var/db/faction235-board"')+'\ntheme = "/var/db/faction235-themes"\n'
+assert 'files_uid =' not in service and 'files_auth_uid =' not in service
+remote('cat > /etc/faction/service.toml; chown root:factionipc /etc/faction/service.toml; chmod 640 /etc/faction/service.toml',service.encode())
+theme=(S/'themes/base/theme.toml').read_text()+'''\n[[menu]]\naction = "home_mail"\nkey = "M"\nlabel = "Home mail"\ndescription = "Open private mail locally"\n[[menu]]\naction = "files"\nkey = "F"\nlabel = "File areas"\ndescription = "Public synthetic transfers"\n'''
+remote('cat > /var/db/faction235-themes/theme.toml; chown factiond:factionipc /var/db/faction235-themes/theme.toml; chmod 600 /var/db/faction235-themes/theme.toml',theme.encode())
+files='owner_uid = '+str(uids['factiond'])+'\nsocket = "/var/run/faction/file-policy.sock"\nstore = "/var/db/faction235-files"\n'
+remote('cat > /etc/faction/files.toml; chmod 644 /etc/faction/files.toml',files.encode())
+ssh=(inputs/'sshd_config.in').read_text().replace('@FACTION_OWNER_UID@',str(uids['factiond'])).replace('ListenAddress 127.0.0.1','ListenAddress 10.0.2.15')
+fssh=(inputs/'files_sshd_config.in').read_text().replace('@PORT@','2223').replace('@LISTEN_ADDRESS@','10.0.2.15')
+for n,data in [('sshd_config',ssh),('files_sshd_config',fssh)]:remote('cat > /etc/ssh/faction/'+n+'; chmod 600 /etc/ssh/faction/'+n,data.encode())
+for n in ['faction_broker','faction_sshd','faction_files_sshd']:
+ data=(inputs/n).read_text().replace('/var/log/faction-broker.log','/var/log/faction235-broker.log').replace('/var/log/faction-files.log','/var/log/faction235-files.log')
+ remote('cat > /etc/rc.d/'+n+'; chmod 555 /etc/rc.d/'+n,data.encode())
+remote('touch /var/log/faction235-broker.log /var/log/faction235-files.log; chmod 600 /var/log/faction235-broker.log /var/log/faction235-files.log')
+password=secrets.token_hex(24);(P/'sysop-password.private').write_text(password)
+c=SSHConsole(A[:-1]+['-tt',A[-1],"su - factiond -c '/usr/local/libexec/faction --state-dir /var/db/faction235-board init'"])
+try:
+ c.expect('Handle: ');c.send('sysop');c.password(password,'New password (12+ characters, hidden): ');c.password(password,'Confirm password (hidden): ');c.expect('Lobby created.');c.finish()
+finally:c.close()
+for n in ['member-key','lab-admin-key']:subprocess.run(['ssh-keygen','-q','-t','ed25519','-N','','-f',str(P/n)],check=True)
+remote('cat > /etc/ssh/faction/authorized_keys; chmod 644 /etc/ssh/faction/authorized_keys',b'restrict,pty '+(P/'member-key.pub').read_bytes())
+remote('cat >> /root/.ssh/authorized_keys; chmod 600 /root/.ssh/authorized_keys',(P/'lab-admin-key.pub').read_bytes())
+ports=json.loads((V/'ports.json').read_text());hostkey=remote('cat /etc/ssh/ssh_host_ed25519_key.pub').stdout.decode().strip()
+known=P/'member-known-hosts';known.write_text(''.join(f'[127.0.0.1]:{ports[n]} '+hostkey+'\n' for n in ['member','files']));known.chmod(0o600)
+def profile(host,memberport,fileport,d):return f'version=1\nhost="{host}"\nport={memberport}\nfile_host="{host}"\nfile_port={fileport}\nidentity="{d}/member-key"\npublic_key="{d}/member-key.pub"\nknown_hosts="{d}/member-known-hosts"\n'
+(P/'host-profile.toml').write_text(profile('127.0.0.1',ports['member'],ports['files'],P));(P/'host-profile.toml').chmod(0o600)
+def argv(host,port,key,known,user):return ['/usr/bin/ssh','-F','/dev/null','-a','-x','-e','none','-o','IdentitiesOnly=yes','-o','BatchMode=yes','-o','ConnectTimeout=5','-o','StrictHostKeyChecking=yes','-o','UserKnownHostsFile='+str(known),'-i',str(key),'-p',str(port),'-tt',user+'@'+host]
+base=dict(disposable_fixture=True,files_disabled=True,sysop_password=password,database='/var/db/faction235-board/faction.sqlite3',scan_board=['/var/db/faction235-board'],scan_store=['/var/db/faction235-files'],scan_logs=['/var/log/faction235-broker.log','/var/log/faction235-files.log'])
+# Empty public marker makes the disabled store's complete scan independently nonempty.
+remote('printf "public synthetic empty store marker\\n" > /var/db/faction235-files/OWNED; chown factionfiles:factionfiles /var/db/faction235-files/OWNED; chmod 600 /var/db/faction235-files/OWNED')
+host=dict(base,member_handle='hostmenu',profile=str(P/'host-profile.toml'),member_argv=argv('127.0.0.1',ports['member'],P/'member-key',known,'factionterm'),admin_argv=A);(P/'host-settings.json').write_text(json.dumps(host))
+d='/home/factionbuild/device235'
+for n in ['member-key','member-key.pub','lab-admin-key']:remote('cat > '+d+'/'+n,(P/n).read_bytes())
+remote('cat > '+d+'/member-known-hosts',(''.join(f'[10.0.2.15]:{p} '+hostkey+'\n' for p in [2222,2223])+'10.0.2.15 '+hostkey+'\n').encode())
+remote('cat > '+d+'/profile.toml',profile('10.0.2.15',2222,2223,d).encode())
+guestadmin=argv('10.0.2.15',22,d+'/lab-admin-key',d+'/member-known-hosts','root');guestadmin.remove('-tt')
+guest=dict(base,member_handle='nativemenu',profile=d+'/profile.toml',member_argv=argv('10.0.2.15',2222,d+'/member-key',d+'/member-known-hosts','factionterm'),admin_argv=guestadmin)
+remote('cat > '+d+'/settings.json',json.dumps(guest).encode())
+remote('printf "Issue235 owned disposable client fixture\\n" > '+d+'/OWNED; chown -R factionbuild:factionbuild '+d+'; chmod 600 '+d+'/*; /usr/sbin/sshd -t -f /etc/ssh/faction/sshd_config; /usr/sbin/sshd -t -f /etc/ssh/faction/files_sshd_config; su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction/service.toml"')
+(P/'server-config-proof.json').write_text(json.dumps(dict(result='pass',fresh_board=True,fresh_file_store=True,service_sha256=hashlib.sha256(service.encode()).hexdigest(),theme_sha256=hashlib.sha256(theme.encode()).hexdigest(),max_sessions=8,launch_ms=5000,files_disabled=True,files_service_started=False,distinct_uids=True,loopback_forward_only=True,services_started=False),indent=2)+'\n')
+print('Fresh current board initialized; Files disabled; new private keys/profiles; normal limits. Services stopped.')

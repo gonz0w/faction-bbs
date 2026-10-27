@@ -1,0 +1,10 @@
+from lab import *
+import hashlib
+rows={}
+for name in ['qemu','controller']:
+ pid=int((V/(name+'.pid')).read_text());cmd=subprocess.check_output(['ps','-p',str(pid),'-o','uid=,lstart=,command='],text=True).strip()
+ assert str(V) in cmd and (('qemu-system-aarch64' in cmd) if name=='qemu' else ('serial-controller.py' in cmd))
+ uid=int(cmd.split()[0]);assert uid==os.getuid()
+ rows[name]={'pid':pid,'uid':uid,'start_command':cmd,'fingerprint':hashlib.sha256(cmd.encode()).hexdigest()}
+(P/'process-baseline.private.json').write_text(json.dumps(rows,indent=2)+'\n')
+print('Owned VM/controller UID,start-time,command fingerprints captured.')

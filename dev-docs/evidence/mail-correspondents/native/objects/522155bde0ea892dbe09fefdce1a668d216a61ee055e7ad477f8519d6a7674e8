@@ -1,0 +1,11 @@
+from pathlib import Path
+import os,subprocess,json,time
+P=Path('/home/factionbuild/proof235');D=Path('/home/factionbuild/device235');B=Path('/home/factionbuild/target235-network/release');out=P/'compatibility02';out.mkdir(mode=0o700);os.umask(0o077)
+commands=[('files',['/usr/pkg/bin/python3.13',str(P/'files_driver.py'),'--client',str(P/'build-final03/faction-client-network'),'--checkpoint-fixture',str(B/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(B/'examples/home_mail_fixture'),'--public-ca','/home/factionbuild/source23501/crates/faction-xmpp/tests/fixtures/local-ca.pem','--settings',str(D/'settings-files.json'),'--private-root',str(D),'--output',str(out/'files.json')]),('legacy',['/usr/pkg/bin/python3.13',str(P/'files_v1.py'),'--settings',str(D/'settings-files.json'),'--private-root',str(D),'--old-client','/home/factionbuild/target/release/faction-client','--default-client',str(P/'build-final03/faction-client-default'),'--output',str(out/'legacy.json')])]
+results=[]
+for name,cmd in commands:
+ time.sleep(40);start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:(out/'result.json').write_text(json.dumps(dict(result='fail',completed=results),indent=2)+'\n');raise SystemExit(r.returncode)
+(out/'result.json').write_text(json.dumps(dict(result='pass',completed=results),indent=2)+'\n')

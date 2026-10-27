@@ -1,0 +1,44 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "machine": "arm64",
+  "scope": "same-ssh-main-menu-device-local-correspondents",
+  "unicode": true,
+  "count": 4,
+  "checks": [
+    "actual_home_outage_then_grouped_readonly_navigation",
+    "grouped_ack_and_reply_cancel_keep_exact_canonical_scope",
+    "fresh_unlock_locked_return_same_SSH",
+    "corrected_GIO_and_board_files_private_markers_absent"
+  ],
+  "private_input_hashes": {
+    "trace_sha256": "b35658ed6560f81fbe4b5a36ffa9d21591a71741ccd6e9beffb68b83ad6d04dd",
+    "marker_set_sha256": "b0bd014376f0f8df4178d46266b5a6144704f3d6601f1e3b6a8b37ee42a1cdc1",
+    "file_scan_input_sha256": "b5d80e9ad061257b9153f70dcfffe3eb3b7c8584d98c02bc4be1d2fc4e771346"
+  },
+  "board_io_reconstruction": {
+    "records": 273,
+    "streams": 16,
+    "decoded_bytes": 104818,
+    "read_bytes": 75570,
+    "write_bytes": 29248
+  },
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 1,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "files_disabled": true,
+  "actual_home_transport_error": "Connect",
+  "private_fixture_retained_for_lead": true,
+  "capture_id": "39897f99af943ac6cafb8447841aafd5",
+  "source_sha256": "318c8daa5f9918c17f3c4f18588ef0f855f6e24d81d27e99884d59f565778599",
+  "marker_count": 24,
+  "private_matches": 0,
+  "file_protocol_matches": 0,
+  "exact_canonical_ack_invariants": true,
+  "same_ssh_pid_until_normal_close": true,
+  "automatic_redial_observed": false
+}

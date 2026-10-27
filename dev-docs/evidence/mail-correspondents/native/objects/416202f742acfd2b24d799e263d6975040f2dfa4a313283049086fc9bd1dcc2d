@@ -1,0 +1,5 @@
+from lab import *
+r=remote("test -f /etc/faction-disposable-test; for n in faction_sshd faction_files_sshd faction_broker faction_doors; do if test -x /etc/rc.d/$n; then /etc/rc.d/$n onestop || true; fi; done; ps -axo pid,user,comm",check=False)
+(P/'guest-inherited-stop.private.log').write_bytes(r.stdout+r.stderr)
+remote('test ! -S /var/run/faction/terminal.sock; test ! -S /var/run/faction/file-policy.sock')
+print('Inherited services stopped only inside owned cold clone; saved source remains stopped/intact.')

@@ -1,0 +1,8 @@
+from pathlib import Path
+import sys,json
+P=Path('/private/tmp/faction235-native-OWNED');sys.path.insert(0,str(P/'runtime-code'))
+from audit_main_capture import audit
+routes={}
+for mode in ['classic','unicode']:
+ _,routes['host_'+mode]=audit(P,(P/'host-main'/(mode+'.json')).read_bytes(),P/'runtime-code/probe_mail_correspondents.py')
+(P/'host-capture-associations.json').write_text(json.dumps(dict(result='pass',routes=routes),indent=2)+'\n');print('Host2private source/capture/canonical associations verified.')

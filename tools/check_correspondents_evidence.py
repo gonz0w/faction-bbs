@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+"""Check immutable correspondent-picker software observations; never start a VM."""
+import hashlib
+import json
+from pathlib import Path
+import re
+
+ROOT = Path(__file__).resolve().parents[1]
+RESULT_SHA256 = "5ec506e4dee39446d0f143430934dc10bfd9d1368d71964129be4492938498e4"
+PROFILE = dict(normal_sessions=8, launch_ms=5000, credential_permits=2, kernel_slots=2,
+               owner_helpers=3, drain_seconds=5, parked_prompt_seconds=120,
+               history_records=64, rows_per_page=6)
+CLAIMS = {'automatic_send', 'automatic_read_ack', 'background_polling', 'credential_lease',
+          'new_crypto', 'schema_change', 'new_dependency', 'historical_key_continuity',
+          'physical_hardware', 'capacity', 'production_deployment'}
+SCOPES = dict(local='device-local-mail-correspondents',
+              main='same-ssh-main-menu-device-local-correspondents')
+CONTROLS = dict(local={
+    'encrypted_interleaved_exact_account_device_groups_newest_first',
+    'six_row_pages_and_empty_single_64_group_clamps',
+    'grouped_original_indices_and_U_A_stay_exact_group',
+    'grouped_last_unread_ack_stays_empty_without_peer_hop',
+    'current_peer_reply_cancel_queue_preserves_selected_source',
+    'mismatched_peer_and_history_only_reply_authority_unchanged',
+    'offline_has_no_reply_and_unknown_read_stays_unknown',
+    'navigation_no_home_prompt_or_canonical_mutation',
+}, main={
+    'actual_home_outage_then_grouped_readonly_navigation',
+    'grouped_ack_and_reply_cancel_keep_exact_canonical_scope',
+    'fresh_unlock_locked_return_same_SSH',
+    'corrected_GIO_and_board_files_private_markers_absent',
+})
+RECORDS = {'associations', 'native', 'cleanup', 'tdd', 'publication', 'rust'}
+
+
+def raw(root, ref):
+    path = Path(ref['path'])
+    assert not path.is_absolute() and '..' not in path.parts
+    assert re.fullmatch('[0-9a-f]{64}', ref['sha256'])
+    target = root/path
+    assert not target.is_symlink() and target.resolve().is_relative_to(root.resolve())
+    data = target.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == ref['sha256'], str(path)
+    return data
+
+
+def value(root, ref):
+    return json.loads(raw(root, ref))
+
+
+def route(root, ref, kind, platform, unicode, sources):
+    data = value(root, ref)
+    assert data['result'] == 'pass' and data['scope'] == SCOPES[kind]
+    assert data['platform'] == ('Darwin' if platform == 'host' else 'NetBSD')
+    assert data['unicode'] is unicode and data['source_sha256'] in sources
+    assert data['count'] == len(data['checks']) == len(CONTROLS[kind])
+    assert set(data['checks']) == CONTROLS[kind]
+    if kind == 'local':
+        assert data['private_fixture_removed'] is True
+        assert data['navigation_readonly_preserved'] is True
+        assert data['home_password_prompt_observed'] is False
+        assert data['configured_home_endpoint_was_closed'] is True
+    else:
+        assert re.fullmatch('[0-9a-f]{32}', data['capture_id'])
+        inputs = data['private_input_hashes']
+        assert set(inputs) == {'trace_sha256', 'marker_set_sha256', 'file_scan_input_sha256'}
+        assert all(re.fullmatch('[0-9a-f]{64}', sha) for sha in inputs.values())
+        assert data['same_ssh_pid_until_normal_close'] is True
+        assert data['automatic_redial_observed'] is False and data['files_disabled'] is True
+        assert data['actual_home_transport_error'] == 'Connect'
+        assert data['exact_canonical_ack_invariants'] is True
+        assert data['marker_count'] > 0 and data['private_matches'] == data['file_protocol_matches'] == 0
+        scan = data['privacy_scan']
+        assert scan['matches'] == scan['symlinks'] == 0
+        assert all(scan[key] > 0 for key in ('board_files', 'store_files', 'log_files'))
+        io = data['board_io_reconstruction']
+        assert all(io[key] > 0 for key in ('records', 'streams', 'decoded_bytes', 'read_bytes', 'write_bytes'))
+        assert io['decoded_bytes'] == io['read_bytes'] + io['write_bytes']
+    return data
+
+
+def validate(root, record):
+    assert record['schema'] == 1 and record['issue'] == 235 and record['result'] == 'pass'
+    assert record['profile'] == PROFILE
+    assert set(record['claims']) == CLAIMS and all(v is False for v in record['claims'].values())
+    assert record['sources'] and record['prior_records'] and set(record['records']) >= RECORDS
+    for ref in record['sources'] + record['prior_records']:
+        raw(root, ref)
+    sources = {ref['sha256'] for ref in record['sources']}
+    assert record['production'] and all(sha in sources for sha in record['production'].values())
+    assert {'crates/faction-client/src/checkpoint_ui.rs',
+            'crates/faction-client/src/checkpoint_ui_inbox.rs'} <= set(record['production'])
+    finals = {}
+    for stage in record['source_stages']:
+        files = value(root, stage['manifest'])
+        assert files and all(sha in sources for sha in files.values())
+        if stage['label'] in ('host-final', 'native-final'):
+            assert stage['label'] not in finals
+            finals[stage['label']] = files
+            assert all(files[name] == sha for name, sha in record['production'].items())
+    assert set(finals) == {'host-final', 'native-final'}
+    expected = {p + '_' + mode for p in ('host', 'netbsd') for mode in ('classic', 'unicode')}
+    assert set(record['routes']) == {'local', 'main'}
+    observed = {}
+    for kind, routes in record['routes'].items():
+        assert set(routes) == expected
+        observed[kind] = {}
+        for platform in ('host', 'netbsd'):
+            for unicode in (False, True):
+                key = platform + ('_unicode' if unicode else '_classic')
+                observed[kind][key] = route(root, routes[key], kind, platform, unicode, sources)
+    records = {key: value(root, ref) for key, ref in record['records'].items()}
+    assert all(v['result'] == 'pass' for v in records.values())
+    native = records['native']
+    assert native['files'] == finals['native-final'] and native['all_source_match'] is True
+    assert native['source_count'] == len(native['files']) > 0
+    assert native['compile_memory_mib'] == 2048 and 1000*1024**2 < native['runtime_physmem'] < 1024**3
+    associations = records['associations']['routes']
+    assert set(associations) == expected
+    ids = set()
+    for key, data in observed['main'].items():
+        match = associations[key]
+        assert data['capture_id'] not in ids
+        ids.add(data['capture_id'])
+        assert match['capture_id'] == data['capture_id'] and match['source_sha256'] == data['source_sha256']
+        assert match['result_sha256'] == record['routes']['main'][key]['sha256']
+        assert match['private_input_hashes'] == data['private_input_hashes']
+        assert match['generated_before_capture'] is True and match['input_trace_unchanged'] is True
+    assert all(records['cleanup'][key] is True for key in
+               ('owned_removed', 'saved_stopped', 'saved_hashes_unchanged', 'saved_sizes_mtimes_unchanged', 'forwards_closed'))
+    tdd = records['tdd']
+    assert tdd['captured_before_edit'] is True and tdd['red_exit'] != 0 and tdd['green_exit'] == 0
+    publication = records['publication']
+    assert publication['generated_private_values_scanned'] > 0
+    assert publication['private_matches'] == publication['raw_private_key_or_vault_matches'] == 0
+    assert publication['explicit_manifests_verified'] is True
+    runs = records['rust']['runs']
+    assert set(runs) == {'workspace', 'network', 'native', 'netbsd'}
+    for run in runs.values():
+        counts = re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored', raw(root, run['log']).decode())
+        assert counts and all(int(f) == 0 for p, f, i in counts)
+        assert sum(int(p) for p, f, i in counts) == run['passed'] > 0
+        assert sum(int(i) for p, f, i in counts) == run['ignored'] >= 0
+    return records
+
+
+def check():
+    data = (ROOT/'dev-docs/evidence/mail-correspondents/results.json').read_bytes()
+    assert RESULT_SHA256 and hashlib.sha256(data).hexdigest() == RESULT_SHA256, 'immutable correspondent evidence changed'
+    validate(ROOT, json.loads(data))
+    print('Correspondent evidence passed: exact retained account/device groups, source-bound host/NetBSD classic/Unicode, private same-SSH scope and cleanup; software observations only.')
+
+
+if __name__ == '__main__':
+    check()

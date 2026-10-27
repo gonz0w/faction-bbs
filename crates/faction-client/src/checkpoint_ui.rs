@@ -295,16 +295,113 @@ impl Screen<'_> {
             })
             .collect()
     }
+    fn inbox_group_entries(
+        v: &CheckpointVault,
+        group: Option<usize>,
+    ) -> io::Result<Vec<inbox::Entry>> {
+        let entries = Self::inbox_entries(v)?;
+        if let Some(group) = group {
+            let peers = v
+                .history()?
+                .iter()
+                .map(|record| (record.address.as_str(), record.device))
+                .collect::<Vec<_>>();
+            Ok(inbox::within_group(entries, &peers, group))
+        } else {
+            Ok(entries)
+        }
+    }
+    fn correspondents(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
+        let peers = v
+            .history()?
+            .iter()
+            .map(|record| (record.address.as_str(), record.device))
+            .collect::<Vec<_>>();
+        let mut groups = inbox::Correspondents::new(&peers);
+        drop(peers);
+        let mut decoder = Decoder::new();
+        loop {
+            self.print("\r\n---------------------------------------\r\n[LOCAL CORRESPONDENTS]\r\nRetained device groups; newest first.\r\nNo contact or key-continuity claim.\r\n")?;
+            let (page, pages) = groups.page();
+            self.print(&format!(
+                "Page {page}/{pages}; selection {}/{}\r\n",
+                if groups.len() == 0 {
+                    0
+                } else {
+                    groups.position() + 1
+                },
+                groups.len()
+            ))?;
+            if groups.visible().is_empty() {
+                self.print("No retained correspondents.\r\n")?;
+            }
+            for (offset, &index) in groups.visible().iter().enumerate() {
+                let record = &v.history()?[index];
+                let number = (page - 1) * inbox::PAGE_ROWS + offset + 1;
+                self.print(&inbox::correspondent_row(
+                    number,
+                    record.device,
+                    &record.address,
+                    groups.selected() == Some(index),
+                    self.unicode,
+                ))?;
+                self.print("\r\n")?;
+            }
+            self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open  [B] Back\r\n")?;
+            loop {
+                let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
+                    continue;
+                };
+                match key {
+                    Key::Up | Key::Hotkey(b'K') => groups.up(),
+                    Key::Down | Key::Hotkey(b'J') => groups.down(),
+                    Key::Hotkey(b'N') => groups.next(),
+                    Key::Hotkey(b'P') => groups.previous(),
+                    Key::Hotkey(b'B') => return Ok(()),
+                    Key::Enter | Key::Hotkey(b'O') => {
+                        if let Some(index) = groups.selected() {
+                            self.inbox_list(v, online, Some(index))?;
+                            let peers = v
+                                .history()?
+                                .iter()
+                                .map(|record| (record.address.as_str(), record.device))
+                                .collect::<Vec<_>>();
+                            groups.refresh(&peers);
+                            decoder = Decoder::new();
+                        }
+                    }
+                    _ => continue,
+                }
+                break;
+            }
+        }
+    }
     fn inbox(&mut self, v: &mut CheckpointVault) -> io::Result<()> {
         self.inbox_mode(v, false)
     }
     fn inbox_mode(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
-        let mut list = inbox::Inbox::new(Self::inbox_entries(v)?);
+        self.inbox_list(v, online, None)
+    }
+    fn inbox_list(
+        &mut self,
+        v: &mut CheckpointVault,
+        online: bool,
+        group: Option<usize>,
+    ) -> io::Result<()> {
+        let mut list = inbox::Inbox::new(Self::inbox_group_entries(v, group)?);
         let mut decoder = Decoder::new();
         let mut unknown = false;
         loop {
             // A compact fixed separator and cell-bounded rows fit classic 40 columns.
-            self.print("\r\n---------------------------------------\r\n[LOCAL INBOX]\r\n")?;
+            self.print("\r\n---------------------------------------\r\n")?;
+            if let Some(index) = group {
+                self.print("[LOCAL CORRESPONDENT INBOX]\r\nPeer: ")?;
+                let record = &v.history()?[index];
+                self.print(&inbox::compact(&record.address, self.unicode, 33))?;
+                self.print(&format!("\r\nDevice: {}\r\n", record.device))?;
+            } else {
+                self.print("[LOCAL INBOX]\r\n")?;
+            }
             self.print(match list.mode() {
                 inbox::Filter::All => "All retained; newest first\r\n",
                 inbox::Filter::Unread => "Unread received; newest first\r\n",
@@ -346,7 +443,13 @@ impl Screen<'_> {
                 ))?;
                 self.print("\r\n")?;
             }
-            self.print("[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open  [U] Unread  [A] All\r\n[B] Back\r\n")?;
+            self.print(
+                "[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open  [U] Unread  [A] All\r\n",
+            )?;
+            if group.is_none() {
+                self.print("[C] Correspondents  ")?;
+            }
+            self.print("[B] Back\r\n")?;
             loop {
                 let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
                     continue;
@@ -367,10 +470,15 @@ impl Screen<'_> {
                         list.filter(inbox::Filter::All);
                     }
                     Key::Hotkey(b'B') => return Ok(()),
+                    Key::Hotkey(b'C') if group.is_none() => {
+                        self.correspondents(v, online)?;
+                        list.refresh(Self::inbox_entries(v)?);
+                        decoder = Decoder::new();
+                    }
                     Key::Enter | Key::Hotkey(b'O') => {
                         if let Some(entry) = list.selected() {
                             self.inbox_record_mode(v, entry, online)?;
-                            list.refresh(Self::inbox_entries(v)?);
+                            list.refresh(Self::inbox_group_entries(v, group)?);
                             decoder = Decoder::new();
                         }
                     }
@@ -1305,6 +1413,100 @@ mod tests {
             }
         }
         drop(vault);
+    }
+    #[test]
+    fn correspondents_opens_from_actual_inbox_and_backs_to_global() {
+        let child = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--ignored",
+                "--exact",
+                "checkpoint_ui::tests::correspondents_actual_interface_helper",
+                "--nocapture",
+            ])
+            .output()
+            .unwrap();
+        assert!(
+            child.status.success(),
+            "actual correspondent interface failed: {} {}",
+            String::from_utf8_lossy(&child.stdout),
+            String::from_utf8_lossy(&child.stderr)
+        );
+    }
+    #[test]
+    #[ignore = "owned subprocess helper, exercised by the correspondent interface control"]
+    fn correspondents_actual_interface_helper() {
+        use std::{io::Write, os::unix::fs::PermissionsExt};
+        struct Owned(std::path::PathBuf);
+        impl Drop for Owned {
+            fn drop(&mut self) {
+                assert!(self.0.join("OWNERSHIP").is_file());
+                std::fs::remove_dir_all(&self.0).unwrap();
+            }
+        }
+        let mut id = [0; 16];
+        getrandom::fill(&mut id).unwrap();
+        let root = Owned(
+            std::env::temp_dir()
+                .canonicalize()
+                .unwrap()
+                .join(format!("faction235-interface-OWNED-{}", hex(&id))),
+        );
+        std::fs::create_dir(&root.0).unwrap();
+        std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::write(
+            root.0.join("OWNERSHIP"),
+            b"synthetic correspondent interface control\n",
+        )
+        .unwrap();
+        let path = root.0.join("vault");
+        let (mut vault, _) = CheckpointVault::create(
+            Store::at(&path, true).unwrap(),
+            Data::new("alice@home.test".into()).unwrap(),
+            b"synthetic local interface password",
+            101,
+            now().unwrap(),
+        )
+        .unwrap();
+        let before = std::fs::read(path.join("mail.fkv")).unwrap();
+        for unicode in [false, true] {
+            for online in [false, true] {
+                let (master, slave) = faction_client_pty::open(24, 40).unwrap();
+                let mut input = std::fs::File::from(master);
+                let saved = rustix::termios::tcgetattr(&slave).unwrap();
+                let mut raw = saved.clone();
+                raw.make_raw();
+                rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                    .unwrap();
+                let capture = root.0.join("output");
+                let mut term = LocalTerminal {
+                    input: slave.into(),
+                    output: std::fs::File::create(&capture).unwrap(),
+                    saved,
+                };
+                input.write_all(b"cbb").unwrap();
+                Screen {
+                    term: &mut term,
+                    activity: Instant::now(),
+                    unicode,
+                }
+                .inbox_mode(&mut vault, online)
+                .unwrap();
+                drop(term);
+                let output = std::fs::read_to_string(capture).unwrap();
+                assert!(
+                    output.contains("[LOCAL CORRESPONDENTS]"),
+                    "C must open the correspondent picker"
+                );
+                assert!(output.contains("No retained correspondents."));
+                assert_eq!(
+                    output.matches("[LOCAL INBOX]").count(),
+                    2,
+                    "picker Back returns to original global inbox"
+                );
+                assert!(!output.contains("Reply locally"));
+                assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
+            }
+        }
     }
     #[test]
     fn inactivity_locks_without_remote_connection() {

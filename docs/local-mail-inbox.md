@@ -43,6 +43,30 @@ Enable [local read tracking](local-unread-mail.md) deliberately with E at the ma
 menu before using read decisions. Merely opening the inbox does not upgrade an
 older encrypted checkpoint. **H** retains its sequential history reader.
 
+## Browse one correspondent
+
+From the inbox, choose **C: Correspondents**. The picker groups retained sent and
+received records by their exact stored peer account and device. The same account
+on two devices appears separately. Groups with the newest retained activity come
+first; this is your device snapshot, not live presence or a complete home inbox.
+A group does not verify a contact or establish continuity with an older key.
+
+Use arrows or J/K to select, N/P to page, and Enter/O to open. Each page has up to
+six entries. The complete device number precedes an inert account preview; `~`
+indicates shortened text. Open a record to inspect its existing peer details.
+
+Inside a correspondent inbox, **U** shows that group's unread received messages;
+**A** shows all its retained records. Neither key switches to another correspondent.
+Disabled read tracking still shows unknown. Acknowledging the last unread record
+leaves an empty unread view for that group. Browsing and filtering acknowledge
+nothing and do not connect to your home.
+
+**B** returns from the grouped inbox to the correspondent picker. Another B
+returns to the original inbox, and B there returns to the local mail menu.
+The picker also works offline. Existing explicit read decisions remain available;
+Reply is still limited to the manual home-mail console and its current verified
+peer checks. Grouping never enrolls or retargets a recipient.
+
 ## Reply from the manual home-mail console
 
 After opening a received record in the manual home-mail console, press Enter to

@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "generated_private_values_scanned": 467,
+  "private_inventory_sha256": "77f4a4ed0b49e3d1705809374e6d620b2f6268d0cf06c5fb03ee612a71292d3e",
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "explicit_manifests_verified": true,
+  "bundles": {
+    "native": {
+      "files": 161,
+      "manifest_sha256": "6f63848e9cfaa13b21120ae7c89f4009ac3f01153e29002561b4864c6538cef7"
+    },
+    "client": {
+      "files": 33,
+      "manifest_sha256": "0603dcd0fb85922c0b55d417054556e91e6334b7b3a9c16062213a49eb7166c7"
+    },
+    "lead": {
+      "files": 40,
+      "manifest_sha256": "1551c9f9af85c5acaf8f46ff590a48230b2f71b9061647ae3b22cc12c054ef03"
+    },
+    "lead_final": {
+      "files": 28,
+      "manifest_sha256": "d9906e56e85ed631490cba693c0223abb77b6330a1b81b03f0d6ac4809fc2802"
+    },
+    "review": {
+      "files": 9,
+      "manifest_sha256": "d646b5de73440523de3e13691668e3df15f8c99c56229341d9e919e715db0f30"
+    }
+  },
+  "reused_committed_source_objects_scanned": 712,
+  "scanned_extra_sha256": {
+    "scan_publication05.py": "2080fa293db227b866ecd11dfc9c1ac216070b32717a6c646030613994de8c06",
+    "scan_publication02.py": "2d18738bbcedc1eea8b973ad43a46756c54f1479ea131f06e0ccb7989bf41894",
+    "scan_publication03.py": "074fbcf97a740b81bba9095768f0190a1530f136a5680cd52c1dc7805febf918",
+    "scan_publication04.py": "2f1fd727105bcd02a42217586db4bde0f6112a11945dad72630fe8576efbcddf",
+    "publication-scan-initial.log": "5439616b70b6700572d1f0a0a1646480857c9fcba3d1bc8c39011aed7d3c263d",
+    "publication-scan-initial02.log": "26133dc23df98cc9a729be8136f8f9ef3db4056f32f614f5b579fe82fabeef65",
+    "publication-scan-initial03.log": "56ca461b424c2f5268e15de5e9c0250854eb78bba42e6510951ac24b894bc3ef",
+    "publication-scan-initial04.log": "68183adeb5cce18bffe1db4edea2140fa7fd51ceef1412a8cb25ae29a9548bcf",
+    "publication-scan-initial.json": "745e8e956cb94bf76816882fe1110f2b94b7872b904e5e025905af24b6950ec4",
+    "owned_stop.py": "5128525790a8c4653a571105e33462117e020351132313e5cb367468e6f75a55",
+    "owned-stop-result.json": "705bf83bbb357366b5c8db0538015d9bb5721816d4887d1caa218a7943ed8dda",
+    "owned-stop.log": "84c48e0492f5d09d591ca006b132a57f291151f6ee52c42a2b5389b123b38411",
+    "saved-identity-proof.json": "c23350c81b49b20e9971b04f91409e7dd848db17ea697c2e8c9fd5d23748b223"
+  },
+  "known_public_synthetic_fixture_literals_excluded": true,
+  "private_poison_control_rejected": true
+}

@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "issue": 235,
+  "python_passed": 436,
+  "guard_tests": 10,
+  "source_stable": true,
+  "earlier_435_run_unchanged": true,
+  "guard_fix": "coherent capture-association negative test RED then exact_canonical_ack_invariants assertion GREEN",
+  "publication_scan": "pending actual private-value scan"
+}

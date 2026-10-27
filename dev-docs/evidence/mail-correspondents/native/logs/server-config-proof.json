@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "fresh_board": true,
+  "fresh_file_store": true,
+  "service_sha256": "7c8cf4667aea97b590e72bdb7c15bd70c7551a3b415750e7b01122b5f166a55f",
+  "theme_sha256": "75d51725f3db0be7bd685b7e95aefd866a5308407f28ce3317a0e979c5bf3145",
+  "max_sessions": 8,
+  "launch_ms": 5000,
+  "files_disabled": true,
+  "files_service_started": false,
+  "distinct_uids": true,
+  "loopback_forward_only": true,
+  "services_started": false
+}

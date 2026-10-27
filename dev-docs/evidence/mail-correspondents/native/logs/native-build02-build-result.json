@@ -1,0 +1,27 @@
+{
+  "scope": "two-cores-2GiB-native-build",
+  "result": "fail",
+  "steps": [
+    {
+      "name": "server",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-cli",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-files"
+      ],
+      "target": "target235",
+      "returncode": 101,
+      "elapsed_seconds": 0.05241299099998287
+    }
+  ]
+}

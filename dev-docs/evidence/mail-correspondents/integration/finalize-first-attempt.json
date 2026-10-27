@@ -1,0 +1,9 @@
+{
+  "result": "fail",
+  "phase": "cleanup invocation before deletion",
+  "returncode": 1,
+  "observed": "Ownership guard saw the still-running parent shell command containing the review root literal; all roots remain present. Finalizer source unchanged; retry uses a separate invocation.",
+  "source_sha256": "e8d4188f54071cbee1ef29bdb717d8523fae041f558e105fc8496cefc9c8bfd1",
+  "subsequent_draft_repository_check": "README results.json link absent until cleanup/root finalization; expected draft state",
+  "owned_roots_removed": false
+}

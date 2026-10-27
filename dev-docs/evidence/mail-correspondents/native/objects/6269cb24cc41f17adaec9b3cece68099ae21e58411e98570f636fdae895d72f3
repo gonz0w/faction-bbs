@@ -1,0 +1,15 @@
+import subprocess,pathlib,json,hashlib,os
+p=pathlib.Path('/private/tmp/faction235-native-OWNED');f=p/'target-fixture/debug/examples/mail_correspondents_fixture';root=p/'fixture-contract02';root.mkdir(mode=0o700);result=[]
+for mode in ['ready','unknown','empty','single','full','revoked','history-only']:
+ r=subprocess.run([f,'seed',root/mode,mode],input=b'fixture-subject\nfixture-body\npeer@away.test\nother@away.test\n',capture_output=True,timeout=90);(p/('fixture02-'+mode+'-seed.private.log')).write_bytes(r.stdout+r.stderr)
+ assert r.returncode==0,(mode,r.returncode)
+ r=subprocess.run([f,'inspect',root/mode],capture_output=True,timeout=30);assert r.returncode==0;d=json.loads(r.stdout);(p/('fixture02-'+mode+'-inspection.private.json')).write_bytes(r.stdout)
+ n={'empty':0,'single':2,'full':64}.get(mode,8);assert len(d['history'])==n
+ if mode=='ready':
+  assert [(x['address'],x['device']) for x in d['history']]==[('peer@away.test',202)]*2+[('peer@away.test',203)]*2+[('other@away.test',202)]*2+[('peer@away.test',202)]*2
+  assert [x['read'] for x in d['history']]==[False,None,True,None,False,None,False,None]
+  assert len(d['pending'])==1
+ if mode=='unknown':assert all(x['read'] is None for x in d['history'])
+ if mode=='full':assert len(set((x['address'],x['device']) for x in d['history']))==64
+ result.append({'mode':mode,'retained':n,'pending':len(d['pending']),'result':'pass'})
+(p/'fixture-contract-green.json').write_text(json.dumps(result,indent=2)+'\n');print(result)

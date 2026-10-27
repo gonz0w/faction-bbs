@@ -1,0 +1,11 @@
+from lab import *
+import hashlib,re
+out=P/'native-compatibility';out.mkdir(mode=0o700)
+for n in ['files.json','legacy.json','execution.json','result.json','files.raw.log','legacy.raw.log']:(out/n).write_bytes(remote('cat /home/factionbuild/proof235/compatibility02/'+n).stdout)
+assert json.loads((out/'result.json').read_text())['result']=='pass'
+files=json.loads((P/'sources/native-final01-before.json').read_text());assert json.loads((P/'native-build/source-observed.json').read_text())==files==json.loads((P/'native-build/source-after.json').read_text())
+assert json.loads((P/'native-runtime/source-before.json').read_text())==files==json.loads((P/'native-runtime/source-after.json').read_text())
+counts=re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored',(P/'native-build/tests-build.log').read_text());assert counts and all(int(f)==0 for _,f,_ in counts)
+summary=dict(result='pass',files=files,all_source_match=True,source_count=len(files),compile_memory_mib=2048,runtime_physmem=json.loads((P/'runtime-environment.json').read_text())['physmem_bytes'],cores=2,rust_passed=sum(int(n) for n,_,_ in counts),rust_ignored=sum(int(i) for _,_,i in counts),compile_jobs=2,separate_default_and_network_targets=True,helper_ignores_exercised_by_substantive_tests=True,physical_hardware=False,capacity_claim=False,production_claim=False)
+(P/'native-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+print('Native final277/0/5,702matchedsources, Files14 and actualolder/default2 raw results retained.')

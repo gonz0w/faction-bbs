@@ -126,6 +126,105 @@ impl Inbox {
         }
     }
 }
+/// Original indices of the newest retained record for each exact stored peer.
+/// Account/device strings stay borrowed while deriving this body-free metadata.
+pub struct Correspondents {
+    groups: Vec<usize>,
+    position: usize,
+}
+impl Correspondents {
+    pub fn new(peers: &[(&str, u32)]) -> Self {
+        let mut model = Self {
+            groups: Vec::new(),
+            position: 0,
+        };
+        model.refresh(peers);
+        model
+    }
+    pub fn refresh(&mut self, peers: &[(&str, u32)]) {
+        assert!(peers.len() <= 64);
+        let selected = self.selected();
+        self.groups = (0..peers.len())
+            .rev()
+            .filter(|&index| !peers[index + 1..].contains(&peers[index]))
+            .collect();
+        self.position = selected
+            .and_then(|index| {
+                self.groups
+                    .iter()
+                    .position(|&candidate| peers.get(candidate) == peers.get(index))
+            })
+            .unwrap_or(self.position)
+            .min(self.groups.len().saturating_sub(1));
+    }
+    pub fn selected(&self) -> Option<usize> {
+        self.groups.get(self.position).copied()
+    }
+    pub fn position(&self) -> usize {
+        self.position
+    }
+    pub fn len(&self) -> usize {
+        self.groups.len()
+    }
+    pub fn visible(&self) -> &[usize] {
+        let start = self.position / PAGE_ROWS * PAGE_ROWS;
+        &self.groups[start..self.groups.len().min(start + PAGE_ROWS)]
+    }
+    pub fn page(&self) -> (usize, usize) {
+        if self.groups.is_empty() {
+            (0, 0)
+        } else {
+            (
+                self.position / PAGE_ROWS + 1,
+                self.groups.len().div_ceil(PAGE_ROWS),
+            )
+        }
+    }
+    pub fn up(&mut self) {
+        self.position = self.position.saturating_sub(1);
+    }
+    pub fn down(&mut self) {
+        self.position = (self.position + 1).min(self.groups.len().saturating_sub(1));
+    }
+    pub fn next(&mut self) {
+        let start = (self.position / PAGE_ROWS + 1) * PAGE_ROWS;
+        if start < self.groups.len() {
+            self.position = start;
+        }
+    }
+    pub fn previous(&mut self) {
+        let page = self.position / PAGE_ROWS;
+        if page > 0 {
+            self.position = (page - 1) * PAGE_ROWS;
+        }
+    }
+}
+/// Scope before constructing or refreshing an inbox so All never escapes a group.
+pub fn within_group(entries: Vec<Entry>, peers: &[(&str, u32)], group: usize) -> Vec<Entry> {
+    let peer = peers[group];
+    entries
+        .into_iter()
+        .filter(|entry| peers[entry.index] == peer)
+        .collect()
+}
+pub fn correspondent_row(
+    number: usize,
+    device: u32,
+    address: &str,
+    selected: bool,
+    unicode: bool,
+) -> Zeroizing<String> {
+    // Put the complete device number before the bounded account preview so two
+    // retained devices remain distinguishable even with a long account label.
+    let mut row = Zeroizing::new(format!(
+        "{} {number:02} D{device} ",
+        if selected { '>' } else { ' ' }
+    ));
+    let available = 39 - row.len();
+    row.push_str(&compact(address, unicode, available));
+    row
+}
+
 /// Bound expanded inert scalars in terminal cells, keeping private scratch zeroized.
 pub fn compact(text: &str, unicode: bool, cap: usize) -> Zeroizing<String> {
     let mut out = Zeroizing::new(String::new());
@@ -162,6 +261,185 @@ mod tests {
                 status: Status::Unread,
             })
             .collect()
+    }
+    #[test]
+    fn correspondents_group_exact_account_and_device_newest_first() {
+        let peers = [
+            ("bob@away.test", 202),
+            ("bob@away.test", 202),
+            ("bob@away.test", 203),
+            ("bob@away.test", 203),
+            ("carol@away.test", 202),
+            ("carol@away.test", 202),
+            ("bob@away.test", 202),
+            ("bob@away.test", 202),
+        ];
+        let mut groups = Correspondents::new(&peers);
+        assert_eq!(groups.visible(), [7, 5, 3]);
+        assert_eq!(groups.selected(), Some(7));
+        groups.down();
+        assert_eq!(groups.selected(), Some(5));
+        let records = vec![
+            Entry {
+                index: 0,
+                status: Status::Unread,
+            },
+            Entry {
+                index: 1,
+                status: Status::Retired,
+            },
+            Entry {
+                index: 2,
+                status: Status::Read,
+            },
+            Entry {
+                index: 3,
+                status: Status::Retired,
+            },
+            Entry {
+                index: 4,
+                status: Status::Unread,
+            },
+            Entry {
+                index: 5,
+                status: Status::Retired,
+            },
+            Entry {
+                index: 6,
+                status: Status::Unread,
+            },
+            Entry {
+                index: 7,
+                status: Status::Pending,
+            },
+        ];
+        let mut list = Inbox::new(within_group(records.clone(), &peers, 7));
+        assert_eq!(
+            list.visible().iter().map(|e| e.index).collect::<Vec<_>>(),
+            [7, 6, 1, 0]
+        );
+        assert!(list.filter(Filter::Unread));
+        assert_eq!(
+            list.visible().iter().map(|e| e.index).collect::<Vec<_>>(),
+            [6, 0]
+        );
+        let mut updated = records.clone();
+        updated[6].status = Status::Read;
+        updated[0].status = Status::Read;
+        list.refresh(within_group(updated, &peers, 7));
+        assert_eq!(list.selected(), None, "last unread cannot switch to Carol");
+        assert!(list.filter(Filter::All));
+        assert_eq!(
+            list.visible().iter().map(|e| e.index).collect::<Vec<_>>(),
+            [7, 6, 1, 0]
+        );
+        let mut unknown = records;
+        unknown[0].status = Status::Unknown;
+        let mut list = Inbox::new(within_group(unknown, &peers, 7));
+        assert!(!list.filter(Filter::Unread));
+        assert_eq!(list.mode(), Filter::All);
+        assert_eq!(list.len(), 4);
+    }
+    #[test]
+    fn reply_refresh_keeps_original_source_and_selected_group() {
+        let mut peers = vec![("bob@away.test", 202), ("carol@away.test", 202)];
+        let mut groups = Correspondents::new(&peers);
+        groups.down();
+        assert_eq!(groups.selected(), Some(0));
+        let mut list = Inbox::new(within_group(
+            vec![
+                Entry {
+                    index: 0,
+                    status: Status::Unread,
+                },
+                Entry {
+                    index: 1,
+                    status: Status::Unread,
+                },
+            ],
+            &peers,
+            0,
+        ));
+        peers.push(("bob@away.test", 202));
+        let entries = vec![
+            Entry {
+                index: 0,
+                status: Status::Unread,
+            },
+            Entry {
+                index: 1,
+                status: Status::Unread,
+            },
+            Entry {
+                index: 2,
+                status: Status::Pending,
+            },
+        ];
+        list.refresh(within_group(entries, &peers, 0));
+        assert_eq!(list.selected().unwrap().index, 0);
+        assert_eq!(
+            list.visible().iter().map(|e| e.index).collect::<Vec<_>>(),
+            [2, 0]
+        );
+        groups.refresh(&peers);
+        assert_eq!(groups.selected(), Some(2));
+        assert_eq!(groups.position(), 0);
+    }
+    #[test]
+    fn correspondent_empty_single_and_sixty_four_groups_clamp_pages() {
+        let mut empty = Correspondents::new(&[]);
+        empty.up();
+        empty.down();
+        empty.next();
+        empty.previous();
+        assert_eq!(empty.selected(), None);
+        assert_eq!(empty.page(), (0, 0));
+        assert!(empty.visible().is_empty());
+        let mut one = Correspondents::new(&[("one@away.test", 1)]);
+        one.down();
+        one.next();
+        one.up();
+        one.previous();
+        assert_eq!(one.selected(), Some(0));
+        let peers = (1..=64).map(|d| ("same@away.test", d)).collect::<Vec<_>>();
+        let mut groups = Correspondents::new(&peers);
+        assert_eq!(groups.visible(), [63, 62, 61, 60, 59, 58]);
+        groups.previous();
+        groups.up();
+        assert_eq!(groups.selected(), Some(63));
+        for _ in 0..70 {
+            groups.next();
+            groups.down();
+        }
+        assert_eq!(groups.page(), (11, 11));
+        assert_eq!(groups.selected(), Some(0));
+        assert_eq!(groups.visible(), [3, 2, 1, 0]);
+        groups.previous();
+        assert_eq!(groups.selected(), Some(9));
+        groups.up();
+        assert_eq!(groups.selected(), Some(10));
+    }
+    #[test]
+    fn correspondent_rows_preserve_device_digits_and_are_inert_at_thirty_nine_cells() {
+        for unicode in [false, true] {
+            for device in [1, 202, 203, 2_147_483_647] {
+                let row = correspondent_row(
+                    64,
+                    device,
+                    &"λ界\x1b\u{202e}\nlong@away.test".repeat(30),
+                    true,
+                    unicode,
+                );
+                assert!(row.starts_with(&format!("> 64 D{device} ")));
+                assert!(faction_terminal::text::width(&row) <= 39);
+                assert!(!row.contains('\x1b') && !row.contains('\u{202e}') && !row.contains('\n'));
+                assert!(row.ends_with('~'));
+            }
+        }
+        assert_ne!(
+            correspondent_row(1, 202, "same@away.test", false, false),
+            correspondent_row(1, 203, "same@away.test", false, false)
+        );
     }
     #[test]
     fn empty_and_single_never_wrap_or_open_out_of_range() {

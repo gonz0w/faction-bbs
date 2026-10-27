@@ -1,0 +1,5 @@
+from lab import *
+r=remote("printf 'Issue 235 owned disposable overlay only\\n' > /etc/faction-disposable-test; chmod 600 /etc/faction-disposable-test; /usr/pkg/bin/python3.13 --version; test -d /home/factionbuild/cargo; find /home/factionbuild -maxdepth 1 -type d -name '*cargo*'",check=False)
+(P/'guest-marked.private.log').write_bytes(r.stdout+r.stderr)
+assert r.returncode==0
+print('Disposable overlay marked; native toolchain ready.')

@@ -1,0 +1,37 @@
+{
+  "result": "pass",
+  "runs": {
+    "native": {
+      "ignored": 5,
+      "log": {
+        "path": "dev-docs/evidence/mail-correspondents/client/logs/native-tests.log",
+        "sha256": "260063e0b6dc49eebb0ab553d89ba1aa0564b5000a36463f2ed24bccea1c364c"
+      },
+      "passed": 95
+    },
+    "netbsd": {
+      "ignored": 5,
+      "log": {
+        "path": "dev-docs/evidence/mail-correspondents/native/logs/native-build/tests-build.log",
+        "sha256": "057e6e9a2a9987365082d134625c50090e2ed316c07a95a0f0083163b42619ec"
+      },
+      "passed": 277
+    },
+    "network": {
+      "ignored": 5,
+      "log": {
+        "path": "dev-docs/evidence/mail-correspondents/client/logs/network-tests.log",
+        "sha256": "56ecd1f1e11cedc748662f1f1edb3d037d3aec7f46840e497d4787842cf582fe"
+      },
+      "passed": 144
+    },
+    "workspace": {
+      "ignored": 0,
+      "log": {
+        "path": "dev-docs/evidence/mail-correspondents/lead/logs/host-2.log",
+        "sha256": "6d42a60e8e46e8d04873c6e869db26f2f6c805ef5c672e5e38893eb8995261c7"
+      },
+      "passed": 473
+    }
+  }
+}

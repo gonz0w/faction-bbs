@@ -1,0 +1,14 @@
+.......F..
+======================================================================
+FAIL: test_rejects_false_canonical_ack_with_coherent_capture_association (test_correspondents_evidence.Evidence.test_rejects_false_canonical_ack_with_coherent_capture_association)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_correspondents_evidence.py", line 69, in test_rejects_false_canonical_ack_with_coherent_capture_association
+    with self.assertRaises(AssertionError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.036s
+
+FAILED (failures=1)

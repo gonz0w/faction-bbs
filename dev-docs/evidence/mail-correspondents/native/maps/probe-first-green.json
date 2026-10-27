@@ -1,0 +1,5 @@
+{
+  "tools/probe_mail_correspondents.py": "c70edb173b0773a77cd5deada095613b7b28da2ea0cd5a66ba9fd187a0206168",
+  "tools/test_probe_mail_correspondents.py": "b91523b6038d7d1a002b0a391ef338bd9a9243cb32b8898c2c2e87534f6d7c3b",
+  "crates/faction-client/examples/mail_correspondents_fixture.rs": "2ee17ad10568f092946e9b5e21a617e75861cc25effa5e945916e8b119f832e6"
+}
