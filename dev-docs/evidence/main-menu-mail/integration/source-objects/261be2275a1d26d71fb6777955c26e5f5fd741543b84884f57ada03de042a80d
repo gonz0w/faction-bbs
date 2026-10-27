@@ -1,0 +1,5 @@
+import sys
+sys.path.insert(0,'/private/tmp/faction230-native-OWNED')
+from lab import remote
+r=remote("if test -f /home/factionbuild/proof230/native-files-final02/progress.json; then cat /home/factionbuild/proof230/native-files-final02/progress.json; fi",check=False)
+print(r.stdout.decode())

@@ -1,0 +1,320 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:74:23
+   |
+74 |     let mut history = native_mail::History::default();
+   |                       ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:82:13
+   |
+82 |     assert!(native_mail::History::default().can_offer());
+   |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:26:26
+   |
+26 |     let (offer, frame) = native_mail::offer(State::Menu, &mut f.board, &f.member).unwrap();
+   |                          ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:27:36
+   |
+27 |     assert!(matches!(offer, State::MailOffer)); assert_eq!(frame, Frame::Offer);
+   |                                    ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:28:25
+   |
+28 |     let (parked, ack) = native_mail::transition(offer, &request(Request::Park(N.into())), &mut f.board, &f.member).unwrap();
+   |                         ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailParked` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:29:38
+   |
+29 |     assert!(matches!(&parked, State::MailParked(n) if n == N)); assert_eq!(ack, Some(Frame::Parked(N.into())));
+   |                                      ^^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailParked` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:30:23
+   |
+30 |     let (menu, ack) = native_mail::transition(parked, &request(Request::Back(N.into())), &mut f.board, &f.member).unwrap();
+   |                       ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:38:28
+   |
+38 |         let (state, ack) = native_mail::transition(State::MailOffer, line, &mut f.board, &f.member).unwrap();
+   |                            ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:38:59
+   |
+38 |         let (state, ack) = native_mail::transition(State::MailOffer, line, &mut f.board, &f.member).unwrap();
+   |                                                           ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:41:24
+   |
+41 |     let (state, ack) = native_mail::transition(State::MailOffer, &request(Request::Back(N.into())), &mut f.board, &f.member).unwrap();
+   |                        ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:41:55
+   |
+41 |     let (state, ack) = native_mail::transition(State::MailOffer, &request(Request::Back(N.into())), &mut f.board, &f.member).unwrap();
+   |                                                       ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:43:26
+   |
+43 |     for state in [State::MailOffer, State::Pause, State::Files, State::NativeFiles, State::MailParked(N.into())] {
+   |                          ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0599]: no variant, associated function, or constant named `MailParked` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:43:92
+   |
+43 |     for state in [State::MailOffer, State::Pause, State::Files, State::NativeFiles, State::MailParked(N.into())] {
+   |                                                                                            ^^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailParked` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:44:17
+   |
+44 |         assert!(native_mail::offer(state, &mut f.board, &f.member).is_err());
+   |                 ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:51:17
+   |
+51 |         assert!(native_mail::transition(State::MailParked(N.into()), line, &mut f.board, &f.member).is_err());
+   |                 ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailParked` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:51:48
+   |
+51 |         assert!(native_mail::transition(State::MailParked(N.into()), line, &mut f.board, &f.member).is_err());
+   |                                                ^^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailParked` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:53:13
+   |
+53 |     assert!(native_mail::transition(State::MailParked(N.into()), &request(Request::Back(OTHER.into())), &mut f.board, &f.member).is_...
+   |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailParked` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:53:44
+   |
+53 |     assert!(native_mail::transition(State::MailParked(N.into()), &request(Request::Back(OTHER.into())), &mut f.board, &f.member).is_...
+   |                                            ^^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailParked` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:54:13
+   |
+54 |     assert!(native_mail::transition(State::MailParked(N.into()), &request(Request::Park(N.into())), &mut f.board, &f.member).is_err());
+   |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailParked` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:54:44
+   |
+54 |     assert!(native_mail::transition(State::MailParked(N.into()), &request(Request::Park(N.into())), &mut f.board, &f.member).is_err());
+   |                                            ^^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailParked` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:56:17
+   |
+56 |         assert!(native_mail::transition(state, &request(Request::Back(N.into())), &mut f.board, &f.member).is_err());
+   |                 ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:59:17
+   |
+59 |         assert!(native_mail::transition(State::MailOffer, line, &mut f.board, &f.member).is_err());
+   |                 ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:59:48
+   |
+59 |         assert!(native_mail::transition(State::MailOffer, line, &mut f.board, &f.member).is_err());
+   |                                                ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:66:13
+   |
+66 |     assert!(native_mail::offer(State::Menu, &mut f.board, &f.member).is_err());
+   |             ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:67:35
+   |
+67 |     for (state, line) in [(State::MailOffer, request(Request::Park(N.into()))), (State::MailOffer, request(Request::Back(N.into())))...
+   |                                   ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:67:89
+   |
+67 | ...::Park(N.into()))), (State::MailOffer, request(Request::Back(N.into()))), (State::MailOffer, "".into()), (State::MailParked(N.int...
+   |                                ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0599]: no variant, associated function, or constant named `MailOffer` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:67:143
+   |
+67 | ...::Back(N.into()))), (State::MailOffer, "".into()), (State::MailParked(N.into()), request(Request::Back(N.into())))] {
+   |                                ^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailOffer` not found for this enum
+
+error[E0599]: no variant, associated function, or constant named `MailParked` found for enum `State` in the current scope
+  --> crates/faction-service/src/native_mail_tests.rs:67:174
+   |
+67 | ...lOffer, "".into()), (State::MailParked(N.into()), request(Request::Back(N.into())))] {
+   |                                ^^^^^^^^^^ variant, associated function, or constant not found in `State`
+   |
+  ::: crates/faction-service/src/main.rs:57:1
+   |
+57 | enum State {
+   | ---------- variant, associated function, or constant `MailParked` not found for this enum
+
+error[E0433]: cannot find module or crate `native_mail` in this scope
+  --> crates/faction-service/src/native_mail_tests.rs:68:17
+   |
+68 |         assert!(native_mail::transition(state, &line, &mut f.board, &f.member).is_err());
+   |                 ^^^^^^^^^^^ use of unresolved module or unlinked crate `native_mail`
+   |
+   = help: if you wanted to use a crate named `native_mail`, use `cargo add native_mail` to add it to your `Cargo.toml`
+
+error[E0004]: non-exhaustive patterns: `faction_terminal::Action::HomeMail` not covered
+   --> crates/faction-service/src/ui.rs:251:27
+    |
+251 |         let title = match action {
+    |                           ^^^^^^ pattern `faction_terminal::Action::HomeMail` not covered
+    |
+note: `faction_terminal::Action` defined here
+   --> crates/faction-terminal/src/theme.rs:12:1
+    |
+ 12 | pub enum Action {
+    | ^^^^^^^^^^^^^^^
+...
+ 23 |     HomeMail,
+    |     -------- not covered
+    = note: the matched value is of type `faction_terminal::Action`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+    |
+271 ~             Action::Find => "Find & save",
+272 ~             faction_terminal::Action::HomeMail => todo!(),
+    |
+
+error[E0004]: non-exhaustive patterns: `faction_terminal::Action::HomeMail` not covered
+   --> crates/faction-service/src/ui.rs:274:15
+    |
+274 |         match action {
+    |               ^^^^^^ pattern `faction_terminal::Action::HomeMail` not covered
+    |
+note: `faction_terminal::Action` defined here
+   --> crates/faction-terminal/src/theme.rs:12:1
+    |
+ 12 | pub enum Action {
+    | ^^^^^^^^^^^^^^^
+...
+ 23 |     HomeMail,
+    |     -------- not covered
+    = note: the matched value is of type `faction_terminal::Action`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+    |
+365 ~             Action::Doors => self.door_open("doors", board, theme)?,
+366 ~             faction_terminal::Action::HomeMail => todo!(),
+    |
+
+Some errors have detailed explanations: E0004, E0433, E0599.
+For more information about an error, try `rustc --explain E0004`.
+error: could not compile `faction-service` (bin "faction-service" test) due to 31 previous errors

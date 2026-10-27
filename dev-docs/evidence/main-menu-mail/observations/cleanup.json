@@ -1,0 +1,14 @@
+{
+  "closed_loopback_forwards": 4,
+  "forwards_closed": true,
+  "owned_removed": true,
+  "owned_roots_removed": 8,
+  "owned_ssh_children_remaining": 0,
+  "result": "pass",
+  "saved_files_checked": 6,
+  "saved_hashes_unchanged": true,
+  "saved_size_mtime_unchanged": true,
+  "saved_stopped": true,
+  "scope": "exact marked fixture roots only; saved owner files verified before/after removal",
+  "vm_controller_stopped": true
+}

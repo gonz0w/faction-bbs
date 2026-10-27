@@ -1,0 +1,23 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0599]: no associated function or constant named `mail_entries` found for struct `Terminal` in the current scope
+   --> crates/faction-client/src/main.rs:933:30
+    |
+ 33 | struct Terminal {
+    | --------------- associated function or constant `mail_entries` not found for this struct
+...
+933 |         assert_eq!(Terminal::mail_entries(), [(b'O', "Open encrypted home mail"), (b'B', "Back to the BBS")]);
+    |                              ^^^^^^^^^^^^ associated function or constant not found in `Terminal`
+    |
+note: if you're trying to build a new `Terminal`, consider using `Terminal::start` which returns `Result<Terminal, std::io::Error>`
+   --> crates/faction-client/src/main.rs:64:5
+    |
+ 64 |     fn start() -> io::Result<Self> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: there is an associated function `entries` with a similar name
+   --> crates/faction-client/src/main.rs:151:5
+    |
+151 |     fn entries(mail: &visit_mail::VisitMail) -> Vec<(u8, &'static str)> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `faction-client` (bin "faction-client" test) due to 1 previous error

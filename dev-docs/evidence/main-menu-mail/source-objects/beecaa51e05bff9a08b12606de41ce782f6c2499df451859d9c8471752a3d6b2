@@ -1,0 +1,58 @@
+from pathlib import Path
+import copy,hashlib,json,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');O=Path('/private/tmp/faction230-layout-public');OUT=R/'dev-docs/evidence/main-menu-mail';g=R/'tools/check_menu_mail_evidence.py';t=R/'tools/test_menu_mail_evidence.py'
+for label,path in [('guard-before.py',g),('test-before.py',t),('original-record.json',OUT/'results.json')]: (O/label).write_bytes(path.read_bytes())
+p=subprocess.run(['python3','tools/check_repository.py'],cwd=R,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(O/'repository-red.log').write_bytes(p.stdout);assert p.returncode!=0
+s=t.read_text();s=s.replace('    def test_accepts_complete_bounded_observations(self):', '''    def publication_fixture(self):
+        def store(name,value):
+            data=json.dumps(value).encode() if isinstance(value,dict) else value;path=self.root/name;path.write_bytes(data);return dict(path=name,sha256=hashlib.sha256(data).hexdigest())
+        previous=copy.deepcopy(self.record);source=store('snapshot.md',b'frozen relative Markdown');previous['sources'].append(source)
+        current=copy.deepcopy(previous);moved=store('snapshot.raw',b'frozen relative Markdown');current['sources'][-1]=moved
+        current['publication_layout']=dict(kind='frozen-markdown-path-relocation',no_measurements_refreshed=True,original_record=store('original.raw',previous),relocations=[dict(original_path=source['path'],new_path=moved['path'],sha256=source['sha256'])],sources=[])
+        return current,previous,store
+
+    def test_accepts_exact_frozen_markdown_relocation(self):
+        current,_,_=self.publication_fixture();self.module.validate(self.root,current)
+
+    def test_rejects_publication_measurement_refresh(self):
+        current,previous,store=self.publication_fixture();previous['profile']['normal_sessions']=250
+        current['publication_layout']['original_record']=store('changed-original.raw',previous)
+        with self.assertRaises(AssertionError):self.module.validate(self.root,current)
+
+    def test_accepts_complete_bounded_observations(self):''')
+t.write_text(s);(O/'test-red.py').write_bytes(t.read_bytes())
+p=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_menu_mail_evidence.py'],cwd=R,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(O/'unit-red.log').write_bytes(p.stdout);assert p.returncode!=0
+helper='''def publication(root,record):
+ if 'publication_layout' not in record:return
+ layout=record['publication_layout'];assert layout['kind']=='frozen-markdown-path-relocation' and layout['no_measurements_refreshed'] is True
+ previous=json.loads(raw(root,layout['original_record']));assert 'publication_layout' not in previous
+ assert layout['relocations'] and len({r['original_path'] for r in layout['relocations']})==len(layout['relocations'])
+ for change in layout['relocations']:
+  assert change['original_path'].endswith('.md') and change['new_path']!=change['original_path']
+  matches=[s for s in previous['sources'] if s['path']==change['original_path']];assert len(matches)==1
+  assert matches[0]['sha256']==change['sha256'];matches[0]['path']=change['new_path'];raw(root,matches[0])
+ for source in layout['sources']:raw(root,source)
+ current=dict(record);current.pop('publication_layout');assert current==previous,'publication changed a measurement or source identity'
+
+'''
+s=g.read_text().replace('def validate(root,record):',helper+'def validate(root,record):\n publication(root,record)');g.write_text(s)
+p=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_menu_mail_evidence.py'],cwd=R,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(O/'unit-green.log').write_bytes(p.stdout);assert p.returncode==0
+for label,path in [('guard-green-before-pin.py',g),('test-green.py',t)]: (O/label).write_bytes(path.read_bytes())
+previous=(O/'original-record.json').read_bytes();assert hashlib.sha256(previous).hexdigest()=='a2c16502e0a61c1bc2e09a70272b8c7f0c61ded9966625cadffe6d20969a90cd'
+def object_ref(raw):
+ digest=hashlib.sha256(raw).hexdigest();path=OUT/'source-objects'/digest;path.parent.mkdir(parents=True,exist_ok=True)
+ if path.exists():assert path.read_bytes()==raw
+ else:path.write_bytes(raw)
+ return dict(path=str(path.relative_to(R)),sha256=digest)
+record=json.loads(previous);relocations=[]
+for entry in record['sources']:
+ path=R/entry['path']
+ if path.suffix=='.md' and 'review/final-review-sources/' in entry['path']:
+  original=entry['path'];raw=path.read_bytes();assert hashlib.sha256(raw).hexdigest()==entry['sha256'];replacement=object_ref(raw);entry['path']=replacement['path'];relocations.append(dict(original_path=original,new_path=entry['path'],sha256=entry['sha256']));path.unlink()
+assert len(relocations)==5
+# Preserve every actual repair source/log before pinning, including the old record.
+items=[]
+for name in ['repair_layout.py','guard-before.py','test-before.py','test-red.py','unit-red.log','guard-green-before-pin.py','test-green.py','unit-green.log','repository-red.log']:items.append(object_ref((O/name).read_bytes()))
+record['publication_layout']=dict(kind='frozen-markdown-path-relocation',no_measurements_refreshed=True,original_record=object_ref(previous),relocations=relocations,sources=items)
+path=OUT/'results.json';path.write_text(json.dumps(record,indent=2,sort_keys=True)+'\n');digest=hashlib.sha256(path.read_bytes()).hexdigest();s=g.read_text().replace("RESULT_SHA256='a2c16502e0a61c1bc2e09a70272b8c7f0c61ded9966625cadffe6d20969a90cd'", "RESULT_SHA256='"+digest+"'");g.write_text(s)
+print('Preserved original root, relocated five unchanged Markdown payloads, actual RED/GREEN12; current root',digest)

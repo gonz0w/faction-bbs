@@ -1,0 +1,6 @@
+from lab import *
+r=remote("printf 'Issue 230 owned disposable overlay only\\n' > /etc/faction-disposable-test; chmod 600 /etc/faction-disposable-test; ps -axo pid,user,comm; ls /usr/include/openssl/ssl.h /usr/lib/libssl.so; find /home/factionbuild -maxdepth 2 -type d -name '*cargo*'; cat /etc/rc.conf",check=False)
+(P/'guest-marked.private.log').write_bytes(r.stdout+r.stderr)
+assert r.returncode==0
+for line in r.stdout.decode().splitlines():
+ if 'faction' in line or 'openssl' in line or 'libssl' in line:print(line)

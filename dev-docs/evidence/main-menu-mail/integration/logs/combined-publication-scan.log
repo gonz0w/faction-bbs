@@ -1,0 +1,2 @@
+Late public source stages passed actual-private-value scan before export.
+{'result': 'pass', 'files_scanned': {'native': 1040, 'execution': 1086, 'review': 64}, 'actual_generated_values_scanned': True, 'secret_matches': 0, 'private_key_material_matches': 0, 'binaries_archives_metadata_excluded': True, 'static_public_fixture_values_not_secret': True}

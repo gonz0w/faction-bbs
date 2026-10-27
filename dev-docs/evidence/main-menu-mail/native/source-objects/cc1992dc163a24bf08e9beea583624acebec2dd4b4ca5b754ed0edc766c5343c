@@ -1,0 +1,69 @@
+"""Private actual-SSH protocol/compatibility negatives; fixed public facts only."""
+import argparse,json,os,select,time,signal,secrets,hashlib,subprocess,sys,termios
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent/'code'))
+from check_restricted_ssh import SSHConsole
+from owned_fixture_cleanup import close_console
+from smoke_board_launcher import LauncherConsole
+from probe_visit_mail import private_json,visit_processes,assert_same_visit,drain_ready
+MENU='Ctrl-C exits; Esc: Enter to recover.'
+PREFIX='\x1b]7770;FACTION-MAIL1;';N='0123456789abcdef0123456789abcdef';OTHER='1123456789abcdef0123456789abcdef'
+def run(a):
+ s=private_json(a.settings);assert s['disposable_fixture'] and s['files_disabled'];assert (a.private_root/'OWNED').is_file()
+ root=a.private_root/('controls-'+secrets.token_hex(4));root.mkdir(mode=0o700);children=[];checks=[];secret=secrets.token_hex(24);handle=s['member_handle']+'ctl'+secrets.token_hex(3)
+ (root/'private-markers.json').write_text(json.dumps([secret,s['sysop_password']]));(root/'private-markers.json').chmod(0o600)
+ def board():
+  c=SSHConsole(s['member_argv']);children.append(c);return c
+ def login(c,h,p,register=False):
+  c.expect('[L]ogin [R]egister [Q]uit: ');c.send('r' if register else 'l');c.expect('Handle: ');c.send(h);c.password(p)
+  if register:c.password(p,'Confirm password (hidden): ')
+  else:c.expect('Press Enter to continue: ');c.send('');c.expect(MENU)
+ def close(c):c.raw(b'q');c.expect('Logged out.');c.finish()
+ def status(owner,action):
+  owner.raw(b's');owner.expect('[C]reate room: ');owner.send(action);owner.expect('Member handle: ');owner.send(handle);owner.expect('Status updated; previous sessions expired.');owner.expect('Press Enter to return to menu: ');owner.send('');owner.expect(MENU)
+ def admitted():
+  time.sleep(5.1);c=board();login(c,handle,secret);return c
+ def offer(c):c.raw(b'm');c.expect(PREFIX+'offer\x07')
+ def request(c,action,n=N):c.send('@MAIL1 '+action+' '+n)
+ def exited(c):
+  end=time.monotonic()+15
+  while time.monotonic()<end:
+   pid,status=os.waitpid(c.pid,os.WNOHANG)
+   if pid:c.done=True;assert termios.tcgetattr(c.fd)[3]&termios.ECHO;return os.waitstatus_to_exitcode(status)
+   drain_ready(c,.02)
+  raise AssertionError('malformed/revoked mail control retained live board connection')
+ try:
+  c=board();login(c,handle,secret,True);c.expect('Registration pending; sysop approval required.');c.finish()
+  owner=board();login(owner,'sysop',s['sysop_password']);status(owner,'a')
+  c=admitted();offer(c);request(c,'park');c.expect(PREFIX+'parked;'+N+'\x07');request(c,'back');c.expect(PREFIX+'returned;'+N+'\x07');c.expect(MENU);offer(c);request(c,'back',OTHER);c.expect(PREFIX+'returned;'+OTHER+'\x07');c.expect(MENU);checks.append('actual_versioned_park_and_offer_cancel_same_connection_without_files')
+  offer(c);request(c,'park');exited(c);checks.append('stale_nonce_reuse_after_completed_return_closes_connection')
+  for name,lines in [('malformed_uppercase_nonce',['@MAIL1 park '+N.upper()]),('wrong_parked_return',['@MAIL1 park '+N,'@MAIL1 back '+OTHER]),('duplicate_park',['@MAIL1 park '+N,'@MAIL1 park '+N]),('trailing_request_field',['@MAIL1 back '+N+' extra'])]:
+   c=admitted();offer(c)
+   for i,line in enumerate(lines):
+    c.send(line)
+    if i<len(lines)-1:c.expect(PREFIX+'parked;'+N+'\x07')
+   exited(c);checks.append(name+'_closes_connection')
+  c=admitted();c.send('@MAIL1 back '+N);exited(c);checks.append('out_of_state_mail_control_closes_connection')
+  for parked in [False,True]:
+   c=admitted();offer(c)
+   if parked:request(c,'park');c.expect(PREFIX+'parked;'+N+'\x07')
+   status(owner,'v');request(c,'back' if parked else 'park');exited(c);status(owner,'a');checks.append('current_approval_revocation_'+('after_park' if parked else 'before_park')+'_denied')
+  close(owner)
+  # Older native binaries ignore the unknown namespace and retain readable Back.
+  for name,binary,message in [('old_native',a.old_client,'Ordinary SSH: press Enter or type back to return to the main menu.'),('default_build',a.default_client,'Home mail requires a network-mail client build.'),('network_unconfigured',a.network_client,'Home mail is not configured in this local board catalog.')]:
+   if binary is None:continue
+   time.sleep(5.1);c=LauncherConsole([binary,'--profile',s['profile']]);children.append(c);login(c,handle,secret);before=visit_processes(c.pid);c.raw(b'm');c.expect(message)
+   if name!='old_native':c.expect('Enter to return to the board: ')
+   drain_ready(c);assert b'LOCAL checkpoint passphrase' not in c.transcript and b'HOME account password' not in c.transcript
+   c.send('');c.expect(MENU);assert_same_visit(before,visit_processes(c.pid));close(c);checks.append(name+'_explanation_same_ssh_return')
+  result=dict(result='pass',scope='actual-ssh-mail-protocol-and-compatibility-files-disabled',count=len(checks),checks=checks,files_disabled=True,no_private_unlock=True,normal_limits_unchanged=True,capacity_claim=False,physical_hardware=False)
+  a.output.write_text(json.dumps(result,indent=2)+'\n');print('Actual SSH protocol/compatibility passed:',len(checks))
+ except BaseException:
+  for i,c in enumerate(children):(root/(str(i)+'.private')).write_bytes(c.transcript+c.buffer)
+  raise
+ finally:
+  for c in children:close_console(c,s['member_argv'],root)
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--settings',type=Path,required=True);p.add_argument('--private-root',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+ for n in ['old-client','default-client','network-client']:p.add_argument('--'+n,type=Path)
+ run(p.parse_args())

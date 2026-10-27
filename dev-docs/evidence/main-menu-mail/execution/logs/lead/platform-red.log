@@ -1,0 +1,14 @@
+...F...
+======================================================================
+FAIL: test_rejects_host_results_reused_as_native (test_menu_mail_evidence.Evidence.test_rejects_host_results_reused_as_native)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_evidence.py", line 42, in test_rejects_host_results_reused_as_native
+    with self.assertRaises(AssertionError):self.module.validate(self.root,record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.029s
+
+FAILED (failures=1)

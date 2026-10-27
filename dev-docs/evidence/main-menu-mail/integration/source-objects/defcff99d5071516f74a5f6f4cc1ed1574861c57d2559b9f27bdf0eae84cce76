@@ -1,0 +1,27 @@
+"""Pre-publication scan of privately staged fixture results; never prints secrets."""
+from pathlib import Path
+import ast,hashlib,json,re,sys,shlex
+sys.path.insert(0,'/private/tmp/faction230-native-OWNED');from lab import remote,P
+module=ast.parse((P/'70_export_initial.py').read_text());code=next(ast.literal_eval(node.value) for node in module.body if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='code' for t in node.targets))
+response=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'generated-inventory.final.private.json').write_bytes(response.stdout);values=json.loads(response.stdout)
+for path in P.rglob('*.json'):
+ if path.name not in {'private-markers.json','private-inputs.json'} and not(path.name.startswith('generated-') and path.name.endswith('.private.json')):continue
+ data=json.loads(path.read_bytes())
+ if isinstance(data,list):values.extend(v for v in data if isinstance(v,str))
+ elif isinstance(data,dict):values.extend(data[k] for k in ['home_password','subject','body','password'] if k in data)
+values.append((P/'sysop-password.private').read_text())
+for name in ['member-key','lab-admin-key']:
+ values.extend(v for v in (P/name).read_text().splitlines() if len(v)>=32 and not v.startswith('-----'))
+needles={v.encode() for v in values if v};files=list((P/'late-files-private').rglob('*'));checked={}
+for path in files:
+ if not path.is_file():continue
+ raw=path.read_bytes();assert not any(value in raw for value in needles),'private fixture value present; publication refused'
+ assert not re.search(rb'(?m)^-----BEGIN (?:OPENSSH |RSA |EC )?PRIVATE KEY-----',raw),'key material; publication refused'
+ checked[str(path.relative_to(P/'late-files-private'))]=hashlib.sha256(raw).hexdigest()
+# Bind finite test output to already-public fields; reject unknown JSON content.
+for mode in ['classic','unicode','legacy']:
+ host=json.loads((P/'host-files-final01'/(mode+'.json')).read_bytes());native=json.loads((P/'late-files-private/native-files-final02'/(mode+'.json')).read_bytes())
+ if 'platform' in host:host['platform']='NetBSD'
+ assert native==host,'unexpected result fields; no publication without review'
+report=dict(result='pass',scope='prepublication-private-staging-actual-generated-secrets-and-known-result-schema',files=checked,actual_needles=len(needles),secret_matches=0,private_key_matches=0,final_route_values_match_known_public_schema=True)
+Path('/private/tmp/faction230-integration-OWNED/files-publication-scan.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n');print('Private staged results/logs passed actual-secret/key scan and exact known public result schema.')

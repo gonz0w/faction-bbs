@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "sha256": "8d08e81d95b988fce351c9c05fe80da2429e8aaa2b9691ffa733e0e4d1d30fc0",
+  "normal_limits_unchanged": true,
+  "source_context": "source-final06",
+  "client_source_context": "source-final05",
+  "board_state_preserved": true,
+  "service_restarted_for_code_update": true,
+  "admission_reset_for_test": false
+}

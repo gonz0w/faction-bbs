@@ -1,0 +1,29 @@
+{
+  "CARGO_BUILD_JOBS": "2",
+  "binaries": {
+    "/private/tmp/faction230-client-OWNED/host-network/checkpoint_ui_fixture": "ade23dc6891bbb48ff762d241837888cbd35a05add7c1372736b66a4579ee25c",
+    "/private/tmp/faction230-client-OWNED/host-network/faction-client": "b29844a515db2846e923b5bdd7a05e58751eec74f54585f48b6b806190dc3df1",
+    "/private/tmp/faction230-client-OWNED/host-network/home_mail_fixture": "95c279294e2b069a133f4569d88a8e077ac7b30f1e10003050f30e52f1039fe2"
+  },
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "-p",
+    "faction-client",
+    "--features",
+    "network-mail",
+    "--example",
+    "checkpoint_ui_fixture",
+    "--example",
+    "home_mail_fixture",
+    "--bin",
+    "faction-client"
+  ],
+  "cwd": "/Users/cam/DEV/faction-bbs",
+  "end_utc": "2026-10-26T22:27:39Z",
+  "exit_code": 0,
+  "source_manifest_sha256": "0032fab2b6dac5840535be540cdbd9e8a65a97621eb710e0077f734a068b6867",
+  "sources_unchanged": true,
+  "start_utc": "2026-10-26T22:27:30Z"
+}

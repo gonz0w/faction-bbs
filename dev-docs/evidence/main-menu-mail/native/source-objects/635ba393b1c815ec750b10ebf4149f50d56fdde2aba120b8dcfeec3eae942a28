@@ -1,0 +1,11 @@
+from lab import *
+code=r'''from pathlib import Path
+import subprocess,json
+rows=[]
+for l in subprocess.check_output(['ps','-axo','pid,user,comm'],text=True).splitlines():
+ f=l.strip().split(None,2)
+ if len(f)==3 and f[0].isdigit():rows.append((int(f[0]),f[1],f[2].strip()))
+service=[x for x in rows if x[2]=='/usr/local/libexec/faction-service'];tty=[x for x in rows if x[2]=='/usr/local/libexec/faction-tty'];pid=int(Path('/var/run/faction/terminal.pid').read_text());assert len(service)==1 and service[0][0]==pid
+print(json.dumps({'result':'pass','service_live':True,'service_pid_matches':True,'live_member_frontends':len(tty),'board_socket_present':Path('/var/run/faction/terminal.sock').exists()}))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'service-final06-liveness-after-denial.json').write_bytes(r.stdout);print(r.stdout.decode())

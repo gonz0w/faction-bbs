@@ -1,0 +1,19 @@
+from lab import *
+import hashlib,tarfile
+code=r'''from pathlib import Path
+import json,os,pwd,hashlib
+assert Path('/etc/faction-disposable-test').is_file()
+p=Path('/home/factionbuild/device230/settings-files.json');s=p.stat();h=hashlib.sha256(p.read_bytes()).hexdigest();u=pwd.getpwnam('factionbuild');os.chown(p,u.pw_uid,u.pw_gid);a=p.stat();assert a.st_uid==u.pw_uid and a.st_mode&0o777==0o600 and a.st_nlink==1 and hashlib.sha256(p.read_bytes()).hexdigest()==h
+print(json.dumps({'result':'pass','classification':'private-fixture-settings-owner-correction','bytes_unchanged':True,'mode':384,'single_link':True,'owner_before_was_root':s.st_uid==0,'owner_after_matches_device':True}))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'native-files-settings-owner-correction.json').write_bytes(r.stdout)
+old=P/'native-files-final01';run=P/'native-files-final02';run.mkdir(mode=0o700)
+for f in old.rglob('*.py'):
+ out=run/f.relative_to(old);out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(f.read_bytes().replace(b'native-files-final01',b'native-files-final02') if f.name=='driver.py' else f.read_bytes())
+manifest={str(f.relative_to(run)):hashlib.sha256(f.read_bytes()).hexdigest() for f in run.rglob('*') if f.is_file()};(run/'source-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n');archive=P/'native-files-final02-public-code.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for f in run.rglob('*'):
+  if f.is_file():t.add(f,arcname=str(f.relative_to(run)),recursive=False)
+remote('test ! -e /home/factionbuild/proof230/native-files-final02; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/proof230/native-files-final02; tar -xzf - -C /home/factionbuild/proof230/native-files-final02; chown -R factionbuild:factionbuild /home/factionbuild/proof230/native-files-final02',archive.read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-files-final02/driver.py > /home/factionbuild/proof230/native-files-final02/driver-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Native existingFiles retry launched: private settings ownerfixedonly; contents/mode/assertions/Rust unchanged; originalfailure retained.')

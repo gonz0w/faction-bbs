@@ -61,7 +61,7 @@ impl Client {
     pub(super) fn activity(&self) -> Option<faction_core::VisitActivity> {
         use faction_core::VisitActivity as A;
         Some(match self.state {
-            State::Menu => A::Menu,
+            State::Menu | State::MailOffer | State::MailParked(_) => A::Menu,
             State::Chat => A::Chat,
             State::Lounge(_) => A::Lounge,
             State::Who(_) => A::Who,

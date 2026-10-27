@@ -1,0 +1,9 @@
+{
+  "crates/faction-service/src/ui.rs": "a54a324c04b2df708e37d9b7fff2940f9157938470024e297e64c920e42925e9",
+  "crates/faction-service/src/native_mail.rs": "3693cbcf0495c8a5a3a6e342c8c361fa693afb5366f2da94577b6d3e39406540",
+  "crates/faction-service/src/native_mail_tests.rs": "cb770e01fbb5019d2c7badbd9a716def3c95369e3b3df331e5205a99a97a6fba",
+  "crates/faction-service/src/file_ui.rs": "a2a29c7a7bf9f0909dffb6443bc16b3a1b23f34174246b58db2a0c50017f45e4",
+  "docs/travel-modes.md": "6c82b44fe787b1b657c7fa2a42b79e0b02970fc4f66d06bad01fb34b995ca72c",
+  "docs/main-menu-mail.md": "47689fc7913f61d57c6b4e419974ed0e560ed4e098d513da6e2119d36e0cb2aa",
+  "dev-docs/main-menu-mail.md": "c0e5f355005d75ef84965ec6759063b4fec981c98323c05bb64b8a051a587bd7"
+}

@@ -1,0 +1,6 @@
+from pathlib import Path
+import sys,json
+p=Path('/private/tmp/faction230-native-OWNED/privacy-postrun-rescan');sys.path.insert(0,str(p/'code'));import probe_menu_mail as proof
+try:
+ streams,records=proof.reconstruct_kdump_streams((p/'host_classic.post-hex.private.log').read_bytes());print(json.dumps(dict(result='pass',records=records,streams=len(streams))))
+except AssertionError as error:print(json.dumps(dict(result='fail',error=str(error))))

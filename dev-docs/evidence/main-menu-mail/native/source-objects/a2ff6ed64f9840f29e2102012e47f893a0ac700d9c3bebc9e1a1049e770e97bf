@@ -1,0 +1,6 @@
+from lab import *
+r=remote('ls -la /home/factionbuild/proof230/server-final06; ps -axo pid,ppid,etime,stat,wchan,comm; wc -c /home/factionbuild/proof230/native-server-final06-launch.log; cat /home/factionbuild/proof230/native-server-final06-launch.log',check=False)
+(P/'service06-inspection.private.log').write_bytes(r.stdout+r.stderr)
+for l in r.stdout.decode().splitlines():
+ if 'cargo' in l or 'rustc' in l or 'python' in l or 'json' in l or '.log' in l or 'Trace' in l or 'Error' in l or 'Permission' in l:print(l)
+print(r.stderr.decode())

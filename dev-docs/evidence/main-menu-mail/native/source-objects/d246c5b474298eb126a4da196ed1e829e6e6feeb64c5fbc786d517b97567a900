@@ -1,0 +1,23 @@
+from lab import *
+import hashlib,shlex
+D=R/'local/demo';B=D/'saved/20261022T005925Z';before=json.loads((P/'saved-before.private.json').read_text());checks={}
+def digest(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1048576),b''):h.update(b)
+ return h.hexdigest()
+for n,expected in before.items():
+ p=(B/n) if n in {'playground.qcow2','kernel.img'} else D/n;s=p.stat();actual=dict(sha256=digest(p),size=s.st_size,mtime_ns=s.st_mtime_ns);assert actual==expected,n;checks[n]=True
+rows=subprocess.check_output(['ps','-axo','command'],text=True).splitlines();saved=[]
+for line in rows:
+ try:a=shlex.split(line)
+ except ValueError:continue
+ if not a:continue
+ if Path(a[0]).name.startswith('qemu-system') and any(x.startswith(str(D)+'/') or ('file='+str(D)+'/') in x for x in a):saved.append(line)
+ if Path(a[0]).name.lower().startswith('python') and any(x.startswith(str(D)+'/') and x.endswith('serial-controller.py') for x in a):saved.append(line)
+assert not saved
+pid=int((V/'runtime-qemu.pid').read_text());cmd=subprocess.check_output(['ps','-p',str(pid),'-o','command='],text=True).strip();assert str(V/'disk.qcow2') in cmd and '-m 1024' in cmd
+listeners=subprocess.check_output(['lsof','-nP','-a','-p',str(pid),'-iTCP','-sTCP:LISTEN'],text=True).splitlines()[1:];assert len(listeners)==4 and all('127.0.0.1:' in row for row in listeners)
+(P/'owned-listeners-before-teardown.private.log').write_text('\n'.join(listeners)+'\n')
+(P/'saved-integrity-before-lead-audit.json').write_text(json.dumps(dict(result='pass',saved_owner_stopped=True,saved_disk_sha256=before['playground.qcow2']['sha256'],saved_kernel_sha256=before['kernel.img']['sha256'],all_saved_hash_size_mtime_matches=True,checked_saved_files=len(checks),owned_vm_live_for_lead_audit=True,owned_loopback_listeners=4,runtime_memory_mib=1024,cleanup_claim=False),indent=2)+'\n')
+print('Saved disk/kernel and metadata unchanged; saved playground stopped; owned VM retained with4loopbacklisteners for lead audit.')

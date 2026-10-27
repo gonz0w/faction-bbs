@@ -1,0 +1,15 @@
+from lab import *
+import tarfile,hashlib,time
+cargo=P/'host-public-cargo';cargo.mkdir(mode=0o700)
+for n in ['public-registry.tar.gz','public-index-resolution.tar.gz']:
+ with tarfile.open(P/n) as t:t.extractall(cargo,filter='data')
+source=P/'source-final05';run=P/'host-cli-final';run.mkdir(mode=0o700)
+env=dict(os.environ,CARGO_HOME=str(cargo),CARGO_TARGET_DIR=str(R/'target'),CARGO_BUILD_JOBS='2')
+cmd=['cargo','+1.96.0','build','--manifest-path',str(source/'Cargo.toml'),'--locked','--offline','-j','2','-p','faction-cli'];start=time.monotonic()
+with (run/'build.log').open('wb') as f:r=subprocess.run(cmd,env=env,stdout=f,stderr=f)
+assert r.returncode==0,(run/'build.log').read_text()[-3000:]
+artifacts={}
+for n in ['faction','faction-member']:
+ data=(R/'target/debug'/n).read_bytes();(run/n).write_bytes(data);(run/n).chmod(0o755);artifacts[n]=hashlib.sha256(data).hexdigest()
+(run/'build.json').write_text(json.dumps(dict(result='pass',command=cmd,returncode=r.returncode,elapsed_seconds=time.monotonic()-start,source_manifest='source-final05-manifest.json',artifacts=artifacts),indent=2)+'\n')
+print('Frozen-source host standalone/inherited binaries built.')

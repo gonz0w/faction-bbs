@@ -1,0 +1,5 @@
+{
+  "capture_sha256": "ce20b095083f79cf22a35deaa6c159e341322317c67963ba678e04d91a2948c3",
+  "reason": "invalid GIO hex byte",
+  "result": "rejected"
+}

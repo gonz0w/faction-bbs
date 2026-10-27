@@ -28,3 +28,5 @@ pub mod rooms;
 pub mod composer;
 
 pub mod guide;
+
+pub mod home_mail;

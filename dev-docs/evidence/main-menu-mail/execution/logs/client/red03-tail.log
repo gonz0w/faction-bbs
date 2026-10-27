@@ -1,0 +1,22 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.65s
+     Running unittests src/main.rs (target/debug/deps/faction_client-e38c5cd7c9581673)
+
+running 1 test
+test transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail ... FAILED
+
+failures:
+
+---- transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail stdout ----
+
+thread 'transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail' (1349342) panicked at crates/faction-client/src/transport.rs:401:13:
+park ACK bypassed an already-started trailing control
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 36 filtered out; finished in 0.70s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

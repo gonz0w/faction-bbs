@@ -1,0 +1,374 @@
+//! Local-only destinations and OpenSSH configuration. Remote frames cannot modify it.
+use base64::{Engine, engine::general_purpose::STANDARD};
+use faction_files::invalid;
+use rustix::fs::OFlags;
+use std::{
+    fs::OpenOptions,
+    io::{self, Read},
+    os::unix::fs::{MetadataExt, OpenOptionsExt},
+    path::{Path, PathBuf},
+    process::Command,
+};
+pub struct ExperimentalTerminal {
+    pub login: String,
+    pub identity: PathBuf,
+    pub certificate: PathBuf,
+}
+pub struct Profile {
+    pub host: String,
+    pub port: u16,
+    pub file_host: String,
+    pub file_port: u16,
+    pub identity: PathBuf,
+    pub public_key: String,
+    pub known_hosts: PathBuf,
+    pub experimental_terminal: Option<ExperimentalTerminal>,
+}
+/// Parsed local settings, separate from the readiness of the referenced files.
+pub(super) struct Settings {
+    pub host: String,
+    pub port: u16,
+    pub file_host: String,
+    pub file_port: u16,
+    pub identity: PathBuf,
+    pub public: PathBuf,
+    pub known_hosts: PathBuf,
+    pub experimental_terminal: Option<ExperimentalTerminal>,
+}
+pub(super) fn regular(path: &Path, cap: u64, private: bool) -> io::Result<std::fs::File> {
+    let f = OpenOptions::new()
+        .read(true)
+        .custom_flags((OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC).bits() as i32)
+        .open(path)?;
+    let m = f.metadata()?;
+    let uid = rustix::process::geteuid().as_raw();
+    if !m.is_file()
+        || m.nlink() != 1
+        || (m.uid() != uid && (private || m.uid() != 0))
+        || m.mode() & if private { 0o077 } else { 0o022 } != 0
+        || m.len() > cap
+    {
+        return Err(invalid());
+    }
+    Ok(f)
+}
+pub(super) fn path(s: String) -> io::Result<PathBuf> {
+    let p = PathBuf::from(&s);
+    if !p.is_absolute()
+        || s.len() > 512
+        || s.chars().any(|c| c.is_control() || "\"\\%$".contains(c))
+        || p.components()
+            .any(|c| matches!(c, std::path::Component::ParentDir))
+    {
+        return Err(invalid());
+    }
+    Ok(p)
+}
+fn host(s: &str) -> bool {
+    !s.is_empty()
+        && s.len() <= 253
+        && !s.starts_with('-')
+        && s.bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b".-:".contains(&b))
+}
+impl Settings {
+    pub fn load(p: &Path) -> io::Result<Self> {
+        let mut text = String::new();
+        regular(p, 8192, true)?
+            .take(8193)
+            .read_to_string(&mut text)?;
+        let mut t = text.parse::<toml::Table>().map_err(|_| invalid())?;
+        if t.remove("version").and_then(|v| v.as_integer()) != Some(1) {
+            return Err(invalid());
+        }
+        let mut string = |key: &str| {
+            t.remove(key)
+                .and_then(|v| v.as_str().map(str::to_owned))
+                .ok_or_else(invalid)
+        };
+        let hostname = string("host")?;
+        let file_host = string("file_host")?;
+        let identity = path(string("identity")?)?;
+        let public = path(string("public_key")?)?;
+        let known_hosts = path(string("known_hosts")?)?;
+        let mut port = |key: &str| {
+            t.remove(key)
+                .and_then(|v| v.as_integer())
+                .and_then(|v| u16::try_from(v).ok())
+                .filter(|n| *n > 0)
+                .ok_or_else(invalid)
+        };
+        let port = port("port")?;
+        let file_port = t
+            .remove("file_port")
+            .and_then(|v| v.as_integer())
+            .and_then(|v| u16::try_from(v).ok())
+            .filter(|n| *n > 0)
+            .ok_or_else(invalid)?;
+        let experimental_terminal = match t.remove("experimental_terminal") {
+            None => None,
+            Some(toml::Value::Table(mut e)) => {
+                let mut string = |key: &str| {
+                    e.remove(key)
+                        .and_then(|v| v.as_str().map(str::to_owned))
+                        .ok_or_else(invalid)
+                };
+                let login = string("login")?;
+                let terminal_identity = path(string("identity")?)?;
+                let certificate = path(string("certificate")?)?;
+                if terminal_identity == identity
+                    || certificate == terminal_identity
+                    || certificate == identity
+                    || !e.is_empty()
+                    || login.is_empty()
+                    || login.len() > 32
+                    || login.starts_with('-')
+                    || !login
+                        .bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
+                {
+                    return Err(invalid());
+                }
+                Some(ExperimentalTerminal {
+                    login,
+                    identity: terminal_identity,
+                    certificate,
+                })
+            }
+            _ => return Err(invalid()),
+        };
+        if !t.is_empty() || !host(&hostname) || !host(&file_host) {
+            return Err(invalid());
+        }
+        Ok(Self {
+            host: hostname,
+            port,
+            file_host,
+            file_port,
+            identity,
+            public,
+            known_hosts,
+            experimental_terminal,
+        })
+    }
+    pub fn public_key(&self) -> io::Result<String> {
+        let mut key = String::new();
+        regular(&self.public, 256, false)?.read_to_string(&mut key)?;
+        let mut fields = key.split_whitespace();
+        if fields.next() != Some("ssh-ed25519") {
+            return Err(invalid());
+        }
+        let public_key = fields.next().ok_or_else(invalid)?.to_owned();
+        let blob = STANDARD.decode(&public_key).map_err(|_| invalid())?;
+        if blob.len() != 51
+            || &blob[..19] != b"\0\0\0\x0bssh-ed25519\0\0\0\x20"
+            || STANDARD.encode(&blob) != public_key
+        {
+            return Err(invalid());
+        }
+        Ok(public_key)
+    }
+    pub(super) fn terminal_ready(&self) -> io::Result<()> {
+        if let Some(e) = &self.experimental_terminal {
+            regular(&e.identity, 65536, true)?;
+            regular(&e.certificate, 16384, false)?;
+        }
+        Ok(())
+    }
+    fn ready(self) -> io::Result<Profile> {
+        self.terminal_ready()?;
+        regular(&self.identity, 65536, false)?;
+        regular(&self.known_hosts, 1024 * 1024, false)?;
+        let public_key = self.public_key()?;
+        Ok(Profile {
+            host: self.host,
+            port: self.port,
+            file_host: self.file_host,
+            file_port: self.file_port,
+            identity: self.identity,
+            public_key,
+            known_hosts: self.known_hosts,
+            experimental_terminal: self.experimental_terminal,
+        })
+    }
+}
+impl Profile {
+    pub fn load(p: &Path) -> io::Result<Self> {
+        Settings::load(p)?.ready()
+    }
+    pub fn ssh(&self, files: bool) -> Command {
+        let mut c = Command::new("/usr/bin/ssh");
+        c.args([
+            "-F",
+            "/dev/null",
+            "-a",
+            "-x",
+            "-e",
+            "none",
+            "-o",
+            "BatchMode=yes",
+            "-o",
+            "StrictHostKeyChecking=yes",
+            "-o",
+            "IdentitiesOnly=yes",
+            "-o",
+            "ClearAllForwardings=yes",
+            "-o",
+            "PermitLocalCommand=no",
+            "-o",
+            "ControlMaster=no",
+            "-o",
+            "ControlPath=none",
+            "-o",
+            "ConnectTimeout=10",
+            "-o",
+            "LogLevel=ERROR",
+        ]);
+        c.arg("-o").arg(format!(
+            "UserKnownHostsFile=\"{}\"",
+            self.known_hosts.display()
+        ));
+        let terminal = self.experimental_terminal.as_ref().filter(|_| !files);
+        if let Some(e) = terminal {
+            c.arg("-o")
+                .arg(format!("CertificateFile=\"{}\"", e.certificate.display()));
+        }
+        c.arg("-i")
+            .arg(terminal.map_or(&self.identity, |e| &e.identity))
+            .arg("-p")
+            .arg(if files { self.file_port } else { self.port }.to_string());
+        if files {
+            c.args(["-T", "-l", "factionfiles", "-s"])
+                .arg(&self.file_host)
+                .arg("sftp");
+        } else {
+            c.args([
+                "-tt",
+                "-l",
+                terminal.map_or("factionterm", |e| e.login.as_str()),
+            ])
+            .arg(&self.host);
+        }
+        c.env_clear()
+            .env("PATH", "/usr/bin:/bin")
+            .env("TERM", "xterm-256color");
+        if let Some(agent) = std::env::var_os("SSH_AUTH_SOCK") {
+            c.env("SSH_AUTH_SOCK", agent);
+        }
+        c
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn profiles_reject_remote_options_unknown_fields_and_loose_local_permissions() {
+        use std::os::unix::fs::{DirBuilderExt, PermissionsExt};
+        let root =
+            std::env::temp_dir().join(format!("faction-client-profile-{}", std::process::id()));
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&root)
+            .unwrap();
+        let key =
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        for name in ["identity", "identity.pub", "known_hosts"] {
+            std::fs::write(
+                root.join(name),
+                if name == "identity.pub" {
+                    key
+                } else {
+                    "fixture"
+                },
+            )
+            .unwrap();
+            std::fs::set_permissions(root.join(name), std::fs::Permissions::from_mode(0o600))
+                .unwrap();
+        }
+        let original = format!(
+            "version=1\nhost=\"example.invalid\"\nport=2222\nfile_host=\"example.invalid\"\nfile_port=2223\nidentity=\"{}/identity\"\npublic_key=\"{}/identity.pub\"\nknown_hosts=\"{}/known_hosts\"\n",
+            root.display(),
+            root.display(),
+            root.display()
+        );
+        let path = root.join("client.toml");
+        std::fs::write(&path, &original).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+        let profile = Profile::load(&path).unwrap();
+        let args = profile
+            .ssh(false)
+            .get_args()
+            .map(|s| s.to_string_lossy().into_owned())
+            .collect::<Vec<_>>();
+        assert!(args.contains(&"StrictHostKeyChecking=yes".into()));
+        assert!(args.contains(&"BatchMode=yes".into()));
+        assert!(args.contains(&"ClearAllForwardings=yes".into()));
+        assert!(args.contains(&"none".into()));
+        assert!(!args.iter().any(|a| a.starts_with("CertificateFile=")));
+        assert!(args.contains(&"factionterm".into()));
+        let experimental = format!(
+            "{original}[experimental_terminal]\nlogin='factionroam1'\nidentity='{}/auth key'\ncertificate='{}/auth cert.pub'\n",
+            root.display(),
+            root.display()
+        );
+        for name in ["auth key", "auth cert.pub"] {
+            std::fs::write(root.join(name), "fixture").unwrap();
+            std::fs::set_permissions(root.join(name), std::fs::Permissions::from_mode(0o600))
+                .unwrap();
+        }
+        std::fs::write(&path, &experimental).unwrap();
+        let roaming = Profile::load(&path).unwrap();
+        let args = roaming
+            .ssh(false)
+            .get_args()
+            .map(|a| a.to_string_lossy().into_owned())
+            .collect::<Vec<_>>();
+        assert!(args.contains(&"factionroam1".into()));
+        assert!(args.contains(&root.join("auth key").display().to_string()));
+        assert!(args.contains(&format!(
+            "CertificateFile=\"{}/auth cert.pub\"",
+            root.display()
+        )));
+        let files = roaming
+            .ssh(true)
+            .get_args()
+            .map(|a| a.to_string_lossy().into_owned())
+            .collect::<Vec<_>>();
+        assert!(files.contains(&"factionfiles".into()));
+        assert!(files.contains(&root.join("identity").display().to_string()));
+        assert!(!files.iter().any(|a| a.starts_with("CertificateFile=")));
+        for bad in [
+            experimental.replace("login='factionroam1'", "login='-unsafe'"),
+            experimental.replace("login='factionroam1'", "login='bad user'"),
+            experimental.replace(
+                "login='factionroam1'",
+                &format!("login='{}'", "a".repeat(33)),
+            ),
+            experimental.replace("login='factionroam1'\n", ""),
+            experimental.replace(
+                &format!("certificate='{}/auth cert.pub'\n", root.display()),
+                "",
+            ),
+            format!("{experimental}unknown=true\n"),
+            experimental.replace("auth cert.pub", "missing-cert.pub"),
+            experimental.replace("auth key", "identity"),
+            experimental.replace("auth cert.pub", "auth key"),
+        ] {
+            std::fs::write(&path, bad).unwrap();
+            assert!(Profile::load(&path).is_err());
+        }
+        for bad in [
+            original.replace("example.invalid", "-oProxyCommand=bad"),
+            format!("{original}unknown=true\n"),
+            original.replace("port=2222", "port=0"),
+        ] {
+            std::fs::write(&path, bad).unwrap();
+            assert!(Profile::load(&path).is_err());
+        }
+        std::fs::write(&path, original).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(Profile::load(&path).is_err());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}

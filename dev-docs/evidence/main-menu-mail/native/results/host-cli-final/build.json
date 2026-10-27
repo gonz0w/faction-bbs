@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "command": [
+    "cargo",
+    "+1.96.0",
+    "build",
+    "--manifest-path",
+    "/private/tmp/faction230-native-OWNED/source-final05/Cargo.toml",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "-p",
+    "faction-cli"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 11.008808500002488,
+  "source_manifest": "source-final05-manifest.json",
+  "artifacts": {
+    "faction": "cb5f664efee23ce34e75a4ff599cb99108191b3f61ad8ddf0035649c00ed0dff",
+    "faction-member": "0d8351405b899e5ef0c4beddec85bdc988662f58c2df6640d3d3a9199796eb4b"
+  }
+}

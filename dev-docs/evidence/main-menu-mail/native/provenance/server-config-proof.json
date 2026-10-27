@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "fresh_board": true,
+  "fresh_file_store": true,
+  "max_sessions": 8,
+  "launch_ms": 5000,
+  "files_disabled": true,
+  "files_service_started": false,
+  "distinct_uids": true,
+  "loopback_forward_only": true,
+  "services_started": false
+}

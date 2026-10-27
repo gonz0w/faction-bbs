@@ -1,0 +1,212 @@
+//! Root-managed experimental UID admission. No terminal supplies identity fields.
+use faction_access::{Result, denied};
+use faction_core::{RoamingAdmission, RoamingRegistry};
+use rustix::fs::OFlags;
+use std::{
+    fs::{self, File},
+    io::Read,
+    os::unix::{
+        ffi::OsStrExt,
+        fs::{MetadataExt, OpenOptionsExt},
+    },
+    path::{Component, Path},
+};
+use toml::{Table, Value};
+
+const CAP: u64 = 8192;
+pub fn admitted_uid(ordinary: u32, registered: &[u32], observed: u32) -> bool {
+    observed == ordinary || registered.contains(&observed)
+}
+fn valid_path(path: &Path) -> bool {
+    path.is_absolute()
+        && path.as_os_str().as_bytes().len() <= 512
+        && !path
+            .as_os_str()
+            .as_bytes()
+            .iter()
+            .any(|b| *b < 32 || *b == 127)
+        && !path.components().any(|c| matches!(c, Component::ParentDir))
+}
+pub fn load(path: &Path, reserved: &[u32]) -> Result<RoamingRegistry> {
+    if !valid_path(path) {
+        return Err(denied());
+    }
+    // Every ancestor is immutable to the service and transport identities. Root is
+    // a trusted authority; checking without following symlinks prevents alias policy.
+    for parent in path.ancestors().skip(1) {
+        let m = fs::symlink_metadata(parent)?;
+        if !m.is_dir() || m.uid() != 0 || m.mode() & 0o022 != 0 {
+            return Err(denied());
+        }
+    }
+    let mut file = File::options()
+        .read(true)
+        .custom_flags((OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC).bits() as i32)
+        .open(path)?;
+    let m = file.metadata()?;
+    if !m.is_file() || m.uid() != 0 || m.nlink() != 1 || m.mode() & 0o022 != 0 || m.len() > CAP {
+        return Err(denied());
+    }
+    let mut text = String::new();
+    (&mut file).take(CAP + 1).read_to_string(&mut text)?;
+    parse(&text, reserved)
+}
+fn positive(t: &mut Table, key: &str) -> Result<i64> {
+    match t.remove(key) {
+        Some(Value::Integer(n)) if n > 0 => Ok(n),
+        _ => Err(denied()),
+    }
+}
+fn parse(text: &str, reserved: &[u32]) -> Result<RoamingRegistry> {
+    if text.len() > CAP as usize {
+        return Err(denied());
+    }
+    let mut t: Table = text.parse().map_err(|_| denied())?;
+    if t.remove("version").and_then(|v| v.as_integer()) != Some(1) {
+        return Err(denied());
+    }
+    let identity = match t.remove("board_identity") {
+        Some(Value::String(s)) => s,
+        _ => return Err(denied()),
+    };
+    if identity.len() != 64 || !identity.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return Err(denied());
+    }
+    let mut board_identity = [0; 32];
+    for (i, byte) in board_identity.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&identity[i * 2..i * 2 + 2], 16).map_err(|_| denied())?;
+    }
+    let raw = match t.remove("entries") {
+        Some(Value::Array(e)) if e.len() <= 4 => e,
+        _ => return Err(denied()),
+    };
+    if !t.is_empty() {
+        return Err(denied());
+    }
+    let mut entries = Vec::<RoamingAdmission>::new();
+    for e in raw {
+        let Value::Table(mut e) = e else {
+            return Err(denied());
+        };
+        let uid = u32::try_from(positive(&mut e, "uid")?).map_err(|_| denied())?;
+        let binding_id = positive(&mut e, "binding_id")?;
+        let binding_generation = positive(&mut e, "binding_generation")?;
+        let issuer_generation = positive(&mut e, "issuer_generation")?;
+        if !e.is_empty()
+            || reserved.contains(&uid)
+            || entries
+                .iter()
+                .any(|a| a.uid == uid || a.binding_id == binding_id)
+        {
+            return Err(denied());
+        }
+        entries.push(RoamingAdmission {
+            uid,
+            binding_id,
+            binding_generation,
+            issuer_generation,
+        });
+    }
+    Ok(RoamingRegistry {
+        board_identity,
+        entries,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    const ENTRY: &str =
+        "[[entries]]\nuid=4242\nbinding_id=1\nbinding_generation=2\nissuer_generation=3\n";
+    fn text() -> String {
+        format!("version=1\nboard_identity='{}'\n{ENTRY}", "ab".repeat(32))
+    }
+    fn reserved() -> Vec<u32> {
+        vec![0, 123, rustix::process::geteuid().as_raw(), 124, 125, 126]
+    }
+    #[test]
+    fn manifest_parser_accepts_only_exact_bounded_identity_and_bindings() {
+        let good = text();
+        let registry = parse(&good, &reserved()).unwrap();
+        assert_eq!(registry.board_identity, [0xab; 32]);
+        assert_eq!(registry.entries.len(), 1);
+        assert_eq!(registry.entries[0].uid, 4242);
+        assert_eq!(registry.entries[0].binding_generation, 2);
+        let four = format!(
+            "version=1\nboard_identity='{}'\n{}",
+            "AB".repeat(32),
+            (0..4)
+                .map(|i| ENTRY
+                    .replace("4242", &(4242 + i).to_string())
+                    .replace("binding_id=1", &format!("binding_id={}", i + 1)))
+                .collect::<String>()
+        );
+        assert_eq!(parse(&four, &reserved()).unwrap().entries.len(), 4);
+        assert!(
+            parse(
+                &format!("{good}{}", ENTRY.replace("4242", "4243")),
+                &reserved()
+            )
+            .is_err()
+        );
+        assert!(
+            parse(
+                &good.replace(
+                    "uid=4242",
+                    &format!("uid={}", rustix::process::geteuid().as_raw())
+                ),
+                &reserved()
+            )
+            .is_err()
+        );
+        for bad in [
+            good.replace("version=1", "version=2"),
+            good.replace("board_identity=", "unexpected='field'\nboard_identity="),
+            good.replace(&"ab".repeat(32), &"é".repeat(32)),
+            good.replace("binding_id=1", "binding_id='1'"),
+            good.replace("uid=4242", "uid=4294967296"),
+            good.replace("ab", "zz"),
+            good.replace(&"ab".repeat(32), &"ab".repeat(31)),
+            good.replace("uid=4242", "uid=0"),
+            good.replace("uid=4242", "uid=123"),
+            good.replace("uid=4242", "uid=124"),
+            good.replace("uid=4242", "uid=125"),
+            good.replace("uid=4242", "uid=126"),
+            good.replace("binding_id=1", "binding_id=0"),
+            good.replace("binding_generation=2", "binding_generation=-1"),
+            good.replace("issuer_generation=3", "issuer_generation=0"),
+            format!("{good}unknown=true\n"),
+            format!("{good}{ENTRY}"),
+            format!(
+                "version=1\nboard_identity='{}'\n{}",
+                "ab".repeat(32),
+                (0..5)
+                    .map(|i| ENTRY
+                        .replace("4242", &(4242 + i).to_string())
+                        .replace("binding_id=1", &format!("binding_id={}", i + 1)))
+                    .collect::<String>()
+            ),
+            " ".repeat(8193),
+        ] {
+            assert!(parse(&bad, &reserved()).is_err(), "{bad}");
+        }
+    }
+    #[test]
+    fn manifest_loader_rejects_untrusted_ancestors_and_paths() {
+        let root = std::env::temp_dir().join(format!("faction223-manifest-{}", std::process::id()));
+        std::fs::create_dir(&root).unwrap();
+        let p = root.join("manifest.toml");
+        std::fs::write(&p, text()).unwrap();
+        assert!(load(&p, &reserved()).is_err());
+        assert!(load(std::path::Path::new("relative"), &reserved()).is_err());
+        assert!(load(std::path::Path::new("/etc/../manifest"), &reserved()).is_err());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn only_observed_shared_or_registered_uids_enter_handoff() {
+        assert!(admitted_uid(123, &[4242], 123));
+        assert!(admitted_uid(123, &[4242], 4242));
+        assert!(!admitted_uid(123, &[4242], 4243));
+        assert!(!admitted_uid(123, &[], 0));
+    }
+}

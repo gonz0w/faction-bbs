@@ -1,0 +1,10 @@
+from lab import *
+import tarfile,hashlib
+source=P/'native-helper-source';source.mkdir(mode=0o700);manifest={};archive=P/'native-helper-source.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for f in (R/'native').rglob('*'):
+  if not f.is_file() or f.is_symlink() or f.suffix not in {'.c','.h','.md'}:continue
+  n=f.relative_to(R);data=f.read_bytes();p=source/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data);t.add(p,arcname=str(n),recursive=False);manifest[str(n)]=hashlib.sha256(data).hexdigest()
+(P/'native-helper-source-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23004/native; tar -xzf - -C /home/factionbuild/source23004; chown -R factionbuild:factionbuild /home/factionbuild/source23004/native',archive.read_bytes())
+print('Explicit public native helper sources captured and staged:',len(manifest),'files. Rust inputs unchanged.')

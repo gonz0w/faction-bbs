@@ -1,0 +1,2 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof230/native-final04/progress.json; cat /home/factionbuild/proof230/native-final04/execution.json; tail -18 /home/factionbuild/proof230/native-final04/hostile.raw.log; tail -18 /home/factionbuild/proof230/native-final04/classic-compact.raw.log',check=False);print(r.stdout.decode());print(r.stderr.decode())

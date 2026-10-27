@@ -1,0 +1,15 @@
+{
+  "closed_loopback_forwards": 4,
+  "forwards_closed": true,
+  "owned_controller_stopped": true,
+  "owned_ssh_children_remaining": 0,
+  "owned_vm_stopped": true,
+  "pid_uid_birth_command_fingerprints_checked": true,
+  "result": "pass",
+  "saved_disk_sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+  "saved_files_checked": 6,
+  "saved_hashes_unchanged": true,
+  "saved_kernel_sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+  "saved_size_mtime_unchanged": true,
+  "saved_stopped": true
+}

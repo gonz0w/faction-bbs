@@ -1,0 +1,1 @@
+{"result": "pass", "files_uid_present": false, "files_auth_uid_present": false, "file_policy_socket_exists": false, "files_ssh_listeners": 0, "max_sessions": 8, "launch_ms": 5000, "experimental_capacity": false, "service_sha256": "8d08e81d95b988fce351c9c05fe80da2429e8aaa2b9691ffa733e0e4d1d30fc0", "theme_sha256": "75d51725f3db0be7bd685b7e95aefd866a5308407f28ce3317a0e979c5bf3145"}

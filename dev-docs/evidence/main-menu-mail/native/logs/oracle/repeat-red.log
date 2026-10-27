@@ -1,0 +1,17 @@
+...F......
+======================================================================
+FAIL: test_kdump_repeated_full_rows_expand_to_next_explicit_offset (test_probe_menu_mail.MenuMailOracle.test_kdump_repeated_full_rows_expand_to_next_explicit_offset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail.py", line 55, in test_kdump_repeated_full_rows_expand_to_next_explicit_offset
+    streams,records=proof.reconstruct_kdump_streams(compressed)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/probe_menu_mail.py", line 108, in reconstruct_kdump_streams
+    assert row is not None, 'unrecognized/truncated hex GIO row; no raw fallback'
+           ^^^^^^^^^^^^^^^
+AssertionError: unrecognized/truncated hex GIO row; no raw fallback
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.001s
+
+FAILED (failures=1)

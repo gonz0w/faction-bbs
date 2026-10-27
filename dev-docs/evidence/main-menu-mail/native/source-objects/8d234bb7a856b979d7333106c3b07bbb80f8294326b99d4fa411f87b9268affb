@@ -1,0 +1,42 @@
+from lab import *
+import hashlib,tarfile,time,re
+stage='source-final02';source=P/stage;assert not source.exists();source.mkdir(mode=0o700)
+allowed={'.rs','.toml','.c','.h','.md','.py','.sh','.txt','.ans','.pem','.in'}
+paths=[R/'Cargo.toml',R/'Cargo.lock',R/'LICENSE']
+for top in ['crates','tools','deploy/netbsd','themes']:
+ for f in (R/top).rglob('*'):
+  if not f.is_file() or f.is_symlink():continue
+  if any(x in f.parts for x in ['.git','target','__pycache__','.DS_Store']):continue
+  if f.name.startswith('.') or 'key' in f.name.lower() or f.suffix in {'.der','.pk8'}:continue
+  if f.suffix in allowed or f.name.startswith('LICENSE') or f.name in {'SHA256SUMS','faction_broker','faction_sshd','faction_files_sshd','faction_doors'}:paths.append(f)
+manifest={}
+for f in paths:
+ data=f.read_bytes();assert not re.search(rb'(?m)^-----BEGIN (?:OPENSSH |RSA |EC )?PRIVATE KEY-----',data)
+ rel=f.relative_to(R);out=source/rel;out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(data);manifest[str(rel)]=hashlib.sha256(data).hexdigest()
+(P/(stage+'-manifest.json')).write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/(stage+'.tar.gz')
+with tarfile.open(archive,'w:gz') as t:
+ for n in sorted(manifest):t.add(source/n,arcname=n,recursive=False)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23002; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source23002; tar -xzf - -C /home/factionbuild/source23002; chown -R factionbuild:factionbuild /home/factionbuild/source23002',archive.read_bytes(),180)
+script=r'''from pathlib import Path
+import os,json,subprocess,time,hashlib
+root=Path('/home/factionbuild/source23002');p=Path('/home/factionbuild/proof230/build-attempt02');p.mkdir(exist_ok=True);target=Path('/home/factionbuild/target230');env=os.environ.copy();env.update(PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo230',CARGO_TARGET_DIR=str(target),CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+manifest=json.loads(Path('/home/factionbuild/proof230/expected-source02.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==manifest
+(p/'source-observed.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+result={'scope':'two-cores-2GiB-native-build','result':'running','steps':[]}
+steps=[('server',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-cli','-p','faction-service','-p','faction-files']),('default',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-client','--bin','faction-client']),('network',['cargo','build','--release','--locked','--offline','-j','2','-p','faction-client','--features','network-mail','--bin','faction-client','--example','checkpoint_ui_fixture','--example','home_mail_fixture'])]
+for name,cmd in steps:
+ start=time.monotonic()
+ with (p/(name+'-build.log')).open('wb') as log:r=subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=log)
+ result['steps'].append({'name':name,'command':cmd,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(p/'build-result.json').write_text(json.dumps(result,indent=2)+'\n')
+ if r.returncode:
+  result['result']='fail';(p/'build-result.json').write_text(json.dumps(result,indent=2)+'\n');raise SystemExit(r.returncode)
+ if name in {'default','network'}:
+  data=(target/'release/faction-client').read_bytes();(target/('release/faction-client-'+name)).write_bytes(data);(target/('release/faction-client-'+name)).chmod(0o755)
+result['result']='pass';(p/'build-result.json').write_text(json.dumps(result,indent=2)+'\n')
+'''
+(P/'native-build.py').write_text(script)
+remote('cat > /home/factionbuild/proof230/expected-source02.json; chown factionbuild:factionbuild /home/factionbuild/proof230/expected-source02.json',(P/(stage+'-manifest.json')).read_bytes())
+remote('cat > /home/factionbuild/proof230/native-build02.py; chown factionbuild:factionbuild /home/factionbuild/proof230/native-build02.py',script.encode())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-build02.py > /home/factionbuild/proof230/build-launch02.log 2>&1 < /dev/null &'",timeout=10)
+print('Exact public source captured/uploaded:',len(manifest),'files; sequential native build launched.')

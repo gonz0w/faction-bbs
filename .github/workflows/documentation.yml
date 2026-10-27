@@ -156,6 +156,7 @@ jobs:
           python3 tools/check_picker_mail_evidence.py
           python3 tools/check_unread_mail_evidence.py
           python3 tools/check_mail_inbox_evidence.py
+          python3 tools/check_menu_mail_evidence.py
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

@@ -1,0 +1,43 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.56s
+     Running unittests src/main.rs (target/debug/deps/faction_service-c48f28f4d83044b4)
+
+running 4 tests
+test native_mail_tests::mail_control_text_is_ordinary_hidden_password_input ... FAILED
+test native_mail_tests::mail_control_text_is_ordinary_chat_input ... FAILED
+test native_mail_tests::mail_control_text_is_ordinary_writing_body_input ... FAILED
+test native_mail_tests::mail_control_text_is_ordinary_post_subject_input ... FAILED
+
+failures:
+
+---- native_mail_tests::mail_control_text_is_ordinary_hidden_password_input stdout ----
+
+thread 'native_mail_tests::mail_control_text_is_ordinary_hidden_password_input' (1351411) panicked at crates/faction-service/src/native_mail_tests.rs:413:5:
+ordinary input must not close the connection
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- native_mail_tests::mail_control_text_is_ordinary_chat_input stdout ----
+
+thread 'native_mail_tests::mail_control_text_is_ordinary_chat_input' (1351410) panicked at crates/faction-service/src/native_mail_tests.rs:413:5:
+ordinary input must not close the connection
+
+---- native_mail_tests::mail_control_text_is_ordinary_writing_body_input stdout ----
+
+thread 'native_mail_tests::mail_control_text_is_ordinary_writing_body_input' (1351618) panicked at crates/faction-service/src/native_mail_tests.rs:413:5:
+ordinary input must not close the connection
+
+---- native_mail_tests::mail_control_text_is_ordinary_post_subject_input stdout ----
+
+thread 'native_mail_tests::mail_control_text_is_ordinary_post_subject_input' (1351617) panicked at crates/faction-service/src/native_mail_tests.rs:413:5:
+ordinary input must not close the connection
+
+
+failures:
+    native_mail_tests::mail_control_text_is_ordinary_chat_input
+    native_mail_tests::mail_control_text_is_ordinary_hidden_password_input
+    native_mail_tests::mail_control_text_is_ordinary_post_subject_input
+    native_mail_tests::mail_control_text_is_ordinary_writing_body_input
+
+test result: FAILED. 0 passed; 4 failed; 0 ignored; 0 measured; 30 filtered out; finished in 3.21s
+
+error: test failed, to rerun pass `-p faction-service --bin faction-service`

@@ -1,0 +1,9 @@
+from lab import *
+import tomllib,hashlib
+lock=tomllib.loads((R/'Cargo.lock').read_text());byfile={x['name']+'-'+x['version']+'.crate':x for x in lock['package'] if 'checksum' in x};items=[]
+for p in (P/'downloaded-public-crates').iterdir():
+ x=byfile[p.name];h=hashlib.sha256(p.read_bytes()).hexdigest();assert h==x['checksum'];items.append(dict(name=x['name'],version=x['version'],bytes=p.stat().st_size,sha256=h,expected_cargo_lock_sha256=x['checksum'],source='https://static.crates.io/crates/'+x['name']+'/'+p.name,credentials_used=False))
+(P/'public-download-provenance.json').write_text(json.dumps(dict(result='pass',packages=items,new_product_dependencies=False,private_cargo_config_used=False),indent=2)+'\n')
+r=remote("su - factionbuild -c 'cd /home/factionbuild/source23006 && CARGO_HOME=/home/factionbuild/cargo230 cargo tree --locked --offline -p faction-client --features network-mail --target aarch64-unknown-netbsd --edges normal,build --prefix none'",timeout=30)
+(P/'native-client-dependency-scope.raw.log').write_bytes(r.stdout+r.stderr)
+print('Public download hashes/sizes/origins retained; exact native client graph captured without credentials.')

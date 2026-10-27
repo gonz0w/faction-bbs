@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "saved_owner_stopped": true,
+  "saved_disk_sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+  "saved_kernel_sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+  "all_saved_hash_size_mtime_matches": true,
+  "checked_saved_files": 6,
+  "owned_vm_live_for_lead_audit": true,
+  "owned_loopback_listeners": 4,
+  "runtime_memory_mib": 1024,
+  "cleanup_claim": false
+}

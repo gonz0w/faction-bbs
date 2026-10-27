@@ -1,0 +1,15 @@
+{
+  "credential_permits": 2,
+  "drain_seconds": 5,
+  "final_service_cached_incremental_memory_mib": 1024,
+  "full_build_memory_mib": 2048,
+  "kernel_slots": 2,
+  "launch_ms": 5000,
+  "mail_nonces": 64,
+  "mail_payload_bytes": 80,
+  "normal_sessions": 8,
+  "owner_helpers": 3,
+  "physmem": 1054990336,
+  "result": "pass",
+  "runtime_memory_mib": 1024
+}

@@ -1,0 +1,12 @@
+"""Confirm two source-only owned roots against preserved manifests before marking."""
+from pathlib import Path
+import hashlib,json,os
+R=Path('/Users/cam/DEV/faction-bbs');OUT=R/'dev-docs/evidence/main-menu-mail';O=Path('/private/tmp/faction230-integration-OWNED')
+cases=[('client','client-final02-manifest.json','execution/source-maps/client/root/client-final02-manifest.json'),('oracle','final-source-manifest.json','native/provenance/oracle/final-source-manifest.json')]
+for name,local,archived in cases:
+ root=Path('/private/tmp')/('faction230-'+name+'-OWNED');assert root.is_dir() and not root.is_symlink() and root.stat().st_uid==os.getuid()
+ assert (root/local).read_bytes()==(OUT/archived).read_bytes(),'owned source identity differs'
+ marker=root/'OWNED';assert not marker.exists();marker.write_text('Issue230 delegated source evidence; identity verified against preserved final manifest before cleanup.\n')
+record=json.loads((O/'root-ready-cleanup.json').read_bytes());raw=Path(__file__).read_bytes();digest=hashlib.sha256(raw).hexdigest();path=OUT/'integration/source-objects'/digest;path.write_bytes(raw);record['sources'].append(dict(path=str(path.relative_to(R)),sha256=digest));record['source_stages'].append(dict(label='source-root-marker-verification',files=[dict(name=Path(__file__).name,sha256=digest)]))
+receipt=dict(result='pass',initial_cleanup_refused_before_deletion=True,initial_assumption='Two delegated source roots had explicit OWNED directory names but no marker file',exact_preserved_manifest_matches=2,current_uid_verified=True,symlinks_rejected=True,marker_files_created_before_cleanup=True,cleanup_script_unchanged=True)
+path=OUT/'integration/metadata/source-root-markers.json';path.write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n');record['sources'].append(dict(path=str(path.relative_to(R)),sha256=hashlib.sha256(path.read_bytes()).hexdigest()));(O/'root-ready-cleanup.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n');print('Two delegated source roots confirmed by exact preserved manifests and UID; explicit markers added; original cleanup assertions retained.')

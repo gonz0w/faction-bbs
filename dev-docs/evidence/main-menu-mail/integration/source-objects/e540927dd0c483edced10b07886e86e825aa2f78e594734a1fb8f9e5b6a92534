@@ -1,0 +1,14 @@
+from integrate import *
+record=json.loads((OWN/'root-before-cleanup.json').read_bytes());available={ref['sha256'] for ref in record['sources']};missing=[]
+for stage in record['source_stages']:
+ for source in stage['files']:
+  if source['sha256'] not in available:missing.append((stage['label'],source['name']))
+assert not missing,missing[:10]
+for item in record['sources']+record['prior_records']:
+ path=ROOT/item['path'];assert sha(path.read_bytes())==item['sha256'],item['path']
+final=next(s for s in record['source_stages'] if s['label']=='native-final');changed=[]
+for file in final['files']:
+ if file['name'].startswith('crates/') and sha((ROOT/file['name']).read_bytes())!=file['sha256']:changed.append(file['name'])
+assert not changed,changed
+result=dict(result='pass',all_references_resolved=True,source_stages=len(record['source_stages']),source_references=len(record['sources']),all_current_crates_match_native_final06=True,cleanup_still_required=True)
+(OWN/'root-input-audit.json').write_text(json.dumps(result,indent=2)+'\n');print(result)

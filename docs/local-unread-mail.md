@@ -8,6 +8,9 @@ Build and configure [manual encrypted home mail](online-mail.md), then add the
 private [picker home-mail paths](picker-home-mail.md). The default build and
 ordinary SSH do not decrypt member mail.
 
+A separate optional [main-menu mail entry](main-menu-mail.md) opens the same local
+console without entering Files. The Files workflow below remains available.
+
 ## Enable local read tracking
 
 Open home mail and unlock your checkpoint. Its **E: Enable local read tracking**

@@ -1,0 +1,24 @@
+"""Scan and preserve explicitly selected final assembly inputs before cleanup."""
+from pathlib import Path
+import hashlib,json,re,runpy
+R=Path('/Users/cam/DEV/faction-bbs');O=Path('/private/tmp/faction230-integration-OWNED');OUT=R/'dev-docs/evidence/main-menu-mail'
+ns=runpy.run_path(str(O/'export_public_sources.py'));safe=ns['safe']
+def put(relative,raw):
+ safe(raw);path=OUT/'integration'/relative;path.parent.mkdir(parents=True,exist_ok=True)
+ if path.exists():assert path.read_bytes()==raw
+ else:path.write_bytes(raw)
+ return dict(path=str(path.relative_to(R)),sha256=hashlib.sha256(raw).hexdigest())
+refs=[];stage=[]
+for path in sorted(O.glob('*.py')):
+ raw=path.read_bytes();h=hashlib.sha256(raw).hexdigest();refs.append(put('source-objects/'+h,raw));stage.append(dict(name=path.name,sha256=h))
+metadata=['combined-publication-scan.json','files-publication-scan.json','imports-ready.json','publication-boundaries.json','rescan-guard-tdd.json','retained-rescan02-source.json','root-input-audit.json','vm-teardown.json']
+logs=['combined-publication-scan.log','export-oracle-allowlisted.log','export-public-sources.log','rescan-green.log','rescan-red.log','retained-rescan02.log','scan-files-private.log','scan-files-private02.log','stage-files-private.log','stop-owned-vm.log']
+for name in metadata+logs:
+ raw=(O/name).read_bytes();assert len(raw)<65536 and b'faction-service GIO' not in raw;refs.append(put(('logs/' if name.endswith('.log') else 'metadata/')+name,raw))
+record=json.loads((O/'root-before-cleanup.json').read_bytes());record['sources']+=refs;record['source_stages'].append(dict(label='final-assembly-and-guard',files=stage))
+# Scan the already selected final public tree, not arbitrary private workspace files.
+count=0
+for path in OUT.rglob('*'):
+ if path.is_file():safe(path.read_bytes());count+=1
+ref=put('metadata/final-publication-scan.json',(json.dumps(dict(result='pass',selected_public_files=count,actual_generated_value_scan=True,secret_matches=0,private_key_material_matches=0,raw_captures_not_selected=True),indent=2)+'\n').encode());record['sources'].append(ref)
+(O/'root-ready-cleanup.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n');print('Final assembly sources and selected metadata/logs preserved; public tree passed actual-private-value scan. Ready for exact owned cleanup.')

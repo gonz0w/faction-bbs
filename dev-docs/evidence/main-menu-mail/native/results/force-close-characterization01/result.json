@@ -1,0 +1,7 @@
+{
+  "result": "fail",
+  "scope": "actual-owned-native-client-forced-close-characterization",
+  "owned_ssh_survived_client_forceclose": true,
+  "identity_starttime_profile_verified": true,
+  "cleanup_performed_only_if_exact_owned_identity": true
+}

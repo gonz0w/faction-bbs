@@ -1,0 +1,30 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.02s
+     Running unittests src/main.rs (target/debug/deps/faction_service-c48f28f4d83044b4)
+
+running 3 tests
+test native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work ... FAILED
+test native_mail_tests::mail_initial_offer_supports_ansi_menu_selection ... ok
+test native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi ... FAILED
+
+failures:
+
+---- native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work stdout ----
+
+thread 'native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work' (1434829) panicked at crates/faction-service/src/native_mail_tests.rs:540:9:
+assertion failed: matches!(client.state, State::MailOffer)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi stdout ----
+
+thread 'native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi' (1434857) panicked at crates/faction-service/src/native_mail_tests.rs:564:5:
+assertion failed: matches!(client.state, State::MailOffer)
+
+
+failures:
+    native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work
+    native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi
+
+test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 34 filtered out; finished in 1.96s
+
+error: test failed, to rerun pass `-p faction-service --bin faction-service`

@@ -1,0 +1,13 @@
+{
+  "actual_generated_values_scanned": true,
+  "binaries_archives_metadata_excluded": true,
+  "files_scanned": {
+    "execution": 1086,
+    "native": 1040,
+    "review": 64
+  },
+  "private_key_material_matches": 0,
+  "result": "pass",
+  "secret_matches": 0,
+  "static_public_fixture_values_not_secret": true
+}

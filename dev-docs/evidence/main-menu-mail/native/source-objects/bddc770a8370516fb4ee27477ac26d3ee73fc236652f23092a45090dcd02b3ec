@@ -1,0 +1,9 @@
+from lab import *
+import re
+trace=json.loads(next(f for f in P.glob('menu-mail-*/board-trace.private.json')).read_text());r=remote('kdump -X 1 -m 1048576 -f '+shlex.quote(trace['path']));(P/'hex-format.private.log').write_bytes(r.stdout)
+lines=r.stdout.decode().splitlines();heads=[(i,l) for i,l in enumerate(lines) if ' GIO ' in l]
+for i,l in heads[:5]:
+ print(l)
+ for v in lines[i+1:i+4]:
+  if ' GIO ' in v:break
+  print('structure:',re.sub(r'\b[0-9a-f]{2}\b','XX',v))

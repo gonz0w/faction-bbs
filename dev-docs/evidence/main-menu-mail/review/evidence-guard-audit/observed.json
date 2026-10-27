@@ -1,0 +1,8 @@
+{
+  "same_host_route_refs_accepted_as_netbsd": true,
+  "missing_platform_and_scope_accepted": true,
+  "contiguous_marker_rejected": true,
+  "fragmented_kdump_marker_false_absence_accepted": true,
+  "generic_protocol_compatibility_legacy_pass_records_accepted": true,
+  "source_drift": []
+}

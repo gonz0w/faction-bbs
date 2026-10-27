@@ -1,0 +1,89 @@
+from lab import *
+import hashlib,re,time
+out=P/'public';out.mkdir(mode=0o700)
+for n in ['results','logs','source-maps','source-objects','provenance']: (out/n).mkdir()
+def put(rel,data):
+ p=out/rel;p.parent.mkdir(parents=True,exist_ok=True)
+ if p.exists():assert p.read_bytes()==data,rel
+ else:p.write_bytes(data)
+def copy(path,rel):
+ if path.exists():put(rel,path.read_bytes())
+def native(base,names,prefix):
+ for n in names:
+  r=remote('if test -f '+base+'/'+n+'; then cat '+base+'/'+n+'; else exit 3; fi',check=False)
+  if r.returncode==0:put(prefix+'/'+n,r.stdout)
+for label,names in {
+ 'host-main-final02':['classic.json','unicode.json','classic-compact.json','classic.raw.log','unicode.raw.log','classic-compact.raw.log','source-manifest.json','classic.execution.json','unicode.execution.json','classic-compact-source.json'],
+ 'host-negative-final02':['protocol.json','hostile.json','protocol.raw.log','hostile.raw.log','execution.json','source-manifest.json','artifact-manifest.json'],
+ 'host-standalone-final01':['result.json','raw.log','execution.json','source-manifest.json'],
+ 'host-preflight01':['result.json','raw.log','execution.json','source-manifest.json'],
+ 'host-main-final01':['classic.json','unicode.json','classic.raw.log','unicode.raw.log','source-manifest.json'],
+ 'host-negative-final01':['protocol.json','protocol.raw.log','hostile.raw.log','execution.json','source-manifest.json'],
+ 'force-close-characterization01':['result.json'],
+ 'force-close-characterization02':['result.json'],
+ 'host-cli-final':['build.json','build.log'],
+ 'host-files-final01':['classic.json','unicode.json','source-manifest.json','classic.raw.log','unicode.raw.log']}.items():
+ for n in names:copy(P/label/n,('logs/' if n.endswith('.log') else 'results/')+label+'/'+n)
+for label in ['native-final01','native-final02','native-final03','native-final04']:
+ names=['execution.json','main-classic.json','main-unicode.json','standalone.json','protocol.json','hostile.json','classic-compact.json','main-classic.raw.log','main-unicode.raw.log','standalone.raw.log','protocol.raw.log','hostile.raw.log','classic-compact.raw.log','probe-oracle.raw.log','driver-launch.raw.log']
+ for n in names:native('/home/factionbuild/proof230/'+label,[n],('logs/' if n.endswith('.log') else 'results/')+label)
+for n in ['boot-summary.json','server-config-proof.json','runtime-environment.json','runtime-files-disabled-proof.json','runtime-files-disabled-proof.candidate05.json','main-phase-complete.json','old-client-origin.json','native-final-artifacts.json','native-final-build-result.json','native-final-test-result.json','native-service-final06-result.json','installed-service-final06.json','connection-audit-summary.json','service-final06-liveness-after-denial.json','public-download-provenance.json','files-regression-environment.json','saved-integrity-before-lead-audit.json']:
+ copy(P/n,'provenance/'+n)
+for n in ['native-final-test-raw.log','native-test-attempt05.log','native-service-final06-dependency-scope.raw.log','native-service-final06-build.raw.log','native-service-final06-tests.raw.log','native-server-final06-setup-failure.log','native-client-dependency-scope.raw.log','force-close-characterization.raw.log','force-close-characterization-green.raw.log','cleanup-helper-red.raw.log','cleanup-helper-green.raw.log']:
+ copy(P/n,'logs/'+n)
+for label in ['red-probe','probe-green01','probe-green02','probe-green03','probe-green04']:
+ copy(P/label/'raw.log','logs/'+label+'.raw.log')
+for attempt in ['01','02','03','04','05']:
+ native('/home/factionbuild/proof230/build-attempt'+attempt,['build-result.json'],'provenance/native-build-attempt'+attempt)
+ native('/home/factionbuild/proof230/build-attempt'+attempt,['server-build.log','default-build.log','network-build.log','tests-build.log','build-launch.log'],'logs/native-build-attempt'+attempt)
+allowed={'.rs','.toml','.c','.h','.md','.py','.sh','.txt','.ans','.pem','.in','.sql','.article','.lock'}
+def source_context(name,root):
+ manifest={}
+ for f in sorted(root.rglob('*')):
+  if not f.is_file() or f.is_symlink():continue
+  rel=f.relative_to(root)
+  if any(x in rel.parts for x in ['.git','target','__pycache__','.DS_Store']):continue
+  if not(f.suffix in allowed or f.name.startswith('LICENSE') or f.name in {'SHA256SUMS','faction_broker','faction_sshd','faction_files_sshd','faction_doors'}):continue
+  data=f.read_bytes();assert not data.startswith((b'\x7fELF',b'\x1f\x8b',b'QFI\xfb',b'PK\x03\x04')),str(f)
+  h=hashlib.sha256(data).hexdigest();put('source-objects/'+h,data);manifest[str(rel)]=h
+ put('source-maps/'+name+'.json',(json.dumps(manifest,sort_keys=True,indent=2)+'\n').encode())
+for label in ['source-final01','source-final02','source-final03','source-final04','source-final05','source-final06','probe-green01','probe-green02','probe-green03','probe-green04','red-probe','native-helper-source','config-inputs','config-inputs02','host-preflight01/code','host-main-final01/code','host-main-final02/code','host-negative-final01','host-negative-final02','host-standalone-final01','native-final01','native-final02','native-final03','native-final04','host-files-final01','native-files-final01']:
+ root=P/label
+ if root.exists():source_context(label.replace('/','-'),root)
+root=P/'export-orchestration-inputs';root.mkdir(mode=0o700)
+for f in P.glob('*.py'):(root/f.name).write_bytes(f.read_bytes())
+source_context('orchestration-inputs',root)
+for n in ['source-final01-manifest.json','source-final02-manifest.json','source-final03-manifest.json','source-final04-manifest.json','source-final05-manifest.json','source-final06-manifest.json','source-final06-changes.json','native-helper-source-manifest.json','public-registry-manifest01.json','public-index-resolution-manifest.json']:
+ copy(P/n,'provenance/'+n)
+# Actual generated values stay private; only the zero-match result is exported.
+code=r'''from pathlib import Path
+import json
+assert Path('/etc/faction-disposable-test').is_file()
+values=[]
+for top in ['/home/factionbuild/device230','/home/factionbuild/proof230']:
+ root=Path(top)
+ for p in root.rglob('*.json'):
+  if p.name not in {'private-markers.json','private-inputs.json'} and not(p.name.startswith('generated-') and p.name.endswith('.private.json')):continue
+  x=json.loads(p.read_text())
+  if isinstance(x,list):values.extend(v for v in x if isinstance(v,str))
+  elif isinstance(x,dict):values.extend(x[k] for k in ['home_password','subject','body','password'] if k in x)
+print(json.dumps(values))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'native-generated-inventory.initial.private.json').write_bytes(r.stdout);values=json.loads(r.stdout)
+for p in P.rglob('*.json'):
+ if out in p.parents or p.name not in {'private-markers.json','private-inputs.json'} and not(p.name.startswith('generated-') and p.name.endswith('.private.json')):continue
+ x=json.loads(p.read_text())
+ if isinstance(x,list):values.extend(v for v in x if isinstance(v,str))
+ elif isinstance(x,dict):values.extend(x[k] for k in ['home_password','subject','body','password'] if k in x)
+values.append((P/'sysop-password.private').read_text())
+for p in [P/'member-key',P/'lab-admin-key']:
+ values.extend(l for l in p.read_text().splitlines() if len(l)>=32 and not l.startswith('-----'))
+public_fixture={'checkpoint synthetic fixture password','synthetic private archive id','synthetic-private-archive-id','synthetic subject','synthetic incoming','synthetic received body'}
+needles=sorted({v.encode() for v in values if v and v not in public_fixture});files=[f for f in out.rglob('*') if f.is_file()];matches=[]
+for f in files:
+ data=f.read_bytes()
+ if any(v in data for v in needles) or re.search(rb'(?m)^-----BEGIN (?:OPENSSH |RSA |EC )?PRIVATE KEY-----',data):matches.append(str(f.relative_to(out)))
+assert not matches,matches
+put('provenance/privacy-scan-initial.json',(json.dumps(dict(result='pass',files_scanned=len(files),actual_generated_secret_needles=len(needles),secret_matches=0,private_key_material_matches=0,static_public_fixture_values_not_secret=True,private_captures_archives_configs_keys_binaries_excluded=True),indent=2)+'\n').encode())
+manifest={str(f.relative_to(out)):hashlib.sha256(f.read_bytes()).hexdigest() for f in out.rglob('*') if f.is_file()};put('manifest-initial.json',(json.dumps(manifest,sort_keys=True,indent=2)+'\n').encode())
+print('Immutable partial public export ready:',len(manifest),'files; zero actual-secret/key-marker matches. Private captures remain outside export.')

@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "scope": "main-menu-local-mail-files-disabled-same-ssh",
+  "unicode": true,
+  "count": 11,
+  "checks": [
+    "independent_approved_member_files_disabled_main_menu_entry",
+    "ordinary_ssh_explanation_and_same_menu_return",
+    "fixed_local_open_back_choice_without_unlock_or_home_contact",
+    "queued_confirmation_discarded_and_fresh_local_confirmation_required",
+    "wrong_unlock_and_canceled_unlock_lock_return_same_ssh",
+    "hidden_prompt_and_private_console_do_not_render_hostile_board_output",
+    "real_home_tcp_refusal_preserves_exact_checkpoint_history_pending_cursor",
+    "existing_local_history_and_outbox_remain_device_private",
+    "fresh_hidden_unlock_and_lock_return_to_same_ssh_main_menu",
+    "private_view_disconnect_fails_closed_without_redial",
+    "private_markers_absent_board_transcript_database_store_and_logs"
+  ],
+  "files_disabled": true,
+  "transfer_authority_required": false,
+  "same_client_pid": true,
+  "same_ssh_pid_until_explicit_disconnect": true,
+  "home_transport_error": "Connect",
+  "checkpoint_history_pending_cursor_exact": true,
+  "hostile_output": {
+    "written": 16384,
+    "maximum": 16384,
+    "chunk": 32768,
+    "writer_finished": true,
+    "owned_tty_verified": true
+  },
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 1,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "private_transcript_intervals": 6,
+  "actual_board_io_private_scan": true,
+  "no_file_protocol_in_board_io": true,
+  "terminal_restored": true,
+  "no_automatic_redial": true,
+  "private_fixture_retained_for_lead": true,
+  "capacity_claim": false,
+  "physical_hardware": false
+}

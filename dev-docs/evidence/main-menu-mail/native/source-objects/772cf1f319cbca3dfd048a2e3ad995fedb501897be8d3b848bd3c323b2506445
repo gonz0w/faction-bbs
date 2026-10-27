@@ -1,0 +1,12 @@
+from lab import *
+import hashlib,time
+run=P/'host-files-final01';b=Path('/private/tmp/faction230-client-OWNED/host-network-tail02');S=P/'source-final06';results=[];steps=[]
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';steps.append((mode,['python3',str(run/'55_files_probe_driver.py'),'--client',str(b/'faction-client'),'--checkpoint-fixture',str(b/'checkpoint_ui_fixture'),'--mail-fixture',str(b/'home_mail_fixture'),'--public-ca',str(S/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-files-settings.json'),'--private-root',str(P),'--output',str(run/(mode+'.json'))]+(['--unicode'] if unicode else [])))
+steps.append(('legacy',['python3',str(run/'62_files_v1.py'),'--settings',str(P/'host-files-settings.json'),'--private-root',str(P),'--old-client',str(R/'local/demo/saved/20261022T005925Z/faction-client'),'--default-client','/private/tmp/faction230-client-OWNED/host-default-tail02/faction-client','--output',str(run/'legacy.json')]))
+for name,cmd in steps:
+ (run/'progress.json').write_text(json.dumps({'waiting_normal_refill_before':name,'completed':results},indent=2)+'\n');time.sleep(40);(run/'progress.json').write_text(json.dumps({'running':name,'completed':results},indent=2)+'\n');start=time.monotonic()
+ with (run/(name+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,stdout=f,stderr=f,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(run/'execution.json').write_text(json.dumps(results,indent=2)+'\n');print(name,'returncode',r.returncode,flush=True)
+ if r.returncode:(run/'progress.json').write_text(json.dumps({'result':'fail','completed':results},indent=2)+'\n');print((run/(name+'.raw.log')).read_text());raise SystemExit(r.returncode)
+(run/'progress.json').write_text(json.dumps({'result':'pass','completed':results},indent=2)+'\n');print('Host unchanged Files/SFTP and old/default native-v1 regressions passed.')

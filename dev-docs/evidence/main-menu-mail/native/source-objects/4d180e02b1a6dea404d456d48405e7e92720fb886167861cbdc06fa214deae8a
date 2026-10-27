@@ -1,0 +1,18 @@
+from pathlib import Path
+import os,json,subprocess,hashlib,time
+p=Path('/home/factionbuild/proof230/native-final01');code=p/'code';root=Path('/home/factionbuild/source23005');target=Path('/home/factionbuild/target230/release');device=Path('/home/factionbuild/device230');os.umask(0o077)
+env=dict(os.environ,PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',PYTHONDONTWRITEBYTECODE='1')
+results=[]
+def call(name,cmd):
+ (p/'progress.json').write_text(json.dumps({'running':name,'completed':results},indent=2)+'\n');start=time.monotonic()
+ with (p/(name+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,stdout=f,stderr=f,env=env)
+ row={'name':name,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start};results.append(row);(p/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+python='/usr/pkg/bin/python3.13'
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';call('main-'+mode,[python,str(code/'probe_menu_mail.py'),'--client',str(target/'faction-client-network'),'--checkpoint-fixture',str(target/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(target/'examples/home_mail_fixture'),'--public-ca',str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(p/('main-'+mode+'.json'))]+(['--unicode'] if unicode else []))
+call('probe-oracle',[python,'-m','unittest','discover','-s',str(code),'-p','test_probe_menu_mail.py'])
+call('standalone',[python,str(p/'23_standalone.py'),'--binary',str(target/'faction'),'--member',str(target/'faction-member'),'--private-root',str(device),'--output',str(p/'standalone.json')])
+call('protocol',[python,str(p/'20_remote_controls.py'),'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(p/'protocol.json'),'--old-client','/home/factionbuild/target/release/faction-client','--default-client',str(target/'faction-client-default'),'--network-client',str(target/'faction-client-network')])
+call('hostile',[python,str(p/'21_hostile_controls.py'),'--client',str(target/'faction-client-network'),'--fixture',str(target/'examples/checkpoint_ui_fixture'),'--ca',str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(device/'settings.json'),'--private-root',str(device),'--output',str(p/'hostile.json')])
+(p/'progress.json').write_text(json.dumps({'result':'pass','completed':results},indent=2)+'\n')

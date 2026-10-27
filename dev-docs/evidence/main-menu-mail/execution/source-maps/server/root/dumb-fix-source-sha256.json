@@ -1,0 +1,13 @@
+{
+  "crates/faction-terminal/src/lib.rs": "3071799e7d368c58a79c67cb926a28da235756faff1a98c309f2fe827b5fc873",
+  "crates/faction-terminal/src/theme.rs": "94541eb60c3822bc53886fe4d7ce88b1e7f3dcef64020015d4cd1f73d57b53c5",
+  "crates/faction-terminal/src/home_mail.rs": "df7b6e9762e5f7cc4b2c374847111f53f93ebdf5fab09c4f033cd7ffa17f119c",
+  "crates/faction-terminal/tests/home_mail.rs": "df13825519b54aeac9241e78bda2bc4c6d540981ade4f9d75609f8e4afc5d57c",
+  "crates/faction-terminal/tests/terminal.rs": "1cf61e2abf82b8542ee9261db47a2a13e4ccd412cd67567b3cfd5edcc9a8a53e",
+  "crates/faction-service/src/main.rs": "1bad480bb2078b2663345bf99adbd59d4929cfd9de8191abee2b2f61571e15ff",
+  "crates/faction-service/src/ui.rs": "a54a324c04b2df708e37d9b7fff2940f9157938470024e297e64c920e42925e9",
+  "crates/faction-service/src/social_ui.rs": "244998bb3f0b9414657a8b8050ab823951040a936e5b26d8af7ad451f5fa9a3c",
+  "crates/faction-service/src/native_mail.rs": "3693cbcf0495c8a5a3a6e342c8c361fa693afb5366f2da94577b6d3e39406540",
+  "crates/faction-service/src/native_mail_tests.rs": "cb770e01fbb5019d2c7badbd9a716def3c95369e3b3df331e5205a99a97a6fba",
+  "crates/faction-cli/src/lib.rs": "b0d1bf5af5ab900ce8fe3ee9367bfe91b137dd30e67e6ff4d57ca14f49d57b8a"
+}

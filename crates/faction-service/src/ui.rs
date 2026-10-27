@@ -257,6 +257,7 @@ impl Client {
             Action::Lounge => "Social lounge",
             Action::Who => "Who is here",
             Action::Files => "File areas",
+            Action::HomeMail => "Home mail",
             Action::Doors => "Doors",
             Action::Quit => "Disconnect",
             Action::Terminal => "Terminal settings",
@@ -362,6 +363,7 @@ impl Client {
                 self.chat_prompt();
             }
             Action::Files => self.file_lobby(board)?,
+            Action::HomeMail => self.mail_offer(board, theme)?,
             Action::Doors => self.door_open("doors", board, theme)?,
         }
         Ok(())
@@ -513,8 +515,15 @@ impl Client {
         jobs: &CredentialJobs,
         theme: &Theme,
     ) -> faction_core::Result<()> {
+        if (text == "@MAIL1" || text.starts_with("@MAIL1 "))
+            && matches!(self.state, State::Menu | State::Files | State::NativeFiles)
+        {
+            self.close = true;
+            return Err(Error::Denied);
+        }
         let old = std::mem::replace(&mut self.state, State::Closing);
         match old {
+            State::MailOffer | State::MailParked(_) => self.mail_line(old, text, board, theme)?,
             State::Writing { .. } => self.writing_line(old, text, board, theme)?,
             State::NativeFiles => self.native_line(text, board, theme)?,
             State::Files | State::FileUploadKey { .. } | State::FileDownloadKey(_) => {
@@ -681,6 +690,7 @@ impl Client {
                 } else if text.len() == 1
                     && let Some(action) = theme.hotkey(text.as_bytes()[0], sysop)
                 {
+                    self.state = State::Menu;
                     self.open(action, board, theme)?;
                 } else {
                     self.menu(theme, board)?;
@@ -1255,7 +1265,8 @@ impl Client {
                 | Error::Entropy
                 | Error::PasswordHash
                 | Error::Credentials
-        ) || (self.session.is_some() && self.approved(board).is_err())
+        ) || self.close
+            || (self.session.is_some() && self.approved(board).is_err())
             || self.session.is_none()
         {
             self.error(error);
@@ -1738,6 +1749,11 @@ impl Client {
                 continue;
             }
             if matches!(self.state, State::Menu) && self.ansi {
+                // Versioned request lines cannot be interpreted as menu hotkeys.
+                if byte == b'@' {
+                    self.close = true;
+                    return Err(denied());
+                }
                 if let Some(key) = self.decoder.feed(byte, Instant::now()) {
                     match self.action(key, board, theme) {
                         Ok(true) => {
@@ -1866,7 +1882,11 @@ impl Client {
                 self.capabilities.unicode && matches!(self.state, State::PostBody(..));
             let hidden = matches!(
                 self.state,
-                State::Password(..) | State::Confirm(..) | State::NativeFiles
+                State::Password(..)
+                    | State::Confirm(..)
+                    | State::NativeFiles
+                    | State::MailOffer
+                    | State::MailParked(_)
             );
             if byte == b'\n' || byte == b'\r' {
                 self.skip_lf = byte == b'\r';

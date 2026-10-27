@@ -1,0 +1,7 @@
+from lab import *
+import time
+last=(P/'host-main-final02/classic-compact.json').stat().st_mtime
+wait=max(0,40-(time.time()-last))
+if wait:time.sleep(wait)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-final03/driver.py > /home/factionbuild/proof230/native-final03/driver-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Finalservice06 native matrix launched after full normal admission refill; allclientbytes reused exactly from2GiBbuild05.')

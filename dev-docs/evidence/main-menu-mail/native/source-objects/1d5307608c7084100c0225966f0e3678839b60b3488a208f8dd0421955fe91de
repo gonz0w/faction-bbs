@@ -1,0 +1,13 @@
+from pathlib import Path
+import os,json,subprocess,time,hashlib
+p=Path('/home/factionbuild/proof230/native-files-final02');target=Path('/home/factionbuild/target230/release');root=Path('/home/factionbuild/source23006');device=Path('/home/factionbuild/device230');python='/usr/pkg/bin/python3.13';os.umask(0o077);env=dict(os.environ,PATH='/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',PYTHONDONTWRITEBYTECODE='1');results=[]
+steps=[]
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';steps.append((mode,[python,str(p/'55_files_probe_driver.py'),'--client',str(target/'faction-client-network'),'--checkpoint-fixture',str(target/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(target/'examples/home_mail_fixture'),'--public-ca',str(root/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(device/'settings-files.json'),'--private-root',str(device),'--output',str(p/(mode+'.json'))]+(['--unicode'] if unicode else [])))
+steps.append(('legacy',[python,str(p/'62_files_v1.py'),'--settings',str(device/'settings-files.json'),'--private-root',str(device),'--old-client','/home/factionbuild/target/release/faction-client','--default-client',str(target/'faction-client-default'),'--output',str(p/'legacy.json')]))
+for name,cmd in steps:
+ (p/'progress.json').write_text(json.dumps({'waiting_normal_refill_before':name,'completed':results},indent=2)+'\n');time.sleep(40);(p/'progress.json').write_text(json.dumps({'running':name,'completed':results},indent=2)+'\n');start=time.monotonic()
+ with (p/(name+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,stdout=f,stderr=f,env=env)
+ results.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(p/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:(p/'progress.json').write_text(json.dumps({'result':'fail','completed':results},indent=2)+'\n');raise SystemExit(r.returncode)
+(p/'progress.json').write_text(json.dumps({'result':'pass','completed':results},indent=2)+'\n')

@@ -1,0 +1,2 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof230/native-files-final01/classic.raw.log');(P/'native-files-final01-setup-failure.log').write_bytes(r.stdout);print(r.stdout.decode())

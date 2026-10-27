@@ -1,0 +1,10 @@
+from pathlib import Path
+import hashlib,json,sys
+sys.path.insert(0,'/Users/cam/DEV/faction-bbs/tools')
+import probe_menu_mail as proof
+path=Path('/private/tmp/faction230-native-OWNED/privacy-postrun-rescan/host_classic.post-hex.private.log');data=path.read_bytes();result={'capture_sha256':hashlib.sha256(data).hexdigest()}
+try:
+ streams,records=proof.reconstruct_kdump_streams(data)
+ result.update(result='decoded',records=records,streams=len(streams),decoded_bytes=sum(map(len,streams.values())),read_bytes=sum(len(v) for k,v in streams.items() if k[2]=='read'),write_bytes=sum(len(v) for k,v in streams.items() if k[2]=='wrote'),repeated_row_markers=sum(line==b'\t***' for line in data.splitlines()))
+except AssertionError as e:result.update(result='rejected',reason=str(e))
+Path('/private/tmp/faction230-oracle-OWNED/first-hex-decode-final.json').write_text(json.dumps(result,sort_keys=True,indent=2)+'\n');print(json.dumps(result,sort_keys=True));sys.exit(result['result']!='decoded')

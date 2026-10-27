@@ -1,0 +1,7 @@
+from integrate import *
+import hashlib,json
+inputs=[(Path('/private/tmp/faction230-packaging-OWNED'),'execution','manifest.json'),(Path('/private/tmp/faction230-review-OWNED/public'),'review','manifest.json')]
+results=[]
+for src,prefix,manifest in inputs:
+ before=sha((src/manifest).read_bytes());refs=copy_export(src,prefix,manifest);assert before==sha((src/manifest).read_bytes());results.append(dict(prefix=prefix,manifest_sha256=before,files=len(refs)))
+(OWN/'imports-ready.json').write_text(json.dumps(results,indent=2)+'\n');print(results)

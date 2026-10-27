@@ -860,3 +860,26 @@ fn optional_library_action_fits_crowded_classic_menus_and_disables_cleanly() {
     t.set_library_enabled(false).unwrap();
     assert_eq!(t.hotkey(b'k', false), None);
 }
+
+#[test]
+fn optional_home_mail_has_own_themed_key_and_works_without_files() {
+    assert!(
+        !Theme::default()
+            .entries()
+            .iter()
+            .any(|e| e.action() == Action::HomeMail)
+    );
+    let pack = Pack::new(&format!(
+        "{BASE}\n[[menu]]\naction='home_mail'\nkey='M'\nlabel='Private home inbox'\ndescription='Open on your device'\n[[menu]]\naction='rooms'\nkey='R'\nlabel='Rooms'\n[[menu]]\naction='new'\nkey='N'\nlabel='New'\n[[menu]]\naction='history'\nkey='H'\nlabel='History'\n[[menu]]\naction='post'\nkey='P'\nlabel='Post'\n[[menu]]\naction='sysop'\nkey='S'\nlabel='Sysop'\n[[menu]]\naction='quit'\nkey='Q'\nlabel='Leave'\n"
+    ));
+    let t = Theme::load(&pack.0).unwrap();
+    assert_eq!(t.hotkey(b'm', false), Some(Action::HomeMail));
+    assert_eq!(t.hotkey(b'f', false), None);
+    assert!(t.plain_menu(false).contains("Private home inbox"));
+    let mut menu = Menu::new(&t, false);
+    assert_eq!(menu.feed(Key::Enter), Some(Action::HomeMail));
+    for _ in 0..5 {
+        assert_eq!(menu.feed(Key::Down), None);
+    }
+    assert_eq!(menu.feed(Key::Enter), Some(Action::Quit));
+}

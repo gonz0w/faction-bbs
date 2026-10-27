@@ -1,0 +1,59 @@
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.91s
+     Running tests/home_mail.rs (target/debug/deps/home_mail-db706686336cadab)
+
+running 1 test
+test exact_mail_codec_is_separate_from_files_and_rejects_extensions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/terminal.rs (target/debug/deps/terminal-b11d6b627a7448bb)
+
+running 31 tests
+test arrows_enter_and_casefolded_hotkeys_share_actions ... ok
+test only_runtime_capability_enables_door_arrows_and_hotkeys ... ok
+test malicious_and_unbounded_art_is_rejected ... ok
+test chat_editor_is_a_separate_bounded_context ... ok
+test ansi_cp437_is_converted_to_canonical_cells ... ok
+test optional_files_preserve_default_theme_and_use_arrows_or_hotkeys ... ok
+test focused_hotkey_keeps_full_lightbar_background_and_unavailable_is_explicit ... ok
+test redraw_is_incremental_and_bounded ... ok
+test optional_home_mail_has_own_themed_key_and_works_without_files ... FAILED
+test malicious_sequence_tails_never_activate ... ok
+test split_coalesced_and_crlf_keys ... ok
+test checked_in_base_and_season_examples_validate ... ok
+test custom_layout_collision_and_target_validation ... ok
+test utf8_continuation_bytes_do_not_enter_c1_control_modes ... ok
+test unsupported_or_truncated_sauce_never_changes_the_canvas_or_output_budget ... ok
+test gatherings_are_host_optional_and_remain_reachable_in_full_compact_menus ... ok
+test asset_paths_provenance_and_symlinks_fail_atomically ... ok
+test optional_catchup_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_find_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_gallery_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test sauce_ice_bright_backgrounds_are_canonical_and_metadata_is_inert ... ok
+test optional_poll_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test grid_arrows_are_spatial_tab_and_hotkeys_keep_declared_order ... ok
+test optional_library_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test seasonal_overrides_cannot_remap_commands ... ok
+test strict_theme_and_malicious_labels_fail ... ok
+test descriptions_and_menu_titles_are_inert_atomic_and_not_seasonal ... ok
+test compact_wide_and_maximal_menus_fit_and_delta_matches_full_cells ... ok
+test optional_directory_and_files_keep_full_grid_usable_in_both_enable_orders ... ok
+test grid_focus_restores_by_index_and_classic_layout_keeps_every_action ... ok
+test grid_validation_is_atomic_and_seasons_cannot_move_actions ... ok
+
+failures:
+
+---- optional_home_mail_has_own_themed_key_and_works_without_files stdout ----
+
+thread 'optional_home_mail_has_own_themed_key_and_works_without_files' (1296237) panicked at crates/faction-terminal/tests/terminal.rs:868:34:
+called `Result::unwrap()` on an `Err` value: "menu needs 6-11 entries"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    optional_home_mail_has_own_themed_key_and_works_without_files
+
+test result: FAILED. 30 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p faction-terminal --test terminal`

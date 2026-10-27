@@ -1,0 +1,32 @@
+[
+  {
+    "name": "main-classic",
+    "returncode": 0,
+    "elapsed_seconds": 9.616012700000056
+  },
+  {
+    "name": "main-unicode",
+    "returncode": 0,
+    "elapsed_seconds": 9.713776585000005
+  },
+  {
+    "name": "probe-oracle",
+    "returncode": 0,
+    "elapsed_seconds": 0.04388644100004058
+  },
+  {
+    "name": "standalone",
+    "returncode": 0,
+    "elapsed_seconds": 0.18315033900012168
+  },
+  {
+    "name": "protocol",
+    "returncode": 0,
+    "elapsed_seconds": 74.1146993299999
+  },
+  {
+    "name": "hostile",
+    "returncode": 1,
+    "elapsed_seconds": 0.4567617049999626
+  }
+]

@@ -1,0 +1,39 @@
+from pathlib import Path
+import subprocess,json
+root=Path('/Users/cam/DEV/faction-bbs');own=Path('/private/tmp/faction230-integration-OWNED');g=root/'tools/check_menu_mail_evidence.py';t=root/'tools/test_menu_mail_evidence.py'
+for name,path in [('rescan-guard-before.py',g),('rescan-test-before.py',t)]: (own/name).write_bytes(path.read_bytes())
+s=t.read_text();needle="        for name,value in values.items():self.record['records'][name]=save(name+'.json',value)"
+add="""        values['private-io-rescan']=dict(result='pass',scope='postrun-retained-ktrace-hex-stream-reconstruction',checker_sha256=source['sha256'],fresh_ui_execution=False,stream_key=['pid','fd','direction'],routes={})
+        for platform in ('host','netbsd'):
+            for mode in ('classic','unicode'):
+                values['private-io-rescan']['routes'][platform+'_'+mode]=dict(original_route_result_sha256=self.record['routes'][platform][mode]['sha256'],generated_marker_count=5,private_marker_matches=0,file_protocol_prefix_matches=0,input_trace_unchanged=True)
+"""
+s=s.replace(needle,add+needle).replace('    def test_accepts_complete_bounded_observations(self):',"""    def test_rejects_missing_or_unbound_corrected_privacy_rescan(self):
+        for change in ('remove','leak','wrong-route'):
+            record=copy.deepcopy(self.record)
+            if change=='remove':record['records'].pop('private-io-rescan')
+            else:
+                ref=record['records']['private-io-rescan'];data=json.loads((self.root/ref['path']).read_bytes())
+                data['routes']['netbsd_unicode']['private_marker_matches' if change=='leak' else 'original_route_result_sha256']=1 if change=='leak' else '0'*64
+                record['records']['private-io-rescan']=self.save('mutated-rescan-'+change+'.json',data)
+            with self.assertRaises((AssertionError,KeyError)):self.module.validate(self.root,record)
+
+    def test_accepts_complete_bounded_observations(self):""")
+t.write_text(s);(own/'rescan-red-test.py').write_bytes(t.read_bytes())
+p=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_menu_mail_evidence.py'],cwd=root,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(own/'rescan-red.log').write_bytes(p.stdout);assert p.returncode!=0
+s=g.read_text().replace("'cleanup','tdd'}","'cleanup','tdd','private-io-rescan'}")
+needle=" assert records['tdd']['red_exit']!=0"
+add=""" scan=records['private-io-rescan'];assert scan['scope']=='postrun-retained-ktrace-hex-stream-reconstruction'
+ assert scan['fresh_ui_execution'] is False and scan['stream_key']==['pid','fd','direction']
+ assert scan['checker_sha256'] in available and set(scan['routes'])=={p+'_'+m for p in ('host','netbsd') for m in ('classic','unicode')}
+ for platform in ('host','netbsd'):
+  for mode in ('classic','unicode'):
+   item=scan['routes'][platform+'_'+mode]
+   assert item['original_route_result_sha256']==record['routes'][platform][mode]['sha256']
+   assert item['generated_marker_count']>0 and item['private_marker_matches']==item['file_protocol_prefix_matches']==0
+   assert item['input_trace_unchanged'] is True
+"""
+s=s.replace(needle,add+needle);g.write_text(s)
+p2=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_menu_mail_evidence.py'],cwd=root,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(own/'rescan-green.log').write_bytes(p2.stdout);print(p2.stdout.decode());assert p2.returncode==0
+for name,path in [('rescan-green-guard.py',g),('rescan-green-test.py',t)]: (own/name).write_bytes(path.read_bytes())
+(own/'rescan-guard-tdd.json').write_text(json.dumps(dict(red_exit=p.returncode,green_exit=p2.returncode,captured_before_edit=True),indent=2)+'\n')

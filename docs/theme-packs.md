@@ -503,3 +503,9 @@ backup before upgrade; export/restore strips current activity and live authority
 Optional root guide_title/guide_notes fields customize the [read-only board guide](board-guide.md)
 in base/season packs. F1/plain help use no new menu action/key slot; ? refresh
 and custom-grid positions remain. Notes are at most 1024 inert ASCII bytes/16 lines.
+
+
+The optional [`home_mail` action](main-menu-mail.md#sysop-configuration) opens the
+shared native mail handoff, with a classic explanatory return. Add it explicitly
+to a valid custom menu with its own unused key; default packs reserve no mail key.
+It grants no approval, file capability or home-account access.

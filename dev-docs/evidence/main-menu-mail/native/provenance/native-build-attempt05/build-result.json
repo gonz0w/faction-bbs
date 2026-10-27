@@ -1,0 +1,93 @@
+{
+  "scope": "two-cores-2GiB-native-build",
+  "result": "fail",
+  "steps": [
+    {
+      "name": "server",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-cli",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-files"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 15.716909648999945
+    },
+    {
+      "name": "default",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-client",
+        "--bin",
+        "faction-client"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 2.5505548909999334
+    },
+    {
+      "name": "network",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-client",
+        "--features",
+        "network-mail",
+        "--bin",
+        "faction-client",
+        "--example",
+        "checkpoint_ui_fixture",
+        "--example",
+        "home_mail_fixture"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 12.118246150999994
+    },
+    {
+      "name": "tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "-p",
+        "faction-service",
+        "-p",
+        "faction-terminal",
+        "-p",
+        "faction-client",
+        "--features",
+        "faction-client/network-mail",
+        "--all-targets",
+        "--",
+        "--test-threads=1"
+      ],
+      "returncode": 101,
+      "elapsed_seconds": 83.00809140499996
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+[
+  "crates/faction-service/src/native_mail_tests.rs",
+  "crates/faction-terminal/tests/terminal.rs",
+  "crates/faction-terminal/tests/home_mail.rs",
+  "crates/faction-service/src/ui.rs",
+  "crates/faction-service/src/native_mail.rs",
+  "crates/faction-cli/src/lib.rs",
+  "crates/faction-terminal/src/home_mail.rs"
+]

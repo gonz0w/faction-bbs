@@ -399,3 +399,8 @@ retains every original output byte while providing newline-compliant JSON mirror
 
 
 [Manual roaming owner CLI software evidence](roaming-owner/README.md) covers explicit local association, private manifest export, current service revocation and effective SQLite WAL state, with source-matched host/NetBSD and recovery checks.
+
+[Main-menu encrypted home mail software evidence](main-menu-mail/README.md) records
+Files-independent device-local mail, host/NetBSD classic/Unicode transitions,
+current approval and hostile-output controls, retained oracle corrections and
+existing Files/SFTP regressions.

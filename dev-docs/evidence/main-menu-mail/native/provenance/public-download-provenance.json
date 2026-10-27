@@ -1,0 +1,78 @@
+{
+  "result": "pass",
+  "packages": [
+    {
+      "name": "openssl-probe",
+      "version": "0.2.1",
+      "bytes": 9155,
+      "sha256": "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe",
+      "expected_cargo_lock_sha256": "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe",
+      "source": "https://static.crates.io/crates/openssl-probe/openssl-probe-0.2.1.crate",
+      "credentials_used": false,
+      "selected_native_graph": true
+    },
+    {
+      "name": "openssl",
+      "version": "0.10.81",
+      "bytes": 311187,
+      "sha256": "77823a27f0babb03091cb9ed9ef80af3b39dbc82f97e8fa530374b7dafd87a45",
+      "expected_cargo_lock_sha256": "77823a27f0babb03091cb9ed9ef80af3b39dbc82f97e8fa530374b7dafd87a45",
+      "source": "https://static.crates.io/crates/openssl/openssl-0.10.81.crate",
+      "credentials_used": false,
+      "selected_native_graph": true
+    },
+    {
+      "name": "openssl-macros",
+      "version": "0.1.1",
+      "bytes": 5601,
+      "sha256": "a948666b637a0f465e8564c73e89d4dde00d72d4d473cc972f390fc3dcee7d9c",
+      "expected_cargo_lock_sha256": "a948666b637a0f465e8564c73e89d4dde00d72d4d473cc972f390fc3dcee7d9c",
+      "source": "https://static.crates.io/crates/openssl-macros/openssl-macros-0.1.1.crate",
+      "credentials_used": false,
+      "selected_native_graph": true
+    },
+    {
+      "name": "openssl-sys",
+      "version": "0.9.117",
+      "bytes": 76045,
+      "sha256": "b47e7e6bb2c38cd930d25a23b40fa52e068c10e85f3e03a7f5ba5aaca5713695",
+      "expected_cargo_lock_sha256": "b47e7e6bb2c38cd930d25a23b40fa52e068c10e85f3e03a7f5ba5aaca5713695",
+      "source": "https://static.crates.io/crates/openssl-sys/openssl-sys-0.9.117.crate",
+      "credentials_used": false,
+      "selected_native_graph": true
+    },
+    {
+      "name": "foreign-types-shared",
+      "version": "0.1.1",
+      "bytes": 5672,
+      "sha256": "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b",
+      "expected_cargo_lock_sha256": "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b",
+      "source": "https://static.crates.io/crates/foreign-types-shared/foreign-types-shared-0.1.1.crate",
+      "credentials_used": false,
+      "selected_native_graph": true
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "bytes": 83669,
+      "sha256": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba",
+      "expected_cargo_lock_sha256": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba",
+      "source": "https://static.crates.io/crates/serde/serde-1.0.229.crate",
+      "credentials_used": false,
+      "selected_native_graph": false,
+      "classification": "unnecessary existing-locked public cache archive; never compiled or added as a product dependency"
+    },
+    {
+      "name": "foreign-types",
+      "version": "0.3.2",
+      "bytes": 7504,
+      "sha256": "f6f339eb8adc052cd2ca78910fda869aefa38d22d5cb648e6485e4d3fc06f3b1",
+      "expected_cargo_lock_sha256": "f6f339eb8adc052cd2ca78910fda869aefa38d22d5cb648e6485e4d3fc06f3b1",
+      "source": "https://static.crates.io/crates/foreign-types/foreign-types-0.3.2.crate",
+      "credentials_used": false,
+      "selected_native_graph": true
+    }
+  ],
+  "new_product_dependencies": false,
+  "private_cargo_config_used": false
+}

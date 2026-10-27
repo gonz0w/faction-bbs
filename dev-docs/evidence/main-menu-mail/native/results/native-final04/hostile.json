@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "scope": "actual-ssh-private-transition-hostile-controls",
+  "count": 3,
+  "checks": [
+    "forged_frame_locked_closed_without_remote_render_or_redial",
+    "bounded_output_overflow_locked_closed_without_remote_render_or_redial",
+    "approval_revoked_during_private_view_locked_closed_without_remote_render_or_redial"
+  ],
+  "observations": [
+    {
+      "written": 90,
+      "owned_tty_verified": true
+    },
+    {
+      "written": 42084,
+      "maximum": 1048576,
+      "chunk": 32768,
+      "writer_finished": true,
+      "owned_tty_verified": true
+    },
+    {
+      "approval_revoked": true
+    }
+  ],
+  "private_store_unchanged": true,
+  "normal_output_cap": 32768,
+  "physical_hardware": false,
+  "capacity_claim": false
+}

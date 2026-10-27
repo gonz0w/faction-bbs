@@ -1,0 +1,9 @@
+{
+  "saved_stopped": true,
+  "saved_disk_sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+  "saved_kernel_sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+  "owned_overlay": true,
+  "loopback_forwards": 4,
+  "cores": 2,
+  "compile_memory_mib": 2048
+}

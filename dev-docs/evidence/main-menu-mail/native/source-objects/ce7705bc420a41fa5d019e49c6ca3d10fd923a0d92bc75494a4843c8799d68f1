@@ -1,0 +1,13 @@
+from lab import *
+import hashlib,tarfile
+S=P/'source-final05';names=['probe_menu_mail.py','probe_visit_mail.py','check_restricted_ssh.py','smoke_board_launcher.py','smoke_local_console.py']
+run=P/'host-main-final01';run.mkdir(mode=0o700);code=run/'code';code.mkdir()
+for n in names:(code/n).write_bytes((S/'tools'/n).read_bytes())
+(run/'source-manifest.json').write_text(json.dumps({n:hashlib.sha256((code/n).read_bytes()).hexdigest() for n in names},sort_keys=True,indent=2)+'\n')
+b=Path('/private/tmp/faction230-client-OWNED/host-network-tail02')
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';cmd=['python3',str(code/'probe_menu_mail.py'),'--client',str(b/'faction-client'),'--checkpoint-fixture',str(b/'checkpoint_ui_fixture'),'--mail-fixture',str(b/'home_mail_fixture'),'--public-ca',str(S/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-settings.json'),'--private-root',str(P),'--output',str(run/(mode+'.json'))]+(['--unicode'] if unicode else [])
+ with (run/(mode+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,stdout=f,stderr=f,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ (run/(mode+'.execution.json')).write_text(json.dumps(dict(returncode=r.returncode,scope='final-two-core-1GiB-board-runtime-host-client',client_sha256=hashlib.sha256((b/'faction-client').read_bytes()).hexdigest()),indent=2)+'\n');print(mode,'returncode',r.returncode,flush=True)
+ if r.returncode:print((run/(mode+'.raw.log')).read_text());raise SystemExit(r.returncode)
+print('Final host classic and Unicode main-menu journeys passed.')

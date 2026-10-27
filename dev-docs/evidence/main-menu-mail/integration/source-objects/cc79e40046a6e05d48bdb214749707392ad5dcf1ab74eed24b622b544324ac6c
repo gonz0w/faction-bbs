@@ -1,0 +1,14 @@
+from integrate import *
+import importlib.util
+spec=importlib.util.spec_from_file_location('guard',ROOT/'tools/check_menu_mail_evidence.py');guard=importlib.util.module_from_spec(spec);spec.loader.exec_module(guard)
+record=json.loads((OWN/'assembled-prefix.json').read_bytes());records=record['records'];sources=record['sources']
+def observed(relative):return ref(OUT/relative)
+records['host-tests']=save(OUT/'observations/host-tests.json',dict(result='pass',workspace_passed=473,workspace_ignored=0,default_client_passed=42,network_client_passed=137,network_existing_ignored=4,python_before_final_guard_additions=391,final_guard=10,final_oracle=12,workspace=observed('execution/metadata/lead/host-integrated.json'),summary=observed('execution/summary.json')))
+records['native-tests']=save(OUT/'observations/native-tests.json',dict(result='pass',earlier_selected_passed=267,earlier_existing_ignored=4,final_service_terminal_passed=126,earlier=observed('native/provenance/native-final-test-result.json'),final=observed('native/provenance/native-service-final06-result.json')))
+records['private-io-rescan']=observed('native/provenance/postrun-rescan02/privacy-postrun-rescan.json')
+record.update(schema=1,issue=230,result='pass',profile=guard.PROFILE,claims={k:False for k in guard.CLAIMS},routes={
+ 'host':{m:observed('native/results/host-main-final02/'+m+'.json') for m in ('classic','unicode')},
+ 'netbsd':{m:observed('native/results/native-final03/main-'+m+'.json') for m in ('classic','unicode')}},prior_records=[ref(ROOT/'dev-docs/evidence'/name/'results.json') for name in ('roaming-owner','mail-inbox','roaming-uid')])
+for value in records.values():
+ if value not in sources:sources.append(value)
+(OWN/'root-before-cleanup.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n');print('Final source/route/observation root prepared; cleanup and final assembly source stage remain required.')

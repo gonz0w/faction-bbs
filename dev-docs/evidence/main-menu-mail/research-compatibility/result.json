@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "red_exit": 101,
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "experiments/055-shared-ui/Cargo.toml",
+        "--all-targets",
+        "--release",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "experiments/055-shared-ui/Cargo.toml",
+        "--",
+        "--check"
+      ],
+      "returncode": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "experiments/055-shared-ui/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline"
+      ],
+      "returncode": 0
+    }
+  ],
+  "before_sha256": "2aa40b54a5d97470730ee704dbd87f945cc0fe4838b30f49c72a82176dc190e0",
+  "after_sha256": "d8a17f681801bc485974ca42c36fc6aa1896938136eb913b34f737a84a1285ec",
+  "scope": "Research prototype explanatory optional-section fallback only; maintained service/client untouched"
+}

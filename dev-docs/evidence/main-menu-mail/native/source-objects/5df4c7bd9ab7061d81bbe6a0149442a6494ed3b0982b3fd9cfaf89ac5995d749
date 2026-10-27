@@ -1,0 +1,2 @@
+from lab import *
+r=remote('if test -f /home/factionbuild/proof230/server-final06-retry01/result.json; then cat /home/factionbuild/proof230/server-final06-retry01/result.json; fi; tail -8 /home/factionbuild/proof230/server-final06-retry01/tests.raw.log; tail -8 /home/factionbuild/proof230/native-server-final06-retry01-launch.log',check=False);print(r.stdout.decode());print(r.stderr.decode())

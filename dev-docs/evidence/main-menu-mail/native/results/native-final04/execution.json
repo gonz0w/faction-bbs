@@ -1,0 +1,12 @@
+[
+  {
+    "name": "hostile",
+    "returncode": 0,
+    "elapsed_seconds": 37.08089317500003
+  },
+  {
+    "name": "classic-compact",
+    "returncode": 0,
+    "elapsed_seconds": 20.36266455200007
+  }
+]

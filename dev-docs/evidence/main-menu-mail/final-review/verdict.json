@@ -1,0 +1,40 @@
+{
+  "actual_generated_markers_per_route": 11,
+  "closed_forwards_verified_by_preserved_cleanup_execution": 4,
+  "corrected_private_io_routes": 4,
+  "current_crate_files_matching_native_final": 292,
+  "file_protocol_prefix_matches": 0,
+  "issue": 230,
+  "native_final_source_inputs": 692,
+  "new_fixtures_runtime_builds_vms": false,
+  "offline_checks": {
+    "tools/check_evidence_sources.py": {
+      "returncode": 0,
+      "stdout": "Forty-nine source snapshots and sixty-two unchanged historical records passed."
+    },
+    "tools/check_menu_mail_evidence.py": {
+      "returncode": 0,
+      "stdout": "Main-menu mail evidence passed: source-bound host/NetBSD classic/Unicode, Files separation, private board-I/O exclusion and cleanup; no production claim."
+    },
+    "tools/check_repository.py": {
+      "returncode": 0,
+      "stdout": "Repository checks passed: current doc links, foundation policy, issue provenance, and archive hashes.\nREADME semantic freshness, transitive dependencies, and runtime support still require review."
+    }
+  },
+  "original_root_sha256": "a2c16502e0a61c1bc2e09a70272b8c7f0c61ded9966625cadffe6d20969a90cd",
+  "owned_roots_currently_absent": 8,
+  "private_marker_matches": 0,
+  "private_source_or_capture_copies": false,
+  "publication_changes_only_declared_paths_and_metadata": true,
+  "remaining_actionable_findings": [],
+  "result": "pass",
+  "root_sha256": "a6de523049a995792a234ec142a4f9a9af0349b3a7a1fca4423d324dbc8f8536",
+  "runtime_model_verified": false,
+  "saved_owner_files_verified_by_preserved_cleanup_execution": 6,
+  "schema": 1,
+  "source_drift": [],
+  "source_references": 2269,
+  "source_stages": 146,
+  "unchanged_markdown_relocations": 10,
+  "whitespace_only_probe_delivery_change_preserved": true
+}

@@ -1,0 +1,96 @@
+"""Public, stdlib-only policy builders for the disposable issue #223 fixture."""
+from dataclasses import dataclass
+import re
+
+@dataclass(frozen=True)
+class Binding:
+    login: str
+    uid: int
+    home: str
+    subject: str
+    principal: str
+
+def _bindings(bindings):
+    if not 1 <= len(bindings) <= 4:
+        raise ValueError('one to four dedicated bindings required')
+    if len({b.uid for b in bindings}) != len(bindings) or len({b.login for b in bindings}) != len(bindings):
+        raise ValueError('transport UIDs and login names must be unique')
+    for b in bindings:
+        if not re.fullmatch(r'roam223[a-z0-9]+', b.login) or not 10000 <= b.uid <= 60000:
+            raise ValueError('dedicated unused fixture account required')
+        if not re.fullmatch(r'[A-Za-z0-9_./:-]{1,128}', b.principal):
+            raise ValueError('exact safe principal required')
+
+def sshd_config(board, port, owner_uid, bindings):
+    _bindings(bindings)
+    if board not in {'a','b'} or not 1024 <= port <= 65535 or owner_uid <= 0:
+        raise ValueError('invalid board or listener')
+    return f'''# Issue #223 owned disposable certificate gateway.
+Port {port}
+ListenAddress 10.0.2.15
+HostKey /etc/ssh/ssh_host_ed25519_key
+PidFile /var/run/faction223-{board}-sshd.pid
+AuthorizedKeysFile /etc/ssh/faction223-{board}/keys/%u
+AllowUsers factionterm {' '.join(b.login for b in bindings)}
+PermitRootLogin no
+AuthenticationMethods publickey
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+PermitUserEnvironment no
+PermitUserRC no
+PermitTTY yes
+DisableForwarding yes
+AllowTcpForwarding no
+AllowStreamLocalForwarding no
+AllowAgentForwarding no
+X11Forwarding no
+PermitTunnel no
+MaxAuthTries 3
+MaxSessions 1
+MaxStartups 3:30:8
+LoginGraceTime 30
+ClientAliveInterval 30
+ClientAliveCountMax 2
+ChannelTimeout session=15m
+UnusedConnectionTimeout 30s
+PrintMotd no
+PrintLastLog no
+UseDNS no
+LogLevel ERROR
+ForceCommand /usr/local/libexec/faction-tty --socket /var/run/faction/terminal.sock --owner-uid {owner_uid}
+'''
+
+def authorized_ca(binding, public_ca):
+    _bindings([binding])
+    if '\\n' in public_ca or '\n' in public_ca or not re.fullmatch(r'ssh-ed25519 [A-Za-z0-9+/=]+(?: [A-Za-z0-9_. -]+)?', public_ca):
+        raise ValueError('one Ed25519 public CA record required')
+    return f'restrict,pty,cert-authority,principals="{binding.principal}" {public_ca}\n'
+
+def client_profile(host, terminal_port, file_port, directory, binding):
+    _bindings([binding])
+    if not re.fullmatch(r'[A-Za-z0-9./_-]+',directory) or not directory.startswith('/') or not re.fullmatch(r'[A-Za-z0-9.:-]+',host):
+        raise ValueError('invalid device path or host')
+    return f'''version=1
+host="{host}"
+port={terminal_port}
+file_host="{host}"
+file_port={file_port}
+identity="{directory}/files-key"
+public_key="{directory}/files-key.pub"
+known_hosts="{directory}/known_hosts"
+[experimental_terminal]
+login="{binding.login}"
+identity="{directory}/{binding.login}-key"
+certificate="{directory}/{binding.login}-key-cert.pub"
+'''
+
+def certificate_argv(executable, ca, public_key, binding, serial, validity='-5s:+4m55s'):
+    _bindings([binding])
+    if serial <= 0 or validity not in {'-5s:+4m55s','-10m:-5m','+5m:+10m'}:
+        raise ValueError('bounded fixture certificate required')
+    return [str(executable), '-q', '-s', str(ca), '-I', f'issue223-{serial}', '-z', str(serial), '-n', binding.principal, '-V', validity, str(public_key)]
+
+def public_source_names(names):
+    return sorted(set(n for n in names if n in {'Cargo.toml','Cargo.lock'} or n.startswith(('crates/','native/','tools/','themes/','deploy/','gallery/','library/','magazines/'))), key=lambda n:names.index(n))

@@ -1,0 +1,27 @@
+[
+  {
+    "name": "main-unicode",
+    "returncode": 0,
+    "elapsed_seconds": 9.980350481999949
+  },
+  {
+    "name": "probe-oracle",
+    "returncode": 0,
+    "elapsed_seconds": 0.04298343400000704
+  },
+  {
+    "name": "standalone",
+    "returncode": 0,
+    "elapsed_seconds": 0.1731506839999497
+  },
+  {
+    "name": "protocol",
+    "returncode": 0,
+    "elapsed_seconds": 73.60475935900001
+  },
+  {
+    "name": "hostile",
+    "returncode": 0,
+    "elapsed_seconds": 33.053470488000016
+  }
+]

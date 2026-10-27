@@ -1,0 +1,5 @@
+{
+  "original_source_sha256": "ef04a0014507cfdad2748e59372117abaf54f71c48e3ecfef59fdde65a1db9d6",
+  "executed_source_sha256": "d93a241e962de0f09b3ba41d3e6b8ea9ef86b8972654327f26153cacb3887885",
+  "change": "fresh private output directory only; original candidate and first trace retained"
+}

@@ -1,0 +1,11 @@
+from lab import *
+import hashlib
+b=R/'local/demo/saved/20261022T005925Z';m=json.loads((b/'manifest.json').read_text());p=b/'faction-client';h=hashlib.sha256(p.read_bytes()).hexdigest();assert h==m['files']['faction-client']['sha256'];st=p.stat()
+code=r'''import json,hashlib,subprocess
+from pathlib import Path
+p=Path('/home/factionbuild/target/release/faction-client');s=p.stat();r=subprocess.run([str(p),'--version'],capture_output=True)
+print(json.dumps({'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':s.st_size,'mtime_ns':s.st_mtime_ns,'version_flag_returncode':r.returncode,'embedded_version_reported':r.returncode==0,'usage_has_profile':b'--profile' in r.stderr+r.stdout}))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));native=json.loads(r.stdout)
+result=dict(result='pass',origin='unchanged owner-saved 20261022T005925Z older client artifacts, before main-menu-mail implementation',host={'sha256':h,'bytes':st.st_size,'mtime_ns':st.st_mtime_ns,'saved_manifest_hash_matches':True},native=native,saved_created_utc=m['created_utc'],saved_source_commit=m['source_commit'],source_commit_is_guest_build_identity=False,guest_source_note=m['guest_source_note'],version='not embedded/reported; package version not inferred as source identity',current_default_is_distinct=True)
+(P/'old-client-origin.json').write_text(json.dumps(result,indent=2)+'\n');print('Older saved client identities retained; guest version flag not supported; no source-commit equivalence claimed.')

@@ -1,0 +1,20 @@
+from lab import *
+import time,hashlib
+status=json.loads(remote('cat /home/factionbuild/proof230/native-final04/progress.json').stdout);assert status.get('result')=='pass','Native final matrix must finish before serialized host negatives'
+time.sleep(40)
+run=P/'host-negative-final02';run.mkdir(mode=0o700);code=run/'code';code.mkdir();S=P/'source-final06'
+for n in ['probe_menu_mail.py','probe_visit_mail.py','check_restricted_ssh.py','smoke_board_launcher.py','smoke_local_console.py']:(code/n).write_bytes(((R if n=='probe_menu_mail.py' else S)/'tools'/n).read_bytes())
+(code/'owned_fixture_cleanup.py').write_bytes((P/'owned_fixture_cleanup.py').read_bytes())
+for n in ['20_remote_controls.py','21_hostile_controls.py']:(run/n).write_bytes((P/n).read_bytes())
+(run/'source-manifest.json').write_text(json.dumps({str(f.relative_to(run)):hashlib.sha256(f.read_bytes()).hexdigest() for f in run.rglob('*') if f.is_file()},sort_keys=True,indent=2)+'\n')
+b=Path('/private/tmp/faction230-client-OWNED/host-network-tail02');default=Path('/private/tmp/faction230-client-OWNED/host-default-tail02/faction-client');old=R/'local/demo/saved/20261022T005925Z/faction-client'
+(run/'artifact-manifest.json').write_text(json.dumps({n:hashlib.sha256(f.read_bytes()).hexdigest() for n,f in [('network',b/'faction-client'),('default',default),('old_native',old),('checkpoint_fixture',b/'checkpoint_ui_fixture')]},indent=2)+'\n')
+steps=[('protocol',['python3',str(run/'20_remote_controls.py'),'--settings',str(P/'host-settings.json'),'--private-root',str(P),'--output',str(run/'protocol.json'),'--old-client',str(old),'--default-client',str(default),'--network-client',str(b/'faction-client')]),('hostile',['python3',str(run/'21_hostile_controls.py'),'--client',str(b/'faction-client'),'--fixture',str(b/'checkpoint_ui_fixture'),'--ca',str(S/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-settings.json'),'--private-root',str(P),'--output',str(run/'hostile.json')])]
+results=[]
+for name,cmd in steps:
+ if results:time.sleep(40)
+ start=time.monotonic()
+ with (run/(name+'.raw.log')).open('wb') as f:r=subprocess.run(cmd,stdout=f,stderr=f,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append(dict(name=name,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(run/'execution.json').write_text(json.dumps(results,indent=2)+'\n');print(name,'returncode',r.returncode,flush=True)
+ if r.returncode:print((run/(name+'.raw.log')).read_text());raise SystemExit(r.returncode)
+print('Finalservice06 host protocol and private-transition negative matrices passed.')

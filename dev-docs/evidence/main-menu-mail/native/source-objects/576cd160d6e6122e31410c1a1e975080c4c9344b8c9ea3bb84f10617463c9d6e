@@ -1,0 +1,122 @@
+//! Mail parking owns only connection state. It never touches file or home authority.
+use super::*;
+use faction_terminal::home_mail::{self, Frame, Request};
+const NONCES: usize = 64;
+#[derive(Default)]
+pub(super) struct History(std::collections::BTreeSet<String>);
+impl History {
+    pub(super) fn can_offer(&self) -> bool {
+        self.0.len() < NONCES
+    }
+    pub(super) fn accept(&mut self, nonce: &str) -> faction_core::Result<()> {
+        if !self.can_offer() || !home_mail::is_valid_nonce(nonce) || !self.0.insert(nonce.into()) {
+            return Err(Error::Denied);
+        }
+        Ok(())
+    }
+}
+fn approved(board: &mut Board, session: &Session) -> faction_core::Result<()> {
+    if board.whoami(session)?.status == Status::Approved {
+        Ok(())
+    } else {
+        Err(Error::Denied)
+    }
+}
+pub(super) fn offer(
+    state: State,
+    board: &mut Board,
+    session: &Session,
+) -> faction_core::Result<(State, Frame)> {
+    approved(board, session)?;
+    if !matches!(state, State::Menu) {
+        return Err(Error::Denied);
+    }
+    Ok((State::MailOffer, Frame::Offer))
+}
+pub(super) fn transition(
+    state: State,
+    line: &str,
+    board: &mut Board,
+    session: &Session,
+) -> faction_core::Result<(State, Option<Frame>)> {
+    approved(board, session)?;
+    if matches!(state, State::MailOffer) && (line.is_empty() || line.eq_ignore_ascii_case("back")) {
+        return Ok((State::Menu, None));
+    }
+    let request = home_mail::parse_request(line).map_err(Error::Invalid)?;
+    match (state, request) {
+        (State::MailOffer, Request::Park(n)) => {
+            Ok((State::MailParked(n.clone()), Some(Frame::Parked(n))))
+        }
+        (State::MailOffer, Request::Back(n)) => Ok((State::Menu, Some(Frame::Returned(n)))),
+        (State::MailParked(expected), Request::Back(n)) if expected == n => {
+            Ok((State::Menu, Some(Frame::Returned(n))))
+        }
+        _ => Err(Error::Denied),
+    }
+}
+impl Client {
+    fn mail_frame(&mut self, frame: Frame) -> faction_core::Result<()> {
+        self.queue(&home_mail::encode_frame(&frame).map_err(Error::Invalid)?);
+        if self.close {
+            return Err(Error::Denied);
+        }
+        Ok(())
+    }
+    pub(super) fn mail_offer(
+        &mut self,
+        board: &mut Board,
+        theme: &Theme,
+    ) -> faction_core::Result<()> {
+        self.approved(board)?;
+        if !matches!(self.state, State::Menu) {
+            return Err(Error::Denied);
+        }
+        if !self.mail_history.can_offer() {
+            self.queue("Mail handoff unavailable for this visit; return to the main menu.\n");
+            return self.menu(theme, board);
+        }
+        let old = std::mem::replace(&mut self.state, State::Closing);
+        let (state, frame) = offer(old, board, self.session()?)?;
+        self.state = state;
+        self.input.clear();
+        self.decoder = Decoder::new();
+        self.prompt_started = Instant::now();
+        self.queue("Private home mail opens on your device with the native client.\nOrdinary SSH: press Enter or type back to return to the main menu.\n");
+        self.mail_frame(frame)
+    }
+    pub(super) fn mail_line(
+        &mut self,
+        state: State,
+        line: &str,
+        board: &mut Board,
+        theme: &Theme,
+    ) -> faction_core::Result<()> {
+        self.approved(board)?;
+        if matches!(state, State::MailOffer)
+            && let Ok(Request::Park(n) | Request::Back(n)) = home_mail::parse_request(line)
+            && let Err(e) = self.mail_history.accept(&n)
+        {
+            self.close = true;
+            return Err(e);
+        }
+        let result = transition(state, line, board, self.session()?);
+        let (state, frame) = match result {
+            Ok(result) => result,
+            Err(e) => {
+                self.close = true;
+                return Err(e);
+            }
+        };
+        self.state = state;
+        self.input.clear();
+        self.decoder = Decoder::new();
+        if let Some(frame) = frame {
+            self.mail_frame(frame)?;
+        }
+        if matches!(self.state, State::Menu) {
+            self.menu(theme, board)?;
+        }
+        Ok(())
+    }
+}

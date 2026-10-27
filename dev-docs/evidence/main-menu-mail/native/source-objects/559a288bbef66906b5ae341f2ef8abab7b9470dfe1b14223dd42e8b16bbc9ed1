@@ -1,0 +1,97 @@
+# Original example, not an accepted final artscene identity.
+version=1
+id='nightwire-short'
+board='Faction BBS'
+welcome='Independent signals. Shared nights.'
+menu_title='AFTERHOURS / MAIN'
+layout='grid'
+normal={fg=7,bg=0}
+focus={fg=15,bg=4,bold=true}
+hotkey={fg=1,bg=0,bold=true}
+disabled={fg=8,bg=0}
+identity_ascii='login.txt'
+identity_ansi='login.ans'
+
+creator='Faction contributors; Codex-assisted'
+source='Original Nightwire dark signal; tools/build_nightwire.py'
+permission='BSD-3-Clause; root LICENSE'
+
+[[menu]]
+action='rooms'
+key='R'
+label='Message rooms'
+description='Find a room; follow the talk'
+row=1
+column=1
+
+[[menu]]
+action='new'
+key='N'
+label='New messages'
+description='Catch up where you left off'
+row=2
+column=1
+
+[[menu]]
+action='history'
+key='H'
+label='Room history'
+description='Read the local backscroll'
+row=3
+column=1
+
+[[menu]]
+action='post'
+key='P'
+label='Post a message'
+description='Start a subject; send a reply'
+row=4
+column=1
+
+[[menu]]
+action='chat'
+key='C'
+label='Local chat'
+description='Live channels; slash commands'
+row=5
+column=1
+
+[[menu]]
+action='sysop'
+key='S'
+label='Sysop controls'
+description='Membership and local controls'
+row=1
+column=2
+
+[[menu]]
+action='doors'
+key='D'
+label='Doors'
+description='Step into the arcade'
+row=2
+column=2
+
+[[menu]]
+action='terminal'
+key='T'
+label='Terminal settings'
+description='Text, color and graphics'
+row=3
+column=2
+
+[[menu]]
+action='files'
+key='F'
+label='File areas'
+description='Browse local uploads and files'
+row=4
+column=2
+
+[[menu]]
+action='quit'
+key='Q'
+label='Log out'
+description='Drop carrier; come back soon'
+row=5
+column=2

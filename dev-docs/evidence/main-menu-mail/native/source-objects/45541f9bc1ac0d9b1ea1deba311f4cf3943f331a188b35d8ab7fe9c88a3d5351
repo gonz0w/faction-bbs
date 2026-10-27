@@ -1,0 +1,18 @@
+import copy,unittest
+import owned_fixture_cleanup as clean
+class OwnershipGuard(unittest.TestCase):
+ def setUp(self):
+  self.argv=['ssh','-i','/owned/member-key','-o','UserKnownHostsFile=/owned/known_hosts','member@board.example']
+  self.row=dict(pid=42,ppid=41,uid=clean.os.getuid(),start='Mon Oct 26 22:00:00 2026',command='/usr/bin/ssh -i /owned/member-key -o UserKnownHostsFile=/owned/known_hosts member@board.example')
+ def test_requires_parent_uid_exact_private_profile_and_ssh_executable(self):
+  self.assertEqual(clean.owned_rows([self.row],41,self.argv),[self.row])
+  for k,v in [('ppid',40),('uid',clean.os.getuid()+1),('command','/usr/bin/ssh -i /other/key -o UserKnownHostsFile=/owned/known_hosts member@board.example'),('command','/bin/sleep 60')]:
+   bad=dict(self.row);bad[k]=v;self.assertEqual(clean.owned_rows([bad],41,self.argv),[])
+ def test_reused_pid_or_changed_process_fingerprint_is_never_signal_authority(self):
+  self.assertTrue(clean.same_process(self.row,dict(self.row)))
+  for key,value in [('pid',43),('ppid',1),('uid',clean.os.getuid()+1),('start','Mon Oct 26 22:00:01 2026'),('command',self.row['command']+' extra')]:
+   bad=dict(self.row);bad[key]=value;self.assertFalse(clean.same_process(self.row,bad))
+ def test_named_ps_columns_parse_full_starttime_and_command(self):
+  text='PID PPID UID STARTED COMMAND\n42 41 '+str(clean.os.getuid())+' Mon Oct 26 22:00:00 2026 '+self.row['command']+'\n'
+  self.assertEqual(clean.parse_rows(text),[self.row])
+if __name__=='__main__':unittest.main()

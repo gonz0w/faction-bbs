@@ -1,0 +1,102 @@
+faction-service v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-service)
+base64 v0.23.1
+faction-access v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-access)
+faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-unix)
+cc v1.9.0
+find-msvc-tools v0.1.15
+shlex v2.0.1
+rustix v1.1.5
+bitflags v2.13.2
+errno v0.3.14
+libc v0.2.191
+libc v0.2.191
+faction-catchup v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-catchup)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core)
+argon2 v0.6.0
+base64ct v1.8.3
+blake2 v0.11.0
+digest v0.11.3
+block-buffer v0.12.1
+hybrid-array v0.4.15
+typenum v1.20.1
+const-oid v0.10.2
+crypto-common v0.2.2
+hybrid-array v0.4.15 (*)
+ctutils v0.4.3
+cmov v0.5.4
+password-hash v0.6.1
+getrandom v0.4.3
+cfg-if v1.0.5
+libc v0.2.191
+phc v0.6.1
+base64ct v1.8.3
+ctutils v0.4.3 (*)
+getrandom v0.4.3 (*)
+zeroize v1.9.1
+base64 v0.23.1
+faction-articles v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-articles)
+base64 v0.23.1
+getrandom v0.4.3 (*)
+rusqlite v0.40.1
+bitflags v2.13.2
+fallible-iterator v0.3.0
+fallible-streaming-iterator v0.1.9
+libsqlite3-sys v0.38.2
+cc v1.9.0 (*)
+pkg-config v0.3.34
+vcpkg v0.2.15
+smallvec v1.16.4
+rustix v1.1.5 (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal)
+faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-unix) (*)
+rustix v1.1.5 (*)
+toml v1.1.8+spec-1.1.0
+serde_core v1.0.229
+serde_spanned v1.1.2
+serde_core v1.0.229
+toml_datetime v1.1.2+spec-1.1.0
+serde_core v1.0.229
+toml_parser v1.1.5+spec-1.1.0
+winnow v1.0.4
+winnow v1.0.4
+unicode-width v0.2.2
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-files v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-files)
+base64 v0.23.1
+faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-unix) (*)
+rustix v1.1.5 (*)
+sha2 v0.11.1
+cfg-if v1.0.5
+cpufeatures v0.3.1
+digest v0.11.3 (*)
+toml v1.1.8+spec-1.1.0 (*)
+faction-find v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-find)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+faction-gallery v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-gallery)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+rustix v1.1.5 (*)
+toml v1.1.8+spec-1.1.0 (*)
+faction-gatherings v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-gatherings)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+faction-library v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-library)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+rustix v1.1.5 (*)
+toml v1.1.8+spec-1.1.0 (*)
+faction-pages v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-pages)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+faction-polls v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-polls)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-unix) (*)
+faction-wall v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-wall)
+faction-core v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-core) (*)
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal) (*)
+rustix v1.1.5 (*)
+toml v1.1.8+spec-1.1.0 (*)
+zeroize v1.9.1

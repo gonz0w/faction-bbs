@@ -145,6 +145,7 @@ impl Client {
             }
             // Compatibility only: modern settings belong to the maintained UI.
             Action::Terminal
+            | Action::HomeMail
             | Action::Contacts
             | Action::Wall
             | Action::MemberPages

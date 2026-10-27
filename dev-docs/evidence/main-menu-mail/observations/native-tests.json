@@ -1,0 +1,14 @@
+{
+  "earlier": {
+    "path": "dev-docs/evidence/main-menu-mail/native/provenance/native-final-test-result.json",
+    "sha256": "8a84af2acb688ec4cf178d36c1b8eac4539703a6618d69e74b26427d5060f740"
+  },
+  "earlier_existing_ignored": 4,
+  "earlier_selected_passed": 267,
+  "final": {
+    "path": "dev-docs/evidence/main-menu-mail/native/provenance/native-service-final06-result.json",
+    "sha256": "947b6143430d37e8ba48c387b6c2dfdc2abf844fe8ef89c7fe766b3ffa1b9232"
+  },
+  "final_service_terminal_passed": 126,
+  "result": "pass"
+}

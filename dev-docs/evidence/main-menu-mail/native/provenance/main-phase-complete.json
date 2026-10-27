@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "service_source_context": "source-final06",
+  "native_client_build_context": "source-final05",
+  "host_client_context": "client-final02",
+  "host_main_routes": [
+    "host-main-final02/classic.json",
+    "host-main-final02/unicode.json"
+  ],
+  "native_main_routes": [
+    "native-final03/main-classic.json",
+    "native-final03/main-unicode.json"
+  ],
+  "host_protocol": "host-negative-final02/protocol.json",
+  "native_protocol": "native-final03/protocol.json",
+  "host_private_negative": "host-negative-final02/hostile.json",
+  "native_private_negative": "native-final04/hostile.json",
+  "host_classic_compact": "host-main-final02/classic-compact.json",
+  "native_classic_compact": "native-final04/classic-compact.json",
+  "files_disabled_during_all_mail_acceptance": true,
+  "files_disabled_proof_sha256": "a21d9a97ac6015498e143a47c2723939bd03f9660bfc6d446d3704248289eaf9",
+  "normal_limits_unchanged": true,
+  "fixture_admission_failures_retained": true,
+  "fixture_forced_close_red_and_green_retained": true,
+  "capacity_claim": false,
+  "physical_hardware": false
+}

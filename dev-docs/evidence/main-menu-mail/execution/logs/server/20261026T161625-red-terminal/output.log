@@ -1,0 +1,30 @@
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+error[E0432]: unresolved import `faction_terminal::home_mail`
+ --> crates/faction-terminal/tests/home_mail.rs:1:23
+  |
+1 | use faction_terminal::home_mail::{self, Frame, Request};
+  |                       ^^^^^^^^^ could not find `home_mail` in `faction_terminal`
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `faction-terminal` (test "home_mail") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error[E0599]: no variant, associated function, or constant named `HomeMail` found for enum `Action` in the current scope
+   --> crates/faction-terminal/tests/terminal.rs:866:78
+    |
+866 |     assert!(!Theme::default().entries().iter().any(|e| e.action() == Action::HomeMail));
+    |                                                                              ^^^^^^^^ variant, associated function, or constant not found in `Action`
+
+error[E0599]: no variant, associated function, or constant named `HomeMail` found for enum `Action` in the current scope
+   --> crates/faction-terminal/tests/terminal.rs:869:52
+    |
+869 |     assert_eq!(t.hotkey(b'm', false), Some(Action::HomeMail));
+    |                                                    ^^^^^^^^ variant, associated function, or constant not found in `Action`
+
+error[E0599]: no variant, associated function, or constant named `HomeMail` found for enum `Action` in the current scope
+   --> crates/faction-terminal/tests/terminal.rs:873:52
+    |
+873 |     assert_eq!(menu.feed(Key::Enter), Some(Action::HomeMail));
+    |                                                    ^^^^^^^^ variant, associated function, or constant not found in `Action`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `faction-terminal` (test "terminal") due to 3 previous errors

@@ -1,0 +1,33 @@
+"""Build #230's factual root only from frozen exported observations."""
+from integrate import *
+import importlib.util
+s=importlib.util.spec_from_file_location('guard',ROOT/'tools/check_menu_mail_evidence.py');guard=importlib.util.module_from_spec(s);s.loader.exec_module(guard)
+def observe(relative):return ref(OUT/relative)
+def aggregate(category,routes):return save(OUT/'observations'/f'{category}.json',dict(result='pass',routes={p:{n:observe(path) for n,path in entries.items()} for p,entries in routes.items()}))
+def assemble(native_manifest,package_manifest,review_manifest):
+ sources=[]
+ sources+=copy_export(Path('/private/tmp/faction230-native-OWNED/public'),'native',native_manifest)
+ sources+=copy_export(Path('/private/tmp/faction230-packaging-OWNED'),'execution',package_manifest)
+ sources+=copy_export(Path('/private/tmp/faction230-review-OWNED/public'),'review',review_manifest)
+ records={}
+ records['protocol']=aggregate('protocol',{
+  'host':dict(protocol='native/results/host-negative-final02/protocol.json',hostile='native/results/host-negative-final02/hostile.json'),
+  'netbsd':dict(protocol='native/results/native-final03/protocol.json',hostile='native/results/native-final04/hostile.json')})
+ records['compatibility']=aggregate('compatibility',{
+  'host':dict(compact='native/results/host-main-final02/classic-compact.json',fallback='native/results/host-standalone-final01/result.json'),
+  'netbsd':dict(compact='native/results/native-final04/classic-compact.json',fallback='native/results/native-final03/standalone.json')})
+ records['legacy']=aggregate('legacy',{p:{n:f'native/results/{stem}/{n}.json' for n in ('classic','unicode','legacy')} for p,stem in [('host','host-files-final01'),('netbsd','native-files-final02')]})
+ final=json.loads((OUT/'native/source-maps/source-final06.json').read_bytes())
+ records['native-source-match']=save(OUT/'observations/native-source-match.json',dict(result='pass',all_match=True,files=final,scope='guest independently verified final06 archive; reused client final05 unchanged; helper overrides separately preserved'))
+ records['runtime']=save(OUT/'observations/runtime.json',dict(result='pass',physmem=1054990336,**guard.PROFILE,full_build_memory_mib=2048,final_service_cached_incremental_memory_mib=1024,runtime_memory_mib=1024))
+ records['tdd']=save(OUT/'observations/tdd.json',dict(result='pass',red_exit=101,green_exit=0,captured_before_edit=True,scope='actual saved source/log variants; review-driven regressions and oracle corrections retained'))
+ # host/native tests, rescan and exact cleanup are selected only after verification.
+ sources+=list(records.values())
+ stages=json.loads((OUT/'execution/source-stages.json').read_bytes())
+ for relative in sorted((OUT/'native/source-maps').glob('*.json')):
+  value=json.loads(relative.read_bytes())
+  if isinstance(value,dict) and value and all(isinstance(v,str) and len(v)==64 for v in value.values()):
+   label='native-final' if relative.name=='source-final06.json' else 'native-'+relative.stem
+   stages.append(dict(label=label,files=[dict(name=k,sha256=v) for k,v in value.items()]))
+ (OWN/'assembled-prefix.json').write_text(json.dumps(dict(records=records,sources=sources,source_stages=stages),indent=2,sort_keys=True)+'\n')
+if __name__=='__main__':raise SystemExit('Call assemble only after all named exports freeze.')

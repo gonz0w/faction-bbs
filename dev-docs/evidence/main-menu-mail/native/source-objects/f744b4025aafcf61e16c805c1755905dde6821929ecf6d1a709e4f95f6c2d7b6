@@ -1,0 +1,8 @@
+from lab import *
+script=(P/'native-server-final06.py').read_text();(P/'native-server-final06.failed01.py').write_text(script)
+r=remote('cat /home/factionbuild/proof230/native-server-final06-launch.log');(P/'native-server-final06-setup-failure.log').write_bytes(r.stdout)
+script=script.replace("server-final06'", "server-final06-retry01'").replace("['sysctl','-n'", "['/sbin/sysctl','-n'")
+(P/'native-server-final06-retry01.py').write_text(script)
+remote('cat > /home/factionbuild/proof230/native-server-final06-retry01.py; chown factionbuild:factionbuild /home/factionbuild/proof230/native-server-final06-retry01.py',script.encode())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof230/native-server-final06-retry01.py > /home/factionbuild/proof230/native-server-final06-retry01-launch.log 2>&1 < /dev/null &'",timeout=10)
+print('Preserved missing sysctl PATH setup failure; retry uses exact /sbin/sysctl, source/assertions unchanged.')

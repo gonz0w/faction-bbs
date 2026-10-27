@@ -1,0 +1,4 @@
+from lab import *
+r=remote('ps -axo pid,user,comm; ls -l /var/run/faction; cat /etc/rc.conf; cat /var/run/faction/terminal.pid',check=False);(P/'runtime-inspection.private.log').write_bytes(r.stdout+r.stderr)
+for l in r.stdout.decode().splitlines():
+ if 'faction' in l or 'terminal.' in l:print(l)

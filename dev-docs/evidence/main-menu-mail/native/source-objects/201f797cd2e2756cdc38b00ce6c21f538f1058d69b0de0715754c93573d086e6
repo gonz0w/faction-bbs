@@ -1,0 +1,77 @@
+"""Actual SSH hostile-frame/overflow/approval negatives during local unlock."""
+import argparse,json,os,secrets,sys,subprocess,shlex,termios,time,hashlib
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent/'code'))
+from check_restricted_ssh import SSHConsole
+from smoke_board_launcher import LauncherConsole,PICK,CONFIRM,RETURN
+from probe_visit_mail import private_json,visit_processes,assert_same_visit,TERMINALS,HOSTILE,drain_ready,PASS,UNLOCK,MAIL
+MENU='Ctrl-C exits; Esc: Enter to recover.'
+INJECT=r'''import json,sys,os,stat,pwd,subprocess
+from pathlib import Path
+assert Path('/etc/faction-disposable-test').is_file()
+s=json.load(sys.stdin);pid=s['pid'];tty=s['tty'];assert type(pid)is int and tty.startswith('pts/') and tty[4:].isdigit()
+row=subprocess.check_output(['ps','-p',str(pid),'-o','tty,user,comm'],text=True).splitlines()[-1].strip().split(None,2)
+assert row==[tty,'factionterm','/usr/local/libexec/faction-tty']
+p='/dev/'+tty;st=os.stat(p);assert stat.S_ISCHR(st.st_mode) and st.st_uid==pwd.getpwnam('factionterm').pw_uid
+payload=b'PUBLIC_FORGED_MAIL_BOUNDARY\x1b]7770;FACTION-MAIL1;returned;'+b'0'*32+b'\x07'
+fd=os.open(p,os.O_WRONLY|os.O_NONBLOCK)
+try:n=os.write(fd,payload)
+finally:os.close(fd)
+assert n==len(payload)
+print(json.dumps({'written':n,'owned_tty_verified':True}))
+'''
+def run(a):
+ s=private_json(a.settings);assert s['disposable_fixture'] and s['files_disabled'];root=a.private_root/('hostile-'+secrets.token_hex(4));root.mkdir(mode=0o700);children=[];checks=[]
+ def remote(code,data=None):
+  p=subprocess.run(s['admin_argv']+['/usr/pkg/bin/python3.13 -c '+shlex.quote(code)],input=data,capture_output=True,timeout=45)
+  if p.returncode:(root/'remote-failure.private').write_bytes(p.stdout+p.stderr)
+  assert p.returncode==0;return p.stdout
+ def private(p,text):p.write_text(text);p.chmod(0o600)
+ secret=secrets.token_hex(24);handle=s['member_handle']+'host'+secrets.token_hex(3);store=root/'mail'
+ (root/'private-markers.json').write_text(json.dumps([secret,s['sysop_password'],PASS]));(root/'private-markers.json').chmod(0o600)
+ p=subprocess.run([str(a.fixture),str(store),'archive-pending'],capture_output=True,timeout=30);assert p.returncode==0
+ ca=root/'ca.pem';ca.write_bytes(a.ca.read_bytes());ca.chmod(0o600)
+ config=root/'home.toml';private(config,'version=1\naccount="alice@home.test"\nendpoint="127.0.0.1:9"\ndomain="home.test"\nca='+json.dumps(str(ca))+'\npin="'+'ab'*32+'"\n')
+ catalog=root/'catalog.toml';private(catalog,'version=1\nhome_mail={store='+json.dumps(str(store))+',config='+json.dumps(str(config))+'}\n[[boards]]\nid="board"\nlabel="Owned board"\nprofile='+json.dumps(s['profile'])+'\n')
+ before=(store/'mail.fkv').read_bytes()
+ def board():
+  c=SSHConsole(s['member_argv']);children.append(c);return c
+ def login(c,h,p,reg=False):
+  c.expect('[L]ogin [R]egister [Q]uit: ');c.send('r' if reg else 'l');c.expect('Handle: ');c.send(h);c.password(p)
+  if reg:c.password(p,'Confirm password (hidden): ')
+  else:c.expect('Press Enter to continue: ');c.send('');c.expect(MENU)
+ def status(owner,action):
+  owner.raw(b's');owner.expect('[C]reate room: ');owner.send(action);owner.expect('Member handle: ');owner.send(handle);owner.expect('Status updated; previous sessions expired.');owner.expect('Press Enter to return to menu: ');owner.send('');owner.expect(MENU)
+ try:
+  c=board();login(c,handle,secret,True);c.expect('Registration pending; sysop approval required.');c.finish()
+  owner=board();login(owner,'sysop',s['sysop_password']);status(owner,'a')
+  observations=[]
+  for mode in ['forged_frame','bounded_output_overflow','approval_revoked_during_private_view']:
+   time.sleep(5.1);old={x['pid'] for x in json.loads(remote(TERMINALS))}
+   c=LauncherConsole([a.client,'--boards',catalog]);children.append(c);c.expect(PICK);c.raw(b'a');c.expect(CONFIRM);c.send('y');login(c,handle,secret);visit=visit_processes(c.pid)
+   tty=[x for x in json.loads(remote(TERMINALS)) if x['pid'] not in old];assert len(tty)==1
+   c.raw(b'm');c.expect('[O] Open encrypted home mail');c.raw(b'o');c.expect('LOCAL: open encrypted home mail while this board stays parked? [y/N]: ');c.send('y');c.expect(UNLOCK);start=len(c.transcript)
+   assert not termios.tcgetattr(c.fd)[3]&termios.ECHO
+   if mode=='forged_frame':observation=json.loads(remote(INJECT,json.dumps(tty[0]).encode()))
+   elif mode=='bounded_output_overflow':
+    observation=json.loads(remote(HOSTILE,json.dumps(tty[0]).encode()));assert observation['written']>32768,'overflow fixture did not exceed unchanged output cap'
+   else:status(owner,'v');observation={'approval_revoked':True}
+   drain_ready(c);assert b'PUBLIC_' not in c.transcript[start:]
+   c.send(PASS);c.expect(MAIL);assert_same_visit(visit,visit_processes(c.pid));assert b'PUBLIC_' not in c.transcript[start:]
+   c.raw(b'l');c.expect('Connection stopped: ');c.expect(RETURN);c.send('');c.expect(PICK)
+   rows=subprocess.check_output(['ps','-axo','pid,ppid,comm'],text=True).splitlines()
+   assert not any(len(f:=line.split())>=3 and f[1]==str(c.pid) and Path(f[2]).name=='ssh' for line in rows)
+   assert b'PUBLIC_' not in c.transcript[start:];assert PASS.encode() not in c.transcript;c.raw(b'q');c.finish();assert termios.tcgetattr(c.fd)[3]&termios.ECHO
+   assert (store/'mail.fkv').read_bytes()==before
+   checks.append(mode+'_locked_closed_without_remote_render_or_redial');observations.append(observation)
+  owner.raw(b'q');owner.expect('Logged out.');owner.finish()
+  a.output.write_text(json.dumps(dict(result='pass',scope='actual-ssh-private-transition-hostile-controls',count=len(checks),checks=checks,observations=observations,private_store_unchanged=True,normal_output_cap=32768,physical_hardware=False,capacity_claim=False),indent=2)+'\n');print('Private-transition negative controls passed:',len(checks))
+ except BaseException:
+  for i,c in enumerate(children):(root/(str(i)+'.private')).write_bytes(c.transcript+c.buffer)
+  raise
+ finally:
+  for c in children:c.close()
+if __name__=='__main__':
+ p=argparse.ArgumentParser()
+ for n in ['client','fixture','ca','settings','private-root','output']:p.add_argument('--'+n,type=Path,required=True)
+ run(p.parse_args())

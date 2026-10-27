@@ -1,0 +1,40 @@
+name: Finite feature or design task
+description: One observable outcome that a focused PR can complete.
+labels: ["type:feature", "status:needs-triage"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: State one member/sysop problem and observable result. Split large work into child issues before implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and non-goals
+      description: Include local approval, data/device-key authority, classic fallback and relevant resource boundaries. Future enhancements do not extend completion.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use finite unchecked Markdown checkboxes. Check each only after its evidence passes; close the issue on PR merge.
+      placeholder: "- [ ] Given a named condition, an observable outcome occurs."
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test plan
+      description: Name positive/negative acceptance tests and failure/fallback cases. Behavior changes require an observed red test before code, then green and refactor. Name relevant PTY/native/recovery checks; do not require hardware without a hardware claim.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and related work
+      description: Link parent/child/prerequisite issues and relevant technical docs. Identify what blocks execution; no repository plan or roadmap.
+    validations:
+      required: true

@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "routes": {
+    "host": {
+      "hostile": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-negative-final02/hostile.json",
+        "sha256": "049735e22b017c0391464dce5b9d30060f7b1754abb4ee5240e630e5b2389685"
+      },
+      "protocol": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/host-negative-final02/protocol.json",
+        "sha256": "dd436bce8291e4eb9af39cdc8e4023a48c2a274170c6dddc0356c60f07e65789"
+      }
+    },
+    "netbsd": {
+      "hostile": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-final04/hostile.json",
+        "sha256": "36bc7557053afdc0862eae23304f0d9c0df8a88496aeca1dc3bf887592ad3f49"
+      },
+      "protocol": {
+        "path": "dev-docs/evidence/main-menu-mail/native/results/native-final03/protocol.json",
+        "sha256": "dd436bce8291e4eb9af39cdc8e4023a48c2a274170c6dddc0356c60f07e65789"
+      }
+    }
+  }
+}

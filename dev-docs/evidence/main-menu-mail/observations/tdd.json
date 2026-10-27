@@ -1,0 +1,7 @@
+{
+  "captured_before_edit": true,
+  "green_exit": 0,
+  "red_exit": 101,
+  "result": "pass",
+  "scope": "actual saved source/log variants; review-driven regressions and oracle corrections retained"
+}

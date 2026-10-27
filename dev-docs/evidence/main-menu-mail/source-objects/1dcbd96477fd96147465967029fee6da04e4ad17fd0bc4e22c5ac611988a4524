@@ -1,0 +1,17 @@
+from pathlib import Path
+import hashlib,json,copy
+R=Path('/Users/cam/DEV/faction-bbs');OUT=R/'dev-docs/evidence/main-menu-mail';path=OUT/'results.json';raw=path.read_bytes();current=json.loads(raw);layout=current['publication_layout']
+def object_ref(data):
+ h=hashlib.sha256(data).hexdigest();p=OUT/'source-objects'/h;p.parent.mkdir(parents=True,exist_ok=True)
+ if p.exists():assert p.read_bytes()==data
+ else:p.write_bytes(data)
+ return dict(path=str(p.relative_to(R)),sha256=h)
+original=json.loads((R/layout['original_record']['path']).read_bytes());relocations=copy.deepcopy(layout['relocations'])
+for relative in ['review/static-review-sources/docs/main-menu-mail.md','review/classic-review-sources/docs/main-menu-mail.md','review/classic-review-sources/docs/travel-modes.md']:
+ p=OUT/relative;ref=object_ref(p.read_bytes());relocations.append(dict(original_path=str(p.relative_to(R)),new_path=ref['path'],sha256=ref['sha256']));p.unlink()
+for change in relocations:
+ entry=next(x for x in original['sources'] if x['path']==change['original_path']);assert entry['sha256']==change['sha256'];entry['path']=change['new_path']
+layout['relocations']=relocations;layout['sources']+=[object_ref(raw),object_ref(Path(__file__).read_bytes())];original['publication_layout']=layout
+path.write_text(json.dumps(original,indent=2,sort_keys=True)+'\n');h=hashlib.sha256(path.read_bytes()).hexdigest();g=R/'tools/check_menu_mail_evidence.py';before=g.read_bytes();layout_guard=object_ref(before)
+# Adding the executed pre-pin guard as provenance changes only the outer record.
+original['publication_layout']['sources'].append(layout_guard);path.write_text(json.dumps(original,indent=2,sort_keys=True)+'\n');h=hashlib.sha256(path.read_bytes()).hexdigest();g.write_text(before.decode().replace("RESULT_SHA256='9e40cd9a65dc9944c8b85cb77cc7ef255a7ffa15a0264777b17220b9487738c5'","RESULT_SHA256='"+h+"'"));print('Eight frozen Markdown payloads relocated without changing bytes; original root and intermediate candidate preserved; current root',h)

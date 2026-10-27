@@ -36,7 +36,7 @@ fn hostile_stream() -> std::io::Result<()> {
         for event in filter.feed(&byte)? {
             match event {
                 stream::Event::Text(text) => filtered.extend(text),
-                stream::Event::Frame(_) => {
+                stream::Event::Frame(_) | stream::Event::Mail(_) => {
                     return Err(std::io::Error::other(
                         "unsolicited file frame is not checkpoint authority",
                     ));

@@ -1,0 +1,20 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0382]: use of moved value: `expected`
+   --> crates/faction-client/src/transport.rs:210:41
+    |
+198 |         let expected = match request {
+    |             -------- move occurs because `expected` has type `Frame`, which does not implement the `Copy` trait
+...
+203 |         loop {
+    |         ---- inside of this loop
+...
+210 |                 if self.mail_frames != [expected] {
+    |                                         ^^^^^^^^ value moved here, in previous iteration of loop
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+210 |                 if self.mail_frames != [expected.clone()] {
+    |                                                 ++++++++
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `faction-client` (bin "faction-client" test) due to 1 previous error

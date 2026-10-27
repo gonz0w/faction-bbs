@@ -1,0 +1,514 @@
+use super::*;
+use faction_terminal::home_mail::{Frame, Request};
+const N: &str = "0123456789abcdef0123456789abcdef";
+const OTHER: &str = "1123456789abcdef0123456789abcdef";
+struct Fixture {
+    path: PathBuf,
+    board: Board,
+    member: Session,
+    owner: Session,
+    secret: String,
+}
+impl Fixture {
+    fn new() -> Self {
+        use std::os::unix::fs::DirBuilderExt;
+        let path = std::env::temp_dir().join(format!(
+            "faction230-server-OWNED-{}",
+            faction_core::request_id().unwrap()
+        ));
+        fs::DirBuilder::new().mode(0o700).create(&path).unwrap();
+        let mut board = Board::open(&path.join("board")).unwrap();
+        let secret = faction_core::request_id().unwrap();
+        board.bootstrap("sysop", &secret).unwrap();
+        let owner = board.authenticate("sysop", &secret).unwrap();
+        board.register("member", &secret).unwrap();
+        board
+            .set_status(&owner, "member", Status::Approved)
+            .unwrap();
+        let member = board.authenticate("member", &secret).unwrap();
+        Self {
+            path,
+            board,
+            member,
+            owner,
+            secret,
+        }
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        fs::remove_dir_all(&self.path).unwrap();
+    }
+}
+fn request(r: Request) -> String {
+    faction_terminal::home_mail::encode_request(&r).unwrap()
+}
+#[test]
+fn mail_park_return_needs_no_file_area_key_namespace_or_grant() {
+    let mut f = Fixture::new();
+    let (offer, frame) = native_mail::offer(State::Menu, &mut f.board, &f.member).unwrap();
+    assert!(matches!(offer, State::MailOffer));
+    assert_eq!(frame, Frame::Offer);
+    let (parked, ack) = native_mail::transition(
+        offer,
+        &request(Request::Park(N.into())),
+        &mut f.board,
+        &f.member,
+    )
+    .unwrap();
+    assert!(matches!(&parked, State::MailParked(n) if n == N));
+    assert_eq!(ack, Some(Frame::Parked(N.into())));
+    let (menu, ack) = native_mail::transition(
+        parked,
+        &request(Request::Back(N.into())),
+        &mut f.board,
+        &f.member,
+    )
+    .unwrap();
+    assert!(matches!(menu, State::Menu));
+    assert_eq!(ack, Some(Frame::Returned(N.into())));
+    assert!(f.board.file_areas(&f.member, 0).unwrap().is_empty());
+}
+#[test]
+fn mail_old_client_empty_back_and_new_client_cancel_return_only_from_offer() {
+    let mut f = Fixture::new();
+    for line in ["", "back", "BACK"] {
+        let (state, ack) =
+            native_mail::transition(State::MailOffer, line, &mut f.board, &f.member).unwrap();
+        assert!(matches!(state, State::Menu));
+        assert_eq!(ack, None);
+    }
+    let (state, ack) = native_mail::transition(
+        State::MailOffer,
+        &request(Request::Back(N.into())),
+        &mut f.board,
+        &f.member,
+    )
+    .unwrap();
+    assert!(matches!(state, State::Menu));
+    assert_eq!(ack, Some(Frame::Returned(N.into())));
+    for state in [
+        State::MailOffer,
+        State::Pause,
+        State::Files,
+        State::NativeFiles,
+        State::MailParked(N.into()),
+    ] {
+        assert!(native_mail::offer(state, &mut f.board, &f.member).is_err());
+    }
+}
+#[test]
+fn mail_malformed_wrong_duplicate_stale_and_out_of_state_controls_fail_closed() {
+    let mut f = Fixture::new();
+    for line in [
+        "",
+        "back",
+        "@MAIL1 park x",
+        "@MAIL1 back x",
+        "@MAIL1 back 0123456789abcdef0123456789abcdef extra",
+    ] {
+        assert!(
+            native_mail::transition(State::MailParked(N.into()), line, &mut f.board, &f.member)
+                .is_err()
+        );
+    }
+    assert!(
+        native_mail::transition(
+            State::MailParked(N.into()),
+            &request(Request::Back(OTHER.into())),
+            &mut f.board,
+            &f.member
+        )
+        .is_err()
+    );
+    assert!(
+        native_mail::transition(
+            State::MailParked(N.into()),
+            &request(Request::Park(N.into())),
+            &mut f.board,
+            &f.member
+        )
+        .is_err()
+    );
+    for state in [State::Menu, State::Files, State::NativeFiles, State::Pause] {
+        assert!(
+            native_mail::transition(
+                state,
+                &request(Request::Back(N.into())),
+                &mut f.board,
+                &f.member
+            )
+            .is_err()
+        );
+    }
+    for line in [
+        "no",
+        "@MAIL1 park x",
+        "@MAIL1 park 0123456789abcdef0123456789abcdeF",
+        "@MAIL1 park 0123456789abcdef0123456789abcdef extra",
+    ] {
+        assert!(native_mail::transition(State::MailOffer, line, &mut f.board, &f.member).is_err());
+    }
+}
+#[test]
+fn mail_rechecks_current_approval_before_offer_park_and_both_returns() {
+    let mut f = Fixture::new();
+    f.board
+        .set_status(&f.owner, "member", Status::Revoked)
+        .unwrap();
+    assert!(native_mail::offer(State::Menu, &mut f.board, &f.member).is_err());
+    for (state, line) in [
+        (State::MailOffer, request(Request::Park(N.into()))),
+        (State::MailOffer, request(Request::Back(N.into()))),
+        (State::MailOffer, "".into()),
+        (
+            State::MailParked(N.into()),
+            request(Request::Back(N.into())),
+        ),
+    ] {
+        assert!(native_mail::transition(state, &line, &mut f.board, &f.member).is_err());
+    }
+}
+
+#[test]
+fn mail_nonce_history_refuses_reuse_and_has_a_fixed_connection_budget() {
+    let mut history = native_mail::History::default();
+    assert!(history.can_offer());
+    history.accept(N).unwrap();
+    assert!(history.accept(N).is_err());
+    for i in 1..64 {
+        history.accept(&format!("{i:032x}")).unwrap();
+    }
+    assert!(!history.can_offer());
+    assert!(history.accept(&format!("{:032x}", 64)).is_err());
+    assert!(history.accept("invalid").is_err());
+    assert!(native_mail::History::default().can_offer());
+}
+
+struct Terminal {
+    process: std::process::Child,
+    input: std::process::ChildStdin,
+    output: std::io::BufReader<std::process::ChildStdout>,
+    client: Option<Client>,
+    _control: UnixStream,
+}
+impl Terminal {
+    fn new(f: &mut Fixture) -> Self {
+        use std::io::BufRead;
+        use std::process::{Command, Stdio};
+        let mut process = Command::new("python3").args(["-u", "-c", "import os,pty,sys\nm,s=pty.openpty()\nprint(os.ttyname(s),flush=True)\nfor line in sys.stdin:\n os.write(m,bytes.fromhex(line.strip()))\n print('written',flush=True)"]).stdin(Stdio::piped()).stdout(Stdio::piped()).spawn().unwrap();
+        let input = process.stdin.take().unwrap();
+        let mut output = std::io::BufReader::new(process.stdout.take().unwrap());
+        let mut path = String::new();
+        output.read_line(&mut path).unwrap();
+        let tty = fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path.trim())
+            .unwrap();
+        let (control, peer) = UnixStream::pair().unwrap();
+        let mut client = Client::new(1, control, tty, "xterm", true).unwrap();
+        client.session = Some(f.board.authenticate("member", &f.secret).unwrap());
+        client.state = State::Menu;
+        client.ansi = true;
+        Self {
+            process,
+            input,
+            output,
+            client: Some(client),
+            _control: peer,
+        }
+    }
+    fn send(&mut self, bytes: &[u8]) {
+        use std::io::BufRead;
+        writeln!(
+            self.input,
+            "{}",
+            bytes.iter().map(|b| format!("{b:02x}")).collect::<String>()
+        )
+        .unwrap();
+        self.input.flush().unwrap();
+        let mut ack = String::new();
+        self.output.read_line(&mut ack).unwrap();
+        assert_eq!(ack, "written\n");
+    }
+}
+impl Drop for Terminal {
+    fn drop(&mut self) {
+        self.client.take();
+        self.process.kill().unwrap();
+        self.process.wait().unwrap();
+    }
+}
+#[test]
+fn mail_controls_through_real_pty_input_do_not_become_ansi_menu_or_files_actions() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let (jobs, _receiver) = CredentialJobs::new();
+    for state in [
+        State::Menu,
+        State::Files,
+        State::NativeFiles,
+        State::MailParked(N.into()),
+    ] {
+        let client = tty.client.as_mut().unwrap();
+        client.state = state;
+        client.close = false;
+        client.output.clear();
+        tty.send(format!("@MAIL1 park {N}\n").as_bytes());
+        let client = tty.client.as_mut().unwrap();
+        let result = client.input(&mut f.board, &jobs, &Theme::default());
+        assert!(result.is_err() || client.close);
+        assert!(client.close);
+        assert!(client.native.is_none());
+        assert!(!String::from_utf8_lossy(&client.output).contains(";parked;"));
+    }
+}
+#[test]
+fn mail_full_history_returns_actual_client_to_menu_and_reused_nonce_closes() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let client = tty.client.as_mut().unwrap();
+    for i in 0..64 {
+        client.mail_history.accept(&format!("{i:032x}")).unwrap();
+    }
+    client.mail_offer(&mut f.board, &Theme::default()).unwrap();
+    assert!(matches!(client.state, State::Menu));
+    assert!(!client.close);
+    let output = String::from_utf8_lossy(&client.output);
+    assert!(output.contains("Mail handoff unavailable for this visit"));
+    assert!(!output.contains("FACTION-MAIL1;offer"));
+    client.mail_history = native_mail::History::default();
+    client.mail_history.accept(N).unwrap();
+    client.state = State::MailOffer;
+    assert!(
+        client
+            .mail_line(
+                State::MailOffer,
+                &request(Request::Park(N.into())),
+                &mut f.board,
+                &Theme::default()
+            )
+            .is_err()
+    );
+    assert!(client.close);
+}
+
+#[test]
+fn mail_rechecks_binding_and_issuer_provenance_without_revoking_password_access() {
+    use faction_core::{RoamingAdmission, RoamingRegistry};
+    for revoke_issuer in [false, true] {
+        let mut f = Fixture::new();
+        let issuer = f
+            .board
+            .roaming_add_issuer("home", "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+            .unwrap();
+        let issuer = f
+            .board
+            .roaming_set_issuer_enabled(issuer.id, issuer.generation, true)
+            .unwrap();
+        let member_id = f.board.roaming_owner_member_id("member").unwrap();
+        let binding = f
+            .board
+            .roaming_link_member(
+                issuer.id,
+                issuer.generation,
+                "subject",
+                "board:home:subject",
+                member_id,
+                42001,
+                "local-consent-230",
+            )
+            .unwrap();
+        let binding = f
+            .board
+            .roaming_set_binding_enabled(binding.id, binding.generation, true)
+            .unwrap();
+        let state = f.board.roaming_owner_state().unwrap();
+        f.board = Board::open(&f.path.join("board")).unwrap();
+        f.board
+            .configure_roaming_owner(Some(RoamingRegistry {
+                board_identity: state.board_identity,
+                entries: vec![RoamingAdmission {
+                    uid: binding.uid,
+                    binding_id: binding.id,
+                    binding_generation: binding.generation,
+                    issuer_generation: issuer.generation,
+                }],
+            }))
+            .unwrap();
+        let roaming = f.board.authenticate_roaming_uid(binding.uid).unwrap();
+        let password = f.board.authenticate("member", &f.secret).unwrap();
+        native_mail::offer(State::Menu, &mut f.board, &roaming).unwrap();
+        native_mail::transition(
+            State::MailOffer,
+            &request(Request::Park(N.into())),
+            &mut f.board,
+            &roaming,
+        )
+        .unwrap();
+        if revoke_issuer {
+            f.board
+                .roaming_set_issuer_enabled(issuer.id, issuer.generation, false)
+                .unwrap();
+        } else {
+            f.board
+                .roaming_set_binding_enabled(binding.id, binding.generation, false)
+                .unwrap();
+        }
+        assert!(native_mail::offer(State::Menu, &mut f.board, &roaming).is_err());
+        for (state, line) in [
+            (State::MailOffer, request(Request::Park(N.into()))),
+            (State::MailOffer, request(Request::Back(N.into()))),
+            (State::MailOffer, "back".into()),
+            (
+                State::MailParked(N.into()),
+                request(Request::Back(N.into())),
+            ),
+        ] {
+            assert!(native_mail::transition(state, &line, &mut f.board, &roaming).is_err());
+        }
+        assert!(native_mail::offer(State::Menu, &mut f.board, &password).is_ok());
+    }
+}
+
+#[test]
+fn mail_real_pty_roundtrip_preserves_menu_presence_and_orders_ack_before_menu() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let (jobs, _receiver) = CredentialJobs::new();
+    let theme = Theme::default();
+    let client = tty.client.as_mut().unwrap();
+    client.mail_offer(&mut f.board, &theme).unwrap();
+    assert_eq!(client.activity(), Some(faction_core::VisitActivity::Menu));
+    assert!(!client.files_enabled);
+    assert!(client.native.is_none());
+    client.output.clear();
+    tty.send(format!("@MAIL1 park {N}\n").as_bytes());
+    let client = tty.client.as_mut().unwrap();
+    client.input(&mut f.board, &jobs, &theme).unwrap();
+    assert!(matches!(&client.state, State::MailParked(n) if n == N));
+    assert_eq!(client.activity(), Some(faction_core::VisitActivity::Menu));
+    assert_eq!(
+        String::from_utf8_lossy(&client.output),
+        format!("\r\n\x1b]7770;FACTION-MAIL1;parked;{N}\x07")
+    );
+    client.output.clear();
+    tty.send(format!("@MAIL1 back {N}\n").as_bytes());
+    let client = tty.client.as_mut().unwrap();
+    client.input(&mut f.board, &jobs, &theme).unwrap();
+    assert!(matches!(client.state, State::Menu));
+    assert_eq!(client.activity(), Some(faction_core::VisitActivity::Menu));
+    let output = String::from_utf8_lossy(&client.output);
+    let ack = output
+        .find(&format!("\x1b]7770;FACTION-MAIL1;returned;{N}\x07"))
+        .unwrap();
+    let menu = output.find("Command (then Enter): ").unwrap();
+    assert!(ack < menu);
+    assert!(!client.close);
+    assert!(client.native.is_none());
+}
+
+fn content_unchanged(client: &Client) {
+    assert!(
+        !client.close,
+        "ordinary input must not close the connection"
+    );
+    assert!(!matches!(
+        client.state,
+        State::MailOffer | State::MailParked(_)
+    ));
+    assert!(client.native.is_none());
+    assert!(!String::from_utf8_lossy(&client.output).contains("FACTION-MAIL1"));
+}
+#[test]
+fn mail_control_text_is_ordinary_hidden_password_input() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let (jobs, receiver) = CredentialJobs::new();
+    let text = request(Request::Park(N.into()));
+    let client = tty.client.as_mut().unwrap();
+    client.state = State::Password(false, "member".into());
+    client.session = None;
+    tty.send(format!("{text}\n").as_bytes());
+    let client = tty.client.as_mut().unwrap();
+    client
+        .input(&mut f.board, &jobs, &Theme::default())
+        .unwrap();
+    content_unchanged(client);
+    assert!(matches!(client.state, State::Authenticating));
+    let job = receiver.try_recv().unwrap();
+    assert_eq!(*job.request.secret, text);
+    assert!(!String::from_utf8_lossy(&client.output).contains(&text));
+}
+#[test]
+fn mail_control_text_is_ordinary_post_subject_input() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let (jobs, _receiver) = CredentialJobs::new();
+    let room = f.board.rooms(&f.member).unwrap()[0].id;
+    let text = request(Request::Park(N.into()));
+    tty.client.as_mut().unwrap().state = State::PostSubject(room, None);
+    tty.send(format!("{text}\n").as_bytes());
+    let client = tty.client.as_mut().unwrap();
+    client
+        .input(&mut f.board, &jobs, &Theme::default())
+        .unwrap();
+    content_unchanged(client);
+    assert!(
+        matches!(&client.state, State::PostBody(r, None, subject) if *r == room && subject == &text)
+    );
+}
+#[test]
+fn mail_control_text_is_ordinary_writing_body_input() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let (jobs, _receiver) = CredentialJobs::new();
+    let room = f.board.rooms(&f.member).unwrap()[0].id;
+    let text = request(Request::Park(N.into()));
+    tty.client
+        .as_mut()
+        .unwrap()
+        .writing_start(
+            &mut f.board,
+            &Theme::default(),
+            room,
+            None,
+            "Subject".into(),
+        )
+        .unwrap();
+    tty.send(format!("{text}\n").as_bytes());
+    let client = tty.client.as_mut().unwrap();
+    client
+        .input(&mut f.board, &jobs, &Theme::default())
+        .unwrap();
+    content_unchanged(client);
+    assert!(matches!(&client.state, State::Writing { draft, .. } if draft.body() == text));
+}
+#[test]
+fn mail_control_text_is_ordinary_chat_input() {
+    let mut f = Fixture::new();
+    let mut tty = Terminal::new(&mut f);
+    let (jobs, _receiver) = CredentialJobs::new();
+    let text = request(Request::Park(N.into()));
+    let client = tty.client.as_mut().unwrap();
+    let lease = f.board.chat_open(client.session.as_ref().unwrap()).unwrap();
+    f.board.chat_join(&lease, "#lobby").unwrap();
+    client.lease = Some(lease);
+    client.state = State::Chat;
+    tty.send(format!("{text}\n").as_bytes());
+    let client = tty.client.as_mut().unwrap();
+    client
+        .input(&mut f.board, &jobs, &Theme::default())
+        .unwrap();
+    content_unchanged(client);
+    assert!(matches!(client.state, State::Chat));
+    let page = f
+        .board
+        .chat_read(client.lease.as_ref().unwrap(), "#lobby", 0)
+        .unwrap();
+    assert_eq!(page.messages.len(), 1);
+    assert_eq!(page.messages[0].body, text);
+    f.board.chat_close(client.lease.as_ref().unwrap()).unwrap();
+    client.lease = None;
+}

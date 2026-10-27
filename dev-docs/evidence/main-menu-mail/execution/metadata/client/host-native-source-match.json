@@ -1,0 +1,8 @@
+{
+  "host_entries": 294,
+  "host_manifest_sha256": "0032fab2b6dac5840535be540cdbd9e8a65a97621eb710e0077f734a068b6867",
+  "mismatches": {},
+  "native_entries": 659,
+  "native_manifest_sha256": "e6f4f35f95dfe3cc2eb646d794edec34e1c4bfc6249772843481c49961f5d233",
+  "shared_entries": 272
+}

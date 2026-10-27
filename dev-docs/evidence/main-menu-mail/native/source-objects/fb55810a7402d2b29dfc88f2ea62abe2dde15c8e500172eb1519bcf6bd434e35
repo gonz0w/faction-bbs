@@ -1,0 +1,3 @@
+from lab import *
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_broker onestart; /etc/rc.d/faction_sshd onestart',timeout=60)
+print('Intermediate current board started with Files/SFTP disabled; 2GiB preflight only, not final runtime acceptance.')
