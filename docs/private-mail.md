@@ -114,15 +114,14 @@ E2EE envelope. Treat remote locators as untrusted, enforce destination/size/time
 bounds and require local confirmation before saving. Never send a private attachment
 through the current sysop-readable file area and call it server-blind.
 
-Evaluate reuse of [XEP-0447](https://xmpp.org/extensions/xep-0447.html) (Experimental
-v0.3.1, metadata/source sharing) and [XEP-0454](https://xmpp.org/extensions/xep-0454.html)
-(Historical/Experimental v0.1.0, encrypted media), retrieved 2026-10-21. They are
-research candidates, not adopted formats; the latter's historical status matters.
-Pin versions, assess actual OMEMO/client interoperability and library maintenance,
-and prove that homes, visited boards and blob stores cannot read content/private
-filename metadata or silently enroll a recipient device. Include tamper/wrong-key,
-revoked device, offline/expiry, retry/cancel, quotas and export/recovery experiments.
-Necessary routing, sizes and timing can still be visible. No plaintext fallback.
+The [attachment profile comparison](../dev-docs/research/0058-encrypted-attachment-profile.md)
+proposes a bounded experiment using structured XEP-0447/0448 metadata inside
+authenticated OMEMO/SCE. This is research, not an adopted format or an available
+attachment feature. Independent encrypted interoperability, authenticated private
+storage, strict cipher/size handling and durable attachment keys remain unproven.
+Historical XEP-0454 is a byte-level comparison, not the same format. A local proof
+would not establish private remote delivery. Necessary routing, sizes and timing can
+still be visible; there is no plaintext fallback.
 
 ## What the proof does and does not establish
 
