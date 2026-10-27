@@ -1,0 +1,188 @@
+{
+  "issue": 242,
+  "baseline_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db",
+  "final_sources": {
+    "checkpoint_ui.rs": "f1abeba66a0b227ef01e255821318ea093186a6ed1793dfabec334799256873b",
+    "checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab"
+  },
+  "routing": {
+    "requested_role": "temper_implementer",
+    "requested_model": "gpt-6.1-sol",
+    "requested_effort": "high",
+    "native_discovery_and_backend_metadata": "unavailable; no observed routing claim"
+  },
+  "publication_status": "PENDING private-value scan; no binaries, captures, stores, keys or configuration selected",
+  "chronology_notes": [
+    "01 setup failure is not defect RED; explicit OpenSSL3 dirs corrected command only.",
+    "02 actual pre-production missing-S real PTY/subprocess RED; 03 missing new matcher/model interface RED.",
+    "04 first implementation borrow-check error; 05 unchanged original search assertions GREEN.",
+    "06 added width assertion RED against 40-cell hint, then production hint split.",
+    "07 introduced separate direct-prompt characterization test; compile error corrected; 08 premature PTY master close EOF corrected; 09 whole-query expectation corrected after actual assertion failure; 10 EOF poll fixture stalled and owned test process was terminated. New direct-prompt test was never GREEN until 13. Candidate directory labels containing green do not override exit101 receipts.",
+    "11 rustfmt lacked edition and failed while formatting model only; 14 correct Rust2024 formatting passed.",
+    "12 strict Clippy passed; parallel full library test hit WouldBlock in unchanged kernel credential slot test. 15 serial full network client tests passed.",
+    "16 separate review found growable zeroizing input buffer could leave earlier allocations unwiped; actual capacity assertion RED on old prompt path preserved before production preallocation64 fix.",
+    "17 final frozen source: fmt, strict network Clippy, serial full network client tests pass (88 library+68 binary; 3 ignored helpers each).",
+    "18 final default/native strict Clippy and serial tests all pass: default4library+44binary; native43library+64binary with3ignored helpers each."
+  ],
+  "stages": [
+    {
+      "stage": "01-ui-red",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "02-ui-red",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "03-model-red",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "04-green-candidate",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "05-search-green",
+      "result": {
+        "exit_code": 0
+      }
+    },
+    {
+      "stage": "06-hint-width-red",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "07-search-controls",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "08-search-controls",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "09-search-controls-green",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "10-search-controls-green",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "11-format",
+      "result": {
+        "exit_code": 1
+      }
+    },
+    {
+      "stage": "12-network-checks",
+      "result": {
+        "exit_codes": [
+          0,
+          101
+        ]
+      }
+    },
+    {
+      "stage": "13-prompt-fixture-green",
+      "result": {
+        "exit_code": 0
+      }
+    },
+    {
+      "stage": "14-format",
+      "result": {
+        "exit_code": 0
+      }
+    },
+    {
+      "stage": "15-final-network",
+      "result": {
+        "exit_codes": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "stage": "16-query-allocation-red",
+      "result": {
+        "exit_code": 101
+      }
+    },
+    {
+      "stage": "17-final-network",
+      "result": {
+        "exit_codes": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "stage": "18-default-native-checks",
+      "result": {
+        "exit_codes": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "final_checks": {
+    "toolchain": "1.96.0",
+    "fmt_all_check": 0,
+    "clippy_all_targets_release_locked_Dwarnings": {
+      "default": 0,
+      "native-mail": 0,
+      "network-mail": 0
+    },
+    "serial_tests": {
+      "default": {
+        "passed": 48,
+        "ignored": 0
+      },
+      "native-mail": {
+        "passed": 107,
+        "ignored": 6
+      },
+      "network-mail": {
+        "passed": 156,
+        "ignored": 6
+      }
+    },
+    "diff_check": 0,
+    "full_workspace_remote_gates": "lead integration scope; not claimed here",
+    "host_NetBSD_focused_probes": "separate native implementer scope; not claimed here"
+  },
+  "client_fixture_teardown": {
+    "root_mode": "0o700",
+    "remaining_fixture_paths": [],
+    "remaining_directories": [
+      "public-staging",
+      "target"
+    ],
+    "assertion": "No runtime fixture root remains: only stage records, selected evidence and target. All child test commands completed; one stalled owned test process was explicitly terminated and its SIGTERM result preserved."
+  }
+}

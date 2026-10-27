@@ -197,3 +197,13 @@ dev-docs/evidence/menu-mail-notices/review/audit_native.py whitespace=-blank-at-
 dev-docs/evidence/menu-mail-notices/review/audit_native_shared.py whitespace=-blank-at-eol
 dev-docs/evidence/menu-mail-notices/review/audit_native_v2.py whitespace=-blank-at-eol
 dev-docs/evidence/menu-mail-notices/review/host-audit-sources/check_restricted_ssh.py whitespace=-blank-at-eol
+
+# Issue242 exact executed source variants, compiler logs and software observations.
+dev-docs/evidence/mail-search/** -text
+dev-docs/evidence/mail-search/**/objects/** linguist-generated=true
+dev-docs/evidence/mail-search/**/source-objects/** linguist-generated=true
+dev-docs/evidence/mail-search/**/*.json linguist-generated=true
+
+# Preserve observed compiler/test diagnostics without changing captured bytes.
+dev-docs/evidence/mail-search/**/stages/**/*.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/mail-search/native/logs/native-tests.log whitespace=-blank-at-eof

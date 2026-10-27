@@ -1,0 +1,57 @@
+{
+  "tools/probe_mail_correspondents.py": {
+    "repository_path": "tools/probe_mail_correspondents.py",
+    "sha256": "318c8daa5f9918c17f3c4f18588ef0f855f6e24d81d27e99884d59f565778599",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/test_probe_mail_correspondents.py": {
+    "repository_path": "tools/test_probe_mail_correspondents.py",
+    "sha256": "b91523b6038d7d1a002b0a391ef338bd9a9243cb32b8898c2c2e87534f6d7c3b",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/probe_mail_reply.py": {
+    "repository_path": "tools/probe_mail_reply.py",
+    "sha256": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/test_probe_mail_reply.py": {
+    "repository_path": "tools/test_probe_mail_reply.py",
+    "sha256": "18da0d324379a4c73edb73339a0fa7713706c24191c7ac6b3b10a311d80f91e2",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/probe_mail_inbox.py": {
+    "repository_path": "tools/probe_mail_inbox.py",
+    "sha256": "5c203b8072934ff31c54ff2389352a20f214bc5cdef2a7e0c4551bcd4598224c",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/probe_menu_mail.py": {
+    "repository_path": "tools/probe_menu_mail.py",
+    "sha256": "ce153e5020b84d6db1d4335b12cd382861b95fef06a722d1884ecafcb6e5db3d",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/probe_visit_mail.py": {
+    "repository_path": "tools/probe_visit_mail.py",
+    "sha256": "af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/smoke_native_client_ssh.py": {
+    "repository_path": "tools/smoke_native_client_ssh.py",
+    "sha256": "9c497245465273b89558f08910dfbadff3c618d67e3e1f56d20ee85e0f9322b4",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/smoke_board_launcher.py": {
+    "repository_path": "tools/smoke_board_launcher.py",
+    "sha256": "b5d557391f3efac604463fb0888f9125269a36646890593c7473be97dd16404b",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/smoke_local_console.py": {
+    "repository_path": "tools/smoke_local_console.py",
+    "sha256": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  },
+  "tools/check_restricted_ssh.py": {
+    "repository_path": "tools/check_restricted_ssh.py",
+    "sha256": "dd2d28d58865162d1b6c06967b6884a8dbf913968f942b8c365a1e07a0896404",
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db"
+  }
+}

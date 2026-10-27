@@ -1,0 +1,41 @@
+{
+  "result": "pass",
+  "scope": "bounded source-matched device-local encrypted inbox search software fixtures",
+  "search_routes": [
+    "host-local-classic04",
+    "host-local-unicode04",
+    "host-main-classic02",
+    "host-main-unicode02",
+    "native-local-classic02",
+    "native-local-unicode02",
+    "native-main-classic02",
+    "native-main-unicode02"
+  ],
+  "existing_local_regressions_per_os": [
+    "inbox",
+    "correspondents classic",
+    "correspondents Unicode",
+    "reply classic",
+    "reply Unicode"
+  ],
+  "existing_files_controls_per_os": 14,
+  "unconfigured_network_and_default_files_controls_per_os": 2,
+  "final_rust_source": {
+    "crates/faction-client/src/checkpoint_ui.rs": "f1abeba66a0b227ef01e255821318ea093186a6ed1793dfabec334799256873b",
+    "crates/faction-client/src/checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab"
+  },
+  "final_runtime_manifest": "runtime-source03.json",
+  "final_probe_sha256": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912",
+  "final_test_sha256": "0425f94240b06e011883b883fd48241fabb593ae6a2dd0561eabf558193ce34b",
+  "oracle_unit_tests": 8,
+  "native_source_matched_client_tests": 156,
+  "native_ignored_owned_helpers": 6,
+  "normal_limits_unchanged": true,
+  "home_outage": "actual TCP Transport(Connect) refusal",
+  "privacy_scope": "source-bound actual per-PID/fd/direction reconstructed board-I/O and selected board/store/log scans at measurement; no independent historical filesystem rescan claim",
+  "physical_hardware": false,
+  "capacity_claim": false,
+  "graphical_acceptance": false,
+  "production_support": false,
+  "routing_observation": "requested temper_implementer Sol/high mapping; backend/native-role metadata unavailable"
+}

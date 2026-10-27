@@ -1,0 +1,14 @@
+.E.....
+======================================================================
+ERROR: test_cancellation_requires_the_existing_context_specific_lock_notice (test_probe_mail_search.SearchOracle.test_cancellation_requires_the_existing_context_specific_lock_notice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_mail_search.py", line 31, in test_cancellation_requires_the_existing_context_specific_lock_notice
+    proof.require_locked_output(b'Home mail locked: local operation stopped.\r\n', True)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_mail_search' has no attribute 'require_locked_output'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (errors=1)

@@ -1,0 +1,12 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0502]: cannot borrow `bytes` as immutable because it is also borrowed as mutable
+   --> crates/faction-client/src/checkpoint_ui.rs:185:36
+    |
+185 |                     bytes.truncate(bytes.len().saturating_sub(remove));
+    |                     ----- -------- ^^^^^ immutable borrow occurs here
+    |                     |     |
+    |                     |     mutable borrow later used by call
+    |                     mutable borrow occurs here
+
+For more information about this error, try `rustc --explain E0502`.
+error: could not compile `faction-client` (bin "faction-client" test) due to 1 previous error

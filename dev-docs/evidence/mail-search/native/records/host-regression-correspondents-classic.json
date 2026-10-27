@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "machine": "arm64",
+  "scope": "device-local-mail-correspondents",
+  "unicode": false,
+  "count": 8,
+  "checks": [
+    "encrypted_interleaved_exact_account_device_groups_newest_first",
+    "six_row_pages_and_empty_single_64_group_clamps",
+    "grouped_original_indices_and_U_A_stay_exact_group",
+    "grouped_last_unread_ack_stays_empty_without_peer_hop",
+    "current_peer_reply_cancel_queue_preserves_selected_source",
+    "mismatched_peer_and_history_only_reply_authority_unchanged",
+    "offline_has_no_reply_and_unknown_read_stays_unknown",
+    "navigation_no_home_prompt_or_canonical_mutation"
+  ],
+  "private_fixture_removed": true,
+  "configured_home_endpoint_was_closed": true,
+  "source_sha256": "318c8daa5f9918c17f3c4f18588ef0f855f6e24d81d27e99884d59f565778599",
+  "navigation_readonly_preserved": true,
+  "home_password_prompt_observed": false
+}

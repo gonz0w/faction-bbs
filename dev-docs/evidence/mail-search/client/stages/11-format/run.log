@@ -1,0 +1,52 @@
+error: let chains are only allowed in Rust 2024 or later
+   --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:568:12
+    |
+568 |         if let Some(identity) = received
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: let chains are only allowed in Rust 2024 or later
+   --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:585:22
+    |
+585 |         if online && let Some(identity) = received {
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: let chains are only allowed in Rust 2024 or later
+   --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:693:24
+    |
+693 |                     if let Some(identity) = r.received_id()
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: let chains are only allowed in Rust 2024 or later
+   --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:694:28
+    |
+694 |                         && let Some(acknowledged) = v.received_read(index, identity)?
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: let chains are only allowed in Rust 2024 or later
+   --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:753:20
+    |
+753 |                 if let Some(id) = id
+    |                    ^^^^^^^^^^^^^^^^^
+
+error[E0670]: `async fn` is not permitted in Rust 2015
+   --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:945:5
+    |
+945 |     async fn network_cancel(&mut self) -> io::Result<()> {
+    |     ^^^^^ to use `async fn`, switch to Rust 2018 or later
+    |
+    = help: pass `--edition 2024` to `rustc`
+    = note: for more on editions, read https://doc.rust-lang.org/edition-guide
+
+error: expected one of `,`, `:`, or `}`, found `::`
+    --> /Users/cam/DEV/faction-bbs/crates/faction-client/src/checkpoint_ui.rs:1060:18
+     |
+1059 |         let result = runtime.block_on(async {
+     |                                       ----- `async` blocks are only allowed in Rust 2018 or later
+1060 |             tokio::select! {
+     |             -----^^ expected one of `,`, `:`, or `}`
+     |             |
+     |             while parsing this struct field
+     |
+     = help: pass `--edition 2024` to `rustc`
+     = note: for more on editions, read https://doc.rust-lang.org/edition-guide
+

@@ -1,0 +1,10 @@
+test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) ... ok
+test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) ... ok
+test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) ... ok
+test_unregistered_new_folder_file_is_rejected (test_check_recorded_files.Integrity.test_unregistered_new_folder_file_is_rejected) ... ok
+test_valid_selection_includes_old_object_outside_exact_new_folder (test_check_recorded_files.Integrity.test_valid_selection_includes_old_object_outside_exact_new_folder) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.010s
+
+OK

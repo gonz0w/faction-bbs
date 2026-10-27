@@ -1,0 +1,17 @@
+.....F
+======================================================================
+FAIL: test_width_oracle_scopes_current_inbox_after_reply_confirmation (test_probe_mail_search.SearchOracle.test_width_oracle_scopes_current_inbox_after_reply_confirmation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_mail_search.py", line 26, in test_width_oracle_scopes_current_inbox_after_reply_confirmation
+    proof.require_search_screen(screen, [7], 7, True)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/probe_mail_search.py", line 67, in require_search_screen
+    assert cells <= 39, 'search display exceeds compact classic width'
+           ^^^^^^^^^^^
+AssertionError: search display exceeds compact classic width
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=1)

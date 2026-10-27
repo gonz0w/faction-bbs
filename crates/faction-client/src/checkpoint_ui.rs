@@ -169,6 +169,44 @@ impl Screen<'_> {
             }
         }
     }
+    fn search_line(&mut self) -> io::Result<Option<inbox::Search>> {
+        self.print("Search (64 bytes; blank clears): ")?;
+        let mut bytes = Zeroizing::new(Vec::with_capacity(inbox::SEARCH_BYTES));
+        #[cfg(test)]
+        assert!(
+            bytes.capacity() >= inbox::SEARCH_BYTES,
+            "search scratch must not reallocate private prefixes"
+        );
+        let mut oversized = false;
+        loop {
+            match self.byte()? {
+                b'\r' | b'\n' => {
+                    self.print("\r\n")?;
+                    return Ok(if oversized {
+                        None
+                    } else {
+                        inbox::Search::parse(&bytes).ok()
+                    });
+                }
+                8 | 127 => {
+                    let remove = std::str::from_utf8(&bytes)
+                        .ok()
+                        .and_then(|text| text.chars().next_back())
+                        .map_or(1, char::len_utf8);
+                    let len = bytes.len().saturating_sub(remove);
+                    bytes.truncate(len);
+                }
+                byte => {
+                    if bytes.len() < inbox::SEARCH_BYTES {
+                        bytes.push(byte);
+                    } else {
+                        // Drain the rejected line without growing private scratch.
+                        oversized = true;
+                    }
+                }
+            }
+        }
+    }
     fn confirm(&mut self, label: &str, expected: &str) -> io::Result<()> {
         rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
         if self.line(label, expected.len().max(32), false)?.as_str() != expected {
@@ -311,6 +349,25 @@ impl Screen<'_> {
             Ok(entries)
         }
     }
+    fn inbox_matches(
+        v: &CheckpointVault,
+        search: &inbox::Search,
+    ) -> io::Result<Option<Vec<usize>>> {
+        if !search.active() {
+            return Ok(None);
+        }
+        Ok(Some(
+            v.history()?
+                .iter()
+                .enumerate()
+                .filter_map(|(index, record)| {
+                    search
+                        .matches(&record.address, &record.subject, &record.body)
+                        .then_some(index)
+                })
+                .collect(),
+        ))
+    }
     fn correspondents(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
         let peers = v
             .history()?
@@ -389,6 +446,7 @@ impl Screen<'_> {
         group: Option<usize>,
     ) -> io::Result<()> {
         let mut list = inbox::Inbox::new(Self::inbox_group_entries(v, group)?);
+        let mut search = inbox::Search::default();
         let mut decoder = Decoder::new();
         let mut unknown = false;
         loop {
@@ -406,6 +464,9 @@ impl Screen<'_> {
                 inbox::Filter::All => "All retained; newest first\r\n",
                 inbox::Filter::Unread => "Unread received; newest first\r\n",
             })?;
+            if search.active() {
+                self.print("Local search active.\r\n")?;
+            }
             self.print("Device snapshot; no home refresh.\r\n")?;
             let (page, pages) = list.page();
             self.print(&format!(
@@ -421,7 +482,9 @@ impl Screen<'_> {
                 self.print("Unread unknown; tracking disabled.\r\n")?;
             }
             if list.visible().is_empty() {
-                self.print(if list.mode() == inbox::Filter::Unread {
+                self.print(if search.active() {
+                    "No matching retained records.\r\n"
+                } else if list.mode() == inbox::Filter::Unread {
                     "No unread received records.\r\n"
                 } else {
                     "No retained records.\r\n"
@@ -447,9 +510,9 @@ impl Screen<'_> {
                 "[Up/Down J/K] Select  [N/P] Page\r\n[Enter/O] Open  [U] Unread  [A] All\r\n",
             )?;
             if group.is_none() {
-                self.print("[C] Correspondents  ")?;
+                self.print("[C] Correspondents\r\n")?;
             }
-            self.print("[B] Back\r\n")?;
+            self.print("[S] Search  [B] Back\r\n")?;
             loop {
                 let Some(key) = decoder.feed(self.byte()?, Instant::now()) else {
                     continue;
@@ -469,16 +532,32 @@ impl Screen<'_> {
                         unknown = false;
                         list.filter(inbox::Filter::All);
                     }
+                    Key::Hotkey(b'S') => {
+                        if let Some(query) = self.search_line()? {
+                            let matching = Self::inbox_matches(v, &query)?;
+                            search = query;
+                            list.search(matching);
+                        } else {
+                            self.print("Search rejected; previous query kept.\r\n")?;
+                        }
+                        decoder = Decoder::new();
+                    }
                     Key::Hotkey(b'B') => return Ok(()),
                     Key::Hotkey(b'C') if group.is_none() => {
                         self.correspondents(v, online)?;
-                        list.refresh(Self::inbox_entries(v)?);
+                        list.refresh_matching(
+                            Self::inbox_entries(v)?,
+                            Self::inbox_matches(v, &search)?,
+                        );
                         decoder = Decoder::new();
                     }
                     Key::Enter | Key::Hotkey(b'O') => {
                         if let Some(entry) = list.selected() {
                             self.inbox_record_mode(v, entry, online)?;
-                            list.refresh(Self::inbox_group_entries(v, group)?);
+                            list.refresh_matching(
+                                Self::inbox_group_entries(v, group)?,
+                                Self::inbox_matches(v, &search)?,
+                            );
                             decoder = Decoder::new();
                         }
                     }
@@ -1505,6 +1584,220 @@ mod tests {
                 );
                 assert!(!output.contains("Reply locally"));
                 assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
+            }
+        }
+    }
+    #[test]
+    fn search_opens_from_actual_inbox_and_is_ephemeral() {
+        let child = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--ignored",
+                "--exact",
+                "checkpoint_ui::tests::search_actual_interface_helper",
+                "--nocapture",
+            ])
+            .output()
+            .unwrap();
+        assert!(
+            child.status.success(),
+            "actual search interface failed: {} {}",
+            String::from_utf8_lossy(&child.stdout),
+            String::from_utf8_lossy(&child.stderr)
+        );
+    }
+    #[test]
+    #[ignore = "owned subprocess helper, exercised by the search interface control"]
+    fn search_actual_interface_helper() {
+        use std::{io::Write, os::unix::fs::PermissionsExt};
+        struct Owned(std::path::PathBuf);
+        impl Drop for Owned {
+            fn drop(&mut self) {
+                assert!(self.0.join("OWNERSHIP").is_file());
+                std::fs::remove_dir_all(&self.0).unwrap();
+            }
+        }
+        let mut id = [0; 16];
+        getrandom::fill(&mut id).unwrap();
+        let root = Owned(
+            std::env::temp_dir()
+                .canonicalize()
+                .unwrap()
+                .join(format!("faction242-interface-OWNED-{}", hex(&id))),
+        );
+        std::fs::create_dir(&root.0).unwrap();
+        std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::write(
+            root.0.join("OWNERSHIP"),
+            b"synthetic search interface control\n",
+        )
+        .unwrap();
+        let path = root.0.join("vault");
+        let (mut vault, _) = CheckpointVault::create(
+            Store::at(&path, true).unwrap(),
+            Data::new("alice@home.test".into()).unwrap(),
+            b"synthetic local interface password",
+            101,
+            now().unwrap(),
+        )
+        .unwrap();
+        let before = std::fs::read(path.join("mail.fkv")).unwrap();
+        for unicode in [false, true] {
+            for online in [false, true] {
+                let (master, slave) = faction_client_pty::open(24, 40).unwrap();
+                let mut input = std::fs::File::from(master);
+                let saved = rustix::termios::tcgetattr(&slave).unwrap();
+                let mut raw = saved.clone();
+                raw.make_raw();
+                rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                    .unwrap();
+                let capture = root.0.join("output");
+                let mut term = LocalTerminal {
+                    input: slave.into(),
+                    output: std::fs::File::create(&capture).unwrap(),
+                    saved,
+                };
+                input.write_all(b"sneedle\rs\rsneedle\rs\xff\rb").unwrap();
+                Screen {
+                    term: &mut term,
+                    activity: Instant::now(),
+                    unicode,
+                }
+                .inbox_mode(&mut vault, online)
+                .unwrap();
+                drop(term);
+                let output = std::fs::read_to_string(capture).unwrap();
+                assert!(
+                    output.contains("Search (64 bytes; blank clears): "),
+                    "S must open local search"
+                );
+                assert_eq!(output.matches("Local search active.").count(), 3);
+                assert_eq!(output.matches("No matching retained records.").count(), 3);
+                assert!(output.contains("Search rejected; previous query kept."));
+                assert!(
+                    !output.contains("needle"),
+                    "query stays out of terminal output"
+                );
+                assert!(
+                    output
+                        .lines()
+                        .all(|line| faction_terminal::text::width(line) <= 39),
+                    "every search list and hint line fits classic display"
+                );
+                // Each invocation is a new owning view; its first draw is unfiltered.
+                let first = output
+                    .split("Search (64 bytes; blank clears): ")
+                    .next()
+                    .unwrap();
+                assert!(first.contains("No retained records."));
+                assert!(!first.contains("Local search active."));
+                assert!(!output.contains("Reply locally"));
+                assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
+            }
+        }
+    }
+    #[test]
+    fn search_prompt_edits_unicode_bounds_input_and_keeps_lock_errors() {
+        use std::io::Write;
+        let boundary = "x".repeat(64);
+        let cases = [
+            (b"\r".to_vec(), Some("")),
+            ("λ界\x7f\r".as_bytes().to_vec(), Some("λ")),
+            (
+                [vec![b'x'; 64], b"\r".to_vec()].concat(),
+                Some(boundary.as_str()),
+            ),
+            ([vec![b'x'; 65], b"\x7f\r".to_vec()].concat(), None),
+            (b"\xff\r".to_vec(), None),
+            (b"\x1b\r".to_vec(), None),
+            ("\u{202e}\r".as_bytes().to_vec(), None),
+        ];
+        for unicode in [false, true] {
+            for (input, expected) in &cases {
+                let (master, slave) = faction_client_pty::open(24, 40).unwrap();
+                let saved = rustix::termios::tcgetattr(&slave).unwrap();
+                let mut raw = saved.clone();
+                raw.make_raw();
+                rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                    .unwrap();
+                let mut term = LocalTerminal {
+                    input: slave.into(),
+                    output: std::fs::OpenOptions::new()
+                        .write(true)
+                        .open("/dev/null")
+                        .unwrap(),
+                    saved,
+                };
+                let mut master = std::fs::File::from(master);
+                master.write_all(input).unwrap();
+                let result = Screen {
+                    term: &mut term,
+                    activity: Instant::now(),
+                    unicode,
+                }
+                .search_line()
+                .unwrap();
+                assert_eq!(result.is_some(), expected.is_some());
+                if let (Some(query), Some(text)) = (result, expected) {
+                    assert_eq!(query.active(), !text.is_empty());
+                    assert!(query.matches(text, "", ""));
+                    if *text == "λ" {
+                        assert!(!query.matches("界", "", ""));
+                    }
+                }
+            }
+        }
+        for (input, expired, output_failure, expected) in [
+            (Some(3), false, false, io::ErrorKind::Interrupted),
+            (Some(4), false, false, io::ErrorKind::Interrupted),
+            (None, true, false, io::ErrorKind::TimedOut),
+            (None, false, true, io::ErrorKind::Other),
+            (None, false, false, io::ErrorKind::UnexpectedEof),
+        ] {
+            let (master, slave) = faction_client_pty::open(24, 40).unwrap();
+            let saved = rustix::termios::tcgetattr(&slave).unwrap();
+            let mut raw = saved.clone();
+            raw.make_raw();
+            rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                .unwrap();
+            let mut term = LocalTerminal {
+                input: slave.into(),
+                output: std::fs::OpenOptions::new()
+                    .write(!output_failure)
+                    .read(output_failure)
+                    .open("/dev/null")
+                    .unwrap(),
+                saved,
+            };
+            let tty = if input.is_none() && !expired && !output_failure {
+                let mut eof =
+                    std::fs::File::open(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml"))
+                        .unwrap();
+                std::io::Seek::seek(&mut eof, std::io::SeekFrom::End(0)).unwrap();
+                Some(std::mem::replace(&mut term.input, eof))
+            } else {
+                None
+            };
+            let mut master = std::fs::File::from(master);
+            if let Some(byte) = input {
+                master.write_all(&[byte]).unwrap();
+            }
+            let error = Screen {
+                term: &mut term,
+                activity: if expired {
+                    Instant::now() - IDLE
+                } else {
+                    Instant::now()
+                },
+                unicode: false,
+            }
+            .search_line()
+            .err()
+            .expect("input/output failure must leave the prompt");
+            if !output_failure {
+                assert_eq!(error.kind(), expected);
+            }
+            if let Some(tty) = tty {
+                term.input = tty;
             }
         }
     }

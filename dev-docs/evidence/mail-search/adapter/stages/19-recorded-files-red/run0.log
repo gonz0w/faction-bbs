@@ -1,0 +1,15 @@
+test_ci_pins_mail_search_manifest_once (test_check_recorded_files.Registration.test_ci_pins_mail_search_manifest_once) ... FAIL
+
+======================================================================
+FAIL: test_ci_pins_mail_search_manifest_once (test_check_recorded_files.Registration.test_ci_pins_mail_search_manifest_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 106, in test_ci_pins_mail_search_manifest_once
+    self.assertEqual(len(lines), 1, "CI must verify the selected mail-search manifest and its exact SHA-256")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : CI must verify the selected mail-search manifest and its exact SHA-256
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)

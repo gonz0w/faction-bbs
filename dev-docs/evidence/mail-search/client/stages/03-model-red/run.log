@@ -1,0 +1,157 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:267:21
+    |
+267 |         let query = Search::parse("λ.*[A]".as_bytes()).unwrap();
+    |                     ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:273:18
+    |
+273 |         assert!(!Search::parse(b"AB").unwrap().matches("A", "B", ""));
+    |                  ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:274:18
+    |
+274 |         assert!(!Search::parse(b"AB").unwrap().matches("", "A", "B"));
+    |                  ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:275:18
+    |
+275 |         assert!(!Search::parse("é".as_bytes()).unwrap().matches("", "e\u{301}", ""));
+    |                  ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:276:21
+    |
+276 |         let clear = Search::parse(b"").unwrap();
+    |                     ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:282:17
+    |
+282 |         assert!(Search::parse(&[b'x'; 64]).is_ok());
+    |                 ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:283:17
+    |
+283 |         assert!(Search::parse("界".repeat(21).as_bytes()).is_ok());
+    |                 ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:284:17
+    |
+284 |         assert!(Search::parse("λ".repeat(32).as_bytes()).is_ok());
+    |                 ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:285:17
+    |
+285 |         assert!(Search::parse(&[b'x'; 65]).is_err());
+    |                 ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:286:17
+    |
+286 |         assert!(Search::parse("界".repeat(22).as_bytes()).is_err());
+    |                 ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:288:21
+    |
+288 |             assert!(Search::parse(bytes).is_err());
+    |                     ^^^^^^ use of undeclared type `Search`
+
+error[E0433]: cannot find type `Search` in this scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:290:17
+    |
+290 |         assert!(Search::parse(b"  ").unwrap().active(), "spaces are literal, not trimmed");
+    |                 ^^^^^^ use of undeclared type `Search`
+
+error[E0599]: no method named `search` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:298:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `search` not found for this struct
+...
+298 |         list.search(Some(vec![1, 2, 3, 4]));
+    |              ^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `refresh_matching` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:304:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `refresh_matching` not found for this struct
+...
+304 |         list.refresh_matching(within_group(entries.clone(), &peers, 0), Some(vec![0, 3, 4]));
+    |              ^^^^^^^^^^^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `search` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:306:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `search` not found for this struct
+...
+306 |         list.search(None);
+    |              ^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `search` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:308:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `search` not found for this struct
+...
+308 |         list.search(Some(vec![]));
+    |              ^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `refresh_matching` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:316:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `refresh_matching` not found for this struct
+...
+316 |         list.refresh_matching(within_group(entries, &peers, 0), Some(vec![]));
+    |              ^^^^^^^^^^^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `search` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:322:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `search` not found for this struct
+...
+322 |         list.search(Some((0..64).collect()));
+    |              ^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `search` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:329:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `search` not found for this struct
+...
+329 |         list.search(Some(vec![1, 10, 40]));
+    |              ^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `refresh_matching` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:332:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `refresh_matching` not found for this struct
+...
+332 |         list.refresh_matching(rows(64), Some(vec![1, 10, 40, 63]));
+    |              ^^^^^^^^^^^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+error[E0599]: no method named `search` found for struct `checkpoint_ui::inbox::Inbox` in the current scope
+   --> crates/faction-client/src/checkpoint_ui_inbox.rs:334:14
+    |
+ 35 | pub struct Inbox {
+    | ---------------- method `search` not found for this struct
+...
+334 |         list.search(None);
+    |              ^^^^^^ method not found in `checkpoint_ui::inbox::Inbox`
+
+Some errors have detailed explanations: E0433, E0599.
+For more information about an error, try `rustc --explain E0433`.
+error: could not compile `faction-client` (bin "faction-client" test) due to 21 previous errors

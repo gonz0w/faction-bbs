@@ -1,0 +1,14 @@
+E....
+======================================================================
+ERROR: test_only_exact_proven_public_constants_are_classified_public (test_probe_mail_search.SearchInputProvenance.test_only_exact_proven_public_constants_are_classified_public)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_mail_search.py", line 69, in test_only_exact_proven_public_constants_are_classified_public
+    inventory = proof.input_inventory(markers)
+                ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_mail_search' has no attribute 'input_inventory'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (errors=1)

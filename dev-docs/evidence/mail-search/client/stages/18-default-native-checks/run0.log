@@ -1,0 +1,15 @@
+   Compiling libc v0.2.191
+   Compiling getrandom v0.4.3
+   Compiling rustix v1.1.5
+    Checking chacha20 v0.10.2
+    Checking chacha20poly1305 v0.11.0
+    Checking errno v0.3.14
+    Checking cpufeatures v0.3.1
+    Checking sha2 v0.11.1
+    Checking phc v0.6.1
+    Checking password-hash v0.6.1
+    Checking argon2 v0.6.0
+    Checking faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+    Checking faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Checking faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 1.96s

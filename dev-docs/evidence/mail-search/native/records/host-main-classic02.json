@@ -1,0 +1,47 @@
+{
+  "result": "pass",
+  "platform": "Darwin",
+  "machine": "arm64",
+  "unicode": false,
+  "scope": "same-ssh-main-menu-device-local-mail-search",
+  "count": 4,
+  "checks": [
+    "actual_TCP_Connect_refusal_then_local_search_without_home_cycle",
+    "global_grouped_search_original_index_ack_and_current_reply_cancel",
+    "fresh_unlock_lock_return_same_SSH_without_redial",
+    "private_queries_content_accounts_credentials_absent_strict_board_GIO_and_file_scans"
+  ],
+  "capture_id": "1c63c9692b0e594f900830a77c266a22",
+  "source_sha256": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912",
+  "binary_sha256": {
+    "client": "1329fe26c99981708023b53c288bc9b89d06792630ca1353a5a533bb994c11c3",
+    "fixture": "91c2e44a904e158a0f31722f51e9a558a6724e458bc73d8ffcd96fbfe0b3a104"
+  },
+  "private_input_hashes": {
+    "trace_sha256": "c19e410ae0e2282cd215fed201f5266e0e3b5d3da0ed609c237e1e8bf3fc2df4",
+    "marker_set_sha256": "fdf1a9fca65a7445a1d99a31135c451cd35b6bdab99b4554064f0ee42e77632a",
+    "file_scan_input_sha256": "a5ca59d752bdce8057a58051a6ce20598126d6a5a819332d233ee84cf95e1b76"
+  },
+  "board_io_reconstruction": {
+    "records": 54,
+    "streams": 3,
+    "decoded_bytes": 7862,
+    "read_bytes": 394,
+    "write_bytes": 7468
+  },
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 1,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "private_matches": 0,
+  "marker_count": 36,
+  "files_disabled": true,
+  "actual_home_transport_error": "Connect",
+  "exact_canonical_ack_invariants": true,
+  "same_ssh_pid_until_normal_close": true,
+  "automatic_redial_observed": false,
+  "private_fixture_retained_for_lead": true
+}

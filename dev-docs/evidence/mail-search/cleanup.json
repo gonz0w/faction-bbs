@@ -1,0 +1,32 @@
+{
+  "issue": 242,
+  "result": "pass",
+  "scope": "Actual removal of the three exact owned private fixture roots after selected-byte preservation",
+  "checked_identities": [
+    {
+      "root": "/private/tmp/faction242-client-OWNED",
+      "uid": 501,
+      "mode": "0700",
+      "marker_sha256": "93cd47892f1b886c04308f3b21e75df3b51e5ac8f9c0d228e84fc5d582cd5450"
+    },
+    {
+      "root": "/private/tmp/faction242-native-OWNED",
+      "uid": 501,
+      "mode": "0700",
+      "marker_sha256": "84ef54fc7c66cda46b7418bbe4d2580468ecd56da77ef40458d317d71a9306ea"
+    },
+    {
+      "root": "/private/tmp/faction242-review-OWNED",
+      "uid": 501,
+      "mode": "0700",
+      "marker_sha256": "9713ea55335e3c90cf7484038944987805c09c7ca77e0c6b05901490e4f89483"
+    }
+  ],
+  "owned_root_referencing_processes_before_removal": 0,
+  "all_three_roots_absent_after_removal": true,
+  "private_inventory_retained_only_in_operator_memory_for_final_scan": true,
+  "vm_controller_forward_and_saved_file_observations": "native/records/owned-stop-result.json",
+  "saved_owner_playground_started": false,
+  "saved_owner_playground_modified": false,
+  "limits": "VM/controller stop and six-file identities refer to the earlier source-bound stop observations; this operation did not rehash the saved image or rerun product sessions."
+}

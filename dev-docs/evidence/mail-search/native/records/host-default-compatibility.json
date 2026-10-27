@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "count": 2,
+  "checks": [
+    "current-network-native-v1_files_rpc_same_ssh_return",
+    "current-default-native-v1_files_rpc_same_ssh_return"
+  ],
+  "scope": "actual-unconfigured-network-and-default-native-v1-files-rpc",
+  "private_mail_not_opened": true,
+  "capacity_claim": false,
+  "physical_hardware": false
+}

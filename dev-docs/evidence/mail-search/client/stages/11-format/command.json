@@ -1,0 +1,1 @@
+{"argv": ["rustfmt", "+1.96.0", "--config", "skip_children=true", "crates/faction-client/src/checkpoint_ui.rs", "crates/faction-client/src/checkpoint_ui_inbox.rs"]}

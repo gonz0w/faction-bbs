@@ -29,6 +29,7 @@ retained-device records, not a complete or current home-server inbox.
 - **N/P** moves to the next or previous page.
 - **U** lists unread received messages; **A** returns to all retained records.
   If tracking is disabled, U reports unknown and keeps the all-records view.
+- **S** searches the current inbox. See [Search retained mail](#search-retained-mail).
 - **Enter/O** opens only the selected record, with peer, device, UTC time,
   subject and body. An empty list has nothing to open.
 - **B** returns from the list to the local mail menu.
@@ -42,6 +43,28 @@ an unread-only list. Sent records have no read-acknowledgement prompt.
 Enable [local read tracking](local-unread-mail.md) deliberately with E at the mail
 menu before using read decisions. Merely opening the inbox does not upgrade an
 older encrypted checkpoint. **H** retains its sequential history reader.
+
+## Search retained mail
+
+In an unlocked inbox, press **S**, enter text and press Enter. Your input is
+hidden as you type. Search finds a
+literal, case-sensitive Unicode substring in the peer account, subject or body
+of each retained record. The text must match within one field; it cannot span
+fields. The query can use up to 64 UTF-8 bytes. Invalid or longer input is
+rejected and leaves the previous search active. Press S and then Enter with an
+empty prompt to clear it.
+
+Search works with the current All or Unread filter and, inside a correspondent
+inbox, only that account and device. Results remain newest first, with the
+original record numbers and six entries per page. A new or cleared search
+selects the newest eligible record. The list shows a generic search indicator,
+not the query. If no records match, the list is empty.
+
+A newly opened correspondent inbox starts without a search. Returning through
+the picker restores the original inbox's search; leaving an inbox discards its
+search. Search uses the unlocked records on this device, performs no home
+connection and saves no query or plaintext index. Opening, acknowledging and
+replying retain their existing rules; the offline inbox has no Reply action.
 
 ## Browse one correspondent
 
