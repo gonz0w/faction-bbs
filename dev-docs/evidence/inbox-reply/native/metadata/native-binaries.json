@@ -1,0 +1,13 @@
+{
+  "faction": "e04e0fec155d0c0cc8d5b7f265c53261425669f42d0714be04775944f029df27",
+  "faction-member": "e4b8756c0630f3fc3cdc44e8700d0678b3b6e931aba5e4634789fbfcf93e7b08",
+  "faction-service": "190d82a26aafcfc7517196327af9e638f26663c555571f6753a2ba8f5db893b8",
+  "faction-files": "507211003b7b7f6895d40a7bd779853e9c6707fd595f6f3b7cb1ae53fd64bef4",
+  "faction-tty": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c",
+  "faction-daemon": "1712227c4637b1cf2ff25ba680f01fcced54cd0fc213ba0696d0bc68b89ccd1d",
+  "faction-client-default": "eb25138388f666e4ab39f0f54462ef041b37e55bc94ebb7efd4fe29c5ee0d2db",
+  "faction-client-network": "a241be76e504e349a26a32026c8fab94a1c50ce0f5e57483bb29b287671a5d64",
+  "examples/checkpoint_ui_fixture": "8be790207aee067041a0a96aa7072afadc1ed0a46182c77bbec94d9c1e3b4ce5",
+  "examples/home_mail_fixture": "ab6efe59bcfb15c4944a365411c12bd53c37d5ef223500420609c4f7995d5dc7",
+  "examples/mail_reply_fixture": "8d4d979214995611772f2f426abef73682f0510897807f1dc4390770349d4bcb"
+}

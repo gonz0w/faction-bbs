@@ -1,0 +1,127 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+warning: unused import: `super::*`
+ --> crates/faction-client/src/checkpoint_ui_reply.rs:5:9
+  |
+5 |     use super::*;
+  |         ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:54:17
+   |
+54 |         assert!(Target::prepare(f.v(),0,[1;32],f.time).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:56:22
+   |
+56 |         let target = Target::prepare(f.v(),0,frame,f.time).unwrap();
+   |                      ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:59:17
+   |
+59 |         assert!(Target::prepare(f.v(),0,[9;32],f.time).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:60:17
+   |
+60 |         assert!(Target::prepare(f.v(),1,frame,f.time).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:61:17
+   |
+61 |         assert!(Target::prepare(f.v(),0,frame,f.time-1).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:62:17
+   |
+62 |         assert!(Target::prepare(f.v(),0,frame,f.v().inspection().unwrap().expires+1).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:63:33
+   |
+63 |         let (subject,shortened)=suggested_subject(&f.v().history().unwrap()[0].subject); assert!(!shortened);
+   |                                 ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:66:17
+   |
+66 |         assert!(Target::prepare(f.v(),1,frame,time).is_err()); // sent selection
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:74:17
+   |
+74 |         assert!(Target::prepare(f.v(),0,frame,time).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:77:17
+   |
+77 |         assert!(Target::prepare(f.v(),0,frame,time).is_err());
+   |                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:79:33
+   |
+79 |         f.reopen(true); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+   |                                 ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:81:57
+   |
+81 |         f.vm().fresh_device(303,time).unwrap(); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+   |                                                         ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:84:54
+   |
+84 |         f.vm().start(&remote,time).unwrap(); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+   |                                                      ^^^^^^ use of undeclared type `Target`
+
+error[E0433]: cannot find type `Target` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:87:54
+   |
+87 |         f.vm().start(&remote,time).unwrap(); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+   |                                                      ^^^^^^ use of undeclared type `Target`
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:95:42
+   |
+95 |             let (suggested, shortened) = suggested_subject(&original);
+   |                                          ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:99:20
+   |
+99 |         assert_eq!(suggested_subject("topic").0.as_str(), "Re: topic");
+   |                    ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+   --> crates/faction-client/src/checkpoint_ui_reply.rs:100:20
+    |
+100 |         assert_eq!(suggested_subject("Reformation").0.as_str(), "Re: Reformation");
+    |                    ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+   --> crates/faction-client/src/checkpoint_ui_reply.rs:102:38
+    |
+102 |         let (suggested, shortened) = suggested_subject(&original);
+    |                                      ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+   --> crates/faction-client/src/checkpoint_ui_reply.rs:107:38
+    |
+107 |         let (suggested, shortened) = suggested_subject(&original);
+    |                                      ^^^^^^^^^^^^^^^^^ not found in this scope
+
+Some errors have detailed explanations: E0425, E0433.
+For more information about an error, try `rustc --explain E0425`.
+warning: `faction-client` (bin "faction-client" test) generated 1 warning
+error: could not compile `faction-client` (bin "faction-client" test) due to 19 previous errors; 1 warning emitted

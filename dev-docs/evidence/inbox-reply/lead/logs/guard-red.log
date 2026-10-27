@@ -1,0 +1,101 @@
+EEEEEEEE
+======================================================================
+ERROR: test_accepts_complete_bounded_control_matrix (test_reply_evidence.Evidence.test_accepts_complete_bounded_control_matrix)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_ci_runs_the_pinned_reply_guard (test_reply_evidence.Evidence.test_ci_runs_the_pinned_reply_guard)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_rejects_changed_or_missing_exact_control_and_scope (test_reply_evidence.Evidence.test_rejects_changed_or_missing_exact_control_and_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_rejects_cleanup_tdd_or_build_scope_substitution (test_reply_evidence.Evidence.test_rejects_cleanup_tdd_or_build_scope_substitution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_rejects_local_mutation_network_or_unremoved_fixture (test_reply_evidence.Evidence.test_rejects_local_mutation_network_or_unremoved_fixture)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_rejects_missing_or_host_substituted_native_route (test_reply_evidence.Evidence.test_rejects_missing_or_host_substituted_native_route)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_rejects_missing_record_source_drift_or_relaxed_resource_claim (test_reply_evidence.Evidence.test_rejects_missing_record_source_drift_or_relaxed_resource_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+======================================================================
+ERROR: test_rejects_privacy_or_same_visit_regressions_with_coherent_new_hash (test_reply_evidence.Evidence.test_rejects_privacy_or_same_visit_regressions_with_coherent_new_hash)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 14, in setUp
+    self.m=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(self.m)
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/cam/DEV/faction-bbs/tools/check_reply_evidence.py'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+FAILED (errors=8)

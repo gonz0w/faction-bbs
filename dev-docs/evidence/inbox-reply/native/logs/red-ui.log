@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction233-native-OWNED/red_ui.py", line 13, in <module>
+    assert b'[R] Reply locally' in c.transcript,'selected received online record has no explicit Reply action'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: selected received online record has no explicit Reply action

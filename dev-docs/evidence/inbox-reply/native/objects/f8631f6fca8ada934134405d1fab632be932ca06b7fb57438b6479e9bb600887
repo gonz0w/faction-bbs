@@ -1,0 +1,17 @@
+from lab import *
+import hashlib,tarfile,io
+manifest=json.loads((P/'sources/native-final01-before.json').read_text())
+source=P/'source-final01';source.mkdir(mode=0o700)
+for name,digest in manifest.items():
+ data=(P/'objects'/digest).read_bytes();assert hashlib.sha256(data).hexdigest()==digest
+ dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+archive=P/'native-source-final01.tar.gz'
+with tarfile.open(archive,'w:gz') as output:
+ for name in sorted(manifest):output.add(source/name,arcname=name,recursive=False)
+original='66e60d0e6cb16efb925c4ff221e89c1f8d659dc209e631d9ab467e8244cbe1c8'
+script=(R/'dev-docs/evidence/main-menu-mail/native/source-objects'/original).read_bytes();assert hashlib.sha256(script).hexdigest()==original
+script=script.replace(b'source23005',b'source23301').replace(b'proof230',b'proof233').replace(b'target230',b'target233').replace(b'cargo230',b'cargo233').replace(b'build-attempt05',b'build-final01').replace(b'expected-source05.json',b'expected-source01.json').replace(b"'--example','home_mail_fixture'",b"'--example','home_mail_fixture','--example','mail_reply_fixture'")
+(P/'native-build-final01.py').write_bytes(script)
+metadata={'source_archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'build_original_object':original,'fresh_build_sha256':hashlib.sha256(script).hexdigest(),'source_count':len(manifest),'cores':2,'compile_memory_mib':2048,'compiler_jobs':2,'executed':False}
+(P/'sources/native-build-prepared.json').write_text(json.dumps(metadata,indent=2)+'\n')
+print('Prepared frozen native source archive and original-object-derived build driver:',len(manifest),'public sources; not launched.')

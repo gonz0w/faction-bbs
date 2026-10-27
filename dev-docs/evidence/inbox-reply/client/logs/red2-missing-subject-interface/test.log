@@ -1,0 +1,44 @@
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+warning: unused import: `super::*`
+ --> crates/faction-client/src/checkpoint_ui_reply.rs:5:9
+  |
+5 |     use super::*;
+  |         ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:11:42
+   |
+11 |             let (suggested, shortened) = suggested_subject(&original);
+   |                                          ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:15:20
+   |
+15 |         assert_eq!(suggested_subject("topic").0.as_str(), "Re: topic");
+   |                    ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:16:20
+   |
+16 |         assert_eq!(suggested_subject("Reformation").0.as_str(), "Re: Reformation");
+   |                    ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:18:38
+   |
+18 |         let (suggested, shortened) = suggested_subject(&original);
+   |                                      ^^^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `suggested_subject` in this scope
+  --> crates/faction-client/src/checkpoint_ui_reply.rs:23:38
+   |
+23 |         let (suggested, shortened) = suggested_subject(&original);
+   |                                      ^^^^^^^^^^^^^^^^^ not found in this scope
+
+For more information about this error, try `rustc --explain E0425`.
+warning: `faction-client` (bin "faction-client" test) generated 1 warning
+error: could not compile `faction-client` (bin "faction-client" test) due to 5 previous errors; 1 warning emitted
+warning: build failed, waiting for other jobs to finish...

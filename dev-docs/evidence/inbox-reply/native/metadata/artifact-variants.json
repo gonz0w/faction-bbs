@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "failed_featureoff_example_retained_sha256": "e00cfddce64402b2f1cc50327f314722939b70d2d7443125d6e9837b967cd487",
+  "unverified_default_candidate_was_network_hash": true,
+  "unverified_candidate_not_used_as_default": true,
+  "final_default_was_explicit_build_and_distinct_hash": true,
+  "baseline_client_is_preserved_earlier_binary_not_fresh_build": true,
+  "all_final_host_reply_routes_use_private_pinned_network_copies": true,
+  "earlier_host_classic_pass_and_failed_unicode_candidate_retained_separately": true
+}

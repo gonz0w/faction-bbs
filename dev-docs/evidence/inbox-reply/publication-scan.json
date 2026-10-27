@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "generated_private_values_scanned": 81,
+  "private_inventory_sha256": "4dd905b61c27b82ce72f9097187474073f5427656f484cc4f23787ea08995cde",
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "explicit_manifests_verified": true,
+  "bundles": {
+    "native": {
+      "files": 882,
+      "manifest_sha256": "dda3f0c0f87b71c9bffa05a332750383587748f3db7a002a23695acfede46520"
+    },
+    "client": {
+      "files": 67,
+      "manifest_sha256": "5271a082be5a389490961ea0165c18ef0ced96355d8a12ce88adfd3bf4c19436"
+    },
+    "lead": {
+      "files": 730,
+      "manifest_sha256": "570d9df54ea7fe326622fed29b3b27b6bea82b8abd800a9abe64bfaf3c4a76d1"
+    }
+  },
+  "known_public_synthetic_fixture_literals_excluded": true
+}

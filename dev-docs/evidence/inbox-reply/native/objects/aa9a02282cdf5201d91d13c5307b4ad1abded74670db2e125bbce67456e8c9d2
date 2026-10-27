@@ -1,0 +1,65 @@
+"""Behavior guards for exact canonical reply and private stream observations."""
+import copy
+import unittest
+
+import probe_mail_reply as proof
+from test_probe_menu_mail import dump
+
+
+class ReplyOracle(unittest.TestCase):
+    def setUp(self):
+        self.before = {
+            'history': [{'direction': 'received', 'address': 'bob@away.test',
+                         'device': 202, 'subject': 'hello', 'body': 'original',
+                         'received_id': '11' * 32, 'read': False}],
+            'pending': [{'operation': '22' * 16, 'address': 'bob@away.test', 'device': 202}],
+            'archive': {'cursor': 'synthetic-position'},
+        }
+        self.reply = {'direction': 'sent', 'address': 'bob@away.test',
+                      'device': 202, 'subject': 'Re: hello', 'body': 'fresh body',
+                      'operation': '33' * 16}
+        self.after = copy.deepcopy(self.before)
+        self.after['history'].append(self.reply)
+        self.after['pending'].append({'operation': '33' * 16,
+                                     'address': 'bob@away.test', 'device': 202})
+
+    def test_exact_one_new_sent_and_pending_preserves_original_read_history_and_cursor(self):
+        proof.require_reply_commit(self.before, self.after, 'bob@away.test', 202,
+                                   'Re: hello', 'fresh body')
+
+    def test_mutation_or_duplicate_cannot_be_reported_as_success(self):
+        for mutate in [
+            lambda x: x['history'][0].update(read=True),
+            lambda x: x['archive'].update(cursor='wrong'),
+            lambda x: x['history'].append(dict(self.reply)),
+            lambda x: x['history'][-1].update(subject='wrong'),
+            lambda x: x['history'][-1].update(body='wrong'),
+            lambda x: x['history'][-1].update(address='eve@away.test'),
+            lambda x: x['pending'][0].update(operation='44' * 16),
+            lambda x: x['pending'][-1].update(device=203),
+            lambda x: x['pending'][-1].update(operation='22' * 16),
+        ]:
+            after = copy.deepcopy(self.after)
+            mutate(after)
+            with self.subTest(after=after):
+                with self.assertRaises(AssertionError):
+                    proof.require_reply_commit(self.before, after, 'bob@away.test', 202,
+                                               'Re: hello', 'fresh body')
+
+    def test_corrected_stream_oracle_finds_generated_private_reply_split_across_records(self):
+        marker = b'private-reply-body-0123456789'
+        proof.require_reply_private_absent(dump(b'@MAIL1 back ' + b'a' * 32 + b'\n'), [marker])
+        for trace in [dump(marker), dump(marker[:9]) + dump(marker[9:]),
+                      b''.join(dump(bytes([v])) for v in marker)]:
+            with self.assertRaises(AssertionError):
+                proof.require_reply_private_absent(trace, [marker])
+
+    def test_private_scan_requires_actual_nonempty_markers_and_complete_hex_capture(self):
+        for trace, markers in [(b'', [b'body']), (dump(b'safe'), []),
+                               (dump(b'body')[:-1], [b'body'])]:
+            with self.assertRaises(AssertionError):
+                proof.require_reply_private_absent(trace, markers)
+
+
+if __name__ == '__main__':
+    unittest.main()

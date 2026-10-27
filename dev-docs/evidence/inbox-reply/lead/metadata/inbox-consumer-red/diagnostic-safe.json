@@ -1,0 +1,19 @@
+{
+  "expected_old_pause_mentioned": true,
+  "new_reply_choice_observed": false,
+  "return_record_frame": true,
+  "source_line_frames": [
+    [
+      "198",
+      "probe"
+    ],
+    [
+      "84",
+      "return_record"
+    ],
+    [
+      "41",
+      "expect"
+    ]
+  ]
+}

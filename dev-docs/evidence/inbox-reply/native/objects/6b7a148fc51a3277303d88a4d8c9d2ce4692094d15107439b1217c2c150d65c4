@@ -1,0 +1,9 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof233/runtime-final05/progress.json',check=False)
+if r.returncode:print('Native runtime progress unavailable');raise SystemExit(1)
+value=json.loads(r.stdout);(P/'logs/native-runtime-progress.private.json').write_bytes(r.stdout)
+print(json.dumps({'result':value.get('result','running'),'running':value.get('running'),'waiting':value.get('waiting_normal_refill_before'),'completed':[{k:v for k,v in x.items() if k in {'name','returncode','elapsed_seconds'}} for x in value['completed']]}))
+if value.get('result')=='fail':
+ failed=value['completed'][-1]['name'];text=remote('cat /home/factionbuild/proof233/runtime-final05/'+failed+'.raw.log').stdout;(P/'logs'/('native-'+failed+'-failure.log')).write_bytes(text);print(text.decode()[-2000:])
+if value.get('result')=='pass':
+ for n in ['local-classic.json','local-unicode.json','main-classic.json','main-unicode.json','oracles.raw.log','source-before.json','source-after.json','execution.json']:(P/'logs'/('native-runtime-'+n)).write_bytes(remote('cat /home/factionbuild/proof233/runtime-final05/'+n).stdout)

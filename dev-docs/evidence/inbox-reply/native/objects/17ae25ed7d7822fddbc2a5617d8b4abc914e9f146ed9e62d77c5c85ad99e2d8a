@@ -1,0 +1,6 @@
+from lab import *
+for name in ['build-result.json','source-observed.json','server-build.log','default-build.log','network-build.log','tests-build.log']:
+ (P/'logs'/('native-final02-'+name)).write_bytes(remote('cat /home/factionbuild/proof233/build-final02/'+name).stdout)
+text=(P/'logs/native-final02-tests-build.log').read_text()
+for section in text.split('---- ')[1:]:
+ if ' stdout ----' in section:print(section[:1800])

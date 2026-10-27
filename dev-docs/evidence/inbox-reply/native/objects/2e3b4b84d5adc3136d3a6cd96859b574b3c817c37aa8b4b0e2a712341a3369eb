@@ -1,0 +1,18 @@
+from pathlib import Path
+import sys,json,tarfile,io,stat
+P=Path('/home/factionbuild/proof233');D=Path('/home/factionbuild/device233');sys.path.insert(0,str(P/'runtime-code'))
+from audit_main_capture import audit
+routes={};roots={}
+for mode in ['classic','unicode']:
+ root,routes['netbsd_'+mode]=audit(D,(P/'runtime-final05'/('main-'+mode+'.json')).read_bytes(),P/'runtime-code/probe_mail_reply.py');roots['netbsd_'+mode]=root
+if '--archive' in sys.argv:
+ output=io.BytesIO()
+ names=['private-markers.json','private-input-association.json','trace-input-association.private.json','capture-hash-association.private.json','capture-result-association.private.json','board-file-scan-input.private.json','board-io.private.log','canonical-before.private.json','canonical-after.private.json','terminal-0.private','terminal-1.private','terminal-2.private','mail/mail.fkv']
+ with tarfile.open(fileobj=output,mode='w:gz') as archive:
+  for route,root in roots.items():
+   for name in names:
+    path=root/name;info=path.lstat();assert stat.S_ISREG(info.st_mode) and info.st_nlink==1 and not path.is_symlink();archive.add(path,arcname=route+'/'+name,recursive=False)
+ sys.stdout.buffer.write(output.getvalue())
+else:
+ (P/'native-capture-associations.json').write_text(json.dumps({'result':'pass','routes':routes},indent=2)+'\n')
+ print('Two NetBSD private capture/result/source/marker/trace associations revalidated.')

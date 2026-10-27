@@ -1,0 +1,403 @@
+    Finished `release` profile [optimized] target(s) in 0.05s
+     Running unittests src/lib.rs (/home/factionbuild/target233/release/deps/faction_client-95ca7cd92b6a8f45)
+
+running 91 tests
+test checkpoint_tests::backup_is_history_only_until_explicit_fresh_device ... ok
+test checkpoint_tests::checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by checkpoint crash controls
+test checkpoint_tests::checkpoint_review_parent_sync_failure_prevents_usable_initialization ... ok
+test checkpoint_tests::checkpoint_review_recovery_quarantine_survives_password_reopen ... ok
+test checkpoint_tests::checkpoint_review_restart_outbox_recovers_acknowledgement_id ... ok
+test checkpoint_tests::delayed_keys_and_reply_ratchets_commit_with_history ... ok
+test checkpoint_tests::encrypted_send_receive_retry_and_ack_survive_reopen ... ok
+test checkpoint_tests::explicit_upgrade_preserves_v1_drafts_pins_and_original_backup ... ok
+test checkpoint_tests::locks_wrong_secrets_malformed_bytes_and_caps_fail_closed ... ok
+test checkpoint_tests::process_death_after_delivery_before_ack_retries_identical_ciphertext ... ok
+test checkpoint_tests::process_death_before_and_after_publication_keeps_canonical_state ... ok
+test checkpoint_tests::reset_write_ambiguity_never_rolls_back_into_a_live_handle ... ok
+test checkpoint_tests::validation_tamper_trust_and_duplicates_do_not_change_canonical_state ... ok
+test checkpoint_tests::write_errors_poison_until_durable_reopen ... ok
+test mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count ... ok
+test mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four ... ok
+test mail_archive::tests::incoming_uses_enrolled_identity_and_ignores_server_time ... ok
+test mail_archive::tests::opaque_cursor_and_query_inputs_are_bounded ... ok
+test mail_archive::tests::own_sent_echo_uses_swapped_trusted_binding_without_decryption ... ok
+test mail_archive::tests::request_is_own_archive_peer_filtered_and_four_bounded ... ok
+test mail_archive::tests::saved_cursor_unavailable_requires_exact_own_error_and_optional_query_echo ... ok
+test mail_archive::tests::wrong_owner_query_shape_namespace_addresses_and_delay_are_rejected ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_cas_binding_ids_and_tamper_stop_before_checkpoint_mutation ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by archive checkpoint crash controls
+test mail_checkpoint::archive_checkpoint_tests::archive_inspection_exposes_only_enabled_and_cursor_presence_even_when_inactive ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_process_death_couples_message_cursor_and_native_snapshot ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_receive_commits_authenticated_time_cursor_and_reopen_duplicate_once ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_write_failures_poison_and_preserve_atomic_candidate ... ok
+test mail_checkpoint::archive_checkpoint_tests::explicit_archive_migration_preserves_v2_state_wraps_and_recovery ... ok
+test mail_checkpoint::archive_checkpoint_tests::full_history_or_outbox_blocks_archive_duplicates_and_echoes ... ok
+test mail_checkpoint::archive_checkpoint_tests::inactive_revoked_expired_and_poisoned_archive_operations_refuse ... ok
+test mail_checkpoint::archive_checkpoint_tests::known_own_archive_echo_advances_only_cursor_even_after_retirement ... ok
+test mail_checkpoint::archive_checkpoint_tests::original_recovery_secret_remains_valid_after_explicit_archive_migration ... ok
+test mail_checkpoint::archive_checkpoint_tests::partial_archive_page_preserves_last_good_cursor_when_next_item_fails ... ok
+test mail_checkpoint::archive_checkpoint_tests::recovery_backup_and_reset_preserve_inert_cursor_and_fresh_device_rescopes ... ok
+test mail_checkpoint::archive_checkpoint_tests::schema02_stays_exact_and_schema03_rejects_malformed_or_foreign_scope ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_archive_new_receive_duplicate_and_own_echo_preserve_bits_and_pending ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_crash_child ... ignored, owned subprocess helper, invoked by unread crash controls
+test mail_checkpoint::unread_checkpoint_tests::unread_explicit_opt_in_preserves_old_schemas_and_all_protocol_state ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_full_64_entry_metadata_is_bounded_without_evicting_history ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_history_only_backup_can_acknowledge_without_changing_active_source ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_history_only_recovery_backup_reset_and_fresh_device_keep_local_decisions ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_local_decisions_survive_protocol_expiry_and_revocation ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_malformed_length_direction_boolean_and_trailing_metadata_reject ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_process_death_before_and_after_publish_keeps_whole_read_checkpoint ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_received_only_exact_identity_idempotence_and_duplicate_reopen ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_write_failures_poison_enable_and_mark_without_partial_state ... ok
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact ... ok
+test mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit ... ok
+test mail_network::tests::catch_up_cancellation_after_result_preserves_checkpoint ... ok
+test mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry ... ok
+test mail_network::tests::catch_up_expired_during_connect_sends_no_query ... ok
+test mail_network::tests::catch_up_full_outbox_and_foreign_settings_stop_before_transport ... ok
+test mail_network::tests::catch_up_lost_idle_or_invalid_fin_commits_nothing ... ok
+test mail_network::tests::catch_up_own_sent_echo_matches_durable_history_without_retiring_outbox ... ok
+test mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial ... ok
+test mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait ... ok
+test mail_network::tests::catch_up_saved_cursor_error_is_actionable_without_reset_or_retry ... ok
+test mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens ... ok
+test mail_network::tests::catch_up_total_stanza_budget_and_stale_local_token_stop ... ok
+test mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins ... ok
+test mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message ... ok
+test mail_network::tests::foreign_account_and_expired_state_cannot_open_a_home_connection ... ok
+test mail_network::tests::private_regular_local_configuration_is_preloaded ... ok
+test mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq ... ok
+test mail_network::tests::revoked_recovered_and_poisoned_handles_stop_before_transport_setup ... ok
+test mail_network::tests::symlinks_hardlinks_fifo_and_public_files_are_refused ... ok
+test mail_network::tests::unknown_fields_credentials_and_non_numeric_endpoints_are_rejected ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+test mail_wire::tests::mail_wire_accepts_exact_standard_store_hint_only ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language ... ok
+test mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys ... ok
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... ok
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... ok
+test mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id ... ok
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... ok
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... ok
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_language_namespace_shape_and_bounds ... ok
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_rejects_underfilled_discovery_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+test mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys ... ok
+test network_checkpoint_tests::authenticated_network_timestamp_and_delayed_duplicate_survive_reopen ... ok
+test network_checkpoint_tests::published_prekeys_come_from_the_durable_current_identity_only ... ok
+test network_checkpoint_tests::unauthenticated_timestamp_substitution_and_tampering_never_mutate_checkpoint ... ok
+
+test result: ok. 88 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 38.14s
+
+     Running unittests src/main.rs (/home/factionbuild/target233/release/deps/faction_client-34560294589c2505)
+
+running 52 tests
+test checkpoint_ui::inbox::tests::disabled_tracking_rejects_unread_filter_instead_of_inventing_zero ... ok
+test checkpoint_ui::inbox::tests::empty_and_single_never_wrap_or_open_out_of_range ... ok
+test checkpoint_ui::inbox::tests::forty_column_subjects_are_inert_and_bounded_in_both_modes ... ok
+test checkpoint_ui::inbox::tests::full_retention_is_eleven_pages_and_only_four_final_rows ... ok
+test checkpoint_ui::inbox::tests::newest_first_six_rows_and_partial_page_clamp_selection ... ok
+test checkpoint_ui::inbox::tests::unread_filter_excludes_sent_and_read_refresh_keeps_original_indices ... ok
+test checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals ... ok
+test checkpoint_ui::reply::tests::suggested_subject_keeps_ascii_prefix_and_scalar_boundaries ... ok
+test checkpoint_ui::tests::inactivity_locks_without_remote_connection ... ok
+test checkpoint_ui::tests::inbox_output_failure_and_input_eof_helper ... ignored, owned subprocess helper, exercised by the inbox failure control
+test checkpoint_ui::tests::inbox_output_failure_and_input_eof_preserve_unread_and_restore_tty ... ok
+test checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input ... ok
+test checkpoint_ui::tests::private_text_is_inert_in_classic_and_unicode_modes ... ok
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test launcher::tests::home_mail_is_visible_local_explicit_and_fits_with_existing_entries ... ok
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test tests::files_mail_actions_are_local_configured_and_keep_classic_entries ... ok
+test tests::main_menu_mail_offers_only_fixed_local_open_and_back ... ok
+test transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority ... ok
+test transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits ... ok
+test transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls ... ok
+test transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo ... ok
+test transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail ... ok
+test transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline ... ok
+test transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+test visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count ... ok
+test visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears ... ok
+test visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads ... ok
+test visit_mail::tests::only_configured_visits_offer_mail_and_notices ... ok
+
+test result: ok. 51 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 23.62s
+
+     Running unittests examples/checkpoint_ui_fixture.rs (/home/factionbuild/target233/release/examples/checkpoint_ui_fixture-b0235ba228d9af20)
+
+running 7 tests
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/home_mail_fixture.rs (/home/factionbuild/target233/release/examples/home_mail_fixture-b158bc5d05c327d3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/mail_reply_fixture.rs (/home/factionbuild/target233/release/examples/mail_reply_fixture-3e219b82b8482ccd)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/home/factionbuild/target233/release/deps/faction_service-5f3fae619ef871c4)
+
+running 37 tests
+test classic::tests::fragmented_ansi_cp437_and_hidden_controls_are_filtered ... ok
+test classic::tests::original_lord_rip_probe_is_discarded_and_art_can_return_to_column_one ... ok
+test classic::tests::protocol_buffers_and_terminal_commands_are_bounded ... ok
+test classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots ... ok
+test classic::tests::telnet_fragmentation_negotiates_only_minimal_options_without_identity ... ok
+test config::tests::classic_destinations_are_fixed_bounded_and_disabled_by_default ... ok
+test config::tests::defaults_and_explicit_capacity ... ok
+test config::tests::operator_status_is_strict_and_disabled_by_default ... ok
+test config::tests::owner_file_permissions_links_and_size ... ok
+test config::tests::reject_ambiguous_unbounded_or_unknown_settings ... ok
+test config::tests::roaming_manifest_is_optional_and_has_a_bounded_absolute_path ... ok
+test dispatch_tests::two_jobs_before_receivers_wait_and_permits_cover_work_and_results ... ok
+test doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results ... ok
+test doors::tests::scores_require_one_bounded_terminal_completion ... ok
+test doors::tests::validate_complete_screen_and_only_allowed_actions ... ok
+test native_mail_tests::mail_control_text_is_ordinary_chat_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_hidden_password_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_post_subject_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_writing_body_input ... ok
+test native_mail_tests::mail_controls_through_real_pty_input_do_not_become_ansi_menu_or_files_actions ... ok
+test native_mail_tests::mail_full_history_returns_actual_client_to_menu_and_reused_nonce_closes ... ok
+test native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work ... ok
+test native_mail_tests::mail_initial_offer_supports_ansi_menu_selection ... ok
+test native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi ... ok
+test native_mail_tests::mail_malformed_wrong_duplicate_stale_and_out_of_state_controls_fail_closed ... ok
+test native_mail_tests::mail_nonce_history_refuses_reuse_and_has_a_fixed_connection_budget ... ok
+test native_mail_tests::mail_old_client_empty_back_and_new_client_cancel_return_only_from_offer ... ok
+test native_mail_tests::mail_park_return_needs_no_file_area_key_namespace_or_grant ... ok
+test native_mail_tests::mail_real_pty_roundtrip_preserves_menu_presence_and_orders_ack_before_menu ... ok
+test native_mail_tests::mail_rechecks_binding_and_issuer_provenance_without_revoking_password_access ... ok
+test native_mail_tests::mail_rechecks_current_approval_before_offer_park_and_both_returns ... ok
+test operator::tests::disabled_publisher_creates_no_lifetime_authority ... ok
+test operator::tests::optional_publication_failure_never_steals_a_live_lease ... ok
+test policy::tests::key_lookup_uid_cannot_claim_or_complete_valid_transfer_authority ... ok
+test roaming::tests::manifest_loader_rejects_untrusted_ancestors_and_paths ... ok
+test roaming::tests::manifest_parser_accepts_only_exact_bounded_identity_and_bindings ... ok
+test roaming::tests::only_observed_shared_or_registered_uids_enter_handoff ... ok
+
+test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.73s
+
+     Running unittests src/lib.rs (/home/factionbuild/target233/release/deps/faction_terminal-66bae81078869960)
+
+running 13 tests
+test directory::tests::cards_paginate_and_classic_frames_are_bounded_and_inert ... ok
+test directory::tests::maximum_catalog_pages_ipv6_and_file_permissions ... ok
+test directory::tests::rejects_command_tokens_unknowns_duplicate_endpoints_and_bad_dates ... ok
+test guide::tests::guide_is_current_menu_only_and_has_no_command_side_effects ... ok
+test guide::tests::reference_pages_are_bounded_on_compact_and_large_terminals ... ok
+test keys::guide_tests::f1_is_bounded_fragmented_and_unknown_variants_stay_quarantined ... ok
+test rooms::tests::compact_classic_and_unicode_are_inert_and_bounded ... ok
+test rooms::tests::pages_named_cards_and_actions_bind_the_selected_room ... ok
+test rooms::tests::selection_tracks_id_not_offset_and_next_unread_does_not_mark_read ... ok
+test theme::guide_fields_tests::guide_fields_are_inert_and_current_key_labels_are_used ... ok
+test theme::lounge_tests::custom_lounge_key_is_respected_without_reserving_another_entry ... ok
+test theme::lounge_tests::lounge_is_runtime_gated_and_badge_preserves_bounded_plain_and_ansi_geometry ... ok
+test theme::who_tests::who_keeps_distinct_runtime_gate_and_owner_key_without_displacing_wall ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/capabilities.rs (/home/factionbuild/target233/release/deps/capabilities-f11d47452627e6a9)
+
+running 4 tests
+test independent_preferences_and_classic_recovery ... ok
+test native_scalars_have_bounded_cells_and_escape_invisible_controls ... ok
+test probe_fragments_timeout_unknown_lying_and_malformed_never_return_keys ... ok
+test unicode_pages_wrap_by_cells_preserve_tokens_and_validate_offsets ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/composer.rs (/home/factionbuild/target233/release/deps/composer-b9341a2c3c65dda1)
+
+running 5 tests
+test byte_line_and_control_failures_preserve_the_previous_draft ... ok
+test explicit_commands_preserve_paragraphs_and_never_implicitly_send ... ok
+test extended_input_retains_utf8_and_rejects_controls_and_overlong_lines ... ok
+test previews_page_without_claiming_a_real_post_and_keep_text_inert ... ok
+test quotes_are_all_or_nothing_and_do_not_choose_a_destination ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/directory_overlay.rs (/home/factionbuild/target233/release/deps/directory_overlay-0fb1d30d4ba8aee7)
+
+running 4 tests
+test changed_snapshot_resets_card_before_endpoint_can_swap ... ok
+test composition_accepts_exact_capacity_and_rejects_either_conflict_key ... ok
+test composition_validates_union_and_labels_owner_management ... ok
+test unchanged_snapshot_keeps_card_but_reordering_consumes_selection ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/graphics.rs (/home/factionbuild/target233/release/deps/graphics-47699f8a6a55a43c)
+
+running 4 tests
+test chunks_are_inline_bounded_and_exact_rgb_without_a_frame_cache ... ok
+test graphics_probe_owns_fragmented_unknown_refused_malformed_and_late_reports ... ok
+test native_gate_is_local_opt_in_ordered_fixed_art_and_rate_limited ... ok
+test tty_output_deadline_restores_flags_after_a_blocked_peer ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/home_mail.rs (/home/factionbuild/target233/release/deps/home_mail-6275926a4680c046)
+
+running 2 tests
+test exact_mail_codec_is_separate_from_files_and_rejects_extensions ... ok
+test oversized_mail_requests_are_refused_before_token_allocation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/long_art.rs (/home/factionbuild/target233/release/deps/long_art-bfc7ace7d468a045)
+
+running 4 tests
+test long_art_pages_are_local_bounded_and_keep_inherited_styles ... ok
+test long_identity_is_explicit_and_short_classic_behavior_is_preserved ... ok
+test page_validation_rejects_later_controls_dimensions_and_output_amplification ... ok
+test season_can_replace_long_identity_without_moving_grid_actions ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reader.rs (/home/factionbuild/target233/release/deps/reader-02ab872a97a7f9c9)
+
+running 6 tests
+test every_wrapped_word_is_present_once_in_chronological_order ... ok
+test file_references_survive_wrapping_as_one_native_client_token ... ok
+test metadata_headers_are_bounded_inert_and_leave_room_for_body ... ok
+test page_boundaries_do_not_discard_words_blank_lines_or_escape_tails ... ok
+test section_transitions_follow_the_theme_and_plain_text_has_no_escapes ... ok
+test wrapped_pages_preserve_source_order_and_never_emit_terminal_controls ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/screen_editor.rs (/home/factionbuild/target233/release/deps/screen_editor-73471006be9afb72)
+
+running 6 tests
+test caret_navigation_inserts_without_splitting_utf8_and_deletes_whole_scalars ... ok
+test custom_writing_title_is_bounded_inert_and_loaded_from_a_sysop_theme ... ok
+test paragraph_split_join_start_end_and_line_deletion_work ... ok
+test partial_arrow_remains_a_key_when_geometry_changes_between_bytes ... ok
+test quotas_fail_atomically_and_control_strings_cannot_send_or_save ... ok
+test visible_rows_and_unicode_cells_keep_caret_on_a_bounded_frame ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/seasons.rs (/home/factionbuild/target233/release/deps/seasons-548e4539cd14f389)
+
+running 7 tests
+test annual_boundaries_wrap_leap_and_unknown_clock_use_valid_dates ... ok
+test disabled_calendar_manual_precedence_and_broken_asset_recovery ... ok
+test eight_preloaded_seasons_and_pinned_sessions_do_not_reload_art ... ok
+test overlap_priority_is_order_independent_and_ties_are_rejected ... ok
+test oversized_ascii_identity_falls_back_instead_of_wrapping_compact_login ... ok
+test schedule_schema_paths_permissions_and_size_are_bounded ... ok
+test seasonal_identity_classic_fallback_and_action_map_stay_coherent ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/subjects.rs (/home/factionbuild/target233/release/deps/subjects-6ff28463356a8af5)
+
+running 3 tests
+test malformed_controls_and_incomplete_submit_fail ... ok
+test preview_is_inert_and_bounded_in_display_cells ... ok
+test split_utf8_echo_backspace_and_byte_boundary ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/terminal.rs (/home/factionbuild/target233/release/deps/terminal-a434e1a0072e6e80)
+
+running 31 tests
+test ansi_cp437_is_converted_to_canonical_cells ... ok
+test arrows_enter_and_casefolded_hotkeys_share_actions ... ok
+test asset_paths_provenance_and_symlinks_fail_atomically ... ok
+test chat_editor_is_a_separate_bounded_context ... ok
+test checked_in_base_and_season_examples_validate ... ok
+test compact_wide_and_maximal_menus_fit_and_delta_matches_full_cells ... ok
+test custom_layout_collision_and_target_validation ... ok
+test descriptions_and_menu_titles_are_inert_atomic_and_not_seasonal ... ok
+test focused_hotkey_keeps_full_lightbar_background_and_unavailable_is_explicit ... ok
+test gatherings_are_host_optional_and_remain_reachable_in_full_compact_menus ... ok
+test grid_arrows_are_spatial_tab_and_hotkeys_keep_declared_order ... ok
+test grid_focus_restores_by_index_and_classic_layout_keeps_every_action ... ok
+test grid_validation_is_atomic_and_seasons_cannot_move_actions ... ok
+test malicious_and_unbounded_art_is_rejected ... ok
+test malicious_sequence_tails_never_activate ... ok
+test only_runtime_capability_enables_door_arrows_and_hotkeys ... ok
+test optional_catchup_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_directory_and_files_keep_full_grid_usable_in_both_enable_orders ... ok
+test optional_files_preserve_default_theme_and_use_arrows_or_hotkeys ... ok
+test optional_find_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_gallery_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_home_mail_has_own_themed_key_and_works_without_files ... ok
+test optional_library_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_poll_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test redraw_is_incremental_and_bounded ... ok
+test sauce_ice_bright_backgrounds_are_canonical_and_metadata_is_inert ... ok
+test seasonal_overrides_cannot_remap_commands ... ok
+test split_coalesced_and_crlf_keys ... ok
+test strict_theme_and_malicious_labels_fail ... ok
+test unsupported_or_truncated_sauce_never_changes_the_canvas_or_output_budget ... ok
+test utf8_continuation_bytes_do_not_enter_c1_control_modes ... ok
+
+test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests examples/graphics_budget.rs (/home/factionbuild/target233/release/examples/graphics_budget-7efec34c0743fc40)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/preview_theme.rs (/home/factionbuild/target233/release/examples/preview_theme-31a8248faec1ae61)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/profile_text.rs (/home/factionbuild/target233/release/examples/profile_text-abdf6c0ff194c806)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

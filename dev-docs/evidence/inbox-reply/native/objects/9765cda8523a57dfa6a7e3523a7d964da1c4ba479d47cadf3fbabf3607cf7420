@@ -1,0 +1,24 @@
+from pathlib import Path
+import os,json,hashlib,subprocess,time
+os.umask(0o077)
+P=Path('/home/factionbuild/proof233');C=P/'runtime-code';B=Path('/home/factionbuild/target233/release');D=Path('/home/factionbuild/device233');out=P/'runtime-final05';out.mkdir(mode=0o700)
+expected=json.loads((P/'runtime-code-expected.json').read_text());actual={'tools/'+f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in C.iterdir() if f.is_file()};assert expected==actual
+(out/'source-before.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+base=['/usr/pkg/bin/python3.13',str(C/'probe_mail_reply.py'),'--client',str(B/'faction-client-network'),'--fixture',str(B/'examples/mail_reply_fixture'),'--owned-root',str(D)]
+steps=[]
+for unicode in [False,True]:
+ name='local-'+('unicode' if unicode else 'classic');steps.append((name,base+['--output',str(out/(name+'.json'))]+(['--unicode'] if unicode else []),False))
+steps.append(('oracles',['/usr/pkg/bin/python3.13','-m','unittest','discover','-s',str(C),'-p','test_probe_mail_reply.py'],False))
+for unicode in [False,True]:
+ name='main-'+('unicode' if unicode else 'classic');steps.append((name,base+['--settings',str(D/'settings.json'),'--mail-fixture',str(B/'examples/home_mail_fixture'),'--public-ca','/home/factionbuild/source23301/crates/faction-xmpp/tests/fixtures/local-ca.pem','--output',str(out/(name+'.json'))]+(['--unicode'] if unicode else []),True))
+results=[]
+for name,cmd,refill in steps:
+ if refill:
+  (out/'progress.json').write_text(json.dumps({'waiting_normal_refill_before':name,'completed':results},indent=2)+'\n');time.sleep(40)
+ (out/'progress.json').write_text(json.dumps({'running':name,'completed':results},indent=2)+'\n');start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append({'name':name,'command':cmd,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(out/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:
+  (out/'progress.json').write_text(json.dumps({'result':'fail','completed':results},indent=2)+'\n');raise SystemExit(r.returncode)
+actual={'tools/'+f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in C.iterdir() if f.is_file()};assert expected==actual
+(out/'source-after.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n');(out/'progress.json').write_text(json.dumps({'result':'pass','completed':results},indent=2)+'\n')

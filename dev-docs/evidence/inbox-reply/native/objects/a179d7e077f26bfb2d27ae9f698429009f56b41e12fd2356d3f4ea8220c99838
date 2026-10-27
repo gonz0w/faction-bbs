@@ -1,0 +1,11 @@
+from lab import *
+import tarfile,tomllib,hashlib
+registry=Path('/Users/cam/.cargo/registry/index');lock=tomllib.loads((R/'Cargo.lock').read_text());manifest={};archive=P/'public-index-resolution.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for pkg in lock['package']:
+  if not pkg.get('source','').startswith('registry+'):continue
+  n=pkg['name'];i=n if len(n)==1 else '2/'+n if len(n)==2 else '3/'+n[0]+'/'+n if len(n)==3 else n[:2]+'/'+n[2:4]+'/'+n
+  fs=list(registry.glob('*/.cache/'+i));assert len(fs)==1,n
+  f=fs[0];arc='registry/index/'+f.relative_to(registry).as_posix();t.add(f,arcname=arc,recursive=False);manifest[arc]=hashlib.sha256(f.read_bytes()).hexdigest()
+(P/'public-index-resolution-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+remote('test -f /etc/faction-disposable-test; tar -xzf - -C /home/factionbuild/cargo233; chown -R factionbuild:factionbuild /home/factionbuild/cargo233',archive.read_bytes(),120)

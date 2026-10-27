@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "-p",
+    "faction-service",
+    "-p",
+    "faction-terminal",
+    "-p",
+    "faction-client",
+    "--features",
+    "faction-client/network-mail",
+    "--all-targets",
+    "--",
+    "--test-threads=1"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 63.669748829000014,
+  "fixture_python_alias": "/usr/pkg/bin/python3.13",
+  "assertions_unchanged": true,
+  "source_matches": true,
+  "scope": "two-core-2GiB-native-tests"
+}

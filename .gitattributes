@@ -165,3 +165,9 @@ dev-docs/evidence/main-menu-mail/review/evidence-guard-audit/tools/probe_menu_ma
 dev-docs/evidence/main-menu-mail/review/final-review-sources/tools/probe_menu_mail.py whitespace=-blank-at-eol
 # Captured compiler/test logs retain their original final blank lines.
 dev-docs/evidence/main-menu-mail/**/logs/** whitespace=-blank-at-eof
+
+# Issue233 exact execution inputs and logs retain original bytes.
+dev-docs/evidence/inbox-reply/** -text
+dev-docs/evidence/inbox-reply/**/objects/** linguist-generated=true whitespace=-blank-at-eof,-blank-at-eol,-space-before-tab
+dev-docs/evidence/inbox-reply/**/logs/** linguist-generated=true whitespace=-blank-at-eof
+dev-docs/evidence/inbox-reply/**/*.json linguist-generated=true

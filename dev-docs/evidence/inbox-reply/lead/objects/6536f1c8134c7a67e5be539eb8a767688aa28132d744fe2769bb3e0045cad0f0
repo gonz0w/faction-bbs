@@ -1,0 +1,72 @@
+from pathlib import Path
+import json,subprocess
+r=Path('/Users/cam/DEV/faction-bbs');o=Path('/private/tmp/faction233-lead-OWNED');g=r/'tools/check_reply_evidence.py';t=r/'tools/test_reply_evidence.py';n=Path('/private/tmp/faction233-native-OWNED')
+for name,path in [('coverage-guard-before.py',g),('coverage-test-before.py',t)]: (o/name).write_bytes(path.read_bytes())
+files=json.loads((n/'logs/host-compat-files.json').read_bytes());legacy=json.loads((n/'logs/host-compat-legacy.json').read_bytes());inbox=json.loads((o/'inbox-consumer-green/result.json').read_bytes())
+s=t.read_text().replace("values['native'].update(all_source_match=True,", "values['native'].update(source_count=1,all_source_match=True,")
+needle="        values['associations']=dict(result='pass',routes={})"
+add='''        workspace=dict(result='pass',source_stable=True,checks=[dict(command=['cargo',name],returncode=0) for name in ('fmt','clippy','test')])
+        summary=dict(final2=dict(network=dict(total_passed=139,total_ignored=4),native=dict(total_passed=90,total_ignored=4),sources={'crates/example.rs':source['sha256']}))
+        values['host'].update(workspace=save('workspace.json',workspace),workspace_test_log=save('workspace.log',b'test result: ok. 473 passed; 0 failed; 0 ignored;\\n'),client_summary=save('client-summary.json',summary),client_test_logs={key:save(key+'-test.log',f'test result: ok. {count} passed; 0 failed; 4 ignored;\\n'.encode()) for key,count in [('native',90),('network',139)]})
+        values['native']['test_log']=save('netbsd-test.log',b'test result: ok. 272 passed; 0 failed; 4 ignored;\\n')
+        values['compatibility']['routes']={}
+        for platform in ('host','netbsd'):
+            data=dict(result='pass',platform='Darwin' if platform=='host' else 'NetBSD',scope='same-ssh-parked-files-local-mail-restricted-sftp',count=14,checks=sorted(self.m.FILES_CONTROLS),unicode=False,approved_member=True,restricted_sftp=True,same_ssh_pid_until_explicit_disconnect=True,privacy_scan=dict(matches=0,symlinks=0),physical_hardware=False,capacity_claim=False)
+            old=dict(result='pass',scope='actual-old-and-default-native-v1-files-rpc',count=2,checks=sorted(self.m.LEGACY_CONTROLS),private_mail_not_opened=True,physical_hardware=False,capacity_claim=False)
+            values['compatibility']['routes'][platform]=dict(files=save(platform+'-files.json',data),legacy=save(platform+'-legacy.json',old))
+        values['compatibility']['inbox']=save('inbox.json',dict(result='pass',count=14,checks=sorted(self.m.INBOX_CONTROLS),private_fixture_removed=True,provider_contact=False,read_receipt_sent=False))
+'''
+s=s.replace(needle,add+needle).replace('    def test_accepts_complete_bounded_control_matrix(self):', '''    def test_rejects_placeholder_compatibility_and_host_records(self):
+        for key in ('host','compatibility'):
+            record=copy.deepcopy(self.record);record['records'][key]=self.save('placeholder-'+key+'.json',dict(result='pass'))
+            with self.assertRaises((AssertionError,KeyError)):self.m.validate(self.root,record)
+
+    def test_rejects_native_source_count_mismatch(self):
+        record=copy.deepcopy(self.record);record['records']['native']=self.mutate(record,record['records']['native'],lambda d:d.update(source_count=0))
+        with self.assertRaises(AssertionError):self.m.validate(self.root,record)
+
+    def test_accepts_complete_bounded_control_matrix(self):''')
+# Constants are frozen from already observed compatibility/control contracts.
+constants='FILES_CONTROLS='+repr(set(files['checks']))+'\nLEGACY_CONTROLS='+repr(set(legacy['checks']))+'\nINBOX_CONTROLS='+repr(set(inbox['checks']))+'\n'
+g.write_text(g.read_text().replace('def raw(root,ref):',constants+'\ndef raw(root,ref):'))
+t.write_text(s);(o/'coverage-test-red.py').write_bytes(t.read_bytes());(o/'coverage-guard-red.py').write_bytes(g.read_bytes())
+red_run=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'coverage-red.log').write_bytes(red_run.stdout);assert red_run.returncode!=0
+helper='''def test_counts(root,ref,passed,ignored):
+    text=raw(root,ref).decode();counts=re.findall(r'test result: ok\\. (\\d+) passed; (\\d+) failed; (\\d+) ignored',text)
+    assert counts and all(int(f)==0 for p,f,i in counts)
+    assert sum(int(p) for p,f,i in counts)==passed and sum(int(i) for p,f,i in counts)==ignored
+
+def supplemental(root,values,native_files):
+    host=values['host'];workspace=json.loads(raw(root,host['workspace']))
+    assert workspace['result']=='pass' and workspace['source_stable'] is True
+    assert [row['command'][1] for row in workspace['checks']]==['fmt','clippy','test'] and all(row['returncode']==0 for row in workspace['checks'])
+    test_counts(root,host['workspace_test_log'],473,0)
+    client=json.loads(raw(root,host['client_summary']))['final2']
+    for mode,count in [('network',139),('native',90)]:
+        assert client[mode]['total_passed']==count and client[mode]['total_ignored']==4
+        test_counts(root,host['client_test_logs'][mode],count,4)
+    assert client['sources'] and all(native_files[name]==sha for name,sha in client['sources'].items())
+    test_counts(root,values['native']['test_log'],272,4)
+    compat=values['compatibility'];assert set(compat['routes'])=={'host','netbsd'}
+    for platform,refs in compat['routes'].items():
+        assert set(refs)=={'files','legacy'}
+        for key,expected in [('files',FILES_CONTROLS),('legacy',LEGACY_CONTROLS)]:
+            data=json.loads(raw(root,refs[key]));assert data['result']=='pass'
+            assert data['count']==len(data['checks'])==len(expected) and set(data['checks'])==expected
+            assert data['physical_hardware'] is False and data['capacity_claim'] is False
+            if key=='files':
+                assert data['scope']=='same-ssh-parked-files-local-mail-restricted-sftp'
+                assert data['platform']==('Darwin' if platform=='host' else 'NetBSD') and data['unicode'] is False
+                assert data['approved_member'] is True and data['restricted_sftp'] is True and data['same_ssh_pid_until_explicit_disconnect'] is True
+                assert data['privacy_scan']['matches']==data['privacy_scan']['symlinks']==0
+            else:assert data['scope']=='actual-old-and-default-native-v1-files-rpc' and data['private_mail_not_opened'] is True
+    inbox=json.loads(raw(root,compat['inbox']));assert inbox['result']=='pass' and inbox['count']==len(inbox['checks'])==14 and set(inbox['checks'])==INBOX_CONTROLS
+    assert inbox['private_fixture_removed'] is True and inbox['provider_contact'] is False and inbox['read_receipt_sent'] is False
+
+'''
+s=g.read_text().replace('def validate(root,record):',helper+'def validate(root,record):')
+s=s.replace("    assert values['native']['compile_memory_mib']==2048", "    assert values['native']['source_count']==len(final[0]) and values['native']['source_count']>0\n    supplemental(root,values,final[0])\n    assert values['native']['compile_memory_mib']==2048")
+g.write_text(s)
+green_run=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'coverage-green.log').write_bytes(green_run.stdout);print(green_run.stdout.decode());assert green_run.returncode==0
+for name,path in [('coverage-guard-green.py',g),('coverage-test-green.py',t)]: (o/name).write_bytes(path.read_bytes())
+(o/'coverage-tdd.json').write_text(json.dumps(dict(red_exit=red_run.returncode,green_exit=green_run.returncode,captured_before_edit=True),indent=2)+'\n')

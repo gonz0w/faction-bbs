@@ -1,0 +1,161 @@
+p='crates/faction-client/src/checkpoint_ui_reply.rs'
+s=open(p).read(); pos=s.index('#[cfg(test)]')
+s=s[:pos]+'''use faction_client::{
+    mail_checkpoint::{CheckpointVault, MAX_HISTORY, MAX_OUTBOX},
+    mail_data::invalid,
+};
+use std::io;
+use zeroize::Zeroizing;
+
+// A review snapshot of CURRENT authority, bound to the selected authenticated
+// frame. History does not establish continuity with a current replacement key.
+pub struct Target {
+    pub address: Zeroizing<String>,
+    pub device: u32,
+    pub identity: [u8; 32],
+    index: usize,
+    received: [u8; 32],
+}
+impl Target {
+    pub fn prepare(v: &CheckpointVault, index: usize, received: [u8; 32], now: u64) -> io::Result<Self> {
+        let state = v.inspection()?;
+        let peer = state.peer.ok_or_else(invalid)?;
+        let records = v.history()?;
+        let record = records.get(index).ok_or_else(invalid)?;
+        if record.received_id() != Some(received)
+            || record.address != peer.address
+            || record.device != peer.device
+            || !state.started
+            || state.history_only
+            || peer.revoked
+            || now < state.created
+            || now > state.expires
+            || records.len() >= MAX_HISTORY
+            || v.inspect_outbox()?.len() >= MAX_OUTBOX
+        {
+            return Err(invalid());
+        }
+        Ok(Self { address: Zeroizing::new(peer.address.to_owned()), device: peer.device,
+            identity: *peer.identity, index, received })
+    }
+    pub fn recheck(&self, v: &CheckpointVault, now: u64) -> io::Result<()> {
+        let current = Self::prepare(v, self.index, self.received, now)?;
+        if current.address != self.address || current.device != self.device || current.identity != self.identity {
+            return Err(invalid());
+        }
+        Ok(())
+    }
+}
+
+pub fn suggested_subject(original: &str) -> (Zeroizing<String>, bool) {
+    let mut value = Zeroizing::new(String::new());
+    if !original.get(..3).is_some_and(|prefix| prefix.eq_ignore_ascii_case("re:")) {
+        value.push_str("Re: ");
+    }
+    for c in original.chars() {
+        if value.len() + c.len_utf8() > 128 {
+            return (value, true);
+        }
+        value.push(c);
+    }
+    (value, false)
+}
+
+'''+s[pos:]; open(p,'w').write(s)
+p='crates/faction-client/src/checkpoint_ui.rs'
+s=open(p).read()
+s=s.replace('''    fn inbox(&mut self, v: &mut CheckpointVault) -> io::Result<()> {
+        let mut list''','''    fn inbox(&mut self, v: &mut CheckpointVault) -> io::Result<()> {
+        self.inbox_mode(v, false)
+    }
+    fn inbox_mode(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
+        let mut list''')
+s=s.replace('''                            self.inbox_record(v, entry)?;''','''                            self.inbox_record_mode(v, entry, online)?;''')
+s=s.replace('''    fn inbox_record(&mut self, v: &mut CheckpointVault, entry: inbox::Entry) -> io::Result<()> {
+        let index''','''    #[cfg(test)]
+    fn inbox_record(&mut self, v: &mut CheckpointVault, entry: inbox::Entry) -> io::Result<()> {
+        self.inbox_record_mode(v, entry, false)
+    }
+    fn inbox_record_mode(&mut self, v: &mut CheckpointVault, entry: inbox::Entry, online: bool) -> io::Result<()> {
+        let index''')
+s=s.replace('''        if let Some(identity) = record.received_id()
+            && v.received_read(index, identity)?.is_some()''','''        let received = record.received_id();
+        if let Some(identity) = received
+            && v.received_read(index, identity)?.is_some()''',1)
+s=s.replace('''        self.pause()
+    }
+    fn action''','''        #[cfg(feature = "network-mail")]
+        if online {
+            if let Some(identity) = received {
+                self.print("[R] Reply locally  [B/Enter] Back to inbox\\r\\n")?;
+                let mut decoder = Decoder::new();
+                loop {
+                    match decoder.feed(self.byte()?, Instant::now()) {
+                        Some(Key::Hotkey(b'R')) => return self.reply(v, index, identity),
+                        Some(Key::Enter | Key::Hotkey(b'B')) => return Ok(()),
+                        _ => {}
+                    }
+                }
+            }
+            return Ok(());
+        }
+        #[cfg(not(feature = "network-mail"))]
+        let _ = online;
+        self.pause()
+    }
+    fn action''',1)
+s=s.replace('''        if !b"UKCNOGA".contains(&key) {
+            return self.action(v, key);
+        }''','''        if key == b'I' {
+            return self.inbox_mode(v, true);
+        }
+        if !b"UKCNOGA".contains(&key) {
+            return self.action(v, key);
+        }''')
+pos=s.index('    fn online_menu(')
+s=s[:pos]+'''    fn reply_unavailable(&mut self, v: &CheckpointVault) -> io::Result<()> {
+        // A poisoned handle must reach the existing drop/reopen lock path.
+        v.inspection()?;
+        self.print("Reply unavailable; check selected received record, current prepared peer, expiry and retained-store limits.\\r\\n")
+    }
+    fn reply_target(&mut self, target: &reply::Target) -> io::Result<()> {
+        self.show("CURRENT recipient: ", &target.address)?;
+        self.print(&format!("CURRENT device: {} / ed25519:{}\\r\\n", target.device, hex(&target.identity)))
+    }
+    fn reply(&mut self, v: &mut CheckpointVault, index: usize, received: [u8; 32]) -> io::Result<()> {
+        let target = match reply::Target::prepare(v, index, received, now()?) {
+            Ok(target) => target,
+            Err(_) => return self.reply_unavailable(v),
+        };
+        self.reply_target(&target)?;
+        self.print("Current independently verified identity; history does not prove key continuity.\\r\\n")?;
+        let (suggestion, shortened) = reply::suggested_subject(&v.history()?[index].subject);
+        self.show("Suggested subject: ", &suggestion)?;
+        if shortened {
+            self.print("Suggested subject shortened to the 128 UTF-8 byte limit.\\r\\n")?;
+        }
+        let replacement = self.compose_line("Subject (Enter keeps suggestion; fresh text replaces, 128 UTF-8 bytes): ", 128)?;
+        let subject = if replacement.is_empty() { suggestion } else { replacement };
+        let body = self.compose_line("Body (1024 UTF-8 bytes, one line): ", 1024)?;
+        self.print("Review local reply intent:\\r\\n")?;
+        self.reply_target(&target)?;
+        self.show("Subject: ", &subject)?;
+        self.show("Body: ", &body)?;
+        // Discard typeahead only AFTER all reviewed fields have reached output.
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        if self.line("Type queue to persist encrypted ciphertext: ", 32, false)?.as_str() != "queue" {
+            return self.print("Reply cancelled; no ciphertext queued.\\r\\n");
+        }
+        let timestamp = now()?;
+        if target.recheck(v, timestamp).is_err() {
+            return self.reply_unavailable(v);
+        }
+        let mut operation = [0; 16];
+        getrandom::fill(&mut operation).map_err(|_| invalid())?;
+        match v.queue(operation, &subject, &body, timestamp, timestamp) {
+            Ok(_) => self.print("Queued durably; no delivery or read receipt.\\r\\n"),
+            Err(_) => self.reply_unavailable(v),
+        }
+    }
+'''+s[pos:]
+open(p,'w').write(s)

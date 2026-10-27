@@ -1,0 +1,12 @@
+from pathlib import Path
+import os,subprocess,json,time
+P=Path('/home/factionbuild/proof233');D=Path('/home/factionbuild/device233');B=Path('/home/factionbuild/target233/release');os.umask(0o077);out=P/'compatibility';out.mkdir(mode=0o700)
+base=['/usr/pkg/bin/python3.13',str(P/'files_driver.py'),'--client',str(B/'faction-client-network'),'--checkpoint-fixture',str(B/'examples/checkpoint_ui_fixture'),'--mail-fixture',str(B/'examples/home_mail_fixture'),'--public-ca','/home/factionbuild/source23301/crates/faction-xmpp/tests/fixtures/local-ca.pem','--settings',str(D/'settings-files.json'),'--private-root',str(D),'--output',str(out/'files.json')]
+legacy=['/usr/pkg/bin/python3.13',str(P/'files_v1.py'),'--settings',str(D/'settings-files.json'),'--private-root',str(D),'--old-client','/home/factionbuild/target/release/faction-client','--default-client',str(B/'faction-client-default'),'--output',str(out/'legacy.json')]
+results=[]
+for name,cmd in [('files',base),('legacy',legacy)]:
+ (out/'progress.json').write_text(json.dumps({'waiting_normal_refill_before':name,'completed':results},indent=2)+'\n');time.sleep(40);start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append({'name':name,'command':cmd,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(out/'execution.json').write_text(json.dumps(results,indent=2)+'\n')
+ if r.returncode:(out/'progress.json').write_text(json.dumps({'result':'fail','completed':results},indent=2)+'\n');raise SystemExit(r.returncode)
+(out/'progress.json').write_text(json.dumps({'result':'pass','completed':results},indent=2)+'\n')

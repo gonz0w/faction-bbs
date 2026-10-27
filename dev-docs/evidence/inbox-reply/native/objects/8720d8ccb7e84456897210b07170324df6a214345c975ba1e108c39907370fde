@@ -1,0 +1,17 @@
+from pathlib import Path
+import sys,subprocess,json,hashlib
+sys.path.insert(0,'/Users/cam/DEV/faction-bbs/tools')
+from smoke_native_client_ssh import NativeConsole
+r=Path('/private/tmp/faction233-native-OWNED');p=r/'private'/'red-store'
+subprocess.run([str(r/'bin/checkpoint_ui_fixture'),str(p),'unread'],check=True,capture_output=True)
+ca=r/'private'/'ca.pem';ca.write_text('synthetic unused CA');ca.chmod(0o600)
+f=r/'private'/'home.toml';f.write_text('version=1\naccount="alice@home.test"\nendpoint="127.0.0.1:9"\ndomain="home.test"\nca='+json.dumps(str(ca))+'\npin="'+'00'*32+'"\n');f.chmod(0o600)
+before=(p/'mail.fkv').read_bytes();c=NativeConsole([str(r/'bin/faction-client'),'--mail-online',str(p),str(f)])
+try:
+ c.password('checkpoint synthetic fixture password','LOCAL checkpoint passphrase (hidden): ');c.expect('[L] Lock and exit');c.raw(b'i');c.expect('[B] Back');c.raw(b'o');c.expect('Type read to acknowledge locally, or Enter to keep current state: ');c.send('');c.expect('Enter to return: ')
+ (r/'private'/'red-ui.transcript').write_bytes(c.transcript)
+ assert b'[R] Reply locally' in c.transcript,'selected received online record has no explicit Reply action'
+finally:
+ c.close()
+ assert (p/'mail.fkv').read_bytes()==before
+ (r/'logs'/'red-ui-integrity.json').write_text(json.dumps({'canonical_unchanged':True,'transcript_sha256':hashlib.sha256((r/'private'/'red-ui.transcript').read_bytes()).hexdigest()})+'\n')

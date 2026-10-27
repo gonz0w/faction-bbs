@@ -1,0 +1,10 @@
+{
+  "source_archive_sha256": "92bf6098fa22ace3955ef23968925f7f480840e58f64f1ca72e22a11db4b5b70",
+  "build_original_object": "66e60d0e6cb16efb925c4ff221e89c1f8d659dc209e631d9ab467e8244cbe1c8",
+  "fresh_build_sha256": "1f8b9ce5a0d7a69f8c9bfad99dd09827de841a114f156ced79af79c07c897e24",
+  "source_count": 699,
+  "cores": 2,
+  "compile_memory_mib": 2048,
+  "compiler_jobs": 2,
+  "executed": false
+}

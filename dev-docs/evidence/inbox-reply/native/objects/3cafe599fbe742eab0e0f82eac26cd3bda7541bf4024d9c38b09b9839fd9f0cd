@@ -1,0 +1,14 @@
+from lab import *
+import hashlib
+original='2049792daa8f44faa33a28dfb0b367044164be9501be069f658ef751f2e265f5'
+b=(R/'dev-docs/evidence/main-menu-mail/native/source-objects'/original).read_bytes();assert hashlib.sha256(b).hexdigest()==original
+b=b.split(b"remote('mkdir")[0].replace(b'cargo230',b'cargo233')
+(P/'public_index_complete.py').write_bytes(b)
+for n in ['server-build.log','build-result.json']:
+ (P/'logs'/('native-attempt01-'+n)).write_bytes(remote('cat /home/factionbuild/proof233/build-final01/'+n).stdout)
+remote('mv /home/factionbuild/proof233/build-final01 /home/factionbuild/proof233/build-attempt01')
+exec(compile(b,str(P/'public_index_complete.py'),'exec'))
+script=(P/'native-build-final01.py').read_bytes().replace(b'build-final01',b'build-final02');(P/'native-build-final02.py').write_bytes(script)
+remote('cat > /home/factionbuild/proof233/native-build02.py; chown factionbuild:factionbuild /home/factionbuild/proof233/native-build02.py',script)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof233/native-build02.py > /home/factionbuild/proof233/build-launch02.log 2>&1 < /dev/null &'",timeout=10)
+print('Failed setup logs retained; original-object-derived public metadata supplement staged; unchanged source build retry launched.')

@@ -1,0 +1,80 @@
+p='crates/faction-client/src/checkpoint_ui_reply.rs'; s=open(p).read().replace('assert!(child.status.success(), "{}",String::from_utf8_lossy(&child.stdout));','assert!(child.status.success(), "{}{}",String::from_utf8_lossy(&child.stdout),String::from_utf8_lossy(&child.stderr));')
+s=s.replace('''        while f.v().history().unwrap().len()<64 {f.send_received("fill history");}''','''        while f.v().history().unwrap().len()<64 {
+            let n=f.v().history().unwrap().len() as u8;
+            f.vm().queue([n;16],"fill history","bounded",time,time).unwrap();
+            f.vm().acknowledge([n;16]).unwrap();
+        }''')
+start=s.index('        f.vm().revoke().unwrap(); assert!(target.recheck')
+end=s.index('\n    }',start)
+s=s[:start]+'''        drop(f);
+        // Exercise each authority refusal with room available in history/outbox,
+        // so a separate limit cannot mask the relevant rejection.
+        let mut f=Fixture::new(); let frame=f.receive("authority topic");
+        let target=Target::prepare(f.v(),0,frame,time).unwrap();
+        f.vm().revoke().unwrap(); assert!(target.recheck(f.v(),time).is_err());
+        f.vm().fresh_device(303,time).unwrap();
+        assert!(Target::prepare(f.v(),0,frame,time).is_err()); // retained record, no peer
+        let remote=f.peer.bundle().unwrap();
+        f.vm().enroll("bob@away.test",202,&format!("ed25519:{}",hex(&remote.identity)),time).unwrap();
+        assert!(Target::prepare(f.v(),0,frame,time).is_err()); // verified, unprepared
+        f.vm().start(&remote,time).unwrap(); Target::prepare(f.v(),0,frame,time).unwrap();
+        f.vm().fresh_device(304,time).unwrap();
+        f.vm().enroll("other@away.test",202,&format!("ed25519:{}",hex(&remote.identity)),time).unwrap();
+        f.vm().start(&remote,time).unwrap(); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+        f.vm().fresh_device(305,time).unwrap();
+        f.vm().enroll("bob@away.test",203,&format!("ed25519:{}",hex(&remote.identity)),time).unwrap();
+        f.vm().start(&remote,time).unwrap(); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+        f.vm().fresh_device(306,time).unwrap();
+        let replacement=Device::fresh().unwrap().bundle().unwrap();
+        f.vm().enroll("bob@away.test",202,&format!("ed25519:{}",hex(&replacement.identity)),time).unwrap();
+        f.vm().start(&replacement,time).unwrap();
+        let current=Target::prepare(f.v(),0,frame,time).unwrap();
+        assert_eq!(current.identity,replacement.identity); // current authority, no historical key claim
+        assert!(target.recheck(f.v(),time).is_err()); // an old reviewed target cannot silently change key
+        let before=std::fs::read(f.root.join("vault/mail.fkv")).unwrap();
+        assert!(Target::prepare(f.v(),0,[9;32],time).is_err());
+        assert_eq!(std::fs::read(f.root.join("vault/mail.fkv")).unwrap(),before);
+        f.reopen(true); assert!(Target::prepare(f.v(),0,frame,time).is_err());
+'''+s[end:]
+# New fixtures use current same time; set f.time to same timestamp for fresh initial?
+s=s.replace('let mut f=Fixture::new(); let frame=f.receive("authority topic");','let mut f=Fixture::new(); let frame=f.receive("authority topic"); let time=f.time;')
+open(p,'w').write(s)
+p='crates/faction-client/src/checkpoint_ui.rs';s=open(p).read()
+s=s.replace('''        for fail_output in [true, false] {
+            let (_master''','''        #[cfg(feature = "network-mail")]
+        let attempts = [false, true].as_slice();
+        #[cfg(not(feature = "network-mail"))]
+        let attempts = [false].as_slice();
+        for &reply_attempt in attempts {
+        for fail_output in [true, false] {
+            let (_master''',1)
+s=s.replace('''                if fail_output {
+                    screen
+                        .inbox_record(''','''                #[cfg(feature = "network-mail")]
+                if reply_attempt {
+                    screen.reply(&mut vault, 0, vault_identity).unwrap_err()
+                } else if fail_output {
+                    screen.inbox_record(&mut vault, inbox::Entry {index: 0, status: inbox::Status::Unread}).unwrap_err()
+                } else {
+                    screen.inbox(&mut vault).unwrap_err()
+                }
+                #[cfg(not(feature = "network-mail"))]
+                if fail_output {
+                    screen
+                        .inbox_record(''',1)
+s=s.replace('''        let before = std::fs::read(path.join("mail.fkv")).unwrap();''','''        #[cfg(feature = "network-mail")]
+        let vault_identity = vault.history().unwrap()[0].received_id().unwrap();
+        let before = std::fs::read(path.join("mail.fkv")).unwrap();''',1)
+s=s.replace('''            assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
+        }
+        drop(vault);''','''            assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
+        }
+        }
+        drop(vault);''',1)
+# Offline build must consume bool too.
+s=s.replace('''        for &reply_attempt in attempts {
+        for fail_output''','''        for &reply_attempt in attempts {
+        #[cfg(not(feature = "network-mail"))]
+        let _ = reply_attempt;
+        for fail_output''')
+open(p,'w').write(s)

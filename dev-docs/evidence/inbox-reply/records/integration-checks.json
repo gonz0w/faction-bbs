@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "command": "python3 tools/check_repository.py",
+      "phase": "draft before cleanup/root finalization",
+      "returncode": 1,
+      "observed": "README results.json link not yet present; draft results.draft.json intentionally incomplete"
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_reply_evidence.py",
+      "returncode": 0,
+      "tests": 12
+    },
+    {
+      "command": "python3 -m unittest discover -s tools -p test_probe_mail_reply.py",
+      "returncode": 0,
+      "tests": 5
+    }
+  ],
+  "prior_raw_candidate_bytes_changed": false
+}

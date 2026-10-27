@@ -1,0 +1,205 @@
+#!/usr/bin/env python3
+"""Validate immutable issue226 records and source bytes; never execute a signer."""
+import hashlib
+import json
+from pathlib import Path
+import re
+
+ROOT = Path(__file__).resolve().parents[1]
+RESULT_PATH = 'dev-docs/evidence/signer-qualification/results.json'
+RESULT_SHA256 = '12fbe386631ecf26a6f5276391e334561676c1e9394a503aa81a3838e0f229c1'
+ARCHIVE_SHA256 = 'a9dc9565dffe8640f64d863cd29a32bc4a3dbdec0566a7fc44c5d6ee767d5f39'
+REQUIRED = {'host-probe', 'native-probe', 'baseline', 'host-unit', 'native-unit', 'build',
+            'source-match', 'compatibility', 'source-provenance', 'cleanup'}
+CLAIMS = {'installed', 'production_issuer', 'pkgsrc_tested', 'physical_hardware',
+          'current_member_ssh_trial', 'capacity'}
+COMPATIBILITY = ('base_binary_hashes_unchanged', 'baseline_signer_hash_matches_preserved_rejected',
+                 'admin_ssh_before_after', 'admin_ssh_tty_after', 'sshd_config_valid',
+                 'baseline_cli_before_after')
+GATES = ('artifact_produced', 'accepted', 'independently_parsed', 'signature_verified',
+         'reuse_verified', 'wrong_ca_denied', 'wrong_principal_denied', 'wrong_private_key_denied',
+         'tamper_denied')
+POSITIVE = ('issue', 'parse', 'ca_fingerprint', 'leaf_fingerprint', 'possession', 'verify',
+            'possession-reuse', 'reuse_verify')
+NEGATIVE = ('wrong_ca', 'wrong_principal', 'wrong_private_key', 'tamper')
+TEMPORAL_GATES = ('independently_parsed', 'validity_direction_confirmed',
+                  'in_window_verified', 'current_time_denied')
+TEMPORAL_POSITIVE = ('issue', 'parse', 'ca_fingerprint', 'leaf_fingerprint', 'possession', 'in_window_verify')
+
+
+def _digest(value):
+    assert isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value)
+
+
+def _relative(value):
+    assert isinstance(value, str) and value
+    path = Path(value)
+    assert not path.is_absolute() and '..' not in path.parts and path.parts
+    return path
+
+
+def raw(root, ref):
+    root = Path(root).resolve(strict=True)
+    path = _relative(ref['path'])
+    _digest(ref['sha256'])
+    resolved = root
+    for part in path.parts:
+        resolved = resolved/part
+        assert not resolved.is_symlink(), 'symlink evidence reference'
+    assert resolved.resolve().is_relative_to(root) and resolved.is_file()
+    data = resolved.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == ref['sha256'], str(path)
+    return data
+
+
+def _operation(op):
+    assert isinstance(op, dict)
+    assert type(op['elapsed_ms']) is int and op['elapsed_ms'] >= 0
+    assert all(op.get(key, False) is False for key in ('timed_out', 'output_limited', 'unavailable'))
+
+
+def _success(op):
+    _operation(op)
+    assert op['status'] == 'success' and type(op['exit']) is int and op['exit'] == 0
+
+
+def _denial(op):
+    _operation(op)
+    assert op['status'] == 'normal_error' and type(op['exit']) is int and op['exit'] > 0
+
+
+def _failed_issuance(op):
+    assert type(op['elapsed_ms']) is int and op['elapsed_ms'] >= 0
+    code, status = op['exit'], op['status']
+    assert ((status == 'signal' and type(code) is int and code < 0) or
+            (status == 'normal_error' and type(code) is int and code > 0) or
+            (status in {'timeout', 'output_limit', 'unavailable'} and
+             (code is None or type(code) is int)))
+
+
+def _common_probe(probe):
+    for key, expected in (('rounds', 5), ('validity_seconds', 300),
+                          ('command_timeout_seconds', 10), ('command_output_limit_bytes', 65536)):
+        assert type(probe[key]) is int and probe[key] == expected, key
+    for key in ('fixture_setup_complete', 'core_dumps_disabled', 'keys_removed'):
+        assert probe[key] is True, key
+    for key in ('candidate_sha256', 'verifier_sha256', 'probe_sha256'):
+        _digest(probe[key])
+    assert len(probe['setup_operations']) == 4
+    for setup in probe['setup_operations']:
+        _success(setup)
+        assert setup['artifacts_produced'] is True
+    assert len(probe['controls']) == 5
+    assert [case['case'] for case in probe['controls']] == [1, 2, 3, 4, 5]
+    assert len(probe['temporal_controls']) == 2
+    assert [case['case'] for case in probe['temporal_controls']] == ['expired', 'future']
+
+
+def _qualified(probe):
+    _common_probe(probe)
+    assert probe['result'] == 'qualified' and probe['overall_qualification'] is True
+    assert type(probe['valid_issuance_count']) is int and probe['valid_issuance_count'] == 5
+    assert probe['failure_layer'] is None
+    for case in probe['controls']:
+        assert all(case[key] is True for key in GATES)
+        for key in POSITIVE:
+            _success(case['operations'][key])
+        for key in NEGATIVE:
+            _denial(case['operations'][key])
+    for case in probe['temporal_controls']:
+        assert all(case[key] is True for key in TEMPORAL_GATES)
+        for key in TEMPORAL_POSITIVE:
+            _success(case['operations'][key])
+        _denial(case['operations']['current_verify'])
+    assert all(probe[key] is True for key in ('expired_denied', 'future_denied', 'missing_ca_denied'))
+    _denial(probe['missing_ca_operation'])
+
+
+def _baseline(probe):
+    _common_probe(probe)
+    assert probe['result'] == 'rejected' and probe['overall_qualification'] is False
+    assert type(probe['valid_issuance_count']) is int and probe['valid_issuance_count'] == 0
+    assert probe['failure_layer'] == 'qualification'
+    for case in probe['controls']:
+        assert type(case['artifact_produced']) is bool
+        assert all(case[key] is False for key in GATES if key != 'artifact_produced')
+        # A failed issuance, even with an artifact, must never reach parsing.
+        assert set(case['operations']) == {'issue'}
+        _failed_issuance(case['operations']['issue'])
+    for case in probe['temporal_controls']:
+        assert all(case[key] is False for key in TEMPORAL_GATES)
+        assert set(case['operations']) == {'issue'}
+        _failed_issuance(case['operations']['issue'])
+    assert probe['expired_denied'] is False and probe['future_denied'] is False
+    assert probe['missing_ca_denied'] is True
+    _denial(probe['missing_ca_operation'])
+
+
+def validate(root, result):
+    assert result['schema'] == 1 and result['issue'] == 226 and result['result'] == 'qualified'
+    assert set(result['claims']) == CLAIMS
+    assert all(value is False for value in result['claims'].values())
+    assert REQUIRED <= result['records'].keys()
+    assert result['sources'] and result['source_stages']
+    sources = set()
+    for source in result['sources']:
+        raw(root, source)
+        sources.add((source['path'], source['sha256']))
+    labels = set()
+    native_files = None
+    for stage in result['source_stages']:
+        assert isinstance(stage['label'], str) and stage['label'] and stage['label'] not in labels
+        labels.add(stage['label'])
+        assert stage['files']
+        names = set()
+        for ref in stage['files']:
+            _relative(ref['name'])
+            assert ref['name'] not in names
+            names.add(ref['name'])
+            raw(root, ref)
+            assert (ref['path'], ref['sha256']) in sources
+        if stage['label'] == 'native-executed':
+            native_files = {ref['name']: ref['sha256'] for ref in stage['files']}
+    assert native_files and {'tools/probe_roaming_signer.py', 'tools/test_roaming_signer.py'} <= native_files.keys()
+    records = {name: json.loads(raw(root, ref)) for name, ref in result['records'].items()}
+    assert records['source-match']['result'] == 'pass' and records['source-match']['all_match'] is True
+    assert records['source-match']['files'] == native_files
+    for name in ('host-probe', 'native-probe'):
+        _qualified(records[name])
+    _baseline(records['baseline'])
+    for name in ('host-probe', 'native-probe', 'baseline'):
+        assert records[name]['probe_sha256'] == native_files['tools/probe_roaming_signer.py']
+    native, baseline = records['native-probe'], records['baseline']
+    assert native['verifier_sha256'] == baseline['candidate_sha256'] == baseline['verifier_sha256']
+    assert native['candidate_sha256'] != baseline['candidate_sha256']
+    for name in ('host-unit', 'native-unit'):
+        unit = records[name]
+        assert unit['result'] == 'pass'
+        for key, expected in (('tests', 16), ('failures', 0), ('errors', 0)):
+            assert type(unit[key]) is int and unit[key] == expected
+    build = records['build']
+    assert build['result'] == 'pass' and build['steps']
+    assert all(type(step['returncode']) is int and step['returncode'] == 0 for step in build['steps'])
+    provenance = records['source-provenance']
+    assert provenance['result'] == 'pass' and provenance['archive_sha256'] == ARCHIVE_SHA256
+    assert type(provenance['selected_candidates']) is int and provenance['selected_candidates'] == 1
+    assert all(provenance[key] is True for key in ('release_signature_verified', 'archive_paths_safe', 'no_js_ts_archive_members'))
+    compatibility = records['compatibility']
+    assert compatibility['result'] == 'pass'
+    assert all(compatibility[key] is True for key in COMPATIBILITY)
+    assert compatibility['secret_echoed'] is False and compatibility['keys_or_state_retained'] is False
+    assert all(records['cleanup'][key] is True for key in
+               ('owned_removed', 'saved_stopped', 'saved_hashes_unchanged', 'forwards_closed'))
+    return records
+
+
+def check():
+    data = (ROOT/RESULT_PATH).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == RESULT_SHA256, 'immutable signer qualification result changed'
+    records = validate(ROOT, json.loads(data))
+    print('Signer evidence passed: source-bound host/NetBSD qualification, preserved rejected baseline, compatibility and cleanup; no production claim.')
+    return records
+
+
+if __name__ == '__main__':
+    check()

@@ -1,0 +1,12 @@
+from lab import *
+code='''import json
+from pathlib import Path
+p=Path('/home/factionbuild/proof233/build-final02')
+r=p/'build-result.json'
+print(r.read_text() if r.exists() else '{"result":"not-started"}')
+for name in ['server','default','network','tests']:
+ f=p/(name+'-build.log')
+ if f.exists():print(name, f.read_text()[-3000:])
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'logs/native-status-latest.log').write_bytes(r.stdout)
+print(r.stdout.decode())

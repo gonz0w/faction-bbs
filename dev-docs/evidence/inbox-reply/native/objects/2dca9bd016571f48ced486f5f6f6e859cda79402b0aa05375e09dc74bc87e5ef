@@ -1,0 +1,5 @@
+from lab import *
+r=remote("test -f /etc/faction-disposable-test; ls /etc/rc.d/faction*; for n in faction_sshd faction_files_sshd faction_broker faction_doors; do if test -x /etc/rc.d/$n; then /etc/rc.d/$n onestop; fi; done; ps -axo pid,user,comm; ls /home/factionbuild/.cargo /home/factionbuild/build/.cargo",check=False)
+(P/'guest-inherited-stop.private.log').write_bytes(r.stdout+r.stderr)
+assert r.returncode==0
+print('Inherited disposable board/file/door services stopped; private process proof retained.')

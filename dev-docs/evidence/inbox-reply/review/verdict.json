@@ -1,0 +1,57 @@
+{
+  "assurance": "separate agent review of work not authored by reviewer; not independent human assurance",
+  "blockers": [],
+  "candidate_manifests": {
+    "client": "5271a082be5a389490961ea0165c18ef0ced96355d8a12ce88adfd3bf4c19436",
+    "lead": "570d9df54ea7fe326622fed29b3b27b6bea82b8abd800a9abe64bfaf3c4a76d1",
+    "native": "dda3f0c0f87b71c9bffa05a332750383587748f3db7a002a23695acfede46520"
+  },
+  "issue": 233,
+  "observed": {
+    "draft_publication_files_scanned": 1686,
+    "files_controls_per_os": 14,
+    "generated_private_matches": 0,
+    "generated_private_values_scanned": 81,
+    "independently_revalidated_original_main_captures": 4,
+    "local_controls_per_mode_per_os": 11,
+    "main_controls_per_mode_per_os": 6,
+    "markers_per_main_capture": 15,
+    "native_build_inputs": 699,
+    "older_default_v1_controls_per_os": 2,
+    "original_inbox_consumer_controls": 14,
+    "raw_test_counts": {
+      "client_native": 90,
+      "client_network": 139,
+      "host_workspace": 473,
+      "native_selected": 272
+    },
+    "runtime_helper_overrides": 9,
+    "source_stages": 58
+  },
+  "original_native_capture_archive_read_in_memory_without_extraction": true,
+  "phase": "separate pre-teardown source/publication review; final cleanup/root-pin/archive/CI review pending",
+  "private_captures_or_values_exported": false,
+  "product_edits_or_builds_performed_by_reviewer": false,
+  "product_source_sha256": {
+    "checkpoint_ui": "e19243bd6d661942c43e3d9165aa1dd6e5595edf9f16d537944c0d591ce6c74e",
+    "checkpoint_ui_reply": "0c3660f7ea1e10af56db91b4c45c2309a4658af1318c9269b66b23b49958f7ea"
+  },
+  "required_before_completion": [
+    "actual owned-fixture teardown and stopped saved-playground integrity record",
+    "immutable final root digest and successful guard",
+    "clean committed archive validation",
+    "required exact-head CI"
+  ],
+  "result": "pass",
+  "review_script_hashes_unchanged_before_after": true,
+  "review_scripts_saved_before_execution": true,
+  "role": {
+    "observed_runtime_effort": null,
+    "observed_runtime_model": null,
+    "requested": "temper_reviewer",
+    "requested_effort": "high",
+    "requested_model": "gpt-6.1-sol",
+    "runtime_metadata_status": "unavailable; requested settings are not observed metadata"
+  },
+  "scratch_log_limitation_reviewed": true
+}

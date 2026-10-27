@@ -1,0 +1,14 @@
+....E
+======================================================================
+ERROR: test_reply_returns_same_original_selection_even_after_new_sent_append (test_probe_mail_reply.ReplyOracle.test_reply_returns_same_original_selection_even_after_new_sent_append)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_mail_reply.py", line 64, in test_reply_returns_same_original_selection_even_after_new_sent_append
+    proof.require_selected_index(b'  03 PENDING new\r\n> 02 UNREAD source\r\n  01 PENDING old\r\n', 2)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'probe_mail_reply' has no attribute 'require_selected_index'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (errors=1)

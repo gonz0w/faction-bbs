@@ -1,0 +1,84 @@
+#!/bin/sh
+# PROVIDE: faction_broker
+# REQUIRE: DAEMON
+# BEFORE: faction_sshd
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+name="faction_broker"
+rcvar=$name
+command="/usr/local/libexec/faction-service"
+pidfile="/var/run/faction/terminal.pid"
+start_cmd="faction_start"
+stop_cmd="faction_stop"
+status_cmd="faction_status"
+required_files="/usr/local/libexec/faction-daemon"
+
+# Detect the running backend independently of a changed rc.conf selection.
+faction_pid()
+{
+    p=$(check_pidfile "$pidfile" /usr/local/libexec/faction-service)
+    [ -n "$p" ] || p=$(check_pidfile "$pidfile" /usr/local/libexec/faction-broker)
+    [ -z "$p" ] || echo "$p"
+}
+faction_status()
+{
+    p=$(faction_pid)
+    if [ -n "$p" ]; then echo "faction_broker is running as pid $p."; return 0; fi
+    echo "faction_broker is not running."
+    return 1
+}
+faction_start()
+{
+    [ -z "$(faction_pid)" ] || return 1
+    [ ! -L /var/run/faction ] || return 1
+    /usr/bin/install -d -o factiond -g factionipc -m 710 /var/run/faction || return 1
+    case "$faction_broker_backend" in
+    shared)
+        [ -z "$faction_broker_flags" ] || { warn "worker flags cannot configure shared service"; return 1; }
+        command=/usr/local/libexec/faction-service
+        /usr/bin/su -m factiond -c "/usr/bin/env -i PATH=/usr/bin:/bin HOME=/home/factiond USER=factiond LOGNAME=factiond $command --check-config /etc/faction/service.toml" || return 1
+        args="--config /etc/faction/service.toml"
+        ;;
+    workers)
+        [ -f /var/db/faction/faction.sqlite3 ] && [ -x /usr/local/libexec/faction-member ] || return 1
+        command=/usr/local/libexec/faction-broker
+        terminal_uid=$(/usr/bin/id -u factionterm) || return 1
+        args="--socket /var/run/faction/terminal.sock --terminal-uid $terminal_uid --worker /usr/local/libexec/faction-member --state-dir /var/db/faction $faction_broker_flags"
+        ;;
+    *) warn "faction_broker_backend must be shared or workers"; return 1 ;;
+    esac
+    process_name=/usr/local/libexec/faction-service
+    [ "$faction_broker_backend" != workers ] || process_name=/usr/local/libexec/faction-broker
+    # rc.conf is root-owned shell configuration. The backend owns its locked
+    # persistent pidfile. Detach from the boot session before exec; $! is not
+    # the backend PID. Never unlink a live lock inode.
+    /usr/bin/su -m factiond -c "exec /usr/local/libexec/faction-daemon $command $args" </dev/null >>/var/log/faction-broker.log 2>&1 &
+    n=0
+    while [ "$n" -lt 50 ]; do
+        if [ -n "$(check_pidfile "$pidfile" "$process_name")" ] && [ -S /var/run/faction/terminal.sock ]; then return 0; fi
+        sleep 0.1
+        n=$((n+1))
+    done
+    warn "backend did not become ready; inspect /var/log/faction-broker.log"
+    return 1
+}
+faction_stop()
+{
+    p=$(faction_pid)
+    [ -n "$p" ] || return 0
+    kill -TERM "$p" || return 1
+    n=0
+    while [ "$n" -lt 100 ]; do
+        [ -z "$(faction_pid)" ] && return 0
+        sleep 0.1
+        n=$((n+1))
+    done
+    warn "backend still running; inspect it before explicit forced recovery"
+    return 1
+}
+load_rc_config "$name"
+: ${faction_broker:=NO}
+: ${faction_broker_backend:=shared}
+: ${faction_broker_flags:=}
+run_rc_command "$1"

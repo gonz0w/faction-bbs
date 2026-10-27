@@ -1,0 +1,14 @@
+from pathlib import Path
+import hashlib,json,os,subprocess,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction233-lead-OWNED');objects=P/'python-objects';objects.mkdir(exist_ok=True)
+def snapshot(name):
+ names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z','--','tools','.github/workflows'],cwd=R).decode().split('\0');mapping={}
+ for relative in sorted(set(names)-{''}):
+  path=R/relative
+  if not path.is_file() or path.is_symlink() or path.suffix not in {'.py','.json','.yml','.toml'} or '.DS_Store' in path.parts:continue
+  raw=path.read_bytes();digest=hashlib.sha256(raw).hexdigest();mapping[relative]=digest;target=objects/digest
+  if not target.exists():target.write_bytes(raw)
+ (P/name).write_text(json.dumps(mapping,indent=2,sort_keys=True)+'\n');return mapping
+before=snapshot('python-before.json');start=time.monotonic();command=['python3','-m','unittest','discover','-s','tools','-p','test_*.py']
+with (P/'python.log').open('wb') as output:run=subprocess.run(command,cwd=R,stdout=output,stderr=subprocess.STDOUT,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+after=snapshot('python-after.json');result=dict(result='pass' if run.returncode==0 and before==after else 'fail',command=command,returncode=run.returncode,source_stable=before==after,seconds=round(time.monotonic()-start,3));(P/'python-result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));assert result['result']=='pass'

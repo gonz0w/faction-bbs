@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "generated_private_values_scanned": 81,
+  "private_inventory_sha256": "4dd905b61c27b82ce72f9097187474073f5427656f484cc4f23787ea08995cde",
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "explicit_manifests_verified": true,
+  "bundles": {
+    "native": {
+      "files": 882,
+      "manifest_sha256": "dda3f0c0f87b71c9bffa05a332750383587748f3db7a002a23695acfede46520"
+    },
+    "client": {
+      "files": 67,
+      "manifest_sha256": "5271a082be5a389490961ea0165c18ef0ced96355d8a12ce88adfd3bf4c19436"
+    },
+    "lead": {
+      "files": 730,
+      "manifest_sha256": "570d9df54ea7fe326622fed29b3b27b6bea82b8abd800a9abe64bfaf3c4a76d1"
+    },
+    "review": {
+      "files": 9,
+      "manifest_sha256": "2f732605c609bd26107aa929e6645c01800f15e9e8fcf0ff7f22b19067949938"
+    }
+  },
+  "scanned_extra_sha256": {
+    "faction233-native-teardown-stop.py": "b105ef09980dfc018457468260aa3557b1dd9ab845c5a02b51058aa4f802b9b7",
+    "faction233-native-teardown-stop-source.json": "faaf52b143844feee74db2c1c19b22235541e90c4d24ffc3659e6270c654ef37",
+    "faction233-native-teardown-stop-result.json": "d65fcb5fb88bccc4d17ad034a624bda8b38fbcf7f151496e44b17b46330a4d10",
+    "faction233-native-teardown-stop.log": "dbb91becab363d8170a8f8cedfcd507cd2b02471dca5f65bb70ec5cb26ddf01a",
+    "public-export-scan.json": "cf2cfd453b47f3f3799c02b9bcee191e9c00ae177b5cda2277794b89e19a80c8",
+    "faction233-native-final-publication-scan.py": "89d700d70d377d095ca8c9cf0b0e5892364c0140fea58ea2c6deb84ebf9f2e3c"
+  },
+  "native_root_and_inventory_retained_for_lead_copy": true,
+  "known_public_synthetic_fixture_literals_excluded": true
+}

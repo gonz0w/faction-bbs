@@ -1,0 +1,265 @@
+[
+  {
+    "label": "baseline",
+    "logs": [],
+    "manifest": {
+      "relativepath": "stages/baseline/source-manifest.json",
+      "sha256": "594004f00c5cfb292b88fe436a51c7997ef38c2f4545fd7e89133c54e18960a7"
+    },
+    "outcome": "source-only pre-edit capture",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/baseline/baseline.sha256",
+        "sha256": "a8a50d881adb3976d52db18a20588456b5147af02f45987479be2af4a5b7e353"
+      }
+    ]
+  },
+  {
+    "label": "red1-sandbox-setup-failure",
+    "logs": [
+      {
+        "relativepath": "logs/red1-sandbox-setup-failure/test.log",
+        "sha256": "650e62cd28f03c947aa1cd2460b3c3e8f591d2b5819838f07090e22cdd4d0798"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/red1-sandbox-setup-failure/source-manifest.json",
+      "sha256": "594004f00c5cfb292b88fe436a51c7997ef38c2f4545fd7e89133c54e18960a7"
+    },
+    "outcome": "setup failure; no meaningful RED claimed",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/red1-sandbox-setup-failure/before.sha256",
+        "sha256": "d55e811d26e51b37513c586a03603ef96b1705fe40dabfa06c6edeb627340260"
+      },
+      {
+        "relativepath": "maps/red1-sandbox-setup-failure/after.sha256",
+        "sha256": "d55e811d26e51b37513c586a03603ef96b1705fe40dabfa06c6edeb627340260"
+      }
+    ]
+  },
+  {
+    "label": "red2-missing-subject-interface",
+    "logs": [
+      {
+        "relativepath": "logs/red2-missing-subject-interface/test.log",
+        "sha256": "007c7156aea99149c156762b2d1a622a603f3039369d6ee5775d1f6babdf212c"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/red2-missing-subject-interface/source-manifest.json",
+      "sha256": "d6d20a5b72bc0d1fc3bf7f2e83fb97c6596cb2927b5fb2506e16585f040596dc"
+    },
+    "outcome": "actual RED: absent suggested_subject, five E0425 errors",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/red2-missing-subject-interface/before.sha256",
+        "sha256": "f5bb18ddc0a94fad5771465a11c9e299058e55947dcbb6d56e5d63078f88209b"
+      },
+      {
+        "relativepath": "maps/red2-missing-subject-interface/after.sha256",
+        "sha256": "f5bb18ddc0a94fad5771465a11c9e299058e55947dcbb6d56e5d63078f88209b"
+      }
+    ]
+  },
+  {
+    "label": "red3-missing-eligibility-interface",
+    "logs": [
+      {
+        "relativepath": "logs/red3-missing-eligibility-interface/test.log",
+        "sha256": "b19bbe2894f7882a177d80ee495c439ec0bfb1399583934280723ba51e1f25d9"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/red3-missing-eligibility-interface/source-manifest.json",
+      "sha256": "3b4a65458031b081f5de5c8b094ef37dbe89ab2791d91169c292d82837f41b85"
+    },
+    "outcome": "actual RED: absent Target and suggested_subject interfaces",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/red3-missing-eligibility-interface/before.sha256",
+        "sha256": "5f6551080cc749fd6eff6fd70c7d4547ea7776fff081f2d2af045c86a28ca0be"
+      },
+      {
+        "relativepath": "maps/red3-missing-eligibility-interface/after.sha256",
+        "sha256": "5f6551080cc749fd6eff6fd70c7d4547ea7776fff081f2d2af045c86a28ca0be"
+      }
+    ]
+  },
+  {
+    "label": "green1-failed-lifecycle-fixture",
+    "logs": [
+      {
+        "relativepath": "logs/green1-failed-lifecycle-fixture/test.log",
+        "sha256": "20349ab4c13529768a3499354d8838e4046841c14b0f3b8255b0378978b8f675"
+      },
+      {
+        "relativepath": "logs/green1-failed-lifecycle-fixture/direct-child.log",
+        "sha256": "3de38dc247e490eac1215fcc412a8239d1e7aba0e4b630e22c5b567c86a2ff8f"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/green1-failed-lifecycle-fixture/source-manifest.json",
+      "sha256": "0cd8d0b003b1fa7fda5d25a3db6dd635de2111ceee32978eb1b09a619db37f97"
+    },
+    "outcome": "subject passed; lifecycle FAILED in repeated synthetic incoming ratchet setup",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/green1-failed-lifecycle-fixture/before.sha256",
+        "sha256": "a0c708fb913d39e0e9519251469f7e3fea2df6861d3aa5a6d10767b483f9cf34"
+      },
+      {
+        "relativepath": "maps/green1-failed-lifecycle-fixture/after.sha256",
+        "sha256": "a0c708fb913d39e0e9519251469f7e3fea2df6861d3aa5a6d10767b483f9cf34"
+      }
+    ]
+  },
+  {
+    "label": "green2-focused-pass",
+    "logs": [
+      {
+        "relativepath": "logs/green2-focused-pass/test.log",
+        "sha256": "197919d0bf74fb1b49056c41c3c58f88b45a324a0a9717c0413c7cd700a40b95"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/green2-focused-pass/source-manifest.json",
+      "sha256": "ac7e7286dd862ec5cc68847c33f17400f34618be6c30a179ce4eedb41d343a31"
+    },
+    "outcome": "focused UI: 12 passed, 1 existing subprocess helper ignored and exercised by wrapper",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/green2-focused-pass/before.sha256",
+        "sha256": "e7d85a64467763e84f4c9b4f63690d4242b62a1fe29f829a28084a0757ef0fe2"
+      },
+      {
+        "relativepath": "maps/green2-focused-pass/after.sha256",
+        "sha256": "e7d85a64467763e84f4c9b4f63690d4242b62a1fe29f829a28084a0757ef0fe2"
+      }
+    ]
+  },
+  {
+    "label": "green3-network-pass",
+    "logs": [
+      {
+        "relativepath": "logs/green3-network-pass/network-test.log",
+        "sha256": "94941c86ebaef13a5937c02dc5160cb35c87cd3a3a59a2f6fd4a431114240892"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/green3-network-pass/source-manifest.json",
+      "sha256": "cfc5b20d79af44b4ee7612bd9c6f22678789a7e467c09c7c710ebd02a6b4ba06"
+    },
+    "outcome": "network: 88 library passed/3 ignored; 51 binary passed/1 ignored; 0 doctests",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/green3-network-pass/before.sha256",
+        "sha256": "a3c4269e6885c9f1d7a5fcadca80c636b3b01befd74e359f1473a6903f78f2c1"
+      },
+      {
+        "relativepath": "maps/green3-network-pass/after.sha256",
+        "sha256": "a3c4269e6885c9f1d7a5fcadca80c636b3b01befd74e359f1473a6903f78f2c1"
+      }
+    ]
+  },
+  {
+    "label": "final-before-clippy-style-cleanup",
+    "logs": [
+      {
+        "relativepath": "logs/final-before-clippy-style-cleanup/native-test.log",
+        "sha256": "cb555c72f87f75fd0c80edbee3bbdfb8679f3a978dca896ba476a2afef7326fb"
+      },
+      {
+        "relativepath": "logs/final-before-clippy-style-cleanup/default-test.log",
+        "sha256": "17d88acd52c58c5c9820438d8657c91a86c3d2bfa7b571be6d84642d9da4ac69"
+      },
+      {
+        "relativepath": "logs/final-before-clippy-style-cleanup/network-clippy.log",
+        "sha256": "7c7284bcf6a5ec971581d54c14e2af5c219eaea7ab7833eb63347a62a0c612d0"
+      },
+      {
+        "relativepath": "logs/final-before-clippy-style-cleanup/fmt.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/final-before-clippy-style-cleanup/source-manifest.json",
+      "sha256": "e90841e81f4fffa99f467f708dff1ab0692563d381e8844fa6d40691403d7ff6"
+    },
+    "outcome": "native 90 passed/4 ignored; default 42 passed; Clippy FAILED collapsible-if; formatting passed",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/final-before-clippy-style-cleanup/before.sha256",
+        "sha256": "1b91631bd961d5ad2d2cc14ffbf90f1e7ec97c945967f3e6b247b4684932ef97"
+      },
+      {
+        "relativepath": "maps/final-before-clippy-style-cleanup/after-native.sha256",
+        "sha256": "1b91631bd961d5ad2d2cc14ffbf90f1e7ec97c945967f3e6b247b4684932ef97"
+      },
+      {
+        "relativepath": "maps/final-before-clippy-style-cleanup/after-default.sha256",
+        "sha256": "1b91631bd961d5ad2d2cc14ffbf90f1e7ec97c945967f3e6b247b4684932ef97"
+      },
+      {
+        "relativepath": "maps/final-before-clippy-style-cleanup/after-clippy.sha256",
+        "sha256": "1b91631bd961d5ad2d2cc14ffbf90f1e7ec97c945967f3e6b247b4684932ef97"
+      }
+    ]
+  },
+  {
+    "label": "final2-frozen-pass",
+    "logs": [
+      {
+        "relativepath": "logs/final2-frozen-pass/network-clippy.log",
+        "sha256": "415449f2e566cf829859b938bd8c6a61b0bd530c881f180a476456e0d58eb46a"
+      },
+      {
+        "relativepath": "logs/final2-frozen-pass/network-test.log",
+        "sha256": "bb06a02d42248cffd28b760af3b638fbc01511f4660946d8107f1c4f07209524"
+      },
+      {
+        "relativepath": "logs/final2-frozen-pass/native-test.log",
+        "sha256": "7cdb31a587cad68fe53412d38b2707aa176b43bded5555a863eaafb54f662eed"
+      },
+      {
+        "relativepath": "logs/final2-frozen-pass/fmt.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relativepath": "logs/final2-frozen-pass/cleanup.log",
+        "sha256": "8565846937cbef53f1f554e10b8c952a7f5be3d997926455cd6e9f2d8b63c07d"
+      }
+    ],
+    "manifest": {
+      "relativepath": "stages/final2-frozen-pass/source-manifest.json",
+      "sha256": "0d4e536adadfa4c182fc1ee439a362f80e1a5df76cb9d3d27f4330da7c803506"
+    },
+    "outcome": "exact-final network 139 passed/4 existing ignored; native 90 passed/4 existing ignored; Clippy and formatting passed; synthetic fixtures remaining 0",
+    "recorded_source_maps": [
+      {
+        "relativepath": "maps/final2-frozen-pass/before.sha256",
+        "sha256": "fc75ae319131c0f5716659b570fec31b367be40371304adc31e82f48651e2212"
+      },
+      {
+        "relativepath": "maps/final2-frozen-pass/after-clippy.sha256",
+        "sha256": "fc75ae319131c0f5716659b570fec31b367be40371304adc31e82f48651e2212"
+      },
+      {
+        "relativepath": "maps/final2-frozen-pass/after-network.sha256",
+        "sha256": "fc75ae319131c0f5716659b570fec31b367be40371304adc31e82f48651e2212"
+      },
+      {
+        "relativepath": "maps/final2-frozen-pass/after-native.sha256",
+        "sha256": "fc75ae319131c0f5716659b570fec31b367be40371304adc31e82f48651e2212"
+      }
+    ]
+  },
+  {
+    "label": "public-capture-scripts",
+    "manifest": {
+      "relativepath": "stages/public-capture-scripts/source-manifest.json",
+      "sha256": "93e5c700f7183e4c2df699510d71fc3396c1f164ef06269ce19c6bfce77847be"
+    },
+    "outcome": "preserved local source-edit and packaging scripts; no fixtures/configs/binaries"
+  }
+]

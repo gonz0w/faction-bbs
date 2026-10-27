@@ -1,0 +1,14 @@
+........F
+======================================================================
+FAIL: test_rejects_unbound_capture_result_association (test_reply_evidence.Evidence.test_rejects_unbound_capture_result_association)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 44, in test_rejects_unbound_capture_result_association
+    with self.assertRaises(AssertionError):self.m.validate(self.root,record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.028s
+
+FAILED (failures=1)

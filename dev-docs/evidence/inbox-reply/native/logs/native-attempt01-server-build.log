@@ -1,0 +1,7 @@
+error: no matching package named `schannel` found
+location searched: crates.io index
+required by package `native-tls v0.2.18`
+    ... which satisfies dependency `native-tls = "=0.2.18"` (locked to 0.2.18) of package `faction-xmpp v0.1.0-alpha.1 (/home/factionbuild/source23301/crates/faction-xmpp)`
+    ... which satisfies path dependency `faction-xmpp` (locked to 0.1.0-alpha.1) of package `faction-client v0.1.0-alpha.1 (/home/factionbuild/source23301/crates/faction-client)`
+note: offline mode (via `--offline`) can sometimes cause surprising resolution failures
+help: if this error is too confusing you may wish to retry without `--offline`

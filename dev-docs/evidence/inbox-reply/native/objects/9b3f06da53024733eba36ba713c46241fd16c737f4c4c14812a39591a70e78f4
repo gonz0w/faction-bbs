@@ -1,0 +1,55 @@
+"""Terminate only fingerprinted SSH children of a still-owned fixture client."""
+import json,os,shlex,signal,stat,subprocess,time
+from pathlib import Path
+
+def parse_rows(text):
+ result=[]
+ for line in text.splitlines():
+  fields=line.strip().split(None,8)
+  if len(fields)==9 and all(x.isdigit() for x in fields[:3]):
+   result.append(dict(pid=int(fields[0]),ppid=int(fields[1]),uid=int(fields[2]),start=' '.join(fields[3:8]),command=fields[8]))
+ return result
+
+def rows():
+ return parse_rows(subprocess.check_output(['ps','-axo','pid,ppid,uid,lstart,command'],text=True))
+
+def expected(argv):
+ identity=argv[argv.index('-i')+1]
+ known=next(x for x in argv if x.startswith('UserKnownHostsFile='))
+ return identity,known
+
+def owned_rows(candidates,parent,argv):
+ identity,known=expected(argv);found=[]
+ for row in candidates:
+  try:args=shlex.split(row['command'])
+  except ValueError:continue
+  if row['ppid']==parent and row['uid']==os.getuid() and args and Path(args[0]).name=='ssh' and known in args and '-i' in args and args[args.index('-i')+1:args.index('-i')+2]==[identity]:found.append(row)
+ return found
+
+def same_process(before,after):
+ return all(before.get(k)==after.get(k) for k in ['pid','ppid','uid','start','command'])
+
+def close_console(console,member_argv,private_root):
+ if console.done:
+  console.close();return
+ try:
+  pid,status=os.waitpid(console.pid,os.WNOHANG)
+ except ChildProcessError:
+  console.done=True;console.close();return
+ if pid:
+  console.done=True;console.close();return
+ identity,known=expected(member_argv)
+ for value in [identity,known.split('=',1)[1]]:
+  info=Path(value).lstat()
+  assert stat.S_ISREG(info.st_mode) and info.st_uid==os.getuid() and info.st_nlink==1 and not info.st_mode&0o077,'fixture identity/known-host file is not private and owned'
+ observations=[]
+ for row in owned_rows(rows(),console.pid,member_argv):
+  current=next((x for x in rows() if x['pid']==row['pid']),None)
+  if current is not None and same_process(row,current):
+   observations.append(dict(identity=row,signal='SIGTERM',parent_live_and_owned=True))
+   # The client is still our unreaped direct child; PID and start-time, UID,
+   # direct parent and exact private profile arguments were just rechecked.
+   os.kill(row['pid'],signal.SIGTERM)
+ if observations:
+  p=Path(private_root)/('owned-cleanup-'+str(console.pid)+'-'+str(time.monotonic_ns())+'.private.json');p.write_text(json.dumps(observations,indent=2)+'\n');p.chmod(0o600)
+ console.close()

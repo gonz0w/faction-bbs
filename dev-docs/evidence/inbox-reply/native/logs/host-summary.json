@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "pinned_binary_source_maps_equal": true,
+  "pinned_network_binaries": {
+    "examples/checkpoint_ui_fixture": {
+      "before_after_copy_equal": true,
+      "bytes": 750608,
+      "sha256": "ade23dc6891bbb48ff762d241837888cbd35a05add7c1372736b66a4579ee25c"
+    },
+    "examples/home_mail_fixture": {
+      "before_after_copy_equal": true,
+      "bytes": 2950832,
+      "sha256": "95c279294e2b069a133f4569d88a8e077ac7b30f1e10003050f30e52f1039fe2"
+    },
+    "examples/mail_reply_fixture": {
+      "before_after_copy_equal": true,
+      "bytes": 683232,
+      "sha256": "0034d07b4e9bb73fc14ec3102f00f1df273609f7eb21cad13c1a464c8e065b16"
+    },
+    "faction-client": {
+      "before_after_copy_equal": true,
+      "bytes": 3287968,
+      "sha256": "a69b319c0d364df0aa5bfb533d0431054788140ac1e11464048f36b85a2b4633"
+    }
+  },
+  "explicit_default_binary": {
+    "sha256": "046e3570e443e40e0ba12ed91cf6cf7a84d1cdd4bc5983b3a2dc77e9eabc115d",
+    "bytes": 954992,
+    "source_copy_after_hashes_equal": true,
+    "network_hash_distinct": true,
+    "feature_off_usage_checked": true
+  },
+  "final_runtime_helper_count": 9,
+  "final_local_controls_per_mode": 11,
+  "final_main_controls_per_mode": 6
+}

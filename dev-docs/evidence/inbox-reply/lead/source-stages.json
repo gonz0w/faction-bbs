@@ -1,0 +1,37 @@
+[
+  {
+    "label": "host-before",
+    "manifest": {
+      "relativepath": "maps/host-before.json",
+      "sha256": "c57f58152ee88691d3e135fa0a85b015dda3ea8e2833d68c4b6b328083ce8c34"
+    }
+  },
+  {
+    "label": "host-after",
+    "manifest": {
+      "relativepath": "maps/host-after.json",
+      "sha256": "c57f58152ee88691d3e135fa0a85b015dda3ea8e2833d68c4b6b328083ce8c34"
+    }
+  },
+  {
+    "label": "python-before",
+    "manifest": {
+      "relativepath": "maps/python-before.json",
+      "sha256": "e947316f4b59bbe8f199b8ee6d320b5b517af58997db111726ce6c5d588f1acd"
+    }
+  },
+  {
+    "label": "python-after",
+    "manifest": {
+      "relativepath": "maps/python-after.json",
+      "sha256": "e947316f4b59bbe8f199b8ee6d320b5b517af58997db111726ce6c5d588f1acd"
+    }
+  },
+  {
+    "label": "lead-actual-executable-variants",
+    "manifest": {
+      "relativepath": "maps/lead-executable-variants.json",
+      "sha256": "df5125f787e41ef156bbe87edad6f471c75cdd3ef88c8fbc643a2ed88d74dea9"
+    }
+  }
+]

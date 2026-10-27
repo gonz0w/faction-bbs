@@ -1,0 +1,29 @@
+{
+  "inbox": {
+    "path": "dev-docs/evidence/inbox-reply/lead/metadata/inbox-consumer-green/result.json",
+    "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+  },
+  "result": "pass",
+  "routes": {
+    "host": {
+      "files": {
+        "path": "dev-docs/evidence/inbox-reply/native/logs/host-compat-files.json",
+        "sha256": "22524cdba014fd06a91d67f773f9685af92337fa9abb0410a7298c4accd852a1"
+      },
+      "legacy": {
+        "path": "dev-docs/evidence/inbox-reply/native/logs/host-compat-legacy.json",
+        "sha256": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8"
+      }
+    },
+    "netbsd": {
+      "files": {
+        "path": "dev-docs/evidence/inbox-reply/native/logs/native-compat-files.json",
+        "sha256": "a4502cbc6b70b824ebd28ba76089c2bf7581f45ebea54d2b8b0d10e4728ac4ee"
+      },
+      "legacy": {
+        "path": "dev-docs/evidence/inbox-reply/native/logs/native-compat-legacy.json",
+        "sha256": "7fc169ee8c9f7388b3f310def9928c353af105e908677c1d21b61b245625c3d8"
+      }
+    }
+  }
+}

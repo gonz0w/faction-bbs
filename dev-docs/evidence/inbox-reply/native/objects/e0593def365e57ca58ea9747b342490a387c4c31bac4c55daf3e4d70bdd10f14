@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,subprocess,os,hashlib,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction233-native-OWNED');C=P/'runtime-code';B=P/'bin/final-network';os.umask(0o077)
+source=json.loads((P/'sources/runtime-code-final05.json').read_text());binary=json.loads((P/'sources/host-pinned-binaries.json').read_text())
+def check():
+ assert all(hashlib.sha256((C/Path(n).name).read_bytes()).hexdigest()==v for n,v in source.items())
+ assert all(hashlib.sha256((B/Path(n).name).read_bytes()).hexdigest()==v['sha256'] for n,v in binary.items())
+check();steps=[]
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';base=['python3',str(C/'probe_mail_reply.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'mail_reply_fixture'),'--owned-root',str(P)]
+ steps.append(('host-local-'+mode+'-final',base+['--output',str(P/'logs'/('host-local-'+mode+'-final.json'))]+(['--unicode'] if unicode else []),False))
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';base=['python3',str(C/'probe_mail_reply.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'mail_reply_fixture'),'--owned-root',str(P),'--settings',str(P/'host-settings.json'),'--mail-fixture',str(B/'home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem')]
+ steps.append(('host-main-'+mode+'-final',base+['--output',str(P/'logs'/('host-main-'+mode+'-final.json'))]+(['--unicode'] if unicode else []),True))
+results=[]
+for label,cmd,refill in steps:
+ if refill:time.sleep(40)
+ check();start=time.monotonic()
+ with (P/'logs'/(label+'.log')).open('wb') as out:r=subprocess.run(cmd,stdout=out,stderr=out,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append({'label':label,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(P/'logs/host-pinned-execution.json').write_text(json.dumps(results,indent=2)+'\n');print(label,'returncode',r.returncode,flush=True)
+ if r.returncode:raise SystemExit(r.returncode)
+ check()
+(P/'sources/runtime-code-host-final-after.json').write_text(json.dumps(source,sort_keys=True,indent=2)+'\n')
+(P/'sources/host-pinned-binaries-after.json').write_text(json.dumps(binary,sort_keys=True,indent=2)+'\n')

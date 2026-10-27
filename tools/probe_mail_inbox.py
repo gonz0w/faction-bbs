@@ -16,6 +16,7 @@ from smoke_native_client_ssh import NativeConsole
 PASS = 'checkpoint synthetic fixture password'
 UNLOCK = 'LOCAL checkpoint passphrase (hidden): '
 MENU = '[L] Lock and exit'
+REPLY_RETURN = '[R] Reply locally  [B/Enter] Back to inbox'
 ACK = 'Type read to acknowledge locally, or Enter to keep current state: '
 INBOX = '[LOCAL INBOX]'
 READY = '[B] Back'
@@ -48,6 +49,7 @@ def probe(client, fixture, owned_root, first_control_only=False, online=False):
                     [str(client),'--mail-checkpoints',str(path),'open'])
             if unicode: args.append('--unicode')
             c = NativeConsole(args); children.append(c); c.resize(40,24)
+            c.inbox_online = configured
             c.password(PASS, UNLOCK); c.expect(MENU)
             assert PASS.encode() not in c.transcript
             return c
@@ -71,17 +73,18 @@ def probe(client, fixture, owned_root, first_control_only=False, online=False):
         def back(c):
             c.raw(b'b'); c.expect(MENU)
         def open_record(c, number, received=True, unknown=False, key=b'o'):
+            c.inbox_return_prompt = REPLY_RETURN if c.inbox_online and received else 'Enter to return: '
             begin = len(c.transcript); c.raw(key)
             c.expect('[LOCAL INBOX RECORD]'); c.expect('local retained record '+str(number))
             c.expect('Peer: bob@away.test'); c.expect('Device: 202 / UTC ')
             c.expect('Subject: '); c.expect('Body: ')
-            c.expect(ACK if received and not unknown else 'Enter to return: ')
+            c.expect(ACK if received and not unknown else c.inbox_return_prompt)
             text = c.transcript[begin:]
             assert b'\x1b' not in text and b'\xc2\x9b' not in text and '\u202e'.encode() not in text
             if not received or unknown: assert ACK.encode() not in text
         def return_record(c, answer=None):
             if answer is not None:
-                c.send(answer); c.expect('Enter to return: ')
+                c.send(answer); c.expect(c.inbox_return_prompt)
             c.send(''); return screen(c)
         def stable(path, before):
             assert (path/'mail.fkv').read_bytes() == before

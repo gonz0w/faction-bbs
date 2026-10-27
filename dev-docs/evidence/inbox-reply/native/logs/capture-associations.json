@@ -1,0 +1,53 @@
+{
+  "result": "pass",
+  "routes": {
+    "host_classic": {
+      "capture_id": "eb49f14147c1fe2346e5f6a5e390eb0d",
+      "source_sha256": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854",
+      "result_sha256": "ed2e97503e067866964fffd91a4582699264b41e13c166bc4a1f70c411935e1b",
+      "private_input_hashes": {
+        "trace_sha256": "33aec1a638cb4e6e33aadcd022e411df77987e54c4e0de96c573d55d18a9edd0",
+        "marker_set_sha256": "782ff5cb3eefce3d2dd916bc648be5492c677a2a76522ae67dac5d8fef6538e5",
+        "file_scan_input_sha256": "5f217ac08ef700f64e761e5909d1b8a799ba594fc77bbac025a9db6573927e06"
+      },
+      "generated_before_capture": true,
+      "input_trace_unchanged": true
+    },
+    "host_unicode": {
+      "capture_id": "32e9e9e9f90245b8f7b0c725d383360a",
+      "source_sha256": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854",
+      "result_sha256": "f8696599ead88800cac4f62c1f9ff50820099d5060be568a88fc68302d641b23",
+      "private_input_hashes": {
+        "trace_sha256": "fa4ff5f4801886eff99abed040bee035659053345a09eef55973326ec8285b90",
+        "marker_set_sha256": "87565b82bd73c608f9068531c4e9b5cd8d3cf31dbefd0cfba1f1e4b4b5cd2471",
+        "file_scan_input_sha256": "87b863d480287ee19b15680e16402302a89ffb346f7750c678cb52cc9135dc6f"
+      },
+      "generated_before_capture": true,
+      "input_trace_unchanged": true
+    },
+    "netbsd_classic": {
+      "capture_id": "d1262640fe6eb91c72469ad5ff2c0379",
+      "source_sha256": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854",
+      "result_sha256": "d3b2bf1ffe1f71aa979f9edb5b269f291425c01c6a44da7efd812f0298309f5e",
+      "private_input_hashes": {
+        "trace_sha256": "32d34c5a93d537463f707000bdd28a9c0b6abe10ede0abf3cbd71ba2f1205836",
+        "marker_set_sha256": "b32110de883a2eb76b193e5d737ed0879aded86b92c66957ef8c743c9efff169",
+        "file_scan_input_sha256": "c1af78b396943a485187d1f6351c52da7f66da6e633f3f3967eb839387586154"
+      },
+      "generated_before_capture": true,
+      "input_trace_unchanged": true
+    },
+    "netbsd_unicode": {
+      "capture_id": "b802b353d4e7c1c58014b30d810e1efa",
+      "source_sha256": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854",
+      "result_sha256": "6dda88f30956b7526660a1b6583433b860a4891f05761da87279e1f4da8e813a",
+      "private_input_hashes": {
+        "trace_sha256": "22b28360e575d4b420596c22a2fab99d255ff382ecc74c14529fe426decdbce4",
+        "marker_set_sha256": "ff0fe389460c86df67121f04eb59f630e78391f35fb34544bc46b024043e03e1",
+        "file_scan_input_sha256": "3ce5fc18617754eb1992d2c104f1b96320c93d34e14da5e1f97ec18c63c9f1f6"
+      },
+      "generated_before_capture": true,
+      "input_trace_unchanged": true
+    }
+  }
+}

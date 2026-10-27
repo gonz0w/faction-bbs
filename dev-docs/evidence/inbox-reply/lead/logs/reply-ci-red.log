@@ -1,0 +1,14 @@
+.F........
+======================================================================
+FAIL: test_ci_executes_both_live_local_reply_modes (test_reply_evidence.Evidence.test_ci_executes_both_live_local_reply_modes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_reply_evidence.py", line 57, in test_ci_executes_both_live_local_reply_modes
+    self.assertEqual(len(commands),2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 2
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.033s
+
+FAILED (failures=1)

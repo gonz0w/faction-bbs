@@ -1,0 +1,11 @@
+from lab import *
+code=r'''import json,subprocess,stat
+from pathlib import Path
+out={'services':[],'rc':[line for line in Path('/etc/rc.conf').read_text().splitlines() if line.startswith(('faction_broker=','faction_sshd=','faction_files_sshd=','faction_doors='))]}
+for line in subprocess.check_output(['ps','-axo','pid,user,comm'],text=True).splitlines():
+ f=line.split(None,2)
+ if len(f)==3 and ('faction' in f[1] or 'faction' in f[2]):out['services'].append(f)
+p=Path('/var/run/faction/terminal.sock');out['terminal_socket_exists']=p.exists();out['terminal_socket_mode']=oct(p.lstat().st_mode) if p.exists() else None
+print(json.dumps(out))
+'''
+r=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code));(P/'logs/runtime-inspect01.json').write_bytes(r.stdout);print(r.stdout.decode())

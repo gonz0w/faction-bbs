@@ -1,0 +1,10 @@
+from lab import *
+import hashlib
+objects=R/'dev-docs/evidence/main-menu-mail/native/source-objects'
+for name,digest in {'enable_files.py':'995bb8ca4ed2f417514662bf4655a17014539dbdbef3c2b3128dd593cc2aa56b','files_driver.py':'4c509097acdf33d31f7c705f17d728804f650395dd076a7a966414ad226f1edf','files_v1.py':'293ec741a68be145e4487b6d7981a358ad5a077773a584c37d38996c240e562a','owned_fixture_cleanup.py':'9b3f06da53024733eba36ba713c46241fd16c737f4c4c14812a39591a70e78f4'}.items():
+ data=(objects/digest).read_bytes();assert hashlib.sha256(data).hexdigest()==digest
+ if name=='enable_files.py':data=data.replace(b'faction230',b'faction233').replace(b'device230',b'device233').replace(b'source-final06',b'source-final01')
+ if name in {'files_driver.py','files_v1.py'}:data=data.replace(b"Path(__file__).parent/'code'",b"Path(__file__).parent/'runtime-code'")
+ (P/name).write_bytes(data);h=hashlib.sha256(data).hexdigest();(P/'objects'/h).write_bytes(data)
+(P/'sources/compatibility-prepared.json').write_text(json.dumps({n:hashlib.sha256((P/n).read_bytes()).hexdigest() for n in ['enable_files.py','files_driver.py','files_v1.py','owned_fixture_cleanup.py']},indent=2)+'\n')
+print('Prepared original-object-derived scoped Files/SFTP and v1 compatibility drivers; not executed.')

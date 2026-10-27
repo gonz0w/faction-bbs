@@ -1,0 +1,56 @@
+{
+  "result": "pass",
+  "candidates": [
+    {
+      "candidate": "host-local-classic01",
+      "classification": "sandbox setup failure before controls",
+      "observation": "ephemeral loopback bind denied; elevated fixture run authorized"
+    },
+    {
+      "candidate": "host-local-classic02",
+      "classification": "oracle setup failure after exploratory controls",
+      "observation": "online cancellation uses existing Home mail locked message; offline Checkpoint locked expectation corrected; no product assertion removed"
+    },
+    {
+      "candidate": "native-build01",
+      "classification": "offline dependency resolution setup failure",
+      "observation": "schannel index metadata missing; original preserved public-index supplement used, no nonselected crate archives fetched"
+    },
+    {
+      "candidate": "native-build02-tests",
+      "classification": "fixture interpreter setup failure",
+      "observation": "client139 passed with4 existing ignores;10 service PTY tests could not spawn python3; unchanged suite passed272 with an owned python3.13 alias"
+    },
+    {
+      "candidate": "configure01",
+      "classification": "synthetic theme setup refusal",
+      "observation": "synthetic descriptions exceeded existing30-byte bound; original preserved theme correction used"
+    },
+    {
+      "candidate": "runtime-ready01",
+      "classification": "preflight setup refusal",
+      "observation": "inherited disposable startup services were already active; stopped through scoped rc scripts before current service start"
+    },
+    {
+      "candidate": "host-main-unicode01",
+      "classification": "shared build output collision before controls",
+      "observation": "lead default all-target build replaced new example with feature-off stub; exact stub retained, rebuilt network assets pinned; both final host main routes rerun"
+    },
+    {
+      "candidate": "native-compatibility01",
+      "classification": "owned configuration file ownership refusal before controls",
+      "observation": "root-created Files settings had UID0; single owned file chowned to uid1000 with before/after content hashes equal; retry keeps assertions and normal limits"
+    },
+    {
+      "candidate": "early-fixture-smoke",
+      "classification": "exploratory oracle expectation error",
+      "observation": "history-only recovery retains pending intent; exploratory zero-pending expectation was wrong; product state unchanged"
+    },
+    {
+      "candidate": "initial-host-format-build",
+      "classification": "sandbox refusal",
+      "observation": "format/write denied before authorized elevated build; tool transcript preserves diagnostic, initial cargo scratch log was reused and is not claimed as a retained original log"
+    }
+  ],
+  "final_claims_use_only_pinned_successful_routes": true
+}

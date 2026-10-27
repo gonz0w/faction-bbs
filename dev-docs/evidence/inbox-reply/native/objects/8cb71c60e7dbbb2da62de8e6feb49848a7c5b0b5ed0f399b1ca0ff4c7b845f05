@@ -1,0 +1,14 @@
+from lab import *
+import time
+for _ in range(30):
+ try:
+  r=remote('true',timeout=3,check=False)
+  if r.returncode==0:break
+ except subprocess.TimeoutExpired:pass
+ time.sleep(.3)
+else:raise RuntimeError('Owned1GiB runtime SSH unavailable')
+r=remote('sysctl -n hw.physmem64 hw.ncpu');mem,cores=map(int,r.stdout.split());assert cores==2 and 1000000000<mem<1100000000
+remote('test -f /etc/faction-disposable-test; test ! -S /var/run/faction/terminal.sock; /etc/rc.d/faction_broker onestart; /etc/rc.d/faction_sshd onestart',timeout=30)
+r=remote('test ! -S /var/run/faction/file-policy.sock; pgrep -fl "/usr/sbin/sshd.*files_sshd_config"',check=False);assert r.returncode!=0,'Files/SFTP unexpectedly active'
+(P/'logs/runtime-environment.json').write_text(json.dumps(dict(result='pass',cores=cores,physmem_bytes=mem,build_memory_mib=2048,runtime_memory_mib=1024,files_disabled=True,files_sftp_listener_stopped=True,loopback_only=True,normal_limits=True),indent=2)+'\n')
+print('Fresh Files-disabled owned1GiB runtime ready:',mem,'physical bytes;',cores,'cores.')

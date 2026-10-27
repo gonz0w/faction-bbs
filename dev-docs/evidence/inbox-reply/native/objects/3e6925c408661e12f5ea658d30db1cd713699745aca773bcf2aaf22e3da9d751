@@ -1,0 +1,32 @@
+"""Source-bound audit of explicitly associated private reply captures; no runtime."""
+import hashlib,json,stat,os
+from pathlib import Path
+from probe_mail_reply import require_reply_commit,require_reply_private_absent
+from probe_menu_mail import reconstruct_kdump_streams
+
+def digest(data):return hashlib.sha256(data).hexdigest()
+def audit(parent,result_bytes,source):
+ result=json.loads(result_bytes);assert result['result']=='pass';identifier=result['capture_id'];matches=[]
+ for candidate in parent.iterdir():
+  if not candidate.name.startswith('reply-menu-OWNED-') or not candidate.is_dir() or candidate.is_symlink():continue
+  record=candidate/'capture-result-association.private.json'
+  if record.is_file() and json.loads(record.read_text())['capture_id']==identifier:matches.append(candidate)
+ assert len(matches)==1,'capture ID must identify exactly one actual private root'
+ root=matches[0];info=root.lstat();assert info.st_uid==os.getuid() and stat.S_IMODE(info.st_mode)==0o700
+ marker_file=root/'private-markers.json';markers=json.loads(marker_file.read_text());trace=(root/'board-io.private.log').read_bytes();scan=(root/'board-file-scan-input.private.json').read_bytes()
+ association=json.loads((root/'capture-result-association.private.json').read_text());pre=json.loads((root/'private-input-association.json').read_text());start=json.loads((root/'trace-input-association.private.json').read_text())
+ hashes={'trace_sha256':digest(trace),'marker_set_sha256':digest(marker_file.read_bytes()),'file_scan_input_sha256':digest(scan)}
+ assert hashes==result['private_input_hashes']
+ assert all(association[k]==v for k,v in hashes.items())
+ assert association['result_sha256']==digest(result_bytes)
+ assert all(x['capture_id']==identifier for x in [association,pre,start])
+ actual_source=digest(source.read_bytes());assert result['source_sha256']==actual_source
+ assert all(x['source_sha256']==actual_source for x in [association,pre,start])
+ assert pre['generated_before_capture'] is True
+ assert pre['marker_set_sha256']==start['marker_set_sha256']==start['marker_file_sha256_at_trace_start']==hashes['marker_set_sha256']
+ assert json.loads(scan)['markers']==markers and len(markers)==result['marker_count']
+ observed=require_reply_private_absent(trace,[x.encode() for x in markers]);assert observed==result['board_io_reconstruction']
+ streams,_=reconstruct_kdump_streams(trace);assert all(b'FACTION1;' not in data and b'@FACTION1' not in data for data in streams.values())
+ before=json.loads((root/'canonical-before.private.json').read_text());after=json.loads((root/'canonical-after.private.json').read_text())
+ require_reply_commit(before,after,'bob@away.test',202,pre['replacement'],pre['body'])
+ return root,dict(capture_id=identifier,source_sha256=actual_source,result_sha256=digest(result_bytes),private_input_hashes=hashes,generated_before_capture=True,input_trace_unchanged=True)

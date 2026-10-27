@@ -1,0 +1,9 @@
+from pathlib import Path
+import os,json,time,subprocess,hashlib
+p=Path('/home/factionbuild/proof233/test-retry01');p.mkdir();ownedbin=p/'bin';ownedbin.mkdir();(ownedbin/'python3').symlink_to('/usr/pkg/bin/python3.13')
+root=Path('/home/factionbuild/source23301');expected=json.loads(Path('/home/factionbuild/proof233/expected-source01.json').read_text());actual={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file()};assert actual==expected
+(p/'source-observed.json').write_text(json.dumps(actual,sort_keys=True,indent=2)+'\n')
+env=dict(os.environ,PATH=str(ownedbin)+':/usr/pkg/bin:/usr/bin:/bin:/usr/sbin:/sbin',CARGO_HOME='/home/factionbuild/cargo233',CARGO_TARGET_DIR='/home/factionbuild/target233',CARGO_BUILD_JOBS='2',OPENSSL_INCLUDE_DIR='/usr/include',OPENSSL_LIB_DIR='/usr/lib',PYTHONDONTWRITEBYTECODE='1')
+cmd=['cargo','test','--release','--locked','--offline','-j','2','-p','faction-service','-p','faction-terminal','-p','faction-client','--features','faction-client/network-mail','--all-targets','--','--test-threads=1'];start=time.monotonic()
+with (p/'raw.log').open('wb') as f:r=subprocess.run(cmd,cwd=root,env=env,stdout=f,stderr=f)
+(p/'result.json').write_text(json.dumps(dict(result='pass' if r.returncode==0 else 'fail',command=cmd,returncode=r.returncode,elapsed_seconds=time.monotonic()-start,fixture_python_alias='/usr/pkg/bin/python3.13',assertions_unchanged=True,source_matches=True,scope='two-core-2GiB-native-tests'),indent=2)+'\n')

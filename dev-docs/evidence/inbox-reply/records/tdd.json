@@ -1,0 +1,11 @@
+{
+  "captured_before_edit": true,
+  "evidence": {
+    "path": "dev-docs/evidence/inbox-reply/lead/metadata/guard-tdd.json",
+    "sha256": "f1fd244040f3492759d67ca9dadfd79b93a39ac0a2857c95d5553bb641099350"
+  },
+  "green_exit": 0,
+  "red_exit": 1,
+  "registration_red_exit": 1,
+  "result": "pass"
+}

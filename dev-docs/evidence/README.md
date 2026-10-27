@@ -404,3 +404,5 @@ retains every original output byte while providing newline-compliant JSON mirror
 Files-independent device-local mail, host/NetBSD classic/Unicode transitions,
 current approval and hostile-output controls, retained oracle corrections and
 existing Files/SFTP regressions.
+
+- [Selected-record encrypted replies](inbox-reply/README.md) — source-bound host/NetBSD classic/Unicode queue, private-I/O, compatibility and teardown observations for #233.

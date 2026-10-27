@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction233-native-OWNED/runtime_ready.py", line 11, in <module>
+    remote('test -f /etc/faction-disposable-test; test ! -S /var/run/faction/terminal.sock; /etc/rc.d/faction_broker onestart; /etc/rc.d/faction_sshd onestart',timeout=30)
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction233-native-OWNED/lab.py", line 7, in remote
+    (P/'remote-failure.private').write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained')
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned lab command failed; private diagnostic retained

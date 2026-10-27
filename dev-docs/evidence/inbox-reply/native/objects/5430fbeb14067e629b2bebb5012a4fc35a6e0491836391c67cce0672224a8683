@@ -1,0 +1,16 @@
+from pathlib import Path
+import hashlib,json,re
+P=Path('/private/tmp/faction233-native-OWNED');values=json.loads((P/'private/generated-private-values.private.json').read_text());needles=[x.encode() for x in values];assert needles
+roots={'native':P/'public-staging','client':Path('/private/tmp/faction233-client-OWNED/public-staging'),'lead':Path('/private/tmp/faction233-lead-OWNED/public-staging')};result={};matches=[]
+for label,root in roots.items():
+ assert root.is_dir() and not root.is_symlink(),label+' staging not ready'
+ manifest=json.loads((root/'manifest.json').read_text());actual={str(f.relative_to(root)) for f in root.rglob('*') if f.is_file()};assert actual==set(manifest)|{'manifest.json'},label+' explicit manifest differs'
+ for relative in sorted(actual):
+  path=root/relative;assert not path.is_symlink() and path.resolve().is_relative_to(root.resolve());data=path.read_bytes()
+  if relative!='manifest.json':assert hashlib.sha256(data).hexdigest()==manifest[relative]
+  if any(value in data for value in needles) or re.search(rb'(?m)^-----BEGIN (?:OPENSSH |RSA |EC |ENCRYPTED )?PRIVATE KEY-----',data) or data.startswith((b'FACTVLT1',b'FACTVLT2')):matches.append(label+'/'+relative)
+ result[label]={'files':len(actual),'manifest_sha256':hashlib.sha256((root/'manifest.json').read_bytes()).hexdigest()}
+assert not matches,'private values or raw private artifact in selected public output'
+verdict={'result':'pass','generated_private_values_scanned':len(needles),'private_inventory_sha256':hashlib.sha256((P/'private/generated-private-values.private.json').read_bytes()).hexdigest(),'private_matches':0,'raw_private_key_or_vault_matches':0,'explicit_manifests_verified':True,'bundles':result,'known_public_synthetic_fixture_literals_excluded':True}
+raw=(json.dumps(verdict,indent=2)+'\n').encode();assert all(value not in raw for value in needles);(P/'logs/public-export-scan.json').write_bytes(raw)
+print('Three explicitly allowlisted public candidates passed actual generated-private-value and private-artifact scan.')

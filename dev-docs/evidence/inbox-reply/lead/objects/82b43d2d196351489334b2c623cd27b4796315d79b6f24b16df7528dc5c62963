@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""Real local/worker directory moderation through private disposable PTYs."""
+import argparse, hashlib, json, secrets, socket, sqlite3, tempfile
+from pathlib import Path
+from smoke_local_console import Console
+from smoke_member_worker import Worker
+from smoke_directory import FOOTER
+
+
+def run(a):
+    checks = []; children = []; password = secrets.token_hex(24)
+    with tempfile.TemporaryDirectory(prefix='faction-directory-submissions-') as tmp, socket.socket() as trap:
+        root = Path(tmp); state = root/'board'; pack = root/'pack'; pack.mkdir(mode=0o700)
+        source = pack/'boards.toml'; source.write_text('version=1\nboards=[]\n'); source.chmod(0o600)
+        original = hashlib.sha256(source.read_bytes()).hexdigest()
+        trap.bind(('127.0.0.1', 0)); trap.listen(1); trap.setblocking(False)
+        def query(sql):
+            with sqlite3.connect(f'file:{state}/faction.sqlite3?mode=ro', uri=True) as db:
+                return db.execute(sql).fetchall()
+        def start(action='login', handle='sysop', plain=True, worker=False, compact=False):
+            flags = ['--directory', str(pack)]
+            c = Worker(a.member, state, flags, columns=40 if compact else 80, rows=18 if compact else 24) if worker else Console(a.binary, state, action, (['--plain' if plain else '--ansi', *flags] if action=='login' else []), columns=40 if compact else 80, rows=18 if compact else 24)
+            children.append(c)
+            if worker: c.expect('[L]ogin [R]egister [Q]uit: '); c.send('l')
+            c.expect('Handle: '); c.send(handle)
+            if action=='login':
+                c.password(password)
+                if plain and not worker: c.expect('Command (then Enter): ')
+                elif compact: c.expect(FOOTER)
+                else: c.expect('Press Enter to continue: '); c.send(''); c.expect(FOOTER)
+            return c
+        def setup(action, handle):
+            c=start(action, handle); c.password(password, 'New password (12+ characters, hidden): '); c.password(password, 'Confirm password (hidden): '); c.expect('Lobby created.' if action=='init' else 'Registered pending sysop approval.'); c.finish()
+        def approve(handle, action='a'):
+            c=start(); c.send('s'); c.expect('[C]reate room: '); c.send(action); c.expect('Member handle: '); c.send(handle); c.expect('Status updated; previous sessions expired.'); c.expect('Command (then Enter): '); c.send('q'); c.expect('Logged out.'); c.finish()
+        def open_desk(c, plain=True):
+            c.send('o') if plain else c.raw(b'o'); c.expect('Directory command: ') if plain else c.expect('Independent login/approval required.')
+            c.send('s') if plain else c.raw(b's'); c.expect('Directory submissions'); c.expect('Submission command: ')
+        def cmd(c, text, expected='Submission command: '):
+            c.send(text); c.expect(expected)
+        def create(c, slug, cancel=False):
+            cmd(c, 'n', 'Slug: ')
+            values = [(slug,'Name: '), ('Midnight Radio','Summary: '), ('Original independent community','SSH host: '), ('127.0.0.1','SSH port: '), (str(trap.getsockname()[1]),'SSH login: '), ('bbs','Public fingerprint (blank: none): '), ('','Draft preview / not saved')]
+            for value,prompt in values: cmd(c,value,prompt)
+            c.expect('Submission command: ')
+            if cancel: cmd(c,'c','Unsaved listing cancelled.'); c.expect('Submission command: ')
+            else: cmd(c,'s','Private draft saved;'); c.expect('Submission command: ')
+        def leave(c, plain=True):
+            cmd(c,'q','Directory command: ' if plain else 'Independent login/approval required.')
+            c.send('q') if plain else c.raw(b'q'); c.expect('Command (then Enter): ' if plain else FOOTER)
+            c.send('q') if plain else c.raw(b'q'); c.expect('Logged out.'); c.finish()
+        def review(c, action, confirm=True):
+            cmd(c,'m'); cmd(c,'1')
+            if action=='approve':
+                cmd(c,'a','Reviewed date: '); cmd(c,'2026-10-26','Valid until date: '); cmd(c,'2099-10-26')
+            else: cmd(c, {'reject':'r','remove':'x','expire':'e'}[action])
+            cmd(c,action.upper() if confirm else 'cancel')
+        try:
+            setup('init','sysop'); setup('register','member'); approve('member')
+            c=start(handle='member'); open_desk(c); create(c,'cancelled',True); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; leave(c); checks.append('unsaved_preview_cancel_writes_no_row')
+            c=start(handle='member'); open_desk(c); create(c,'midnight'); assert query('SELECT state FROM directory_submissions')==[('draft',)]; leave(c); checks.append('explicit_save_retains_private_draft_without_publication')
+            c=start(handle='member'); open_desk(c); cmd(c,'1')
+            cmd(c,'s','Submitted pending sysop review.'); c.expect('Submission command: '); assert query('SELECT state FROM directory_submissions')==[('pending',)]; leave(c); checks.append('relogin_reopens_draft_and_explicit_submit_stays_pending')
+            c=start(); open_desk(c); review(c,'approve',False); assert query('SELECT state FROM directory_submissions')==[('pending',)]; cmd(c,'l'); leave(c); checks.append('cancelled_sysop_confirmation_never_publishes')
+            c=start(); open_desk(c); review(c,'approve'); assert query('SELECT state FROM directory_submissions')==[('published',)]; leave(c); checks.append('exact_review_approval_publishes_one_listing')
+            c=start(plain=False); c.raw(b'o'); c.expect('Midnight Radio'); c.raw(b'a'); c.expect('Connection card 1 / 1'); c.expect('Locally moderated member submission.'); c.raw(b'q'); c.expect(FOOTER); c.raw(b'q'); c.expect('Logged out.'); c.finish(); checks.append('ansi_published_card_hotkey_and_classic_main_return')
+            c=start(); open_desk(c); review(c,'expire'); assert query('SELECT state FROM directory_submissions')==[('expired',)]; leave(c); checks.append('explicit_expiry_retains_slot_and_old_metadata')
+            c=start(); c.send('o'); c.expect('[OLD]'); c.expect('Directory command: '); c.send('s'); c.expect('Submission command: '); review(c,'remove'); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; leave(c); checks.append('sysop_removal_deletes_expired_listing')
+            c=start(worker=True,plain=False); open_desk(c,False); create(c,'worker'); cmd(c,'s','Submitted pending sysop review.'); c.expect('Submission command: '); leave(c,False); checks.append('inherited_worker_uses_same_private_submit_workflow')
+            c=start(); open_desk(c); review(c,'reject'); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; leave(c); checks.append('sysop_rejection_deletes_pending_without_history')
+            c=start(plain=False,compact=True); open_desk(c,False); create(c,'compact'); cmd(c,'w','Submission withdrawn and removed.'); c.expect('Submission command: '); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; leave(c,False); checks.append('compact_ansi_draft_and_author_withdrawal')
+            c=start(handle='member'); open_desk(c); cmd(c,'n','Slug: '); approve('member','v'); c.send('revoked'); c.finish(1); assert query('SELECT count(*) FROM directory_submissions')==[(0,)]; checks.append('revocation_during_unsaved_input_prevents_mutation')
+            assert query('PRAGMA user_version')==[(20,)]
+            assert hashlib.sha256(source.read_bytes()).hexdigest()==original; checks.append('owner_catalog_bytes_unchanged_schema_twenty')
+            try: conn,_=trap.accept()
+            except BlockingIOError: pass
+            else: conn.close(); raise AssertionError('directory opened a network connection')
+            assert all(password.encode() not in c.transcript for c in children); checks.append('no_secret_echo_or_endpoint_connection')
+        finally:
+            for c in children: c.close()
+    result={'result':'pass','count':len(checks),'checks':checks,'schema_version':20,'capacity_claim':False,'hardening_claim':False,'automatic_connection':False}
+    if a.output: a.output.write_text(json.dumps(result,indent=2)+'\n')
+    print('Directory submission PTYs passed:',len(checks),'controls.')
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('binary',type=Path);p.add_argument('member',type=Path);p.add_argument('--output',type=Path)
+    a=p.parse_args();a.binary=a.binary.resolve(strict=True);a.member=a.member.resolve(strict=True);run(a)

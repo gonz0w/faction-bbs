@@ -1,0 +1,34 @@
+from pathlib import Path
+import subprocess,json
+r=Path('/Users/cam/DEV/faction-bbs');o=Path('/private/tmp/faction233-lead-OWNED');g=r/'tools/check_reply_evidence.py';t=r/'tools/test_reply_evidence.py'
+for n,p in [('guard-assoc-before.py',g),('test-assoc-before.py',t)]: (o/n).write_bytes(p.read_bytes())
+s=t.read_text().replace("capture_id='a'*32", "capture_id=f'{(0 if platform==\"host\" else 2)+(1 if mode==\"unicode\" else 0)+1:032x}'")
+needle="        for key,value in values.items():self.record['records'][key]=save(key+'.json',value)"
+addition="""        values['associations']=dict(result='pass',routes={})
+        for key,ref in self.record['routes']['main'].items():
+            data=json.loads((self.root/ref['path']).read_bytes())
+            values['associations']['routes'][key]=dict(capture_id=data['capture_id'],source_sha256=data['source_sha256'],result_sha256=ref['sha256'],private_input_hashes=data['private_input_hashes'],generated_before_capture=True,input_trace_unchanged=True)
+"""
+s=s.replace(needle,addition+needle).replace('    def test_accepts_complete_bounded_control_matrix(self):',"""    def test_rejects_unbound_capture_result_association(self):
+        record=copy.deepcopy(self.record)
+        record['records']['associations']=self.mutate(record,record['records']['associations'],lambda d:d['routes']['host_classic'].update(result_sha256='e'*64))
+        with self.assertRaises(AssertionError):self.m.validate(self.root,record)
+
+    def test_accepts_complete_bounded_control_matrix(self):""")
+t.write_text(s);(o/'guard-assoc-red-test.py').write_bytes(t.read_bytes())
+p=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'guard-assoc-red.log').write_bytes(p.stdout);assert p.returncode!=0
+s=g.read_text().replace("'cleanup','compatibility'}", "'cleanup','compatibility','associations'}")
+needle="    final=[]"
+addition="""    associations=values['associations']['routes'];assert set(associations)==set(record['routes']['main'])
+    capture_ids=set()
+    for key,ref in record['routes']['main'].items():
+        data=json.loads(raw(root,ref));association=associations[key]
+        assert data['capture_id'] not in capture_ids;capture_ids.add(data['capture_id'])
+        assert association['capture_id']==data['capture_id'] and association['source_sha256']==data['source_sha256']
+        assert association['result_sha256']==ref['sha256'] and association['private_input_hashes']==data['private_input_hashes']
+        assert association['generated_before_capture'] is True and association['input_trace_unchanged'] is True
+"""
+s=s.replace(needle,addition+needle);g.write_text(s)
+p2=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'guard-assoc-green.log').write_bytes(p2.stdout);print(p2.stdout.decode());assert p2.returncode==0
+for n,p in [('guard-assoc-green.py',g),('test-assoc-green.py',t)]: (o/n).write_bytes(p.read_bytes())
+(o/'guard-assoc-tdd.json').write_text(json.dumps(dict(red_exit=p.returncode,green_exit=p2.returncode,captured_before_edit=True),indent=2)+'\n')

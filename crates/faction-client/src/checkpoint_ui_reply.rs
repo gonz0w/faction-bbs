@@ -1,0 +1,410 @@
+//! Selected authenticated record reply rules; no network or trust mutation.
+
+use faction_client::{
+    mail_checkpoint::{CheckpointVault, MAX_HISTORY, MAX_OUTBOX},
+    mail_data::invalid,
+};
+use std::io;
+use zeroize::Zeroizing;
+
+// A review snapshot of CURRENT authority, bound to the selected authenticated
+// frame. History does not establish continuity with a current replacement key.
+pub struct Target {
+    pub address: Zeroizing<String>,
+    pub device: u32,
+    pub identity: [u8; 32],
+    index: usize,
+    received: [u8; 32],
+}
+impl Target {
+    pub fn prepare(
+        v: &CheckpointVault,
+        index: usize,
+        received: [u8; 32],
+        now: u64,
+    ) -> io::Result<Self> {
+        let state = v.inspection()?;
+        let peer = state.peer.ok_or_else(invalid)?;
+        let records = v.history()?;
+        let record = records.get(index).ok_or_else(invalid)?;
+        if record.received_id() != Some(received)
+            || record.address != peer.address
+            || record.device != peer.device
+            || !state.started
+            || state.history_only
+            || peer.revoked
+            || now < state.created
+            || now > state.expires
+            || records.len() >= MAX_HISTORY
+            || v.inspect_outbox()?.len() >= MAX_OUTBOX
+        {
+            return Err(invalid());
+        }
+        Ok(Self {
+            address: Zeroizing::new(peer.address.to_owned()),
+            device: peer.device,
+            identity: *peer.identity,
+            index,
+            received,
+        })
+    }
+    pub fn recheck(&self, v: &CheckpointVault, now: u64) -> io::Result<()> {
+        let current = Self::prepare(v, self.index, self.received, now)?;
+        if current.address != self.address
+            || current.device != self.device
+            || current.identity != self.identity
+        {
+            return Err(invalid());
+        }
+        Ok(())
+    }
+}
+
+pub fn suggested_subject(original: &str) -> (Zeroizing<String>, bool) {
+    let mut value = Zeroizing::new(String::new());
+    if !original
+        .get(..3)
+        .is_some_and(|prefix| prefix.eq_ignore_ascii_case("re:"))
+    {
+        value.push_str("Re: ");
+    }
+    for c in original.chars() {
+        if value.len() + c.len_utf8() > 128 {
+            return (value, true);
+        }
+        value.push(c);
+    }
+    (value, false)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use faction_client::{
+        mail_checkpoint::{CheckpointVault, Wire},
+        mail_data::{Data, hex},
+        mail_vault::Store,
+    };
+    use faction_omemo::{Device, sce};
+    use std::os::unix::fs::PermissionsExt;
+
+    struct Fixture {
+        root: std::path::PathBuf,
+        vault: Option<CheckpointVault>,
+        peer: Device,
+        recovery: zeroize::Zeroizing<[u8; 32]>,
+        time: u64,
+    }
+    impl Fixture {
+        fn new() -> Self {
+            let mut id = [0; 16];
+            getrandom::fill(&mut id).unwrap();
+            let root = std::env::temp_dir()
+                .canonicalize()
+                .unwrap()
+                .join(format!("faction233-reply-OWNED-{}", hex(&id)));
+            std::fs::create_dir(&root).unwrap();
+            std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();
+            std::fs::write(root.join("OWNED"), b"synthetic issue 233 reply test\n").unwrap();
+            let time = super::super::now().unwrap();
+            let (vault, recovery) = CheckpointVault::create(
+                Store::at(&root.join("vault"), true).unwrap(),
+                Data::new("alice@home.test".into()).unwrap(),
+                b"synthetic reply test password",
+                101,
+                time,
+            )
+            .unwrap();
+            Self {
+                root,
+                vault: Some(vault),
+                peer: Device::fresh().unwrap(),
+                recovery,
+                time,
+            }
+        }
+        fn v(&self) -> &CheckpointVault {
+            self.vault.as_ref().unwrap()
+        }
+        fn vm(&mut self) -> &mut CheckpointVault {
+            self.vault.as_mut().unwrap()
+        }
+        fn receive(&mut self, subject: &str) -> [u8; 32] {
+            let local = self.v().bundle().unwrap();
+            let remote = self.peer.bundle().unwrap();
+            let time = self.time;
+            self.vm()
+                .enroll(
+                    "bob@away.test",
+                    202,
+                    &format!("ed25519:{}", hex(&remote.identity)),
+                    time,
+                )
+                .unwrap();
+            self.peer
+                .trust(&format!("ed25519:{}", hex(&local.identity)))
+                .unwrap();
+            self.peer.start(&local).unwrap();
+            self.send_received(subject);
+            self.vm().enable_read_tracking().unwrap();
+            self.v().history().unwrap()[0].received_id().unwrap()
+        }
+        fn send_received(&mut self, subject: &str) {
+            let remote = self.peer.bundle().unwrap();
+            let time = self.time;
+            let plain = sce::encode(
+                "bob@away.test",
+                "alice@home.test",
+                time,
+                subject,
+                "original body is never quoted",
+            )
+            .unwrap();
+            let incoming = self.peer.seal(&plain).unwrap();
+            self.vm()
+                .receive(
+                    &Wire {
+                        namespace: "urn:xmpp:omemo:2".into(),
+                        from: "bob@away.test".into(),
+                        to: "alice@home.test".into(),
+                        device: 202,
+                        to_device: 101,
+                        identity: remote.identity,
+                        sent_at: time,
+                        key: incoming.key,
+                        prekey: incoming.prekey,
+                        payload: incoming.payload,
+                    },
+                    time,
+                )
+                .unwrap();
+        }
+        fn reopen(&mut self, recovery: bool) {
+            drop(self.vault.take());
+            self.vault = Some(
+                CheckpointVault::unlock(
+                    Store::at(&self.root.join("vault"), false).unwrap(),
+                    if recovery {
+                        &self.recovery[..]
+                    } else {
+                        b"synthetic reply test password"
+                    },
+                    recovery,
+                )
+                .unwrap(),
+            );
+        }
+    }
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            drop(self.vault.take());
+            assert!(self.root.join("OWNED").is_file());
+            std::fs::remove_dir_all(&self.root).unwrap();
+        }
+    }
+
+    #[test]
+    fn reply_eligibility_queue_reopen_and_refusals() {
+        // Core-dump guard is process global; isolate this fixture just as the existing UI tests do.
+        const MARKER: &str = "FACTION233_REPLY_TEST_CHILD";
+        if std::env::var_os(MARKER).is_none() {
+            let child = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals",
+                    "--nocapture",
+                ])
+                .env(MARKER, "1")
+                .output()
+                .unwrap();
+            assert!(
+                child.status.success(),
+                "{}{}",
+                String::from_utf8_lossy(&child.stdout),
+                String::from_utf8_lossy(&child.stderr)
+            );
+            return;
+        }
+        let mut f = Fixture::new();
+        assert!(Target::prepare(f.v(), 0, [1; 32], f.time).is_err());
+        let frame = f.receive("selected topic");
+        let target = Target::prepare(f.v(), 0, frame, f.time).unwrap();
+        assert_eq!(target.address.as_str(), "bob@away.test");
+        assert_eq!(target.device, 202);
+        assert_eq!(target.identity, f.peer.bundle().unwrap().identity);
+        assert!(Target::prepare(f.v(), 0, [9; 32], f.time).is_err());
+        assert!(Target::prepare(f.v(), 1, frame, f.time).is_err());
+        assert!(Target::prepare(f.v(), 0, frame, f.time - 1).is_err());
+        assert!(Target::prepare(f.v(), 0, frame, f.v().inspection().unwrap().expires + 1).is_err());
+        let (subject, shortened) = suggested_subject(&f.v().history().unwrap()[0].subject);
+        assert!(!shortened);
+        target.recheck(f.v(), f.time).unwrap();
+        let time = f.time;
+        f.vm()
+            .queue([1; 16], &subject, "fresh reply body", time, time)
+            .unwrap();
+        assert!(Target::prepare(f.v(), 1, frame, time).is_err()); // sent selection
+        assert_eq!(f.v().read_summary().unwrap().unread, Some(1));
+        f.reopen(false);
+        assert_eq!(f.v().history().unwrap().len(), 2);
+        assert_eq!(f.v().inspect_outbox().unwrap().len(), 1);
+        let sent = &f.v().history().unwrap()[1];
+        assert!(sent.direction == faction_client::mail_checkpoint::Direction::Sent);
+        assert_eq!(sent.address, "bob@away.test");
+        assert_eq!(sent.device, 202);
+        assert_eq!(sent.subject.as_str(), "Re: selected topic");
+        assert_eq!(sent.body.as_str(), "fresh reply body");
+        assert_eq!(f.v().read_summary().unwrap().unread, Some(1));
+        for n in 2..=8 {
+            f.vm()
+                .queue([n; 16], "bounded", "bounded", time, time)
+                .unwrap();
+        }
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err());
+        f.vm().discard_pending().unwrap();
+        while f.v().history().unwrap().len() < 64 {
+            let n = f.v().history().unwrap().len() as u8;
+            f.vm()
+                .queue([n; 16], "fill history", "bounded", time, time)
+                .unwrap();
+            f.vm().acknowledge([n; 16]).unwrap();
+        }
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err());
+        drop(f);
+        // Exercise each authority refusal with room available in history/outbox,
+        // so a separate limit cannot mask the relevant rejection.
+        let mut f = Fixture::new();
+        let frame = f.receive("authority topic");
+        let time = f.time;
+        let target = Target::prepare(f.v(), 0, frame, time).unwrap();
+        f.vm().revoke().unwrap();
+        assert!(target.recheck(f.v(), time).is_err());
+        f.vm().fresh_device(303, time).unwrap();
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err()); // retained record, no peer
+        let remote = f.peer.bundle().unwrap();
+        f.vm()
+            .enroll(
+                "bob@away.test",
+                202,
+                &format!("ed25519:{}", hex(&remote.identity)),
+                time,
+            )
+            .unwrap();
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err()); // verified, unprepared
+        f.vm().start(&remote, time).unwrap();
+        Target::prepare(f.v(), 0, frame, time).unwrap();
+        f.vm().fresh_device(304, time).unwrap();
+        f.vm()
+            .enroll(
+                "other@away.test",
+                202,
+                &format!("ed25519:{}", hex(&remote.identity)),
+                time,
+            )
+            .unwrap();
+        f.vm().start(&remote, time).unwrap();
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err());
+        f.vm().fresh_device(305, time).unwrap();
+        f.vm()
+            .enroll(
+                "bob@away.test",
+                203,
+                &format!("ed25519:{}", hex(&remote.identity)),
+                time,
+            )
+            .unwrap();
+        f.vm().start(&remote, time).unwrap();
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err());
+        f.vm().fresh_device(306, time).unwrap();
+        let replacement = Device::fresh().unwrap().bundle().unwrap();
+        f.vm()
+            .enroll(
+                "bob@away.test",
+                202,
+                &format!("ed25519:{}", hex(&replacement.identity)),
+                time,
+            )
+            .unwrap();
+        f.vm().start(&replacement, time).unwrap();
+        let current = Target::prepare(f.v(), 0, frame, time).unwrap();
+        assert_eq!(current.identity, replacement.identity); // current authority, no historical key claim
+        assert!(target.recheck(f.v(), time).is_err()); // an old reviewed target cannot silently change key
+        let before = std::fs::read(f.root.join("vault/mail.fkv")).unwrap();
+        assert!(Target::prepare(f.v(), 0, [9; 32], time).is_err());
+        assert_eq!(
+            std::fs::read(f.root.join("vault/mail.fkv")).unwrap(),
+            before
+        );
+        f.reopen(true);
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err());
+        drop(f);
+        // A failed canonical write poisons the handle. Presentation checks must
+        // propagate that state; only dropping/reopening may recover authority.
+        let mut f = Fixture::new();
+        let frame = f.receive("write refusal topic");
+        let time = f.time;
+        let before = std::fs::read(f.root.join("vault/mail.fkv")).unwrap();
+        std::fs::set_permissions(f.root.join("vault"), std::fs::Permissions::from_mode(0o500))
+            .unwrap();
+        let refused = f.vm().queue(
+            [11; 16],
+            "Re: write refusal topic",
+            "fresh body",
+            time,
+            time,
+        );
+        std::fs::set_permissions(f.root.join("vault"), std::fs::Permissions::from_mode(0o700))
+            .unwrap();
+        assert!(refused.is_err());
+        assert!(f.v().inspection().is_err());
+        assert!(Target::prepare(f.v(), 0, frame, time).is_err());
+        f.reopen(false);
+        assert_eq!(
+            std::fs::read(f.root.join("vault/mail.fkv")).unwrap(),
+            before
+        );
+        assert_eq!(f.v().history().unwrap().len(), 1);
+        assert!(f.v().inspect_outbox().unwrap().is_empty());
+        assert_eq!(f.v().read_summary().unwrap().unread, Some(1));
+        Target::prepare(f.v(), 0, frame, time).unwrap();
+    }
+
+    #[test]
+    fn suggested_subject_keeps_ascii_prefix_and_scalar_boundaries() {
+        for prefix in ["Re:", "RE:", "rE:", "re:"] {
+            let original = format!("{prefix} existing");
+            let (suggested, shortened) = suggested_subject(&original);
+            assert_eq!(suggested.as_str(), original);
+            assert!(!shortened);
+        }
+        let prefixed = format!("rE:{}", "a".repeat(125));
+        assert_eq!(suggested_subject(&prefixed).0.as_str(), prefixed);
+        assert!(!suggested_subject(&prefixed).1);
+        let hostile = "λ\n\x1b]52;c;hostile\x07\u{202e}safe";
+        let (suggested, shortened) = suggested_subject(hostile);
+        assert!(!shortened);
+        assert_eq!(
+            super::super::inert(&suggested, false).as_str(),
+            "Re: \\u{3bb}\\u{a}\\u{1b}]52;c;hostile\\u{7}\\u{202e}safe"
+        );
+        assert_eq!(
+            super::super::inert(&suggested, true).as_str(),
+            "Re: λ\\u{a}\\u{1b}]52;c;hostile\\u{7}\\u{202e}safe"
+        );
+        assert_eq!(suggested_subject("topic").0.as_str(), "Re: topic");
+        assert_eq!(
+            suggested_subject("Reformation").0.as_str(),
+            "Re: Reformation"
+        );
+        let original = "λ".repeat(64);
+        let (suggested, shortened) = suggested_subject(&original);
+        assert_eq!(suggested.as_str(), format!("Re: {}", "λ".repeat(62)));
+        assert_eq!(suggested.len(), 128);
+        assert!(shortened);
+        let original = format!("{}🦀", "a".repeat(123));
+        let (suggested, shortened) = suggested_subject(&original);
+        assert_eq!(suggested.as_str(), format!("Re: {}", "a".repeat(123)));
+        assert_eq!(suggested.len(), 127);
+        assert!(shortened);
+    }
+}

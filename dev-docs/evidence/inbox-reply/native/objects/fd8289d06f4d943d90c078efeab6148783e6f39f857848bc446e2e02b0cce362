@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""Synthetic device-local reply controls; raw fixture values remain private.
+
+Only explicitly marked owned roots are accepted. The caller freezes source bytes
+before execution and owns teardown. This probe does not contact a home service.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import secrets
+import stat
+import subprocess
+import tempfile
+
+from probe_menu_mail import require_board_bound_private_absent
+from smoke_native_client_ssh import NativeConsole
+
+PASS = 'checkpoint synthetic fixture password'
+UNLOCK = 'LOCAL checkpoint passphrase (hidden): '
+MENU = '[L] Lock and exit'
+INBOX = '[LOCAL INBOX]'
+ACK = 'Type read to acknowledge locally, or Enter to keep current state: '
+REPLY = '[R] Reply locally  [B/Enter] Back to inbox'
+SUBJECT = 'Subject (Enter keeps suggestion; fresh text replaces, 128 UTF-8 bytes): '
+BODY = 'Body (1024 UTF-8 bytes, one line): '
+QUEUE = 'Type queue to persist encrypted ciphertext: '
+
+
+def require_reply_commit(before, after, address, device, subject, body):
+    """Require exact preserved prior records and precisely one atomic reply."""
+    assert after['history'][:-1] == before['history'], 'original history or read state changed'
+    assert len(after['history']) == len(before['history']) + 1, 'reply history is not exactly one append'
+    assert after['pending'][:-1] == before['pending'], 'unrelated pending ciphertext changed'
+    assert len(after['pending']) == len(before['pending']) + 1, 'reply pending intent is not exactly one append'
+    assert after['archive'] == before['archive'], 'archive cursor changed during local reply'
+    row = after['history'][-1]
+    assert all(row[k] == v for k, v in dict(direction='sent', address=address,
+        device=device, subject=subject, body=body).items()), 'canonical reply differs from review'
+    pending = after['pending'][-1]
+    assert all(pending[k] == v for k, v in dict(address=address, device=device,
+        operation=row['operation']).items()), 'pending intent differs from sent record'
+    assert pending['operation'] not in {p['operation'] for p in before['pending']}, 'reply reused unrelated operation ID'
+
+
+def require_reply_private_absent(capture, markers):
+    """Reuse the corrected per-process/fd/direction decoder without fallback."""
+    return require_board_bound_private_absent(capture, markers)
+
+
+def private_root(path):
+    info = path.lstat()
+    assert stat.S_ISDIR(info.st_mode) and info.st_uid == os.getuid()
+    assert info.st_mode & 0o777 == 0o700 and (path / 'OWNED').is_file()
+    return path.resolve()
+
+
+def probe(client, fixture, owned_root, unicode=False):
+    owned_root = private_root(owned_root)
+    children, checks = [], []
+    with tempfile.TemporaryDirectory(prefix='reply-OWNED-', dir=owned_root) as name:
+        root = Path(name)
+        subject = 'reply-source-' + secrets.token_hex(12)
+        body = 'reply-body-' + secrets.token_hex(16)
+        replacement = 'reply-replacement-' + secrets.token_hex(12)
+        ca = root / 'unused-ca.pem'
+        ca.write_text('synthetic unused CA\n'); ca.chmod(0o600)
+        config = root / 'home.toml'
+        config.write_text('version=1\naccount="alice@home.test"\nendpoint="127.0.0.1:9"\ndomain="home.test"\nca=' +
+                          json.dumps(str(ca)) + '\npin="' + '00' * 32 + '"\n')
+        config.chmod(0o600)
+
+        def command(action, path, mode=None, seed_subject=subject):
+            args = [str(fixture), action, str(path)] + ([mode] if mode else [])
+            result = subprocess.run(args, input=(seed_subject + '\nsource body\n').encode() if action == 'seed' else b'',
+                                    capture_output=True, timeout=30)
+            assert result.returncode == 0, 'synthetic reply fixture failed'
+            return json.loads(result.stdout) if action == 'inspect' else None
+
+        def seed(name, mode='ready', seed_subject=subject):
+            path = root / name; command('seed', path, mode, seed_subject)
+            return path
+
+        def start(path, online=True):
+            argv = ([str(client), '--mail-online', str(path), str(config)] if online else
+                    [str(client), '--mail-checkpoints', str(path), 'open'])
+            if unicode: argv.append('--unicode')
+            c = NativeConsole(argv); children.append(c); c.resize(80, 24)
+            c.password(PASS, UNLOCK); c.expect(MENU)
+            return c
+
+        def inbox(c):
+            c.raw(b'i'); c.expect(INBOX); c.expect('[B] Back')
+
+        def selected(c):
+            c.raw(b'o'); c.expect('[LOCAL INBOX RECORD]'); c.expect(ACK); c.send(''); c.expect(REPLY)
+
+        def compose(c, replacement_subject=''):
+            c.raw(b'r'); c.expect('CURRENT recipient: bob@away.test')
+            c.expect('CURRENT device: 202 / ed25519:'); c.expect('Suggested subject: ')
+            c.expect(SUBJECT); c.send(replacement_subject); c.expect(BODY); c.send(body)
+            c.expect(QUEUE)
+
+        def returned(c):
+            c.expect(INBOX); c.expect('[B] Back')
+
+        def lock(c):
+            c.raw(b'b'); c.expect(MENU); c.raw(b'l'); c.finish()
+
+        def unchanged(path, before, snapshot):
+            assert (path / 'mail.fkv').read_bytes() == before
+            assert command('inspect', path) == snapshot
+            assert {p.name for p in path.iterdir()} == {'mail.fkv', 'mail.lock'}
+
+        try:
+            for replace in [False, True]:
+                path = seed('queue-' + str(replace)); before = command('inspect', path)
+                c = start(path); inbox(c); selected(c); compose(c, replacement if replace else '')
+                c.send('queue'); returned(c); lock(c)
+                after = command('inspect', path)
+                require_reply_commit(before, after, 'bob@away.test', 202,
+                                     replacement if replace else 'Re: ' + subject, body)
+                encrypted = (path / 'mail.fkv').read_bytes()
+                assert all(s.encode() not in encrypted for s in [subject, body, replacement, PASS])
+                assert {p.name for p in path.iterdir()} == {'mail.fkv', 'mail.lock'}
+                c = start(path); inbox(c); lock(c)
+                assert command('inspect', path) == after
+            checks.append('fresh_queue_keeps_or_replaces_subject_exact_canonical_reply_and_pending_once')
+            checks.append('source_read_history_cursor_and_unrelated_pending_preserved_after_reopen')
+            checks.append('encrypted_checkpoint_has_no_known_plaintext_or_sidecar')
+
+            for answer in ['', 'Queue', 'queue ']:
+                path = seed('cancel-' + secrets.token_hex(3)); before = (path / 'mail.fkv').read_bytes()
+                snapshot = command('inspect', path); c = start(path); inbox(c); selected(c); compose(c)
+                c.send(answer); returned(c); lock(c); unchanged(path, before, snapshot)
+            checks.append('cancel_and_nonexact_queue_confirmation_create_no_reply_or_acknowledgement')
+
+            path = seed('typeahead'); before = (path / 'mail.fkv').read_bytes(); snapshot = command('inspect', path)
+            c = start(path); inbox(c); selected(c); c.raw(b'rqueue\n'); c.expect(SUBJECT)
+            c.send(''); c.expect(BODY); c.raw(body.encode() + b'\nqueue\n'); c.expect(QUEUE)
+            c.send(''); returned(c); lock(c); unchanged(path, before, snapshot)
+            checks.append('queued_reply_and_queue_typeahead_discarded_before_fresh_prompts')
+
+            for mode in ['expired', 'revoked', 'history-only', 'full-history', 'full-outbox']:
+                path = seed('refusal-' + mode, mode); before = (path / 'mail.fkv').read_bytes(); snapshot = command('inspect', path)
+                c = start(path); inbox(c); selected(c); c.raw(b'r')
+                c.expect('Reply unavailable;'); returned(c); lock(c); unchanged(path, before, snapshot)
+            checks.append('expired_revoked_history_only_full_history_and_full_outbox_refuse_without_mutation')
+
+            path = seed('offline'); before = (path / 'mail.fkv').read_bytes(); snapshot = command('inspect', path)
+            c = start(path, online=False); inbox(c); c.raw(b'o'); c.expect(ACK); c.send(''); c.expect('Enter to return: ')
+            assert REPLY.encode() not in c.transcript
+            c.send(''); returned(c); lock(c); unchanged(path, before, snapshot)
+            checks.append('offline_inbox_remains_readonly_and_has_no_reply_offer')
+
+            for key in [b'\x03', b'\x04']:
+                path = seed('abort-' + key.hex()); before = (path / 'mail.fkv').read_bytes(); snapshot = command('inspect', path)
+                c = start(path); inbox(c); selected(c); compose(c); c.raw(key)
+                c.expect('Checkpoint locked: '); c.finish(1); unchanged(path, before, snapshot)
+            checks.append('CtrlC_CtrlD_at_commit_lock_and_leave_no_partial_reply')
+            return dict(result='pass', platform=platform.system(), machine=platform.machine(),
+                        unicode=unicode, count=len(checks), checks=checks,
+                        private_fixture_removed=True, home_connection_requested=False)
+        finally:
+            for c in children: c.close()
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--client', type=Path, required=True)
+    parser.add_argument('--fixture', type=Path, required=True)
+    parser.add_argument('--owned-root', type=Path, required=True)
+    parser.add_argument('--unicode', action='store_true')
+    parser.add_argument('--output', type=Path)
+    args = parser.parse_args()
+    result = probe(args.client.resolve(), args.fixture.resolve(), args.owned_root.resolve(), args.unicode)
+    if args.output: args.output.write_text(json.dumps(result, indent=2) + '\n')
+    print('Device-local reply PTY controls passed:', result['count'], result['platform'], result['machine'])

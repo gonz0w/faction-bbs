@@ -1,0 +1,27 @@
+{
+  "boot.py": {
+    "original_object": "d02f6937147c46d703c1934815fd6613bbdfe8cb9ea4f48ebf1ba3d6c0f5ce0b",
+    "fresh_sha256": "e969cbd094ca4deab48bf33e7d9f7b95392f5f1282e8c3725b646652df1ea9e8",
+    "executed": false
+  },
+  "lab.py": {
+    "original_object": "129f3a627c2533683cc0d6d09c98023bdd67f3cc4ac0b9a0ba85275d0f919373",
+    "fresh_sha256": "3db3e44bdbb95faeba125461da8a32cf4b94023f9d28f1400fe73b4e2613fe7c",
+    "executed": false
+  },
+  "public_cache.py": {
+    "original_object": "4a7e1aa6b8ea2b63797b7fa97baf2b3a35a59f0145a2356991b61dcce9c9f3fa",
+    "fresh_sha256": "6fa7144d762951d1878a70a7c156b8273d1607ab07c0f3fb2bbc940392c72f93",
+    "executed": false
+  },
+  "configure.py": {
+    "original_object": "e1bc615ff1410da9c0beb7e06ff52171c5c9e0463122f9f1e3760646e77532db",
+    "fresh_sha256": "285d9f93803596e77b935259294ecd82013424e741fa57cc796ce165bb14ce31",
+    "executed": false
+  },
+  "owned_fixture_cleanup.py": {
+    "original_object": "9b3f06da53024733eba36ba713c46241fd16c737f4c4c14812a39591a70e78f4",
+    "fresh_sha256": "9b3f06da53024733eba36ba713c46241fd16c737f4c4c14812a39591a70e78f4",
+    "executed": false
+  }
+}

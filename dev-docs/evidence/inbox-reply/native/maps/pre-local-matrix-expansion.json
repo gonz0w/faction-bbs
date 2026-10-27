@@ -1,0 +1,4 @@
+{
+  "tools/probe_mail_reply.py": "fd8289d06f4d943d90c078efeab6148783e6f39f857848bc446e2e02b0cce362",
+  "crates/faction-client/examples/mail_reply_fixture.rs": "3bb1bd4a8099c98b8c6797aed11d0b444d6558a1297a3d0bbad70e270f4c5f41"
+}

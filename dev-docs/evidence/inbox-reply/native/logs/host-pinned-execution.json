@@ -1,0 +1,22 @@
+[
+  {
+    "label": "host-local-classic-final",
+    "returncode": 0,
+    "elapsed_seconds": 10.645432750003238
+  },
+  {
+    "label": "host-local-unicode-final",
+    "returncode": 0,
+    "elapsed_seconds": 10.189896417003183
+  },
+  {
+    "label": "host-main-classic-final",
+    "returncode": 0,
+    "elapsed_seconds": 2.762117499994929
+  },
+  {
+    "label": "host-main-unicode-final",
+    "returncode": 0,
+    "elapsed_seconds": 2.5110767079968355
+  }
+]

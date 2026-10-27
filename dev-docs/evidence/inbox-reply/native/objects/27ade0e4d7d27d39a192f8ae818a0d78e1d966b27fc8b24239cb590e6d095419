@@ -1,0 +1,36 @@
+from lab import *
+import time,signal,hashlib,sys
+sys.path.insert(0,str(P/'source-final01/tools'))
+from playground import process,same_process
+assert json.loads((P/'logs/native-test-retry01-result.json').read_text())['result']=='pass'
+remote('test -f /etc/faction-disposable-test; install -o root -g wheel -m 755 /home/factionbuild/target233/release/faction /home/factionbuild/target233/release/faction-member /home/factionbuild/target233/release/faction-service /home/factionbuild/target233/release/faction-files /usr/local/libexec/')
+code=r'''from pathlib import Path
+import re
+p=Path('/etc/rc.conf');s=p.read_text();Path('/root/issue233-rc-before.private').write_text(s)
+for n in ['faction_broker','faction_sshd','faction_files_sshd','faction_doors']:s=re.sub(r'(?m)^'+n+r'=.*$',n+'="NO"',s)
+p.write_text(s)
+'''
+remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code))
+code=r'''from pathlib import Path
+import json,hashlib
+p=Path('/home/factionbuild/target233/release');names=['faction','faction-member','faction-service','faction-files','faction-tty','faction-daemon','faction-client-default','faction-client-network','examples/checkpoint_ui_fixture','examples/home_mail_fixture','examples/mail_reply_fixture'];print(json.dumps({n:hashlib.sha256((p/n).read_bytes()).hexdigest() for n in names}))
+'''
+artifacts=json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout);(P/'logs/native-binaries.json').write_text(json.dumps(artifacts,indent=2)+'\n')
+pid=int((V/'qemu.pid').read_text());controller=int((V/'controller.pid').read_text());records=[process(pid),process(controller)];assert all(x is not None and str(V) in x['command'] for x in records)
+(P/'vm-before-runtime-processes.private.json').write_text(json.dumps(records,indent=2)+'\n')
+remote('/sbin/shutdown -p now',check=False,timeout=10)
+for _ in range(60):
+ if process(pid) is None:break
+ time.sleep(.25)
+else:raise RuntimeError('Owned guest did not cleanly power off')
+if same_process(records[1]):
+ os.kill(controller,signal.SIGTERM)
+for n in ['serial.sock','console.in']:
+ p=V/n
+ if p.exists():p.unlink()
+q=json.loads((V/'qemu-command.private.json').read_text());assert q[q.index('-m')+1]=='2048';q[q.index('-m')+1]='1024'
+with (V/'qemu-runtime.log').open('wb') as f:p=subprocess.Popen(q,stdout=f,stderr=f,start_new_session=True)
+(V/'runtime-qemu.pid').write_text(str(p.pid));(V/'runtime-qemu-command.private.json').write_text(json.dumps(q))
+with (V/'controller-runtime.log').open('wb') as f:p=subprocess.Popen(['python3',str(V/'serial-controller.py')],stdout=f,stderr=f,start_new_session=True)
+(V/'runtime-controller.pid').write_text(str(p.pid))
+print('Owned overlay cleanly rebooting with two cores/1GiB runtime; compiler/test2GiB scope retained.')

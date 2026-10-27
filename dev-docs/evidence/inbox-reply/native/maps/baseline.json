@@ -1,0 +1,16 @@
+{
+  "Cargo.toml": "30fdcc2de04b1e4007b735b0f231530fa253e988973036536ea6eba3d1bff8ad",
+  "Cargo.lock": "a538c752e61279ce640542470e9efbe2899ff862c96c258bbc5d02baeffe7059",
+  "crates/faction-client/Cargo.toml": "f4a5afdbe7e12495e2f0cbf54a8bb64b6ca337b34625d9e50556eb4b368428c8",
+  "crates/faction-client/src/checkpoint_ui.rs": "669dea471a4707ee3b999b3bad38e309ee4324572864fa610f25ffc257e1454e",
+  "crates/faction-client/src/checkpoint_ui_inbox.rs": "468b999414e2a10dd378f0e52ca3f63327a899aa862f61bfb67ddcdf282bf82d",
+  "crates/faction-client/src/mail_checkpoint.rs": "7401014e3ded0a204c259075f477a550b432b3c095790a8593e5b339927c38fe",
+  "crates/faction-client/examples/checkpoint_ui_fixture.rs": "7dd2ce28336362a6753cc660a1bca9cfb060b969ad9f0a2fb265466e104d2847",
+  "crates/faction-client/examples/home_mail_fixture.rs": "d893a2750b9fc4b83ae1dc59de2d2e2c37d9430c7d00aeb6f9ab84dca59aa9f1",
+  "tools/probe_mail_inbox.py": "4515a0b371fb011b10b59f55db5b5eb2dbb0e10a87a2c0a057b69c491812aa33",
+  "tools/probe_menu_mail.py": "ce153e5020b84d6db1d4335b12cd382861b95fef06a722d1884ecafcb6e5db3d",
+  "tools/test_probe_menu_mail.py": "65802a5e5472329458f14fa3425474fa9981de4fc4c6880d32d5c3d1b776b71c",
+  "tools/smoke_native_client_ssh.py": "9c497245465273b89558f08910dfbadff3c618d67e3e1f56d20ee85e0f9322b4",
+  "tools/check_restricted_ssh.py": "dd2d28d58865162d1b6c06967b6884a8dbf913968f942b8c365a1e07a0896404",
+  "tools/playground.py": "1faa31ca5d47e6e984b45a69e410a912e4133b480e4fd18fecc19afd7c255c50"
+}

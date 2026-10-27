@@ -1,0 +1,16 @@
+from pathlib import Path
+import hashlib,json,os,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction233-lead-OWNED');source=R/'tools/probe_mail_inbox.py';run=P/'inbox-consumer-green';run.mkdir(mode=0o700)
+assert source.read_bytes()==(P/'inbox-consumer-red/probe-before.py').read_bytes()
+s=source.read_text().replace("MENU = '[L] Lock and exit'", "MENU = '[L] Lock and exit'\nREPLY_RETURN = '[R] Reply locally  [B/Enter] Back to inbox'")
+assert 'REPLY_RETURN =' in s
+s=s.replace('c = NativeConsole(args); children.append(c); c.resize(40,24)', 'c = NativeConsole(args); children.append(c); c.resize(40,24)\n            c.inbox_online = configured')
+s=s.replace("            begin = len(c.transcript); c.raw(key)\n            c.expect('[LOCAL INBOX RECORD]')", "            c.inbox_return_prompt = REPLY_RETURN if c.inbox_online and received else 'Enter to return: '\n            begin = len(c.transcript); c.raw(key)\n            c.expect('[LOCAL INBOX RECORD]')")
+s=s.replace("c.expect(ACK if received and not unknown else 'Enter to return: ')", "c.expect(ACK if received and not unknown else c.inbox_return_prompt)")
+s=s.replace("c.send(answer); c.expect('Enter to return: ')", "c.send(answer); c.expect(c.inbox_return_prompt)")
+source.write_text(s);(run/'probe-after.py').write_bytes(source.read_bytes());owned=run/'owned';owned.mkdir(mode=0o700);(owned/'OWNERSHIP').write_text('Issue233 current inbox compatibility\n');binary=Path('/private/tmp/faction233-native-OWNED/bin/final-network')
+manifest={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [source,binary/'faction-client',binary/'checkpoint_ui_fixture']};(run/'before.json').write_text(json.dumps(manifest,indent=2)+'\n')
+command=['python3','tools/probe_mail_inbox.py','--client',str(binary/'faction-client'),'--fixture',str(binary/'checkpoint_ui_fixture'),'--owned-root',str(owned),'--online','--output',str(run/'result.json')]
+with (run/'green.log').open('wb') as output:result=subprocess.run(command,cwd=R,stdout=output,stderr=subprocess.STDOUT,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+after={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [source,binary/'faction-client',binary/'checkpoint_ui_fixture']};assert after==manifest
+(run/'status.json').write_text(json.dumps(dict(returncode=result.returncode,source_and_binaries_unchanged=True,command=command),indent=2)+'\n');assert result.returncode==0;print('Existing full offline/configured-online inbox controls GREEN; only return-prompt expectation adapts, canonical/read/bounds assertions intact.')

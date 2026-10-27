@@ -1,0 +1,28 @@
+//! Selected authenticated record reply rules; no network or trust mutation.
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn suggested_subject_keeps_ascii_prefix_and_scalar_boundaries() {
+        for prefix in ["Re:", "RE:", "rE:", "re:"] {
+            let original = format!("{prefix} existing");
+            let (suggested, shortened) = suggested_subject(&original);
+            assert_eq!(suggested.as_str(), original);
+            assert!(!shortened);
+        }
+        assert_eq!(suggested_subject("topic").0.as_str(), "Re: topic");
+        assert_eq!(suggested_subject("Reformation").0.as_str(), "Re: Reformation");
+        let original = "λ".repeat(64);
+        let (suggested, shortened) = suggested_subject(&original);
+        assert_eq!(suggested.as_str(), format!("Re: {}", "λ".repeat(62)));
+        assert_eq!(suggested.len(), 128);
+        assert!(shortened);
+        let original = format!("{}🦀", "a".repeat(123));
+        let (suggested, shortened) = suggested_subject(&original);
+        assert_eq!(suggested.as_str(), format!("Re: {}", "a".repeat(123)));
+        assert_eq!(suggested.len(), 127);
+        assert!(shortened);
+    }
+}
