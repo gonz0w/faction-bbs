@@ -1,0 +1,112 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 2.97s
+     Running unittests src/lib.rs (/private/tmp/faction242-client-OWNED/target/release/deps/faction_client-6b76699e9a9722c0)
+
+running 91 tests
+test checkpoint_tests::checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by checkpoint crash controls
+test mail_archive::tests::opaque_cursor_and_query_inputs_are_bounded ... ok
+test mail_archive::tests::own_sent_echo_uses_swapped_trusted_binding_without_decryption ... ok
+test mail_archive::tests::incoming_uses_enrolled_identity_and_ignores_server_time ... ok
+test checkpoint_tests::checkpoint_review_parent_sync_failure_prevents_usable_initialization ... ok
+test mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count ... ok
+test mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four ... ok
+test mail_archive::tests::request_is_own_archive_peer_filtered_and_four_bounded ... ok
+test mail_archive::tests::saved_cursor_unavailable_requires_exact_own_error_and_optional_query_echo ... ok
+test mail_archive::tests::wrong_owner_query_shape_namespace_addresses_and_delay_are_rejected ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_checkpoint_crash_child ... ignored, owned subprocess helper, invoked only by archive checkpoint crash controls
+test checkpoint_tests::checkpoint_review_recovery_quarantine_survives_password_reopen ... ok
+test checkpoint_tests::explicit_upgrade_preserves_v1_drafts_pins_and_original_backup ... ok
+test checkpoint_tests::checkpoint_review_restart_outbox_recovers_acknowledgement_id ... ok
+test checkpoint_tests::validation_tamper_trust_and_duplicates_do_not_change_canonical_state ... ok
+test checkpoint_tests::backup_is_history_only_until_explicit_fresh_device ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_cas_binding_ids_and_tamper_stop_before_checkpoint_mutation ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_receive_commits_authenticated_time_cursor_and_reopen_duplicate_once ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_inspection_exposes_only_enabled_and_cursor_presence_even_when_inactive ... ok
+test mail_checkpoint::archive_checkpoint_tests::explicit_archive_migration_preserves_v2_state_wraps_and_recovery ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_crash_child ... ignored, owned subprocess helper, invoked by unread crash controls
+test checkpoint_tests::encrypted_send_receive_retry_and_ack_survive_reopen ... ok
+test mail_checkpoint::archive_checkpoint_tests::inactive_revoked_expired_and_poisoned_archive_operations_refuse ... ok
+test checkpoint_tests::delayed_keys_and_reply_ratchets_commit_with_history ... ok
+test mail_checkpoint::archive_checkpoint_tests::original_recovery_secret_remains_valid_after_explicit_archive_migration ... ok
+test checkpoint_tests::process_death_after_delivery_before_ack_retries_identical_ciphertext ... ok
+test mail_checkpoint::archive_checkpoint_tests::schema02_stays_exact_and_schema03_rejects_malformed_or_foreign_scope ... ok
+test checkpoint_tests::locks_wrong_secrets_malformed_bytes_and_caps_fail_closed ... ok
+test mail_checkpoint::archive_checkpoint_tests::known_own_archive_echo_advances_only_cursor_even_after_retirement ... ok
+test mail_checkpoint::archive_checkpoint_tests::partial_archive_page_preserves_last_good_cursor_when_next_item_fails ... ok
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test checkpoint_tests::process_death_before_and_after_publication_keeps_canonical_state ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_malformed_length_direction_boolean_and_trailing_metadata_reject ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_archive_new_receive_duplicate_and_own_echo_preserve_bits_and_pending ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_local_decisions_survive_protocol_expiry_and_revocation ... ok
+test mail_checkpoint::archive_checkpoint_tests::recovery_backup_and_reset_preserve_inert_cursor_and_fresh_device_rescopes ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_history_only_backup_can_acknowledge_without_changing_active_source ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_received_only_exact_identity_idempotence_and_duplicate_reopen ... ok
+test checkpoint_tests::reset_write_ambiguity_never_rolls_back_into_a_live_handle ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_history_only_recovery_backup_reset_and_fresh_device_keep_local_decisions ... ok
+test mail_network::tests::catch_up_cancellation_after_result_preserves_checkpoint ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_explicit_opt_in_preserves_old_schemas_and_all_protocol_state ... ok
+test mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry ... ok
+test mail_network::tests::catch_up_own_sent_echo_matches_durable_history_without_retiring_outbox ... ok
+test mail_network::tests::catch_up_full_outbox_and_foreign_settings_stop_before_transport ... ok
+test checkpoint_tests::write_errors_poison_until_durable_reopen ... ok
+test mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial ... ok
+test mail_network::tests::private_regular_local_configuration_is_preloaded ... ok
+test mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit ... ok
+test mail_network::tests::catch_up_total_stanza_budget_and_stale_local_token_stop ... ok
+test mail_network::tests::foreign_account_and_expired_state_cannot_open_a_home_connection ... ok
+test mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens ... ok
+test mail_network::tests::symlinks_hardlinks_fifo_and_public_files_are_refused ... ok
+test mail_network::tests::unknown_fields_credentials_and_non_numeric_endpoints_are_rejected ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_write_failures_poison_and_preserve_atomic_candidate ... ok
+test mail_wire::tests::mail_wire_accepts_exact_standard_store_hint_only ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language ... ok
+test mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language ... ok
+test mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys ... ok
+test mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds ... ok
+test mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert ... ok
+test mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time ... ok
+test mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id ... ok
+test mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only ... ok
+test mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex ... ok
+test mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_language_namespace_shape_and_bounds ... ok
+test mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion ... ok
+test mail_wire::tests::mail_wire_rejects_underfilled_discovery_bundle ... ok
+test mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children ... ok
+test mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys ... ok
+test mail_network::tests::catch_up_expired_during_connect_sends_no_query ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test network_checkpoint_tests::published_prekeys_come_from_the_durable_current_identity_only ... ok
+test network_checkpoint_tests::unauthenticated_timestamp_substitution_and_tampering_never_mutate_checkpoint ... ok
+test network_checkpoint_tests::authenticated_network_timestamp_and_delayed_duplicate_survive_reopen ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_write_failures_poison_enable_and_mark_without_partial_state ... FAILED
+test mail_network::tests::revoked_recovered_and_poisoned_handles_stop_before_transport_setup ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+test mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_process_death_before_and_after_publish_keeps_whole_read_checkpoint ... ok
+test mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message ... ok
+test mail_checkpoint::archive_checkpoint_tests::archive_process_death_couples_message_cursor_and_native_snapshot ... ok
+test mail_network::tests::catch_up_saved_cursor_error_is_actionable_without_reset_or_retry ... ok
+test mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait ... ok
+test mail_checkpoint::unread_checkpoint_tests::unread_full_64_entry_metadata_is_bounded_without_evicting_history ... ok
+test mail_checkpoint::archive_checkpoint_tests::full_history_or_outbox_blocks_archive_duplicates_and_echoes ... ok
+test mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact ... ok
+test mail_network::tests::catch_up_lost_idle_or_invalid_fin_commits_nothing ... ok
+
+failures:
+
+---- mail_checkpoint::unread_checkpoint_tests::unread_write_failures_poison_enable_and_mark_without_partial_state stdout ----
+
+thread 'mail_checkpoint::unread_checkpoint_tests::unread_write_failures_poison_enable_and_mark_without_partial_state' (3545039) panicked at crates/faction-client/src/unread_checkpoint_tests.rs:19:36:
+called `Result::unwrap()` on an `Err` value: Os { code: 35, kind: WouldBlock, message: "Resource temporarily unavailable" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    mail_checkpoint::unread_checkpoint_tests::unread_write_failures_poison_enable_and_mark_without_partial_state
+
+test result: FAILED. 87 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 6.40s
+
+error: test failed, to rerun pass `-p faction-client --lib`

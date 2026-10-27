@@ -1,0 +1,22 @@
+{
+  "issue": 242,
+  "result": "pass",
+  "scope": "Every selected new-folder file, immutable external reference, final cleanup, derived review/results, this receipt and final manifest bytes",
+  "payload_selection_sha256": "15131090351cccb473315798a28b7c11d52bbf3603d1d66d0dbd325348be1165",
+  "private_inventory_sha256": "dd3f9762fed59046e69e67a6b677358058363f0592101046bce335297a7087dc",
+  "actual_generated_values": 333,
+  "new_folder_files_before_this_receipt_and_manifest": 210,
+  "immutable_external_files": 15,
+  "private_matches": 0,
+  "raw_private_key_vault_binary_matches": 0,
+  "actual_private_value_poison_rejected": true,
+  "safe_control_passed": true,
+  "unchanged_helper_source_sha256": "ba1d518b79e903c560cbc73a1bf6f63f596f7107e7d27d51ab59f6a819c227dc",
+  "unchanged_detection_kernel_sha256": "2080fa293db227b866ecd11dfc9c1ac216070b32717a6c646030613994de8c06",
+  "old_issue239_main_invoked": false,
+  "prior_payload_source_scan": "publication-scan-payload.json",
+  "prior_payload_source_scan_sha256": "0e0c6e8e481b7014d6b291ac37e141a85ea88a0d56767e3dec2aed4f8815d4d9",
+  "all_three_owned_roots_actually_removed": true,
+  "method": "Lead operator composition of unchanged pure detection helpers and standard-library file/hash/copy/identity/removal operations; no new scanner API or committed finalizer. Values retained only in this process until final metadata and public integration files were scanned.",
+  "limitations": "Does not rerun product/native sessions or establish their behavior; final integration review and hosted exact-head CI are separate."
+}

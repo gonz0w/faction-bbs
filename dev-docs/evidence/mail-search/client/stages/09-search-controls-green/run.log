@@ -1,0 +1,25 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 1.74s
+     Running unittests src/main.rs (/private/tmp/faction242-client-OWNED/target/release/deps/faction_client-1ddeb8e40e7186fe)
+
+running 7 tests
+test checkpoint_ui::tests::search_actual_interface_helper ... ignored, owned subprocess helper, exercised by the search interface control
+test checkpoint_ui::inbox::tests::search_full_retention_pages_and_new_query_choose_newest ... ok
+test checkpoint_ui::inbox::tests::search_validates_utf8_bytes_and_rejects_terminal_controls_without_truncation ... ok
+test checkpoint_ui::inbox::tests::search_intersects_group_and_unread_retains_indices_and_refresh_selection ... ok
+test checkpoint_ui::inbox::tests::search_matches_literal_case_sensitive_unicode_fields_independently ... ok
+
+thread 'checkpoint_ui::tests::search_prompt_edits_unicode_bounds_input_and_keeps_lock_errors' (3540586) panicked at crates/faction-client/src/checkpoint_ui.rs:1686:21:
+assertion failed: query.matches(text, "", "")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test checkpoint_ui::tests::search_prompt_edits_unicode_bounds_input_and_keeps_lock_errors ... FAILED
+test checkpoint_ui::tests::search_opens_from_actual_inbox_and_is_ephemeral ... ok
+
+failures:
+
+failures:
+    checkpoint_ui::tests::search_prompt_edits_unicode_bounds_input_and_keeps_lock_errors
+
+test result: FAILED. 5 passed; 1 failed; 1 ignored; 0 measured; 64 filtered out; finished in 0.09s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

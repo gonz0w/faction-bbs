@@ -168,6 +168,7 @@ jobs:
           python3 tools/check_reply_evidence.py
           python3 tools/check_correspondents_evidence.py
           python3 tools/check_menu_mail_notices_evidence.py
+          python3 tools/check_recorded_files.py dev-docs/evidence/mail-search/manifest.json 7942dc8503a25039d6f4457629b3c41d91ffaf186ef4a299da2fa3595a21224c
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py

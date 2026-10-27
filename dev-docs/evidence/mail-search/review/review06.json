@@ -1,0 +1,42 @@
+{
+  "review": "separate read-only static review and saved chronology audit",
+  "source_sha256": {
+    "crates/faction-client/src/checkpoint_ui.rs": "f1abeba66a0b227ef01e255821318ea093186a6ed1793dfabec334799256873b",
+    "crates/faction-client/src/checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab",
+    "tools/probe_mail_search.py": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912",
+    "tools/test_probe_mail_search.py": "0425f94240b06e011883b883fd48241fabb593ae6a2dd0561eabf558193ce34b",
+    "tools/probe_menu_mail.py": "ce153e5020b84d6db1d4335b12cd382861b95fef06a722d1884ecafcb6e5db3d",
+    "tools/probe_visit_mail.py": "af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd",
+    "tools/probe_mail_correspondents.py": "318c8daa5f9918c17f3c4f18588ef0f855f6e24d81d27e99884d59f565778599",
+    "tools/check_recorded_files.py": "d7fb797b75c76124d3cdf9f294ed6cd4e6d8ead21c657b473318172b8069d1c9",
+    "tools/test_check_recorded_files.py": "b44f6d8b286dcfaec392991c93488b025c5606e0316c37dcf1abb01e6d1d6575"
+  },
+  "finding": {
+    "priority": "P2",
+    "file": "crates/faction-client/src/checkpoint_ui.rs",
+    "line": 174,
+    "reason": "Private input Vec may reallocate plaintext prefixes; Zeroizing covers only final allocation.",
+    "status": "resolved; actual stage16 RED followed by final preallocation fix, stage17 GREEN verified"
+  },
+  "actual_checks": [
+    "5 focused Python oracle tests passed after provenance delta, with PYTHONDONTWRITEBYTECODE=1",
+    "All saved client source-stage bytes match sources.json SHA-256 mappings",
+    "Existing strict GIO decoder verified by source",
+    "Stage16 allocation-invariant RED command/result/source binding verified; final fix only preallocation and formatting",
+    "Stage17 saved command/result/log receipts verified: fmt0, strict network-mail all-target Clippy0, serial lib88+bin68 pass, 3 ignored helpers each",
+    "5 generic integrity tests independently passed with private audit TMPDIR",
+    "Stages19/20 saved exact tool/test/workflow source hashes verified; observed separate registration RED and API absence RED",
+    "Final 8 focused probe tests independently passed",
+    "Both final host same-SSH private original captures audited: source/runtime/settings/profile/CA/binary hashes; source/marker/start/publication/capture/scan-input/result associations; strict GIO private markers absent; exact canonical read-bit transition",
+    "Both final NetBSD same-SSH originals independently audited: compiled source maps before/after equal frozen map; runtime guest map equals final runtime map; settings/profile/CA match preserved hashes; source/marker/start/publication/capture/scan-input/result associations; strict GIO absence and exact selected read-bit transition"
+  ],
+  "pending": [
+    "actual-value publication scan",
+    "lead owned-fixture cleanup",
+    "real final manifest CLI and CI registration; exact-head required remote CI/final acceptance"
+  ],
+  "integrity_review": "No actionable source finding. Valid-old-object unit test calls verify directly; actual CLI execution and registration pending real final manifest.",
+  "native_tdd_limit": "Unexecuted1a9 shared-marker registration-account candidate has no test-first claim; final publication-only interface has its own observed API-absence RED before final producer/GREEN.",
+  "review_audit_limit": "An initial audit-only assertion expecting registration handle in traced GIO failed; removed after source confirmed trace starts after login. Private publication completeness and forbidden-mail checks remain.",
+  "native_binary_limit": "Native executable identities matched preserved native hashing receipt; reviewer performed no guest executable read/rehash or live VM operation."
+}

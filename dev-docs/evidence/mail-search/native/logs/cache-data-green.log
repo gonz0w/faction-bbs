@@ -1,0 +1,1 @@
+PASS: only cargo/proof destination data adapted; archive SHA and Cargo.lock checksum checks unchanged.

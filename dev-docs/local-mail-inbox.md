@@ -105,3 +105,28 @@ private-console routing, locked return and normal approval/resource limits apply
 [Correspondent software observations](evidence/mail-correspondents/README.md)
 retain executed variants, actual failures and host/NetBSD controls separately
 from the earlier inbox and reply records.
+
+## Local search
+
+Issue [#242](https://github.com/gonz0w/faction-bbs/issues/242) adds S to the
+unlocked offline and manual home-mail inboxes. A validated query is a literal,
+case-sensitive Unicode substring of at most 64 UTF-8 bytes. Match each borrowed
+peer account, subject and body independently; never combine fields or copy
+bodies into an index. Blank Enter clears the query. Invalid or oversized input
+is rejected without replacing the active query. The list uses a generic active
+indicator, not the query, and reports an empty result truthfully.
+
+Search intersects the current account/device group and All/Unread filter. The
+model retains original canonical indices, newest-first order and six-row pages.
+A new or cleared search selects the newest eligible record; normal refresh
+retains the selected index where eligible. A nested group starts with an empty
+query, Back restores the outer inbox query, and leaving its owning inbox drops
+it. Query text and private scratch are transient and zeroized. Classic and
+Unicode output remains inert and bounded to the existing 39-cell list width.
+
+Search does not alter ciphertext, read state, pending intents, archive position
+or trust; it does not unlock a store or contact home. Opening and explicit
+acknowledgement still target the original record. Online reply retains its
+existing authority checks; offline has no Reply. Control interruption,
+inactivity and I/O failure retain the existing lock/drop behavior. No persistent
+query, plaintext index, schema, dependency, crypto or wire change is introduced.

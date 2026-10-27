@@ -1,0 +1,104 @@
+{
+  "cases": [
+    {
+      "change": "new-probe-interface",
+      "red": {
+        "path": "probe-interface-red.log",
+        "sha256": "af8b82262953f68b1bb53c0cb098ef491b7d9075339c55c7b7cf3685412dde73"
+      },
+      "green": {
+        "path": "probe-unit-green01.log",
+        "sha256": "feabb4add9e2ca3374e538560634d1ec97dc4f4ce89aab12f3d726e36ea9b2f6"
+      },
+      "before_source": null,
+      "after_source": {
+        "path": "probe_mail_search.py.first-green-source",
+        "sha256": "0e61c05afc8ad89ea697cffc40bff603dc15ca0869aebf0aa093be8337f021d9"
+      }
+    },
+    {
+      "change": "public-fixed-input-provenance",
+      "red": {
+        "path": "probe-provenance-red.log",
+        "sha256": "632adc02ca0c7c462d5b7a28336661a719807686a4dd7079b7b8bf000cb13a9d"
+      },
+      "green": {
+        "path": "probe-provenance-green.log",
+        "sha256": "6273232de4d3ef7acd4ecafa5c86beeeb974f56586b21089a2990b3f72facbe6"
+      },
+      "before_source": {
+        "path": "probe_mail_search.py.provenance-red-source",
+        "sha256": "0e61c05afc8ad89ea697cffc40bff603dc15ca0869aebf0aa093be8337f021d9"
+      },
+      "after_source": {
+        "path": "probe_mail_search.py.provenance-green-source",
+        "sha256": "ad4a996b0effc3f555a776ebf28bc90a51fd2b751eb78eb044307650cc486c23"
+      }
+    },
+    {
+      "change": "reply-preamble-display-scope",
+      "red": {
+        "path": "probe-reply-preamble-red.log",
+        "sha256": "91f383bda7cb5659a5f45faaac7893afdac315cf8d61fd6db30b73a479b32084"
+      },
+      "green": {
+        "path": "probe-reply-preamble-green.log",
+        "sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371"
+      },
+      "before_source": {
+        "path": "probe_mail_search.py.reply-preamble-red-source",
+        "sha256": "ad4a996b0effc3f555a776ebf28bc90a51fd2b751eb78eb044307650cc486c23"
+      },
+      "after_source": {
+        "path": "probe_mail_search.py.reply-preamble-green-source",
+        "sha256": "c9110d5a322f8c279a63ec67cf835475f189772ef3753bd2f9ae565670a5b83f"
+      }
+    },
+    {
+      "change": "online-context-lock-notice",
+      "red": {
+        "path": "probe-lock-notice-red.log",
+        "sha256": "a613f4d4307b1f821a792b909a3bc4db86f7d031452b44923736e64054c90522"
+      },
+      "green": {
+        "path": "probe-lock-notice-green.log",
+        "sha256": "83166b089fbcb82fac63f22522fa6ae99bb5e46368cd35d756277fd463dd6346"
+      },
+      "before_source": {
+        "path": "probe_mail_search.py.lock-notice-red-source",
+        "sha256": "c9110d5a322f8c279a63ec67cf835475f189772ef3753bd2f9ae565670a5b83f"
+      },
+      "after_source": {
+        "path": "probe_mail_search.py.lock-notice-green-source",
+        "sha256": "bc08b5d4ace4b32563e68b282b4226d3e31bb7f21baed0ef3c3432a0acd563e5"
+      }
+    },
+    {
+      "change": "publication-only-generated-BBS-account",
+      "red": {
+        "path": "probe-publication-account-red.log",
+        "sha256": "a39f8d8c9ab6bd45ed7a1c853a89c28d46bd0d73789fd28a98fbcda801c4e65e"
+      },
+      "green": {
+        "path": "probe-publication-account-green.log",
+        "sha256": "8511476ade8de90f5517cc722fe4e78a712af4c32884f34c51335fc83e873772"
+      },
+      "before_source": {
+        "path": "probe_mail_search.py.publication-account-red-source",
+        "sha256": "1a9f7ad1171d073eef9b0944845dbba6d36b2f41c143b04fc268f016ac9ff262"
+      },
+      "after_source": {
+        "path": "probe_mail_search.py.publication-account-green-source",
+        "sha256": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912"
+      }
+    }
+  ],
+  "limits": [
+    "First RED was missing-module loader absence; substantive assertion methods ran GREEN.",
+    "Unexecuted1a9 registration-account candidate conflated forbidden-board and publication inventory and was abandoned before runtime. Its bytes and preceding artifact diagnosis remain preserved; final category interface has separate actual RED/GREEN.",
+    "Host classic01 width andclassic02 context-lock failures are actual oracle failures; product Rust unchanged.",
+    "Concurrentunicode same-SSH attempts hit existing terminal admission; retained as failedsetup/limit observations; finalsame-SSH runs are sequential with unchanged limits."
+  ],
+  "final_probe_sha256": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912",
+  "final_test_sha256": "0425f94240b06e011883b883fd48241fabb593ae6a2dd0561eabf558193ce34b"
+}

@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "scope": "explicit issue242 native safe selection before checked VM stop",
+  "publication_selection_sha256": "9c6ce03f420e581f6cb8f886ceabf268130e2e91466b7d89db12a81c5ddf4303",
+  "selected_payload_files": 82,
+  "generated_private_values_scanned": 333,
+  "private_inventory_sha256": "dd3f9762fed59046e69e67a6b677358058363f0592101046bce335297a7087dc",
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "actual_generated_value_poison_rejected": true,
+  "actual_json_escaped_value_poison_rejected": true,
+  "actual_private_key_poison_rejected": true,
+  "vault_checkpoint_and_binary_poison_controls_rejected": true,
+  "safe_control_passed": true,
+  "explicit_manifest_verified": true,
+  "source_and_file_set_unchanged": true,
+  "reused_helper_source_sha256": "ba1d518b79e903c560cbc73a1bf6f63f596f7107e7d27d51ab59f6a819c227dc",
+  "reused_kernel_sha256": "2080fa293db227b866ecd11dfc9c1ac216070b32717a6c646030613994de8c06",
+  "reused_unchanged_pure_helpers": [
+    "findings",
+    "load_selected",
+    "exact_file",
+    "sha"
+  ],
+  "old_issue239_main_invoked": false,
+  "owned_roots_deleted": false
+}

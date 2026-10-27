@@ -1,0 +1,75 @@
+"""Positive and rejection contracts for the search observation oracle."""
+import copy
+import hashlib
+import unittest
+
+import probe_mail_search as proof
+
+
+class SearchOracle(unittest.TestCase):
+    def test_selected_original_indices_active_label_and_bounded_cells(self):
+        screen = (b'[LOCAL INBOX]\r\nLocal search active.\r\n'
+                  b'> 07 UNREAD subject\r\n  01 READ subject\r\n[B] Back\r\n')
+        proof.require_search_screen(screen, [7, 1], 7, True)
+        for bad in [screen.replace(b'01 READ', b'02 READ'),
+                    screen.replace(b'> 07', b'  07').replace(b'  01', b'> 01'),
+                    screen.replace(b'Local search active.\r\n', b''),
+                    screen + b'x' * 40 + b'\r\n',
+                    screen + b'\x1b[31m', screen + '\u202e'.encode()]:
+            with self.subTest(bad=bad), self.assertRaises(AssertionError):
+                proof.require_search_screen(bad, [7, 1], 7, True)
+
+    def test_no_match_is_truthful_and_clear_removes_active_indicator(self):
+        empty = b'[LOCAL INBOX]\r\nLocal search active.\r\nNo matching retained records.\r\n[B] Back\r\n'
+        proof.require_search_screen(empty, [], None, True)
+        for bad in [empty.replace(b'No matching retained records.\r\n', b''),
+                    empty + b'> 01 UNREAD wrong\r\n']:
+            with self.subTest(bad=bad), self.assertRaises(AssertionError):
+                proof.require_search_screen(bad, [], None, True)
+        clear = b'[LOCAL INBOX]\r\n> 08 PENDING current\r\n[B] Back\r\n'
+        proof.require_search_screen(clear, [8], 8, False)
+        with self.assertRaises(AssertionError):
+            proof.require_search_screen(clear + b'Local search active.\r\n', [8], 8, False)
+
+    def test_private_query_may_not_reappear_in_search_heading(self):
+        screen = b'[LOCAL INBOX]\r\nLocal search active.\r\n> 01 UNREAD subject\r\n[B] Back\r\n'
+        proof.require_search_screen(screen, [1], 1, True, b'private-query')
+        with self.assertRaises(AssertionError):
+            proof.require_search_screen(screen.replace(b'Local search active.', b'Local search active. private-query'), [1], 1, True, b'private-query')
+
+    def test_capture_binding_requires_preexisting_markers_and_actual_binaries(self):
+        source, marker_data = b'probe source', b'["private input"]'
+        binaries = {'client': b'actual client', 'fixture': b'actual fixture'}
+        sha = lambda data: hashlib.sha256(data).hexdigest()
+        record = {'capture_id': '12' * 16, 'source_sha256': sha(source),
+                  'marker_set_sha256': sha(marker_data),
+                  'binary_sha256': {key: sha(value) for key, value in binaries.items()},
+                  'generated_at_ns': 10, 'started_at_ns': 11}
+        proof.require_capture_binding(record, source, marker_data, binaries)
+        for key, value in [('capture_id', ''), ('source_sha256', '0' * 64),
+                           ('marker_set_sha256', '0' * 64), ('generated_at_ns', 12),
+                           ('binary_sha256', {'client': sha(b'other'), 'fixture': sha(b'actual fixture')})]:
+            changed = copy.deepcopy(record); changed[key] = value
+            with self.subTest(key=key), self.assertRaises(AssertionError):
+                proof.require_capture_binding(changed, source, marker_data, binaries)
+        with self.assertRaises(AssertionError):
+            proof.require_capture_binding(record, source, marker_data + b' ', binaries)
+        with self.assertRaises(AssertionError):
+            proof.require_capture_binding(record, source, marker_data, dict(binaries, client=b'rebuilt client'))
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+class SearchInputProvenance(unittest.TestCase):
+    def test_only_exact_proven_public_constants_are_classified_public(self):
+        private = ['query-private-dc713f2e', 'private-prefix-recv 03-suffix', '00' * 32]
+        markers = [proof.PASS, 'recv 03', '[.*]', 'λ界', *private]
+        inventory = proof.input_inventory(markers)
+        self.assertEqual(inventory['private_values'], private)
+        self.assertEqual(inventory['public_input_provenance']['values'], markers[:4])
+        self.assertEqual(inventory['public_input_provenance']['source_sha256'],
+                         hashlib.sha256(proof.Path(proof.__file__).read_bytes()).hexdigest())
+        self.assertEqual(set(inventory['private_values']) |
+                         set(inventory['public_input_provenance']['values']), set(markers))

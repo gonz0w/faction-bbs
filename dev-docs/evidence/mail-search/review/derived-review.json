@@ -1,0 +1,17 @@
+{
+  "issue": 242,
+  "review_type": "separate agent review",
+  "result": "no findings",
+  "reviewer": "temper_242_review",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "runtime_routing_metadata": "unavailable",
+  "reviewed_results_sha256": "5bcb4a8aec82159b669f542d6b91f6892544796a953236f13ffcc2772c696a58",
+  "reviewed_payload_scan_sha256": "0e0c6e8e481b7014d6b291ac37e141a85ea88a0d56767e3dec2aed4f8815d4d9",
+  "observations": "Exact hashes, candidate copies, source and archive identities, route counts and scan-procedure bytes match. Pass is limited to completed observations. No files created; original review06 unchanged.",
+  "pending_at_review": [
+    "actual owned-root removal",
+    "final metadata scan and manifest CLI",
+    "CI registration and exact-head remote gates"
+  ]
+}

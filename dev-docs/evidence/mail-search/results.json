@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "issue": 242,
+  "scope": "software observations",
+  "result": "pass",
+  "pass_boundary": "Completed source-bound tests and disposable runtime observations only; this is not overall issue acceptance or an integration/cleanup pass.",
+  "payload": {
+    "selection": "payload-selection.json",
+    "sha256": "15131090351cccb473315798a28b7c11d52bbf3603d1d66d0dbd325348be1165",
+    "references": 220,
+    "new_payload_files": 205,
+    "immutable_existing_references": 15
+  },
+  "sources": {
+    "base_commit": "306e6c2ae219d54ad3f17e783b9e6051624549db",
+    "frozen_execution_map": {
+      "path": "native/records/frozen-build-source02.json",
+      "entries": 732,
+      "base_git_entries": 728,
+      "archived_changed_entries": 4,
+      "exact_build_overrides": {
+        "crates/faction-client/src/checkpoint_ui.rs": "f1abeba66a0b227ef01e255821318ea093186a6ed1793dfabec334799256873b",
+        "crates/faction-client/src/checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab",
+        "tools/probe_mail_search.py": "ad4a996b0effc3f555a776ebf28bc90a51fd2b751eb78eb044307650cc486c23",
+        "tools/test_probe_mail_search.py": "867fb10498eecc29eb9a4d84b97793b8ed53c077906ebb19e94d069e9cd50a00"
+      },
+      "source_archive_sha256": "6b928c392770be8900a26f55efd3e6bbd73b4ce3c3395cad13fee3517ee1988a"
+    },
+    "final_product": {
+      "crates/faction-client/src/checkpoint_ui.rs": "f1abeba66a0b227ef01e255821318ea093186a6ed1793dfabec334799256873b",
+      "crates/faction-client/src/checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab"
+    },
+    "final_runtime_probes": {
+      "tools/probe_mail_search.py": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912",
+      "tools/test_probe_mail_search.py": "0425f94240b06e011883b883fd48241fabb593ae6a2dd0561eabf558193ce34b"
+    },
+    "runtime_map": "native/records/runtime-source03.json",
+    "immutable_source_references": "source-references.json",
+    "embedded_unchanged_helper": "embedded-source-references.json"
+  },
+  "checks": {
+    "host_client": {
+      "toolchain": "1.96.0",
+      "fmt_all_check": 0,
+      "clippy_all_targets_release_locked_Dwarnings": {
+        "default": 0,
+        "native-mail": 0,
+        "network-mail": 0
+      },
+      "serial_tests": {
+        "default": {
+          "passed": 48,
+          "ignored": 0
+        },
+        "native-mail": {
+          "passed": 107,
+          "ignored": 6
+        },
+        "network-mail": {
+          "passed": 156,
+          "ignored": 6
+        }
+      },
+      "diff_check": 0,
+      "full_workspace_remote_gates": "lead integration scope; not claimed here",
+      "host_NetBSD_focused_probes": "separate native implementer scope; not claimed here"
+    },
+    "netbsd_client_network_mail": {
+      "passed": 156,
+      "ignored_owned_helpers": 6,
+      "log": "native/logs/native-tests.log",
+      "separate_pty_crate_tests_passed": 7
+    },
+    "focused_probe_unit_tests_passed": 8,
+    "generic_integrity_unit_tests_passed": 5,
+    "generic_integrity_registration": "Actual missing-registration RED is preserved; final registration GREEN is outside this observations pass."
+  },
+  "runtime": {
+    "environment_record": "native/records/runtime-environment.json",
+    "result": "pass",
+    "os": "NetBSD 11.0 evbarm",
+    "physmem_bytes": 1054990336,
+    "cores": 2,
+    "build_memory_mib": 2048,
+    "runtime_memory_mib": 1024,
+    "files_disabled": true,
+    "loopback_only": true,
+    "normal_limits": true,
+    "toolchain": "Rust/Cargo 1.96.0",
+    "platform_observation": "NetBSD 11 ARM64 software VM; no physical hardware observation"
+  },
+  "search_routes": {
+    "local": {
+      "records": [
+        "native/records/host-local-classic04.json",
+        "native/records/host-local-unicode04.json",
+        "native/records/native-local-classic02.json",
+        "native/records/native-local-unicode02.json"
+      ],
+      "runs": 4,
+      "controls_per_run": 7,
+      "contexts": "offline and manual online, classic and Unicode on each OS"
+    },
+    "same_ssh": {
+      "records": [
+        "native/records/host-main-classic02.json",
+        "native/records/host-main-unicode02.json",
+        "native/records/native-main-classic02.json",
+        "native/records/native-main-unicode02.json"
+      ],
+      "runs": 4,
+      "controls_per_run": 4,
+      "contexts": "classic and Unicode on each OS"
+    },
+    "selected_acknowledgement": {
+      "canonical_history_index": 4,
+      "displayed_record": 5,
+      "read_bit_changes": 1
+    },
+    "pure_search_navigation": "No canonical mutation; ciphertext equality asserted in executed probe, with logical before/after originals independently reviewed.",
+    "home_outage": "actual TCP Transport(Connect) refusal before retained local search",
+    "board_io": "strict per-PID/fd/direction GIO reconstruction and selected board/store/log scans report zero private matches"
+  },
+  "compatibility": {
+    "local_regressions_per_os": [
+      "inbox",
+      "correspondents classic",
+      "correspondents Unicode",
+      "reply classic",
+      "reply Unicode"
+    ],
+    "files_controls_per_os": 14,
+    "unconfigured_network_and_default_controls_per_os": 2,
+    "records": [
+      "native/records/host-files-compatibility.json",
+      "native/records/native-files-compatibility.json",
+      "native/records/host-default-compatibility.json",
+      "native/records/native-default-compatibility.json"
+    ]
+  },
+  "publication_scan": {
+    "record": "publication-scan-payload.json",
+    "sha256": "0e0c6e8e481b7014d6b291ac37e141a85ea88a0d56767e3dec2aed4f8815d4d9",
+    "scope": "Frozen payload220 references, resolved732 base/build inputs and2 supplementals; later derived metadata is outside this scan.",
+    "logical_inputs": 954,
+    "generated_private_values": 333,
+    "private_matches": 0,
+    "raw_private_key_or_vault_matches": 0,
+    "actual_raw_escaped_key_and_binary_poison_controls": "pass",
+    "before_after_inputs_unchanged": true
+  },
+  "stop_observations": {
+    "record": "native/records/owned-stop-result.json",
+    "vm_stopped": true,
+    "controller_stopped": true,
+    "identity_checked": true,
+    "closed_forward_count": 4,
+    "saved_owner_files_unchanged_hash_size_mtime": 6,
+    "saved_playground_stopped": true,
+    "saved_identity_record": "native/records/saved-identity-proof.json"
+  },
+  "separate_review": {
+    "receipt": "review/review06.json",
+    "kind": "agent review; no external human assurance claim",
+    "frozen_payload_review": "Separately verified exact220 references and732-input base plus archived-override resolution; later derived records require separate final review."
+  },
+  "qualifications": [
+    "Native executable identities use preserved native hashing receipts; no independent fresh guest executable rehash is claimed.",
+    "Pure-search ciphertext equality is an assertion in executed source; separate saved-original audit checks logical before/after state.",
+    "Board/store/log absence is the source-bound original filesystem scan, not a new scan of a historical filesystem.",
+    "Client setup, test-fixture, format and parallel credential-slot failures remain preserved as failures, not behavioral RED or passes.",
+    "An abandoned unexecuted registration-account prototype has no TDD claim; the final publication-only inventory interface has its own actual RED/GREEN.",
+    "The expired issue239 exception is not used for this work.",
+    "Requested temper_implementer Sol/high mapping is recorded; native role/backend routing telemetry remains unavailable."
+  ],
+  "tdd_records": [
+    "client/summary.json",
+    "native/records/probe-tdd-observations.json",
+    "adapter/stages/19-recorded-files-red/result.json",
+    "adapter/stages/20-recorded-files-green/result.json"
+  ],
+  "not_completed_at_record_creation": {
+    "actual_removal_of_three_private_owned_roots": "pending; later actual receipt is cleanup.json",
+    "final_recorded_file_cli": "pending real final manifest",
+    "ci_registration_green": "pending real manifest hash pin",
+    "exact_head_required_remote_ci_and_integration": "pending"
+  },
+  "cleanup_record": "cleanup.json",
+  "claims": {
+    "normal_limits_unchanged": true,
+    "background_home_refresh": false,
+    "persistent_query_or_plaintext_index": false,
+    "new_crypto_or_protocol": false,
+    "physical_hardware": false,
+    "capacity": false,
+    "graphical_acceptance": false,
+    "production_support": false
+  }
+}

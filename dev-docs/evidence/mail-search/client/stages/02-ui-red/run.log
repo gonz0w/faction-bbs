@@ -1,0 +1,58 @@
+   Compiling rxml v0.14.0
+   Compiling tokio-util v0.7.20
+   Compiling zerovec v0.11.9
+   Compiling zerotrie v0.2.5
+   Compiling futures-executor v0.3.34
+   Compiling tokio-native-tls v0.3.1
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling futures v0.3.34
+   Compiling tokio-stream v0.1.19
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling icu_collections v2.4.0
+   Compiling minidom v0.19.0
+   Compiling icu_locale_core v2.4.0
+   Compiling icu_provider v2.4.0
+   Compiling icu_normalizer v2.4.0
+   Compiling icu_properties v2.4.0
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling jid v0.12.3
+   Compiling xso v0.4.0
+   Compiling xmpp-parsers v0.23.0
+   Compiling tokio-xmpp v6.0.0
+   Compiling faction-xmpp v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-xmpp)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 20.58s
+     Running unittests src/main.rs (/private/tmp/faction242-client-OWNED/target/release/deps/faction_client-1ddeb8e40e7186fe)
+
+running 1 test
+
+thread 'checkpoint_ui::tests::search_opens_from_actual_inbox_and_is_ephemeral' (3528680) panicked at crates/faction-client/src/checkpoint_ui.rs:1522:9:
+actual search interface failed: 
+running 1 test
+test checkpoint_ui::tests::search_actual_interface_helper ... FAILED
+
+failures:
+
+failures:
+    checkpoint_ui::tests::search_actual_interface_helper
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 65 filtered out; finished in 0.09s
+
+ 
+thread 'checkpoint_ui::tests::search_actual_interface_helper' (3528682) panicked at crates/faction-client/src/checkpoint_ui.rs:1590:17:
+S must open local search
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test checkpoint_ui::tests::search_opens_from_actual_inbox_and_is_ephemeral ... FAILED
+
+failures:
+
+failures:
+    checkpoint_ui::tests::search_opens_from_actual_inbox_and_is_ephemeral
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 65 filtered out; finished in 0.09s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

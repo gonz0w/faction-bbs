@@ -3,6 +3,33 @@
 use zeroize::Zeroizing;
 
 pub const PAGE_ROWS: usize = 6;
+pub const SEARCH_BYTES: usize = 64;
+/// View-owned literal query. Private text is never retained in list metadata.
+#[derive(Default)]
+pub struct Search(Zeroizing<String>);
+impl Search {
+    pub fn parse(bytes: &[u8]) -> Result<Self, ()> {
+        let text = std::str::from_utf8(bytes).map_err(|_| ())?;
+        if bytes.len() > SEARCH_BYTES
+            || text.chars().any(|c| {
+                c.is_control()
+                    || matches!(c, '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
+                        | '\u{200e}' | '\u{200f}' | '\u{61c}' | '\u{2028}' | '\u{2029}')
+            })
+        {
+            return Err(());
+        }
+        Ok(Self(Zeroizing::new(text.to_owned())))
+    }
+    pub fn active(&self) -> bool {
+        !self.0.is_empty()
+    }
+    pub fn matches(&self, account: &str, subject: &str, body: &str) -> bool {
+        [account, subject, body]
+            .iter()
+            .any(|field| field.contains(self.0.as_str()))
+    }
+}
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Status {
     Unread,
@@ -37,6 +64,7 @@ pub struct Inbox {
     shown: Vec<Entry>,
     position: usize,
     filter: Filter,
+    matching: Option<Vec<usize>>,
 }
 impl Inbox {
     pub fn new(entries: Vec<Entry>) -> Self {
@@ -45,6 +73,7 @@ impl Inbox {
             shown: Vec::new(),
             position: 0,
             filter: Filter::All,
+            matching: None,
         };
         model.refresh(entries);
         model
@@ -53,13 +82,7 @@ impl Inbox {
         assert!(entries.len() <= 64);
         let selected = self.selected().map(|e| e.index);
         self.all = entries;
-        self.shown = self
-            .all
-            .iter()
-            .rev()
-            .copied()
-            .filter(|e| self.filter == Filter::All || e.status == Status::Unread)
-            .collect();
+        self.rebuild();
         self.position = selected
             .and_then(|index| self.shown.iter().position(|e| e.index == index))
             .unwrap_or(self.position)
@@ -71,15 +94,33 @@ impl Inbox {
         }
         self.filter = filter;
         self.position = 0;
-        // Rebuild only bounded index/status metadata, never message text.
+        self.rebuild();
+        true
+    }
+    pub fn search(&mut self, matching: Option<Vec<usize>>) {
+        self.matching = matching;
+        self.position = 0;
+        self.rebuild();
+    }
+    pub fn refresh_matching(&mut self, entries: Vec<Entry>, matching: Option<Vec<usize>>) {
+        self.matching = matching;
+        self.refresh(entries);
+    }
+    fn rebuild(&mut self) {
+        // Keep all scoped statuses, including unknowns hidden by a query.
         self.shown = self
             .all
             .iter()
             .rev()
             .copied()
-            .filter(|e| filter == Filter::All || e.status == Status::Unread)
+            .filter(|e| {
+                (self.filter == Filter::All || e.status == Status::Unread)
+                    && self
+                        .matching
+                        .as_ref()
+                        .is_none_or(|indices| indices.contains(&e.index))
+            })
             .collect();
-        true
     }
     pub fn mode(&self) -> Filter {
         self.filter
@@ -261,6 +302,115 @@ mod tests {
                 status: Status::Unread,
             })
             .collect()
+    }
+    #[test]
+    fn search_matches_literal_case_sensitive_unicode_fields_independently() {
+        let query = Search::parse("λ.*[A]".as_bytes()).unwrap();
+        assert!(query.active());
+        assert!(query.matches("peerλ.*[A]@away.test", "x", "y"));
+        assert!(query.matches("peer", "subject λ.*[A] suffix", "y"));
+        assert!(query.matches("peer", "subject", "body λ.*[A] suffix"));
+        assert!(!query.matches("peer", "subject λ.*[a]", "body λxxA"));
+        assert!(!Search::parse(b"AB").unwrap().matches("A", "B", ""));
+        assert!(!Search::parse(b"AB").unwrap().matches("", "A", "B"));
+        assert!(
+            !Search::parse("é".as_bytes())
+                .unwrap()
+                .matches("", "e\u{301}", "")
+        );
+        let clear = Search::parse(b"").unwrap();
+        assert!(!clear.active());
+        assert!(clear.matches("", "", ""));
+    }
+    #[test]
+    fn search_validates_utf8_bytes_and_rejects_terminal_controls_without_truncation() {
+        assert!(Search::parse(&[b'x'; 64]).is_ok());
+        assert!(Search::parse("界".repeat(21).as_bytes()).is_ok());
+        assert!(Search::parse("λ".repeat(32).as_bytes()).is_ok());
+        assert!(Search::parse(&[b'x'; 65]).is_err());
+        assert!(Search::parse("界".repeat(22).as_bytes()).is_err());
+        for bytes in [
+            b"\xff".as_slice(),
+            b"\xc3",
+            b"a\0b",
+            b"a\x1bb",
+            b"a\nb",
+            b"a\tb",
+            "a\u{202e}b".as_bytes(),
+        ] {
+            assert!(Search::parse(bytes).is_err());
+        }
+        assert!(
+            Search::parse(b"  ").unwrap().active(),
+            "spaces are literal, not trimmed"
+        );
+    }
+    #[test]
+    fn search_intersects_group_and_unread_retains_indices_and_refresh_selection() {
+        let peers = [("bob", 1), ("carol", 1), ("bob", 2), ("bob", 1), ("bob", 1)];
+        let mut entries = rows(5);
+        entries[4].status = Status::Pending;
+        let mut list = Inbox::new(within_group(entries.clone(), &peers, 0));
+        list.search(Some(vec![1, 2, 3, 4]));
+        assert_eq!(
+            list.visible().iter().map(|e| e.index).collect::<Vec<_>>(),
+            [4, 3]
+        );
+        assert!(list.filter(Filter::Unread));
+        assert_eq!(list.selected().unwrap().index, 3);
+        assert!(list.filter(Filter::All));
+        list.down();
+        list.refresh_matching(
+            within_group(entries.clone(), &peers, 0),
+            Some(vec![0, 3, 4]),
+        );
+        assert_eq!(list.selected().unwrap().index, 3);
+        list.search(None);
+        assert_eq!(
+            list.selected().unwrap().index,
+            4,
+            "clear chooses newest in current scope"
+        );
+        list.search(Some(vec![]));
+        assert_eq!(list.selected(), None);
+        assert_eq!(list.page(), (0, 0));
+        list.up();
+        list.down();
+        list.next();
+        list.previous();
+        assert!(list.visible().is_empty());
+        assert!(list.filter(Filter::All));
+        assert_eq!(list.selected(), None, "All cannot escape a query");
+        entries[0].status = Status::Unknown;
+        list.refresh_matching(within_group(entries, &peers, 0), Some(vec![]));
+        assert!(
+            !list.filter(Filter::Unread),
+            "hidden unknown still rejects Unread"
+        );
+    }
+    #[test]
+    fn search_full_retention_pages_and_new_query_choose_newest() {
+        let mut list = Inbox::new(rows(64));
+        list.search(Some((0..64).collect()));
+        assert_eq!(
+            list.visible().iter().map(|e| e.index).collect::<Vec<_>>(),
+            [63, 62, 61, 60, 59, 58]
+        );
+        for _ in 0..80 {
+            list.next();
+            list.down();
+        }
+        assert_eq!(list.page(), (11, 11));
+        assert_eq!(list.selected().unwrap().index, 0);
+        list.previous();
+        assert_eq!(list.selected().unwrap().index, 9);
+        list.search(Some(vec![1, 10, 40]));
+        assert_eq!(list.selected().unwrap().index, 40);
+        list.down();
+        list.refresh_matching(rows(64), Some(vec![1, 10, 40, 63]));
+        assert_eq!(list.selected().unwrap().index, 10);
+        list.search(None);
+        assert_eq!(list.selected().unwrap().index, 63);
     }
     #[test]
     fn correspondents_group_exact_account_and_device_newest_first() {

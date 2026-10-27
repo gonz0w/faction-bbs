@@ -1,0 +1,308 @@
+test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) ... 
+  test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) (reference='evidence/new/README.md') ... ERROR
+  test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) (reference='evidence/new/logs/result.json') ... ERROR
+  test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) (reference='evidence/old/source-object') ... ERROR
+test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) ... ERROR
+test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) ... 
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='/absolute') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='../escape') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='evidence/new/../../escape') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='./evidence/new/README.md') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='evidence//new/README.md') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='evidence\\new\\README.md') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (manifest='../manifest.json') ... ERROR
+  test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (manifest='/manifest.json') ... ERROR
+test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) ... ERROR
+test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) ... 
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema=0) ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema=2) ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema=True) ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema='1') ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (files={}) ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (files=[]) ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (files={'evidence/new/README.md': 'not-a-sha256'}) ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (pin='') ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (pin='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') ... ERROR
+  test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (pin='gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg') ... ERROR
+test_unregistered_new_folder_file_is_rejected (test_check_recorded_files.Integrity.test_unregistered_new_folder_file_is_rejected) ... ERROR
+test_valid_selection_includes_old_object_outside_exact_new_folder (test_check_recorded_files.Integrity.test_valid_selection_includes_old_object_outside_exact_new_folder) ... ERROR
+
+======================================================================
+ERROR: test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) (reference='evidence/new/README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 49, in test_content_manifest_tamper_and_missing_reference_fail
+    self.verify()
+    ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) (reference='evidence/new/logs/result.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 49, in test_content_manifest_tamper_and_missing_reference_fail
+    self.verify()
+    ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail) (reference='evidence/old/source-object')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 49, in test_content_manifest_tamper_and_missing_reference_fail
+    self.verify()
+    ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_content_manifest_tamper_and_missing_reference_fail (test_check_recorded_files.Integrity.test_content_manifest_tamper_and_missing_reference_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 57, in test_content_manifest_tamper_and_missing_reference_fail
+    self.verify()
+    ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='/absolute')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 74, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files={name: "0" * 64}))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='../escape')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 74, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files={name: "0" * 64}))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='evidence/new/../../escape')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 74, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files={name: "0" * 64}))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='./evidence/new/README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 74, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files={name: "0" * 64}))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='evidence//new/README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 74, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files={name: "0" * 64}))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (path='evidence\\new\\README.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 74, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files={name: "0" * 64}))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (manifest='../manifest.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 78, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(manifest=manifest)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks) (manifest='/manifest.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 78, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(manifest=manifest)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks (test_check_recorded_files.Integrity.test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 84, in test_paths_cannot_escape_or_follow_file_directory_or_manifest_symlinks
+    self.verify(pin=self.write_manifest(files=files))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 62, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(schema=schema))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 62, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(schema=schema))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 62, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(schema=schema))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (schema='1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 62, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(schema=schema))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (files={})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 65, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(files=files))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (files=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 65, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(files=files))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (files={'evidence/new/README.md': 'not-a-sha256'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 65, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=self.write_manifest(files=files))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (pin='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 69, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=pin)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (pin='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 69, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=pin)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_schema_empty_files_and_hash_shapes_fail (test_check_recorded_files.Integrity.test_schema_empty_files_and_hash_shapes_fail) (pin='gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 69, in test_schema_empty_files_and_hash_shapes_fail
+    self.verify(pin=pin)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_unregistered_new_folder_file_is_rejected (test_check_recorded_files.Integrity.test_unregistered_new_folder_file_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 99, in test_unregistered_new_folder_file_is_rejected
+    self.verify()
+    ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+======================================================================
+ERROR: test_valid_selection_includes_old_object_outside_exact_new_folder (test_check_recorded_files.Integrity.test_valid_selection_includes_old_object_outside_exact_new_folder)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 40, in test_valid_selection_includes_old_object_outside_exact_new_folder
+    self.assertEqual(self.verify(), 3)
+                     ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_check_recorded_files.py", line 35, in verify
+    from check_recorded_files import verify
+ModuleNotFoundError: No module named 'check_recorded_files'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.008s
+
+FAILED (errors=25)

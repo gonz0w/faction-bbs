@@ -1,0 +1,33 @@
+from lab import *
+import hashlib,tarfile,tomllib,io,urllib.request
+os.umask(0o077)
+lock=tomllib.loads((R/'Cargo.lock').read_text());registry=Path('/Users/cam/.cargo/registry');packages=[x for x in lock['package'] if x.get('source','').startswith('registry+')]
+allowed={'foreign-types','foreign-types-shared','openssl','openssl-macros','openssl-probe','openssl-sys','serde'}
+archive=P/'public-registry.tar.gz';manifest={};receipts=[];missing=[]
+with tarfile.open(archive,'w:gz') as t:
+ for pkg in packages:
+  n=pkg['name'];v=pkg['version'];fs=list((registry/'cache').glob('*/'+n+'-'+v+'.crate'))
+  if not fs and n in allowed:
+   public=P/'downloaded-public-crates';public.mkdir(exist_ok=True,mode=0o700);f=public/(n+'-'+v+'.crate');url='https://static.crates.io/crates/'+n+'/'+n+'-'+v+'.crate'
+   data=urllib.request.urlopen(url,timeout=30).read();assert hashlib.sha256(data).hexdigest()==pkg['checksum'];f.write_bytes(data);fs=[f];receipts.append(dict(name=n,version=v,url=url,sha256=hashlib.sha256(data).hexdigest(),cargo_lock_checksum=pkg['checksum']))
+  if fs:
+   assert len(fs)==1;f=fs[0];assert hashlib.sha256(f.read_bytes()).hexdigest()==pkg['checksum'];arc='registry/cache/index.crates.io-1949cf8c6b5b557f/'+f.name;t.add(f,arcname=arc,recursive=False);manifest[arc]=pkg['checksum']
+  else:missing.append(n+'-'+v)
+  i=n if len(n)==1 else '2/'+n if len(n)==2 else '3/'+n[0]+'/'+n if len(n)==3 else n[:2]+'/'+n[2:4]+'/'+n
+  fs=list((registry/'index').glob('*/.cache/'+i));assert len(fs)==1,(n,i);f=fs[0];data=f.read_bytes()
+  # Cargo sparse records carry NUL-delimited version and JSON pairs. Verify the
+  # exact locked package record before using any metadata (including schannel).
+  records=[json.loads(b) for b in data.split(b'\0') if b.startswith(b'{')]
+  matches=[x for x in records if x.get('vers')==v];assert len(matches)==1 and matches[0]['cksum']==pkg['checksum'],n
+  arc='registry/index/'+f.relative_to(registry/'index').as_posix();t.add(f,arcname=arc,recursive=False);manifest[arc]=hashlib.sha256(data).hexdigest()
+  if n=='schannel':(P/'objects'/hashlib.sha256(data).hexdigest()).write_bytes(data)
+ names={x.split('/')[2] for x in manifest if x.startswith('registry/index/')}
+ for name in names:
+  data=b'{"dl":"https://static.crates.io/crates","api":"https://crates.io"}\n';entry=tarfile.TarInfo('registry/index/'+name+'/config.json');entry.size=len(data);entry.mode=0o600;t.addfile(entry,io.BytesIO(data));manifest[entry.name]=hashlib.sha256(data).hexdigest()
+(P/'public-registry-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n');(P/'locked-download-receipts.json').write_text(json.dumps(receipts,indent=2)+'\n')
+(P/'cache-preparation-proof.json').write_text(json.dumps(dict(result='pass',cached_files=len(manifest),downloaded_locked_archives=len(receipts),omitted_target_only_archives=missing,cache_renamed=False,original_cargo233_absent=True,new_cargo_home='/home/factionbuild/cargo242',source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),cargo_lock_sha256=hashlib.sha256((R/'Cargo.lock').read_bytes()).hexdigest()),indent=2)+'\n')
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/cargo242; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/cargo242 /home/factionbuild/proof242; tar -xzf - -C /home/factionbuild/cargo242; chown -R factionbuild:factionbuild /home/factionbuild/cargo242',archive.read_bytes(),180)
+code="from pathlib import Path;import json,hashlib;p=Path('/home/factionbuild/cargo242');print(json.dumps({str(f.relative_to(p)):hashlib.sha256(f.read_bytes()).hexdigest() for f in p.rglob('*') if f.is_file()}))"
+observed=json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout);assert observed==manifest
+(P/'guest-registry-match.json').write_text(json.dumps(observed,sort_keys=True,indent=2)+'\n')
+print('Verified and staged',len(manifest),'public cache files;',len(receipts),'exact locked downloads; no cache moves.')

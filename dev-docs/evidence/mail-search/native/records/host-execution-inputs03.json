@@ -1,0 +1,14 @@
+{
+  "source_manifest_sha256": "7b4d8d8a70aea2bf59bc0a885dc52afc0864f2ef907ef5059c470cde9f40f421",
+  "runtime_manifest_sha256": "f0a202371f5e7d9a46422ff44c819d764107f321b00bcfcf1bf4ae4baa566c1e",
+  "settings_sha256": "b18002154e597324f5a3a76f504ba492d1d7cadec4495b970a2e69a907020868",
+  "profile_sha256": "e0785e228ac3882464228e4e8d2ed2a3e4a3c1399b9601a0da5e66a61b6d8eb9",
+  "public_ca_sha256": "4c6cec0b5ffab12b1126d5f4ed85a4256656742f9e6c4c206fc04135051338a3",
+  "binary_sha256": {
+    "faction-client": "1329fe26c99981708023b53c288bc9b89d06792630ca1353a5a533bb994c11c3",
+    "examples/mail_correspondents_fixture": "91c2e44a904e158a0f31722f51e9a558a6724e458bc73d8ffcd96fbfe0b3a104",
+    "examples/home_mail_fixture": "95c279294e2b069a133f4569d88a8e077ac7b30f1e10003050f30e52f1039fe2",
+    "examples/checkpoint_ui_fixture": "ade23dc6891bbb48ff762d241837888cbd35a05add7c1372736b66a4579ee25c",
+    "examples/mail_reply_fixture": "0034d07b4e9bb73fc14ec3102f00f1df273609f7eb21cad13c1a464c8e065b16"
+  }
+}

@@ -1,0 +1,1 @@
+{"argv": ["python3", "-m", "unittest", "discover", "-s", "tools", "-p", "test_check_recorded_files.py", "-k", "Integrity", "-v"], "env": {"TMPDIR": "/private/tmp/faction242-client-OWNED", "PYTHONDONTWRITEBYTECODE": "1"}}

@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "scope": "explicit native issue242 selection including actual checked stop receipts",
+  "publication_selection_sha256": "d5baa40fbb304a827720c3024c49b56c5e162fc33481558967ccb6de420725e2",
+  "selected_payload_files": 89,
+  "generated_private_values_scanned": 333,
+  "private_inventory_sha256": "dd3f9762fed59046e69e67a6b677358058363f0592101046bce335297a7087dc",
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "source_and_file_set_unchanged": true,
+  "reused_unchanged_pure_helpers": [
+    "findings",
+    "load_selected",
+    "exact_file",
+    "sha"
+  ],
+  "reused_helper_source_sha256": "ba1d518b79e903c560cbc73a1bf6f63f596f7107e7d27d51ab59f6a819c227dc",
+  "reused_kernel_sha256": "2080fa293db227b866ecd11dfc9c1ac216070b32717a6c646030613994de8c06",
+  "old_issue239_main_invoked": false,
+  "owned_roots_deleted": false
+}

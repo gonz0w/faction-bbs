@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "machine": "evbarm",
+  "unicode": false,
+  "scope": "device-local-mail-search",
+  "count": 7,
+  "checks": [
+    "offline_and_manual_online_S_field_case_literal_unicode_and_byte_bounds",
+    "global_U_A_exact_group_nested_Back_clear_and_reentry_scope",
+    "six_rows_newest_first_original_indices_full64_empty_unknown",
+    "pure_search_navigation_preserves_canonical_ciphertext_and_logical_state",
+    "selected_search_received_ack_changes_exactly_one_original_read_bit",
+    "selected_search_reply_current_identity_cancel_queue_and_refusal",
+    "search_control_interruption_locks_without_mutation"
+  ],
+  "capture_id": "cbdd7ecb2b47b3736f1c828d26a4655b",
+  "source_sha256": "b2c3f377c57b8d97a93ea97832617ce5e8569730dee97bd5783cc08311305912",
+  "binary_sha256": {
+    "client": "99998041a1d50c86975eeb0b128481f331c3ab5d180c5180836b9abc6bd42e45",
+    "fixture": "bdda17d5465a95aa65c49e075ecf09a34bc575061c5d96f398ff2f9c32ecac45"
+  },
+  "marker_set_sha256": "077412cc2954e7590079aad1cf21d6f696bee4f7a2c07b54e5d5e7dfaf132db0",
+  "canonical_search_unchanged": true,
+  "configured_home_endpoint_was_closed": true,
+  "private_fixture_retained_for_lead": true
+}

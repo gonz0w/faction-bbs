@@ -123,9 +123,9 @@ native entry, **N: Local notices** opts into locked, stale device-local counts f
 that visit. The same setting applies in Files; enabling it never unlocks mail or
 contacts a home server.
 The [local inbox](docs/local-mail-inbox.md) includes a device-local correspondent
-picker for browsing one retained account/device at a time. The manual inbox also
-offers deliberate replies to a selected received message; queueing stays on the
-device and sending is explicit.
+picker for browsing one retained account/device at a time and local search of
+unlocked retained mail. The manual inbox also offers deliberate replies to a
+selected received message; queueing stays on the device and sending is explicit.
 
 The default-off [roaming terminal experiment](docs/roaming-authentication.md) adds
 a trusted UID-to-local-member path plus filesystem-owner commands for manual

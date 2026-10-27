@@ -1,0 +1,14 @@
+E.......
+======================================================================
+ERROR: test_board_registration_account_is_publication_private_but_allowed_board_io (test_probe_mail_search.SearchInputProvenance.test_board_registration_account_is_publication_private_but_allowed_board_io)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_mail_search.py", line 86, in test_board_registration_account_is_publication_private_but_allowed_board_io
+    result = proof.inputs(root, root, binary, binary,
+                          publication_extra=['fixture-board-account'])
+TypeError: inputs() got an unexpected keyword argument 'publication_extra'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.018s
+
+FAILED (errors=1)
