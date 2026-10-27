@@ -74,6 +74,15 @@ inputs, expected output, and verification. Inspect shared edits before overwriti
 files. Separate working copies or nonoverlapping ownership can reduce collisions;
 the method does not require a particular worktree tool or agent topology.
 
+Batch independent reads when useful; keep dependent changes in order. Where the
+client supports it, expose only tools relevant to the task while retaining needed
+context. Stop owned delegated work when cancelled or complete, and reconcile any
+pending effects. Preserve failures and distinguish assertion failures, timeouts,
+and provider errors before deciding whether an authorized retry can help. This
+adds no retry budget or authority. Use the
+[workflow comparison procedure](verification.md#compare-agent-workflows) to assess
+efficiency without removing required checks or review.
+
 Resolve routine implementation choices under the project's delegation policy.
 Stop affected work if policy is missing, conflicting, or requires an owner decision.
 Do not use a timeout, silence, or another agent's preference as approval.
