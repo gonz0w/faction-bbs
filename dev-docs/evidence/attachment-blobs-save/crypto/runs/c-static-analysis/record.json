@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/usr/bin/clang",
+    "--analyze",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-I",
+    "/opt/homebrew/opt/openssl@3/include",
+    "crates/faction-omemo/native/attachment.c",
+    "-o",
+    "/private/tmp/faction254-crypto-OWNED/attachment-analysis.plist"
+  ],
+  "cwd": "/Users/cam/DEV/faction-bbs",
+  "environment": {
+    "OPENSSL_INCLUDE_DIR": "/opt/homebrew/opt/openssl@3/include",
+    "OPENSSL_LIB_DIR": "/opt/homebrew/opt/openssl@3/lib",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/private/tmp/faction254-crypto-OWNED/target",
+    "TMPDIR": "/private/tmp/faction254-crypto-OWNED"
+  },
+  "started_at_epoch": 1793142144.900492,
+  "elapsed_seconds": 0.07496094703674316,
+  "exit": 0,
+  "source_sha256": {
+    "Cargo.lock": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+    "crates/faction-omemo/Cargo.toml": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650",
+    "crates/faction-omemo/build.rs": "71543cb430a0bf8bf9c47a48e139f8f5e7fb9b711ad67cdd4c7393102d7271aa",
+    "crates/faction-omemo/src/lib.rs": "3b7f2b39fd8aeb798c3b1b536a2ae62d89b2db42948ba1d93c36e9a44a9e5867",
+    "crates/faction-omemo/src/attachment.rs": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e",
+    "crates/faction-omemo/src/native.rs": "b5864fb74619ce0b15d274f7a1d14483b9f9d63fcceffd018b0221f40a5d116c",
+    "crates/faction-omemo/src/blob.rs": "974ea741487061d3847f5408d0fa8dcb3284e4ca2e912095f3d18c58bf22a4d8",
+    "crates/faction-omemo/native/attachment.c": "1bae39ccc86e0a20de2883d81d90adb9c115c6edb292a526205a2035c6ccb1f9",
+    "crates/faction-omemo/tests/blob_contract.rs": "57c782a47f2f2611702110b530f66291c0600f8765b7c86d4fcea9a415e894c7",
+    "crates/faction-omemo/tests/blob_native.rs": "2a7fd9f1fcf067281b45e6c00147a9338994b2549a930d9997d4e13de8183309",
+    "crates/faction-omemo/tests/blob_guard.rs": "37b0bf2b573d3155dc74bbc200ff60efb934161793d23169a9653ae61ba3b6a0",
+    "crates/faction-omemo/tests/blob_guard.c": "200eb440d291c2669ad4086dd59a08dba8d1efcffeebf7a13aec12d27d2bc097",
+    "crates/faction-omemo/src/blob_tests.rs": "bfd5ef1e9d4132f70b991567a80040b9fb90bf15d8d201c26ff8ad22a4a6b930"
+  }
+}

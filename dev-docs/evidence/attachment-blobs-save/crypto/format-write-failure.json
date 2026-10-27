@@ -1,0 +1,8 @@
+{
+  "kind": "saved transcript of tool-observed setup failure, not a behavioral RED",
+  "cwd": "/Users/cam/DEV/faction-bbs",
+  "command": ["/Users/cam/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustfmt", "--edition", "2024", "crates/faction-omemo/src/blob.rs", "crates/faction-omemo/src/blob_tests.rs", "crates/faction-omemo/tests/blob_contract.rs", "crates/faction-omemo/tests/blob_native.rs", "crates/faction-omemo/tests/blob_guard.rs"],
+  "exit": 1,
+  "observed_output": "Error writing files: io error: each of the five selected source files: Operation not permitted (os error 1).",
+  "scope": "The exec filesystem sandbox refused writes outside its listed writable roots. No auto-review rejection occurred. The exact unchanged attempted source variant is retained in captures/formatting-write-failure. Formatting was then obtained from read-only rustfmt stdout and applied through the authorized file-edit tool."
+}

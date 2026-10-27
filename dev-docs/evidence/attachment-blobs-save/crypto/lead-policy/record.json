@@ -1,0 +1,66 @@
+{
+  "scope": "current dependency/tooling/repository checks; separate from native execution",
+  "runs": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_rust_dependencies.py"
+      ],
+      "started_at": "2026-10-27T23:11:15.497888+00:00",
+      "elapsed_seconds": 0.5080987499968614,
+      "exit": 0,
+      "log": "command0.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_omemo_dependencies.py"
+      ],
+      "started_at": "2026-10-27T23:11:16.006233+00:00",
+      "elapsed_seconds": 0.22171058400999755,
+      "exit": 0,
+      "log": "command1.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_network_mail_dependencies.py"
+      ],
+      "started_at": "2026-10-27T23:11:16.228221+00:00",
+      "elapsed_seconds": 1.8566952499968465,
+      "exit": 0,
+      "log": "command2.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_*.py"
+      ],
+      "started_at": "2026-10-27T23:11:18.085176+00:00",
+      "elapsed_seconds": 69.69277275001514,
+      "exit": 0,
+      "log": "command3.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/check_repository.py"
+      ],
+      "started_at": "2026-10-27T23:12:27.778599+00:00",
+      "elapsed_seconds": 2.384276458993554,
+      "exit": 0,
+      "log": "command4.log"
+    }
+  ]
+}

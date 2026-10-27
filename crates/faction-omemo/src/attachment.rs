@@ -34,7 +34,7 @@ pub struct Content {
 }
 
 impl Descriptor {
-    fn validate(&self) -> Result<()> {
+    pub(crate) fn validate(&self) -> Result<()> {
         let name = self.name.as_str();
         let media = self.media_type.as_str();
         let locator = self.locator.as_str();

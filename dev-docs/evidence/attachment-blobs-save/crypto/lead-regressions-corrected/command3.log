@@ -1,0 +1,36 @@
+Diff in /Users/cam/DEV/faction-bbs/crates/faction-omemo/tests/build_contract.rs:192:
+     )
+     .unwrap();
+     let program = fixture.0.join("build-script");
+-    assert!(Command::new("rustc")
+-        .arg(root.join("build.rs"))
+-        .args(["--edition=2024", "-o"])
+-        .arg(&program)
+-        .status()
+-        .unwrap()
+-        .success());
++    assert!(
++        Command::new("rustc")
++            .arg(root.join("build.rs"))
++            .args(["--edition=2024", "-o"])
++            .arg(&program)
++            .status()
++            .unwrap()
++            .success()
++    );
+     let off = Command::new(&program)
+         .current_dir(&fixture.0)
+         .env_clear()
+Diff in /Users/cam/DEV/faction-bbs/crates/faction-omemo/tests/build_contract.rs:273:
+             .output()
+             .unwrap();
+         assert!(!compile.status.success());
+-        assert!(String::from_utf8_lossy(&compile.stderr)
+-            .contains("requires native system OpenSSL major 3"));
++        assert!(
++            String::from_utf8_lossy(&compile.stderr)
++                .contains("requires native system OpenSSL major 3")
++        );
+     }
+ }
+ 

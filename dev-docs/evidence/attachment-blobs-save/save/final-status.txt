@@ -1,0 +1,13 @@
+ M crates/faction-client/src/lib.rs
+ M crates/faction-omemo/build.rs
+ M crates/faction-omemo/src/attachment.rs
+ M crates/faction-omemo/src/lib.rs
+?? crates/faction-client/src/attachment_save.rs
+?? crates/faction-client/tests/attachment_save.rs
+?? crates/faction-omemo/native/attachment.c
+?? crates/faction-omemo/src/blob.rs
+?? crates/faction-omemo/src/blob_tests.rs
+?? crates/faction-omemo/tests/blob_contract.rs
+?? crates/faction-omemo/tests/blob_guard.c
+?? crates/faction-omemo/tests/blob_guard.rs
+?? crates/faction-omemo/tests/blob_native.rs

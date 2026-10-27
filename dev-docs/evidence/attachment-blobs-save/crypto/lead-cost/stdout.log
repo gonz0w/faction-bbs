@@ -1,0 +1,7 @@
+
+running 1 test
+test bounded_cap_operation_observation ... bounded synthetic complete-buffer observation: plaintext_bytes=1048576 ciphertext_bytes=1048592 encrypt_seconds=0.008614 verify_seconds=0.000544; one host test process, not throughput/capacity qualification
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.02s
+

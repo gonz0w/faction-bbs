@@ -1,0 +1,74 @@
+{
+  "review_type": "separate Temper peer-agent final publication/source/integration review before owned-fixture teardown",
+  "issues": [
+    254,
+    255
+  ],
+  "reviewed_at": "2026-10-27T23:28:27.912683+00:00",
+  "requested_routing": "temper_reviewer, Sol/high explicit mapping; backend runtime metadata unobserved",
+  "findings": [],
+  "conclusion": "No actionable source, publication-integrity, privacy or claim-scope finding. Ready for deliberate owned-root teardown after preserving this review; final manifest/PR/CI integration work remains with lead.",
+  "observed_checks": {
+    "selected_original_and_publication_and_source_alias_matches": 250,
+    "distinct_selected_published_paths": 143,
+    "content_addressed_objects_verified": 54,
+    "final_current_index_and_object_source_matches": 23,
+    "frozen_prose_unchanged_renames_verified": 6,
+    "exact_whitespace_attribute_paths_matching_original_diagnostics": 19,
+    "broader_record_counts": {
+      "feature_off_passed": 49,
+      "feature_off_ignored": 0,
+      "native_mail_passed": 176,
+      "native_mail_ignored": 7
+    },
+    "published_regular_utf8_files_including_provisional_manifest": 161,
+    "hostname_content_absent": true,
+    "checker_CI_vendor_checkpoint_changes_absent": true,
+    "repository_check_exit": 0,
+    "staged_diff_whitespace_check_exit": 0,
+    "provisional_recorded_files_check_exit": 0,
+    "provisional_recorded_files_verified": 160
+  },
+  "provisional_manifest_sha256": "f0b6ed0d5c5581feeb8c8584e169d14b6bc9cd8f1d48cc0559d4072dee522a19",
+  "reviewed_document_sha256": {
+    "dev-docs/attachment-blobs-save.md": "66a435d05c3b9c162a6d8ef84d731a4b92ebcf09debf89ef4c273b3499adeb6e",
+    "dev-docs/attachment-metadata.md": "883109a2a4d45667da9369fe22c66ed6a1358cab70fb82bbb399bb01ff7f5a81",
+    "docs/private-mail.md": "2ae8500f118675e51c0069cdd73875acdeff42bb38ded7f62c09e54570dd8878",
+    "crates/faction-omemo/README.md": "16b03226f834b95040058346d0db01f44cfabcf902cec4affbe4e4ac19e942ce",
+    "dev-docs/evidence/attachment-blobs-save/README.md": "dab70b16d8264bc2233b9fbd2e7e80889bc364bbead86121235b29322c1bb613"
+  },
+  "reviewed_pr_draft_sha256": "27b2402babe9bb6cda013fa3710e3caf422a160fce1cedb916772912c7987261",
+  "evidence_map_sha256": {
+    "selection.json": "1da55960a0de73e4428e14e83d9098eb9762bec8349bafe89ef37e9d62df0a8d",
+    "source-aliases.json": "b8c55bb03941d19f7ca411ee5b8e41de558b21a23649ade04244fb234ed3ea9d",
+    "final-sources.json": "0e0e31e0651e52b83771b07a9f3614b53caaebf2ae6d16c30d703160596a0acb",
+    "metadata/layout-and-whitespace.json": "ce9c38e90ba124db9c41b52951a854d17e556ba7719842f38fc600aa4ef1586d",
+    "metadata/diagnostic-self-whitespace.json": "a55f41381ab0bbb30e7d4da3436b58dab154ed8b1176e9945eda2298eea291e0"
+  },
+  "preserved_failure_history_reviewed": [
+    "missing Rust blob/save API",
+    "missing native wrapper",
+    "strict-umask refusal",
+    "Clippy type-cast rejection",
+    "timeout publication classifier rejection",
+    "obsolete four-unit integration expectation",
+    "edition-format mismatch",
+    "immutable prose object relative-link layout failure",
+    "staged original log whitespace failure",
+    "captured diagnostic self-whitespace failure"
+  ],
+  "claim_limits": [
+    "host local filesystem only; NetBSD and remote/NFS semantics remain unqualified",
+    "no fresh modern-client reference/transport or full attachment delivery claim",
+    "debug process RSS is not per-call allocation or BBS capacity evidence",
+    "controlled helper child executions are distinct from ordinary and ignored harness entries",
+    "peer-agent review is a second examination, not independent human security assurance"
+  ],
+  "pending_lead_completion": [
+    "Preserve this sanitized review, then perform and record only verified owned fixture teardown; do not claim completed cleanup until cleanup.json exists.",
+    "Add review and actual cleanup records; regenerate and verify the final manifest.",
+    "Replace both MANIFEST_DIGEST placeholders in PR draft with the frozen final manifest digest.",
+    "Complete required exact-head/current-main CI and normal issue/parent/label reconciliation after merge."
+  ],
+  "execution_limits": "No compilation or behavioral suite executed during this publication pass; prior reviewer focused behavioral replay and retained actual lead runs were examined."
+}

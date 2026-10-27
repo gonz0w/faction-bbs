@@ -1,0 +1,60 @@
+   Compiling typenum v1.20.1
+   Compiling libc v0.2.191
+   Compiling hybrid-array v0.4.15
+   Compiling crypto-common v0.2.2
+   Compiling cmov v0.5.4
+   Compiling ctutils v0.4.3
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling cc v1.9.0
+   Compiling block-buffer v0.12.1
+   Compiling serde_core v1.0.229
+   Compiling const-oid v0.10.2
+   Compiling digest v0.11.3
+   Compiling getrandom v0.4.3
+   Compiling faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+   Compiling inout v0.2.5
+   Compiling rustix v1.1.5
+   Compiling winnow v1.0.4
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling errno v0.3.14
+   Compiling bitflags v2.13.2
+   Compiling base64ct v1.8.3
+   Compiling phc v0.6.1
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling cipher v0.5.2
+   Compiling cpufeatures v0.3.1
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+warning: faction-unix@0.1.0-alpha.1: 2026-10-27 17:11:32.713 xcodebuild[13669:4260812]  DVTFilePathFSEvents: Failed to start fs event stream.
+warning: faction-unix@0.1.0-alpha.1: 2026-10-27 17:11:32.907 xcodebuild[13669:4260809] [MT] DVTDeveloperPaths: Failed to get length of DARWIN_USER_CACHE_DIR from confstr(3), error = Error Domain=NSPOSIXErrorDomain Code=5 "Input/output error". Using NSCachesDirectory instead.
+   Compiling universal-hash v0.6.1
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling poly1305 v0.9.1
+   Compiling sha2 v0.11.1
+   Compiling chacha20 v0.10.2
+   Compiling password-hash v0.6.1
+   Compiling aead v0.6.1
+   Compiling blake2 v0.11.0
+   Compiling unicode-width v0.2.2
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+   Compiling argon2 v0.6.0
+   Compiling chacha20poly1305 v0.11.0
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.03s
+     Running unittests src/lib.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/faction_client-b265dbd55516606c)
+
+running 8 tests
+test attachment_save::tests::bounded_child_death_before_and_after_publication_retains_recoverable_private_temp ... ok
+test attachment_save::tests::death_child ... ok
+test attachment_save::tests::deterministic_failures_keep_publication_phase_and_complete_output ... ok
+test attachment_save::tests::exclusive_owned_file_is_exactly_private_even_with_restrictive_umask ... ok
+test attachment_save::tests::publication_syscall_errors_preserve_known_phase_results ... ok
+test attachment_save::tests::racing_destination_and_unknown_temporary_are_never_removed ... ok
+test attachment_save::tests::strict_umask_child ... ok
+test attachment_save::tests::timeout_after_publication_syscall_attempt_is_uncertain ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 46 filtered out; finished in 0.12s
+

@@ -1,0 +1,26 @@
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running tests/blob_guard.rs (/private/tmp/faction254-crypto-OWNED/target/debug/deps/blob_guard-2735d5b9a3ca2012)
+
+running 1 test
+test native_guards_and_capacity_refusals_precede_context_allocation ... FAILED
+
+failures:
+
+---- native_guards_and_capacity_refusals_precede_context_allocation stdout ----
+
+thread 'native_guards_and_capacity_refusals_precede_context_allocation' (4236260) panicked at crates/faction-omemo/tests/blob_guard.rs:19:5:
+/Users/cam/DEV/faction-bbs/crates/faction-omemo/tests/blob_guard.c:26:10: fatal error: '../native/attachment.c' file not found
+   26 | #include "../native/attachment.c"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    native_guards_and_capacity_refusals_precede_context_allocation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `-p faction-omemo --test blob_guard`

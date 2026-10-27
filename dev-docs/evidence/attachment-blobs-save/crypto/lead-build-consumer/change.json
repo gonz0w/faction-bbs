@@ -1,0 +1,6 @@
+{
+  "classification": "existing build consumer expectation extended for the accepted fifth owned C unit; original failure observed before edit",
+  "before_sha256": "6f14aaba9ea6f93c03b0fdc8e0978e96290bf4106f4960eb6411cb4204f49f0c",
+  "after_sha256": "16d481a0cefa309f67f0d16598e74a8119106f7c92dce73db23d30b3562b430a",
+  "failed_broader_record": "lead-regressions/record.json"
+}

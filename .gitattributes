@@ -240,3 +240,29 @@ dev-docs/evidence/attachment-metadata/observations/run05-final/command2.log whit
 dev-docs/evidence/attachment-metadata/review/command0.log whitespace=-blank-at-eof
 dev-docs/evidence/attachment-metadata/review/command1.log whitespace=-blank-at-eof
 dev-docs/evidence/attachment-metadata/review/command2.log whitespace=-blank-at-eof
+
+# Issues254/255 immutable executed source and observed diagnostic bytes.
+dev-docs/evidence/attachment-blobs-save/** -text
+dev-docs/evidence/attachment-blobs-save/objects/** linguist-generated=true
+dev-docs/evidence/attachment-blobs-save/**/*.json linguist-generated=true
+
+# Preserve only the actual observed final blank lines/trailing spaces.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/stdout.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command2.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command3.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/command.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-initial/command.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/review/logs/crypto.log whitespace=-blank-at-eof,-blank-at-eol
+dev-docs/evidence/attachment-blobs-save/review/logs/save-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/review/logs/save-unit.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/classifier-characterization.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/final-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/final-unit.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/green-candidate1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/green-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/review-final-integration.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/save/review-final-unit.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-blobs-save/metadata/staged-whitespace-before.txt whitespace=-blank-at-eol

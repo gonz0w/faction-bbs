@@ -1,0 +1,41 @@
+{
+  "performed_at": "2026-10-27T23:29:05.597411+00:00",
+  "original_publication_inputs_rechecked": 250,
+  "current_source_identities_rechecked": 23,
+  "roots": [
+    {
+      "root": "/private/tmp/faction254-crypto-OWNED",
+      "same_effective_uid": true,
+      "mode": "0700",
+      "owner_marker_sha256": "9200fcc0212a9f72c606e602c70d6fecd4d28c99c36338f1d6994f6ced922c97",
+      "lsof_exit": 1,
+      "open_pids": [],
+      "lsof_diagnostics": "",
+      "absent_after_removal": true
+    },
+    {
+      "root": "/private/tmp/faction255-save-OWNED0700",
+      "same_effective_uid": true,
+      "mode": "0700",
+      "owner_marker_sha256": "64e7244ef76663b73d9f41352dd4ad41a6ec496a3662fd708c523a5e477f4e71",
+      "lsof_exit": 1,
+      "open_pids": [],
+      "lsof_diagnostics": "",
+      "absent_after_removal": true
+    },
+    {
+      "root": "/private/tmp/faction254-255-review-OWNED-20261027-01",
+      "same_effective_uid": true,
+      "mode": "0700",
+      "owner_marker_sha256": "d64976184c9209e248e2c5ef75aeb366c8d87ae4b9e3cae53d51464d7e4a4be0",
+      "lsof_exit": 1,
+      "open_pids": [],
+      "lsof_diagnostics": "",
+      "absent_after_removal": true
+    }
+  ],
+  "empty_failed_guard_directories_removed_with_root": [
+    "/private/tmp/faction254-crypto-OWNED/faction254-guard-10199"
+  ],
+  "scope": "Removed only these three exact marked owned temporary roots after separate content/source review and open-handle checks. Targets/compiler caches and private runtime leftovers were removed with their owned roots. Ordinary removal, not secure erasure. No playground, VM, listener, provider, package, service, host policy or unrelated filesystem operation."
+}

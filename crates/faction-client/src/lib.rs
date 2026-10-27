@@ -1,4 +1,6 @@
 //! Member-device storage. Remote terminal streams cannot unlock or mutate it.
+#[cfg(feature = "native-mail")]
+pub mod attachment_save;
 #[cfg(all(test, feature = "native-mail"))]
 mod checkpoint_tests;
 #[cfg(feature = "native-mail")]

@@ -36,11 +36,13 @@ fn compiler_feature_contract(root: &Path, fixture: &Path, program: &Path) {
         .unwrap();
     }
     fs::create_dir(fixture.join("native")).unwrap();
-    fs::copy(
-        root.join("native/adapter.c"),
-        fixture.join("native/adapter.c"),
-    )
-    .unwrap();
+    for name in ["adapter.c", "attachment.c"] {
+        fs::copy(
+            root.join("native").join(name),
+            fixture.join("native").join(name),
+        )
+        .unwrap();
+    }
     let tools = fixture.join("capture-tools");
     fs::create_dir(&tools).unwrap();
     let compiler = tools.join("capture-cc");
@@ -120,10 +122,17 @@ fn compiler_feature_contract(root: &Path, fixture: &Path, program: &Path) {
         let calls: Vec<_> = log.split("BEGIN\n").skip(1).collect();
         assert_eq!(
             calls.len(),
-            4,
-            "{target_os} must compile all four native units"
+            5,
+            "{target_os} must compile all five native units"
         );
-        for call in calls {
+        let expected_sources = [
+            "vendor/gen/omemo2.c",
+            "vendor/hacl.c",
+            "vendor/openssl.c",
+            "native/adapter.c",
+            "native/attachment.c",
+        ];
+        for (call, expected_source) in calls.into_iter().zip(expected_sources) {
             let args: Vec<_> = call.lines().collect();
             let definitions: Vec<_> = args
                 .iter()
@@ -139,15 +148,28 @@ fn compiler_feature_contract(root: &Path, fixture: &Path, program: &Path) {
                 "wrong compiler feature macros for {target_os}"
             );
             assert!(args.contains(&"-std=c11"));
-            assert!(args.contains(&"-c"));
+            let source_position = args.iter().position(|arg| *arg == "-c").unwrap() + 1;
+            assert_eq!(args[source_position], expected_source);
         }
         let archive_args = fs::read_to_string(ar_log).unwrap();
         let archive_args: Vec<_> = archive_args.lines().collect();
-        assert_eq!(archive_args.len(), 6);
+        assert_eq!(archive_args.len(), 7);
         assert_eq!(archive_args[0], "rcs");
         assert_eq!(archive_args[1], out.join("libproof.a").to_str().unwrap());
-        for name in ["omemo2", "hacl", "openssl", "proof"] {
-            assert!(out.join(format!("{name}.o")).is_file());
+        let units = ["omemo2", "hacl", "openssl", "proof", "attachment"];
+        let expected_objects: Vec<_> = units
+            .iter()
+            .map(|name| out.join(format!("{name}.o")))
+            .collect();
+        assert_eq!(
+            archive_args[2..],
+            expected_objects
+                .iter()
+                .map(|p| p.to_str().unwrap())
+                .collect::<Vec<_>>()
+        );
+        for object in expected_objects {
+            assert!(object.is_file());
         }
     }
 }

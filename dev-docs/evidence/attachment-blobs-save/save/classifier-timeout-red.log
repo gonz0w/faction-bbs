@@ -1,0 +1,24 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.31s
+     Running unittests src/lib.rs (target/debug/deps/faction_client-b265dbd55516606c)
+
+running 1 test
+test attachment_save::tests::timeout_after_publication_syscall_attempt_is_uncertain ... FAILED
+
+failures:
+
+---- attachment_save::tests::timeout_after_publication_syscall_attempt_is_uncertain stdout ----
+
+thread 'attachment_save::tests::timeout_after_publication_syscall_attempt_is_uncertain' (4251051) panicked at crates/faction-client/src/attachment_save.rs:259:9:
+assertion `left == right` failed
+  left: BeforePublication
+ right: PublicationUncertain
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    attachment_save::tests::timeout_after_publication_syscall_attempt_is_uncertain
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 53 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p faction-client --lib`

@@ -1,0 +1,3 @@
+7ef472d895498d342d43288ad48eaf800fe5520b7b3f3b90b46f28a35178a8d6  crates/faction-client/src/attachment_save.rs
+f9dbb7040effe2f200a1938ee31ae6446249f8b613c775065bddbbf48b21c132  crates/faction-client/tests/attachment_save.rs
+e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288  crates/faction-client/src/lib.rs

@@ -1,0 +1,165 @@
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Finished `release` profile [optimized] target(s) in 0.37s
+     Running unittests src/lib.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/faction_client-174a8e21e1b57e86)
+
+running 4 tests
+test mail_data::tests::bounded_state_and_unambiguous_addresses ... ok
+test mail_vault::tests::encrypted_persistence_recovery_trust_and_backup ... ok
+test mail_vault::tests::private_files_links_and_create_only_initialization ... ok
+test mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.28s
+
+     Running unittests src/main.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/faction_client-24598c7d1d1feccb)
+
+running 44 tests
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test tests::files_mail_actions_are_local_configured_and_keep_classic_entries ... ok
+test tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead ... ok
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... ok
+test tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input ... ok
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... ok
+test tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it ... ok
+test tests::main_menu_mail_offers_exact_fixed_local_choices ... ok
+test transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority ... ok
+test transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits ... ok
+test transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls ... ok
+test transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo ... ok
+test transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail ... ok
+test transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline ... ok
+test transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+test visit_mail::tests::context_hints_match_the_local_entry_in_every_notice_state ... ok
+test visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count ... ok
+test visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears ... ok
+test visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads ... ok
+test visit_mail::tests::only_configured_visits_offer_mail_and_notices ... ok
+
+test result: ok. 44 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s
+
+     Running tests/attachment_rejection.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/attachment_rejection-117b72c4fefa24a8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/attachment_save.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/attachment_save-b17b3a62deb1f1bd)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/mail_correspondents_fixture.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/examples/mail_correspondents_fixture-a91037955ee5e994)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/mail_reply_fixture.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/examples/mail_reply_fixture-995a9fabf3bbdb3b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/faction_omemo-47fe72f5870eb121)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/attachment_contract.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/attachment_contract-6137ab1041641a3a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/attachment_native.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/attachment_native-3204961553ca3391)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/blob_contract.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/blob_contract-6a31deac3c4ea5df)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/blob_guard.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/blob_guard-e1ea2f6fa8572b1c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/blob_native.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/blob_native-b188b0e7c7a78aa7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/build_contract.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/build_contract-9fdab8ce28bbc51d)
+
+running 1 test
+test disabled_has_no_native_tools_cross_rejects_and_source_tampering_fails ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+     Running tests/core_dump_guard.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/core_dump_guard-f8c165977ff0d62e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/core_dump_refusal.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/core_dump_refusal-d387663b67b1fb77)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/native_contract.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/native_contract-6d60404361e384d2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/network_sce.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/network_sce-a55204f01f67006a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/openssl_runtime_refusal.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/openssl_runtime_refusal-84875d41026044c6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/sce_contract.rs (/private/tmp/faction254-crypto-OWNED/target-release/release/deps/sce_contract-90117e9a34dbe6a3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

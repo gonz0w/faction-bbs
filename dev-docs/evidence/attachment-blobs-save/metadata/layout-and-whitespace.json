@@ -1,0 +1,71 @@
+{
+  "initial_repository_check_exit": 1,
+  "note": "Frozen original prose objects use .md.txt to preserve their literal executed bytes without interpreting relative links as current documentation in a hash directory. No source or link-check rule is waived. Original staged whitespace diagnostics are retained; exact flagged log paths alone receive required whitespace attributes.",
+  "renamed_unchanged_objects": {
+    "dev-docs/evidence/attachment-blobs-save/objects/1de9ced7de3e16363e3ab180b0938ba8ec4fc82fc6e8c8022d93b898307b1088.md": "dev-docs/evidence/attachment-blobs-save/objects/1de9ced7de3e16363e3ab180b0938ba8ec4fc82fc6e8c8022d93b898307b1088.md.txt",
+    "dev-docs/evidence/attachment-blobs-save/objects/b6b68c15eee2379f603d0823843e66328e2626cba6c909fe97d87b132f51a78f.md": "dev-docs/evidence/attachment-blobs-save/objects/b6b68c15eee2379f603d0823843e66328e2626cba6c909fe97d87b132f51a78f.md.txt",
+    "dev-docs/evidence/attachment-blobs-save/objects/883109a2a4d45667da9369fe22c66ed6a1358cab70fb82bbb399bb01ff7f5a81.md": "dev-docs/evidence/attachment-blobs-save/objects/883109a2a4d45667da9369fe22c66ed6a1358cab70fb82bbb399bb01ff7f5a81.md.txt",
+    "dev-docs/evidence/attachment-blobs-save/objects/2ae8500f118675e51c0069cdd73875acdeff42bb38ded7f62c09e54570dd8878.md": "dev-docs/evidence/attachment-blobs-save/objects/2ae8500f118675e51c0069cdd73875acdeff42bb38ded7f62c09e54570dd8878.md.txt",
+    "dev-docs/evidence/attachment-blobs-save/objects/66a435d05c3b9c162a6d8ef84d731a4b92ebcf09debf89ef4c273b3499adeb6e.md": "dev-docs/evidence/attachment-blobs-save/objects/66a435d05c3b9c162a6d8ef84d731a4b92ebcf09debf89ef4c273b3499adeb6e.md.txt",
+    "dev-docs/evidence/attachment-blobs-save/objects/16b03226f834b95040058346d0db01f44cfabcf902cec4affbe4e4ac19e942ce.md": "dev-docs/evidence/attachment-blobs-save/objects/16b03226f834b95040058346d0db01f44cfabcf902cec4affbe4e4ac19e942ce.md.txt"
+  },
+  "log_attributes": {
+    "dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/stdout.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command1.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command0.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command1.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command2.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command3.log": [
+      "-blank-at-eof",
+      "-blank-at-eol"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/command.log": [
+      "-blank-at-eof",
+      "-blank-at-eol"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/crypto/runs/green-initial/command.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/review/logs/crypto.log": [
+      "-blank-at-eof",
+      "-blank-at-eol"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/review/logs/save-integration.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/review/logs/save-unit.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/classifier-characterization.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/final-integration.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/final-unit.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/green-candidate1.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/green-integration.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/review-final-integration.log": [
+      "-blank-at-eof"
+    ],
+    "dev-docs/evidence/attachment-blobs-save/save/review-final-unit.log": [
+      "-blank-at-eof"
+    ]
+  }
+}

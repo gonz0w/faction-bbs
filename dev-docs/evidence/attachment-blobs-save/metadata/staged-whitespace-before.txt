@@ -1,0 +1,24 @@
+dev-docs/evidence/attachment-blobs-save/crypto/lead-cost/stdout.log:7: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-final-checks/command1.log:9: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command0.log:9: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command1.log:165: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command2.log:314: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command3.log:36: trailing whitespace.
++ 
+dev-docs/evidence/attachment-blobs-save/crypto/lead-regressions-corrected/command3.log:36: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/command.log:46: trailing whitespace.
++test blob_only_public_entry_establishes_core_guard ... 
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-formatted/command.log:64: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/crypto/runs/green-initial/command.log:53: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/review/logs/crypto.log:45: trailing whitespace.
++test blob_only_public_entry_establishes_core_guard ... 
+dev-docs/evidence/attachment-blobs-save/review/logs/crypto.log:63: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/review/logs/save-integration.log:14: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/review/logs/save-unit.log:60: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/classifier-characterization.log:9: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/final-integration.log:12: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/final-unit.log:15: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/green-candidate1.log:31: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/green-integration.log:11: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/review-final-integration.log:12: new blank line at EOF.
+dev-docs/evidence/attachment-blobs-save/save/review-final-unit.log:16: new blank line at EOF.
