@@ -81,6 +81,73 @@ Keep those inputs resolvable through retained source revisions or artifacts befo
 changing them. Do not rewrite old results to describe current code. Do not require
 duplicate source archives when existing retention already preserves the inputs.
 
+## Compare agent workflows
+
+Before observing results, record the comparison question, current baseline,
+candidate, representative task groups, and decision rule in the work item. Group
+work by relevant difficulty and risk. Fix the quality bar first: required outcomes,
+known defects that must be detected, acceptable false positives, severity accuracy
+where relevant, and allowed review corrections. Use separately checked expected
+results; record gaps in that reference. Decide what improvement would justify a
+change while preserving required quality, checks, and review.
+
+Compare matched inputs under recorded conditions. Identify task and source
+revisions, requested and observed model/effort, client, tools, environment, and
+resource bounds. Keep tuning examples separate from evaluation where practical.
+Repeat or vary execution order when needed to assess noise, cache effects, and
+sample limits. Record differences that prevent a fair comparison. A small sample
+can support a bounded trial; it does not establish a universal ranking.
+
+Measure the whole task through acceptance, including the lead, delegates, context
+and available input/output/cache token usage, tool calls, retries, coordination,
+validation, review, repair, and elapsed time. Preserve failed and cancelled attempts.
+Calculate cost per accepted outcome as total measured cost, including rejected
+work, divided by accepted outcomes. With no accepted outcomes, that ratio is
+undefined. Unavailable usage or prices are not zero: report the gap and avoid a
+monetary savings claim that depends on it. Keep elapsed time separate from summed
+agent effort, particularly when work overlaps.
+
+Check validated findings, missed known defects, false positives, severity accuracy,
+and review corrections alongside acceptance. More findings can mean more noise;
+fewer can mean missed defects. Agent agreement can share a mistake. An author's
+edit does not establish that a finding was correct. Model judges can help triage,
+but their errors and limited inputs need separate examination. Check missed
+required behavior as well as the findings that were reported.
+
+Record the decision to retain, change, or investigate, with evidence and limits.
+Apply the [evidence-reuse rules](#keep-feedback-fast-and-sufficient) when inputs
+stay relevant. A favorable comparison does not waive policy or silently change
+model defaults. Optional routing uses the
+[Codex profile's runtime checks](../../profiles/codex.md#verify-use-and-evaluate-benefit).
+
+### Fictional comparison
+
+All measurements below are synthetic. A fictional project compares two candidates
+with its baseline on ten matched review tasks, with two planted defects per task.
+Before running, it requires all 20 known defects, correct severity for each,
+at most two validated false positives, no outstanding review corrections, and ten
+accepted tasks. Among candidates meeting that bar, it selects lower total cost.
+Costs include lead/delegated work, failed attempts, review, and repair for all ten
+tasks. Time is elapsed time for each complete batch under the same conditions.
+
+| Workflow | Known defects found | False positives | Accepted tasks | Total cost | Cost per accepted task | Elapsed minutes | Decision |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Baseline | 20/20 | 1 | 10 | $10.00 | $1.00 | 100 | Reference |
+| Candidate A | 20/20 | 1 | 10 | $8.00 | $0.80 | 80 | Accept for this bounded trial |
+| Candidate B | 18/20 | 0 | 8 | $5.00 | $0.625 | 60 | Reject: two tasks each miss one required defect |
+
+All detected defects have correct severity; accepted tasks have no outstanding
+review corrections. Candidate A saves 20% in this fictional batch. Candidate B's
+ratio includes the cost of its two rejected tasks, but lower cost cannot satisfy
+the missing quality requirement. Planted defects and this small sample do not
+establish coverage of unknown defects or measured Temper benefits.
+
+The [Cloudflare optimization case study](https://blog.cloudflare.com/obsessive-inference-optimization/)
+reports cost improvements and lost useful findings in some lower-effort reviews.
+It also describes limits in its overall cost attribution and quality measures.
+Use such observations to choose questions to test, rather than transfer reported
+gains to a different workflow.
+
 ## Review the result
 
 Review acceptance, tests, implementation, documentation, dependencies, and applicable
