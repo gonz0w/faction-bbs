@@ -1,0 +1,29 @@
+    Checking faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+warning: faction-unix@0.1.0-alpha.1: 2026-10-27 15:59:18.289 xcodebuild[93420:4136247]  DVTFilePathFSEvents: Failed to start fs event stream.
+warning: faction-unix@0.1.0-alpha.1: 2026-10-27 15:59:18.471 xcodebuild[93420:4136245] [MT] DVTDeveloperPaths: Failed to get length of DARWIN_USER_CACHE_DIR from confstr(3), error = Error Domain=NSPOSIXErrorDomain Code=5 "Input/output error". Using NSCachesDirectory instead.
+    Checking serde_spanned v1.1.2
+    Checking toml_datetime v1.1.2+spec-1.1.0
+    Checking errno v0.3.14
+    Checking base64ct v1.8.3
+    Checking bitflags v2.13.2
+    Checking rustix v1.1.5
+    Checking phc v0.6.1
+    Checking toml v1.1.8+spec-1.1.0
+    Checking faction-unix v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-unix)
+    Checking cipher v0.5.2
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+    Checking universal-hash v0.6.1
+    Checking cpufeatures v0.3.1
+    Checking sha2 v0.11.1
+    Checking poly1305 v0.9.1
+    Checking chacha20 v0.10.2
+    Checking password-hash v0.6.1
+    Checking aead v0.6.1
+    Checking blake2 v0.11.0
+    Checking unicode-width v0.2.2
+    Checking faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Checking argon2 v0.6.0
+    Checking chacha20poly1305 v0.11.0
+    Checking faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+    Checking faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.56s

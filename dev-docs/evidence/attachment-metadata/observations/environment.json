@@ -1,0 +1,66 @@
+{
+  "environment": {
+    "PKG_CONFIG_PATH": "/opt/homebrew/opt/openssl@3/lib/pkgconfig"
+  },
+  "observations": [
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "cargo 1.96.0 (30a34c682 2026-05-25)\n"
+    },
+    {
+      "command": [
+        "rustc",
+        "+1.96.0",
+        "-vV"
+      ],
+      "exit": 0,
+      "output": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "command": [
+        "cc",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "Apple clang version 21.0.0 (clang-2100.3.20.102)\nTarget: arm64-apple-darwin27.2.0\nThread model: posix\nInstalledDir: /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n"
+    },
+    {
+      "command": [
+        "sw_vers"
+      ],
+      "exit": 0,
+      "output": "ProductName:\t\tmacOS\nProductVersion:\t\t27.2\nBuildVersion:\t\t26B118\n"
+    },
+    {
+      "command": [
+        "uname",
+        "-sm"
+      ],
+      "exit": 0,
+      "output": "Darwin arm64\n"
+    },
+    {
+      "command": [
+        "otool",
+        "-L",
+        "/private/tmp/faction252-OWNED/target/debug/deps/attachment_native-b9a38bc2fde537a8"
+      ],
+      "exit": 0,
+      "output": "/private/tmp/faction252-OWNED/target/debug/deps/attachment_native-b9a38bc2fde537a8:\n\t/opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib (compatibility version 3.0.0, current version 3.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n\t/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)\n"
+    },
+    {
+      "command": [
+        "pkg-config",
+        "--modversion",
+        "libcrypto"
+      ],
+      "exit": 0,
+      "output": "3.6.3\n"
+    }
+  ]
+}

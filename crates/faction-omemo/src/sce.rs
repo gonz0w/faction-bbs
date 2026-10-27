@@ -9,7 +9,7 @@ use zeroize::Zeroizing;
 
 const SCE: &str = "urn:xmpp:sce:1";
 const CLIENT: &str = "jabber:client";
-const LAST_SECOND: u64 = 253_402_300_799;
+pub(crate) const LAST_SECOND: u64 = 253_402_300_799;
 const NODE_LIMIT: u32 = 128;
 
 /// Private text. Callers must also treat the parser input as private.
@@ -22,7 +22,7 @@ pub struct Content {
 fn xml_text(text: &str) -> bool {
     text.chars().all(|c| matches!(c, '\t' | '\n' | '\r' | '\u{20}'..='\u{d7ff}' | '\u{e000}'..='\u{fffd}' | '\u{10000}'..='\u{10ffff}'))
 }
-fn bounded(text: &str, limit: usize) -> Result<()> {
+pub(crate) fn bounded(text: &str, limit: usize) -> Result<()> {
     if text.is_empty() || text.len() > limit || !xml_text(text) {
         Err(Error)
     } else {
@@ -32,7 +32,7 @@ fn bounded(text: &str, limit: usize) -> Result<()> {
 fn whitespace(text: &str) -> bool {
     text.chars().all(|c| matches!(c, ' ' | '\t' | '\r' | '\n'))
 }
-fn escape(out: &mut String, text: &str) {
+pub(crate) fn escape(out: &mut String, text: &str) {
     for c in text.chars() {
         match c {
             '&' => out.push_str("&amp;"),
@@ -144,6 +144,17 @@ pub fn encode(
     subject: &str,
     body: &str,
 ) -> Result<Zeroizing<Vec<u8>>> {
+    encode_content(sender, recipient, sent_at, subject, body, None)
+}
+
+pub(crate) fn encode_content(
+    sender: &str,
+    recipient: &str,
+    sent_at: u64,
+    subject: &str,
+    body: &str,
+    extension: Option<&str>,
+) -> Result<Zeroizing<Vec<u8>>> {
     bounded(sender, MAX_PLAINTEXT)?;
     bounded(recipient, MAX_PLAINTEXT)?;
     bounded(subject, 128)?;
@@ -154,7 +165,11 @@ pub fn encode(
     escape(&mut out, subject);
     out.push_str("</subject><body xmlns='jabber:client'>");
     escape(&mut out, body);
-    out.push_str("</body></content><from jid='");
+    out.push_str("</body>");
+    if let Some(extension) = extension {
+        out.push_str(extension);
+    }
+    out.push_str("</content><from jid='");
     escape(&mut out, sender);
     out.push_str("'/><to jid='");
     escape(&mut out, recipient);
@@ -176,10 +191,10 @@ pub fn encode(
     // Move the owned String allocation into a zeroizing byte allocation.
     Ok(Zeroizing::new(std::mem::take(&mut *out).into_bytes()))
 }
-fn named(node: Node<'_, '_>, ns: &str, name: &str) -> bool {
+pub(crate) fn named(node: Node<'_, '_>, ns: &str, name: &str) -> bool {
     node.is_element() && node.tag_name().namespace() == Some(ns) && node.tag_name().name() == name
 }
-fn elements<'a, 'input>(node: Node<'a, 'input>) -> Result<Vec<Node<'a, 'input>>> {
+pub(crate) fn elements<'a, 'input>(node: Node<'a, 'input>) -> Result<Vec<Node<'a, 'input>>> {
     let mut children = Vec::new();
     for child in node.children() {
         if child.is_element() {
@@ -190,7 +205,7 @@ fn elements<'a, 'input>(node: Node<'a, 'input>) -> Result<Vec<Node<'a, 'input>>>
     }
     Ok(children)
 }
-fn only_attribute<'a>(node: Node<'a, '_>, key: &str) -> Result<&'a str> {
+pub(crate) fn only_attribute<'a>(node: Node<'a, '_>, key: &str) -> Result<&'a str> {
     let mut attrs = node.attributes();
     let attr = attrs.next().ok_or(Error)?;
     if attrs.next().is_some() || attr.namespace().is_some() || attr.name() != key {
@@ -198,7 +213,7 @@ fn only_attribute<'a>(node: Node<'a, '_>, key: &str) -> Result<&'a str> {
     }
     Ok(attr.value())
 }
-fn text_leaf(node: Node<'_, '_>, limit: usize) -> Result<Zeroizing<String>> {
+pub(crate) fn text_leaf(node: Node<'_, '_>, limit: usize) -> Result<Zeroizing<String>> {
     if node.attributes().len() != 0 {
         return Err(Error);
     }
@@ -234,18 +249,22 @@ pub fn decode(
 /// Decode an already authenticated native plaintext, deriving its sender time.
 /// Arrival time and unauthenticated XMPP metadata are never clock authority.
 pub fn decode_network(raw: &[u8], sender: &str, recipient: &str) -> Result<(Content, u64)> {
+    let doc = parse(raw)?;
+    let (content, stamp) = envelope(&doc, sender, recipient, &[])?;
+    Ok((text_fields(&elements(content)?)?, stamp))
+}
+
+pub(crate) fn parse(raw: &[u8]) -> Result<Document<'_>> {
     if raw.len() > MAX_PLAINTEXT {
         return Err(Error);
     }
-    bounded(sender, MAX_PLAINTEXT)?;
-    bounded(recipient, MAX_PLAINTEXT)?;
     let text = std::str::from_utf8(raw).map_err(|_| Error)?;
     // Reject declarations, CDATA, comments, DTDs and PIs before parsing. Only
     // built-in/numeric XML escapes are useful; external entities have no resolver.
     if text.contains("<!") || text.contains("<?") {
         return Err(Error);
     }
-    let doc = Document::parse_with_options(
+    Document::parse_with_options(
         text,
         ParsingOptions {
             allow_dtd: false,
@@ -253,7 +272,17 @@ pub fn decode_network(raw: &[u8], sender: &str, recipient: &str) -> Result<(Cont
             entity_resolver: None,
         },
     )
-    .map_err(|_| Error)?;
+    .map_err(|_| Error)
+}
+
+pub(crate) fn envelope<'a, 'input>(
+    doc: &'a Document<'input>,
+    sender: &str,
+    recipient: &str,
+    additional_namespaces: &[&str],
+) -> Result<(Node<'a, 'input>, u64)> {
+    bounded(sender, MAX_PLAINTEXT)?;
+    bounded(recipient, MAX_PLAINTEXT)?;
     let roots = elements(doc.root())?;
     if roots.len() != 1 {
         return Err(Error);
@@ -267,7 +296,7 @@ pub fn decode_network(raw: &[u8], sender: &str, recipient: &str) -> Result<(Cont
             !matches!(
                 ns.uri(),
                 SCE | CLIENT | "http://www.w3.org/XML/1998/namespace"
-            )
+            ) && !additional_namespaces.contains(&ns.uri())
         }) {
             return Err(Error);
         }
@@ -314,13 +343,16 @@ pub fn decode_network(raw: &[u8], sender: &str, recipient: &str) -> Result<(Cont
     if content.attributes().len() != 0 {
         return Err(Error);
     }
-    let fields = elements(content)?;
+    Ok((content, stamp))
+}
+
+pub(crate) fn text_fields(fields: &[Node<'_, '_>]) -> Result<Content> {
     if fields.len() != 2 {
         return Err(Error);
     }
     let mut subject = None;
     let mut body = None;
-    for field in fields {
+    for &field in fields {
         if named(field, CLIENT, "subject") && subject.is_none() {
             subject = Some(text_leaf(field, 128)?);
         } else if named(field, CLIENT, "body") && body.is_none() {
@@ -329,11 +361,8 @@ pub fn decode_network(raw: &[u8], sender: &str, recipient: &str) -> Result<(Cont
             return Err(Error);
         }
     }
-    Ok((
-        Content {
-            subject: subject.ok_or(Error)?,
-            body: body.ok_or(Error)?,
-        },
-        stamp,
-    ))
+    Ok(Content {
+        subject: subject.ok_or(Error)?,
+        body: body.ok_or(Error)?,
+    })
 }

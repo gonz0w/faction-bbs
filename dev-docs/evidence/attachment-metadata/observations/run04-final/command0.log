@@ -1,0 +1,21 @@
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.26s
+     Running tests/attachment_contract.rs (/private/tmp/faction252-OWNED/target/debug/deps/attachment_contract-fac8ca70df192096)
+
+running 5 tests
+test exact_inner_addresses_time_and_text_are_preserved ... ok
+test exact_metadata_limits_and_checked_size_without_blob_allocation ... ok
+test filenames_media_types_and_inert_locators_reject_invalid_values ... ok
+test independent_xml_and_roundtrip_preserve_typed_private_metadata ... ok
+test strict_binary_decimal_algorithm_and_shape_rejections ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/attachment_native.rs (/private/tmp/faction252-OWNED/target/debug/deps/attachment_native-b9a38bc2fde537a8)
+
+running 2 tests
+test authenticated_descriptor_commits_and_authentic_malformed_input_aborts ... ok
+test untrusted_wrong_peer_and_corrupt_messages_never_release_candidate_plaintext ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

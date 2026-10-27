@@ -1,0 +1,23 @@
+   Compiling libc v0.2.191
+   Compiling getrandom v0.4.3
+   Compiling memchr v2.8.3
+   Compiling cfg-if v1.0.5
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+   Compiling roxmltree v0.21.1
+   Compiling zeroize v1.9.1
+error[E0432]: unresolved import `faction_omemo::attachment`
+ --> crates/faction-omemo/tests/attachment_native.rs:2:38
+  |
+2 | use faction_omemo::{Device, Message, attachment};
+  |                                      ^^^^^^^^^^ no `attachment` in the root
+
+error[E0432]: unresolved import `faction_omemo::attachment`
+ --> crates/faction-omemo/tests/attachment_contract.rs:2:21
+  |
+2 | use faction_omemo::{attachment, sce};
+  |                     ^^^^^^^^^^ no `attachment` in the root
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `faction-omemo` (test "attachment_native") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `faction-omemo` (test "attachment_contract") due to 1 previous error

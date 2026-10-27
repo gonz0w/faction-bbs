@@ -1,0 +1,27 @@
+{
+  "all_original_aliases_rechecked": 76,
+  "both_owned_roots_absent": true,
+  "cargo_existing_pinned_source_cache_fetch": "six pre-existing locked packages; ordinary cache entries retained; no host package-manager install",
+  "final_input_hashes_rechecked": 8,
+  "host_package_or_policy_changes": false,
+  "no_live_owned_root_process_references": true,
+  "observed_at": "2026-10-27T22:11:50.188986+00:00",
+  "owned_roots": [
+    {
+      "marker_sha256": "b33ff8c1534f370d918cdfcb5829714c3bdcec6aec037cb59fb81d52f45ccd07",
+      "mode": "0700",
+      "path": "/private/tmp/faction252-OWNED",
+      "uid": 501
+    },
+    {
+      "marker_sha256": "40ea17d3dec336fd845edd04673362e2c39acea3c5296a4e03e5b80c799a74d8",
+      "mode": "0700",
+      "path": "/private/tmp/faction252-review-OWNED",
+      "uid": 501
+    }
+  ],
+  "playground_operations_performed": false,
+  "schema": 1,
+  "scope": "exact owned fixture removal after separate review and completed test sessions; not secure erasure",
+  "vm_or_listener_started": false
+}

@@ -218,3 +218,25 @@ dev-docs/evidence/attachment-bytes/proof/logs/native-missing-interface-red.log w
 dev-docs/evidence/attachment-bytes/qualification/logs/host-perl.log whitespace=-blank-at-eol
 dev-docs/evidence/attachment-bytes/qualification/logs/openssl-build-generated.log whitespace=-blank-at-eol
 dev-docs/evidence/attachment-bytes/qualification/logs/openssl-configdata.log whitespace=-blank-at-eol
+
+# Issue252 exact executed variants and original observations.
+dev-docs/evidence/attachment-metadata/** -text
+dev-docs/evidence/attachment-metadata/objects/** linguist-generated=true
+dev-docs/evidence/attachment-metadata/**/*.json linguist-generated=true
+
+# Keep only these observed diagnostic final blank lines unchanged.
+dev-docs/evidence/attachment-metadata/lead-regressions/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/lead-regressions/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run02/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run02/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run03-characterization/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run03-characterization/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run04-final/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run04-final/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run04-final/command2.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run05-final/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run05-final/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/observations/run05-final/command2.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/review/command0.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/review/command1.log whitespace=-blank-at-eof
+dev-docs/evidence/attachment-metadata/review/command2.log whitespace=-blank-at-eof

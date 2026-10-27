@@ -1,0 +1,11 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit": 2,
+  "log": "whitespace-including-logs-before.log",
+  "classification": "actual selected raw diagnostic whitespace; first check omitted globally ignored log files"
+}

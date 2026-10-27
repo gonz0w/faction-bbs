@@ -1,0 +1,9 @@
+LICENSE: OK
+METHOD.md: OK
+docs/reference/documentation.md: OK
+docs/reference/extensions.md: OK
+docs/reference/verification.md: OK
+docs/reference/workflow.md: OK
+profiles/codex.md: OK
+profiles/github.md: OK
+profiles/strict-test-first.md: OK

@@ -8,9 +8,10 @@ publish.workspace = true
 
 [features]
 default = []
-native = ["dep:zeroize", "dep:roxmltree", "dep:getrandom"]
+native = ["dep:zeroize", "dep:roxmltree", "dep:getrandom", "dep:base64"]
 
 [dependencies]
+base64 = { workspace = true, optional = true }
 zeroize = { workspace = true, optional = true }
 getrandom = { workspace = true, optional = true }
 roxmltree = { version = "=0.21.1", default-features = false, features = ["std"], optional = true }
