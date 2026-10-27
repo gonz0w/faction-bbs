@@ -1,5 +1,8 @@
 # Faction BBS agent instructions
 
+Read root [policy.toml](policy.toml), every selected module and its prerequisites
+before work. PROJECT remains the policy entry point; selection grants no authority.
+
 Read [PROJECT.md](PROJECT.md), the [pinned Agent Temper method](.agent-temper/METHOD.md),
 and the selected GitHub issue **with its comments** before editing. PROJECT.md
 selects the applicable profiles and preserves Faction's stronger local contracts.

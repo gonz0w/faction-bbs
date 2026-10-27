@@ -32,69 +32,15 @@ across agents and sessions.
 
 ## Delivery choices
 
-| Area | Recorded policy |
-| --- | --- |
-| Work authority | GitHub Issues own scope, acceptance, priority, dependencies, progress, approaches and continuation. No local execution plan, roadmap, TODO/status journal or second task system. |
-| Stack and support | Rust product, primary NetBSD; existing narrow C/FFI and Python stdlib/shell tooling boundaries remain. No JS/TS anywhere, including transitive/browser/tool/CI dependencies. |
-| License | BSD-3-Clause; preserve third-party terms and rights. |
-| Source control | Git; coherent issue-scoped branches/commits; PRs target main and close fully completed executable issues. No force push or branch deletion. |
-| Verification | Strict behavioral TDD; explicit source/link/policy/example validation for prose. Never fabricate execution or weaken assertions/limits to pass checks. |
-| Review and integration | Review the final change, resolve findings/conversations and pass current required checks against current main. Agents may merge accepted work under this workflow; a second maintainer's account approval is not mandated. |
-| Releases and operations | No supported release or established release process exists. Explicit owner authorization is required for tags/releases, deployment, public listeners, host/security changes or new external services. Adoption grants none of these. |
-| Documentation | Keep member/sysop docs in docs/ and technical contracts/research/evidence in dev-docs/. Use the pinned reader-oriented documentation guidance and original STE-informed prose for changed instructions; no formal ASD-STE100 compliance claim. |
-| Decisions | The owner changes product direction, required policy and consequential authority. Agents resolve routine implementation choices within accepted scope and these constraints. |
-
-Priorities/dependencies stay in GitHub. Select a finite ready issue in accepted
-scope, respect ongoing ownership and ask about material priority conflicts. An
-epic or deferred issue is not an executable assignment.
+Read the canonical [work and delivery contracts](docs/policy/work.md#delivery-choices).
 
 ## GitHub state mapping
 
-These equivalent names preserve existing labels; they do not migrate issue state.
-Use one progress label on an open issue and none on a closed issue.
-
-| Upstream state | Faction label |
-| --- | --- |
-| Backlog | status:needs-triage |
-| Ready | status:ready |
-| In progress | status:in-progress |
-| Review | status:review |
-| Blocked | status:blocked |
-| Deferred | status:deferred |
-
-GitHub open/closed state is completion authority. Keep priority:p0/p1/p2, area/type
-labels and type:epic semantics. The [workflow](dev-docs/workflow.md) owns exact
-readiness, PR fields, closing syntax and parent reconciliation.
+Read the canonical [work and delivery contracts](docs/policy/work.md#github-state-mapping).
 
 ## Verification and extension maintenance
 
-Run `python3 tools/check_repository.py` and relevant tests. For this policy/checker
-contract, use `python3 -m unittest discover -s tools -p test_issue_workflow.py` and
-`python3 -m unittest discover -s tools -p test_check_repository.py`. Required remote
-contexts are **Documentation and policy** and **Issue closure and TDD**. Their
-current commands live in the [repository workflow](.github/workflows/documentation.yml)
-and [issue workflow](.github/workflows/issue-policy.yml); do not copy rolling test
-counts or waive failures. UI/transport/storage changes need appropriate real
-PTY/native/recovery checks. Prose adoption does not require or authorize a new VM.
-
-From `.agent-temper`, run `shasum -a 256 -c SHA256SUMS` (or the equivalent
-`sha256sum -c SHA256SUMS`) and review the complete file list for unexpected additions.
-Validate offline relative links and a committed source archive when provenance or
-layout changes. The consumer does not need Agent Temper's Python runner.
-
-These local extensions are versioned with Faction, outside the upstream bundle.
-Their purpose is to preserve Faction's delivery, product, authority and evidence
-needs. They depend on the selected profiles; verify changed contracts with their
-relevant tests, current gates and separate review. The owner explicitly authorizes
-replacement/removal of required policy. Routine clarifications follow bounded
-issues and normal reviewed integration.
-
-Use the [extension decision rules](.agent-temper/docs/reference/extensions.md) when
-adoption exposes a useful practice or conflict. File a bounded upstream issue for
-a general improvement or reusable profile; keep product-specific rules local.
-Replace obsolete instructions deliberately and preserve history. Upstream acceptance
-never updates this pin automatically. A framework update needs its own Faction
-issue, source/manifest review and compatibility validation before integration.
+Read the canonical [verification and execution contracts](docs/policy/verification.md#verification-and-extension-maintenance).
 
 ## Codex routing selection
 
@@ -139,130 +85,44 @@ supporting session. Existing chats do not switch models when files change.
 
 ## Product and implementation contracts
 
-Read [product direction](docs/project.md), [privacy/security](docs/security-privacy.md),
-[current architecture](dev-docs/architecture.md), and relevant feature docs/ADRs.
-Rust, primary NetBSD, BSD-3-Clause and **no JavaScript/TypeScript anywhere**, including
-transitive/browser/tooling/CI dependencies, remain. Keep the Citadel room model,
-WWIV login/approval, sysop-defined ANSI/lightbar/season identity and classic/plain
-fallback. Capability observations/overrides, never terminal brand alone, gate
-modern Unicode/graphics. Untrusted terminal strings never become commands or art.
-
-Preserve current local approval/role/epoch/grant checks on every action. Keep
-transport admission, BBS identity, destination approval, OS operator authority and
-member-device cryptographic identity distinct. Who shows broad current activity;
-group `/who` and Lounge keep distinct interfaces with universal visibility and
-availability. No private room/channel/draft/game names in broad presence.
-
-All new private mail, keys and decryption stay on the member's device. No
-server-readable fallback, server-side SSH decrypt/render, shared passwords or
-automatic visited-board membership. Independent invited home boards are selected;
-XMPP/OMEMO remains a candidate beyond existing reference proofs/local vault work.
-IRC live chat, Netnews discussion articles and private mail have separate formats.
-Optional federation requires the relevant explicit room/author/peer/device policy;
-no automatic replication or publication of local rooms/files/accounts/circles.
-
-Keep ordinary board operation independent of optional HTTP, federation, emulators,
-Lua, overlays or external providers. Doors use separate host identities/resources;
-no generic emulator/native launch under the BBS owner/frontend. Additional game
-expansion, hardening #106–#111 and advanced combined 250-member experiments are
-owner-deferred. Existing defenses remain; deferral never authorizes weakening them.
+Read the canonical [product and compatibility contracts](docs/policy/product.md#product-and-implementation-contracts).
 
 ## Accepted first optional roaming model
 
-The owner [selected this model](https://github.com/gonz0w/faction-bbs/issues/91#issuecomment-6422333314) on
-2026-10-26 for the first optional prototype: one restricted OS transport account
-per independently approved home/local-member binding. Devices sharing that
-binding have one BBS identity; the UID path does not attest individual leaf keys.
-Certificate expiry governs new SSH admission. Current local binding/issuer/member
-revocation and normal session rules govern established access.
-
-Keep independent local consent/approval, root-managed transport policy/manifest,
-immutable UID history and device-private mail keys. This choice does not increase
-resource/experiment caps, adopt a package or online issuer, authorize host changes
-or a public listener, or establish production support. Remaining enrollment,
-issuance and operational work stays issue-scoped under #91.
+Read the canonical [product and compatibility contracts](docs/policy/product.md#accepted-first-optional-roaming-model).
 
 ## Resource and evidence contracts
 
-Preserve the normal eight sessions/5000-ms admission, two credential permits
-covering queued/active/result lifetime, two kernel slots, unchanged Argon2, three
-owner helpers, bounded encoded output and five-second drain. Experimental capacity
-must remain explicit; old 250-member observations are not current support promises.
-Keep kernel peer-UID/owned-TTY checks, opaque connection-bound sessions, descriptor/
-environment hygiene and owner-only recovery operations. Never unlink live locks.
-Do not silently tune allocators/NTP/sysctls, replace NPF or activate host services.
-
-Before changing measured inputs, inspect [evidence preservation](dev-docs/evidence/README.md)
-and preserve the actual previously executed bytes if not already resolvable.
-Never refresh old hashes/results to current code or describe saved checks as fresh
-execution. Preserve failed/rejected candidates and distinguish source checks,
-software observations, graphical acceptance, hardware and production support.
-Current evidence guards are discovered from CI; do not hardcode rolling counts here.
-
-The saved owner playground stays **stopped and intact** unless the owner asks to
-run it. Use only marked owned disposable fixtures, keep private data outside Git,
-and prove teardown before claiming cleanup. Never publish keys, real endpoints,
-member content or unlicensed games/art. Report sensitive bugs via SECURITY.md.
+Read the canonical [resource and evidence contracts](docs/policy/resources.md#resource-and-evidence-contracts).
 
 ## Terra product routing update — 2026-10-27
 
-The owner authorized this workflow/model-routing update and integration after
-review in [the owning issue](https://github.com/gonz0w/faction-bbs/issues/236). Select `temper_product` with
-`gpt-6.1-terra` / `medium` from the recorded upstream pin. This adds product-facing
-work to the selected routes; the existing workflow, implementer, analyst and
-reviewer settings remain unchanged. The local role is
-[temper_product](.codex/agents/temper_product.toml).
-
-Use the product role only for accepted documentation, visual inspection, explicitly
-authorized bounded browser tasks and small UI fixes with specified behavior and
-observable acceptance. Substantial implementation stays with the implementer;
-ambiguous design goes to the analyst. Existing risk, platform, execution and
-separate-review requirements override a routine product assignment. The author
-cannot supply its own required separate review.
-
-For this role only, the lead may explicitly select `temper_implementer` with
-`gpt-6.1-sol` / `high` as the one approved fallback when Terra is unavailable or
-cannot perform the task with available tools. Record that selection and confirm
-capability, tool availability, existing permissions and task/resource limits
-before dispatch. Missing tools are not installed by choosing another model.
-Retain stricter dispatch/risk rules and stop if the fallback is unsuitable. Other
-routes keep their existing fallback policy; no automatic substitution, recursive
-delegation, extra retry or higher limit follows.
-
-Terra requires a supporting client/account; Codex CLI requires 0.159.0 or newer.
-Start a fresh consumer session and inspect actual role/model/effort metadata
-before claiming observed routing. Configuration and source review do not prove
-runtime discovery, model execution or measured quality/cost benefit. These remain
-unverified until observed. This selection changes no primary-chat model, CI,
-hooks, trust, permissions, product/platform or consequential-action authority.
+Read the canonical [codex routing and resources](docs/policy/routing.md#terra-product-routing-update--2026-10-27).
 
 ## One-time Terra routing integration decision
 
-On 2026-10-27, Cam approved the reviewed one-time Terra routing integration
-proposal for [this owning issue](https://github.com/gonz0w/faction-bbs/issues/236). For the new declarative product-role TOML
-only, existing source checks, exact template comparison, configuration syntax
-validation and separate review replace preimplementation test-first execution.
-No red history is claimed. Both unchanged required hosted checks still must pass.
-Source signatures, genuine author DCO, PRs, separate review and all protections
-remain. One additional bounded routing batch is permitted for this repository,
-ending at merge or abandonment. This exception expires at that PR's merge or
-abandonment; all other configuration and behavior retain strict TDD. No CI
-infrastructure, checker/test/assertion, product, permission/protection, future
-bypass or runtime-routing authority changes.
+Read the canonical [historical finite decisions](docs/policy/history.md#one-time-terra-routing-integration-decision).
 
 ## One-time issue #239 oracle TDD disposition
 
-On 2026-10-27, the owner explicitly approved [this limited disposition](https://github.com/gonz0w/faction-bbs/issues/239#issuecomment-6445428781)
-for issue #239's stale O/E notice verification-helper correction. The already-green
-oracle and its expected bytes were changed together without an observed
-pre-correction failing run. That historical strict-test-first gap remains explicit;
-no retrospective RED or complete strict chronology is claimed for it.
+Read the canonical [historical finite decisions](docs/policy/history.md#one-time-issue-239-oracle-tdd-disposition).
 
-For this correction only, accept the preserved source/execution history,
-substantive final tests, actual host/NetBSD routes and separate review as the
-alternative evidence. Existing product/interface and later helper REDs qualify
-only their own changes. All other tests, source preservation, privacy checks,
-actual fixture cleanup, separate review and unchanged current-head CI/merge gates
-remain required. No other change or future work receives an exception. This
-one-time authority ends when the issue's PR merges or is abandoned; its historical
-record remains. Further changes to the helper retain strict test-first delivery.
+## Explicit policy selection
+
+The owner-selected modular adoption in [issue #246](https://github.com/gonz0w/faction-bbs/issues/246)
+uses root [policy.toml](policy.toml) as the sole selected-module record. Read every
+selected module and its declared prerequisites before work; linked local contracts
+retain their existing applicability. PROJECT remains the entry point and retains
+its prior heading anchors as pointers to the canonical extracted clauses.
+
+Compatible stronger rules apply together. The owner controls required-policy,
+selection, exception and authority changes through the existing work/review process.
+The manifest describes composition; it does not authorize actions or supersede prose.
+Historical finite approvals remain expired for this work; selection does not renew
+WIP lanes, host permissions, check/hook waivers or operational authority.
+
+The [manually invoked selection checker](tools/temper/SOURCE.md) reads inert declared data.
+It is outside the retained method bundle and is not wired into CI, hooks or gates.
+Mechanical success leaves policy meaning, source trust, approval, check applicability
+and execution/integration authority unverified. Use only an already authorized executor;
+missing required checks remain unavailable and block their dependent acceptance.
