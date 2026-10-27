@@ -1,0 +1,30 @@
+{
+  "clang": {
+    "xcrun_exit": 0,
+    "path": "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+    "error": "",
+    "resolved": "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+    "sha256": "178ff35952fbf7651eaab02f8c07929f952b99f9eb54d0b8363080a98ce49029"
+  },
+  "ar": {
+    "xcrun_exit": 0,
+    "path": "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar",
+    "error": "",
+    "resolved": "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar",
+    "sha256": "fa1baca6e6eeb0dcf7a1c476d9d69176ad258be79c0323c7e2f9a7a4165572e6"
+  },
+  "ld": {
+    "xcrun_exit": 0,
+    "path": "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld",
+    "error": "",
+    "resolved": "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld",
+    "sha256": "eb49fa9579cc2a712451e1e6ab85837de02e90d455c8f5bd5efab4fba755a0b7"
+  },
+  "make": {
+    "xcrun_exit": 0,
+    "path": "/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make",
+    "error": "",
+    "resolved": "/Applications/Xcode-beta.app/Contents/Developer/usr/bin/make",
+    "sha256": "0443701d858503f84542085178e0288cc131ddc00a08351855d6cc8899d9024f"
+  }
+}

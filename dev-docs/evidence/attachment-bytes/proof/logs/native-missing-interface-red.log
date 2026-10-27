@@ -1,0 +1,658 @@
+test_failed_reference_does_not_mutate_spool (__main__.HarnessContracts.test_failed_reference_does_not_mutate_spool) ... ok
+test_injected_final_failure_releases_no_output_or_file (__main__.HarnessContracts.test_injected_final_failure_releases_no_output_or_file) ... ok
+test_invalid_requests_fail_before_reference_instantiation (__main__.HarnessContracts.test_invalid_requests_fail_before_reference_instantiation) ... ok
+test_malformed_source_rejected_before_import (__main__.HarnessContracts.test_malformed_source_rejected_before_import) ... ok
+test_mutations_include_tag_ciphertext_truncation_append_and_missing_tag (__main__.HarnessContracts.test_mutations_include_tag_ciphertext_truncation_append_and_missing_tag) ... ok
+test_native_failure_stdout_is_never_accepted (__main__.HarnessContracts.test_native_failure_stdout_is_never_accepted) ... ok
+test_native_rejection_and_wrong_length_are_errors (__main__.HarnessContracts.test_native_rejection_and_wrong_length_are_errors) ... ok
+test_reference_encoding_bounds_are_closed_under_tag_append (__main__.HarnessContracts.test_reference_encoding_bounds_are_closed_under_tag_append) ... ok
+test_reference_returns_only_after_successful_finalize (__main__.HarnessContracts.test_reference_returns_only_after_successful_finalize) ... ok
+test_spool_exact_membership_bytes_and_regular_files (__main__.HarnessContracts.test_spool_exact_membership_bytes_and_regular_files) ... ok
+test_spool_rejects_symlink_and_traversal (__main__.HarnessContracts.test_spool_rejects_symlink_and_traversal) ... ok
+test_nonreading_stdin_remains_time_bounded (__main__.ProcessBounds.test_nonreading_stdin_remains_time_bounded) ... ok
+test_output_and_exit_are_captured_within_bounds (__main__.ProcessBounds.test_output_and_exit_are_captured_within_bounds) ... ok
+test_stderr_overflow_kills_and_reaps (__main__.ProcessBounds.test_stderr_overflow_kills_and_reaps) ... ok
+test_stdout_overflow_kills_and_reaps (__main__.ProcessBounds.test_stdout_overflow_kills_and_reaps) ... ok
+test_timeout_kills_and_reaps (__main__.ProcessBounds.test_timeout_kills_and_reaps) ... ok
+test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) ... 
+  test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='tag-bit') ... ERROR
+  test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='cipher-bit') ... ERROR
+  test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='truncate') ... ERROR
+  test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='append') ... ERROR
+  test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='missing-tag') ... ERROR
+test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) ... ERROR
+test_cap_roundtrip_and_largest_fixture_append_authentication (__main__.native_suite.<locals>.NativeContract.test_cap_roundtrip_and_largest_fixture_append_authentication) ... ERROR
+test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) ... 
+  test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=None) ... ERROR
+  test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=1) ... ERROR
+  test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=15) ... ERROR
+  test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=16) ... ERROR
+  test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=17) ... ERROR
+  test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=4096) ... ERROR
+test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) ... 
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt'], frame_length=0) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['decrypt'], frame_length=59) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt'], frame_length=8237) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['decrypt'], frame_length=8253) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['invalid'], frame_length=44) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '0'], frame_length=44) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '-1'], frame_length=44) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '1x'], frame_length=44) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '999999999999999999999999999999'], frame_length=44) ... ERROR
+  test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '1', 'extra'], frame_length=44) ... ERROR
+
+======================================================================
+ERROR: test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='tag-bit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 230, in test_auth_failures_have_empty_stdout
+    status, output, error = self.raw("decrypt", payload)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='cipher-bit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 230, in test_auth_failures_have_empty_stdout
+    status, output, error = self.raw("decrypt", payload)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='truncate')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 230, in test_auth_failures_have_empty_stdout
+    status, output, error = self.raw("decrypt", payload)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='append')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 230, in test_auth_failures_have_empty_stdout
+    status, output, error = self.raw("decrypt", payload)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout) (mutation='missing-tag')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 230, in test_auth_failures_have_empty_stdout
+    status, output, error = self.raw("decrypt", payload)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_auth_failures_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_auth_failures_have_empty_stdout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 234, in test_auth_failures_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary), "decrypt"], wrong + self.iv + self.cipher, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_cap_roundtrip_and_largest_fixture_append_authentication (__main__.native_suite.<locals>.NativeContract.test_cap_roundtrip_and_largest_fixture_append_authentication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 261, in test_cap_roundtrip_and_largest_fixture_append_authentication
+    status, cipher, error = self.raw("encrypt", plain)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 220, in test_independent_nist_known_answer_reciprocal
+    status, output, error = self.raw("encrypt", self.plain, chunk)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 220, in test_independent_nist_known_answer_reciprocal
+    status, output, error = self.raw("encrypt", self.plain, chunk)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=15)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 220, in test_independent_nist_known_answer_reciprocal
+    status, output, error = self.raw("encrypt", self.plain, chunk)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=16)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 220, in test_independent_nist_known_answer_reciprocal
+    status, output, error = self.raw("encrypt", self.plain, chunk)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=17)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 220, in test_independent_nist_known_answer_reciprocal
+    status, output, error = self.raw("encrypt", self.plain, chunk)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_independent_nist_known_answer_reciprocal (__main__.native_suite.<locals>.NativeContract.test_independent_nist_known_answer_reciprocal) (chunk=4096)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 220, in test_independent_nist_known_answer_reciprocal
+    status, output, error = self.raw("encrypt", self.plain, chunk)
+                            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 215, in raw
+    return proof._run_bounded(args, self.key + self.iv + payload, 8208, 256, 5)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt'], frame_length=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['decrypt'], frame_length=59)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt'], frame_length=8237)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['decrypt'], frame_length=8253)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['invalid'], frame_length=44)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '0'], frame_length=44)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '-1'], frame_length=44)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '1x'], frame_length=44)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '999999999999999999999999999999'], frame_length=44)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+======================================================================
+ERROR: test_input_and_argv_rejections_have_empty_stdout (__main__.native_suite.<locals>.NativeContract.test_input_and_argv_rejections_have_empty_stdout) (argv=['encrypt', '1', 'extra'], frame_length=44)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 253, in test_input_and_argv_rejections_have_empty_stdout
+    status, output, error = proof._run_bounded(
+                            ~~~~~~~~~~~~~~~~~~^
+        [str(binary)] + args, frame, 8208, 256, 5
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py", line 92, in _run_bounded
+    process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1990, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction250-OWNED/phase2/adapter'
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.318s
+
+FAILED (errors=23)
+
+EXIT=1

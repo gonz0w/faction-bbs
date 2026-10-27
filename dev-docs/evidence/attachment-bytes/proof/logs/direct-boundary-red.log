@@ -1,0 +1,8 @@
+{"control": "unsafe direct-API composition boundary, not an upstream bug claim", "provisional_bytes": 16, "final_authentication_rejected": true}
+Traceback (most recent call last):
+  File "/private/tmp/faction250-OWNED/phase2/variants/direct-boundary-control.py", line 17, in <module>
+    assert provisional==b"", "direct API composition released provisional plaintext before failed authentication"
+           ^^^^^^^^^^^^^^^^
+AssertionError: direct API composition released provisional plaintext before failed authentication
+
+EXIT=1

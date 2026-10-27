@@ -1,0 +1,85 @@
+{
+  "environment": {
+    "OPENSSL_CONF": "/private/tmp/faction250-OWNED/openssl-empty.cnf",
+    "OPENSSL_MODULES": "/private/tmp/faction250-OWNED/modules-empty",
+    "OPENSSL_ENGINES": "/private/tmp/faction250-OWNED/engines-empty"
+  },
+  "commands": [
+    {
+      "command": [
+        "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl",
+        "version",
+        "-a"
+      ],
+      "exit": 0,
+      "log": "/private/tmp/faction250-OWNED/logs/openssl-version.log"
+    },
+    {
+      "command": [
+        "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl",
+        "list",
+        "-providers",
+        "-verbose"
+      ],
+      "exit": 0,
+      "log": "/private/tmp/faction250-OWNED/logs/openssl-providers.log"
+    },
+    {
+      "command": [
+        "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl",
+        "list",
+        "-cipher-algorithms",
+        "-select",
+        "AES-256-GCM",
+        "-verbose"
+      ],
+      "exit": 0,
+      "log": "/private/tmp/faction250-OWNED/logs/openssl-ciphers.log"
+    },
+    {
+      "command": [
+        "/usr/bin/otool",
+        "-L",
+        "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl"
+      ],
+      "exit": 0,
+      "log": "/private/tmp/faction250-OWNED/logs/openssl-cli-linkage.log"
+    },
+    {
+      "command": [
+        "/usr/bin/perl",
+        "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/configdata.pm",
+        "--dump"
+      ],
+      "exit": 0,
+      "log": "/private/tmp/faction250-OWNED/logs/openssl-configdata.log"
+    }
+  ],
+  "artifacts": {
+    "libcrypto.a": {
+      "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/libcrypto.a",
+      "sha256": "62c20598c84e16019aff31fcfae085474e6243fd32f04f410600f201dcad1165",
+      "bytes": 8548744
+    },
+    "apps/openssl": {
+      "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl",
+      "sha256": "9e41c3986a767a91917aa405c1763463f75327ec642a31d34999877f7b1c1186",
+      "bytes": 6141864
+    },
+    "configdata.pm": {
+      "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/configdata.pm",
+      "sha256": "b71da87ae9d605b0f1386be9e7bfeefd394cf435e4439b8af42f2ae8130f141d",
+      "bytes": 873143
+    },
+    "include/openssl/configuration.h": {
+      "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/include/openssl/configuration.h",
+      "sha256": "1eff57cdb8aada5dd3f90ca69f44a59221fcd167cbeed55ab37424dbf32bd4e6",
+      "bytes": 5314
+    },
+    "include/openssl/opensslv.h": {
+      "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/include/openssl/opensslv.h",
+      "sha256": "256985d6271826835673eb59dec8369dbbead0b5055864b8b7e69effac426e52",
+      "bytes": 3447
+    }
+  }
+}

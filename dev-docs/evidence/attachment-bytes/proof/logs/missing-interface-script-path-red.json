@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/python3",
+    "-s",
+    "-B",
+    "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py"
+  ],
+  "exit": 1,
+  "source_sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+  "expected": "ModuleNotFoundError: absent sibling proof.py with script directory import enabled",
+  "prior_command_limit": "-I excludes script directory even after proof.py would exist; use -s -B for test module and explicit qualification paths for integration."
+}

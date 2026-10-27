@@ -1,0 +1,24 @@
+{
+  "issue": 250,
+  "result": "pass",
+  "scope": "Actual removal of the single exact marked isolated dependency/proof root after original-source/spool/public-selection review",
+  "root": "/private/tmp/faction250-OWNED",
+  "uid_before": 501,
+  "mode_before": "0700",
+  "marker_sha256": "846f4a265f63d6bf69407f0db0c160c81fea3ae581ea017041a860cee3b1c125",
+  "root_referencing_processes_before_removal": 0,
+  "root_absent_after_removal": true,
+  "source_manifests_rechecked_before_removal": {
+    "qualification_entries": 63,
+    "proof_entries": 38,
+    "native_artifacts": 5
+  },
+  "original_ciphertext_spool_rechecked": {
+    "regular_objects": 8,
+    "bytes": 12465
+  },
+  "no_host_package_service_policy_changes": true,
+  "no_vm_or_public_listener_started": true,
+  "saved_owner_playground_started_or_modified": false,
+  "limits": "Input corpus was fixed public fixtures; no real mail or credentials. Directory removal is not a secure media-erasure claim. The saved playground was not rehashed during this local experiment."
+}

@@ -1,0 +1,33 @@
+["/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl", "list", "-cipher-algorithms", "-select", "AES-256-GCM", "-verbose"]
+Legacy:
+Provided:
+  { 2.16.840.1.101.3.4.1.46, aes-256-gcm, id-aes256-GCM } @ default
+    description: aes-256-gcm
+    retrievable algorithm parameters:
+      mode: unsigned integer (max 4 bytes large)
+      keylen: unsigned integer (max 8 bytes large)
+      ivlen: unsigned integer (max 8 bytes large)
+      blocksize: unsigned integer (max 8 bytes large)
+      aead: integer (max 4 bytes large)
+      custom-iv: integer (max 4 bytes large)
+      cts: integer (max 4 bytes large)
+      tls-multi: integer (max 4 bytes large)
+      has-randkey: integer (max 4 bytes large)
+    retrievable operation parameters:
+      keylen: unsigned integer (max 8 bytes large)
+      ivlen: unsigned integer (max 8 bytes large)
+      taglen: unsigned integer (max 8 bytes large)
+      iv: octet string (arbitrary size)
+      updated-iv: octet string (arbitrary size)
+      tag: octet string (arbitrary size)
+      tlsaadpad: unsigned integer (max 8 bytes large)
+      tlsivgen: octet string (arbitrary size)
+      iv-generated: unsigned integer (max 4 bytes large)
+    settable operation parameters:
+      ivlen: unsigned integer (max 8 bytes large)
+      tag: octet string (arbitrary size)
+      tlsaad: octet string (arbitrary size)
+      tlsivfixed: octet string (arbitrary size)
+      tlsivinv: octet string (arbitrary size)
+
+EXIT=0

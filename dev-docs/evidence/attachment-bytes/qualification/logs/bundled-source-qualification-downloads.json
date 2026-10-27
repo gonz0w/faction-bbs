@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://files.pythonhosted.org/packages/9d/af/182eb91b0df3fe75c4d9f26fe70684569566745f6ba7e5c9c73a862c5252/cryptography-50.0.2.tar.gz",
+    "file": "cryptography-50.0.2.tar.gz",
+    "sha256": "7b46165bb56eb4704e2eaaf86f3c940d19154535d9b0ca7d6d590b04060e00d5",
+    "bytes": 880623,
+    "entries": 485,
+    "expanded_bytes": 5120023,
+    "no_js_ts": true,
+    "exit": 0
+  },
+  {
+    "url": "https://api.github.com/repos/openssl/openssl/git/ref/tags/openssl-4.0.3",
+    "file": "openssl-4.0.3-tag.json",
+    "sha256": "bc564fab8a0e0f516df9735198f72875775d8389dc62e258b717e0c1c14626eb",
+    "bytes": 355,
+    "exit": 0
+  },
+  {
+    "url": "https://raw.githubusercontent.com/openssl/openssl/openssl-4.0.3/LICENSE.txt",
+    "file": "openssl-4.0.3-LICENSE.txt",
+    "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+    "bytes": 10175,
+    "exit": 0
+  }
+]

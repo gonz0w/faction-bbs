@@ -1,0 +1,13 @@
+{
+  "issue": 250,
+  "type": "separate agent examination, not independent human assurance",
+  "requested_role": "temper_reviewer",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "native_routing_metadata": "unavailable",
+  "qualification": "63 records, 170 wheel files, native/source/license/SBOM identities reviewed before proof",
+  "implementation": "No actionable findings in frozen C/Python/test/binary; reviewer ran native-enabled 20-test suite (16 stdlib plus four native groups), inspected retained integration/spool, and did not repeat integration",
+  "public_selection_sha256": "40ab0c6f161181622eca878a22e174cc624169a0cf2b57a12ab1aecc4544ab62",
+  "public_selection": "76 references plus selection itself, copied records/source aliases/build excerpts checked against retained originals",
+  "later_checks": "Final cleanup/manifest/CI/prose review remains separate integration work"
+}

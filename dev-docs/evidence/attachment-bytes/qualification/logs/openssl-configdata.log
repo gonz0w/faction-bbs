@@ -1,0 +1,283 @@
+["/usr/bin/perl", "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/configdata.pm", "--dump"]
+
+Command line (with current working directory = /private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e):
+
+    /usr/bin/perl ./Configure darwin64-arm64-cc no-shared no-tests no-module no-ssl no-quic no-engine no-legacy no-dso --prefix=/private/tmp/faction250-OWNED/unused-install --openssldir=/private/tmp/faction250-OWNED/openssl-config
+
+Perl information:
+
+    /usr/bin/perl
+    5.34.1 for darwin-thread-multi-2level
+
+Enabled features:
+
+    apps
+    argon2
+    aria
+    asm
+    async
+    atexit
+    autoalginit
+    autoerrinit
+    autoload-config
+    bf
+    blake2
+    bulk
+    cached-fetch
+    camellia
+    cast
+    chacha
+    cmac
+    cmp
+    cms
+    comp
+    ct
+    default-thread-pool
+    deprecated
+    des
+    dgram
+    dh
+    docs
+    dsa
+    dtls
+    ec
+    ec2m
+    ecdh
+    ecdsa
+    ecx
+    err
+    filenames
+    gost
+    http
+    idea
+    integrity-only-ciphers
+    makedepend
+    md4
+    mdc2
+    ml-dsa
+    ml-kem
+    multiblock
+    nextprotoneg
+    ocb
+    ocsp
+    pic
+    pinshared
+    poly1305
+    posix-io
+    psk
+    rc2
+    rc4
+    rdrand
+    rfc3779
+    rmd160
+    scrypt
+    secure-memory
+    seed
+    siphash
+    siv
+    slh-dsa
+    sm2
+    sm2-precomp
+    sm3
+    sm4
+    sock
+    srp
+    srtp
+    sse2
+    ssl
+    ssl-trace
+    static-engine
+    stdio
+    thread-pool
+    threads
+    tls
+    tls-deprecated-ec
+    ts
+    ui-console
+    whirlpool
+    tls1
+    tls1-method
+    tls1_1
+    tls1_1-method
+    tls1_2
+    tls1_2-method
+    tls1_3
+    dtls1
+    dtls1-method
+    dtls1_2
+    dtls1_2-method
+
+Disabled features:
+
+    acvp-tests             [cascade]        OPENSSL_NO_ACVP_TESTS
+    afalgeng               [cascade]        OPENSSL_NO_AFALGENG
+    asan                   [default]        OPENSSL_NO_ASAN
+    brotli                 [default]        OPENSSL_NO_BROTLI
+    brotli-dynamic         [default]        OPENSSL_NO_BROTLI_DYNAMIC
+    buildtest-c++          [default]        
+    capieng                [cascade]        OPENSSL_NO_CAPIENG
+    winstore               [not-windows]    OPENSSL_NO_WINSTORE
+    crypto-mdebug          [default]        OPENSSL_NO_CRYPTO_MDEBUG
+    demos                  [default]        OPENSSL_NO_DEMOS
+    h3demo                 [default]        OPENSSL_NO_H3DEMO
+    hqinterop              [default]        OPENSSL_NO_HQINTEROP
+    devcryptoeng           [default]        OPENSSL_NO_DEVCRYPTOENG
+    dso                    [option]         OPENSSL_NO_DSO
+    dynamic-engine         [cascade]        
+    ec_nistp_64_gcc_128    [default]        OPENSSL_NO_EC_NISTP_64_GCC_128
+    egd                    [default]        OPENSSL_NO_EGD
+    engine                 [option]         OPENSSL_NO_ENGINE (skip engines, crypto/engine)
+    external-tests         [default]        OPENSSL_NO_EXTERNAL_TESTS
+    fips                   [default]        
+    fips-securitychecks    [cascade]        OPENSSL_NO_FIPS_SECURITYCHECKS
+    fips-post              [cascade]        OPENSSL_NO_FIPS_POST
+    fips-jitter            [default]        OPENSSL_NO_FIPS_JITTER
+    fuzz-afl               [default]        OPENSSL_NO_FUZZ_AFL
+    fuzz-libfuzzer         [default]        OPENSSL_NO_FUZZ_LIBFUZZER
+    jitter                 [default]        OPENSSL_NO_JITTER
+    ktls                   [default]        OPENSSL_NO_KTLS
+    legacy                 [option]         
+    loadereng              [cascade]        OPENSSL_NO_LOADERENG
+    md2                    [default]        OPENSSL_NO_MD2 (skip crypto/md2)
+    module                 [option]         
+    msan                   [default]        OPENSSL_NO_MSAN
+    padlockeng             [cascade]        OPENSSL_NO_PADLOCKENG
+    pie                    [default]        OPENSSL_NO_PIE
+    quic                   [option]         OPENSSL_NO_QUIC
+    unstable-qlog          [cascade]        OPENSSL_NO_UNSTABLE_QLOG
+    rc5                    [default]        OPENSSL_NO_RC5 (skip crypto/rc5)
+    sctp                   [default]        OPENSSL_NO_SCTP
+    shared                 [option]         
+    sslkeylog              [default]        OPENSSL_NO_SSLKEYLOG
+    tests                  [option]         OPENSSL_NO_TESTS
+    tfo                    [default]        OPENSSL_NO_TFO
+    trace                  [default]        OPENSSL_NO_TRACE
+    ubsan                  [default]        OPENSSL_NO_UBSAN
+    unit-test              [default]        OPENSSL_NO_UNIT_TEST
+    uplink                 [no uplink_arch] OPENSSL_NO_UPLINK
+    weak-ssl-ciphers       [default]        OPENSSL_NO_WEAK_SSL_CIPHERS
+    zlib                   [default]        OPENSSL_NO_ZLIB
+    zlib-dynamic           [default]        OPENSSL_NO_ZLIB_DYNAMIC
+    zstd                   [default]        OPENSSL_NO_ZSTD
+    zstd-dynamic           [default]        OPENSSL_NO_ZSTD_DYNAMIC
+    ssl3                   [option(ssl)]    OPENSSL_NO_SSL3
+    ssl3-method            [default]        OPENSSL_NO_SSL3_METHOD
+
+Config target attributes:
+
+    AR => "ar",
+    ARFLAGS => "qc",
+    CC => "cc",
+    CFLAGS => "-O3 -Wall",
+    HASHBANGPERL => "/usr/bin/env perl",
+    OBJCOPY => "objcopy",
+    RANLIB => "ranlib -c",
+    RC => "windres",
+    asm_arch => "aarch64",
+    bin_cflags => "",
+    bin_lflags => "",
+    bn_ops => "SIXTY_FOUR_BIT_LONG",
+    build_file => "Makefile",
+    build_scheme => [ "unified", "unix" ],
+    cflags => "-arch arm64",
+    cppflags => "-D_REENTRANT",
+    defines => [ "OPENSSL_BUILDING_OPENSSL" ],
+    disable => [  ],
+    dso_scheme => "dlfcn",
+    enable => [  ],
+    ex_libs => "",
+    includes => [  ],
+    lflags => "-Wl,-search_paths_first",
+    lib_cflags => "",
+    lib_cppflags => "-DL_ENDIAN",
+    lib_defines => [  ],
+    module_cflags => "-fPIC",
+    module_cxxflags => undef,
+    module_ldflags => "-bundle",
+    perl_platform => "Unix",
+    perlasm_scheme => "ios64",
+    shared_cflag => "-fPIC",
+    shared_defines => [  ],
+    shared_extension => ".\$(SHLIB_VERSION_NUMBER).dylib",
+    shared_ldflag => "-dynamiclib -current_version \$(SHLIB_VERSION_NUMBER) -compatibility_version \$(SHLIB_VERSION_NUMBER)",
+    shared_rcflag => "",
+    shared_sonameflag => "-install_name \$(libdir)/",
+    shared_target => "darwin-shared",
+    sys_id => "MACOSX",
+    thread_defines => [  ],
+    thread_scheme => "pthreads",
+    unistd => "<unistd.h>",
+
+Recorded environment:
+
+    AR = 
+    ARFLAGS = 
+    AS = 
+    ASFLAGS = 
+    BUILDFILE = 
+    CC = 
+    CFLAGS = 
+    CPP = 
+    CPPDEFINES = 
+    CPPFLAGS = 
+    CPPINCLUDES = 
+    CROSS_COMPILE = 
+    CXX = 
+    CXXFLAGS = 
+    HASHBANGPERL = 
+    LD = 
+    LDFLAGS = 
+    LDLIBS = 
+    MT = 
+    MTFLAGS = 
+    OBJCOPY = 
+    OPENSSL_LOCAL_CONFIG_DIR = 
+    PERL = 
+    RANLIB = 
+    RC = 
+    RCFLAGS = 
+    RM = 
+    WINDRES = 
+    __CNF_CFLAGS = 
+    __CNF_CPPDEFINES = 
+    __CNF_CPPFLAGS = 
+    __CNF_CPPINCLUDES = 
+    __CNF_CXXFLAGS = 
+    __CNF_LDFLAGS = 
+    __CNF_LDLIBS = 
+
+Makevars:
+
+    AR              = ar
+    ARFLAGS         = qc
+    ASFLAGS         = 
+    CC              = cc
+    CFLAGS          = -O3 -Wall
+    CPPDEFINES      = 
+    CPPFLAGS        = 
+    CPPINCLUDES     = 
+    CXXFLAGS        = 
+    HASHBANGPERL    = /usr/bin/env perl
+    LDFLAGS         = 
+    LDLIBS          = 
+    OBJCOPY         = objcopy
+    PERL            = /usr/bin/perl
+    RANLIB          = ranlib -c
+    RC              = windres
+    RCFLAGS         = 
+
+NOTE: These variables only represent the configuration view.  The build file
+template may have processed these variables further, please have a look at the
+build file for more exact data:
+    /private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/Makefile
+
+build file:
+
+    /private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/Makefile
+
+build file templates:
+
+    /private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/Configurations/common0.tmpl
+    /private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/Configurations/unix-Makefile.tmpl
+
+EXIT=0

@@ -1,0 +1,17 @@
+import importlib.util, sys, json
+from pathlib import Path
+p=Path("/private/tmp/faction250-OWNED/downloads/gajim-aes.py")
+spec=importlib.util.spec_from_file_location("unchanged_gajim_boundary",p)
+reference=importlib.util.module_from_spec(spec); sys.modules[spec.name]=reference; spec.loader.exec_module(reference)
+key=bytes.fromhex("31bdadd96698c204aa9ce1448ea94ae1fb4a9a0b3c9d773b51bb1822666b8f22")
+iv=bytes.fromhex("0d18e06c7c725ac9e362e1ce")
+cipher=bytearray.fromhex("fa4362189661d163fcd6a56d8bf0405ad636ac1bbedd5cc3ee727dc2ab4a9489"); cipher[-1]^=1
+operation=reference.AESGCMDecryptor(reference.AESKeyData(key,iv))
+provisional=operation.decrypt(bytes(cipher)); rejected=False
+try:
+    operation.finalize()
+except Exception:
+    rejected=True
+print(json.dumps({"control":"unsafe direct-API composition boundary, not an upstream bug claim","provisional_bytes":len(provisional),"final_authentication_rejected":rejected}))
+assert rejected, "bad tag must fail authentication"
+assert provisional==b"", "direct API composition released provisional plaintext before failed authentication"

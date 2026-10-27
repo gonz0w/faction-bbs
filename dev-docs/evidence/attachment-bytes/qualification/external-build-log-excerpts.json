@@ -1,0 +1,28 @@
+[
+  {
+    "source_name": "openssl-build-cli.log",
+    "full_log_sha256": "2c3ec0245718664b24371ae5147490783c328915b51ed4162fabc751b315218d",
+    "full_log_bytes": 125599,
+    "first_line": "[\"/usr/bin/make\", \"-j2\", \"apps/openssl\"]",
+    "last_lines": [
+      "\t\tapps/libapps.a -lssl -lcrypto  ",
+      "",
+      "EXIT=0",
+      "ELAPSED_SECONDS=7.650"
+    ],
+    "scope": "Derived head/tail observations; full successful external-build transcript is not published."
+  },
+  {
+    "source_name": "openssl-build-libcrypto.log",
+    "full_log_sha256": "4df1b316085bb94cfd10cfb286d644154ed681078d5bf1ec7783a8fd670e0251",
+    "full_log_bytes": 762167,
+    "first_line": "[\"/usr/bin/make\", \"-j2\", \"libcrypto.a\"]",
+    "last_lines": [
+      "ranlib -c libcrypto.a || echo Never mind.",
+      "",
+      "EXIT=0",
+      "ELAPSED_SECONDS=28.838"
+    ],
+    "scope": "Derived head/tail observations; full successful external-build transcript is not published."
+  }
+]

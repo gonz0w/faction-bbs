@@ -1,0 +1,54 @@
+{
+  "phase2/variants/01-missing-interface/test_proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+    "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "phase2/variants/02-before-proof/test_proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+    "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "phase2/variants/03-python-initial/proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+    "sha256": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062"
+  },
+  "phase2/variants/03-python-initial/test_proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+    "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "phase2/variants/04-before-native/proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+    "sha256": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062"
+  },
+  "phase2/variants/04-before-native/test_proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+    "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "phase2/variants/05-native-initial/adapter.c": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5",
+    "sha256": "30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5"
+  },
+  "phase2/variants/05-native-initial/proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+    "sha256": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062"
+  },
+  "phase2/variants/05-native-initial/test_proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+    "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "phase2/variants/direct-boundary-control.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/786b68c04e367dd7eb0ff7c98f3b3e3297d2c7365f822bbe7844483ec6bf88bf",
+    "sha256": "786b68c04e367dd7eb0ff7c98f3b3e3297d2c7365f822bbe7844483ec6bf88bf"
+  },
+  "repository/experiments/250-attachment-bytes/adapter.c": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5",
+    "sha256": "30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5"
+  },
+  "repository/experiments/250-attachment-bytes/proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+    "sha256": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062"
+  },
+  "repository/experiments/250-attachment-bytes/test_proof.py": {
+    "published": "dev-docs/evidence/attachment-bytes/source-objects/9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+    "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  }
+}

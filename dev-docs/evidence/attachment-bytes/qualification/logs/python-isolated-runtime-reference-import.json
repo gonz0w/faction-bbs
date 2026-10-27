@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/private/tmp/faction250-OWNED/venv/bin/python",
+    "-I",
+    "-B",
+    "-c",
+    "import sys, importlib.util, importlib.metadata, json, hashlib\nfrom pathlib import Path\nimport cryptography, cffi, pycparser\nfrom cryptography.hazmat.backends.openssl.backend import backend\nfrom cryptography.hazmat.bindings._rust import openssl\np=Path(\"/private/tmp/faction250-OWNED/downloads/gajim-aes.py\")\nbefore=hashlib.sha256(p.read_bytes()).hexdigest()\nspec=importlib.util.spec_from_file_location(\"faction250_unchanged_gajim_aes\",p)\nmodule=importlib.util.module_from_spec(spec); sys.modules[spec.name]=module; spec.loader.exec_module(module)\nafter=hashlib.sha256(p.read_bytes()).hexdigest()\nassert before==after==\"79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4\"\nprint(json.dumps({\"python\":sys.version,\"executable\":sys.executable,\"distributions\":sorted((d.metadata[\"Name\"],d.version) for d in importlib.metadata.distributions()),\"openssl_version\":backend.openssl_version_text(),\"openssl_version_number\":backend.openssl_version_number(),\"fips_enabled\":backend._fips_enabled,\"legacy_provider_loaded\":openssl._legacy_provider_loaded,\"default_provider\":\"successful cryptography initialization loads default per source src/rust/src/lib.rs:107\",\"gajim_imported_classes\":[name for name in [\"AESKeyData\",\"AESGCMEncryptor\",\"AESGCMDecryptor\"] if hasattr(module,name)],\"gajim_source_sha256_before\":before,\"gajim_source_sha256_after\":after,\"cryptographic_operations_executed\":False},indent=2))\n"
+  ],
+  "environment": {
+    "OPENSSL_CONF": "/private/tmp/faction250-OWNED/openssl-empty.cnf",
+    "OPENSSL_MODULES": "/private/tmp/faction250-OWNED/modules-empty",
+    "OPENSSL_ENGINES": "/private/tmp/faction250-OWNED/engines-empty"
+  },
+  "stdout": "{\n  \"python\": \"3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]\",\n  \"executable\": \"/private/tmp/faction250-OWNED/venv/bin/python\",\n  \"distributions\": [\n    [\n      \"cffi\",\n      \"2.0.0\"\n    ],\n    [\n      \"cryptography\",\n      \"50.0.2\"\n    ],\n    [\n      \"pycparser\",\n      \"2.23\"\n    ]\n  ],\n  \"openssl_version\": \"OpenSSL 4.0.3 29 Sep 2026\",\n  \"openssl_version_number\": 1073741872,\n  \"fips_enabled\": false,\n  \"legacy_provider_loaded\": true,\n  \"default_provider\": \"successful cryptography initialization loads default per source src/rust/src/lib.rs:107\",\n  \"gajim_imported_classes\": [\n    \"AESKeyData\",\n    \"AESGCMEncryptor\",\n    \"AESGCMDecryptor\"\n  ],\n  \"gajim_source_sha256_before\": \"79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4\",\n  \"gajim_source_sha256_after\": \"79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4\",\n  \"cryptographic_operations_executed\": false\n}\n",
+  "stderr": "",
+  "exit": 0
+}

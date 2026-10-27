@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/openssl/openssl/8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/.gitattributes",
+    "file": "openssl-gitattributes",
+    "sha256": "2f24580448bd0cb5f6f66abfc953f72e629febff4d9edd3bd97534c3a3a776e4",
+    "bytes": 801,
+    "exit": 0
+  },
+  {
+    "url": "https://api.github.com/repos/gajim/gajim/contents/gajim/common/aes.py?ref=c9b40e5e220ea59b0e387ac3e753eac1cfe215a1",
+    "file": "gajim-aes-contents.json",
+    "sha256": "6e2f1b71273f9eb2341d1473ae01255b29467054bb074b58d3465c36500e81c5",
+    "bytes": 3188,
+    "exit": 0
+  },
+  {
+    "url": "https://api.github.com/repos/gajim/gajim/contents/COPYING?ref=c9b40e5e220ea59b0e387ac3e753eac1cfe215a1",
+    "file": "gajim-copying-contents.json",
+    "sha256": "4262e31c0a7846b07e0f9352b86fa23364e5f3e9a4d8a284865195e662847136",
+    "bytes": 49314,
+    "exit": 0
+  }
+]

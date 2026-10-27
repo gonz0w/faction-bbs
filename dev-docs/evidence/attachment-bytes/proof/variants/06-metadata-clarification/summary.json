@@ -1,0 +1,50 @@
+{
+  "status": "complete-input-byte-proof-passed",
+  "known_answers": 2,
+  "complete_inputs": 8,
+  "mutation_cases": 47,
+  "reference_rejection_causes": {
+    "cryptography.exceptions.InvalidTag": 43,
+    "missing authentication framing": 4
+  },
+  "native_rejection_causes": {
+    "native.exit.3": 43,
+    "missing authentication framing": 4
+  },
+  "chunk_observations": 40,
+  "reference_chunk_successes": 14,
+  "reference_chunk_failures": 26,
+  "chunk_failure_causes": {
+    "builtins.ValueError": 26
+  },
+  "per_chunk_actual_success_lengths": {
+    "1": [],
+    "15": [],
+    "16": [
+      0,
+      16,
+      4096
+    ],
+    "17": [
+      0,
+      1,
+      17,
+      4097
+    ],
+    "4096": [
+      0,
+      1,
+      15,
+      16,
+      17,
+      4096,
+      4097
+    ]
+  },
+  "prediction_mismatches": 0,
+  "spool_regular_objects": 8,
+  "spool_ciphertext_bytes": 12465,
+  "frozen_qualification_files_unchanged": 63,
+  "frozen_native_artifacts_unchanged": 5,
+  "temporary_unit_fixture_entries_remaining": 1
+}

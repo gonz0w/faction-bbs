@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/python3",
+    "-s",
+    "-B",
+    "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py"
+  ],
+  "exit": 0,
+  "sources": {
+    "proof.py": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+    "test_proof.py": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "native_binary_existed_before": false
+}

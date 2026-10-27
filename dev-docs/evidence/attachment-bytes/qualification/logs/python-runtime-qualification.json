@@ -1,0 +1,82 @@
+{
+  "runtime": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/private/tmp/faction250-OWNED/venv/bin/python",
+  "stdlib": "/opt/homebrew/opt/python@3.14/Frameworks/Python.framework/Versions/3.14/lib/python3.14",
+  "site": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages",
+  "distributions": [
+    {
+      "name": "cffi",
+      "version": "2.0.0",
+      "license_expression": "MIT",
+      "license": null,
+      "requires": [
+        "pycparser; implementation_name != \"PyPy\""
+      ],
+      "dist_info": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/cffi-2.0.0.dist-info"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "license_expression": "Apache-2.0 OR BSD-3-Clause",
+      "license": null,
+      "requires": [
+        "cffi>=2.0.0 ; platform_python_implementation != 'PyPy'",
+        "typing-extensions>=4.13.2 ; python_full_version < '3.11'",
+        "bcrypt>=3.1.5 ; extra == 'ssh'"
+      ],
+      "dist_info": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/cryptography-50.0.2.dist-info"
+    },
+    {
+      "name": "pycparser",
+      "version": "2.23",
+      "license_expression": null,
+      "license": "BSD-3-Clause",
+      "requires": null,
+      "dist_info": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/pycparser-2.23.dist-info"
+    }
+  ],
+  "openssl_version_text": "OpenSSL 4.0.3 29 Sep 2026",
+  "openssl_version_number": 1073741872,
+  "backend_module": "cryptography.hazmat.backends.openssl.backend",
+  "modules": {
+    "cryptography": {
+      "path": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/cryptography/__init__.py",
+      "sha256": "9ad86e52b4dde0544e0a9518ad322a863cfab3a4fd763019ad5ee7675a0c9b6a"
+    },
+    "cffi": {
+      "path": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/cffi/__init__.py",
+      "sha256": "fa4b0143b31f0f356f6c1955fdfb5805602612a7c0f3a963233331cda65e0252"
+    },
+    "pycparser": {
+      "path": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/pycparser/__init__.py",
+      "sha256": "150165e57bb15d98981eb06e37510494dd423a547c93868249d1bb87b6bbccbc"
+    },
+    "_cffi_backend": {
+      "path": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/_cffi_backend.cpython-314-darwin.so",
+      "sha256": "66fc2c5f14599ea1c95660d5287479776d45a0ef2643badc2c9d318394b502d8"
+    }
+  },
+  "native_extensions": [
+    {
+      "path": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/_cffi_backend.cpython-314-darwin.so",
+      "sha256": "66fc2c5f14599ea1c95660d5287479776d45a0ef2643badc2c9d318394b502d8",
+      "otool_L": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/_cffi_backend.cpython-314-darwin.so:\n\t/usr/lib/libffi.dylib (compatibility version 1.0.0, current version 32.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1345.120.2)\n",
+      "exit": 0
+    },
+    {
+      "path": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/cryptography/hazmat/bindings/_rust.abi3.so",
+      "sha256": "0aced18998c288668c0eb65cfdc76fd41726370e6d5d9760c0b27143929162d2",
+      "otool_L": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages/cryptography/hazmat/bindings/_rust.abi3.so:\n\t@rpath/cryptography.hazmat.bindings._rust.abi3.so (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)\n",
+      "exit": 0
+    }
+  ],
+  "reference_imports": [
+    "from __future__ import annotations",
+    "import os",
+    "from dataclasses import dataclass",
+    "from cryptography.hazmat.backends import default_backend",
+    "from cryptography.hazmat.primitives.ciphers import algorithms",
+    "from cryptography.hazmat.primitives.ciphers import Cipher",
+    "from cryptography.hazmat.primitives.ciphers.modes import GCM"
+  ]
+}

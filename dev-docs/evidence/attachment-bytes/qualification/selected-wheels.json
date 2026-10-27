@@ -1,0 +1,74 @@
+[
+  {
+    "comment_text": null,
+    "core-metadata": {
+      "sha256": "047cfc71226409de4318b360aef15c63a2adf609731e3dcf7fe932f14ea042ee"
+    },
+    "digests": {
+      "blake2b_256": "e556d194340cc4a57535e82e1bee9e89667ac4b7c13b5d3f59686deae3094dd5",
+      "md5": "9a1b5b0fccee2996921da9f6e627825c",
+      "sha256": "fa8f5efb344d6908a1ce62f4a24e2e5780f825d6f53f5f50ec5ffacac72936cb"
+    },
+    "downloads": -1,
+    "filename": "cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl",
+    "has_sig": false,
+    "md5_digest": "9a1b5b0fccee2996921da9f6e627825c",
+    "packagetype": "bdist_wheel",
+    "python_version": "cp311",
+    "requires_python": "!=3.9.0,!=3.9.1,>=3.9",
+    "size": 3914904,
+    "upload_time": "2026-09-30T14:43:44",
+    "upload_time_iso_8601": "2026-09-30T14:43:44.339921Z",
+    "url": "https://files.pythonhosted.org/packages/e5/56/d194340cc4a57535e82e1bee9e89667ac4b7c13b5d3f59686deae3094dd5/cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl",
+    "yanked": false,
+    "yanked_reason": null
+  },
+  {
+    "comment_text": null,
+    "core-metadata": {
+      "sha256": "b98ce7e3417af089bc12d5c73412d9b3b1683ccf8ec73c986c35ac8c9be1ba39"
+    },
+    "digests": {
+      "blake2b_256": "59dd27e9fa567a23931c838c6b02d0764611c62290062a6d4e8ff7863daf9730",
+      "md5": "36c8d9308a055343f8cd7c016ae762b5",
+      "sha256": "c654de545946e0db659b3400168c9ad31b5d29593291482c43e3564effbcee13"
+    },
+    "downloads": -1,
+    "filename": "cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+    "has_sig": false,
+    "md5_digest": "36c8d9308a055343f8cd7c016ae762b5",
+    "packagetype": "bdist_wheel",
+    "python_version": "cp314",
+    "requires_python": ">=3.9",
+    "size": 181487,
+    "upload_time": "2025-09-08T23:23:19",
+    "upload_time_iso_8601": "2025-09-08T23:23:19.622604Z",
+    "url": "https://files.pythonhosted.org/packages/59/dd/27e9fa567a23931c838c6b02d0764611c62290062a6d4e8ff7863daf9730/cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+    "yanked": false,
+    "yanked_reason": null
+  },
+  {
+    "comment_text": null,
+    "core-metadata": {
+      "sha256": "a2c9a11ccc5ade7e6c3f0bf959e529cb23e79bbe9ea215d8199c8a1a659b3c57"
+    },
+    "digests": {
+      "blake2b_256": "a0e359cd50310fc9b59512193629e1984c1f95e5c8ae6e5d8c69532ccc65a7fe",
+      "md5": "961daf0e0910747590f8a0101322bcd3",
+      "sha256": "e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934"
+    },
+    "downloads": -1,
+    "filename": "pycparser-2.23-py3-none-any.whl",
+    "has_sig": false,
+    "md5_digest": "961daf0e0910747590f8a0101322bcd3",
+    "packagetype": "bdist_wheel",
+    "python_version": "py3",
+    "requires_python": ">=3.8",
+    "size": 118140,
+    "upload_time": "2025-09-09T13:23:46",
+    "upload_time_iso_8601": "2025-09-09T13:23:46.651288Z",
+    "url": "https://files.pythonhosted.org/packages/a0/e3/59cd50310fc9b59512193629e1984c1f95e5c8ae6e5d8c69532ccc65a7fe/pycparser-2.23-py3-none-any.whl",
+    "yanked": false,
+    "yanked_reason": null
+  }
+]

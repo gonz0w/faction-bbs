@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/private/tmp/faction250-OWNED/venv/bin/python",
+    "-I",
+    "-B",
+    "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py",
+    "--native-binary",
+    "/private/tmp/faction250-OWNED/phase2/adapter",
+    "--gajim-module",
+    "/private/tmp/faction250-OWNED/downloads/gajim-aes.py",
+    "--spool",
+    "/private/tmp/faction250-OWNED/phase2/spool-first",
+    "--result",
+    "/private/tmp/faction250-OWNED/phase2/result-first.json"
+  ],
+  "environment": {
+    "TMPDIR": "/private/tmp/faction250-OWNED/phase2/tmp",
+    "OPENSSL_CONF": "/private/tmp/faction250-OWNED/openssl-empty.cnf",
+    "OPENSSL_MODULES": "/private/tmp/faction250-OWNED/modules-empty",
+    "OPENSSL_ENGINES": "/private/tmp/faction250-OWNED/engines-empty"
+  },
+  "exit": 0,
+  "sources": {
+    "adapter.c": "30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5",
+    "proof.py": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+    "test_proof.py": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6"
+  },
+  "binary_sha256": "a19a7047378c247e8c232c4c0569943a2871318e960ea4c06da53ccee1878211"
+}

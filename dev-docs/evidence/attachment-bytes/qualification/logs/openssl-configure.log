@@ -1,0 +1,26 @@
+["/usr/bin/perl", "Configure", "darwin64-arm64-cc", "no-shared", "no-tests", "no-apps", "no-module", "no-ssl", "no-quic", "no-engine", "no-legacy", "no-dso", "--prefix=/private/tmp/faction250-OWNED/unused-install", "--openssldir=/private/tmp/faction250-OWNED/openssl-config"]
+Configuring OpenSSL version 3.5.7 for target darwin64-arm64-cc
+Using os-specific seed configuration
+Created configdata.pm
+Running configdata.pm
+Created Makefile.in
+Created Makefile
+Created include/openssl/configuration.h
+
+**********************************************************************
+***                                                                ***
+***   OpenSSL has been successfully configured                     ***
+***                                                                ***
+***   If you encounter a problem while building, please open an    ***
+***   issue on GitHub <https://github.com/openssl/openssl/issues>  ***
+***   and include the output from the following command:           ***
+***                                                                ***
+***       perl configdata.pm --dump                                ***
+***                                                                ***
+***   (If you are new to OpenSSL, you might want to consult the    ***
+***   'Troubleshooting' section in the INSTALL.md file first)      ***
+***                                                                ***
+**********************************************************************
+
+EXIT=0
+ELAPSED_SECONDS=5.124

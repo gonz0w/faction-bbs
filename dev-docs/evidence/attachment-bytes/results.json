@@ -1,0 +1,1029 @@
+{
+  "status": "complete-input-byte-proof-passed",
+  "scope": "local historical AES-256-GCM bytes, empty AAD; no modern descriptor/transport/NetBSD/product claim",
+  "primitive_limit": "native OpenSSL 3.5.7 and reference bundled OpenSSL 4.0.3 share lineage",
+  "laboratory_plaintext_cap": 8192,
+  "laboratory_ciphertext_cap": 8208,
+  "reference_sha256_before": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4",
+  "known_answers": [
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "both_directions_match": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 16,
+      "both_directions_match": true
+    }
+  ],
+  "complete_inputs": [
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "ciphertext_bytes": 16,
+      "ciphertext_sha256": "bcd1bd87fc7415c104a9788cdf6a07389a2ff16320b6036787301c26f9507e0d",
+      "reciprocal": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 1,
+      "ciphertext_bytes": 17,
+      "ciphertext_sha256": "4cd3c72548f13f23ef7a448d27a02a4cd1482c32bcf6215d673e1c51fdc6c792",
+      "reciprocal": true
+    },
+    {
+      "case": 2,
+      "plaintext_bytes": 15,
+      "ciphertext_bytes": 31,
+      "ciphertext_sha256": "6f98d19c930f86c7bb51195b6c4d0b42742be51bbf35b63102ce1143d724ee85",
+      "reciprocal": true
+    },
+    {
+      "case": 3,
+      "plaintext_bytes": 16,
+      "ciphertext_bytes": 32,
+      "ciphertext_sha256": "4c5a6ccf8d14f0e8af41a1d8b7e862280c88326f046bbd50095fb07eb1714b37",
+      "reciprocal": true
+    },
+    {
+      "case": 4,
+      "plaintext_bytes": 17,
+      "ciphertext_bytes": 33,
+      "ciphertext_sha256": "23ad0e80c0262bb2ba5b837321eb1295566417cfd5f884e8f47255939e6061a3",
+      "reciprocal": true
+    },
+    {
+      "case": 5,
+      "plaintext_bytes": 4095,
+      "ciphertext_bytes": 4111,
+      "ciphertext_sha256": "6aec6e0868140f4a244da66a95b348ca2d8c956271d373b6b534b507a6074a2e",
+      "reciprocal": true
+    },
+    {
+      "case": 6,
+      "plaintext_bytes": 4096,
+      "ciphertext_bytes": 4112,
+      "ciphertext_sha256": "05ca73c81b847bd34cd932fd9c111ee49b6a8ed8a0a646e1f38f81856449b798",
+      "reciprocal": true
+    },
+    {
+      "case": 7,
+      "plaintext_bytes": 4097,
+      "ciphertext_bytes": 4113,
+      "ciphertext_sha256": "c3b8b8c5303b056caaedc2db61c10abaf6f92a155381f20c7fb990f0b2571258",
+      "reciprocal": true
+    }
+  ],
+  "rejections": [
+    {
+      "case": 0,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 0,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 0,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "missing authentication framing",
+        "reference": "missing authentication framing"
+      }
+    },
+    {
+      "case": 0,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 0,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "missing authentication framing",
+        "reference": "missing authentication framing"
+      }
+    },
+    {
+      "case": 1,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 1,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 1,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 1,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 1,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 1,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "missing authentication framing",
+        "reference": "missing authentication framing"
+      }
+    },
+    {
+      "case": 2,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 2,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 2,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 2,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 2,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 2,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "missing authentication framing",
+        "reference": "missing authentication framing"
+      }
+    },
+    {
+      "case": 3,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 3,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 3,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 3,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 3,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 3,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 4,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 4,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 4,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 4,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 4,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 4,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 5,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 5,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 5,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 5,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 5,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 5,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 6,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 6,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 6,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 6,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 6,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 6,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 7,
+      "mutation": "wrong-key",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 7,
+      "mutation": "tag-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 7,
+      "mutation": "cipher-bit",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 7,
+      "mutation": "truncate",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 7,
+      "mutation": "append",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    },
+    {
+      "case": 7,
+      "mutation": "missing-tag",
+      "accepted_plaintext_bytes": 0,
+      "spool_unchanged": true,
+      "causes": {
+        "native": "native.exit.3",
+        "reference": "cryptography.exceptions.InvalidTag"
+      }
+    }
+  ],
+  "chunks": [
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 0,
+      "plaintext_bytes": 0,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 1,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 1,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 1,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 1,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 1,
+      "plaintext_bytes": 1,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 2,
+      "plaintext_bytes": 15,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 2,
+      "plaintext_bytes": 15,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 2,
+      "plaintext_bytes": 15,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 2,
+      "plaintext_bytes": 15,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 2,
+      "plaintext_bytes": 15,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 3,
+      "plaintext_bytes": 16,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 3,
+      "plaintext_bytes": 16,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 3,
+      "plaintext_bytes": 16,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 3,
+      "plaintext_bytes": 16,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 3,
+      "plaintext_bytes": 16,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 4,
+      "plaintext_bytes": 17,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 4,
+      "plaintext_bytes": 17,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 4,
+      "plaintext_bytes": 17,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 4,
+      "plaintext_bytes": 17,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 4,
+      "plaintext_bytes": 17,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 5,
+      "plaintext_bytes": 4095,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 5,
+      "plaintext_bytes": 4095,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 5,
+      "plaintext_bytes": 4095,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 5,
+      "plaintext_bytes": 4095,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 5,
+      "plaintext_bytes": 4095,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 6,
+      "plaintext_bytes": 4096,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 6,
+      "plaintext_bytes": 4096,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 6,
+      "plaintext_bytes": 4096,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 6,
+      "plaintext_bytes": 4096,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 6,
+      "plaintext_bytes": 4096,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 7,
+      "plaintext_bytes": 4097,
+      "chunk_bytes": 1,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 7,
+      "plaintext_bytes": 4097,
+      "chunk_bytes": 15,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 7,
+      "plaintext_bytes": 4097,
+      "chunk_bytes": 16,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": false,
+      "reference_rejection": "builtins.ValueError",
+      "source_predicted_decrypt_match": false,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 7,
+      "plaintext_bytes": 4097,
+      "chunk_bytes": 17,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    },
+    {
+      "case": 7,
+      "plaintext_bytes": 4097,
+      "chunk_bytes": 4096,
+      "reference_encrypt_match": true,
+      "native_reciprocal_match": true,
+      "reference_decrypt_match": true,
+      "reference_rejection": null,
+      "source_predicted_decrypt_match": true,
+      "prediction_matches_observation": true
+    }
+  ],
+  "spool": {
+    "blob-00.bin": {
+      "bytes": 16,
+      "sha256": "bcd1bd87fc7415c104a9788cdf6a07389a2ff16320b6036787301c26f9507e0d"
+    },
+    "blob-01.bin": {
+      "bytes": 17,
+      "sha256": "4cd3c72548f13f23ef7a448d27a02a4cd1482c32bcf6215d673e1c51fdc6c792"
+    },
+    "blob-02.bin": {
+      "bytes": 31,
+      "sha256": "6f98d19c930f86c7bb51195b6c4d0b42742be51bbf35b63102ce1143d724ee85"
+    },
+    "blob-03.bin": {
+      "bytes": 32,
+      "sha256": "4c5a6ccf8d14f0e8af41a1d8b7e862280c88326f046bbd50095fb07eb1714b37"
+    },
+    "blob-04.bin": {
+      "bytes": 33,
+      "sha256": "23ad0e80c0262bb2ba5b837321eb1295566417cfd5f884e8f47255939e6061a3"
+    },
+    "blob-05.bin": {
+      "bytes": 4111,
+      "sha256": "6aec6e0868140f4a244da66a95b348ca2d8c956271d373b6b534b507a6074a2e"
+    },
+    "blob-06.bin": {
+      "bytes": 4112,
+      "sha256": "05ca73c81b847bd34cd932fd9c111ee49b6a8ed8a0a646e1f38f81856449b798"
+    },
+    "blob-07.bin": {
+      "bytes": 4113,
+      "sha256": "c3b8b8c5303b056caaedc2db61c10abaf6f92a155381f20c7fb990f0b2571258"
+    }
+  },
+  "reference_sha256_after": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4",
+  "binary_sha256": "a19a7047378c247e8c232c4c0569943a2871318e960ea4c06da53ccee1878211",
+  "characterization_prediction_mismatches": 0
+}

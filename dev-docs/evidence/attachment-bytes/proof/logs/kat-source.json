@@ -1,0 +1,9 @@
+{
+  "url": "https://raw.githubusercontent.com/pyca/cryptography/50.0.2/vectors/cryptography_vectors/ciphers/AES/GCM/gcmEncryptExtIV256.rsp",
+  "git_blob_sha1": "60da5fae6135187e4d7912a2da62a20bad3c2a48",
+  "sha256": "4448b4998c3f58cd9f5542ddf7c573189a721ff3d3ac24cd5177bb4910a787f8",
+  "bytes": 3182939,
+  "exit": 0,
+  "source": "NIST CAVS 14.0 public AES-GCM vectors, mirrored by pyca/cryptography 50.0.2",
+  "license_reference": "https://github.com/pyca/cryptography/tree/50.0.2 (Apache-2.0 OR BSD-3-Clause; public NIST data attribution)"
+}

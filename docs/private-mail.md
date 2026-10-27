@@ -117,11 +117,13 @@ through the current sysop-readable file area and call it server-blind.
 The [attachment profile comparison](../dev-docs/research/0058-encrypted-attachment-profile.md)
 proposes a bounded experiment using structured XEP-0447/0448 metadata inside
 authenticated OMEMO/SCE. This is research, not an adopted format or an available
-attachment feature. Independent encrypted interoperability, authenticated private
-storage, strict cipher/size handling and durable attachment keys remain unproven.
-Historical XEP-0454 is a byte-level comparison, not the same format. A local proof
-would not establish private remote delivery. Necessary routing, sizes and timing can
-still be visible; there is no plaintext fallback.
+attachment feature. A [local byte proof](../dev-docs/research/0059-attachment-byte-proof.md)
+matched bounded historical AES-256-GCM inputs with an unchanged reference on one
+macOS host ([saved evidence](../dev-docs/evidence/attachment-bytes/README.md)). It also retained reference chunk decryption failures; it does not qualify
+streaming or private delivery. Authenticated private storage, the proposed descriptor,
+recipient authorization and durable attachment keys remain unproven. Historical
+XEP-0454 is a byte-level comparison, not the proposed format. Necessary routing,
+sizes and timing can still be visible; there is no plaintext fallback.
 
 ## What the proof does and does not establish
 
