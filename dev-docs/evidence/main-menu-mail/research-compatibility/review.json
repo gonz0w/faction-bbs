@@ -1,0 +1,19 @@
+{
+  "actual_green": [
+    "same strict all-target release Clippy command",
+    "format check",
+    "one existing test"
+  ],
+  "actual_red": "E0004 missing HomeMail exhaustive match, exit101",
+  "fallback": "current approval check then existing Optional section unavailable message and Pause; no native mail handoff",
+  "issue": 230,
+  "other_experimental_action_consumers": "three additional imports already use wildcard unavailable fallbacks",
+  "product_root_sha256_unchanged": "a6de523049a995792a234ec142a4f9a9af0349b3a7a1fca4423d324dbc8f8536",
+  "remaining_actionable_findings": [],
+  "result": "pass",
+  "reviewer_builds_tests_or_fixtures": false,
+  "schema": 1,
+  "scope": "one-line non-installed research adapter compatibility fallback",
+  "ui_after_sha256": "d8a17f681801bc485974ca42c36fc6aa1896938136eb913b34f737a84a1285ec",
+  "ui_before_sha256": "2aa40b54a5d97470730ee704dbd87f945cc0fe4838b30f49c72a82176dc190e0"
+}
