@@ -1,0 +1,24 @@
+{
+  "initial_check_without_ignored_logs": 0,
+  "including_all_selected_logs_before": 2,
+  "after": 0,
+  "scope": "15 exact captured diagnostic EOF exceptions only; no source/runtime/global whitespace exemption",
+  "paths": [
+    "dev-docs/evidence/attachment-metadata/lead-regressions/command0.log",
+    "dev-docs/evidence/attachment-metadata/lead-regressions/command1.log",
+    "dev-docs/evidence/attachment-metadata/observations/run02/command0.log",
+    "dev-docs/evidence/attachment-metadata/observations/run02/command1.log",
+    "dev-docs/evidence/attachment-metadata/observations/run03-characterization/command0.log",
+    "dev-docs/evidence/attachment-metadata/observations/run03-characterization/command1.log",
+    "dev-docs/evidence/attachment-metadata/observations/run04-final/command0.log",
+    "dev-docs/evidence/attachment-metadata/observations/run04-final/command1.log",
+    "dev-docs/evidence/attachment-metadata/observations/run04-final/command2.log",
+    "dev-docs/evidence/attachment-metadata/observations/run05-final/command0.log",
+    "dev-docs/evidence/attachment-metadata/observations/run05-final/command1.log",
+    "dev-docs/evidence/attachment-metadata/observations/run05-final/command2.log",
+    "dev-docs/evidence/attachment-metadata/review/command0.log",
+    "dev-docs/evidence/attachment-metadata/review/command1.log",
+    "dev-docs/evidence/attachment-metadata/review/command2.log"
+  ],
+  "raw_bytes_unchanged": true
+}

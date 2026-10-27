@@ -5,5 +5,8 @@
 mod native;
 #[cfg(feature = "native")]
 pub use native::*;
+/// Experimental attachment metadata proof; no checkpoint or delivery integration.
+#[cfg(feature = "native")]
+pub mod attachment;
 #[cfg(feature = "native")]
 pub mod sce;

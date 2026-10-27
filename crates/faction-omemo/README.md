@@ -61,6 +61,11 @@ fractions, offsets or leap seconds. They must agree within 300 seconds of the
 enclosing **sending** time; receipt time is irrelevant. This is a deliberately
 bounded SCE subset, not a claim of complete XMPP/SCE extension support.
 
+The native-only [experimental attachment metadata codec](../../dev-docs/attachment-metadata.md)
+handles one bounded descriptor inside authenticated SCE. The existing text-only
+SCE APIs and current checkpoint reject that extension. It does not provide blob
+verification, storage or attachment delivery; default features remain empty.
+
 The `interop_probe` Cargo example is a laboratory-only, uninstalled raw-state
 channel for the unchanged [independent reference](../../experiments/200-omemo-interop/reference.py).
 It requires the explicit `native` feature and accepts no arguments or file/TTY

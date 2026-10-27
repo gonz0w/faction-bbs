@@ -1,0 +1,41 @@
+{
+  "dependency-checks": {
+    "default": "pass; inventory unchanged",
+    "first_offline_network_attempt": "unavailable cached source; not an application behavior RED",
+    "missing_preexisting_locked_sources_fetched": [
+      "openssl-probe0.2.1",
+      "foreign-types0.3.2",
+      "openssl-macros0.1.1",
+      "foreign-types-shared0.1.1",
+      "openssl-sys0.9.117",
+      "openssl0.10.81"
+    ],
+    "network": "pass after reviewed local manifest/root-lock hash changes only; no registry/license/feature/source changes",
+    "observation_source": "lead tool-call outputs and issue discussion; no full local raw log is claimed",
+    "optional-native": "pass; inventory unchanged"
+  },
+  "feature-off": {
+    "exit": 0,
+    "failed": 0,
+    "harness_summaries": 15,
+    "ignored_helpers_or_existing": 0,
+    "passed": 49
+  },
+  "native-mail": {
+    "exit": 0,
+    "failed": 0,
+    "harness_summaries": 17,
+    "ignored_helpers_or_existing": 6,
+    "passed": 154
+  },
+  "new_platform_support": false,
+  "product_attachment_delivery": false,
+  "temper-manifest": {
+    "exit": 0,
+    "files": 9
+  },
+  "tool-tests": {
+    "exit": 0,
+    "passed": 478
+  }
+}

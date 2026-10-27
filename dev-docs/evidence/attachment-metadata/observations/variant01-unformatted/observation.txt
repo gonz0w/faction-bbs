@@ -1,0 +1,1 @@
+cargo +1.96.0 fmt --all -- --check exited 1 for formatting; no runtime tests ran on this variant. Output was returned by exec tool, not captured as a full local log.

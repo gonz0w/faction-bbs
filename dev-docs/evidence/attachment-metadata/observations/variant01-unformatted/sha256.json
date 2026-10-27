@@ -1,0 +1,10 @@
+{
+  "Cargo.lock": "362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30",
+  "crates/faction-omemo/Cargo.toml": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650",
+  "crates/faction-omemo/src/lib.rs": "e8c5746336ff397f27d9fa31ad57b39b11adc323b52d15608b661c0990128c77",
+  "crates/faction-omemo/src/sce.rs": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508",
+  "crates/faction-omemo/src/attachment.rs": "6bcac1a1b049d75bf5b069bdc8f8f6f6e4c06b90bc10c49b695cdc35a50ae2f3",
+  "crates/faction-omemo/tests/attachment_contract.rs": "ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69",
+  "crates/faction-omemo/tests/attachment_native.rs": "3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1",
+  "crates/faction-client/tests/attachment_rejection.rs": "758b8e5e36246d2f107ef1c9b7e4fc6dd92cf2758f78fd937255fe5eef322a75"
+}

@@ -1,0 +1,363 @@
+{
+  "files": {
+    "red/checkpoint.log": {
+      "public_path": "observations/red/checkpoint.log",
+      "sha256": "e3127a6207546c0b27f6815ebb86c120352acabb145ac109eb1c6d53450759ff"
+    },
+    "red/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/2527a8c4ff9de893aaa6cb30db885cf6c33b5d3f4f4c13bd7228c17e3c3265b2.rs",
+      "sha256": "2527a8c4ff9de893aaa6cb30db885cf6c33b5d3f4f4c13bd7228c17e3c3265b2"
+    },
+    "red/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69.rs",
+      "sha256": "ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69"
+    },
+    "red/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1.rs",
+      "sha256": "3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1"
+    },
+    "red/omemo.log": {
+      "public_path": "observations/red/omemo.log",
+      "sha256": "7da086dbfe18f19a83120c1c91b2f80fe207daf20b4b9450c09ada38a2cbdd7e"
+    },
+    "run01/command0.log": {
+      "public_path": "observations/run01/command0.log",
+      "sha256": "3571159d8770f00969768d651dd1a45f35d7e7073d5e804e702508e5dca3f22e"
+    },
+    "run01/command1.log": {
+      "public_path": "observations/run01/command1.log",
+      "sha256": "3571159d8770f00969768d651dd1a45f35d7e7073d5e804e702508e5dca3f22e"
+    },
+    "run01/inputs/Cargo.lock": {
+      "public_path": "objects/362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30.lock",
+      "sha256": "362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30"
+    },
+    "run01/inputs/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+      "sha256": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376"
+    },
+    "run01/inputs/crates/faction-omemo/Cargo.toml": {
+      "public_path": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "run01/inputs/crates/faction-omemo/src/attachment.rs": {
+      "public_path": "objects/793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899.rs",
+      "sha256": "793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899"
+    },
+    "run01/inputs/crates/faction-omemo/src/lib.rs": {
+      "public_path": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "run01/inputs/crates/faction-omemo/src/sce.rs": {
+      "public_path": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+      "sha256": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508"
+    },
+    "run01/inputs/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8.rs",
+      "sha256": "bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8"
+    },
+    "run01/inputs/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1.rs",
+      "sha256": "682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1"
+    },
+    "run01/record.json": {
+      "public_path": "observations/run01/record.json",
+      "sha256": "7dad4e496b763bc328b5e8bee83f35a855fc44a749e8be55db46de4b93332f37"
+    },
+    "run02/command0.log": {
+      "public_path": "observations/run02/command0.log",
+      "sha256": "f75572cbcc223a265bb9a4a18c00e29a40d6405705e1c03201910f98ce4ead58"
+    },
+    "run02/command1.log": {
+      "public_path": "observations/run02/command1.log",
+      "sha256": "93b9005a32c38f7d1a8adb17e47ff97c108b850d74ba78a3e6f0882acbdfef38"
+    },
+    "run02/inputs/Cargo.lock": {
+      "public_path": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "run02/inputs/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+      "sha256": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376"
+    },
+    "run02/inputs/crates/faction-omemo/Cargo.toml": {
+      "public_path": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "run02/inputs/crates/faction-omemo/src/attachment.rs": {
+      "public_path": "objects/793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899.rs",
+      "sha256": "793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899"
+    },
+    "run02/inputs/crates/faction-omemo/src/lib.rs": {
+      "public_path": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "run02/inputs/crates/faction-omemo/src/sce.rs": {
+      "public_path": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+      "sha256": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508"
+    },
+    "run02/inputs/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8.rs",
+      "sha256": "bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8"
+    },
+    "run02/inputs/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1.rs",
+      "sha256": "682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1"
+    },
+    "run02/record.json": {
+      "public_path": "observations/run02/record.json",
+      "sha256": "f5fd6bd33841189d8c08e13ddb017f6139292e361dbf4567da6d3c93b15db9c9"
+    },
+    "run03-characterization/command0.log": {
+      "public_path": "observations/run03-characterization/command0.log",
+      "sha256": "e8482bc08e16c9ccaddaa3ed917dc73540345a642d08ff50abf04a5875b1d103"
+    },
+    "run03-characterization/command1.log": {
+      "public_path": "observations/run03-characterization/command1.log",
+      "sha256": "0751301cf6c69b26ce4b50e1f7b54214e0c2340da8f94ebba46be0d34e36a675"
+    },
+    "run03-characterization/inputs/Cargo.lock": {
+      "public_path": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "run03-characterization/inputs/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+      "sha256": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376"
+    },
+    "run03-characterization/inputs/crates/faction-omemo/Cargo.toml": {
+      "public_path": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "run03-characterization/inputs/crates/faction-omemo/src/attachment.rs": {
+      "public_path": "objects/793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899.rs",
+      "sha256": "793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899"
+    },
+    "run03-characterization/inputs/crates/faction-omemo/src/lib.rs": {
+      "public_path": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "run03-characterization/inputs/crates/faction-omemo/src/sce.rs": {
+      "public_path": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+      "sha256": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508"
+    },
+    "run03-characterization/inputs/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d.rs",
+      "sha256": "783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d"
+    },
+    "run03-characterization/inputs/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e.rs",
+      "sha256": "7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e"
+    },
+    "run03-characterization/record.json": {
+      "public_path": "observations/run03-characterization/record.json",
+      "sha256": "90f4520f3f37b10e4695819509242d02c8bf675628ea700805eee358d98b07ae"
+    },
+    "run04-final/command0.log": {
+      "public_path": "observations/run04-final/command0.log",
+      "sha256": "be3c6db76c433bf71da4ba0525acb7b64687f3613a10a3d971a0d1c42c8e1153"
+    },
+    "run04-final/command1.log": {
+      "public_path": "observations/run04-final/command1.log",
+      "sha256": "19b0361ec0c3414468858e2b1a088caec83fb9f4f517f0b712611b7285490023"
+    },
+    "run04-final/command2.log": {
+      "public_path": "observations/run04-final/command2.log",
+      "sha256": "03f13c439ea2a74f4d909c63c2fa4fd0ebc55d1f852312d7d676a726772cd3bd"
+    },
+    "run04-final/command3.log": {
+      "public_path": "observations/run04-final/command3.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run04-final/command4.log": {
+      "public_path": "observations/run04-final/command4.log",
+      "sha256": "7ee7bf91b8c161c266e381878fdd03d1ce1ca73326a2f4eb84f85bf0058ea38e"
+    },
+    "run04-final/inputs/Cargo.lock": {
+      "public_path": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "run04-final/inputs/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+      "sha256": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376"
+    },
+    "run04-final/inputs/crates/faction-omemo/Cargo.toml": {
+      "public_path": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "run04-final/inputs/crates/faction-omemo/src/attachment.rs": {
+      "public_path": "objects/d24b961ea4c4bf5362f9c5a855eee9e50f308e3c97bba7dd9cc4b509c4ebf3f1.rs",
+      "sha256": "d24b961ea4c4bf5362f9c5a855eee9e50f308e3c97bba7dd9cc4b509c4ebf3f1"
+    },
+    "run04-final/inputs/crates/faction-omemo/src/lib.rs": {
+      "public_path": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "run04-final/inputs/crates/faction-omemo/src/sce.rs": {
+      "public_path": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+      "sha256": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508"
+    },
+    "run04-final/inputs/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d.rs",
+      "sha256": "783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d"
+    },
+    "run04-final/inputs/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e.rs",
+      "sha256": "7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e"
+    },
+    "run04-final/record.json": {
+      "public_path": "observations/run04-final/record.json",
+      "sha256": "b60e86ae9c0f7e01ceadf960779d0cbc1eebcd21ed143ddec5f40a222d2ad5ce"
+    },
+    "run05-final/command0.log": {
+      "public_path": "observations/run05-final/command0.log",
+      "sha256": "7771477965d6114b818320652eb7b6414b6bdbb88a8946977349773d2cd05a5c"
+    },
+    "run05-final/command1.log": {
+      "public_path": "observations/run05-final/command1.log",
+      "sha256": "6af2dae7b8062b533c36d9560a15c37ed9725d57b9ff374dcbc4e7a0bb6bca3a"
+    },
+    "run05-final/command2.log": {
+      "public_path": "observations/run05-final/command2.log",
+      "sha256": "d9e3c1cabf9ba728c60d9b1ef6fed8915ca44255e9d7890b85f0218903c8adcf"
+    },
+    "run05-final/command3.log": {
+      "public_path": "observations/run05-final/command3.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run05-final/command4.log": {
+      "public_path": "observations/run05-final/command4.log",
+      "sha256": "3f8bf883b4c586d22c8f2fe3ee4e5879745f0638a8bf1efb281ad9844f935e54"
+    },
+    "run05-final/inputs/Cargo.lock": {
+      "public_path": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+      "sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c"
+    },
+    "run05-final/inputs/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+      "sha256": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376"
+    },
+    "run05-final/inputs/crates/faction-omemo/Cargo.toml": {
+      "public_path": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "run05-final/inputs/crates/faction-omemo/src/attachment.rs": {
+      "public_path": "objects/0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac.rs",
+      "sha256": "0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac"
+    },
+    "run05-final/inputs/crates/faction-omemo/src/lib.rs": {
+      "public_path": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+      "sha256": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb"
+    },
+    "run05-final/inputs/crates/faction-omemo/src/sce.rs": {
+      "public_path": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+      "sha256": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508"
+    },
+    "run05-final/inputs/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d.rs",
+      "sha256": "783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d"
+    },
+    "run05-final/inputs/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e.rs",
+      "sha256": "7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e"
+    },
+    "run05-final/record.json": {
+      "public_path": "observations/run05-final/record.json",
+      "sha256": "a93c83b5e2a5d626f0678f8a6175a47d9d5e1189b5731a4e26ae1335fd38633f"
+    },
+    "variant01-unformatted/Cargo.lock": {
+      "public_path": "objects/362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30.lock",
+      "sha256": "362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30"
+    },
+    "variant01-unformatted/crates/faction-client/tests/attachment_rejection.rs": {
+      "public_path": "objects/758b8e5e36246d2f107ef1c9b7e4fc6dd92cf2758f78fd937255fe5eef322a75.rs",
+      "sha256": "758b8e5e36246d2f107ef1c9b7e4fc6dd92cf2758f78fd937255fe5eef322a75"
+    },
+    "variant01-unformatted/crates/faction-omemo/Cargo.toml": {
+      "public_path": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+      "sha256": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650"
+    },
+    "variant01-unformatted/crates/faction-omemo/src/attachment.rs": {
+      "public_path": "objects/6bcac1a1b049d75bf5b069bdc8f8f6f6e4c06b90bc10c49b695cdc35a50ae2f3.rs",
+      "sha256": "6bcac1a1b049d75bf5b069bdc8f8f6f6e4c06b90bc10c49b695cdc35a50ae2f3"
+    },
+    "variant01-unformatted/crates/faction-omemo/src/lib.rs": {
+      "public_path": "objects/e8c5746336ff397f27d9fa31ad57b39b11adc323b52d15608b661c0990128c77.rs",
+      "sha256": "e8c5746336ff397f27d9fa31ad57b39b11adc323b52d15608b661c0990128c77"
+    },
+    "variant01-unformatted/crates/faction-omemo/src/sce.rs": {
+      "public_path": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+      "sha256": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508"
+    },
+    "variant01-unformatted/crates/faction-omemo/tests/attachment_contract.rs": {
+      "public_path": "objects/ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69.rs",
+      "sha256": "ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69"
+    },
+    "variant01-unformatted/crates/faction-omemo/tests/attachment_native.rs": {
+      "public_path": "objects/3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1.rs",
+      "sha256": "3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1"
+    },
+    "variant01-unformatted/observation.txt": {
+      "public_path": "observations/variant01-unformatted/observation.txt",
+      "sha256": "f700b5b2c01d7f4af8a782fdb5f1a507a2d21a368110762a896182ce9645f09e"
+    },
+    "variant01-unformatted/sha256.json": {
+      "public_path": "observations/variant01-unformatted/sha256.json",
+      "sha256": "e57126fc9cbaa511bc2fc83796ee08410c03771e414bdd37289d0c76d2d64f13"
+    }
+  },
+  "schema": 1,
+  "scope": "deduplicated original author source variants; paths in unchanged observations are historical private layout",
+  "source_aliases": {
+    "red/crates/faction-client/tests/attachment_rejection.rs": "objects/2527a8c4ff9de893aaa6cb30db885cf6c33b5d3f4f4c13bd7228c17e3c3265b2.rs",
+    "red/crates/faction-omemo/tests/attachment_contract.rs": "objects/ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69.rs",
+    "red/crates/faction-omemo/tests/attachment_native.rs": "objects/3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1.rs",
+    "run01/inputs/Cargo.lock": "objects/362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30.lock",
+    "run01/inputs/crates/faction-client/tests/attachment_rejection.rs": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+    "run01/inputs/crates/faction-omemo/Cargo.toml": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+    "run01/inputs/crates/faction-omemo/src/attachment.rs": "objects/793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899.rs",
+    "run01/inputs/crates/faction-omemo/src/lib.rs": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+    "run01/inputs/crates/faction-omemo/src/sce.rs": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+    "run01/inputs/crates/faction-omemo/tests/attachment_contract.rs": "objects/bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8.rs",
+    "run01/inputs/crates/faction-omemo/tests/attachment_native.rs": "objects/682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1.rs",
+    "run02/inputs/Cargo.lock": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+    "run02/inputs/crates/faction-client/tests/attachment_rejection.rs": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+    "run02/inputs/crates/faction-omemo/Cargo.toml": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+    "run02/inputs/crates/faction-omemo/src/attachment.rs": "objects/793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899.rs",
+    "run02/inputs/crates/faction-omemo/src/lib.rs": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+    "run02/inputs/crates/faction-omemo/src/sce.rs": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+    "run02/inputs/crates/faction-omemo/tests/attachment_contract.rs": "objects/bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8.rs",
+    "run02/inputs/crates/faction-omemo/tests/attachment_native.rs": "objects/682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1.rs",
+    "run03-characterization/inputs/Cargo.lock": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+    "run03-characterization/inputs/crates/faction-client/tests/attachment_rejection.rs": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+    "run03-characterization/inputs/crates/faction-omemo/Cargo.toml": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+    "run03-characterization/inputs/crates/faction-omemo/src/attachment.rs": "objects/793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899.rs",
+    "run03-characterization/inputs/crates/faction-omemo/src/lib.rs": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+    "run03-characterization/inputs/crates/faction-omemo/src/sce.rs": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+    "run03-characterization/inputs/crates/faction-omemo/tests/attachment_contract.rs": "objects/783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d.rs",
+    "run03-characterization/inputs/crates/faction-omemo/tests/attachment_native.rs": "objects/7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e.rs",
+    "run04-final/inputs/Cargo.lock": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+    "run04-final/inputs/crates/faction-client/tests/attachment_rejection.rs": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+    "run04-final/inputs/crates/faction-omemo/Cargo.toml": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+    "run04-final/inputs/crates/faction-omemo/src/attachment.rs": "objects/d24b961ea4c4bf5362f9c5a855eee9e50f308e3c97bba7dd9cc4b509c4ebf3f1.rs",
+    "run04-final/inputs/crates/faction-omemo/src/lib.rs": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+    "run04-final/inputs/crates/faction-omemo/src/sce.rs": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+    "run04-final/inputs/crates/faction-omemo/tests/attachment_contract.rs": "objects/783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d.rs",
+    "run04-final/inputs/crates/faction-omemo/tests/attachment_native.rs": "objects/7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e.rs",
+    "run05-final/inputs/Cargo.lock": "objects/8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c.lock",
+    "run05-final/inputs/crates/faction-client/tests/attachment_rejection.rs": "objects/e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376.rs",
+    "run05-final/inputs/crates/faction-omemo/Cargo.toml": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+    "run05-final/inputs/crates/faction-omemo/src/attachment.rs": "objects/0ff33555984af43c8d1ef203716ebc65e240efa90af7b6b53ed5ead78774fbac.rs",
+    "run05-final/inputs/crates/faction-omemo/src/lib.rs": "objects/eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb.rs",
+    "run05-final/inputs/crates/faction-omemo/src/sce.rs": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+    "run05-final/inputs/crates/faction-omemo/tests/attachment_contract.rs": "objects/783078ff2e2928c3f10202ad2cb043a59bb49629a11c2e700fd869341a6c3a5d.rs",
+    "run05-final/inputs/crates/faction-omemo/tests/attachment_native.rs": "objects/7ec190cba3907804ce6f689908a60182059e8bf4350061383a328aab5dac158e.rs",
+    "variant01-unformatted/Cargo.lock": "objects/362140b11931e87e2db1e64321cd189ed019320cff9f08dfeb0d2e4f58790f30.lock",
+    "variant01-unformatted/crates/faction-client/tests/attachment_rejection.rs": "objects/758b8e5e36246d2f107ef1c9b7e4fc6dd92cf2758f78fd937255fe5eef322a75.rs",
+    "variant01-unformatted/crates/faction-omemo/Cargo.toml": "objects/1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650.toml",
+    "variant01-unformatted/crates/faction-omemo/src/attachment.rs": "objects/6bcac1a1b049d75bf5b069bdc8f8f6f6e4c06b90bc10c49b695cdc35a50ae2f3.rs",
+    "variant01-unformatted/crates/faction-omemo/src/lib.rs": "objects/e8c5746336ff397f27d9fa31ad57b39b11adc323b52d15608b661c0990128c77.rs",
+    "variant01-unformatted/crates/faction-omemo/src/sce.rs": "objects/10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508.rs",
+    "variant01-unformatted/crates/faction-omemo/tests/attachment_contract.rs": "objects/ad3fbfaa85840c44f6647eb05f34db6cd2a91ae371dc875b33f1e3c23c27ce69.rs",
+    "variant01-unformatted/crates/faction-omemo/tests/attachment_native.rs": "objects/3646668ed9b54da7373ac0f45d6e4f355084707f89732e408013380cc32a17b1.rs"
+  }
+}

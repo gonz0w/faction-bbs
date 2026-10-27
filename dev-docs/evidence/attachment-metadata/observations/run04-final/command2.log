@@ -1,0 +1,20 @@
+   Compiling faction-omemo v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-omemo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/network_sce.rs (/private/tmp/faction252-OWNED/target/debug/deps/network_sce-d1f89fa0abf5a0dd)
+
+running 2 tests
+test network_sce_keeps_exact_addresses_and_strict_envelope ... ok
+test network_sce_uses_authenticated_sender_time_without_arrival_metadata ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/sce_contract.rs (/private/tmp/faction252-OWNED/target/debug/deps/sce_contract-efedd13b3f7fc587)
+
+running 4 tests
+test accepts_independently_written_sce_and_inert_escaped_unicode ... ok
+test exact_utf8_and_envelope_bounds_and_large_received_padding ... ok
+test rejects_wrong_binding_shape_namespace_and_active_xml ... ok
+test timestamp_subset_calendar_range_and_enclosing_time_are_checked ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,66 @@
+{
+  "cwd": "/Users/cam/DEV/faction-bbs",
+  "environment": {
+    "OPENSSL_INCLUDE_DIR": "/opt/homebrew/opt/openssl@3/include",
+    "OPENSSL_LIB_DIR": "/opt/homebrew/opt/openssl@3/lib",
+    "CARGO_TARGET_DIR": "/private/tmp/faction252-OWNED/target",
+    "CARGO_BUILD_JOBS": "2",
+    "TMPDIR": "/private/tmp/faction252-OWNED"
+  },
+  "source_sha256": {
+    "Cargo.lock": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+    "crates/faction-omemo/Cargo.toml": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650",
+    "crates/faction-omemo/src/lib.rs": "eae5a7b5729934fe100aeaceb16ae488900fec51930cae9465529c7d09c680bb",
+    "crates/faction-omemo/src/sce.rs": "10ad5abade6551b11dd9b5e9db3f37db1edf18d7bb7e628cd59a0f40321ca508",
+    "crates/faction-omemo/src/attachment.rs": "793165337ea4af6d52eced5adbd16f77bc24712c48e39f13a672fd8203f2e899",
+    "crates/faction-omemo/tests/attachment_contract.rs": "bbd044b3ad748df95de8e4edbe2c29f82bcaaeea8472b2c6a70a4e9c63a923f8",
+    "crates/faction-omemo/tests/attachment_native.rs": "682d3164df659df7223a15242cf168bd6e0ed996f9dad3255179cd4fb8a09ed1",
+    "crates/faction-client/tests/attachment_rejection.rs": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376"
+  },
+  "runs": [
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "-p",
+        "faction-omemo",
+        "--features",
+        "native",
+        "--test",
+        "attachment_contract",
+        "--test",
+        "attachment_native",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=1"
+      ],
+      "started_at": "2026-10-27T21:56:54.183901+00:00",
+      "exit": 0,
+      "elapsed_seconds": 3.431221500009997,
+      "log": "command0.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "-p",
+        "faction-client",
+        "--features",
+        "native-mail",
+        "--test",
+        "attachment_rejection",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=1"
+      ],
+      "started_at": "2026-10-27T21:56:57.615326+00:00",
+      "exit": 0,
+      "elapsed_seconds": 2.61135550000472,
+      "log": "command1.log"
+    }
+  ]
+}

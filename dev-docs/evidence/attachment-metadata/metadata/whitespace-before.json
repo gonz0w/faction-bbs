@@ -1,0 +1,11 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit": 0,
+  "log": "whitespace-before.log",
+  "classification": "original diagnostic whitespace, not an application defect"
+}

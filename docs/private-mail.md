@@ -120,10 +120,13 @@ authenticated OMEMO/SCE. This is research, not an adopted format or an available
 attachment feature. A [local byte proof](../dev-docs/research/0059-attachment-byte-proof.md)
 matched bounded historical AES-256-GCM inputs with an unchanged reference on one
 macOS host ([saved evidence](../dev-docs/evidence/attachment-bytes/README.md)). It also retained reference chunk decryption failures; it does not qualify
-streaming or private delivery. Authenticated private storage, the proposed descriptor,
-recipient authorization and durable attachment keys remain unproven. Historical
-XEP-0454 is a byte-level comparison, not the proposed format. Necessary routing,
-sizes and timing can still be visible; there is no plaintext fallback.
+streaming or private delivery. An [experimental native metadata codec](../dev-docs/attachment-metadata.md)
+now handles one bounded descriptor inside authenticated SCE; current mail
+checkpoints reject it and attachments are not available for delivery. It does not
+verify file bytes or establish modern-client interoperability. Authenticated private
+storage, recipient authorization and durable attachment keys remain unproven.
+Historical XEP-0454 is a byte-level comparison, not the candidate format. Necessary
+routing, sizes and timing can still be visible; there is no plaintext fallback.
 
 ## What the proof does and does not establish
 
