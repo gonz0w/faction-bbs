@@ -1,0 +1,23 @@
+test_failed_reference_does_not_mutate_spool (__main__.HarnessContracts.test_failed_reference_does_not_mutate_spool) ... ok
+test_injected_final_failure_releases_no_output_or_file (__main__.HarnessContracts.test_injected_final_failure_releases_no_output_or_file) ... ok
+test_invalid_requests_fail_before_reference_instantiation (__main__.HarnessContracts.test_invalid_requests_fail_before_reference_instantiation) ... ok
+test_malformed_source_rejected_before_import (__main__.HarnessContracts.test_malformed_source_rejected_before_import) ... ok
+test_mutations_include_tag_ciphertext_truncation_append_and_missing_tag (__main__.HarnessContracts.test_mutations_include_tag_ciphertext_truncation_append_and_missing_tag) ... ok
+test_native_failure_stdout_is_never_accepted (__main__.HarnessContracts.test_native_failure_stdout_is_never_accepted) ... ok
+test_native_rejection_and_wrong_length_are_errors (__main__.HarnessContracts.test_native_rejection_and_wrong_length_are_errors) ... ok
+test_reference_encoding_bounds_are_closed_under_tag_append (__main__.HarnessContracts.test_reference_encoding_bounds_are_closed_under_tag_append) ... ok
+test_reference_returns_only_after_successful_finalize (__main__.HarnessContracts.test_reference_returns_only_after_successful_finalize) ... ok
+test_spool_exact_membership_bytes_and_regular_files (__main__.HarnessContracts.test_spool_exact_membership_bytes_and_regular_files) ... ok
+test_spool_rejects_symlink_and_traversal (__main__.HarnessContracts.test_spool_rejects_symlink_and_traversal) ... ok
+test_nonreading_stdin_remains_time_bounded (__main__.ProcessBounds.test_nonreading_stdin_remains_time_bounded) ... ok
+test_output_and_exit_are_captured_within_bounds (__main__.ProcessBounds.test_output_and_exit_are_captured_within_bounds) ... ok
+test_stderr_overflow_kills_and_reaps (__main__.ProcessBounds.test_stderr_overflow_kills_and_reaps) ... ok
+test_stdout_overflow_kills_and_reaps (__main__.ProcessBounds.test_stdout_overflow_kills_and_reaps) ... ok
+test_timeout_kills_and_reaps (__main__.ProcessBounds.test_timeout_kills_and_reaps) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.266s
+
+OK
+
+EXIT=0

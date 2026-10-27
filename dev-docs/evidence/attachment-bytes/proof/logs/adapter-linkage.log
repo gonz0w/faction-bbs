@@ -1,0 +1,5 @@
+["/usr/bin/otool", "-L", "/private/tmp/faction250-OWNED/phase2/adapter"]
+/private/tmp/faction250-OWNED/phase2/adapter:
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)
+
+EXIT=0

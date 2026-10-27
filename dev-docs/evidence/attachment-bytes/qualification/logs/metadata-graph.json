@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://files.pythonhosted.org/packages/e5/56/d194340cc4a57535e82e1bee9e89667ac4b7c13b5d3f59686deae3094dd5/cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl.metadata",
+    "bytes": 4394,
+    "path": "cryptography-selected.metadata",
+    "sha256": "047cfc71226409de4318b360aef15c63a2adf609731e3dcf7fe932f14ea042ee",
+    "exit": 0
+  },
+  {
+    "url": "https://pypi.org/pypi/cffi/2.0.0/json",
+    "bytes": 75565,
+    "path": "cffi-2.0.0-pypi.json",
+    "sha256": "176060f17977cb6a9df47b3ee7f97ee40d688832f30593649b465e8d064f4530",
+    "exit": 0
+  },
+  {
+    "url": "https://pypi.org/pypi/pycparser/2.23/json",
+    "bytes": 3154,
+    "path": "pycparser-2.23-pypi.json",
+    "sha256": "2f8b35ee20ccc932a73315a4fea04b3b88a17a66b23c5305af534a9a6d1f20a2",
+    "exit": 0
+  },
+  {
+    "url": "https://api.github.com/repos/openssl/openssl/git/trees/f221bdef224d16f21793595bcf1bc4949bbe7a10?recursive=1",
+    "bytes": 1447923,
+    "path": "openssl-tree.json",
+    "sha256": "74d9e2315abc0212b7e485397492a8bfc0231b6667e16f44a0b86cc7c6544676",
+    "exit": 0
+  }
+]

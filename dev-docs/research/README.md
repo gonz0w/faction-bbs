@@ -97,3 +97,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0057 — Maintained NetBSD signer qualification](0057-netbsd-signer-qualification.md): one uninstalled portable source build, preserved rejected baseline, update path and operational limits.
 
 - [0058: Encrypted attachment profile](0058-encrypted-attachment-profile.md) — source comparison and proposed local proof; no format or transport adoption.
+
+- [0059: Historical attachment byte proof](0059-attachment-byte-proof.md) — bounded complete-input comparison and retained chunk failures; no attachment feature or format adoption.

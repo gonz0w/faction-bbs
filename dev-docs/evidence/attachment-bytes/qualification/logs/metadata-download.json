@@ -1,0 +1,37 @@
+[
+  {
+    "url": "https://pypi.org/pypi/cryptography/50.0.2/json",
+    "final_url": "https://pypi.org/pypi/cryptography/50.0.2/json",
+    "path": "cryptography-50.0.2-pypi.json",
+    "bytes": 57201,
+    "exit": 0
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gajim/gajim/c9b40e5e220ea59b0e387ac3e753eac1cfe215a1/gajim/common/aes.py",
+    "final_url": "https://raw.githubusercontent.com/gajim/gajim/c9b40e5e220ea59b0e387ac3e753eac1cfe215a1/gajim/common/aes.py",
+    "path": "gajim-aes.py",
+    "bytes": 1620,
+    "exit": 0
+  },
+  {
+    "url": "https://raw.githubusercontent.com/gajim/gajim/c9b40e5e220ea59b0e387ac3e753eac1cfe215a1/COPYING",
+    "final_url": "https://raw.githubusercontent.com/gajim/gajim/c9b40e5e220ea59b0e387ac3e753eac1cfe215a1/COPYING",
+    "path": "gajim-COPYING",
+    "bytes": 35147,
+    "exit": 0
+  },
+  {
+    "url": "https://api.github.com/repos/openssl/openssl/git/commits/8cf17aaeb4599f8af87fefd810b5b5fee90fe69e",
+    "final_url": "https://api.github.com/repos/openssl/openssl/git/commits/8cf17aaeb4599f8af87fefd810b5b5fee90fe69e",
+    "path": "openssl-commit.json",
+    "bytes": 1275,
+    "exit": 0
+  },
+  {
+    "url": "https://raw.githubusercontent.com/openssl/openssl/8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/LICENSE.txt",
+    "final_url": "https://raw.githubusercontent.com/openssl/openssl/8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/LICENSE.txt",
+    "path": "openssl-LICENSE.txt",
+    "bytes": 10175,
+    "exit": 0
+  }
+]

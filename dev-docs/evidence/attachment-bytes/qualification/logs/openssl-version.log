@@ -1,0 +1,13 @@
+["/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl", "version", "-a"]
+OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)
+built on: Tue Oct 27 19:26:39 2026 UTC
+platform: darwin64-arm64-cc
+options:  bn(64,64)
+compiler: cc -fPIC -arch arm64 -O3 -Wall -DL_ENDIAN -DOPENSSL_PIC -D_REENTRANT -DOPENSSL_BUILDING_OPENSSL -DNDEBUG
+OPENSSLDIR: "/private/tmp/faction250-OWNED/openssl-config"
+ENGINESDIR: "/private/tmp/faction250-OWNED/unused-install/lib/engines-3"
+MODULESDIR: "/private/tmp/faction250-OWNED/unused-install/lib/ossl-modules"
+Seeding source: os-specific
+CPUINFO: OPENSSL_armcap=0x87d
+
+EXIT=0

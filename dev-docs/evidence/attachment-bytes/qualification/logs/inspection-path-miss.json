@@ -1,0 +1,5 @@
+{
+  "command": "rg -n -C 5 LoadedProviders|legacy_provider|Provider::load|default_provider sources/cryptography-50.0.2/src/rust/src/lib.rs sources/cryptography-50.0.2/src/rust/src/backend/mod.rs sources/cryptography-50.0.2/src/rust/src/backend/openssl.rs",
+  "exit": 2,
+  "error": "Last optional lookup path does not exist; relevant provider initialization is in src/rust/src/lib.rs, inspected successfully. This is an inspection path miss, not an executed behavior RED."
+}

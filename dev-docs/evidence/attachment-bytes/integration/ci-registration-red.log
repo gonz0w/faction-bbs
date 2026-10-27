@@ -1,0 +1,6 @@
+CI registration counts: 0 0
+Traceback (most recent call last):
+  File "/private/tmp/faction250-OWNED/integration/ci-registration-control.py", line 6, in <module>
+    assert (record,unit)==(1,1), "CI must pin the actual attachment manifest and execute stdlib proof contracts exactly once"
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: CI must pin the actual attachment manifest and execute stdlib proof contracts exactly once

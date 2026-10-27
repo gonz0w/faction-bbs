@@ -1,0 +1,20 @@
+[
+  {
+    "wheel": "cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl",
+    "record_hashes_verified": 119,
+    "destination": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages",
+    "exit": 0
+  },
+  {
+    "wheel": "cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+    "record_hashes_verified": 29,
+    "destination": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages",
+    "exit": 0
+  },
+  {
+    "wheel": "pycparser-2.23-py3-none-any.whl",
+    "record_hashes_verified": 22,
+    "destination": "/private/tmp/faction250-OWNED/venv/lib/python3.14/site-packages",
+    "exit": 0
+  }
+]

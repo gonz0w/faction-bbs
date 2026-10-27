@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-I",
+    "-B",
+    "/private/tmp/faction250-OWNED/integration/ci-registration-control.py",
+    "/Users/cam/DEV/faction-bbs"
+  ],
+  "exit": 1,
+  "source_sha256": "05d36333ea991c9b9a4f36be2e047caf042c7e23527035e4a13523583d2b76a3",
+  "workflow_base_commit": "45ce5a32800c86006d7068793e446f9590a9efc7",
+  "workflow_sha256": "fbe2ffed7fa487f28e4f7125ddaf7207d0bd29e4bd5627f16d5f725d3ace1ad8"
+}

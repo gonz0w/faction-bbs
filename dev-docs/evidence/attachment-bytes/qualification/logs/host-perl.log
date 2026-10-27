@@ -1,0 +1,108 @@
+["perl", "-V"]
+Summary of my perl5 (revision 5 version 34 subversion 1) configuration:
+   
+  Platform:
+    osname=darwin
+    osvers=26.0
+    archname=darwin-thread-multi-2level
+    uname='darwin vtk95.p1s.plx.sd.apple.com 26.0 darwin kernel version 23.0.0: thu feb 1 13:18:34 pst 2024; root:xnu-10002.1.11.100.4~1development_x86_64 x86_64 '
+    config_args='-ds -e -Dprefix=/usr -Dccflags=-g  -pipe  -Dldflags= -Dman3ext=3pm -Duseithreads -Duseshrplib -Dinc_version_list=none -Dcc=cc'
+    hint=recommended
+    useposix=true
+    d_sigaction=define
+    useithreads=define
+    usemultiplicity=define
+    use64bitint=define
+    use64bitall=define
+    uselongdouble=undef
+    usemymalloc=n
+    default_inc_excludes_dot=define
+  Compiler:
+    cc='cc'
+    ccflags =' -g -pipe -fno-strict-aliasing -fstack-protector-strong -DPERL_USE_SAFE_PUTENV'
+    optimize='-Os'
+    cppflags='-g -pipe -fno-strict-aliasing -fstack-protector-strong'
+    ccversion=''
+    gccversion='Apple LLVM 21.0.0 (clang-2100.4.1.1) [+internal-os]'
+    gccosandvers=''
+    intsize=4
+    longsize=8
+    ptrsize=8
+    doublesize=8
+    byteorder=12345678
+    doublekind=3
+    d_longlong=define
+    longlongsize=8
+    d_longdbl=define
+    longdblsize=16
+    longdblkind=3
+    ivtype='long'
+    ivsize=8
+    nvtype='double'
+    nvsize=8
+    Off_t='off_t'
+    lseeksize=8
+    alignbytes=8
+    prototype=define
+  Linker and Libraries:
+    ld='cc'
+    ldflags =' -fstack-protector-strong'
+    libpth=/AppleInternal/Library/BuildRoots/4~CZ8lugCfpcnbMtv_mQCXdoxVNPncZe1flCv43mg/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.2.Internal.sdk/usr/local/lib /AppleInternal/Library/BuildRoots/4~CZ8lugCfpcnbMtv_mQCXdoxVNPncZe1flCv43mg/Applications/Xcode.app/Contents/Developer/Toolchains/OSX27.2.xctoolchain/usr/lib/clang/21/lib /AppleInternal/Library/BuildRoots/4~CZ8lugCfpcnbMtv_mQCXdoxVNPncZe1flCv43mg/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.2.Internal.sdk/usr/lib /AppleInternal/Library/BuildRoots/4~CZ8lugCfpcnbMtv_mQCXdoxVNPncZe1flCv43mg/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib /usr/lib /usr/local/lib
+    libs= 
+    perllibs=
+    libc=
+    so=dylib
+    useshrplib=true
+    libperl=libperl.dylib
+    gnulibc_version=''
+  Dynamic Linking:
+    dlsrc=dl_dlopen.xs
+    dlext=bundle
+    d_dlsymun=undef
+    ccdlflags=' '
+    cccdlflags=' '
+    lddlflags=' -bundle -undefined dynamic_lookup -fstack-protector-strong'
+
+
+Characteristics of this binary (from libperl): 
+  Compile-time options:
+    HAS_TIMES
+    MULTIPLICITY
+    PERLIO_LAYERS
+    PERL_COPY_ON_WRITE
+    PERL_DONT_CREATE_GVSV
+    PERL_IMPLICIT_CONTEXT
+    PERL_MALLOC_WRAP
+    PERL_OP_PARENT
+    PERL_PRESERVE_IVUV
+    PERL_USE_SAFE_PUTENV
+    USE_64_BIT_ALL
+    USE_64_BIT_INT
+    USE_ITHREADS
+    USE_LARGE_FILES
+    USE_LOCALE
+    USE_LOCALE_COLLATE
+    USE_LOCALE_CTYPE
+    USE_LOCALE_NUMERIC
+    USE_LOCALE_TIME
+    USE_PERLIO
+    USE_PERL_ATOF
+    USE_REENTRANT_API
+    USE_THREAD_SAFE_LOCALE
+  Locally applied patches:
+    /Library/Perl/Updates/<version> comes before system perl directories
+    installprivlib and installarchlib points to the Updates directory
+  Built under darwin
+  Compiled at Oct  3 2026 14:25:55
+  @INC:
+    /Library/Perl/5.34/darwin-thread-multi-2level
+    /Library/Perl/5.34
+    /Network/Library/Perl/5.34/darwin-thread-multi-2level
+    /Network/Library/Perl/5.34
+    /Library/Perl/Updates/5.34.1
+    /System/Library/Perl/5.34/darwin-thread-multi-2level
+    /System/Library/Perl/5.34
+    /System/Library/Perl/Extras/5.34/darwin-thread-multi-2level
+    /System/Library/Perl/Extras/5.34
+
+EXIT=0

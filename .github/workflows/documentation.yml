@@ -169,6 +169,7 @@ jobs:
           python3 tools/check_correspondents_evidence.py
           python3 tools/check_menu_mail_notices_evidence.py
           python3 tools/check_recorded_files.py dev-docs/evidence/mail-search/manifest.json 7942dc8503a25039d6f4457629b3c41d91ffaf186ef4a299da2fa3595a21224c
+          python3 tools/check_recorded_files.py dev-docs/evidence/attachment-bytes/manifest.json 4856304289bca15fccbb4c8c54bb8c900871ff054f823aa65f2a7a58a4bb00a3
           python3 tools/check_netbsd_application_evidence.py
           python3 tools/check_service_evidence.py
           python3 tools/check_memory_evidence.py
@@ -184,6 +185,7 @@ jobs:
           python3 tools/check_lookup_evidence.py
           python3 tools/check_global_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 -m unittest discover -s experiments/250-attachment-bytes -p test_proof.py
       - name: Validate optional Lua game evaluator and examples
         run: |
           sudo apt-get update -qq

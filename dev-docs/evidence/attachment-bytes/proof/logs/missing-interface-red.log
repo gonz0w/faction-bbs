@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py", line 12, in <module>
+    import proof
+ModuleNotFoundError: No module named 'proof'
+
+EXIT=1

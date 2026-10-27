@@ -1,0 +1,50 @@
+{
+  "repository_base": "45ce5a32800c86006d7068793e446f9590a9efc7",
+  "branch": "research/250-attachment-byte-proof",
+  "sources": {
+    "adapter.c": {
+      "path": "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/adapter.c",
+      "sha256": "30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5",
+      "bytes": 4942
+    },
+    "proof.py": {
+      "path": "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/proof.py",
+      "sha256": "97a90feb784e172d14d1c0ba7850a9e52c6c46f51d60bdb7e0726aa577f33062",
+      "bytes": 16136
+    },
+    "test_proof.py": {
+      "path": "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/test_proof.py",
+      "sha256": "9873d5e3a3a842fa5d97b4428c2f466967904a3a063518c1f2f147152bd1e7d6",
+      "bytes": 13313
+    }
+  },
+  "binary": {
+    "path": "/private/tmp/faction250-OWNED/phase2/adapter",
+    "sha256": "a19a7047378c247e8c232c4c0569943a2871318e960ea4c06da53ccee1878211",
+    "bytes": 4391528
+  },
+  "native_library": {
+    "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/libcrypto.a",
+    "sha256": "62c20598c84e16019aff31fcfae085474e6243fd32f04f410600f201dcad1165",
+    "bytes": 8548744
+  },
+  "reference": {
+    "path": "/private/tmp/faction250-OWNED/downloads/gajim-aes.py",
+    "sha256": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4"
+  },
+  "qualification": {
+    "path": "/private/tmp/faction250-OWNED/qualification.json",
+    "sha256": "ead6d14cdc152c3b357874ac1538af9c3c165dc7f5b6dbc76df92df122248821",
+    "manifest_sha256": "5cb84df6f2d438aeea8d1c5bb0b0c2ee725620f76927654c273d54410e2c11bc"
+  },
+  "scope_limits": [
+    "No plaintext file was written; native and reference return accepted plaintext only in memory after authentication. Python memory clearing is not a secure-erasure guarantee.",
+    "Native and reference use OpenSSL lineage, versions 3.5.7 and 4.0.3 respectively; two application adapters are not independent primitives.",
+    "Complete bounded byte interoperability is established for the public laboratory cases only. Reference chunk decryption failures are preserved, not streaming qualification.",
+    "No modern descriptor, transport, private recipient authorization, durable checkpoint/blob ordering, NetBSD, performance/capacity or product-adoption claim.",
+    "All owned phase2 fixtures/builds remain retained for lead review. Exact teardown is not yet performed.",
+    "No refactor was required after green; source initial implementations passed focused behavior checks.",
+    "Compiler exit0 included nonfatal Xcode FSEvents/cache diagnostics, retained in compile log.",
+    "Initial -I test invocation excludes sibling imports and is retained as a command limitation; corrected -s -B invocation produced actual missing-interface RED before proof.py existed."
+  ]
+}

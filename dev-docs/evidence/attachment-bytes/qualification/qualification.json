@@ -1,0 +1,196 @@
+{
+  "issue": "https://github.com/gonz0w/faction-bbs/issues/250",
+  "phase": "1: dependency qualification only",
+  "created_utc": "2026-10-27T19:29:44.476531+00:00",
+  "repository_base": "45ce5a32800c86006d7068793e446f9590a9efc7",
+  "owned_root": "/private/tmp/faction250-OWNED",
+  "uid": 501,
+  "mode": "0o700",
+  "prepared_inputs": {
+    "native": {
+      "source_commit": "8cf17aaeb4599f8af87fefd810b5b5fee90fe69e",
+      "version": "3.5.7",
+      "license": "Apache-2.0",
+      "source_dir": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e",
+      "artifacts": {
+        "libcrypto.a": {
+          "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/libcrypto.a",
+          "sha256": "62c20598c84e16019aff31fcfae085474e6243fd32f04f410600f201dcad1165",
+          "bytes": 8548744
+        },
+        "apps/openssl": {
+          "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl",
+          "sha256": "9e41c3986a767a91917aa405c1763463f75327ec642a31d34999877f7b1c1186",
+          "bytes": 6141864
+        },
+        "configdata.pm": {
+          "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/configdata.pm",
+          "sha256": "b71da87ae9d605b0f1386be9e7bfeefd394cf435e4439b8af42f2ae8130f141d",
+          "bytes": 873143
+        },
+        "include/openssl/configuration.h": {
+          "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/include/openssl/configuration.h",
+          "sha256": "1eff57cdb8aada5dd3f90ca69f44a59221fcd167cbeed55ab37424dbf32bd4e6",
+          "bytes": 5314
+        },
+        "include/openssl/opensslv.h": {
+          "path": "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/include/openssl/opensslv.h",
+          "sha256": "256985d6271826835673eb59dec8369dbbead0b5055864b8b7e69effac426e52",
+          "bytes": 3447
+        }
+      },
+      "provider": "default 3.5.7, active, observed with upstream CLI",
+      "aes_256_gcm": "listed at default by upstream CLI; no encrypt/decrypt operation performed",
+      "environment": {
+        "OPENSSL_CONF": "/private/tmp/faction250-OWNED/openssl-empty.cnf",
+        "OPENSSL_MODULES": "/private/tmp/faction250-OWNED/modules-empty",
+        "OPENSSL_ENGINES": "/private/tmp/faction250-OWNED/engines-empty"
+      }
+    },
+    "reference": {
+      "source_commit": "c9b40e5e220ea59b0e387ac3e753eac1cfe215a1",
+      "version": "Gajim 2.4.7",
+      "source_path": "/private/tmp/faction250-OWNED/downloads/gajim-aes.py",
+      "source_sha256": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4",
+      "source_bytes": 1620,
+      "license": "GPL-3.0-only",
+      "license_path": "/private/tmp/faction250-OWNED/downloads/gajim-COPYING",
+      "reference_modified": false,
+      "imports": "os, dataclasses, cryptography only",
+      "runtime_observation": {
+        "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+        "executable": "/private/tmp/faction250-OWNED/venv/bin/python",
+        "distributions": [
+          [
+            "cffi",
+            "2.0.0"
+          ],
+          [
+            "cryptography",
+            "50.0.2"
+          ],
+          [
+            "pycparser",
+            "2.23"
+          ]
+        ],
+        "openssl_version": "OpenSSL 4.0.3 29 Sep 2026",
+        "openssl_version_number": 1073741872,
+        "fips_enabled": false,
+        "legacy_provider_loaded": true,
+        "default_provider": "successful cryptography initialization loads default per source src/rust/src/lib.rs:107",
+        "gajim_imported_classes": [
+          "AESKeyData",
+          "AESGCMEncryptor",
+          "AESGCMDecryptor"
+        ],
+        "gajim_source_sha256_before": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4",
+        "gajim_source_sha256_after": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4",
+        "cryptographic_operations_executed": false
+      }
+    },
+    "python_wheels": [
+      {
+        "file": "cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl",
+        "url": "https://files.pythonhosted.org/packages/e5/56/d194340cc4a57535e82e1bee9e89667ac4b7c13b5d3f59686deae3094dd5/cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl",
+        "sha256": "fa8f5efb344d6908a1ce62f4a24e2e5780f825d6f53f5f50ec5ffacac72936cb",
+        "bytes": 3914904,
+        "no_js_ts": true,
+        "licenses": [
+          "cryptography-50.0.2.dist-info/licenses/LICENSE",
+          "cryptography-50.0.2.dist-info/licenses/LICENSE.APACHE",
+          "cryptography-50.0.2.dist-info/licenses/LICENSE.BSD"
+        ]
+      },
+      {
+        "file": "cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+        "url": "https://files.pythonhosted.org/packages/59/dd/27e9fa567a23931c838c6b02d0764611c62290062a6d4e8ff7863daf9730/cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+        "sha256": "c654de545946e0db659b3400168c9ad31b5d29593291482c43e3564effbcee13",
+        "bytes": 181487,
+        "no_js_ts": true,
+        "licenses": [
+          "cffi-2.0.0.dist-info/licenses/",
+          "cffi-2.0.0.dist-info/licenses/LICENSE",
+          "cffi-2.0.0.dist-info/licenses/AUTHORS"
+        ]
+      },
+      {
+        "file": "pycparser-2.23-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/a0/e3/59cd50310fc9b59512193629e1984c1f95e5c8ae6e5d8c69532ccc65a7fe/pycparser-2.23-py3-none-any.whl",
+        "sha256": "e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934",
+        "bytes": 118140,
+        "no_js_ts": true,
+        "licenses": [
+          "pycparser-2.23.dist-info/LICENSE"
+        ]
+      }
+    ],
+    "venv": "/private/tmp/faction250-OWNED/venv",
+    "python_mode": "-I -B; stdlib venv --without-pip; selected wheels safely extracted after verifying wheel RECORD hashes; no pip or build packages installed",
+    "selected_python_runtime_graph": [
+      "cryptography==50.0.2",
+      "cffi==2.0.0",
+      "pycparser==2.23"
+    ],
+    "inactive_markers": [
+      "typing-extensions excluded: Python 3.14.7 >= 3.11",
+      "bcrypt excluded: ssh extra not selected"
+    ],
+    "bundled_graph": {
+      "source_lock_sha256": "98778208027ce05bfff0db88c290f28355eb20e685f0c728775359fb91a1a4c4",
+      "rust_sbom_sha256": "3e83e46564396b435608932504bdf782a7156b841c3b98c16c98c5c82ce6dc90",
+      "rust_components": 39,
+      "source_lock_packages": 40,
+      "all_sbom_versions_matched_lock": true,
+      "declared_license_expressions": [
+        "(MIT OR Apache-2.0) AND Unicode-3.0",
+        "Apache-2.0",
+        "Apache-2.0 OR BSD-3-Clause",
+        "Apache-2.0 OR GPL-2.0-only",
+        "Apache-2.0 OR MIT",
+        "Apache-2.0 WITH LLVM-exception",
+        "BSD-3-Clause",
+        "MIT",
+        "MIT OR Apache-2.0"
+      ],
+      "openssl_version": "4.0.3",
+      "openssl_source_release_sha256": "325b5c806167c13b40b1ffeadfe0248197c00eccc4cf123ec1e28d2d2fd216d9",
+      "openssl_sbom_sha256": "eae61c5ad3197e6c0a30adb3eeab20fa085f1068607667b1137fccf458fe7958"
+    }
+  },
+  "qualification_checks": {
+    "artifact_hashes": "pass: exact selected PyPI wheel SHA256 and all wheel RECORD hashes",
+    "native_source": "pass: all 5750 included archive blobs match pinned OpenSSL Git tree; 57 export-ignore omissions explained by pinned .gitattributes",
+    "no_js_ts": "No JS/TS files or package-manager manifests in selected wheels or OpenSSL archive/tree; source sdist also scanned. Included Rust SBOM has only Cargo purls and matches source lock; Python metadata closure is three distributions. This identifies the selected graph; it is not an independent source audit/rebuild of all precompiled Rust crates.",
+    "reference_import": "pass: unchanged module imported under isolated venv/config, no classes instantiated and no crypto operation",
+    "native_build": "pass: make -j2 static libcrypto plus ordinary upstream CLI; no install target",
+    "native_identity": "pass: upstream version -a, list -providers -verbose, list -cipher-algorithms -select AES-256-GCM -verbose; CLI linkage only macOS libSystem",
+    "native_source_tests": "not run: no-tests selected; not interoperability evidence"
+  },
+  "source_preservation": {
+    "original_no_apps_build": "/private/tmp/faction250-OWNED/variants/openssl-no-apps",
+    "export_ignore_initial_assertion_failure": "/private/tmp/faction250-OWNED/logs/archive-exact-tree-rejected.json",
+    "failure_classification": "setup/archive-assumption rejection; never a behavior RED",
+    "cffi_license_note": "PyPI/wheel metadata License-Expression MIT; retained LICENSE text labels MIT No Attribution. Both identities preserved without rewriting upstream metadata."
+  },
+  "limits": [
+    "Dependency availability/runtime qualification only; no interoperability, known-answer, tamper, quarantine, streaming, save/spool or cleanup tests run.",
+    "Two adapters would use OpenSSL lineage (native 3.5.7 versus reference bundled 4.0.3); no independent cryptographic primitive claim.",
+    "Wheel and SBOM are hash-pinned published upstream artifacts; wheel compiler version and independent binary reproducibility were not established.",
+    "System libffi/libiconv/libSystem are existing macOS dynamic-library dependencies; their dyld shared-cache bytes were not independently hashed.",
+    "No product runtime/dependency adoption, NetBSD/modern XMPP/transport/production claim.",
+    "Owned root retained for lead acceptance and later proof; teardown has not occurred.",
+    "No repository source changes; no proof/adapter code written; no host install/package/service/policy changes or playground actions."
+  ],
+  "evidence_paths": {
+    "host_identities": "/private/tmp/faction250-OWNED/host-identities.json",
+    "toolchain": "/private/tmp/faction250-OWNED/toolchain-resolved.json",
+    "native": "/private/tmp/faction250-OWNED/native-identities.json",
+    "python_native_linkage": "/private/tmp/faction250-OWNED/logs/python-runtime-qualification.json",
+    "reference_and_isolated_runtime": "/private/tmp/faction250-OWNED/logs/python-isolated-runtime-reference-import.json",
+    "license_hashes": "/private/tmp/faction250-OWNED/license-identities.json",
+    "source_sbom_graph": "/private/tmp/faction250-OWNED/logs/cryptography-source-sbom-graph.json",
+    "download_inspection": "/private/tmp/faction250-OWNED/logs/artifact-download-inspection.json",
+    "no_js_closure": "/private/tmp/faction250-OWNED/logs/no-js-closure.json"
+  }
+}

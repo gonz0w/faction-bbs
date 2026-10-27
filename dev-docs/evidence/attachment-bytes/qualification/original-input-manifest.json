@@ -1,0 +1,254 @@
+{
+  "OWNED": {
+    "sha256": "846f4a265f63d6bf69407f0db0c160c81fea3ae581ea017041a860cee3b1c125",
+    "bytes": 128
+  },
+  "downloads/cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl": {
+    "sha256": "c654de545946e0db659b3400168c9ad31b5d29593291482c43e3564effbcee13",
+    "bytes": 181487
+  },
+  "downloads/cffi-2.0.0-pypi.json": {
+    "sha256": "176060f17977cb6a9df47b3ee7f97ee40d688832f30593649b465e8d064f4530",
+    "bytes": 75565
+  },
+  "downloads/cffi-2.0.0.metadata": {
+    "sha256": "b98ce7e3417af089bc12d5c73412d9b3b1683ccf8ec73c986c35ac8c9be1ba39",
+    "bytes": 2559
+  },
+  "downloads/cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl": {
+    "sha256": "fa8f5efb344d6908a1ce62f4a24e2e5780f825d6f53f5f50ec5ffacac72936cb",
+    "bytes": 3914904
+  },
+  "downloads/cryptography-50.0.2-pypi.json": {
+    "sha256": "7423990cc0948676ef47a71ea62a476ece4c76245e6bebd1c3a71f03c4ffc0f4",
+    "bytes": 57201
+  },
+  "downloads/cryptography-50.0.2.tar.gz": {
+    "sha256": "7b46165bb56eb4704e2eaaf86f3c940d19154535d9b0ca7d6d590b04060e00d5",
+    "bytes": 880623
+  },
+  "downloads/cryptography-selected.metadata": {
+    "sha256": "047cfc71226409de4318b360aef15c63a2adf609731e3dcf7fe932f14ea042ee",
+    "bytes": 4394
+  },
+  "downloads/gajim-COPYING": {
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "bytes": 35147
+  },
+  "downloads/gajim-aes-contents.json": {
+    "sha256": "6e2f1b71273f9eb2341d1473ae01255b29467054bb074b58d3465c36500e81c5",
+    "bytes": 3188
+  },
+  "downloads/gajim-aes.py": {
+    "sha256": "79036e4d5f72cf8696b7ee44a5223ff6f5214a18b4e8809bf9b22167128c10e4",
+    "bytes": 1620
+  },
+  "downloads/gajim-copying-contents.json": {
+    "sha256": "4262e31c0a7846b07e0f9352b86fa23364e5f3e9a4d8a284865195e662847136",
+    "bytes": 49314
+  },
+  "downloads/openssl-4.0.3-LICENSE.txt": {
+    "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+    "bytes": 10175
+  },
+  "downloads/openssl-4.0.3-tag.json": {
+    "sha256": "bc564fab8a0e0f516df9735198f72875775d8389dc62e258b717e0c1c14626eb",
+    "bytes": 355
+  },
+  "downloads/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e.tar.gz": {
+    "sha256": "03154360ff8808ac38da7530cd69d211e105683e077e9835e48161493c3d0050",
+    "bytes": 53347187
+  },
+  "downloads/openssl-LICENSE.txt": {
+    "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+    "bytes": 10175
+  },
+  "downloads/openssl-commit.json": {
+    "sha256": "cfbfafb58a79c67034a0a372fdd1ad558b569eb0a5559ab240d5d90243e0a935",
+    "bytes": 1275
+  },
+  "downloads/openssl-gitattributes": {
+    "sha256": "2f24580448bd0cb5f6f66abfc953f72e629febff4d9edd3bd97534c3a3a776e4",
+    "bytes": 801
+  },
+  "downloads/openssl-tree.json": {
+    "sha256": "74d9e2315abc0212b7e485397492a8bfc0231b6667e16f44a0b86cc7c6544676",
+    "bytes": 1447923
+  },
+  "downloads/pycparser-2.23-py3-none-any.whl": {
+    "sha256": "e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934",
+    "bytes": 118140
+  },
+  "downloads/pycparser-2.23-pypi.json": {
+    "sha256": "2f8b35ee20ccc932a73315a4fea04b3b88a17a66b23c5305af534a9a6d1f20a2",
+    "bytes": 3154
+  },
+  "downloads/pycparser-2.23.metadata": {
+    "sha256": "a2c9a11ccc5ade7e6c3f0bf959e529cb23e79bbe9ea215d8199c8a1a659b3c57",
+    "bytes": 993
+  },
+  "host-identities.json": {
+    "sha256": "b4d675ce1fa969c99634681d4895e1855eb50dffa2699a5feb13e3e9ca8818d2",
+    "bytes": 1120
+  },
+  "license-identities.json": {
+    "sha256": "2cdb16434a1842610f15eabd2da3e8c3907a8124817bbee3d0a6c969e35aedbe",
+    "bytes": 1385
+  },
+  "logs/archive-exact-tree-rejected.json": {
+    "sha256": "dda2645b3d5617b413efcc93fab19cd8072ca43c49fb25676a10e91c717de2c7",
+    "bytes": 2576
+  },
+  "logs/artifact-download-inspection.json": {
+    "sha256": "05dc0e98a7ef8492e8eb0cf979116633058dbb5d1ff748bf8530045b65633eff",
+    "bytes": 5004
+  },
+  "logs/bundled-source-qualification-downloads.json": {
+    "sha256": "5fd2036045b18c8df113927a620fab9dee8895acc4d2be1a0f32d3169abc975f",
+    "bytes": 895
+  },
+  "logs/cryptography-source-sbom-graph.json": {
+    "sha256": "5ca0d658b609d1737387305c90778792b67e2017d49710c848841fc13e61083d",
+    "bytes": 55476
+  },
+  "logs/host-cc.log": {
+    "sha256": "0aadc2071832597e83c3b9c1aecdc98b3619dc039080b43b69de2fffe2f87704",
+    "bytes": 245
+  },
+  "logs/host-clang.log": {
+    "sha256": "bff12dfd6e727c2cac0f35526a2b4ac3e116258bf4143e65025266ded89179b9",
+    "bytes": 239
+  },
+  "logs/host-make.log": {
+    "sha256": "6a5d3ba1c5a6e23c698c271b4d447143ae5e297d41553816bc4be0cc9d6a29f2",
+    "bytes": 293
+  },
+  "logs/host-perl.log": {
+    "sha256": "673cc93c5f25c8a402d0030761b58d72d592fa80da7f795b91ce50a5e85411c2",
+    "bytes": 3680
+  },
+  "logs/host-python.log": {
+    "sha256": "e6fafe0fe938e2fd89a9b5503f22d3125d0f42eb06c48b156d823d6cca6d4775",
+    "bytes": 107
+  },
+  "logs/host-sdk.log": {
+    "sha256": "871806925777aad78c7d7dc0470ca4216aeab3a94778f68d3b42fc3b58d6011a",
+    "bytes": 137
+  },
+  "logs/host-sw-vers.log": {
+    "sha256": "b4c8268b8e3abb1d5145236ed8b173c7851172f87af728646c45254e47c09e97",
+    "bytes": 93
+  },
+  "logs/inspection-path-miss.json": {
+    "sha256": "365caee3da30f8b961749783007a53e8ddacc5fc57eeefcb5489a34eead2ad78",
+    "bytes": 474
+  },
+  "logs/macho-_cffi_backend.cpython-314-darwin.so.log": {
+    "sha256": "20254e1e9c686b673c43cc08ea5ede390d5ff5bf24fe850f0f8c1ec8d6bcfe2f",
+    "bytes": 5771
+  },
+  "logs/macho-_rust.abi3.so.log": {
+    "sha256": "60793ae39b40652e7a2f0dfdb556ef6bc64e105084c721899330e63b2651d902",
+    "bytes": 7161
+  },
+  "logs/metadata-download.json": {
+    "sha256": "2eff2c191c14b17ac465295266d177b3031c0d4b23a55a93050306bfc66da7ab",
+    "bytes": 1458
+  },
+  "logs/metadata-graph.json": {
+    "sha256": "0edf8135300d22fab95c1aa4e66377ca3ed3d0103e7ccbbf981476dff32de05c",
+    "bytes": 1071
+  },
+  "logs/no-js-closure.json": {
+    "sha256": "ece6b90fbcfb1bef6a55b58e0160dfab73f2cf19f425ea3be985d7cc655dedb7",
+    "bytes": 725
+  },
+  "logs/openssl-apps-generated.log": {
+    "sha256": "c7a911aea3469d91a4f26799b3f25f5e182e1de32575ced0514f7768f5c6fb47",
+    "bytes": 5358
+  },
+  "logs/openssl-build-cli.log": {
+    "sha256": "2c3ec0245718664b24371ae5147490783c328915b51ed4162fabc751b315218d",
+    "bytes": 125599
+  },
+  "logs/openssl-build-generated.log": {
+    "sha256": "79a7c43eaa7aac8d3fa06736d9a153f80d9b04f67697cea995654306578655f8",
+    "bytes": 10596
+  },
+  "logs/openssl-build-libcrypto.log": {
+    "sha256": "4df1b316085bb94cfd10cfb286d644154ed681078d5bf1ec7783a8fd670e0251",
+    "bytes": 762167
+  },
+  "logs/openssl-ciphers.log": {
+    "sha256": "ababa80436991113b2252aaef9017026161f2f760e4f2e37b30ff1651f4e4f91",
+    "bytes": 1493
+  },
+  "logs/openssl-cli-linkage.log": {
+    "sha256": "b8d6cfe6bdd38c1f4dcb187c28f6068c83734019dfbbfa4933665bceaa0310c5",
+    "bytes": 321
+  },
+  "logs/openssl-configdata.log": {
+    "sha256": "0b4f5a15ac2ef52a148ba1359e5e97d753ccb293fded243ed434c945e2b4aa76",
+    "bytes": 8159
+  },
+  "logs/openssl-configure-apps.log": {
+    "sha256": "825f12b999acceffce9a08738d7bad5fade0ea9321d9994baf734b2f216c69a9",
+    "bytes": 1511
+  },
+  "logs/openssl-configure.log": {
+    "sha256": "4b3ba2ba2d0dc15962b6f733807cbd85a5a3fb33fda5698821e110e94b9a83a7",
+    "bytes": 1522
+  },
+  "logs/openssl-providers.log": {
+    "sha256": "7289047d2632e315f9ede10c37eb4759daebc6fb78790bd77b9fc2eef72d7792",
+    "bytes": 529
+  },
+  "logs/openssl-version.log": {
+    "sha256": "807ebb4a1ced580c4e96c935795fcdc6bc0af771e432aca72502b44ce8e2ead6",
+    "bytes": 658
+  },
+  "logs/provenance-supplement.json": {
+    "sha256": "f34287b195fcf062cca3ae3a1cca219be7d6d09f6d9546ede04fcfca973fc0fe",
+    "bytes": 860
+  },
+  "logs/python-isolated-runtime-reference-import.json": {
+    "sha256": "024415bc87fb0abb73a5d2d804e1a72db600af3309268d634e2106376ea9176f",
+    "bytes": 2854
+  },
+  "logs/python-runtime-qualification.json": {
+    "sha256": "e8a55eac0085adddc4456b33f73364d4857d7d2193d11ad969279769c1ab5364",
+    "bytes": 4033
+  },
+  "logs/venv-create.log": {
+    "sha256": "3a5ee6bb5b11175824b4db1b229ccb3872c8c7732e22d8a121a4dfc257c9b039",
+    "bytes": 73
+  },
+  "logs/wheel-install-stdlib.json": {
+    "sha256": "4c2bca8896ca85a332f6005d26947db6573dbc99b743e09a5f0df426692d2d11",
+    "bytes": 611
+  },
+  "logs/wheel-metadata.json": {
+    "sha256": "f052af9eaa54eaee68e45331315fb589dde0bdfe02f37413fb180cd622e3280b",
+    "bytes": 587
+  },
+  "native-identities.json": {
+    "sha256": "a2f3983e1b315fadcd8eabfb7a87e8cf8d5aced9617bea072ceb2525f6a2cae4",
+    "bytes": 3084
+  },
+  "openssl-empty.cnf": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "qualification.json": {
+    "sha256": "ead6d14cdc152c3b357874ac1538af9c3c165dc7f5b6dbc76df92df122248821",
+    "bytes": 10563
+  },
+  "selected-wheels.json": {
+    "sha256": "5d1596f3ab1b121c9334ddfbd86d6d1b6453346afa895fea0bddae5ab624a9b7",
+    "bytes": 2963
+  },
+  "toolchain-resolved.json": {
+    "sha256": "3fdc3cddfe24bdcca407d44187514375ad62ead869cbe8ee5c2c722aba35239f",
+    "bytes": 1378
+  }
+}

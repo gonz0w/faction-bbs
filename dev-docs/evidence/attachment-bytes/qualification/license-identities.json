@@ -1,0 +1,34 @@
+{
+  "downloads/openssl-LICENSE.txt": {
+    "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+    "bytes": 10175
+  },
+  "downloads/openssl-4.0.3-LICENSE.txt": {
+    "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+    "bytes": 10175
+  },
+  "downloads/gajim-COPYING": {
+    "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "bytes": 35147
+  },
+  "venv/lib/python3.14/site-packages/pycparser-2.23.dist-info/LICENSE": {
+    "sha256": "0c846399369ea76ddd7b5c44fe6d16497415fcf015f5cbb508c24bf98b81c5b1",
+    "bytes": 1543
+  },
+  "venv/lib/python3.14/site-packages/cryptography-50.0.2.dist-info/licenses/LICENSE": {
+    "sha256": "3e0c7c091a948b82533ba98fd7cbb40432d6f1a9acbf85f5922d2f99a93ae6bb",
+    "bytes": 197
+  },
+  "venv/lib/python3.14/site-packages/cryptography-50.0.2.dist-info/licenses/LICENSE.APACHE": {
+    "sha256": "aac73b3148f6d1d7111dbca32099f68d26c644c6813ae1e4f05f6579aa2663fe",
+    "bytes": 11360
+  },
+  "venv/lib/python3.14/site-packages/cryptography-50.0.2.dist-info/licenses/LICENSE.BSD": {
+    "sha256": "602c4c7482de6479dd2e9793cda275e5e63d773dacd1eca689232ab7008fb4fb",
+    "bytes": 1532
+  },
+  "venv/lib/python3.14/site-packages/cffi-2.0.0.dist-info/licenses/LICENSE": {
+    "sha256": "5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63",
+    "bytes": 1123
+  }
+}

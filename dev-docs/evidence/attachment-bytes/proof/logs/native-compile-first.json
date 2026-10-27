@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/clang",
+    "-std=c11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-I/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/include",
+    "/Users/cam/DEV/faction-bbs/experiments/250-attachment-bytes/adapter.c",
+    "/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/libcrypto.a",
+    "-o",
+    "/private/tmp/faction250-OWNED/phase2/adapter"
+  ],
+  "exit": 0,
+  "source_sha256": "30c4e8861ddc82b2f23bfddad3bd5acb421b347c89706b89cb5b45d6afe1ebc5",
+  "libcrypto_sha256": "62c20598c84e16019aff31fcfae085474e6243fd32f04f410600f201dcad1165",
+  "binary_sha256": "a19a7047378c247e8c232c4c0569943a2871318e960ea4c06da53ccee1878211"
+}

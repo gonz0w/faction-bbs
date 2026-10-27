@@ -1,0 +1,32 @@
+[
+  {
+    "archive": "cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+    "entries": 33,
+    "js_ts_or_js_package_manifests": [],
+    "exit": 0
+  },
+  {
+    "archive": "cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl",
+    "entries": 120,
+    "js_ts_or_js_package_manifests": [],
+    "exit": 0
+  },
+  {
+    "archive": "cryptography-50.0.2.tar.gz",
+    "entries": 485,
+    "js_ts_or_js_package_manifests": [],
+    "exit": 0
+  },
+  {
+    "archive": "openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e.tar.gz",
+    "entries": 6048,
+    "js_ts_or_js_package_manifests": [],
+    "exit": 0
+  },
+  {
+    "archive": "pycparser-2.23-py3-none-any.whl",
+    "entries": 23,
+    "js_ts_or_js_package_manifests": [],
+    "exit": 0
+  }
+]

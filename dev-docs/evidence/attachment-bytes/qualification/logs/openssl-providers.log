@@ -1,0 +1,14 @@
+["/private/tmp/faction250-OWNED/sources/openssl-8cf17aaeb4599f8af87fefd810b5b5fee90fe69e/apps/openssl", "list", "-providers", "-verbose"]
+Providers:
+  default
+    name: OpenSSL Default Provider
+    version: 3.5.7
+    status: active
+    build info: 3.5.7
+    gettable provider parameters:
+      name: pointer to a UTF8 encoded string (arbitrary size)
+      version: pointer to a UTF8 encoded string (arbitrary size)
+      buildinfo: pointer to a UTF8 encoded string (arbitrary size)
+      status: integer (arbitrary size)
+
+EXIT=0

@@ -1,0 +1,4 @@
+["xcrun", "--show-sdk-path"]
+/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+
+EXIT=0

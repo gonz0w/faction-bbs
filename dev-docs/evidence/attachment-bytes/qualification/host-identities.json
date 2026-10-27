@@ -1,0 +1,30 @@
+{
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "uid": 501,
+  "root_mode": "0o700",
+  "tools": {
+    "/opt/homebrew/bin/python3": {
+      "resolved": "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634"
+    },
+    "/usr/bin/clang": {
+      "resolved": "/usr/bin/clang",
+      "sha256": "ed6f5284033aa2aae6a58427c25ba3ab119947b40365627b24e5d51a4b70a1cd"
+    },
+    "/usr/bin/perl": {
+      "resolved": "/usr/bin/perl",
+      "sha256": "fd21aceaf96967b5c0088578777a3c33b281791ad1a1b912875f21ba3d70c11e"
+    },
+    "/usr/bin/make": {
+      "resolved": "/usr/bin/make",
+      "sha256": "ed6f5284033aa2aae6a58427c25ba3ab119947b40365627b24e5d51a4b70a1cd"
+    },
+    "/usr/bin/curl": {
+      "resolved": "/usr/bin/curl",
+      "sha256": "b6f8c43b623b760e2fa95910e3f62bb518257c48b4ef54ed09285e49d6d1b85f"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "issue": 250,
+  "result": "pass",
+  "scope": "Selected public code/metadata/logs/excerpts, review, actual cleanup, this receipt and final manifest bytes",
+  "initial_selection_sha256": "40ab0c6f161181622eca878a22e174cc624169a0cf2b57a12ab1aecc4544ab62",
+  "initial_selected_references": 76,
+  "initial_selected_folder_files": 77,
+  "fixed_public_fixture_material_only": true,
+  "real_member_secret_corpus_used": false,
+  "original_reference_raw_json_escaped_and_base64_bytes_excluded": true,
+  "compiled_binary_key_store_and_private_pem_markers_excluded": true,
+  "wheels_archives_upstream_trees_and_vector_archive_not_selected": true,
+  "original_private_layout_manifests_retained_as_historical_data": true,
+  "source_preservation": "Four frozen project-source objects; verified immutable upstream revision/blob/artifact/license locators. No generic runtime or privacy inference by the byte guard.",
+  "original_input_root_actually_removed": true,
+  "method": "Lead selection and standard-library byte/hash/copy/identity/removal operations; no new maintained scanner/finalizer API",
+  "limits": "Public laboratory inputs only; this is not a scan of real secrets, a security audit, secure erasure or fresh crypto execution."
+}
