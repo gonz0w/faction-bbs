@@ -1,0 +1,37 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.86s
+     Running unittests src/lib.rs (target/debug/deps/faction_client-59b3907ec8766a20)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 91 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/faction_client-80575f57565c41bc)
+
+running 2 tests
+test checkpoint_ui::reply::tests::suggested_subject_keeps_ascii_prefix_and_scalar_boundaries ... ok
+
+thread 'checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals' (1980548) panicked at crates/faction-client/src/checkpoint_ui_reply.rs:112:13:
+
+running 1 test
+test checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals ... FAILED
+
+failures:
+
+failures:
+    checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 51 filtered out; finished in 3.36s
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals ... FAILED
+
+failures:
+
+failures:
+    checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 50 filtered out; finished in 3.36s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

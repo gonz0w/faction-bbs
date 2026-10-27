@@ -1,0 +1,26 @@
+from pathlib import Path
+import hashlib,json
+P=Path('/private/tmp/faction233-native-OWNED');S=P/'public-staging'
+def digest(data):return hashlib.sha256(data).hexdigest()
+def copy(relative,path):
+ data=path.read_bytes();out=S/relative;out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(data);return digest(data)
+programs=['compatibility_status.py','compatibility_status02.py','fix_native_compat_owner.py','native_compat_runtime02.py','audit_frozen_inputs.py','collect_scan_values.py','scan_public_candidates.py','audit_saved_integrity.py','finalize_public_staging.py']
+stages=json.loads((S/'source-stages.json').read_text());mapping={}
+for name in programs:
+ data=(P/name).read_bytes();h=digest(data);(P/'objects'/h).write_bytes(data);copy('objects/'+h,P/'objects'/h);mapping['orchestration/'+name]=h
+path=S/'maps/publication-audit.json';path.write_text(json.dumps(mapping,sort_keys=True,indent=2)+'\n');stages.append({'label':'publication-audit','manifest':{'relativepath':'maps/publication-audit.json','sha256':digest(path.read_bytes())}})
+for name in ['native-compat-owner-before.json','native-compat-status02-before.json','frozen-post-audit-before.json','public-scan-before.json','saved-audit-before.json']:
+ data=json.loads((P/'sources'/name).read_text());assert all(isinstance(v,str) and len(v)==64 for v in data.values())
+ for h in data.values():copy('objects/'+h,P/'objects'/h)
+ h=copy('maps/'+name,P/'sources'/name);stages.append({'label':name[:-5],'manifest':{'relativepath':'maps/'+name,'sha256':h}})
+(S/'source-stages.json').write_text(json.dumps(stages,indent=2)+'\n')
+for name in ['native-compat-files.json','native-compat-legacy.json','native-compat-files.raw.log','native-compat-legacy.raw.log','native-compat-owner-correction.json','native-compat-files-failed.log','compatibility-summary.json','frozen-input-post-audit.json','setup-candidates.json']:
+ copy('logs/'+name,P/'logs'/name)
+copy('metadata/saved-integrity-before-lead-audit.json',P/'saved-integrity-before-lead-audit.json')
+shared=json.loads((P/'sources/host-shared-featureoff-snapshot.json').read_text());network=json.loads((P/'sources/host-pinned-binaries.json').read_text());default=json.loads((P/'sources/host-default-binary.json').read_text());assert shared['faction-client-default-current']['sha256']==network['faction-client']['sha256']!=default['sha256']
+variants={'result':'pass','failed_featureoff_example_retained_sha256':shared['mail_reply_fixture-featureoff-failed']['sha256'],'unverified_default_candidate_was_network_hash':True,'unverified_candidate_not_used_as_default':True,'final_default_was_explicit_build_and_distinct_hash':True,'baseline_client_is_preserved_earlier_binary_not_fresh_build':True,'all_final_host_reply_routes_use_private_pinned_network_copies':True,'earlier_host_classic_pass_and_failed_unicode_candidate_retained_separately':True}
+(S/'metadata/artifact-variants.json').write_text(json.dumps(variants,indent=2)+'\n')
+summary={'result':'pass','phase':'source-bound software validation before review-gated teardown','host_local_controls_per_mode':11,'netbsd_local_controls_per_mode':11,'host_main_controls_per_mode':6,'netbsd_main_controls_per_mode':6,'private_markers_per_main_route':15,'native_rust_passed':272,'native_rust_ignored':4,'native_python_oracle_tests':5,'host_files_sftp_controls':14,'netbsd_files_sftp_controls':14,'older_default_v1_controls_per_os':2,'native_build_memory_mib':2048,'native_runtime_physmem_bytes':1054990336,'native_sources':699,'runtime_helpers':9,'owned_fixture_retained_for_review':True,'cleanup_claim':False,'scratch_log_limitation_explicit':True,'private_export_scan_pending':True}
+(S/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+manifest={str(f.relative_to(S)):digest(f.read_bytes()) for f in S.rglob('*') if f.is_file() and f.name!='manifest.json'};(S/'manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+print(json.dumps({'selected_files':len(manifest),'source_stages':len(stages),'objects':len(list((S/'objects').iterdir())),'all_final_runtime_routes_and_compatibility_passed':True,'private_scan_pending':True,'owned_fixture_retained_for_review':True}))

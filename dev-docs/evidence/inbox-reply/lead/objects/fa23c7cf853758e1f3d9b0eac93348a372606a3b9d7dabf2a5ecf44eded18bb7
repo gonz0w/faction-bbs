@@ -1,0 +1,34 @@
+name: Issue-driven PR policy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: issue-policy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  issue-policy:
+    name: Issue closure and TDD
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Fetch the public PR revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Validate actual closing issues and acceptance evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/check_issue_workflow.py --event "$GITHUB_EVENT_PATH"

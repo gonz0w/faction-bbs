@@ -1,0 +1,8 @@
+from pathlib import Path
+import sys,json
+P=Path('/private/tmp/faction233-native-OWNED');sys.path.insert(0,str(P/'runtime-code'))
+from audit_main_capture import audit
+routes={}
+for mode in ['classic','unicode']:
+ _,routes['host_'+mode]=audit(P,(P/'logs'/('host-main-'+mode+'-final.json')).read_bytes(),P/'runtime-code/probe_mail_reply.py')
+(P/'logs/host-capture-associations.json').write_text(json.dumps({'result':'pass','routes':routes},indent=2)+'\n');print('Two host private capture/result/source/marker/trace associations revalidated without mtime inference.')

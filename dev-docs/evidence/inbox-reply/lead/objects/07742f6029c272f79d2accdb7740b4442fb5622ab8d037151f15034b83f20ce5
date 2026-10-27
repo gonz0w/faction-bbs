@@ -1,0 +1,9 @@
+from pathlib import Path
+import hashlib,json,os,subprocess
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction233-lead-OWNED');run=P/'inbox-consumer-red';run.mkdir(mode=0o700);owned=run/'owned';owned.mkdir(mode=0o700);(owned/'OWNERSHIP').write_text('Issue233 existing inbox consumer compatibility\n')
+source=R/'tools/probe_mail_inbox.py';(run/'probe-before.py').write_bytes(source.read_bytes());binary=Path('/private/tmp/faction233-native-OWNED/bin/final-network')
+manifest={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [source,binary/'faction-client',binary/'checkpoint_ui_fixture']};(run/'before.json').write_text(json.dumps(manifest,indent=2)+'\n')
+command=['python3','tools/probe_mail_inbox.py','--client',str(binary/'faction-client'),'--fixture',str(binary/'checkpoint_ui_fixture'),'--owned-root',str(owned),'--online','--output',str(run/'result.json')]
+with (run/'red.log').open('wb') as output:result=subprocess.run(command,cwd=R,stdout=output,stderr=subprocess.STDOUT,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+after={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [source,binary/'faction-client',binary/'checkpoint_ui_fixture']};assert after==manifest
+(run/'status.json').write_text(json.dumps(dict(returncode=result.returncode,source_and_binaries_unchanged=True,command=command),indent=2)+'\n');assert result.returncode!=0;print('Old configured-online inbox consumer failed against new reply prompt; sources/binaries unchanged; diagnostic retained.')

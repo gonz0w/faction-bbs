@@ -1,0 +1,17 @@
+{
+  "returncode": 1,
+  "source_and_binaries_unchanged": true,
+  "command": [
+    "python3",
+    "tools/probe_mail_inbox.py",
+    "--client",
+    "/private/tmp/faction233-native-OWNED/bin/final-network/faction-client",
+    "--fixture",
+    "/private/tmp/faction233-native-OWNED/bin/final-network/checkpoint_ui_fixture",
+    "--owned-root",
+    "/private/tmp/faction233-lead-OWNED/inbox-consumer-red/owned",
+    "--online",
+    "--output",
+    "/private/tmp/faction233-lead-OWNED/inbox-consumer-red/result.json"
+  ]
+}

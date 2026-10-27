@@ -1,0 +1,28 @@
+from pathlib import Path
+import subprocess,json
+r=Path('/Users/cam/DEV/faction-bbs');o=Path('/private/tmp/faction233-lead-OWNED');t=r/'tools/test_reply_evidence.py';w=r/'.github/workflows/documentation.yml';(o/'reply-ci-test-before.py').write_bytes(t.read_bytes());(o/'reply-ci-workflow-before.yml').write_bytes(w.read_bytes())
+s=t.read_text().replace('    def test_rejects_missing_or_host_substituted_native_route(self):', '''    def test_ci_executes_both_live_local_reply_modes(self):
+        workflow=(Path(__file__).resolve().parents[1]/'.github/workflows/documentation.yml').read_text()
+        native=workflow.split('  native_mail:',1)[1].split('  documentation:',1)[0]
+        commands=[line.strip() for line in native.splitlines() if line.strip().startswith('python3 tools/probe_mail_reply.py ')]
+        self.assertEqual(len(commands),2)
+        self.assertNotIn('--unicode',commands[0]);self.assertIn('--unicode',commands[1])
+        for command in commands:
+            self.assertIn('--fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture"',command)
+            self.assertIn('--owned-root "$RUNNER_TEMP/reply-owned"',command)
+        build=next(line for line in native.splitlines() if 'cargo build -p faction-client --features network-mail --bin faction-client' in line)
+        self.assertIn('--example mail_reply_fixture',build)
+        self.assertLess(native.index(build),native.index(commands[0]))
+
+    def test_rejects_missing_or_host_substituted_native_route(self):''')
+t.write_text(s);(o/'reply-ci-test-red.py').write_bytes(t.read_bytes())
+red_run=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'reply-ci-red.log').write_bytes(red_run.stdout);assert red_run.returncode!=0
+s=w.read_text();needle='          cargo build -p faction-client --features network-mail --bin faction-client --example checkpoint_ui_fixture --example home_mail_fixture --release --locked';assert s.count(needle)==1
+s=s.replace(needle,needle.replace(' --release --locked',' --example mail_reply_fixture --release --locked')+'''
+          mkdir -m 700 "$RUNNER_TEMP/reply-owned"
+          printf 'CI owned reply fixtures\\n' > "$RUNNER_TEMP/reply-owned/OWNED"
+          python3 tools/probe_mail_reply.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture" --owned-root "$RUNNER_TEMP/reply-owned" --output "$RUNNER_TEMP/reply-classic.json"
+          python3 tools/probe_mail_reply.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture" --owned-root "$RUNNER_TEMP/reply-owned" --unicode --output "$RUNNER_TEMP/reply-unicode.json"''')
+w.write_text(s)
+green_run=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'reply-ci-green.log').write_bytes(green_run.stdout);print(green_run.stdout.decode());assert green_run.returncode==0
+(o/'reply-ci-test-green.py').write_bytes(t.read_bytes());(o/'reply-ci-workflow-green.yml').write_bytes(w.read_bytes());(o/'reply-ci-result.json').write_text(json.dumps(dict(red_exit=red_run.returncode,green_exit=green_run.returncode,captured_before_edit=True),indent=2)+'\n')

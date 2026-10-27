@@ -1,0 +1,11 @@
+from lab import *
+import time,hashlib
+R=Path('/Users/cam/DEV/faction-bbs');B=R/'target/release';C=P/'runtime-code';time.sleep(40)
+command=['python3',str(C/'probe_mail_reply.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'examples/mail_reply_fixture'),'--owned-root',str(P),'--settings',str(P/'host-settings.json'),'--mail-fixture',str(B/'examples/home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--unicode','--output',str(P/'logs/host-main-unicode01.json')]
+with (P/'logs/host-main-unicode01.log').open('wb') as output:r=subprocess.run(command,stdout=output,stderr=output,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+assert r.returncode==0,'host main unicode route failed'
+script=(P/'native_reply_runtime.py').read_bytes();manifest=(P/'sources/runtime-code-final05.json').read_bytes()
+remote('cat > /home/factionbuild/proof233/native-runtime01.py; chown factionbuild:factionbuild /home/factionbuild/proof233/native-runtime01.py',script)
+remote('cat > /home/factionbuild/proof233/runtime-code-expected.json; chown factionbuild:factionbuild /home/factionbuild/proof233/runtime-code-expected.json',manifest)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof233/native-runtime01.py > /home/factionbuild/proof233/native-runtime-launch01.log 2>&1 < /dev/null &'",timeout=10)
+print('Host Unicode6 controls passed; serial NetBSD local/oracle/main runtime routes launched with normal40s refills.')

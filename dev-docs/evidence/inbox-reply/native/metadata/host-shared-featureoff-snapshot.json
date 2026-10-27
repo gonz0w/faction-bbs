@@ -1,0 +1,14 @@
+{
+  "mail_reply_fixture-featureoff-failed": {
+    "sha256": "e00cfddce64402b2f1cc50327f314722939b70d2d7443125d6e9837b967cd487",
+    "bytes": 341904,
+    "source": "target/release/examples/mail_reply_fixture",
+    "observed_after_shared_default_workspace_build": true
+  },
+  "faction-client-default-current": {
+    "sha256": "a69b319c0d364df0aa5bfb533d0431054788140ac1e11464048f36b85a2b4633",
+    "bytes": 3287968,
+    "source": "target/release/faction-client",
+    "observed_after_shared_default_workspace_build": true
+  }
+}

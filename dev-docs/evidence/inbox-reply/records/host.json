@@ -1,0 +1,25 @@
+{
+  "client_summary": {
+    "path": "dev-docs/evidence/inbox-reply/client/summary.json",
+    "sha256": "d97d22151a2c53cedae77870c44e8f07ad410a25da60bc4c6665860793999547"
+  },
+  "client_test_logs": {
+    "native": {
+      "path": "dev-docs/evidence/inbox-reply/client/logs/final2-frozen-pass/native-test.log",
+      "sha256": "7cdb31a587cad68fe53412d38b2707aa176b43bded5555a863eaafb54f662eed"
+    },
+    "network": {
+      "path": "dev-docs/evidence/inbox-reply/client/logs/final2-frozen-pass/network-test.log",
+      "sha256": "bb06a02d42248cffd28b760af3b638fbc01511f4660946d8107f1c4f07209524"
+    }
+  },
+  "result": "pass",
+  "workspace": {
+    "path": "dev-docs/evidence/inbox-reply/lead/metadata/host-result.json",
+    "sha256": "542ccaa1c12f2c01bb6abdd08c59f6d0b7b4bc6de64f2e54f221ac221a76e318"
+  },
+  "workspace_test_log": {
+    "path": "dev-docs/evidence/inbox-reply/lead/logs/host-2.log",
+    "sha256": "b9e0ec2f94c051955920e926cb6bb8f7da41f64f78a3c837f6f83dab74d3536c"
+  }
+}

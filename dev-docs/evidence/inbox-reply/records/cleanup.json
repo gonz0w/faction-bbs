@@ -1,0 +1,17 @@
+{
+  "checked_saved_files": 6,
+  "closed_forward_count": 4,
+  "forwards_closed": true,
+  "owned_removed": true,
+  "private_teardown_process_inventory_removed": true,
+  "removed_roots": [
+    "faction233-native-OWNED",
+    "faction233-client-OWNED",
+    "faction233-lead-OWNED",
+    "faction233-review-OWNED"
+  ],
+  "result": "pass",
+  "saved_hashes_unchanged": true,
+  "saved_sizes_mtimes_unchanged": true,
+  "saved_stopped": true
+}

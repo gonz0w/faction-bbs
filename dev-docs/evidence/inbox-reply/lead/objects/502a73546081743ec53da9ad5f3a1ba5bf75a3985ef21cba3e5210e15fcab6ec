@@ -1,0 +1,85 @@
+from pathlib import Path
+import json,subprocess
+r=Path('/Users/cam/DEV/faction-bbs');o=Path('/private/tmp/faction233-lead-OWNED');t=r/'tools/test_reply_evidence.py';(o/'guard-test-red.py').write_bytes(t.read_bytes());controls=json.loads((o/'expected-controls.json').read_bytes())
+code='''#!/usr/bin/env python3
+"""Verify immutable selected-record reply observations without starting a runtime."""
+import hashlib
+import json
+from pathlib import Path
+import re
+
+ROOT=Path(__file__).resolve().parents[1]
+RESULT_SHA256=None
+PROFILE=dict(normal_sessions=8,launch_ms=5000,credential_permits=2,kernel_slots=2,owner_helpers=3,drain_seconds=5,parked_prompt_seconds=120,history_records=64,outbox_records=8,subject_bytes=128,body_bytes=1024)
+CLAIMS={'automatic_send','automatic_read_ack','background_polling','credential_lease','server_plaintext_or_keys','new_crypto','schema_change','new_dependency','physical_hardware','capacity','production_deployment'}
+REQUIRED={'host','native','tdd','cleanup','compatibility'}
+SCOPES={'local':'device-local-inbox-reply','main':'same-ssh-main-menu-device-local-reply'}
+CONTROLS=__CONTROLS__
+
+def raw(root,ref):
+    path=Path(ref['path']);assert not path.is_absolute() and '..' not in path.parts
+    assert re.fullmatch('[0-9a-f]{64}',ref['sha256'])
+    target=root/path;assert not target.is_symlink() and target.resolve().is_relative_to(root.resolve())
+    data=target.read_bytes();assert hashlib.sha256(data).hexdigest()==ref['sha256'],str(path)
+    return data
+
+def route(root,ref,kind,platform,mode,available):
+    value=json.loads(raw(root,ref));assert value['result']=='pass'
+    assert value['platform']==('Darwin' if platform=='host' else 'NetBSD')
+    assert value['scope']==SCOPES[kind] and value['unicode'] is (mode=='unicode')
+    assert value['count']==len(value['checks'])==len(CONTROLS[kind]) and set(value['checks'])==set(CONTROLS[kind])
+    if kind=='local':
+        assert value['private_fixture_removed'] is True and value['configured_home_endpoint_was_closed'] is True
+        assert value['home_password_prompt_observed'] is False
+    else:
+        assert value['files_disabled'] is True and value['actual_home_transport_error']=='Connect'
+        assert value['exact_canonical_reply_invariants'] is True and value['same_ssh_pid_until_normal_close'] is True
+        assert value['automatic_redial_observed'] is False
+        assert value['marker_count']>0 and value['private_matches']==value['file_protocol_matches']==0
+        assert re.fullmatch('[0-9a-f]{32}',value['capture_id']) and value['source_sha256'] in available
+        inputs=value['private_input_hashes']
+        assert set(inputs)=={'trace_sha256','marker_set_sha256','file_scan_input_sha256'}
+        assert all(re.fullmatch('[0-9a-f]{64}',v) for v in inputs.values())
+        scan=value['privacy_scan'];assert scan['matches']==scan['symlinks']==0
+        assert all(scan[k]>0 for k in ('board_files','store_files','log_files'))
+        stats=value['board_io_reconstruction']
+        assert all(stats[k]>0 for k in ('records','streams','decoded_bytes','read_bytes','write_bytes'))
+        assert stats['decoded_bytes']==stats['read_bytes']+stats['write_bytes']
+    return value
+
+def validate(root,record):
+    assert record['schema']==1 and record['issue']==233 and record['result']=='pass'
+    assert record['profile']==PROFILE and set(record['claims'])==CLAIMS and all(v is False for v in record['claims'].values())
+    assert record['sources'] and record['prior_records'] and set(record['records'])>=REQUIRED
+    for ref in record['sources']+record['prior_records']:raw(root,ref)
+    available={ref['sha256'] for ref in record['sources']}
+    assert set(record['routes'])=={'local','main'}
+    for kind,routes in record['routes'].items():
+        assert set(routes)=={p+'_'+m for p in ('host','netbsd') for m in ('classic','unicode')}
+        for platform in ('host','netbsd'):
+            for mode in ('classic','unicode'):route(root,routes[platform+'_'+mode],kind,platform,mode,available)
+    values={key:json.loads(raw(root,ref)) for key,ref in record['records'].items()}
+    assert all(v['result']=='pass' for v in values.values())
+    final=[]
+    for stage in record['source_stages']:
+        files=json.loads(raw(root,stage['manifest']));assert files and all(sha in available for sha in files.values())
+        if stage['label']=='native-final':final.append(files)
+    assert len(final)==1 and values['native']['files']==final[0] and values['native']['all_source_match'] is True
+    assert values['native']['compile_memory_mib']==2048 and 1000*1024**2<values['native']['runtime_physmem']<1024**3
+    assert all(values['cleanup'][k] is True for k in ('owned_removed','saved_stopped','saved_hashes_unchanged','forwards_closed'))
+    assert values['tdd']['captured_before_edit'] is True and values['tdd']['red_exit']!=0 and values['tdd']['green_exit']==0
+    return values
+
+def check():
+    data=(ROOT/'dev-docs/evidence/inbox-reply/results.json').read_bytes()
+    assert RESULT_SHA256 and hashlib.sha256(data).hexdigest()==RESULT_SHA256,'immutable reply evidence changed'
+    validate(ROOT,json.loads(data))
+    print('Reply evidence passed: source-bound host/NetBSD local and same-SSH classic/Unicode, canonical queue/read preservation and private I/O exclusion; no deployment claim.')
+
+if __name__=='__main__':check()
+'''.replace('__CONTROLS__',repr(controls))
+g=r/'tools/check_reply_evidence.py';g.write_text(code);(o/'guard-before-ci.py').write_bytes(g.read_bytes())
+p=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'guard-registration-red.log').write_bytes(p.stdout);assert p.returncode!=0 and b'test_ci_runs_the_pinned_reply_guard' in p.stdout
+w=r/'.github/workflows/documentation.yml';(o/'workflow-before.yml').write_bytes(w.read_bytes());s=w.read_text();assert 'python3 tools/check_reply_evidence.py' not in s;s=s.replace('          python3 tools/check_menu_mail_evidence.py','          python3 tools/check_menu_mail_evidence.py\n          python3 tools/check_reply_evidence.py');w.write_text(s)
+p2=subprocess.run(['python3','-m','unittest','discover','-s','tools','-p','test_reply_evidence.py'],cwd=r,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);(o/'guard-green.log').write_bytes(p2.stdout);print(p2.stdout.decode());assert p2.returncode==0
+(o/'guard-test-green.py').write_bytes(t.read_bytes());(o/'guard-green.py').write_bytes(g.read_bytes());(o/'guard-tdd.json').write_text(json.dumps(dict(red_exit=1,registration_red_exit=p.returncode,green_exit=p2.returncode,captured_before_edit=True),indent=2)+'\n')

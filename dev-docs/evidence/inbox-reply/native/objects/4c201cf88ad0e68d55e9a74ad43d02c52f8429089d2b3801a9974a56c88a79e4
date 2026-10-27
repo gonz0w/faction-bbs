@@ -1,0 +1,43 @@
+from lab import *
+import tarfile
+values=[]
+static={'checkpoint synthetic fixture password','source body','unrelated pending subject','unrelated pending body','synthetic-reply-archive-position','alice@home.test','bob@away.test','CURRENT recipient:','[LOCAL INBOX]','Local unread:'}
+def add(value):
+ if isinstance(value,str) and value not in static and len(value)>=20:values.append(value)
+ elif isinstance(value,list):
+  for child in value:add(child)
+ elif isinstance(value,dict):
+  for key in ['home_password','subject','body','replacement']:
+   if key in value:add(value[key])
+for child in P.iterdir():
+ if child.is_dir() and not child.is_symlink() and child.name.startswith(('reply-menu-OWNED-','local-reply-capture-OWNED-','files-v1-','visit-mail-')):
+  for name in ['private-markers.json','markers.private.json','private-inputs.json','private-input-association.json']:
+   path=child/name
+   if path.is_file():add(json.loads(path.read_text()))
+for name in ['generated-classic.private.json']:
+ path=P/name
+ if path.is_file():add(json.loads(path.read_text()))
+add((P/'sysop-password.private').read_text())
+for name in ['member-key','lab-admin-key']:
+ data=(P/name).read_text();add(data)
+ for line in data.splitlines():
+  if line and not line.startswith('-----'):add(line)
+with tarfile.open(P/'private/native-main-captures.private.tar.gz','r:gz') as archive:
+ for member in archive.getmembers():
+  if member.name.endswith('/private-markers.json'):add(json.loads(archive.extractfile(member).read()))
+code=r'''from pathlib import Path
+import json,os,stat
+D=Path('/home/factionbuild/device233');P=Path('/home/factionbuild/proof233');values=[]
+for child in D.iterdir():
+ if child.is_dir() and not child.is_symlink() and child.name.startswith(('reply-menu-OWNED-','local-reply-capture-OWNED-','files-v1-','visit-mail-')):
+  for name in ['private-markers.json','markers.private.json','private-inputs.json','private-input-association.json']:
+   p=child/name
+   if p.is_file():values.append(json.loads(p.read_text()))
+p=P/'generated-classic.private.json'
+if p.is_file():values.append(json.loads(p.read_text()))
+print(json.dumps(values))
+'''
+data=remote("su - factionbuild -c "+shlex.quote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code))).stdout
+(P/'private/native-generated-values.private.json').write_bytes(data);add(json.loads(data))
+unique=sorted(set(values));out=P/'private/generated-private-values.private.json';out.write_text(json.dumps(unique,indent=2)+'\n');out.chmod(0o600)
+print('Actual generated private-value inventory assembled:',len(unique),'values; raw inventory stays private.')

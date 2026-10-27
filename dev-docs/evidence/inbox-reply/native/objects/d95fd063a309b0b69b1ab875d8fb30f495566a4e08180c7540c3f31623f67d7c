@@ -1,0 +1,8 @@
+from lab import *
+r=remote('cat /home/factionbuild/proof233/compatibility02/progress.json',check=False)
+if r.returncode:print('native compatibility not started');raise SystemExit(1)
+s=json.loads(r.stdout);(P/'logs/native-compat-progress.private.json').write_bytes(r.stdout);print(json.dumps({'result':s.get('result','running'),'waiting':s.get('waiting_normal_refill_before'),'completed':[{'name':x['name'],'returncode':x['returncode']} for x in s['completed']]}))
+if s.get('result')=='pass':
+ for n in ['files.json','legacy.json','files.raw.log','legacy.raw.log','execution.json']:(P/'logs'/('native-compat-'+n)).write_bytes(remote('cat /home/factionbuild/proof233/compatibility02/'+n).stdout)
+if s.get('result')=='fail':
+ n=s['completed'][-1]['name'];data=remote('cat /home/factionbuild/proof233/compatibility02/'+n+'.raw.log').stdout;(P/'logs'/('native-compat-'+n+'-failed.log')).write_bytes(data);print(data.decode()[-1800:])

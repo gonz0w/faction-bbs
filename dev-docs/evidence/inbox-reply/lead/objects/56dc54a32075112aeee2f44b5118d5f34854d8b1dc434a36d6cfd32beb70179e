@@ -1,0 +1,21 @@
+"""Snapshot actual public workspace inputs around relevant integrated checks."""
+from pathlib import Path
+import hashlib,json,os,subprocess,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction233-lead-OWNED');objects=P/'host-objects';objects.mkdir(exist_ok=True)
+def snapshot(name):
+ names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z','--','Cargo.toml','Cargo.lock','crates','native'],cwd=R).decode().split('\0');data={}
+ for relative in sorted(set(names)-{''}):
+  path=R/relative
+  if not path.is_file() or path.is_symlink() or '.DS_Store' in path.parts:continue
+  raw=path.read_bytes();digest=hashlib.sha256(raw).hexdigest();data[relative]=digest;target=objects/digest
+  if not target.exists():target.write_bytes(raw)
+ (P/name).write_text(json.dumps(data,indent=2,sort_keys=True)+'\n');return data
+before=snapshot('host-before.json');env=dict(os.environ,CARGO_BUILD_JOBS='2',CARGO_TARGET_DIR=str(R/'target'))
+commands=[['cargo','fmt','--all','--','--check'],['cargo','clippy','--workspace','--all-targets','--release','--locked','--offline','--','-D','warnings'],['cargo','test','--workspace','--release','--locked','--offline','--','--test-threads=1']];results=[]
+for index,command in enumerate(commands):
+ start=time.monotonic()
+ with (P/('host-'+str(index)+'.log')).open('wb') as stream:run=subprocess.run(command,cwd=R,env=env,stdout=stream,stderr=subprocess.STDOUT)
+ results.append(dict(command=command,returncode=run.returncode,seconds=round(time.monotonic()-start,3)))
+ if run.returncode:break
+after=snapshot('host-after.json');result=dict(result='pass' if all(x['returncode']==0 for x in results) and len(results)==len(commands) and before==after else 'fail',source_stable=before==after,checks=results)
+(P/'host-result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));assert result['result']=='pass'

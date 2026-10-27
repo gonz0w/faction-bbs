@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "phase": "owned VM stopped; native root retained for proof copying",
+  "owned_vm_stopped": true,
+  "owned_controller_stopped": true,
+  "forwards_closed": true,
+  "closed_forward_count": 4,
+  "saved_stopped": true,
+  "saved_hashes_unchanged": true,
+  "saved_sizes_mtimes_unchanged": true,
+  "checked_saved_files": 6,
+  "saved_disk_sha256": "94b61d2cf2649048282d3ecec85a8d66bfbe8ff669fe3232f24da3797c3be062",
+  "saved_kernel_sha256": "3508b0d0424935797bbabc047b6eac9527930abdc59fe920f31997f51510aca8",
+  "owned_ssh_children_absent": true,
+  "native_root_retained": true,
+  "owned_removed": false,
+  "source_sha256": "b105ef09980dfc018457468260aa3557b1dd9ab845c5a02b51058aa4f802b9b7"
+}

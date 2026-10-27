@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "cores": 2,
+  "physmem_bytes": 1054990336,
+  "build_memory_mib": 2048,
+  "runtime_memory_mib": 1024,
+  "files_disabled": true,
+  "files_sftp_listener_stopped": true,
+  "loopback_only": true,
+  "normal_limits": true,
+  "scoped_service_stop_steps": [
+    {
+      "service": "faction_sshd",
+      "stop_returncode": 0
+    },
+    {
+      "service": "faction_files_sshd",
+      "stop_returncode": 1
+    },
+    {
+      "service": "faction_broker",
+      "stop_returncode": 0
+    },
+    {
+      "service": "faction_doors",
+      "stop_returncode": 0
+    }
+  ]
+}

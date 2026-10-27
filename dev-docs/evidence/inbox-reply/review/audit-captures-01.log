@@ -1,0 +1,5 @@
+host classic retained original capture independently revalidated
+host unicode retained original capture independently revalidated
+NetBSD classic retained capture independently revalidated
+NetBSD unicode retained capture independently revalidated
+All four captures: generated marker/source/result/input associations, canonical invariants and strict private byte absence pass

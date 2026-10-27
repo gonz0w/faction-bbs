@@ -1,0 +1,71 @@
+{
+  "base_commit": "395bfc4703d772908a7861827091d78b16374d32",
+  "commands": {
+    "clippy": "cargo clippy -j2 -p faction-client --all-targets --features network-mail -- -D warnings",
+    "default": "cargo test -j2 -p faction-client",
+    "formatting": "rustfmt --check --edition 2024 crates/faction-client/src/checkpoint_ui.rs crates/faction-client/src/checkpoint_ui_reply.rs",
+    "green2": "cargo test -j2 -p faction-client --features network-mail checkpoint_ui:: -- --nocapture",
+    "native": "cargo test -j2 -p faction-client --features native-mail",
+    "network": "cargo test -j2 -p faction-client --features network-mail",
+    "red2_red3": "cargo test -p faction-client --features network-mail checkpoint_ui::reply -- --nocapture"
+  },
+  "default": {
+    "binary_passed": 38,
+    "ignored": 0,
+    "library_passed": 4,
+    "limitation": "executed before final cfg(network-mail)-only let-chain style cleanup; not claimed as exact-final2 execution",
+    "stage": "final-before-clippy-style-cleanup",
+    "total_passed": 42
+  },
+  "failures_preserved": [
+    "red1 sandbox setup failure, not behavioral RED",
+    "red2 missing suggested subject interface behavioral RED",
+    "red3 missing eligibility interface behavioral RED",
+    "green1 invalid repeated synthetic incoming ratchet fixture; assertions retained and fixture changed to queue/retire for filling history",
+    "final Clippy collapsible-if failure; equivalent final2 let-chain cleanup"
+  ],
+  "final2": {
+    "formatting": "passed",
+    "native": {
+      "binary_ignored": 1,
+      "binary_passed": 47,
+      "doctests": 0,
+      "library_ignored": 3,
+      "library_passed": 43,
+      "total_ignored": 4,
+      "total_passed": 90
+    },
+    "network": {
+      "binary_ignored": 1,
+      "binary_passed": 51,
+      "doctests": 0,
+      "library_ignored": 3,
+      "library_passed": 88,
+      "total_ignored": 4,
+      "total_passed": 139
+    },
+    "network_all_targets_clippy": "passed",
+    "sources": {
+      "crates/faction-client/src/checkpoint_ui.rs": "e19243bd6d661942c43e3d9165aa1dd6e5595edf9f16d537944c0d591ce6c74e",
+      "crates/faction-client/src/checkpoint_ui_reply.rs": "0c3660f7ea1e10af56db91b4c45c2309a4658af1318c9269b66b23b49958f7ea"
+    },
+    "synthetic_rust_fixture_roots_remaining": 0
+  },
+  "issue": "https://github.com/gonz0w/faction-bbs/issues/233",
+  "manifest_convention": "manifest.json maps every other selected staging file to its SHA-256; its own digest is reported separately to avoid recursion",
+  "publication_limits": [
+    "no private fixture directories, keys, configurations, PTY transcripts, binaries, compiler archives or DS_Store selected",
+    "original capture root retained unchanged apart from adding packaging script and staging",
+    "no previous measured source/result hashes refreshed",
+    "selected exports still require lead/native actual-private-value scan before repository publication"
+  ],
+  "role": {
+    "observed_runtime_effort": null,
+    "observed_runtime_model": null,
+    "requested": "temper_implementer",
+    "requested_effort": "high",
+    "requested_model": "gpt-6.1-sol",
+    "runtime_metadata_status": "unavailable; requested settings are not an observed runtime claim"
+  },
+  "scope": "client-owned source and test evidence only; not a complete build-source archive or native/PTY evidence package"
+}

@@ -1,0 +1,16 @@
+"""Unchanged existing Files/native-v1/SFTP probe plus private RNG inventory."""
+import argparse,json,os,secrets,sys,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent/'runtime-code'))
+import probe_visit_mail as proof
+p=argparse.ArgumentParser()
+for n in ['client','checkpoint-fixture','mail-fixture','public-ca','settings','private-root','output']:p.add_argument('--'+n,type=Path,required=True)
+p.add_argument('--unicode',action='store_true');a=p.parse_args();os.umask(0o077)
+original=secrets.token_hex;markers=[];inventory=Path(__file__).parent/('generated-'+('unicode' if a.unicode else 'classic')+'.private.json')
+def recorded(n=None):
+ value=original(n);markers.append(value);inventory.write_text(json.dumps(markers));inventory.chmod(0o600);return value
+secrets.token_hex=recorded
+try:
+ result=proof.probe(a);assert result['checks']==proof.CHECKS and result['count']==14
+ a.output.write_text(json.dumps(result,indent=2)+'\n');print('Unchanged Files/native-v1/SFTP journey passed:',result['count'])
+finally:secrets.token_hex=original

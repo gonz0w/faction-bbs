@@ -1,0 +1,4 @@
+from lab import *
+r=remote('if test -f /home/factionbuild/proof233/test-retry01/result.json; then cat /home/factionbuild/proof233/test-retry01/result.json; else tail -3 /home/factionbuild/proof233/test-retry01/raw.log; fi');print(r.stdout.decode())
+if b'"result": "pass"' in r.stdout:
+ for name in ['result.json','raw.log','source-observed.json']:(P/'logs'/('native-test-retry01-'+name)).write_bytes(remote('cat /home/factionbuild/proof233/test-retry01/'+name).stdout)

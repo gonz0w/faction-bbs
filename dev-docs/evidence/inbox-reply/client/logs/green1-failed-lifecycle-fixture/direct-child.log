@@ -1,0 +1,15 @@
+
+running 1 test
+
+thread 'checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals' (1980970) panicked at crates/faction-client/src/checkpoint_ui_reply.rs:97:267:
+called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "invalid local mail data or unlock secret" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals ... FAILED
+
+failures:
+
+failures:
+    checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 51 filtered out; finished in 3.34s
+

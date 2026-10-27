@@ -1,0 +1,10 @@
+{
+  "audit-captures-01.log": "d39972de067a3d7508cb4b2bff5544e83cebad7bd4779c2a75c81c947a2d2a4e",
+  "audit-draft-root-01.log": "641a7ad7f7ceb341deb784339f33e310d41f56accf696067ee3e6d23ac9edee7",
+  "audit-publication-01.log": "5cdebf0d2da6d10093b588524786060b8853d24963348131b4380b49df2e38a8",
+  "audit_captures.py": "39b4025cb40c5fd4932f58c1e1cb1502c8218771e84ab22fa481b831e0bec571",
+  "audit_draft_root.py": "0ceb09488acd573d5e25ad8524002a213cf766c8bdcab10600dc67c3a6dac97a",
+  "audit_publication.py": "1a29b4711ef9fd9d5a8377e23cf9d0adad2ec9c416a1f985233b16a13899110b",
+  "package_review.py": "951b11daf5e9eb20ddb0ba22d1f4cf61b173db0f3bd705ba3060bb990c6f2b2a",
+  "verdict.json": "c329f6b28935d264f33839cbb0b2b573bc952bd21ed471f5da104fcd072d4f38"
+}

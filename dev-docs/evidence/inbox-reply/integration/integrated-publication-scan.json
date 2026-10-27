@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "generated_private_values_scanned": 81,
+  "private_inventory_sha256": "4dd905b61c27b82ce72f9097187474073f5427656f484cc4f23787ea08995cde",
+  "scanned_tree_files": 1703,
+  "tree_filemap_sha256": "c4890fe9bb171ad5fcd31b574bad4a109e0d37d722c92ae41e6d9333c5216b6d",
+  "tree_stable_during_scan": true,
+  "private_matches": 0,
+  "raw_private_key_or_vault_matches": 0,
+  "extra_source_sha256": {
+    "faction233_finalize.py": "339ecbd2ad06ee77567c279ab0850922b9bf18eb5a42f24c29bb539a4ce3f229",
+    "faction233-integrated-scan.py": "dff537c26220c7a14e75f2b37c3fa50e2d071107d76f3dd42628427f81e76292"
+  },
+  "known_public_synthetic_fixture_literals_excluded": true
+}

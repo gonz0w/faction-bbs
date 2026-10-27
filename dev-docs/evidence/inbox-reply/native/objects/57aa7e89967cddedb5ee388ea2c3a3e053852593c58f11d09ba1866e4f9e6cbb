@@ -1,0 +1,18 @@
+from pathlib import Path
+import json,subprocess,os,hashlib,time
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction233-native-OWNED');code=P/'runtime-code';B=R/'target/release'
+os.umask(0o077)
+expected=json.loads((P/'sources/runtime-code-final05.json').read_text());assert all(hashlib.sha256((code/Path(n).name).read_bytes()).hexdigest()==v for n,v in expected.items())
+steps=[]
+for unicode in [False,True]:
+ mode='unicode' if unicode else 'classic';steps.append(('host-local-'+mode+'05',['python3',str(code/'probe_mail_reply.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'examples/mail_reply_fixture'),'--owned-root',str(P),'--output',str(P/'logs'/('host-local-'+mode+'05.json'))]+(['--unicode'] if unicode else [])))
+steps.append(('host-main-classic01',['python3',str(code/'probe_mail_reply.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'examples/mail_reply_fixture'),'--owned-root',str(P),'--settings',str(P/'host-settings.json'),'--mail-fixture',str(B/'examples/home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--output',str(P/'logs/host-main-classic01.json')]))
+results=[]
+for label,command in steps:
+ start=time.monotonic()
+ with (P/'logs'/(label+'.log')).open('wb') as out:r=subprocess.run(command,stdout=out,stderr=out,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append({'label':label,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(P/'logs/host-reply-execution01.json').write_text(json.dumps(results,indent=2)+'\n')
+ print(label,'returncode',r.returncode,flush=True)
+ if r.returncode:raise SystemExit(r.returncode)
+assert all(hashlib.sha256((code/Path(n).name).read_bytes()).hexdigest()==v for n,v in expected.items())
+(P/'sources/runtime-code-host-after05.json').write_text(json.dumps(expected,sort_keys=True,indent=2)+'\n')

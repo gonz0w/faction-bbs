@@ -1,0 +1,11 @@
+from lab import *
+import hashlib
+(P/'configure-failure03.log').write_bytes((P/'remote-failure.private').read_bytes())
+code=r'''from pathlib import Path
+p=Path('/var/db/faction233-themes/theme.toml');s=p.read_text();assert 'Open private mail on your device' in s and 'Public synthetic transfer regressions' in s
+s=s.replace('Open private mail on your device','Open private mail locally').replace('Public synthetic transfer regressions','Public synthetic transfers');p.write_text(s);p.chmod(0o600)
+'''
+remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code))
+remote('su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction/service.toml"')
+(P/'server-config-proof.json').write_text(json.dumps(dict(result='pass',fresh_board=True,fresh_file_store=True,max_sessions=8,launch_ms=5000,files_disabled=True,files_service_started=False,distinct_uids=True,loopback_forward_only=True,services_started=False),indent=2)+'\n')
+print('Theme descriptions corrected within existing 30-byte bound; service configuration valid. Original failed theme retained in orchestration.')

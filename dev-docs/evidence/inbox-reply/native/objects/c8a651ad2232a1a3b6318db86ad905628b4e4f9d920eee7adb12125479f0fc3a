@@ -1,0 +1,16 @@
+from lab import *
+import hashlib,time,shutil
+B=P/'bin/final-network';os.umask(0o077)
+saved=R/'local/demo/saved/20261022T005925Z';m=json.loads((saved/'manifest.json').read_text());data=(saved/'faction-client').read_bytes();h=hashlib.sha256(data).hexdigest();assert h==m['files']['faction-client']['sha256'];old=P/'bin/faction-client-older-v1';old.write_bytes(data);old.chmod(0o700)
+(P/'logs/old-client-origin.json').write_text(json.dumps({'result':'pass','host_sha256':h,'saved_manifest_hash_matches':True,'saved_source_commit':m['source_commit'],'guest_source_note':m['guest_source_note'],'source_commit_is_guest_build_identity':False},indent=2)+'\n')
+commands=[('files',['python3',str(P/'files_driver.py'),'--client',str(B/'faction-client'),'--checkpoint-fixture',str(B/'checkpoint_ui_fixture'),'--mail-fixture',str(B/'home_mail_fixture'),'--public-ca',str(R/'crates/faction-xmpp/tests/fixtures/local-ca.pem'),'--settings',str(P/'host-files-settings.json'),'--private-root',str(P),'--output',str(P/'logs/host-compat-files.json')]),('legacy',['python3',str(P/'files_v1.py'),'--settings',str(P/'host-files-settings.json'),'--private-root',str(P),'--old-client',str(old),'--default-client',str(P/'bin/faction-client-default-final'),'--output',str(P/'logs/host-compat-legacy.json')])]
+results=[]
+for name,cmd in commands:
+ time.sleep(40);start=time.monotonic()
+ with (P/'logs'/('host-compat-'+name+'.log')).open('wb') as log:r=subprocess.run(cmd,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ results.append({'name':name,'returncode':r.returncode,'elapsed_seconds':time.monotonic()-start});(P/'logs/host-compat-execution.json').write_text(json.dumps(results,indent=2)+'\n');print('Host',name,'returncode',r.returncode,flush=True)
+ if r.returncode:raise SystemExit(r.returncode)
+for name in ['files_driver.py','files_v1.py','owned_fixture_cleanup.py','native_compat_runtime.py']:
+ remote('cat > /home/factionbuild/proof233/'+name+'; chown factionbuild:factionbuild /home/factionbuild/proof233/'+name,(P/name).read_bytes())
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof233/native_compat_runtime.py > /home/factionbuild/proof233/compat-launch.raw.log 2>&1 < /dev/null &'",timeout=10)
+print('Host Files14+v1controls2 passed; exact guest compatibility drivers launched serially.')

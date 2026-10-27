@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+"""Package the explicit public issue-233 client source/test capture allowlist."""
+from pathlib import Path
+import hashlib
+import json
+import shutil
+
+ROOT = Path('/private/tmp/faction233-client-OWNED')
+OUT = ROOT / 'public-staging'
+assert ROOT.is_dir() and (ROOT / 'OWNED').is_file()
+assert ROOT.stat().st_mode & 0o777 == 0o700
+assert not OUT.exists(), 'Never overwrite a previous packaging attempt'
+OUT.mkdir(mode=0o700)
+(OUT / 'objects').mkdir()
+(OUT / 'stages').mkdir()
+(OUT / 'logs').mkdir()
+(OUT / 'maps').mkdir()
+(OUT / 'OWNED').write_text('Issue 233 public client source and test evidence staging; explicit allowlist only.\n')
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def write_json(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+
+
+def source_object(path):
+    assert path.is_file() and not path.is_symlink()
+    raw = path.read_bytes()
+    sha = digest(raw)
+    dest = OUT / 'objects' / sha
+    if dest.exists():
+        assert dest.read_bytes() == raw
+    else:
+        dest.write_bytes(raw)
+    return sha
+
+
+def copy_selected(relative, destination):
+    path = ROOT / relative
+    assert path.is_file() and not path.is_symlink()
+    dest = OUT / destination
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(path, dest)
+    assert dest.read_bytes() == path.read_bytes()
+    return {'relativepath': destination, 'sha256': digest(dest.read_bytes())}
+
+
+# Labels describe actual observed outcomes. A directory called green1 is a
+# preserved FAILED candidate, not a passing result.
+STAGES = [
+    ('baseline', '', ['baseline-checkpoint_ui.rs'], ['baseline.sha256'], [], 'source-only pre-edit capture'),
+    ('red1-sandbox-setup-failure', 'red1', ['checkpoint_ui.rs'], ['before.sha256', 'after.sha256'], ['test.log'], 'setup failure; no meaningful RED claimed'),
+    ('red2-missing-subject-interface', 'red2', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after.sha256'], ['test.log'], 'actual RED: absent suggested_subject, five E0425 errors'),
+    ('red3-missing-eligibility-interface', 'red3', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after.sha256'], ['test.log'], 'actual RED: absent Target and suggested_subject interfaces'),
+    ('green1-failed-lifecycle-fixture', 'green1', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after.sha256'], ['test.log', 'direct-child.log'], 'subject passed; lifecycle FAILED in repeated synthetic incoming ratchet setup'),
+    ('green2-focused-pass', 'green2', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after.sha256'], ['test.log'], 'focused UI: 12 passed, 1 existing subprocess helper ignored and exercised by wrapper'),
+    ('green3-network-pass', 'green3', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after.sha256'], ['network-test.log'], 'network: 88 library passed/3 ignored; 51 binary passed/1 ignored; 0 doctests'),
+    ('final-before-clippy-style-cleanup', 'final', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after-native.sha256', 'after-default.sha256', 'after-clippy.sha256'], ['native-test.log', 'default-test.log', 'network-clippy.log', 'fmt.log'], 'native 90 passed/4 ignored; default 42 passed; Clippy FAILED collapsible-if; formatting passed'),
+    ('final2-frozen-pass', 'final2', ['checkpoint_ui.rs', 'checkpoint_ui_reply.rs'], ['before.sha256', 'after-clippy.sha256', 'after-network.sha256', 'after-native.sha256'], ['network-clippy.log', 'network-test.log', 'native-test.log', 'fmt.log', 'cleanup.log'], 'exact-final network 139 passed/4 existing ignored; native 90 passed/4 existing ignored; Clippy and formatting passed; synthetic fixtures remaining 0'),
+]
+
+stage_index = []
+for label, directory, sources, maps, logs, outcome in STAGES:
+    source_map = {}
+    for name in sources:
+        original = ROOT / directory / name
+        product_name = 'checkpoint_ui.rs' if name == 'baseline-checkpoint_ui.rs' else name
+        source_map['crates/faction-client/src/' + product_name] = source_object(original)
+    manifest_rel = 'stages/' + label + '/source-manifest.json'
+    write_json(OUT / manifest_rel, source_map)
+    map_pointers = [copy_selected(str(Path(directory) / name), 'maps/' + label + '/' + name) for name in maps]
+    log_pointers = [copy_selected(str(Path(directory) / name), 'logs/' + label + '/' + name) for name in logs]
+    stage_index.append({'label': label, 'manifest': {'relativepath': manifest_rel, 'sha256': digest((OUT / manifest_rel).read_bytes())}, 'recorded_source_maps': map_pointers, 'logs': log_pointers, 'outcome': outcome})
+
+script_names = ['add-tests.py', 'implement.py', 'refine-tests.py', 'final-tests.py', 'package-public-evidence.py']
+script_map = {name: source_object(ROOT / name) for name in script_names}
+write_json(OUT / 'stages' / 'public-capture-scripts' / 'source-manifest.json', script_map)
+script_manifest = OUT / 'stages' / 'public-capture-scripts' / 'source-manifest.json'
+stage_index.append({'label': 'public-capture-scripts', 'manifest': {'relativepath': 'stages/public-capture-scripts/source-manifest.json', 'sha256': digest(script_manifest.read_bytes())}, 'outcome': 'preserved local source-edit and packaging scripts; no fixtures/configs/binaries'})
+
+final_sources = json.loads((OUT / 'stages/final2-frozen-pass/source-manifest.json').read_text())
+assert final_sources == {
+    'crates/faction-client/src/checkpoint_ui.rs': 'e19243bd6d661942c43e3d9165aa1dd6e5595edf9f16d537944c0d591ce6c74e',
+    'crates/faction-client/src/checkpoint_ui_reply.rs': '0c3660f7ea1e10af56db91b4c45c2309a4658af1318c9269b66b23b49958f7ea',
+}
+for label, directory, sources, maps, logs, outcome in STAGES:
+    if directory and maps:
+        expected = (ROOT / directory / maps[0]).read_bytes()
+        for name in maps[1:]:
+            assert (ROOT / directory / name).read_bytes() == expected, (label, name)
+
+write_json(OUT / 'source-stages.json', stage_index)
+write_json(OUT / 'summary.json', {
+    'issue': 'https://github.com/gonz0w/faction-bbs/issues/233',
+    'base_commit': '395bfc4703d772908a7861827091d78b16374d32',
+    'scope': 'client-owned source and test evidence only; not a complete build-source archive or native/PTY evidence package',
+    'role': {'requested': 'temper_implementer', 'requested_model': 'gpt-6.1-sol', 'requested_effort': 'high', 'observed_runtime_model': None, 'observed_runtime_effort': None, 'runtime_metadata_status': 'unavailable; requested settings are not an observed runtime claim'},
+    'commands': {
+        'red2_red3': 'cargo test -p faction-client --features network-mail checkpoint_ui::reply -- --nocapture',
+        'green2': 'cargo test -j2 -p faction-client --features network-mail checkpoint_ui:: -- --nocapture',
+        'network': 'cargo test -j2 -p faction-client --features network-mail',
+        'native': 'cargo test -j2 -p faction-client --features native-mail',
+        'default': 'cargo test -j2 -p faction-client',
+        'clippy': 'cargo clippy -j2 -p faction-client --all-targets --features network-mail -- -D warnings',
+        'formatting': 'rustfmt --check --edition 2024 crates/faction-client/src/checkpoint_ui.rs crates/faction-client/src/checkpoint_ui_reply.rs',
+    },
+    'final2': {'sources': final_sources, 'network': {'library_passed': 88, 'library_ignored': 3, 'binary_passed': 51, 'binary_ignored': 1, 'total_passed': 139, 'total_ignored': 4, 'doctests': 0}, 'native': {'library_passed': 43, 'library_ignored': 3, 'binary_passed': 47, 'binary_ignored': 1, 'total_passed': 90, 'total_ignored': 4, 'doctests': 0}, 'network_all_targets_clippy': 'passed', 'formatting': 'passed', 'synthetic_rust_fixture_roots_remaining': 0},
+    'default': {'stage': 'final-before-clippy-style-cleanup', 'library_passed': 4, 'binary_passed': 38, 'total_passed': 42, 'ignored': 0, 'limitation': 'executed before final cfg(network-mail)-only let-chain style cleanup; not claimed as exact-final2 execution'},
+    'failures_preserved': ['red1 sandbox setup failure, not behavioral RED', 'red2 missing suggested subject interface behavioral RED', 'red3 missing eligibility interface behavioral RED', 'green1 invalid repeated synthetic incoming ratchet fixture; assertions retained and fixture changed to queue/retire for filling history', 'final Clippy collapsible-if failure; equivalent final2 let-chain cleanup'],
+    'publication_limits': ['no private fixture directories, keys, configurations, PTY transcripts, binaries, compiler archives or DS_Store selected', 'original capture root retained unchanged apart from adding packaging script and staging', 'no previous measured source/result hashes refreshed', 'selected exports still require lead/native actual-private-value scan before repository publication'],
+    'manifest_convention': 'manifest.json maps every other selected staging file to its SHA-256; its own digest is reported separately to avoid recursion',
+})
+
+manifest = {}
+for path in sorted(OUT.rglob('*')):
+    if path.is_file():
+        assert not path.is_symlink()
+        rel = path.relative_to(OUT).as_posix()
+        assert rel != '.DS_Store' and '\\' not in rel
+        manifest[rel] = digest(path.read_bytes())
+write_json(OUT / 'manifest.json', manifest)
+for relative, sha in manifest.items():
+    assert digest((OUT / relative).read_bytes()) == sha
+print(json.dumps({'staging': str(OUT), 'selected_files_excluding_manifest': len(manifest), 'source_objects': len(list((OUT / 'objects').iterdir())), 'source_stages': len(stage_index), 'manifest_sha256': digest((OUT / 'manifest.json').read_bytes()), 'source_stages_sha256': digest((OUT / 'source-stages.json').read_bytes()), 'summary_sha256': digest((OUT / 'summary.json').read_bytes()), 'packaging_script_sha256': digest(Path(__file__).read_bytes())}, indent=2))

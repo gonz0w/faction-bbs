@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "host_files_sftp_controls": 14,
+  "netbsd_files_sftp_controls": 14,
+  "host_older_default_native_v1_controls": 2,
+  "netbsd_older_default_native_v1_controls": 2,
+  "scope": "separate Files-enabled compatibility after all Files-disabled reply traces stopped",
+  "main_files_disabled_claim_unchanged": true,
+  "normal_limits_unchanged": true,
+  "default_host_explicitly_built_and_pinned": true,
+  "older_guest_source_build_not_claimed": true,
+  "native_first_setup_refusal_preserved": true
+}

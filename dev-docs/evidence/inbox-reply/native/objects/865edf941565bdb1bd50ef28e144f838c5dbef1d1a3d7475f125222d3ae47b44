@@ -1,0 +1,6 @@
+from lab import *
+script=(P/'native_reply_runtime.py').read_bytes();manifest=(P/'sources/runtime-code-final05.json').read_bytes()
+remote('test ! -e /home/factionbuild/proof233/runtime-final05; cat > /home/factionbuild/proof233/native-runtime01.py; chown factionbuild:factionbuild /home/factionbuild/proof233/native-runtime01.py',script)
+remote('cat > /home/factionbuild/proof233/runtime-code-expected.json; chown factionbuild:factionbuild /home/factionbuild/proof233/runtime-code-expected.json',manifest)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof233/native-runtime01.py > /home/factionbuild/proof233/native-runtime-launch01.log 2>&1 < /dev/null &'",timeout=10)
+print('Source/binary-isolated NetBSD local/oracle/main routes launched serially; host retry is separate.')

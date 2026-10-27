@@ -1,0 +1,28 @@
+{
+  "failures": [
+    "missing evidence module RED",
+    "CI guard registration RED",
+    "capture association RED",
+    "missing live CI matrix RED",
+    "compatibility placeholder/source count RED",
+    "old configured-inbox return-prompt RED",
+    "post-GREEN metadata writer shadowing failure retained",
+    "one inline diagnostic incorrectly assumed exception logger included private UI; logger suppresses it; not used as primary RED"
+  ],
+  "final_guard_tests": 12,
+  "issue": 233,
+  "old_inbox_consumer_controls": 14,
+  "private_consumer_traceback_not_selected": true,
+  "publication_scan": "pending native actual-private-value scan",
+  "python_passed": 423,
+  "raw_trace_capture_or_credentials_selected": false,
+  "reply_oracle_tests": 5,
+  "result": "pass",
+  "source_and_log_selection": "explicit known source/hash stores and filenames only; not arbitrary private fixture outputs",
+  "source_stability": {
+    "python": true,
+    "workspace": true
+  },
+  "workspace_ignored": 0,
+  "workspace_passed": 473
+}

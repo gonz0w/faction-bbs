@@ -1,0 +1,6 @@
+{
+  "red_exit": 1,
+  "green_exit": 0,
+  "captured_before_edit": true,
+  "packaging_failure": "Summary writer shadowed the CompletedProcess variable after both test phases completed; original script and RED/GREEN logs retained unchanged."
+}

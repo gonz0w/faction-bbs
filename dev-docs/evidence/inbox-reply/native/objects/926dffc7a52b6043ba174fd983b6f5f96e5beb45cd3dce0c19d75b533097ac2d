@@ -1,0 +1,32 @@
+"""Actual older and default native-v1 Files handshake same-SSH regressions."""
+import argparse,json,os,secrets,sys,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).parent/'runtime-code'))
+from check_restricted_ssh import SSHConsole
+from owned_fixture_cleanup import close_console
+from smoke_board_launcher import LauncherConsole
+from probe_visit_mail import private_json,visit_processes,assert_same_visit
+MENU='Ctrl-C exits; Esc: Enter to recover.'
+def run(a):
+ s=private_json(a.settings);assert s['disposable_fixture'] and not s['files_disabled'];root=a.private_root/('files-v1-'+secrets.token_hex(4));root.mkdir(mode=0o700);children=[];checks=[];secret=secrets.token_hex(24);handle=s['member_handle']+'v1'+secrets.token_hex(2)
+ (root/'private-markers.json').write_text(json.dumps([secret,s['sysop_password']]));(root/'private-markers.json').chmod(0o600)
+ def board():c=SSHConsole(s['member_argv']);children.append(c);return c
+ def login(c,h,p,reg=False):
+  c.expect('[L]ogin [R]egister [Q]uit: ');c.send('r' if reg else 'l');c.expect('Handle: ');c.send(h);c.password(p)
+  if reg:c.password(p,'Confirm password (hidden): ')
+  else:c.expect('Press Enter to continue: ');c.send('');c.expect(MENU)
+ try:
+  c=board();login(c,handle,secret,True);c.expect('Registration pending; sysop approval required.');c.finish()
+  c=board();login(c,'sysop',s['sysop_password']);c.raw(b's');c.expect('[C]reate room: ');c.send('a');c.expect('Member handle: ');c.send(handle);c.expect('Status updated; previous sessions expired.');c.expect('Press Enter to return to menu: ');c.send('');c.expect(MENU);c.raw(b'q');c.expect('Logged out.');c.finish()
+  for name,binary in [('older-native-v1',a.old_client),('current-default-native-v1',a.default_client)]:
+   time.sleep(40);c=LauncherConsole([binary,'--profile',s['profile']]);children.append(c);login(c,handle,secret);visit=visit_processes(c.pid);c.raw(b'f');c.expect('Files on your device');c.expect('Back to the BBS');assert b'LOCAL checkpoint passphrase' not in c.transcript;c.raw(b'b');c.expect(MENU);assert_same_visit(visit,visit_processes(c.pid));c.raw(b'q');c.expect('Logged out.');c.finish();checks.append(name+'_files_rpc_same_ssh_return')
+  a.output.write_text(json.dumps(dict(result='pass',count=len(checks),checks=checks,scope='actual-old-and-default-native-v1-files-rpc',private_mail_not_opened=True,capacity_claim=False,physical_hardware=False),indent=2)+'\n');print('Old/default native-v1 Files regressions passed:',len(checks))
+ except BaseException:
+  for i,c in enumerate(children):(root/(str(i)+'.private')).write_bytes(c.transcript+c.buffer)
+  raise
+ finally:
+  for c in children:close_console(c,s['member_argv'],root)
+if __name__=='__main__':
+ p=argparse.ArgumentParser()
+ for n in ['settings','private-root','old-client','default-client','output']:p.add_argument('--'+n,type=Path,required=True)
+ run(p.parse_args())

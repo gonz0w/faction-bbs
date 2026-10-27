@@ -1,0 +1,175 @@
+#!/usr/bin/env python3
+"""Verify immutable #211 software observations without running a client or VM."""
+import hashlib
+import json
+import math
+import re
+from pathlib import PurePosixPath
+from evidence_sources import ROOT, source_bytes, home_mail_archive_baseline_manifest
+
+# Preserve these executed placeholder bytes before pinning the actual final
+# record. A synthetic fixture or incomplete native run cannot pass load_record.
+RECORD_SHA256 = '40a72ebcdfb6845e9d29e2a73b55510b42d7b142c48916647163426cdf033f03'
+PROFILE = dict(
+    outer_format='FACTVLT2', inner_format='FACTCP03', explicit_migration=True,
+    archive_page_max=4, own_home_only=True, query_ids_matched=True,
+    cursor_scope=['home', 'device', 'epoch'], authenticated_time='sce',
+    server_metadata_grants_trust=False, server_metadata_retires_outbox=False,
+    archive_mode_presence=False, archive_mode_live_receive=False,
+    outgoing_store_hint=True,
+)
+POSITIVE = {
+    'explicit_archive_enable_preserves_private_history_and_outbox',
+    'five_offline_ciphertexts_recovered_in_pages_of_four_and_one',
+    'authenticated_sce_content_and_time_survive_reopen',
+    'offline_reply_follows_known_own_ciphertext_archive_echoes',
+    'outbox_operation_ids_preserved_without_automatic_retirement',
+    'empty_archive_page_keeps_exact_checkpoint',
+    'wrong_pin_and_home_password_preserve_message_and_cursor',
+}
+LOCAL_SCAN = 'private_content_absent_from_both_local_home_storage_and_logs'
+PROCESS_DEATH = {
+    'owned_live_archive_child_killed_after_observed_checkpoint_publication',
+    'reopened_history_cursor_and_pending_ids_are_consistent_after_process_death',
+    'one_bounded_resume_recovers_all_three_authenticated_new_messages',
+    'archive_recovery_preserves_existing_outbox_operation_ids',
+}
+UI = {
+    'old_v2_catchup_requires_deliberate_local_upgrade_without_network',
+    'declined_schema_upgrade_preserves_canonical_v2_and_restores_terminal',
+    'explicit_schema_upgrade_is_local_and_preserves_member_unlock',
+    'reopen_and_repeated_enable_keep_existing_epoch_and_cursor',
+    'unavailable_home_preserves_cursor_pending_ids_and_readable_classic_history',
+    'cancelled_hidden_home_prompt_locks_without_cursor_mutation',
+}
+TEARDOWN = {'owned_vm_removed', 'owned_private_inputs_removed', 'ports_closed', 'saved_playground_stopped', 'saved_playground_unchanged'}
+FALSE_CLAIMS = {'complete_history', 'read_receipt', 'full_conformance', 'security_audit', 'physical_hardware', 'capacity', 'background', 'roaming', 'attachments'}
+COST_SCOPE = 'one complete faction-client manual UI process, including checkpoint unlock and one explicit empty MAM2 archive page over verified TLS/account; no pending writes'
+ROUTES = {'host': 'Darwin', 'netbsd': 'NetBSD'}
+
+
+def load_record(raw):
+    assert hashlib.sha256(raw).hexdigest() == RECORD_SHA256, 'saved archive-mail record changed or not yet pinned'
+    return json.loads(raw)
+
+
+def named_checks(row, expected):
+    assert row['result'] == 'pass'
+    assert type(row['count']) is int and row['count'] == len(expected)
+    assert isinstance(row['checks'], list) and len(row['checks']) == len(set(row['checks'])) == len(expected)
+    assert set(row['checks']) == expected
+
+
+def relative_name(name):
+    assert isinstance(name, str) and name and '\\' not in name
+    path = PurePosixPath(name)
+    assert not path.is_absolute() and '..' not in path.parts and str(path) == name
+    assert all(ord(char) >= 32 and ord(char) != 127 for char in name)
+
+
+def verify_source(name, digest, resolve):
+    relative_name(name)
+    assert isinstance(digest, str) and re.fullmatch('[a-f0-9]{64}', digest)
+    assert hashlib.sha256(resolve(name, digest)).hexdigest() == digest, name
+
+
+def validate(data, resolve):
+    assert type(data['schema']) is int and data['schema'] == 1
+    assert type(data['issue']) is int and data['issue'] == 211
+    assert data['result'] == 'pass-manual-archive' and data['default_feature_off'] is True
+    assert set(data['profile']) == set(PROFILE)
+    for key, expected in PROFILE.items():
+        assert type(data['profile'][key]) is type(expected) and data['profile'][key] == expected, key
+    assert set(data['runs']) == set(ROUTES)
+    for route, platform in ROUTES.items():
+        run = data['runs'][route]
+        positive = run['positive']
+        expected = POSITIVE
+        audit = positive['server_plaintext_audit']
+        if audit == 'pass-local-scan':
+            assert route == 'netbsd'
+            expected = POSITIVE | {LOCAL_SCAN}
+        else:
+            assert audit == 'requires-separate-remote-proof'
+        named_checks(positive, expected)
+        assert positive['platform'] == platform and positive['native_product_client'] is True
+        assert positive['configured_homes'] == 2 and positive['live_provider_contact'] is False
+        assert positive['no_complete_archive_or_read_receipt_claim'] is True
+        assert re.fullmatch('[a-f0-9]{64}', positive['marker_sha256'])
+        death = run['process_death']
+        named_checks(death, PROCESS_DEATH)
+        assert death['platform'] == platform and death['signal'] == 'SIGKILL'
+        assert death['publication_observed'] is True
+        assert death['recovered_new_count'] == 3 and death['canonical_history_count'] == 9
+        assert death['exact_fsync_boundary_claim'] is False
+        assert death['server_plaintext_audit'] == 'requires-separate-proof'
+        ui = run['ui']
+        named_checks(ui, UI)
+        assert ui['platform'] == platform and ui['private_fixture_removed'] is True and ui['provider_contact'] is False
+    rust = data['rust']
+    assert rust['host_passed'] == rust['netbsd_passed'] == 139
+    assert rust['intentional_ignored_helpers'] == 2 and rust['helpers_invoked_by_parent'] is True
+    assert set(data['default_off']) == set(ROUTES)
+    expected_compatibility = {route + '_' + kind for route in ROUTES for kind in ['checkpoint', 'vault', 'picker']}
+    assert set(data['compatibility']) == expected_compatibility
+    for route in ROUTES:
+        disabled = data['default_off'][route]
+        assert disabled['result'] == 'pass' and disabled['unsupported_command_rejected'] is True and disabled['store_not_created'] is True
+        for kind, count in [('checkpoint', 23), ('vault', 13), ('picker', 8)]:
+            old = data['compatibility'][route + '_' + kind]
+            assert old['result'] == 'pass' and old['count'] == count
+    assert data['build']['complete_builder_mib'] == 2048 and data['build']['fresh_1g_compile_claim'] is False
+    runtime = data['runtime']
+    assert runtime['configured_mib'] == 1024 and runtime['physmem_bytes'] == 1054990336 and runtime['ncpu'] == 2
+    assert set(data['teardown']) == TEARDOWN and all(value is True for value in data['teardown'].values())
+    assert set(data['claims']) == FALSE_CLAIMS and all(value is False for value in data['claims'].values())
+    scripts = set()
+    for group in ['execution_sources', 'frozen_sources']:
+        assert isinstance(data[group], dict) and data[group]
+        for name, digest in data[group].items():
+            verify_source(name, digest, resolve)
+            if name.endswith('.py'):
+                scripts.add(digest)
+    stages = data['source_stages']
+    assert isinstance(stages, list) and stages and len({stage['label'] for stage in stages}) == len(stages)
+    for stage in stages:
+        assert isinstance(stage['label'], str) and stage['label'].strip()
+        assert isinstance(stage['files'], list) and stage['files']
+        assert len({row['name'] for row in stage['files']}) == len(stage['files'])
+        for row in stage['files']:
+            relative_name(row['name'])
+            verify_source(row['resolved_path'], row['sha256'], resolve)
+            if row['name'].endswith('.py'):
+                scripts.add(row['sha256'])
+    assert set(data['server_plaintext_audits']) == set(ROUTES)
+    for route, audit in data['server_plaintext_audits'].items():
+        assert audit['result'] == 'pass' and audit['server_homes'] == 2
+        assert type(audit['files_scanned']) is int and audit['files_scanned'] > 0
+        assert audit['marker_sha256'] == data['runs'][route]['positive']['marker_sha256']
+        assert audit['script_sha256'] in scripts, 'server audit script was not source-matched'
+    if 'native_archive_cost' in data:
+        cost = data['native_archive_cost']
+        assert cost['result'] == 'pass' and cost['platform'] == 'NetBSD'
+        assert cost['usage']['scope'] == COST_SCOPE
+        assert cost['compiler_included'] is False and cost['server_fixture_included'] is False and cost['capacity_claim'] is False
+        assert cost['empty_archive_page'] is True and cost['canonical_unchanged'] is True and cost['terminal_restored'] is True
+        assert cost['collector_sha256'] in scripts, 'native cost collector was not source-matched'
+        for field in ['wall_seconds', 'user_seconds', 'system_seconds', 'max_rss_kib']:
+            value = cost['usage'][field]
+            assert type(value) in {int, float} and math.isfinite(value)
+            assert value > 0 if field in {'wall_seconds', 'max_rss_kib'} else value >= 0
+
+
+def check():
+    record = load_record((ROOT / 'dev-docs/evidence/archive-mail/results.json').read_bytes())
+    validate(record, source_bytes)
+    baseline = home_mail_archive_baseline_manifest()
+    for name, digest in baseline['files'].items():
+        verify_source(name, digest, source_bytes)
+    for name, digest in baseline['records'].items():
+        assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest, 'prior home-mail evidence changed'
+    print('Saved manual archive evidence verified: scoped bounded pages, source-matched host/NetBSD recovery and separate server audits; no complete-history/read-receipt/audit/capacity claim.')
+
+
+if __name__ == '__main__':
+    check()

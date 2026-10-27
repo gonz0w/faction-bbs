@@ -1,0 +1,4 @@
+error: no example target named `mail_reply_fixture` in `faction-client` package
+help: available example targets:
+    checkpoint_ui_fixture
+    home_mail_fixture

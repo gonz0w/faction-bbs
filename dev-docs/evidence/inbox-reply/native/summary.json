@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "phase": "source-bound software validation before review-gated teardown",
+  "host_local_controls_per_mode": 11,
+  "netbsd_local_controls_per_mode": 11,
+  "host_main_controls_per_mode": 6,
+  "netbsd_main_controls_per_mode": 6,
+  "private_markers_per_main_route": 15,
+  "native_rust_passed": 272,
+  "native_rust_ignored": 4,
+  "native_python_oracle_tests": 5,
+  "host_files_sftp_controls": 14,
+  "netbsd_files_sftp_controls": 14,
+  "older_default_v1_controls_per_os": 2,
+  "native_build_memory_mib": 2048,
+  "native_runtime_physmem_bytes": 1054990336,
+  "native_sources": 699,
+  "runtime_helpers": 9,
+  "owned_fixture_retained_for_review": true,
+  "cleanup_claim": false,
+  "scratch_log_limitation_explicit": true,
+  "private_export_scan_pending": true
+}

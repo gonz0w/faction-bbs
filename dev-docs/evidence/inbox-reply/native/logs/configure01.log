@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction233-native-OWNED/configure.py", line 49, in <module>
+    remote('printf "Issue233 owned disposable client fixture\\n" > '+d+'/OWNED; chown -R factionbuild:factionbuild '+d+'; chmod 600 '+d+'/*; /usr/sbin/sshd -t -f /etc/ssh/faction/sshd_config; /usr/sbin/sshd -t -f /etc/ssh/faction/files_sshd_config; su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction/service.toml"')
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction233-native-OWNED/lab.py", line 7, in remote
+    (P/'remote-failure.private').write_bytes(r.stdout+r.stderr);raise RuntimeError('Owned lab command failed; private diagnostic retained')
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Owned lab command failed; private diagnostic retained

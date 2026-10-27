@@ -21,6 +21,10 @@ const IDLE: Duration = Duration::from_secs(300);
 #[path = "checkpoint_ui_inbox.rs"]
 mod inbox;
 
+#[cfg(feature = "network-mail")]
+#[path = "checkpoint_ui_reply.rs"]
+mod reply;
+
 // Default output is classic ASCII. Unicode is an explicit local capability
 // override, never inferred from TERM/remote replies. Escape controls, bidi marks,
 // invisible format characters and line separators even with the override.
@@ -292,6 +296,9 @@ impl Screen<'_> {
             .collect()
     }
     fn inbox(&mut self, v: &mut CheckpointVault) -> io::Result<()> {
+        self.inbox_mode(v, false)
+    }
+    fn inbox_mode(&mut self, v: &mut CheckpointVault, online: bool) -> io::Result<()> {
         let mut list = inbox::Inbox::new(Self::inbox_entries(v)?);
         let mut decoder = Decoder::new();
         let mut unknown = false;
@@ -362,7 +369,7 @@ impl Screen<'_> {
                     Key::Hotkey(b'B') => return Ok(()),
                     Key::Enter | Key::Hotkey(b'O') => {
                         if let Some(entry) = list.selected() {
-                            self.inbox_record(v, entry)?;
+                            self.inbox_record_mode(v, entry, online)?;
                             list.refresh(Self::inbox_entries(v)?);
                             decoder = Decoder::new();
                         }
@@ -373,7 +380,16 @@ impl Screen<'_> {
             }
         }
     }
+    #[cfg(test)]
     fn inbox_record(&mut self, v: &mut CheckpointVault, entry: inbox::Entry) -> io::Result<()> {
+        self.inbox_record_mode(v, entry, false)
+    }
+    fn inbox_record_mode(
+        &mut self,
+        v: &mut CheckpointVault,
+        entry: inbox::Entry,
+        online: bool,
+    ) -> io::Result<()> {
         let index = entry.index;
         let record = &v.history()?[index];
         self.print("\r\n---------------------------------------\r\n[LOCAL INBOX RECORD]\r\n")?;
@@ -389,7 +405,8 @@ impl Screen<'_> {
         ))?;
         self.show("Subject: ", &record.subject)?;
         self.show("Body: ", &record.body)?;
-        if let Some(identity) = record.received_id()
+        let received = record.received_id();
+        if let Some(identity) = received
             && v.received_read(index, identity)?.is_some()
         {
             // Fresh input only after all selected body output succeeded. Bind
@@ -405,6 +422,20 @@ impl Screen<'_> {
                 self.print("Acknowledged on this device only; no read receipt sent.\r\n")?;
             }
         }
+        #[cfg(feature = "network-mail")]
+        if online && let Some(identity) = received {
+            self.print("[R] Reply locally  [B/Enter] Back to inbox\r\n")?;
+            let mut decoder = Decoder::new();
+            loop {
+                match decoder.feed(self.byte()?, Instant::now()) {
+                    Some(Key::Hotkey(b'R')) => return self.reply(v, index, identity),
+                    Some(Key::Enter | Key::Hotkey(b'B')) => return Ok(()),
+                    _ => {}
+                }
+            }
+        }
+        #[cfg(not(feature = "network-mail"))]
+        let _ = online;
         self.pause()
     }
     fn action(&mut self, v: &mut CheckpointVault, key: u8) -> io::Result<()> {
@@ -651,6 +682,72 @@ impl Screen<'_> {
             }
         }
     }
+    fn reply_unavailable(&mut self, v: &CheckpointVault) -> io::Result<()> {
+        // A poisoned handle must reach the existing drop/reopen lock path.
+        v.inspection()?;
+        self.print("Reply unavailable; check selected received record, current prepared peer, expiry and retained-store limits.\r\n")
+    }
+    fn reply_target(&mut self, target: &reply::Target) -> io::Result<()> {
+        self.show("CURRENT recipient: ", &target.address)?;
+        self.print(&format!(
+            "CURRENT device: {} / ed25519:{}\r\n",
+            target.device,
+            hex(&target.identity)
+        ))
+    }
+    fn reply(
+        &mut self,
+        v: &mut CheckpointVault,
+        index: usize,
+        received: [u8; 32],
+    ) -> io::Result<()> {
+        let target = match reply::Target::prepare(v, index, received, now()?) {
+            Ok(target) => target,
+            Err(_) => return self.reply_unavailable(v),
+        };
+        self.reply_target(&target)?;
+        self.print(
+            "Current independently verified identity; history does not prove key continuity.\r\n",
+        )?;
+        let (suggestion, shortened) = reply::suggested_subject(&v.history()?[index].subject);
+        self.show("Suggested subject: ", &suggestion)?;
+        if shortened {
+            self.print("Suggested subject shortened to the 128 UTF-8 byte limit.\r\n")?;
+        }
+        let replacement = self.compose_line(
+            "Subject (Enter keeps suggestion; fresh text replaces, 128 UTF-8 bytes): ",
+            128,
+        )?;
+        let subject = if replacement.is_empty() {
+            suggestion
+        } else {
+            replacement
+        };
+        let body = self.compose_line("Body (1024 UTF-8 bytes, one line): ", 1024)?;
+        self.print("Review local reply intent:\r\n")?;
+        self.reply_target(&target)?;
+        self.show("Subject: ", &subject)?;
+        self.show("Body: ", &body)?;
+        // Discard typeahead only AFTER all reviewed fields have reached output.
+        rustix::termios::tcflush(&self.term.input, rustix::termios::QueueSelector::IFlush)?;
+        if self
+            .line("Type queue to persist encrypted ciphertext: ", 32, false)?
+            .as_str()
+            != "queue"
+        {
+            return self.print("Reply cancelled; no ciphertext queued.\r\n");
+        }
+        let timestamp = now()?;
+        if target.recheck(v, timestamp).is_err() {
+            return self.reply_unavailable(v);
+        }
+        let mut operation = [0; 16];
+        getrandom::fill(&mut operation).map_err(|_| invalid())?;
+        match v.queue(operation, &subject, &body, timestamp, timestamp) {
+            Ok(_) => self.print("Queued durably; no delivery or read receipt.\r\n"),
+            Err(_) => self.reply_unavailable(v),
+        }
+    }
     fn online_menu(&mut self, v: &CheckpointVault) -> io::Result<u8> {
         self.clear()?;
         self.print("[LOCAL / MANUAL ONLINE] Encrypted home mail\r\n")?;
@@ -704,6 +801,9 @@ impl Screen<'_> {
         key: u8,
     ) -> io::Result<()> {
         use faction_client::mail_network::{self, Mode};
+        if key == b'I' {
+            return self.inbox_mode(v, true);
+        }
         if !b"UKCNOGA".contains(&key) {
             return self.action(v, key);
         }
@@ -1094,88 +1194,115 @@ mod tests {
             )
             .unwrap();
         vault.enable_read_tracking().unwrap();
+        #[cfg(feature = "network-mail")]
+        let vault_identity = vault.history().unwrap()[0].received_id().unwrap();
         let before = std::fs::read(path.join("mail.fkv")).unwrap();
         std::fs::write(root.0.join("eof"), []).unwrap();
-        for fail_output in [true, false] {
-            let (_master, slave) = faction_client_pty::open(24, 40).unwrap();
-            let observer = std::fs::File::from(slave.try_clone().unwrap());
-            let saved = rustix::termios::tcgetattr(&slave).unwrap();
-            let mut raw = saved.clone();
-            raw.make_raw();
-            rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
-                .unwrap();
-            let mut term = LocalTerminal {
-                input: slave.try_clone().unwrap().into(),
-                // An actual read-only output descriptor fails writes without
-                // depending on platform-specific /dev/full or signal timing.
-                output: if fail_output {
-                    std::fs::File::open("/dev/null").unwrap()
-                } else {
-                    slave.into()
-                },
-                saved: saved.clone(),
-            };
-            let input = if fail_output {
-                None
-            } else {
-                Some(std::mem::replace(
-                    &mut term.input,
-                    std::fs::File::open(root.0.join("eof")).unwrap(),
-                ))
-            };
-            let error = {
-                let mut screen = Screen {
-                    term: &mut term,
-                    activity: Instant::now(),
-                    unicode: false,
+        #[cfg(feature = "network-mail")]
+        let attempts = [false, true].as_slice();
+        #[cfg(not(feature = "network-mail"))]
+        let attempts = [false].as_slice();
+        for &reply_attempt in attempts {
+            #[cfg(not(feature = "network-mail"))]
+            let _ = reply_attempt;
+            for fail_output in [true, false] {
+                let (_master, slave) = faction_client_pty::open(24, 40).unwrap();
+                let observer = std::fs::File::from(slave.try_clone().unwrap());
+                let saved = rustix::termios::tcgetattr(&slave).unwrap();
+                let mut raw = saved.clone();
+                raw.make_raw();
+                rustix::termios::tcsetattr(&slave, rustix::termios::OptionalActions::Now, &raw)
+                    .unwrap();
+                let mut term = LocalTerminal {
+                    input: slave.try_clone().unwrap().into(),
+                    // An actual read-only output descriptor fails writes without
+                    // depending on platform-specific /dev/full or signal timing.
+                    output: if fail_output {
+                        std::fs::File::open("/dev/null").unwrap()
+                    } else {
+                        slave.into()
+                    },
+                    saved: saved.clone(),
                 };
-                if fail_output {
-                    screen
-                        .inbox_record(
-                            &mut vault,
-                            inbox::Entry {
-                                index: 0,
-                                status: inbox::Status::Unread,
-                            },
-                        )
-                        .unwrap_err()
+                let input = if fail_output {
+                    None
                 } else {
-                    screen.inbox(&mut vault).unwrap_err()
+                    Some(std::mem::replace(
+                        &mut term.input,
+                        std::fs::File::open(root.0.join("eof")).unwrap(),
+                    ))
+                };
+                let error = {
+                    let mut screen = Screen {
+                        term: &mut term,
+                        activity: Instant::now(),
+                        unicode: false,
+                    };
+                    #[cfg(feature = "network-mail")]
+                    if reply_attempt {
+                        screen.reply(&mut vault, 0, vault_identity).unwrap_err()
+                    } else if fail_output {
+                        screen
+                            .inbox_record(
+                                &mut vault,
+                                inbox::Entry {
+                                    index: 0,
+                                    status: inbox::Status::Unread,
+                                },
+                            )
+                            .unwrap_err()
+                    } else {
+                        screen.inbox(&mut vault).unwrap_err()
+                    }
+                    #[cfg(not(feature = "network-mail"))]
+                    if fail_output {
+                        screen
+                            .inbox_record(
+                                &mut vault,
+                                inbox::Entry {
+                                    index: 0,
+                                    status: inbox::Status::Unread,
+                                },
+                            )
+                            .unwrap_err()
+                    } else {
+                        screen.inbox(&mut vault).unwrap_err()
+                    }
+                };
+                if !fail_output {
+                    assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
                 }
-            };
-            if !fail_output {
-                assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
+                // Put the owned tty input back so Drop can restore the actual tty.
+                if let Some(input) = input {
+                    term.input = input;
+                }
+                drop(term);
+                let restored = rustix::termios::tcgetattr(&observer).unwrap();
+                // Darwin and NetBSD termios headers describe PENDIN as retyping
+                // or re-echoing pending input. Both kernels set this state bit when
+                // restoring identical configured modes; mask only that observed bit.
+                #[cfg(any(target_os = "macos", target_os = "netbsd"))]
+                let queue_state = rustix::termios::LocalModes::PENDIN;
+                #[cfg(not(any(target_os = "macos", target_os = "netbsd")))]
+                let queue_state = rustix::termios::LocalModes::empty();
+                assert_eq!(
+                    restored.local_modes & !queue_state,
+                    saved.local_modes & !queue_state
+                );
+                assert_eq!(restored.input_modes, saved.input_modes);
+                assert_eq!(restored.output_modes, saved.output_modes);
+                assert_eq!(restored.control_modes, saved.control_modes);
+                assert_eq!(restored.input_speed(), saved.input_speed());
+                assert_eq!(restored.output_speed(), saved.output_speed());
+                // Rustix exposes the complete control array through Debug, with no
+                // public iterator. Compare every control value, including padding.
+                assert_eq!(
+                    format!("{:?}", restored.special_codes),
+                    format!("{:?}", saved.special_codes)
+                );
+                assert_eq!(vault.read_summary().unwrap().unread, Some(1));
+                assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
             }
-            // Put the owned tty input back so Drop can restore the actual tty.
-            if let Some(input) = input {
-                term.input = input;
-            }
-            drop(term);
-            let restored = rustix::termios::tcgetattr(&observer).unwrap();
-            // Darwin and NetBSD termios headers describe PENDIN as retyping
-            // or re-echoing pending input. Both kernels set this state bit when
-            // restoring identical configured modes; mask only that observed bit.
-            #[cfg(any(target_os = "macos", target_os = "netbsd"))]
-            let queue_state = rustix::termios::LocalModes::PENDIN;
-            #[cfg(not(any(target_os = "macos", target_os = "netbsd")))]
-            let queue_state = rustix::termios::LocalModes::empty();
-            assert_eq!(
-                restored.local_modes & !queue_state,
-                saved.local_modes & !queue_state
-            );
-            assert_eq!(restored.input_modes, saved.input_modes);
-            assert_eq!(restored.output_modes, saved.output_modes);
-            assert_eq!(restored.control_modes, saved.control_modes);
-            assert_eq!(restored.input_speed(), saved.input_speed());
-            assert_eq!(restored.output_speed(), saved.output_speed());
-            // Rustix exposes the complete control array through Debug, with no
-            // public iterator. Compare every control value, including padding.
-            assert_eq!(
-                format!("{:?}", restored.special_codes),
-                format!("{:?}", saved.special_codes)
-            );
-            assert_eq!(vault.read_summary().unwrap().unread, Some(1));
-            assert_eq!(std::fs::read(path.join("mail.fkv")).unwrap(), before);
         }
         drop(vault);
     }

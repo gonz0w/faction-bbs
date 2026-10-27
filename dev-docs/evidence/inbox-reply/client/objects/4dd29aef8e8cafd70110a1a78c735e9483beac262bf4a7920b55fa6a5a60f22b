@@ -1,0 +1,32 @@
+p='crates/faction-client/src/checkpoint_ui_reply.rs';s=open(p).read()
+pos=s.index('\n    #[test]\n    fn suggested_subject')
+# insert extra assertions at end lifecycle before close
+end=s.rfind('    }',0,pos)
+s=s[:end]+'''        drop(f);
+        // A failed canonical write poisons the handle. Presentation checks must
+        // propagate that state; only dropping/reopening may recover authority.
+        let mut f=Fixture::new(); let frame=f.receive("write refusal topic"); let time=f.time;
+        let before=std::fs::read(f.root.join("vault/mail.fkv")).unwrap();
+        std::fs::set_permissions(f.root.join("vault"),std::fs::Permissions::from_mode(0o500)).unwrap();
+        let refused=f.vm().queue([11;16],"Re: write refusal topic","fresh body",time,time);
+        std::fs::set_permissions(f.root.join("vault"),std::fs::Permissions::from_mode(0o700)).unwrap();
+        assert!(refused.is_err()); assert!(f.v().inspection().is_err());
+        assert!(Target::prepare(f.v(),0,frame,time).is_err());
+        f.reopen(false);
+        assert_eq!(std::fs::read(f.root.join("vault/mail.fkv")).unwrap(),before);
+        assert_eq!(f.v().history().unwrap().len(),1);
+        assert!(f.v().inspect_outbox().unwrap().is_empty());
+        assert_eq!(f.v().read_summary().unwrap().unread,Some(1));
+        Target::prepare(f.v(),0,frame,time).unwrap();
+'''+s[end:]
+# Insert prefix limit + inertness assertions after existing prefix loop
+needle='''        assert_eq!(suggested_subject("topic").0.as_str(), "Re: topic");'''
+s=s.replace(needle,'''        let prefixed=format!("rE:{}", "a".repeat(125));
+        assert_eq!(suggested_subject(&prefixed).0.as_str(), prefixed);
+        assert!(!suggested_subject(&prefixed).1);
+        let hostile="λ\\n\\x1b]52;c;hostile\\x07\\u{202e}safe";
+        let (suggested, shortened)=suggested_subject(hostile); assert!(!shortened);
+        assert_eq!(super::super::inert(&suggested,false).as_str(),"Re: \\\\u{3bb}\\\\u{a}\\\\u{1b}]52;c;hostile\\\\u{7}\\\\u{202e}safe");
+        assert_eq!(super::super::inert(&suggested,true).as_str(),"Re: λ\\\\u{a}\\\\u{1b}]52;c;hostile\\\\u{7}\\\\u{202e}safe");
+'''+needle)
+open(p,'w').write(s)

@@ -1,0 +1,39 @@
+"""Prepare explicitly selected public source/test observations for private-value review."""
+from pathlib import Path
+import hashlib,json,re
+P=Path('/private/tmp/faction233-lead-OWNED');R=Path('/Users/cam/DEV/faction-bbs');OUT=P/'public-staging';OUT.mkdir(mode=0o700);(OUT/'OWNED').write_text('Issue233 public-source candidate, pending final scan\n')
+def put(relative,raw):
+ target=OUT/relative;target.parent.mkdir(parents=True,exist_ok=True)
+ if target.exists():assert target.read_bytes()==raw
+ else:target.write_bytes(raw)
+ return dict(relativepath=relative,sha256=hashlib.sha256(raw).hexdigest())
+def object(raw):
+ digest=hashlib.sha256(raw).hexdigest();put('objects/'+digest,raw);return digest
+# These two stores contain only exact Git-selected crates/native/tools/workflow inputs.
+for directory in ['host-objects','python-objects']:
+ for path in (P/directory).iterdir():
+  assert path.is_file() and not path.is_symlink() and re.fullmatch('[0-9a-f]{64}',path.name)
+  raw=path.read_bytes();assert hashlib.sha256(raw).hexdigest()==path.name
+  assert not raw.startswith((b'\x7fELF',b'QFI\xfb',b'\x1f\x8b',b'PK\x03\x04'))
+  object(raw)
+stages=[]
+for name in ['host-before.json','host-after.json','python-before.json','python-after.json']:
+ raw=(P/name).read_bytes();manifest=json.loads(raw);assert all(re.fullmatch('[0-9a-f]{64}',sha) for sha in manifest.values())
+ stages.append(dict(label=name[:-5],manifest=put('maps/'+name,raw)))
+# Exact saved executable variants, not reconstructed earlier source.
+variants={}
+for path in sorted(P.glob('*.py')):variants[path.name]=object(path.read_bytes())
+for path in sorted(P.glob('*.yml')):variants[path.name]=object(path.read_bytes())
+for relative in ['inbox-consumer-red/probe-before.py','inbox-consumer-green/probe-after.py']:
+ variants[relative]=object((P/relative).read_bytes())
+stages.append(dict(label='lead-actual-executable-variants',manifest=put('maps/lead-executable-variants.json',(json.dumps(variants,indent=2,sort_keys=True)+'\n').encode())))
+logs=['coverage-green.log','coverage-red.log','guard-assoc-green.log','guard-assoc-red.log','guard-green.log','guard-red.log','guard-registration-red.log','host-0.log','host-1.log','host-2.log','python.log','reply-ci-green.log','reply-ci-red.log']
+metadata=['coverage-tdd.json','expected-controls.json','guard-assoc-tdd.json','guard-tdd.json','host-result.json','python-result.json','reply-ci-result.json']
+for name in logs:put('logs/'+name,(P/name).read_bytes())
+for name in metadata:put('metadata/'+name,(P/name).read_bytes())
+for relative in ['inbox-consumer-red/red.log','inbox-consumer-red/status.json','inbox-consumer-red/before.json','inbox-consumer-red/result.json','inbox-consumer-red/diagnostic-safe.json','inbox-consumer-green/green.log','inbox-consumer-green/status.json','inbox-consumer-green/before.json','inbox-consumer-green/result.json']:
+ path=P/relative
+ if path.exists():put(('logs/' if path.suffix=='.log' else 'metadata/')+relative,path.read_bytes())
+summary=dict(result='pass',issue=233,workspace_passed=473,workspace_ignored=0,python_passed=423,final_guard_tests=12,reply_oracle_tests=5,old_inbox_consumer_controls=14,source_stability={'workspace':True,'python':True},failures=['missing evidence module RED','CI guard registration RED','capture association RED','missing live CI matrix RED','compatibility placeholder/source count RED','old configured-inbox return-prompt RED','post-GREEN metadata writer shadowing failure retained','one inline diagnostic incorrectly assumed exception logger included private UI; logger suppresses it; not used as primary RED'],private_consumer_traceback_not_selected=True,source_and_log_selection='explicit known source/hash stores and filenames only; not arbitrary private fixture outputs',publication_scan='pending native actual-private-value scan',raw_trace_capture_or_credentials_selected=False)
+put('summary.json',(json.dumps(summary,indent=2,sort_keys=True)+'\n').encode());put('source-stages.json',(json.dumps(stages,indent=2,sort_keys=True)+'\n').encode())
+manifest={str(path.relative_to(OUT)):hashlib.sha256(path.read_bytes()).hexdigest() for path in OUT.rglob('*') if path.is_file()};put('manifest.json',(json.dumps(manifest,indent=2,sort_keys=True)+'\n').encode());print(len(manifest),'selected public-source candidate files; staging only, scan still required.')

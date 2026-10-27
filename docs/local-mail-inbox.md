@@ -43,6 +43,33 @@ Enable [local read tracking](local-unread-mail.md) deliberately with E at the ma
 menu before using read decisions. Merely opening the inbox does not upgrade an
 older encrypted checkpoint. **H** retains its sequential history reader.
 
+## Reply from the manual home-mail console
+
+After opening a received record in the manual home-mail console, press Enter to
+skip the read-acknowledgement prompt if tracking is enabled, then choose **R** to
+prepare a local reply. Review the current verified recipient, device and full
+identity. The received account/device must match that already prepared peer;
+history never enrolls a recipient or proves continuity with a changed key.
+Sent, unprepared, revoked, expired or history-only state cannot authorize a reply.
+
+The suggested subject keeps an existing `Re:` prefix or adds one. It stays within
+128 UTF-8 bytes, with a notice if shortened. Press Enter to keep it, or enter a
+replacement. The one-line body starts empty and retains its 1024-byte limit.
+Review the recipient and complete content, then type a fresh **queue** confirmation
+to persist encrypted ciphertext. Enter or other confirmation text cancels and
+returns to the inbox. Queued confirmation input is discarded.
+
+Reply does not mark the source read, connect to your home or ask for a home
+password. Sending still requires a separate deliberate N action. A pending reply
+proves neither delivery nor reading. Normal cancel returns to the same inbox;
+Ctrl-C/D, input/output failure and inactivity retain their locking behavior.
+Failed writes retain the canonical-store close/reopen rule.
+
+Reply is available only in the manual network-mail console, including its picker,
+Files and main-menu routes. The offline inbox and ordinary SSH keep their existing
+behavior. No reply body, subject, count or key is sent to the BBS, and no plaintext
+reply draft or index is saved.
+
 ## Lock and return
 
 Use B to return to the mail menu and **L** to lock. From parked Files, this returns

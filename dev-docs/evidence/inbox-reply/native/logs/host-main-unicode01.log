@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction233-native-OWNED/runtime-code/probe_mail_reply.py", line 437, in <module>
+    result = probe_main_menu(args)
+  File "/private/tmp/faction233-native-OWNED/runtime-code/probe_mail_reply.py", line 319, in probe_main_menu
+    assert seeded.returncode == 0, 'synthetic reply seed failed'
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: synthetic reply seed failed

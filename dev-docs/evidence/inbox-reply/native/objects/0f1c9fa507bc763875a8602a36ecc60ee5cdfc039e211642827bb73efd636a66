@@ -1,0 +1,9 @@
+from lab import *
+for name in ['audit_main_capture.py','audit_native_main.py']:
+ remote('cat > /home/factionbuild/proof233/'+name+'; chown factionbuild:factionbuild /home/factionbuild/proof233/'+name,(P/name).read_bytes())
+r=remote("su - factionbuild -c '/usr/pkg/bin/python3.13 /home/factionbuild/proof233/audit_native_main.py'");(P/'logs/native-capture-audit.log').write_bytes(r.stdout)
+(P/'logs/native-capture-associations.json').write_bytes(remote('cat /home/factionbuild/proof233/native-capture-associations.json').stdout)
+r=remote("su - factionbuild -c '/usr/pkg/bin/python3.13 /home/factionbuild/proof233/audit_native_main.py --archive'");out=P/'private/native-main-captures.private.tar.gz';out.write_bytes(r.stdout);out.chmod(0o600)
+host=json.loads((P/'logs/host-capture-associations.json').read_text());native=json.loads((P/'logs/native-capture-associations.json').read_text());routes={**host['routes'],**native['routes']};assert len({row['capture_id'] for row in routes.values()})==4
+(P/'logs/capture-associations.json').write_text(json.dumps({'result':'pass','routes':routes},indent=2)+'\n')
+print('All four unique main capture associations verified; selected native raw captures retained privately.')

@@ -1,0 +1,18 @@
+from lab import *
+import hashlib,tarfile
+names=['probe_mail_reply.py','test_probe_mail_reply.py','probe_menu_mail.py','test_probe_menu_mail.py','probe_visit_mail.py','smoke_native_client_ssh.py','smoke_board_launcher.py','smoke_local_console.py','check_restricted_ssh.py']
+code=P/'runtime-code';code.mkdir(mode=0o700)
+manifest={}
+for name in names:
+ data=(R/'tools'/name).read_bytes();digest=hashlib.sha256(data).hexdigest();(P/'objects'/digest).write_bytes(data);(code/name).write_bytes(data);manifest['tools/'+name]=digest
+(P/'sources/runtime-code-final05.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/'runtime-code-final05.tar.gz'
+with tarfile.open(archive,'w:gz') as output:
+ for name in names:output.add(code/name,arcname=name,recursive=False)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/proof233/runtime-code; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/proof233/runtime-code; tar -xzf - -C /home/factionbuild/proof233/runtime-code; chown -R factionbuild:factionbuild /home/factionbuild/proof233/runtime-code',archive.read_bytes())
+code=r'''import json,hashlib
+from pathlib import Path
+p=Path('/home/factionbuild/proof233/runtime-code');print(json.dumps({'tools/'+f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in p.iterdir() if f.is_file()}))
+'''
+observed=json.loads(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout);assert manifest==observed;(P/'sources/runtime-code-guest-match05.json').write_text(json.dumps(observed,sort_keys=True,indent=2)+'\n')
+print('Frozen runtime helper override uploaded and all9 exact source hashes matched.')
