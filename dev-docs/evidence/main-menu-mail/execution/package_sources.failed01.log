@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction230-packaging-OWNED/package_sources.py", line 158, in <module>
+    if not add_map('lead', 'root', p.stem, p):
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction230-packaging-OWNED/package_sources.py", line 91, in add_map
+    raise ValueError('Map contains a non-public source path')
+ValueError: Map contains a non-public source path

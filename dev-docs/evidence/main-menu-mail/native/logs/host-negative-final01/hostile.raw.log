@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction230-native-OWNED/host-negative-final01/21_hostile_controls.py", line 76, in <module>
+    run(p.parse_args())
+    ~~~^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction230-native-OWNED/host-negative-final01/21_hostile_controls.py", line 45, in run
+    c=board();login(c,handle,secret,True);c.expect('Registration pending; sysop approval required.');c.finish()
+              ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction230-native-OWNED/host-negative-final01/21_hostile_controls.py", line 39, in login
+    c.expect('[L]ogin [R]egister [Q]uit: ');c.send('r' if reg else 'l');c.expect('Handle: ');c.send(h);c.password(p)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/faction230-native-OWNED/host-negative-final01/code/smoke_local_console.py", line 51, in expect
+    raise AssertionError(f'console exited before {text!r}')
+AssertionError: console exited before '[L]ogin [R]egister [Q]uit: '

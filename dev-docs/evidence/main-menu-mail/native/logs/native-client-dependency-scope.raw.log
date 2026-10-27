@@ -1,0 +1,355 @@
+faction-client v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-client)
+argon2 v0.6.0
+base64ct v1.8.3
+blake2 v0.11.0
+digest v0.11.3
+block-buffer v0.12.1
+hybrid-array v0.4.15
+typenum v1.20.1
+const-oid v0.10.2
+crypto-common v0.2.2
+hybrid-array v0.4.15 (*)
+ctutils v0.4.3
+cmov v0.5.4
+password-hash v0.6.1
+getrandom v0.4.3
+cfg-if v1.0.5
+libc v0.2.191
+rand_core v0.10.1
+phc v0.6.1
+base64ct v1.8.3
+ctutils v0.4.3 (*)
+getrandom v0.4.3 (*)
+zeroize v1.9.1
+base64 v0.23.1
+chacha20poly1305 v0.11.0
+aead v0.6.1
+crypto-common v0.2.2 (*)
+inout v0.2.5
+hybrid-array v0.4.15 (*)
+chacha20 v0.10.2
+cfg-if v1.0.5
+cipher v0.5.2
+block-buffer v0.12.1 (*)
+crypto-common v0.2.2 (*)
+inout v0.2.5 (*)
+rand_core v0.10.1
+zeroize v1.9.1
+cipher v0.5.2 (*)
+poly1305 v0.9.1
+universal-hash v0.6.1
+crypto-common v0.2.2 (*)
+ctutils v0.4.3 (*)
+zeroize v1.9.1
+faction-client-pty v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-client-pty)
+cc v1.9.0
+find-msvc-tools v0.1.15
+shlex v2.0.1
+faction-files v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-files)
+base64 v0.23.1
+faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-unix)
+cc v1.9.0 (*)
+rustix v1.1.5
+bitflags v2.13.2
+errno v0.3.14
+libc v0.2.191
+libc v0.2.191
+sha2 v0.11.1
+cfg-if v1.0.5
+cpufeatures v0.3.1
+digest v0.11.3 (*)
+toml v1.1.8+spec-1.1.0
+serde_core v1.0.229
+serde_spanned v1.1.2
+serde_core v1.0.229
+toml_datetime v1.1.2+spec-1.1.0
+serde_core v1.0.229
+toml_parser v1.1.5+spec-1.1.0
+winnow v1.0.4
+winnow v1.0.4
+faction-omemo v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-omemo)
+getrandom v0.4.3 (*)
+roxmltree v0.21.1
+memchr v2.8.3
+zeroize v1.9.1
+faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal)
+faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-unix) (*)
+rustix v1.1.5 (*)
+toml v1.1.8+spec-1.1.0 (*)
+unicode-width v0.2.2
+faction-xmpp v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-xmpp)
+futures-util v0.3.34
+futures-channel v0.3.34
+futures-core v0.3.34
+futures-sink v0.3.34
+futures-core v0.3.34
+futures-io v0.3.34
+futures-macro v0.3.34 (proc-macro)
+proc-macro2 v1.0.107
+unicode-ident v1.0.27
+quote v1.0.47
+proc-macro2 v1.0.107 (*)
+syn v3.0.9
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+unicode-ident v1.0.27
+futures-sink v0.3.34
+futures-task v0.3.34
+memchr v2.8.3
+pin-project-lite v0.2.17
+slab v0.4.12
+log v0.4.34
+native-tls v0.2.18
+log v0.4.34
+openssl v0.10.81
+bitflags v2.13.2
+cfg-if v1.0.5
+foreign-types v0.3.2
+foreign-types-shared v0.1.1
+libc v0.2.191
+openssl-macros v0.1.1 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v2.0.119
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+unicode-ident v1.0.27
+openssl-sys v0.9.117
+libc v0.2.191
+cc v1.9.0 (*)
+pkg-config v0.3.34
+vcpkg v0.2.15
+openssl-probe v0.2.1
+openssl-sys v0.9.117 (*)
+rxml v0.14.0
+bytes v1.12.1
+futures-core v0.3.34
+pin-project-lite v0.2.17
+rxml_proc v0.12.1 (proc-macro)
+quote v1.0.47 (*)
+rxml_validation v0.11.0
+syn v2.0.119 (*)
+rxml_validation v0.12.0
+compact_str v0.9.1
+castaway v0.2.4
+rustversion v1.0.23 (proc-macro)
+cfg-if v1.0.5
+itoa v1.0.18
+rustversion v1.0.23 (proc-macro)
+ryu v1.0.23
+static_assertions v1.1.0
+tokio v1.54.1
+bytes v1.12.1
+libc v0.2.191
+mio v1.2.4
+libc v0.2.191
+pin-project-lite v0.2.17
+socket2 v0.6.5
+libc v0.2.191
+tokio-macros v2.7.2 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+sasl v0.5.2
+base64 v0.22.1
+getrandom v0.2.17
+cfg-if v1.0.5
+libc v0.2.191
+hmac v0.12.1
+digest v0.10.7
+block-buffer v0.10.4
+generic-array v0.14.7
+typenum v1.20.1
+version_check v0.9.5
+crypto-common v0.1.7
+generic-array v0.14.7 (*)
+typenum v1.20.1
+subtle v2.6.1
+pbkdf2 v0.12.2
+digest v0.10.7 (*)
+sha1 v0.10.7
+cfg-if v1.0.5
+cpufeatures v0.2.17
+digest v0.10.7 (*)
+sha2 v0.10.9
+cfg-if v1.0.5
+cpufeatures v0.2.17
+digest v0.10.7 (*)
+sha2 v0.10.9 (*)
+tokio v1.54.1 (*)
+tokio-native-tls v0.3.1
+native-tls v0.2.18 (*)
+tokio v1.54.1 (*)
+tokio-xmpp v6.0.0
+bytes v1.12.1
+futures v0.3.34
+futures-channel v0.3.34 (*)
+futures-core v0.3.34
+futures-executor v0.3.34
+futures-core v0.3.34
+futures-task v0.3.34
+futures-util v0.3.34 (*)
+futures-io v0.3.34
+futures-sink v0.3.34
+futures-task v0.3.34
+futures-util v0.3.34 (*)
+log v0.4.34
+native-tls v0.2.18 (*)
+pin-project-lite v0.2.17
+rand v0.10.3
+chacha20 v0.10.2 (*)
+getrandom v0.4.3 (*)
+rand_core v0.10.1
+rxml v0.14.0 (*)
+sasl v0.5.2 (*)
+thiserror v2.0.21
+thiserror-impl v2.0.21 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+tokio v1.54.1 (*)
+tokio-native-tls v0.3.1 (*)
+tokio-stream v0.1.19
+futures-core v0.3.34
+pin-project-lite v0.2.17
+tokio v1.54.1 (*)
+tokio-util v0.7.20
+bytes v1.12.1
+futures-core v0.3.34
+futures-sink v0.3.34
+pin-project-lite v0.2.17
+tokio v1.54.1 (*)
+xmpp-parsers v0.23.0
+base64 v0.22.1
+blake2 v0.10.6
+digest v0.10.7 (*)
+chrono v0.4.45
+num-traits v0.2.19
+autocfg v1.5.1
+digest v0.11.3 (*)
+jid v0.12.3
+idna v1.1.0
+idna_adapter v1.2.2
+icu_normalizer v2.4.0
+icu_collections v2.4.0
+displaydoc v0.2.7 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+potential_utf v0.1.6
+zerovec v0.11.9
+yoke v0.8.4
+stable_deref_trait v1.2.1
+yoke-derive v0.8.4 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+synstructure v0.14.0
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+zerofrom v0.1.8
+zerofrom-derive v0.1.8 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+synstructure v0.14.0 (*)
+zerofrom v0.1.8 (*)
+zerovec-derive v0.11.7 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.9 (*)
+utf8_iter v1.0.4
+yoke v0.8.4 (*)
+zerofrom v0.1.8 (*)
+zerovec v0.11.9 (*)
+icu_normalizer_data v2.4.0
+icu_provider v2.4.0
+displaydoc v0.2.7 (proc-macro) (*)
+icu_locale_core v2.4.0
+displaydoc v0.2.7 (proc-macro) (*)
+litemap v0.8.3
+tinystr v0.8.5
+displaydoc v0.2.7 (proc-macro) (*)
+zerovec v0.11.9 (*)
+writeable v0.6.4
+zerovec v0.11.9 (*)
+writeable v0.6.4
+yoke v0.8.4 (*)
+zerofrom v0.1.8 (*)
+zerotrie v0.2.5
+displaydoc v0.2.7 (proc-macro) (*)
+yoke v0.8.4 (*)
+zerofrom v0.1.8 (*)
+zerovec v0.11.9 (*)
+smallvec v1.16.4
+zerovec v0.11.9 (*)
+icu_properties v2.4.0
+displaydoc v0.2.7 (proc-macro) (*)
+icu_collections v2.4.0 (*)
+icu_locale_core v2.4.0 (*)
+icu_properties_data v2.4.0
+icu_provider v2.4.0 (*)
+zerotrie v0.2.5 (*)
+zerovec v0.11.9 (*)
+smallvec v1.16.4
+utf8_iter v1.0.4
+memchr v2.8.3
+minidom v0.19.0
+rxml v0.14.0 (*)
+thiserror v2.0.21 (*)
+stringprep v0.1.5
+unicode-bidi v0.3.18
+unicode-normalization v0.1.26
+tinyvec v1.13.3
+unicode-properties v0.1.4
+log v0.4.34
+minidom v0.19.0 (*)
+serde_json v1.0.154
+itoa v1.0.18
+memchr v2.8.3
+serde_core v1.0.229
+zmij v1.0.23
+sha1 v0.11.0
+cfg-if v1.0.5
+cpufeatures v0.3.1
+digest v0.11.3 (*)
+sha2 v0.11.1 (*)
+sha3 v0.12.0
+digest v0.11.3 (*)
+keccak v0.2.2
+cfg-if v1.0.5
+cpufeatures v0.3.1
+sponge-cursor v0.1.0
+uuid v1.29.0
+getrandom v0.4.3 (*)
+xso v0.4.0
+base64 v0.22.1
+bytes v1.12.1
+jid v0.12.3 (*)
+minidom v0.19.0 (*)
+rxml v0.14.0 (*)
+serde_json v1.0.154 (*)
+uuid v1.29.0 (*)
+xso_proc v0.3.0 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+rxml_validation v0.12.0
+compact_str v0.9.1
+castaway v0.2.4
+rustversion v1.0.23 (proc-macro)
+cfg-if v1.0.5
+itoa v1.0.18
+rustversion v1.0.23 (proc-macro)
+ryu v1.0.23
+static_assertions v1.1.0
+syn v2.0.119 (*)
+xso v0.4.0 (*)
+xso v0.4.0 (*)
+getrandom v0.4.3 (*)
+roxmltree v0.21.1 (*)
+rustix v1.1.5 (*)
+sha2 v0.11.1 (*)
+tokio v1.54.1 (*)
+toml v1.1.8+spec-1.1.0 (*)
+zeroize v1.9.1

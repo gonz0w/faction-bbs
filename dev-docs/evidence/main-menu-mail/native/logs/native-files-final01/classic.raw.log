@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/factionbuild/proof230/native-files-final01/55_files_probe_driver.py", line 14, in <module>
+    result=proof.probe(a);assert result['checks']==proof.CHECKS and result['count']==14
+  File "/home/factionbuild/proof230/native-files-final01/code/probe_visit_mail.py", line 185, in probe
+    settings=private_json(a.settings)
+  File "/home/factionbuild/proof230/native-files-final01/code/probe_visit_mail.py", line 90, in private_json
+    assert stat.S_ISREG(info.st_mode) and info.st_uid==os.getuid() and not info.st_mode & 0o077 and info.st_nlink==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

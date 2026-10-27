@@ -163,3 +163,5 @@ dev-docs/evidence/main-menu-mail/**/source-objects/** whitespace=-blank-at-eol
 dev-docs/evidence/main-menu-mail/review/corrected-rescan-audit/tools/probe_menu_mail.py whitespace=-blank-at-eol
 dev-docs/evidence/main-menu-mail/review/evidence-guard-audit/tools/probe_menu_mail.py whitespace=-blank-at-eol
 dev-docs/evidence/main-menu-mail/review/final-review-sources/tools/probe_menu_mail.py whitespace=-blank-at-eol
+# Captured compiler/test logs retain their original final blank lines.
+dev-docs/evidence/main-menu-mail/**/logs/** whitespace=-blank-at-eof

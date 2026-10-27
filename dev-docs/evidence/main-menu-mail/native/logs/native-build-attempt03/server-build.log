@@ -1,0 +1,254 @@
+   Compiling faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23003/crates/faction-unix)
+   Compiling libsqlite3-sys v0.38.2
+   Compiling rusqlite v0.40.1
+   Compiling faction-articles v0.1.0-alpha.1 (/home/factionbuild/source23003/crates/faction-articles)
+   Compiling faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23003/crates/faction-terminal)
+   Compiling faction-core v0.1.0-alpha.1 (/home/factionbuild/source23003/crates/faction-core)
+error: couldn't read `crates/faction-core/src/schema.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:115:29
+    |
+115 |     reference.execute_batch(include_str!("schema.sql"))?;
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/chat.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:116:29
+    |
+116 |     reference.execute_batch(include_str!("chat.sql"))?;
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/scores.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:118:33
+    |
+118 |         reference.execute_batch(include_str!("scores.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/files.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:121:33
+    |
+121 |         reference.execute_batch(include_str!("files.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/file_links.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:124:33
+    |
+124 |         reference.execute_batch(include_str!("file_links.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/post_metadata.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:127:33
+    |
+127 |         reference.execute_batch(include_str!("post_metadata.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/post_metadata_v7.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:130:33
+    |
+130 |         reference.execute_batch(include_str!("post_metadata_v7.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/room_drafts.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:133:33
+    |
+133 |         reference.execute_batch(include_str!("room_drafts.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/wall.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:136:33
+    |
+136 |         reference.execute_batch(include_str!("wall.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/member_pages.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:139:33
+    |
+139 |         reference.execute_batch(include_str!("member_pages.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/gatherings.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:142:33
+    |
+142 |         reference.execute_batch(include_str!("gatherings.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/polls.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:145:33
+    |
+145 |         reference.execute_batch(include_str!("polls.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/catchup.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:148:33
+    |
+148 |         reference.execute_batch(include_str!("catchup.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/discussion.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:151:33
+    |
+151 |         reference.execute_batch(include_str!("discussion.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/requests.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:154:33
+    |
+154 |         reference.execute_batch(include_str!("requests.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/editorial.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:157:33
+    |
+157 |         reference.execute_batch(include_str!("editorial.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/social.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:160:33
+    |
+160 |         reference.execute_batch(include_str!("social.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/activity.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:163:33
+    |
+163 |         reference.execute_batch(include_str!("activity.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/directory.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:166:33
+    |
+166 |         reference.execute_batch(include_str!("directory.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/roaming.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/snapshot.rs:169:33
+    |
+169 |         reference.execute_batch(include_str!("roaming.sql"))?;
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/schema.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:391:34
+    |
+391 |                 tx.execute_batch(include_str!("schema.sql"))?;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/chat.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:410:34
+    |
+410 |                 tx.execute_batch(include_str!("chat.sql"))?;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/scores.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:421:34
+    |
+421 |                 tx.execute_batch(include_str!("scores.sql"))?;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/files.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:431:30
+    |
+431 |             tx.execute_batch(include_str!("files.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/file_links.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:440:30
+    |
+440 |             tx.execute_batch(include_str!("file_links.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/post_metadata.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:450:30
+    |
+450 |             tx.execute_batch(include_str!("post_metadata.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/post_metadata.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:459:28
+    |
+459 |             let expected = include_str!("post_metadata.sql")
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/post_metadata_v7.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:485:30
+    |
+485 |             tx.execute_batch(include_str!("post_metadata_v7.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/room_drafts.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:494:30
+    |
+494 |             tx.execute_batch(include_str!("room_drafts.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/wall.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:503:30
+    |
+503 |             tx.execute_batch(include_str!("wall.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/member_pages.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:512:30
+    |
+512 |             tx.execute_batch(include_str!("member_pages.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/gatherings.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:521:30
+    |
+521 |             tx.execute_batch(include_str!("gatherings.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/polls.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:530:30
+    |
+530 |             tx.execute_batch(include_str!("polls.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/catchup.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:539:30
+    |
+539 |             tx.execute_batch(include_str!("catchup.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/discussion.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:548:30
+    |
+548 |             tx.execute_batch(include_str!("discussion.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/requests.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:557:30
+    |
+557 |             tx.execute_batch(include_str!("requests.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/editorial.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:566:30
+    |
+566 |             tx.execute_batch(include_str!("editorial.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/social.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:575:30
+    |
+575 |             tx.execute_batch(include_str!("social.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/activity.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:584:30
+    |
+584 |             tx.execute_batch(include_str!("activity.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/directory.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:593:30
+    |
+593 |             tx.execute_batch(include_str!("directory.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: couldn't read `crates/faction-core/src/roaming.sql`: No such file or directory (os error 2)
+   --> crates/faction-core/src/lib.rs:602:30
+    |
+602 |             tx.execute_batch(include_str!("roaming.sql"))?;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: could not compile `faction-core` (lib) due to 41 previous errors
+warning: build failed, waiting for other jobs to finish...

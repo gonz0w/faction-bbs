@@ -1,0 +1,14 @@
+...F....
+======================================================================
+FAIL: test_rejects_empty_supplemental_pass_metadata (test_menu_mail_evidence.Evidence.test_rejects_empty_supplemental_pass_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_evidence.py", line 47, in test_rejects_empty_supplemental_pass_metadata
+    with self.assertRaises((AssertionError,KeyError)):self.module.validate(self.root,record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'AssertionError'>, <class 'KeyError'>) not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.031s
+
+FAILED (failures=1)

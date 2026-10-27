@@ -1,0 +1,24 @@
+   Compiling faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests/home_mail.rs (target/debug/deps/home_mail-db706686336cadab)
+
+running 1 test
+test oversized_mail_requests_are_refused_before_token_allocation ... FAILED
+
+failures:
+
+---- oversized_mail_requests_are_refused_before_token_allocation stdout ----
+
+thread 'oversized_mail_requests_are_refused_before_token_allocation' (1308505) panicked at crates/faction-terminal/tests/home_mail.rs:34:9:
+assertion `left == right` failed
+  left: Err("invalid mail request")
+ right: Err("mail request too large")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    oversized_mail_requests_are_refused_before_token_allocation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p faction-terminal --test home_mail`

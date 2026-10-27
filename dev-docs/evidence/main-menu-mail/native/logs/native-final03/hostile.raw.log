@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/factionbuild/proof230/native-final03/21_hostile_controls.py", line 77, in <module>
+    run(p.parse_args())
+    ~~~^^^^^^^^^^^^^^^^
+  File "/home/factionbuild/proof230/native-final03/21_hostile_controls.py", line 46, in run
+    c=board();login(c,handle,secret,True);c.expect('Registration pending; sysop approval required.');c.finish()
+              ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/factionbuild/proof230/native-final03/21_hostile_controls.py", line 40, in login
+    c.expect('[L]ogin [R]egister [Q]uit: ');c.send('r' if reg else 'l');c.expect('Handle: ');c.send(h);c.password(p)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/factionbuild/proof230/native-final03/code/smoke_local_console.py", line 51, in expect
+    raise AssertionError(f'console exited before {text!r}')
+AssertionError: console exited before '[L]ogin [R]egister [Q]uit: '

@@ -1,0 +1,19 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+error[E0432]: unresolved import `faction_terminal::home_mail`
+   --> crates/faction-client/src/stream.rs:325:27
+    |
+325 |     use faction_terminal::home_mail::{self, Frame};
+    |                           ^^^^^^^^^ could not find `home_mail` in `faction_terminal`
+
+error[E0599]: no variant, associated function, or constant named `Mail` found for enum `stream::Event` in the current scope
+   --> crates/faction-client/src/stream.rs:331:63
+    |
+  5 | pub enum Event {
+    | -------------- variant, associated function, or constant `Mail` not found for this enum
+...
+331 |         assert!(matches!(&events[..], [Event::Text(a), Event::Mail(Frame::Offer), Event::Text(b)] if a == b"before" && b == b"after...
+    |                                                               ^^^^ variant, associated function, or constant not found in `stream::Event`
+
+Some errors have detailed explanations: E0432, E0599.
+For more information about an error, try `rustc --explain E0432`.
+error: could not compile `faction-client` (bin "faction-client" test) due to 2 previous errors

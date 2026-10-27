@@ -1,0 +1,41 @@
+F.FF.F..
+======================================================================
+FAIL: test_bytewise_and_interleaved_gio_records_cannot_hide_private_marker (test_probe_menu_mail.MenuMailOracle.test_bytewise_and_interleaved_gio_records_cannot_hide_private_marker)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail.py", line 35, in test_bytewise_and_interleaved_gio_records_cannot_hide_private_marker
+    with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(trace,[marker])
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_hex_bytes_are_scanned_after_decoding_including_nonprintable_bytes (test_probe_menu_mail.MenuMailOracle.test_hex_bytes_are_scanned_after_decoding_including_nonprintable_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail.py", line 39, in test_hex_bytes_are_scanned_after_decoding_including_nonprintable_bytes
+    with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(dump(marker),[marker])
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_malformed_truncated_or_unrecognized_dump_never_means_absence (test_probe_menu_mail.MenuMailOracle.test_malformed_truncated_or_unrecognized_dump_never_means_absence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail.py", line 48, in test_malformed_truncated_or_unrecognized_dump_never_means_absence
+    with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(trace,[b'private body'])
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_private_capture_checks_each_board_bound_byte_and_marker (test_probe_menu_mail.MenuMailOracle.test_private_capture_checks_each_board_bound_byte_and_marker)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail.py", line 29, in test_private_capture_checks_each_board_bound_byte_and_marker
+    with self.assertRaises(AssertionError):proof.require_board_bound_private_absent(dump(data),[b'private body',b'home password'])
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+FAILED (failures=4)

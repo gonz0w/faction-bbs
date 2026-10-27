@@ -1,0 +1,24 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+     Running unittests src/main.rs (target/debug/deps/faction_service-c48f28f4d83044b4)
+
+running 3 tests
+test native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work ... FAILED
+test native_mail_tests::mail_initial_offer_supports_ansi_menu_selection ... ok
+test native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi ... ok
+
+failures:
+
+---- native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work stdout ----
+
+thread 'native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work' (1435629) panicked at crates/faction-service/src/native_mail_tests.rs:541:9:
+assertion failed: !client.output.contains(&27)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 34 filtered out; finished in 1.95s
+
+error: test failed, to rerun pass `-p faction-service --bin faction-service`

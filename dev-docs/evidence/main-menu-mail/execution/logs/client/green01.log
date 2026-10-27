@@ -1,0 +1,31 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.63s
+     Running unittests src/main.rs (target/debug/deps/faction_client-e38c5cd7c9581673)
+
+running 8 tests
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo ... ok
+test transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority ... FAILED
+test transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits ... ok
+test transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls ... ok
+
+failures:
+
+---- transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority stdout ----
+
+thread 'transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority' (1298960) panicked at crates/faction-client/src/transport.rs:321:9:
+assertion `left == right` failed
+  left: [77]
+ right: [77, 69, 78, 85]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 27 filtered out; finished in 0.15s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

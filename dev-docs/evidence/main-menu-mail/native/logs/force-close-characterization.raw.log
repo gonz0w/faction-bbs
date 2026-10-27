@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction230-native-OWNED/65_force_close_characterization.py", line 21, in <module>
+    assert not live,'owned SSH child outlived forcibly closed native client'
+           ^^^^^^^^
+AssertionError: owned SSH child outlived forcibly closed native client

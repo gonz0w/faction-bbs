@@ -1,0 +1,63 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+error[E0433]: cannot find `History` in `native_mail`
+  --> crates/faction-service/src/native_mail_tests.rs:74:36
+   |
+74 |     let mut history = native_mail::History::default();
+   |                                    ^^^^^^^ could not find `History` in `native_mail`
+
+error[E0433]: cannot find `History` in `native_mail`
+  --> crates/faction-service/src/native_mail_tests.rs:82:26
+   |
+82 |     assert!(native_mail::History::default().can_offer());
+   |                          ^^^^^^^ could not find `History` in `native_mail`
+
+error[E0433]: cannot find `History` in `native_mail`
+   --> crates/faction-service/src/native_mail_tests.rs:150:40
+    |
+150 |     client.mail_history = native_mail::History::default();
+    |                                        ^^^^^^^ could not find `History` in `native_mail`
+
+error[E0609]: no field `mail_history` on type `&mut Client`
+   --> crates/faction-service/src/native_mail_tests.rs:143:29
+    |
+143 |     for i in 0..64 { client.mail_history.accept(&format!("{i:032x}")).unwrap(); }
+    |                             ^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `connection`, `control`, `tty`, `saved`, `flags` ... and 46 others
+
+error[E0061]: this method takes 1 argument but 2 arguments were supplied
+   --> crates/faction-service/src/native_mail_tests.rs:144:12
+    |
+144 |     client.mail_offer(&mut f.board, &Theme::default()).unwrap();
+    |            ^^^^^^^^^^               ----------------- unexpected argument #2 of type `&faction_terminal::Theme`
+    |
+note: method defined here
+   --> crates/faction-service/src/native_mail.rs:31:19
+    |
+ 31 |     pub(super) fn mail_offer(&mut self, board: &mut Board) -> faction_core::Result<()> {
+    |                   ^^^^^^^^^^
+help: remove the extra argument
+    |
+144 -     client.mail_offer(&mut f.board, &Theme::default()).unwrap();
+144 +     client.mail_offer(&mut f.board).unwrap();
+    |
+
+error[E0609]: no field `mail_history` on type `&mut Client`
+   --> crates/faction-service/src/native_mail_tests.rs:150:12
+    |
+150 |     client.mail_history = native_mail::History::default();
+    |            ^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `connection`, `control`, `tty`, `saved`, `flags` ... and 46 others
+
+error[E0609]: no field `mail_history` on type `&mut Client`
+   --> crates/faction-service/src/native_mail_tests.rs:151:12
+    |
+151 |     client.mail_history.accept(N).unwrap();
+    |            ^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `connection`, `control`, `tty`, `saved`, `flags` ... and 46 others
+
+Some errors have detailed explanations: E0061, E0433, E0609.
+For more information about an error, try `rustc --explain E0061`.
+error: could not compile `faction-service` (bin "faction-service" test) due to 7 previous errors

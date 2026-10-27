@@ -1,0 +1,37 @@
+    Checking faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Checking faction-core v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-core)
+    Checking faction-gallery v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gallery)
+    Checking faction-find v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-find)
+    Checking faction-catchup v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-catchup)
+    Checking faction-library v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-library)
+    Checking faction-polls v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-polls)
+    Checking faction-wall v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-wall)
+    Checking faction-pages v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-pages)
+    Checking faction-gatherings v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-gatherings)
+    Checking faction-cli v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-cli)
+    Checking faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+error: this `if` statement can be collapsed
+   --> crates/faction-service/src/native_mail.rs:96:9
+    |
+ 96 | /         if matches!(state, State::MailOffer) {
+ 97 | |             if let Ok(Request::Park(n) | Request::Back(n)) = home_mail::parse_request(line)
+ 98 | |                 && let Err(e) = self.mail_history.accept(&n)
+...   |
+103 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+    = note: `-D clippy::collapsible-if` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+    |
+ 96 ~         if matches!(state, State::MailOffer)
+ 97 ~             && let Ok(Request::Park(n) | Request::Back(n)) = home_mail::parse_request(line)
+ 98 |                 && let Err(e) = self.mail_history.accept(&n)
+...
+101 |                 return Err(e);
+102 ~             }
+    |
+
+error: could not compile `faction-service` (bin "faction-service") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

@@ -1,0 +1,225 @@
+   Compiling faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-terminal)
+   Compiling faction-service v0.1.0-alpha.1 (/home/factionbuild/source23006/crates/faction-service)
+    Finished `release` profile [optimized] target(s) in 6.06s
+     Running unittests src/main.rs (/home/factionbuild/target230/release/deps/faction_service-06f867cd5d1ec749)
+
+running 37 tests
+test classic::tests::fragmented_ansi_cp437_and_hidden_controls_are_filtered ... ok
+test classic::tests::original_lord_rip_probe_is_discarded_and_art_can_return_to_column_one ... ok
+test classic::tests::protocol_buffers_and_terminal_commands_are_bounded ... ok
+test classic::tests::real_tcp_stream_has_no_automatic_identity_and_releases_all_game_slots ... ok
+test classic::tests::telnet_fragmentation_negotiates_only_minimal_options_without_identity ... ok
+test config::tests::classic_destinations_are_fixed_bounded_and_disabled_by_default ... ok
+test config::tests::defaults_and_explicit_capacity ... ok
+test config::tests::operator_status_is_strict_and_disabled_by_default ... ok
+test config::tests::owner_file_permissions_links_and_size ... ok
+test config::tests::reject_ambiguous_unbounded_or_unknown_settings ... ok
+test config::tests::roaming_manifest_is_optional_and_has_a_bounded_absolute_path ... ok
+test dispatch_tests::two_jobs_before_receivers_wait_and_permits_cover_work_and_results ... ok
+test doors::tests::nonblocking_rpc_rejects_wrong_peer_and_truncated_results ... ok
+test doors::tests::scores_require_one_bounded_terminal_completion ... ok
+test doors::tests::validate_complete_screen_and_only_allowed_actions ... ok
+test native_mail_tests::mail_control_text_is_ordinary_chat_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_hidden_password_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_post_subject_input ... ok
+test native_mail_tests::mail_control_text_is_ordinary_writing_body_input ... ok
+test native_mail_tests::mail_controls_through_real_pty_input_do_not_become_ansi_menu_or_files_actions ... ok
+test native_mail_tests::mail_full_history_returns_actual_client_to_menu_and_reused_nonce_closes ... ok
+test native_mail_tests::mail_initial_offer_is_escape_free_for_dumb_and_both_plain_returns_work ... ok
+test native_mail_tests::mail_initial_offer_supports_ansi_menu_selection ... ok
+test native_mail_tests::mail_initial_offer_supports_native_compact_hint_without_ansi ... ok
+test native_mail_tests::mail_malformed_wrong_duplicate_stale_and_out_of_state_controls_fail_closed ... ok
+test native_mail_tests::mail_nonce_history_refuses_reuse_and_has_a_fixed_connection_budget ... ok
+test native_mail_tests::mail_old_client_empty_back_and_new_client_cancel_return_only_from_offer ... ok
+test native_mail_tests::mail_park_return_needs_no_file_area_key_namespace_or_grant ... ok
+test native_mail_tests::mail_real_pty_roundtrip_preserves_menu_presence_and_orders_ack_before_menu ... ok
+test native_mail_tests::mail_rechecks_binding_and_issuer_provenance_without_revoking_password_access ... ok
+test native_mail_tests::mail_rechecks_current_approval_before_offer_park_and_both_returns ... ok
+test operator::tests::disabled_publisher_creates_no_lifetime_authority ... ok
+test operator::tests::optional_publication_failure_never_steals_a_live_lease ... ok
+test policy::tests::key_lookup_uid_cannot_claim_or_complete_valid_transfer_authority ... ok
+test roaming::tests::manifest_loader_rejects_untrusted_ancestors_and_paths ... ok
+test roaming::tests::manifest_parser_accepts_only_exact_bounded_identity_and_bindings ... ok
+test roaming::tests::only_observed_shared_or_registered_uids_enter_handoff ... ok
+
+test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.70s
+
+     Running unittests src/lib.rs (/home/factionbuild/target230/release/deps/faction_terminal-659eeecbf695b174)
+
+running 13 tests
+test directory::tests::cards_paginate_and_classic_frames_are_bounded_and_inert ... ok
+test directory::tests::maximum_catalog_pages_ipv6_and_file_permissions ... ok
+test directory::tests::rejects_command_tokens_unknowns_duplicate_endpoints_and_bad_dates ... ok
+test guide::tests::guide_is_current_menu_only_and_has_no_command_side_effects ... ok
+test guide::tests::reference_pages_are_bounded_on_compact_and_large_terminals ... ok
+test keys::guide_tests::f1_is_bounded_fragmented_and_unknown_variants_stay_quarantined ... ok
+test rooms::tests::compact_classic_and_unicode_are_inert_and_bounded ... ok
+test rooms::tests::pages_named_cards_and_actions_bind_the_selected_room ... ok
+test rooms::tests::selection_tracks_id_not_offset_and_next_unread_does_not_mark_read ... ok
+test theme::guide_fields_tests::guide_fields_are_inert_and_current_key_labels_are_used ... ok
+test theme::lounge_tests::custom_lounge_key_is_respected_without_reserving_another_entry ... ok
+test theme::lounge_tests::lounge_is_runtime_gated_and_badge_preserves_bounded_plain_and_ansi_geometry ... ok
+test theme::who_tests::who_keeps_distinct_runtime_gate_and_owner_key_without_displacing_wall ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/capabilities.rs (/home/factionbuild/target230/release/deps/capabilities-c0f750d24b904bbd)
+
+running 4 tests
+test independent_preferences_and_classic_recovery ... ok
+test native_scalars_have_bounded_cells_and_escape_invisible_controls ... ok
+test probe_fragments_timeout_unknown_lying_and_malformed_never_return_keys ... ok
+test unicode_pages_wrap_by_cells_preserve_tokens_and_validate_offsets ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/composer.rs (/home/factionbuild/target230/release/deps/composer-61025bddfc934895)
+
+running 5 tests
+test byte_line_and_control_failures_preserve_the_previous_draft ... ok
+test explicit_commands_preserve_paragraphs_and_never_implicitly_send ... ok
+test extended_input_retains_utf8_and_rejects_controls_and_overlong_lines ... ok
+test previews_page_without_claiming_a_real_post_and_keep_text_inert ... ok
+test quotes_are_all_or_nothing_and_do_not_choose_a_destination ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/directory_overlay.rs (/home/factionbuild/target230/release/deps/directory_overlay-44d04717c0437033)
+
+running 4 tests
+test changed_snapshot_resets_card_before_endpoint_can_swap ... ok
+test composition_accepts_exact_capacity_and_rejects_either_conflict_key ... ok
+test composition_validates_union_and_labels_owner_management ... ok
+test unchanged_snapshot_keeps_card_but_reordering_consumes_selection ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/graphics.rs (/home/factionbuild/target230/release/deps/graphics-f0119a81f312bd19)
+
+running 4 tests
+test chunks_are_inline_bounded_and_exact_rgb_without_a_frame_cache ... ok
+test graphics_probe_owns_fragmented_unknown_refused_malformed_and_late_reports ... ok
+test native_gate_is_local_opt_in_ordered_fixed_art_and_rate_limited ... ok
+test tty_output_deadline_restores_flags_after_a_blocked_peer ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/home_mail.rs (/home/factionbuild/target230/release/deps/home_mail-14a9675fc3f8c9fa)
+
+running 2 tests
+test exact_mail_codec_is_separate_from_files_and_rejects_extensions ... ok
+test oversized_mail_requests_are_refused_before_token_allocation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/long_art.rs (/home/factionbuild/target230/release/deps/long_art-3cf0d2f7af2e83c7)
+
+running 4 tests
+test long_art_pages_are_local_bounded_and_keep_inherited_styles ... ok
+test long_identity_is_explicit_and_short_classic_behavior_is_preserved ... ok
+test page_validation_rejects_later_controls_dimensions_and_output_amplification ... ok
+test season_can_replace_long_identity_without_moving_grid_actions ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reader.rs (/home/factionbuild/target230/release/deps/reader-04fd293f32859ded)
+
+running 6 tests
+test every_wrapped_word_is_present_once_in_chronological_order ... ok
+test file_references_survive_wrapping_as_one_native_client_token ... ok
+test metadata_headers_are_bounded_inert_and_leave_room_for_body ... ok
+test page_boundaries_do_not_discard_words_blank_lines_or_escape_tails ... ok
+test section_transitions_follow_the_theme_and_plain_text_has_no_escapes ... ok
+test wrapped_pages_preserve_source_order_and_never_emit_terminal_controls ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/screen_editor.rs (/home/factionbuild/target230/release/deps/screen_editor-b9a33635514671b8)
+
+running 6 tests
+test caret_navigation_inserts_without_splitting_utf8_and_deletes_whole_scalars ... ok
+test custom_writing_title_is_bounded_inert_and_loaded_from_a_sysop_theme ... ok
+test paragraph_split_join_start_end_and_line_deletion_work ... ok
+test partial_arrow_remains_a_key_when_geometry_changes_between_bytes ... ok
+test quotas_fail_atomically_and_control_strings_cannot_send_or_save ... ok
+test visible_rows_and_unicode_cells_keep_caret_on_a_bounded_frame ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/seasons.rs (/home/factionbuild/target230/release/deps/seasons-02a448bb9c40a5c8)
+
+running 7 tests
+test annual_boundaries_wrap_leap_and_unknown_clock_use_valid_dates ... ok
+test disabled_calendar_manual_precedence_and_broken_asset_recovery ... ok
+test eight_preloaded_seasons_and_pinned_sessions_do_not_reload_art ... ok
+test overlap_priority_is_order_independent_and_ties_are_rejected ... ok
+test oversized_ascii_identity_falls_back_instead_of_wrapping_compact_login ... ok
+test schedule_schema_paths_permissions_and_size_are_bounded ... ok
+test seasonal_identity_classic_fallback_and_action_map_stay_coherent ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/subjects.rs (/home/factionbuild/target230/release/deps/subjects-57db305faa855278)
+
+running 3 tests
+test malformed_controls_and_incomplete_submit_fail ... ok
+test preview_is_inert_and_bounded_in_display_cells ... ok
+test split_utf8_echo_backspace_and_byte_boundary ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/terminal.rs (/home/factionbuild/target230/release/deps/terminal-08e257dc99b2f8b5)
+
+running 31 tests
+test ansi_cp437_is_converted_to_canonical_cells ... ok
+test arrows_enter_and_casefolded_hotkeys_share_actions ... ok
+test asset_paths_provenance_and_symlinks_fail_atomically ... ok
+test chat_editor_is_a_separate_bounded_context ... ok
+test checked_in_base_and_season_examples_validate ... ok
+test compact_wide_and_maximal_menus_fit_and_delta_matches_full_cells ... ok
+test custom_layout_collision_and_target_validation ... ok
+test descriptions_and_menu_titles_are_inert_atomic_and_not_seasonal ... ok
+test focused_hotkey_keeps_full_lightbar_background_and_unavailable_is_explicit ... ok
+test gatherings_are_host_optional_and_remain_reachable_in_full_compact_menus ... ok
+test grid_arrows_are_spatial_tab_and_hotkeys_keep_declared_order ... ok
+test grid_focus_restores_by_index_and_classic_layout_keeps_every_action ... ok
+test grid_validation_is_atomic_and_seasons_cannot_move_actions ... ok
+test malicious_and_unbounded_art_is_rejected ... ok
+test malicious_sequence_tails_never_activate ... ok
+test only_runtime_capability_enables_door_arrows_and_hotkeys ... ok
+test optional_catchup_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_directory_and_files_keep_full_grid_usable_in_both_enable_orders ... ok
+test optional_files_preserve_default_theme_and_use_arrows_or_hotkeys ... ok
+test optional_find_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_gallery_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_home_mail_has_own_themed_key_and_works_without_files ... ok
+test optional_library_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test optional_poll_action_fits_crowded_classic_menus_and_disables_cleanly ... ok
+test redraw_is_incremental_and_bounded ... ok
+test sauce_ice_bright_backgrounds_are_canonical_and_metadata_is_inert ... ok
+test seasonal_overrides_cannot_remap_commands ... ok
+test split_coalesced_and_crlf_keys ... ok
+test strict_theme_and_malicious_labels_fail ... ok
+test unsupported_or_truncated_sauce_never_changes_the_canvas_or_output_budget ... ok
+test utf8_continuation_bytes_do_not_enter_c1_control_modes ... ok
+
+test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests examples/graphics_budget.rs (/home/factionbuild/target230/release/examples/graphics_budget-25c1a1d086270415)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/preview_theme.rs (/home/factionbuild/target230/release/examples/preview_theme-16afe0c36cd525da)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/profile_text.rs (/home/factionbuild/target230/release/examples/profile_text-338035affef7e252)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

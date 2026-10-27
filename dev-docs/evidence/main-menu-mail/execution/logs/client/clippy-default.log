@@ -1,0 +1,11 @@
+    Checking inout v0.2.5
+   Compiling faction-client-pty v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client-pty)
+    Checking cipher v0.5.2
+    Checking universal-hash v0.6.1
+    Checking chacha20 v0.10.2
+    Checking poly1305 v0.9.1
+    Checking aead v0.6.1
+    Checking faction-terminal v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-terminal)
+    Checking chacha20poly1305 v0.11.0
+    Checking faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.06s

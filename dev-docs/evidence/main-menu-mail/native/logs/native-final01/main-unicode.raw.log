@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/factionbuild/proof230/native-final01/code/probe_menu_mail.py", line 222, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/home/factionbuild/proof230/native-final01/code/probe_menu_mail.py", line 220, in main
+    result=probe(a);a.output.write_text(json.dumps(result,indent=2)+'\n');print('Main-menu same-SSH mail acceptance passed:',result['count'])
+  File "/home/factionbuild/proof230/native-final01/code/probe_menu_mail.py", line 142, in probe
+    plain=board();login(plain,handle,password);require_menu_mail(plain.transcript,OFFER);plain.raw(b'm');plain.expect('Ordinary SSH: press Enter or type back to return to the main menu.');plain.expect(OFFER.decode());plain.send('');menu(plain);plain.raw(b'q');plain.expect('Logged out.');plain.finish();checks.append(CHECKS[0]);checks.append(CHECKS[1])
+                  ~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/factionbuild/proof230/native-final01/code/probe_menu_mail.py", line 118, in login
+    c.expect('[L]ogin [R]egister [Q]uit: '); c.send('r' if register else 'l'); c.expect('Handle: '); c.send(handle); c.password(secret)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/factionbuild/proof230/native-final01/code/smoke_local_console.py", line 51, in expect
+    raise AssertionError(f'console exited before {text!r}')
+AssertionError: console exited before '[L]ogin [R]egister [Q]uit: '

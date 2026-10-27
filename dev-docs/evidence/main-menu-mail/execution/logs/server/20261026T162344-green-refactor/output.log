@@ -1,0 +1,17 @@
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+     Running unittests src/main.rs (target/debug/deps/faction_service-c48f28f4d83044b4)
+
+running 9 tests
+test native_mail_tests::mail_full_history_returns_actual_client_to_menu_and_reused_nonce_closes ... ok
+test native_mail_tests::mail_controls_through_real_pty_input_do_not_become_ansi_menu_or_files_actions ... ok
+test native_mail_tests::mail_nonce_history_refuses_reuse_and_has_a_fixed_connection_budget ... ok
+test native_mail_tests::mail_malformed_wrong_duplicate_stale_and_out_of_state_controls_fail_closed ... ok
+test native_mail_tests::mail_old_client_empty_back_and_new_client_cancel_return_only_from_offer ... ok
+test native_mail_tests::mail_park_return_needs_no_file_area_key_namespace_or_grant ... ok
+test native_mail_tests::mail_real_pty_roundtrip_preserves_menu_presence_and_orders_ack_before_menu ... ok
+test native_mail_tests::mail_rechecks_current_approval_before_offer_park_and_both_returns ... ok
+test native_mail_tests::mail_rechecks_binding_and_issuer_provenance_without_revoking_password_access ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 21 filtered out; finished in 4.49s
+

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/private/tmp/faction230-lead-OWNED/host_integrated.py", line 13, in <module>
+    before=snapshot('host-integrated-before.json');env=os.environ.copy();env['CARGO_BUILD_JOBS']='2';checks=[]
+  File "/private/tmp/faction230-lead-OWNED/host_integrated.py", line 11, in snapshot
+    (P/name).write_text(json.dumps(files,indent=2,sort_keys=True)+'\n')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 809, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/faction230-lead-OWNED/tools/transport_memory.py'
