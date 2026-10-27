@@ -44,7 +44,11 @@ No nonce history is persisted or shared between board connections.
 
 ## Device boundary
 
-Remote offers are data. They may only present a fixed local Open/Back choice.
+Remote offers are data. They may only present the fixed local O Open / B Back /
+N Local notices choice. Back is the initial Enter default. N changes only the
+existing visit-local notice consent: discard typeahead, reset the decoder and
+Back selection, then redraw locally. It does not access Remote, unlock a vault,
+contact home or consume another park/back exchange.
 Open requires deliberate local choice and fresh confirmation, then the matching
 parked acknowledgement before the existing hidden device unlock. Missing optional
 build/configuration explains and returns. Remote frames cannot supply local paths,
@@ -71,6 +75,20 @@ ordinary client builds and Files/native-v1 behavior remain unchanged. Broad
 presence stays Menu. Existing opt-in notice snapshots remain local and stale or
 unknown; no new background work or credential lease is introduced.
 
+The main-menu entry and Files share one `VisitMail` for the board connection.
+Consent starts off. Opt-in without a snapshot is locked/unknown; successful
+explicit console lock may retain only unread, retained and pending counts.
+Disabled tracking leaves unread unknown. A cancelled unlock or unsuccessful
+console run invalidates the snapshot; declining the local Open confirmation
+leaves it unchanged. A recoverable home-cycle error inside a healthy console can
+still yield stale local counts on graceful lock. Opt-out clears it, re-enabling
+cannot resurrect it, and reconnect resets consent. The
+context selects fixed O (main-menu) or E (Files) hints, with inert lines bounded
+to 39 cells at the existing 64-history/8-pending limits. L still drops the vault
+and returns directly to the BBS main menu; selecting the entry again displays
+its local notice. No server badge, protocol, schema, dependency or polling is
+added, and Files need not be configured.
+
 No schema, dependency, public listener, provider, file capability or BBS membership
 is added. The member still chooses manual mail operations and explicit read
 acknowledgements. Attachments, live private chat, broader active-screen access and
@@ -79,3 +97,7 @@ online roaming enrollment remain separate issues.
 The [source-bound software observations](evidence/main-menu-mail/README.md) retain
 actual RED/GREEN variants, host/NetBSD classic and Unicode controls, compatibility,
 private I/O checks and the existing Files/SFTP regressions.
+
+The [local notice observations](evidence/menu-mail-notices/README.md) cover the
+fixed O/B/N choice and shared visit-local state, with preserved host/NetBSD
+sources, controlled captures and explicit evidence limits.

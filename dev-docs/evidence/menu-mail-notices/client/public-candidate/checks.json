@@ -1,0 +1,112 @@
+[
+  {
+    "name": "final-network",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "-p",
+      "faction-omemo",
+      "--features",
+      "faction-client/network-mail",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "final-clippy-default",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "final-clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "-p",
+      "faction-client",
+      "-p",
+      "faction-omemo",
+      "--features",
+      "faction-client/native-mail",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "final-clippy-network",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "-p",
+      "faction-client",
+      "-p",
+      "faction-omemo",
+      "--features",
+      "faction-client/network-mail",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "final-fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  }
+]

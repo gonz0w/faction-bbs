@@ -1,0 +1,24 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.87s
+     Running unittests src/main.rs (/private/tmp/faction239-client-OWNED0700/target/debug/deps/faction_client-e38c5cd7c9581673)
+
+running 2 tests
+
+thread 'tests::main_mail_pty_renders_notices_and_keeps_enter_safe' (3071126) panicked at crates/faction-client/src/main.rs:1129:21:
+missing local output "[N] Local notices": "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... FAILED
+
+thread 'tests::main_mail_pty_n_redraws_unknown_and_resets_back_default' (3071125) panicked at crates/faction-client/src/main.rs:1129:21:
+missing local output "Notices on; O unlocks manually.": "\u{1b}[2J\u{1b}[HLOCAL / ENCRYPTED HOME MAIL\r\nArrows / Enter or hotkeys.\r\n  [O] Open encrypted home mail\r\n> [B] Back to the BBS\r\n"
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... FAILED
+
+failures:
+
+failures:
+    tests::main_mail_pty_n_redraws_unknown_and_resets_back_default
+    tests::main_mail_pty_renders_notices_and_keeps_enter_safe
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 38 filtered out; finished in 3.00s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

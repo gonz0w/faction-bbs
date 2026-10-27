@@ -1,0 +1,6 @@
+{
+  "observed_error": "First audit failed KeyError on check_restricted_ssh.py because compiled+runtime source map deliberately composes only compiled Rust inputs plus two Python overrides; helper Python files are separately bound by runtime-code03 map.",
+  "first_script_sha256": "9a6bdbe0cdc965dce5b0c859d8561b29643ff408501d14a16ddf5ea28ab43e18",
+  "correction": "Keep helper map verification separately, compare composed-map probe/test only; preserve original source copies and verify identical bytes on reuse.",
+  "second_script_sha256": "7a38d53d6b2a50a5b5984399f371b144b794d1a5e348fb9c4941dc73b951ddcc"
+}

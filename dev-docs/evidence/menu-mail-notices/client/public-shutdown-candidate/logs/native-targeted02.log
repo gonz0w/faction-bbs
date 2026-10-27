@@ -1,0 +1,19 @@
+   Compiling faction-unix v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-unix)
+   Compiling faction-client-pty v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-client-pty)
+   Compiling faction-omemo v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-omemo)
+   Compiling faction-files v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-files)
+   Compiling faction-terminal v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-terminal)
+   Compiling faction-xmpp v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-xmpp)
+   Compiling faction-client v0.1.0-alpha.1 (/home/factionbuild/source23902/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 9.70s
+     Running unittests src/main.rs (/home/factionbuild/target239-network/release/deps/faction_client-34560294589c2505)
+
+running 5 tests
+test tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead ... ok
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... ok
+test tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input ... ok
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... ok
+test tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 59 filtered out; finished in 0.00s
+

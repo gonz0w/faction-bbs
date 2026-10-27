@@ -1,0 +1,32 @@
+FFF......
+======================================================================
+FAIL: test_binary_and_private_profile_hashes_are_bound_before_capture (test_probe_menu_mail_notices.NoticeOracle.test_binary_and_private_profile_hashes_are_bound_before_capture) (field='client_binary_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail_notices.py", line 83, in test_binary_and_private_profile_hashes_are_bound_before_capture
+    with self.subTest(field=field), self.assertRaises(AssertionError):
+                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_and_private_profile_hashes_are_bound_before_capture (test_probe_menu_mail_notices.NoticeOracle.test_binary_and_private_profile_hashes_are_bound_before_capture) (field='fixture_binary_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail_notices.py", line 83, in test_binary_and_private_profile_hashes_are_bound_before_capture
+    with self.subTest(field=field), self.assertRaises(AssertionError):
+                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_binary_and_private_profile_hashes_are_bound_before_capture (test_probe_menu_mail_notices.NoticeOracle.test_binary_and_private_profile_hashes_are_bound_before_capture) (field='profile_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_probe_menu_mail_notices.py", line 83, in test_binary_and_private_profile_hashes_are_bound_before_capture
+    with self.subTest(field=field), self.assertRaises(AssertionError):
+                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (failures=3)

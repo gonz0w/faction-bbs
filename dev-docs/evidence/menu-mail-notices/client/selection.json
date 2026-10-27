@@ -1,0 +1,38 @@
+{
+  "issue": 239,
+  "scope": [
+    "crates/faction-client/src/main.rs",
+    "crates/faction-client/src/visit_mail.rs"
+  ],
+  "final_source_sha256": {
+    "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+    "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+  },
+  "layout": "public-candidate preserves original selected evidence unchanged; public-shutdown-candidate adds exact harness-only followup. Prior manifests remain immutable.",
+  "final_host_client_bin_tests": {
+    "default": {
+      "passed": 44,
+      "ignored": 0
+    },
+    "native": {
+      "passed": 58,
+      "ignored": 2
+    },
+    "network": {
+      "passed": 62,
+      "ignored": 2
+    }
+  },
+  "final_native_targeted_pty_tests": {
+    "passed": 5,
+    "failed": 0,
+    "ignored": 0
+  },
+  "existing_ignored_helpers": "The optional client bin helpers correspondents_actual_interface_helper and inbox_output_failure_and_input_eof_helper are invoked by their positive parent tests. Earlier full native/network matrices also contain3 existing checkpoint crash helpers invoked by their recovery controls. No new ignores.",
+  "final_quality_checks": "Strict Clippy default/native/network all-targets -Dwarnings and cargo fmt --all -- --check passed. Earlier full-target matrices are bound to old main test bytes; latest complete bin matrices are bound to final main bytes.",
+  "private_value_scan_status": "PENDING lead/native scan using actual fixture-private values. Only limited generic private-pattern scans have completed; they do not replace final private-value scanning.",
+  "review_status": "Separate review and remaining full native integration owned by lead/native/reviewer.",
+  "excluded": "No binaries, private keys, configurations, private captures or fixture stores selected.",
+  "ownership": "Raw evidence root /private/tmp/faction239-client-OWNED0700 remains UID501 mode0700 with OWNED marker. Native agent retains target for pinned normal binaries; do not remove yet.",
+  "routing": "Requested temper_implementer gpt-6.1-sol/high; backend role/model/effort metadata unavailable, not verified."
+}

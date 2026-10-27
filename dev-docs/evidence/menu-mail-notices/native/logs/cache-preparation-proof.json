@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "cached_files": 343,
+  "downloaded_locked_archives": 7,
+  "omitted_target_only_archives": [
+    "bumpalo-3.20.3",
+    "js-sys-0.3.106",
+    "schannel-0.1.30",
+    "wasm-bindgen-0.2.129",
+    "wasm-bindgen-macro-0.2.129",
+    "wasm-bindgen-macro-support-0.2.129",
+    "wasm-bindgen-shared-0.2.129"
+  ],
+  "cache_renamed": false,
+  "original_cargo233_absent": true,
+  "new_cargo_home": "/home/factionbuild/cargo239",
+  "source_sha256": "fcaab87e71fe7e3ba5d8edae8718c5d87e6f5df1bd485b25b3678d58061b908c",
+  "cargo_lock_sha256": "a538c752e61279ce640542470e9efbe2899ff862c96c258bbc5d02baeffe7059"
+}

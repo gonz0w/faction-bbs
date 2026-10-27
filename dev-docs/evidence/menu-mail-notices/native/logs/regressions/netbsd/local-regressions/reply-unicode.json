@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "platform": "NetBSD",
+  "machine": "evbarm",
+  "scope": "device-local-inbox-reply",
+  "unicode": true,
+  "count": 11,
+  "checks": [
+    "fresh_queue_keeps_or_replaces_subject_exact_canonical_reply_and_pending_once",
+    "source_read_history_cursor_and_unrelated_pending_preserved_after_reopen",
+    "encrypted_checkpoint_has_no_known_plaintext_or_sidecar",
+    "tracking_disabled_received_reply_preserves_unknown_read_state",
+    "existing_C_compose_still_queues_exact_fresh_intent",
+    "existing_Re_scalar_boundary_shortening_and_hostile_subject_rendering",
+    "cancel_and_nonexact_queue_confirmation_create_no_reply_or_acknowledgement",
+    "queued_queue_typeahead_discarded_before_fresh_confirmation",
+    "expired_revoked_history_only_full_history_and_full_outbox_refuse_without_mutation",
+    "offline_inbox_remains_readonly_and_has_no_reply_offer",
+    "CtrlC_CtrlD_at_commit_lock_and_leave_no_partial_reply"
+  ],
+  "private_fixture_removed": true,
+  "configured_home_endpoint_was_closed": true,
+  "home_password_prompt_observed": false
+}

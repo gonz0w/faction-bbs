@@ -1,0 +1,126 @@
+{
+  "review": "Separate final evidence README and technical-link paragraph review",
+  "time_utc": "2026-10-27T14:52:09Z",
+  "result": "pass",
+  "sources": {
+    "dev-docs/evidence/menu-mail-notices/README.md": "c935329e7e81a24e2f1331040d5707605d29a1a6c36136998e0d36a7dc11d2d5",
+    "dev-docs/main-menu-mail.md": "ce4d47cf0fed4eb5ef8a4f65a3065640bf6dbcf0817acd11285cf54924e827e7",
+    "tools/check_menu_mail_notices_evidence.py": "d3b118709a66fe08bbe0aaf2abbda21648041ea1b8a7287db9f13b67d0c2b724",
+    "tools/probe_menu_mail_notices.py": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+    "dev-docs/evidence/menu-mail-notices/integration/finalize.py": "590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed"
+  },
+  "findings": [],
+  "relative_existing_targets": [
+    {
+      "source": "dev-docs/evidence/menu-mail-notices/README.md",
+      "target": "../../../docs/main-menu-mail.md"
+    },
+    {
+      "source": "dev-docs/evidence/menu-mail-notices/README.md",
+      "target": "../../main-menu-mail.md"
+    },
+    {
+      "source": "dev-docs/evidence/menu-mail-notices/README.md",
+      "target": "../../../tools/check_menu_mail_notices_evidence.py"
+    },
+    {
+      "source": "dev-docs/evidence/menu-mail-notices/README.md",
+      "target": "integration/finalize.py"
+    },
+    {
+      "source": "dev-docs/main-menu-mail.md",
+      "target": "../docs/main-menu-mail.md"
+    },
+    {
+      "source": "dev-docs/main-menu-mail.md",
+      "target": "evidence/main-menu-mail/README.md"
+    },
+    {
+      "source": "dev-docs/main-menu-mail.md",
+      "target": "evidence/menu-mail-notices/README.md"
+    }
+  ],
+  "pending_link_validation": [
+    {
+      "source": "dev-docs/evidence/menu-mail-notices/README.md",
+      "target": "results.json",
+      "reason": "Intentional final results.json target; actual finalizer not yet run."
+    }
+  ],
+  "regression_result_identities": [
+    {
+      "path": "/private/tmp/faction239-native-OWNED/local-regressions/correspondents-classic.json",
+      "sha256": "e1981462a1214eb227ef0edbf695b093122d7269fafc0b03d8fb507baf932782"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/local-regressions/correspondents-unicode.json",
+      "sha256": "3746109184b7765c3a7b7a7fe12fd5a19cbc7d91c255925acc4160b443dcb509"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/local-regressions/execution.private.json",
+      "sha256": "24e4f8c0633615aa2a133cdfa207176256792cdb18a81ca78affaa96cba1d3a8"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/local-regressions/inbox.json",
+      "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/local-regressions/reply-classic.json",
+      "sha256": "81971c2f8bef55c169913e769691f722247a56adcfc8f69853edcfe591640473"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/local-regressions/reply-unicode.json",
+      "sha256": "829406389d0365e9c30695f2a3f5499db93809ec1ff60bbe5c9d370704b0ffe2"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-local-regressions/correspondents-classic.json",
+      "sha256": "af690ebb428cbb567354ecae52f32dbf77fbf2ea9a12a36d670cca1cb4dcdeab"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-local-regressions/correspondents-unicode.json",
+      "sha256": "be412530070e6222479ebe399e987f78253f1ed58e7cfb8c34c5908aee56a33d"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-local-regressions/execution.private.json",
+      "sha256": "5d9ebba488a8e81671aa93ac33fefb1f1072387bca3e275b5ba4308f45a79e92"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-local-regressions/inbox.json",
+      "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-local-regressions/reply-classic.json",
+      "sha256": "f33d57ceda649988555dacc65eddb2d6cc9e9f3deed55e5638d560128943ae00"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-local-regressions/reply-unicode.json",
+      "sha256": "042d67a1852e476086f65e1b634dd335eb176c76f3b614cd6d17c27c95ff48e7"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/main-regressions/classic.json",
+      "sha256": "ba0ec68492e9cb2f7b18a075a0c6fb8073aa79533f0bd73a004f309f0a7360ed"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/main-regressions/execution.private.json",
+      "sha256": "71d8345afe9a47fcb716f0f0d89596ed3edd4ce201749f77e29b5b76ec407887"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/main-regressions/unicode.json",
+      "sha256": "2cc45f575d29558e8b3c9a3c70f83dd54e01aea18b1a16ecc81e687e4f978121"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-main-regressions/classic.json",
+      "sha256": "b1315680cb6c97168fd8c2697f9ccbf47a265763c816fb2975f2a407d38254d4"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-main-regressions/execution.private.json",
+      "sha256": "26adedba0329b3d6e3efdbb3855a8818ef4c1342b2ae628de9f788b71f4b9176"
+    },
+    {
+      "path": "/private/tmp/faction239-native-OWNED/native-main-regressions/unicode.json",
+      "sha256": "03bee405c76c56baad23516e895042c07d0d49cb54b480d71c1d9d083eeddf11"
+    }
+  ],
+  "limits": "README correctly assigns stored route/build/source/cleanup checks to guard and original private review/same-selection scan to finalizer; no actual finalization/publication/cleanup claim accepted until observed.",
+  "repository_edits": false
+}

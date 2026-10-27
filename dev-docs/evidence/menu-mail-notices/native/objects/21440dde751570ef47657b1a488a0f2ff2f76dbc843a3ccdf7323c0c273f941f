@@ -1,0 +1,42 @@
+from pathlib import Path
+import json,re,hashlib,tomllib
+P=Path('/private/tmp/faction239-native-OWNED');R=Path('/Users/cam/DEV/faction-bbs');Q=P/'public-staging';values=set();origins=[]
+fixed={'checkpoint synthetic fixture password','alice@home.test','LOCAL MAIL / LOCKED','LOCAL MAIL: notices off.','unread: 3','retained: 8; pending: 1'}
+def add(v,origin):
+ if isinstance(v,str) and v and v not in fixed and (re.search('[0-9a-f]{12,}',v) or 'PRIVATE KEY-----' in v or v.startswith('127.0.0.1:')):
+  values.add(v);origins.append(origin)
+def walk(x,origin,key=''):
+ if isinstance(x,dict):
+  for k,v in x.items():walk(v,origin,k)
+ elif isinstance(x,list):
+  for v in x:walk(v,origin,key)
+ elif isinstance(x,str) and (key in {'board_password','home_password','password','sysop_password','subject','body','peer','other','address','identity','store','replacement'} or not key):add(x,origin)
+for f in P.rglob('*.json'):
+ if any(part.startswith('source-final') or part=='public-staging' or part=='objects' for part in f.relative_to(P).parts):continue
+ if f.name in {'generated-inputs.private.json','private-inputs.json','private-markers.json','markers.private.json'} or f.name.startswith('generated-') and f.name.endswith('.private.json') or 'canonical-' in f.name and f.name.endswith('.private.json'):
+  walk(json.loads(f.read_text()),str(f.relative_to(P)))
+for f in [P/'sysop-password.private',P/'member-key',P/'member-key.pub',P/'lab-admin-key',P/'lab-admin-key.pub']:
+ if f.exists():
+  text=f.read_text().strip();values.add(text);origins.append(str(f.relative_to(P)))
+  for line in text.splitlines():
+   if len(line)>=40 and not line.startswith('-----'):values.add(line)
+for f in P.rglob('*.toml'):
+ if any(part.startswith('source-final') or part=='public-staging' or part=='objects' for part in f.relative_to(P).parts):continue
+ try:d=tomllib.loads(f.read_text())
+ except (ValueError,UnicodeDecodeError):continue
+ if isinstance(d.get('endpoint'),str):add(d['endpoint'],str(f.relative_to(P)))
+ if d.get('host')=='127.0.0.1' and type(d.get('port')) is int:add('127.0.0.1:'+str(d['port']),str(f.relative_to(P)))
+ports=json.loads((P/'vm/ports.json').read_text())
+for port in ports.values():add('127.0.0.1:'+str(port),'vm/ports.json')
+inventory=dict(values=sorted(values),origins=sorted(set(origins)),scope='Actual generated private values across successful and failed host/native candidates; literal public fixture constants, public capture IDs and short public test slugs excluded.',failed_candidates_included=True)
+(P/'private-inventory.json').write_text(json.dumps(inventory,indent=2)+'\n')
+manifest=json.loads((Q/'manifest.json').read_text());files=[Q/n for n in manifest]+[Q/'manifest.json'];reuse=json.loads((Q/'reuse.json').read_text());files.extend(R/x['repository_path'] for x in reuse.values());assert all(hashlib.sha256((Q/n).read_bytes()).hexdigest()==h for n,h in manifest.items())
+variants={v.encode() for v in values}|{json.dumps(v,ensure_ascii=True)[1:-1].encode() for v in values};matches=[];artifacts=[]
+for f in files:
+ data=f.read_bytes()
+ if any(v in data for v in variants):matches.append(str(f))
+ if re.search(rb'(?m)^-----BEGIN (?:OPENSSH |RSA |EC |)PRIVATE KEY-----\r?$',data) or data.startswith((b'\x7fELF',b'\xcf\xfa\xed\xfe',b'\xfe\xed\xfa\xcf',b'FACTVLT',b'FACTCP')) or f.suffix=='.fkv':artifacts.append(str(f))
+result=dict(result='pass' if not matches and not artifacts else 'fail',generated_private_values_scanned=len(values),private_matches=len(matches),raw_private_key_or_vault_matches=len(artifacts),explicit_manifests_verified=True,selected_new_files=len(manifest)+1,reused_source_files=len(reuse),files_scanned=len(files),failed_candidates_included=True,selected_manifest_sha256=hashlib.sha256((Q/'manifest.json').read_bytes()).hexdigest(),scanner_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+(P/'publication-scan-initial.json').write_text(json.dumps(result,indent=2)+'\n')
+if matches or artifacts:(P/'publication-scan-hits.private.json').write_text(json.dumps(dict(matches=matches,artifacts=artifacts),indent=2))
+print(json.dumps(result,indent=2));assert result['result']=='pass'

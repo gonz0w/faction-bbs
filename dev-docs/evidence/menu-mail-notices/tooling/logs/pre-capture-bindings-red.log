@@ -1,0 +1,65 @@
+........FFFFF...
+======================================================================
+FAIL: test_pre_capture_input_hashes_and_original_record_identity (test_menu_mail_notices_evidence.Evidence.test_pre_capture_input_hashes_and_original_record_identity) (field='pre_input_record_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 70, in test_pre_capture_input_hashes_and_original_record_identity
+    self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+                                                                                                                                              ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_pre_capture_input_hashes_and_original_record_identity (test_menu_mail_notices_evidence.Evidence.test_pre_capture_input_hashes_and_original_record_identity) (field='trace_input_record_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 70, in test_pre_capture_input_hashes_and_original_record_identity
+    self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+                                                                                                                                              ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_pre_capture_input_hashes_and_original_record_identity (test_menu_mail_notices_evidence.Evidence.test_pre_capture_input_hashes_and_original_record_identity) (field='result_association_record_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 70, in test_pre_capture_input_hashes_and_original_record_identity
+    self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+                                                                                                                                              ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_pre_capture_input_hashes_and_original_record_identity (test_menu_mail_notices_evidence.Evidence.test_pre_capture_input_hashes_and_original_record_identity) (field='marker_file_sha256_at_trace_start')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 70, in test_pre_capture_input_hashes_and_original_record_identity
+    self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+                                                                                                                                              ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+======================================================================
+FAIL: test_pre_capture_input_hashes_and_original_record_identity (test_menu_mail_notices_evidence.Evidence.test_pre_capture_input_hashes_and_original_record_identity) (field='scan_input_sha256_at_trace_start')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 70, in test_pre_capture_input_hashes_and_original_record_identity
+    self.record=copy.deepcopy(original);self.change_record('associations',lambda d:d['routes']['main']['host_classic'].update({field:value}));self.reject()
+                                                                                                                                              ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.057s
+
+FAILED (failures=5)

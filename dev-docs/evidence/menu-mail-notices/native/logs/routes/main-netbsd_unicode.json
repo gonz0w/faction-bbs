@@ -1,0 +1,64 @@
+{
+  "client_binary_sha256": "43f715c95525201aa64a6f3cc387543714665b8c7cfbc119a450218e80fa988a",
+  "fixture_binary_sha256": "e6aa7b3d7e8b2cb1d5eb46f55666a6f7811935f32578ddee6ae33b66d9dd75fc",
+  "profile_sha256": "dbcaf03480ae1f27fcfdc6d7a0665bc19efa65725af1db9610e92867cb867746",
+  "ssh_executable": "/usr/bin/ssh",
+  "result": "pass",
+  "platform": "NetBSD",
+  "machine": "evbarm",
+  "scope": "same-ssh-main-menu-mail-notices",
+  "unicode": true,
+  "count": 8,
+  "checks": [
+    "fixed_O_B_N_and_safe_back_defaults",
+    "local_toggle_no_unlock_home_or_protocol",
+    "unknown_stale_off_cleared_on_unknown",
+    "canceled_wrong_unlock_unknown",
+    "fresh_confirmation_typeahead_discard",
+    "canonical_snapshot_unchanged",
+    "same_SSH_lock_return_new_visit_off",
+    "corrected_GIO_and_board_files_private_markers_absent"
+  ],
+  "capture_id": "6e261d1ec5eca644b85b944e65f4b95e",
+  "source_sha256": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+  "marker_count": 27,
+  "private_input_hashes": {
+    "trace_sha256": "5f461a55981754027a9f844add4b4cec6dbff7a09ec40f53bc1dbf9b19286aab",
+    "marker_set_sha256": "450281242857435b655e86ba98e534d70f72d0f8feb6d64879365f97dcdb69da",
+    "file_scan_input_sha256": "64f695187a86467006d0a7072d44725df4ecfa68c65edaa3bec2b423f7cbcf62"
+  },
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 1,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "board_io_reconstruction": {
+    "records": 289,
+    "streams": 6,
+    "decoded_bytes": 50788,
+    "read_bytes": 14396,
+    "write_bytes": 36392
+  },
+  "private_matches": 0,
+  "files_disabled": true,
+  "actual_home_transport_error": "Connect",
+  "same_ssh_pid_until_normal_close": true,
+  "automatic_redial_observed": false,
+  "private_fixture_retained_for_lead": true,
+  "protocol_cycles": {
+    "parks": 5,
+    "backs": 13,
+    "nonces": 13
+  },
+  "file_protocol_matches": 0,
+  "canonical_state_unchanged": true,
+  "notice_toggle_local_only": true,
+  "consent_off_on_reenable_unknown": true,
+  "new_visit_notices_off": true,
+  "safe_back_default_after_redraw": true,
+  "locked_return_same_ssh": true,
+  "notice_cells_max": 39,
+  "main_open_hint": "O"
+}

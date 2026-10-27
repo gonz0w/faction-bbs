@@ -1,0 +1,7 @@
+{
+  "source_url": "https://github.com/gonz0w/faction-bbs/issues/239#issuecomment-6445428781",
+  "comment_id": 6445428781,
+  "author": "gonz0w",
+  "body": "Owner disposition received in this chat on 2026-10-27: \u201cApprove this one-time exception,\u201d responding to the question limited to accepting preserved source history, passing tests and separate review for the stale O/E hint verification-helper correction.\n\nRecord this as a one-time exception for that correction only. Its missing pre-correction RED remains a historical gap; no retrospective test-first claim or full strict chronology is made. The original product/interface RED and later separately qualified REDs keep their actual scopes. This approval changes no other test, source-preservation, privacy, cleanup, separate-review, CI or merge requirement and grants no future bypass.\n\nI am recording the bounded disposition in PROJECT.md. Acceptance may proceed using the explicit alternative evidence for this one correction; merge still waits for all remaining gates.",
+  "retrieval": "GitHub connector, read-only"
+}

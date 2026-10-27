@@ -1,0 +1,13 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `release` profile [optimized] target(s) in 2.20s
+     Running unittests src/main.rs (/private/tmp/faction239-client-OWNED0700/target/release/deps/faction_client-b3ce9e1e2f51ed8a)
+
+running 5 tests
+test tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead ... ok
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... ok
+test tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input ... ok
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... ok
+test tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.01s
+

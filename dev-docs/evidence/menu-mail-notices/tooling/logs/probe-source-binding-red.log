@@ -1,0 +1,17 @@
+........F..
+======================================================================
+FAIL: test_route_requires_executed_probe_not_any_available_source (test_menu_mail_notices_evidence.Evidence.test_route_requires_executed_probe_not_any_available_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 60, in test_route_requires_executed_probe_not_any_available_source
+    self.change_route('main','host_classic',lambda d:d.update(source_sha256=other['sha256']));self.reject()
+                                                                                              ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.046s
+
+FAILED (failures=1)

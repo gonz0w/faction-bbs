@@ -1,0 +1,70 @@
+{
+  "logs/native-pty-shutdown-red.log": {
+    "bytes": 13112,
+    "sha256": "1b4e3c5a2919836592fdb84e49971495b767f63e09dcb4a62c4596e91a9a0190"
+  },
+  "logs/native-targeted02.log": {
+    "bytes": 1376,
+    "sha256": "806d9eda070d09421f6cfb3ebf70bdfc1a9a69df90c536c4daf8bae194052f3d"
+  },
+  "logs/shutdown-candidate1-host-pty.log": {
+    "bytes": 795,
+    "sha256": "2bba834dd41f14ea361fffcac35ca627d115e2539294485191328403bb458974"
+  },
+  "logs/shutdown1-clippy-default.log": {
+    "bytes": 156,
+    "sha256": "0fd7d6e3820b6c7a2875c4a6bb245d208d3bf62e8bd8c707666ed49767ccd8fe"
+  },
+  "logs/shutdown1-clippy-native.log": {
+    "bytes": 248,
+    "sha256": "79374f8c9de6671a1efc7ba6f1ab31b4c5f371c4c302f36ebd2fb5df0d3bb86b"
+  },
+  "logs/shutdown1-clippy-network.log": {
+    "bytes": 248,
+    "sha256": "5d082d3f4009e3eda1854c4d9f5c2f5d4afd0dd6d8fcb232fe5f32a49f41a95b"
+  },
+  "logs/shutdown1-fmt.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "logs/shutdown1-host-default.log": {
+    "bytes": 4372,
+    "sha256": "82770417f96aadac3c954ea4168ddf82e41e662f33f5b0f4c8d4e01b9ca3094e"
+  },
+  "logs/shutdown1-host-native.log": {
+    "bytes": 6227,
+    "sha256": "0c6581ea6d8b835216a58829f57f84fbf3b4e4d271f8d67794a3ba9c37407f3c"
+  },
+  "logs/shutdown1-host-network.log": {
+    "bytes": 6501,
+    "sha256": "cff00102ae3979e800abacbd7ff8f9b0720b0e4c7ac2467abef962ecaac32aa3"
+  },
+  "native-shutdown-red.json": {
+    "bytes": 743,
+    "sha256": "6675145100b7a417c53df4efa531ac0682d4ffaf07d54cdf10130dbe4260b3d7"
+  },
+  "native-targeted02-result.json": {
+    "bytes": 374,
+    "sha256": "26ba55dc82a4e4277c0343d61efdd461b361a710fcfaf0ce6ea9ff20998a9e66"
+  },
+  "shutdown-candidate1-sources.json": {
+    "bytes": 171,
+    "sha256": "c57f606ad874e73de2f8b042f2ef075634ed7b79045ef6696b279296ffa002b6"
+  },
+  "shutdown-candidate1.diff": {
+    "bytes": 1158,
+    "sha256": "449acad878186285a0f95b0e199b2f39491abe21f177a3d7e71c9a184d7bd091"
+  },
+  "shutdown-observations.json": {
+    "bytes": 1542,
+    "sha256": "af04dd484dc1b70d2ef6dcbeb125a4532c9c5ae519a38b0aac5df28c23b5737e"
+  },
+  "shutdown1-checks.json": {
+    "bytes": 3459,
+    "sha256": "058b7bac0b9118db4759b94f1db98636548dbe23a50b636452c612f63fbbb304"
+  },
+  "source/shutdown-candidate1-main.rs": {
+    "bytes": 50076,
+    "sha256": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11"
+  }
+}

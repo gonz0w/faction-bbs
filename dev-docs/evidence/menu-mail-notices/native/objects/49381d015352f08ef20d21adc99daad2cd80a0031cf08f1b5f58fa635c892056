@@ -1,0 +1,20 @@
+from lab import *
+import tarfile,io,hashlib
+code='''from pathlib import Path
+import json,tarfile,sys,io,stat,pwd
+p=Path('/home/factionbuild/device239');assert (p/'OWNED').is_file() and p.stat().st_uid==pwd.getpwnam('factionbuild').pw_uid
+ids=json.loads(Path('/home/factionbuild/proof239/capture-ids02.private.json').read_text());wanted={ids['shared_netbsd']};found=[]
+for f in p.glob('menu-notices-OWNED-*/private-input-association.json'):
+ if json.loads(f.read_text())['capture_id'] in wanted:found.append(f.parent)
+assert len(found)==1
+with tarfile.open(fileobj=sys.stdout.buffer,mode='w|') as t:
+ for root in found:
+  for f in sorted(root.rglob('*')):
+   assert not f.is_symlink()
+   if f.is_file():t.add(f,arcname=str(f.relative_to(p)),recursive=False)
+'''
+raw=remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code),timeout=90).stdout;archive=P/'native-shared-private.tar';archive.write_bytes(raw);d=P/'native-shared-private';d.mkdir(mode=0o700)
+with tarfile.open(fileobj=io.BytesIO(raw)) as t:
+ assert all(not x.issym() and not x.islnk() and not x.name.startswith('/') and '..' not in Path(x.name).parts for x in t.getmembers());t.extractall(d,filter='data')
+manifest={str(f.relative_to(d)):hashlib.sha256(f.read_bytes()).hexdigest() for f in d.rglob('*') if f.is_file()};(P/'native-shared-private-manifest.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+print('Original native shared captures privately copied:',len(manifest),'files; exact content hashes retained.')

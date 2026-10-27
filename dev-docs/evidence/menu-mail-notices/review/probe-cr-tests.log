@@ -1,0 +1,13 @@
+test_actual_terminal_CR_and_normal_LF_CRLF_protocol_terminators (test_probe_menu_mail_notices.NoticeOracle.test_actual_terminal_CR_and_normal_LF_CRLF_protocol_terminators) ... ok
+test_binary_and_private_profile_hashes_are_bound_before_capture (test_probe_menu_mail_notices.NoticeOracle.test_binary_and_private_profile_hashes_are_bound_before_capture) ... ok
+test_capture_association_requires_frozen_id_source_markers_and_scan_input (test_probe_menu_mail_notices.NoticeOracle.test_capture_association_requires_frozen_id_source_markers_and_scan_input) ... ok
+test_choice_requires_exact_fixed_set_and_safe_default (test_probe_menu_mail_notices.NoticeOracle.test_choice_requires_exact_fixed_set_and_safe_default) ... ok
+test_notice_rejects_wrong_context_count_extra_metadata_and_controls (test_probe_menu_mail_notices.NoticeOracle.test_notice_rejects_wrong_context_count_extra_metadata_and_controls) ... ok
+test_off_unknown_stale_and_disabled_are_exact_context_specific_lines (test_probe_menu_mail_notices.NoticeOracle.test_off_unknown_stale_and_disabled_are_exact_context_specific_lines) ... ok
+test_protocol_cycles_reject_toggle_emission_replay_and_unpaired_input (test_probe_menu_mail_notices.NoticeOracle.test_protocol_cycles_reject_toggle_emission_replay_and_unpaired_input) ... ok
+test_toggle_cannot_change_vault_or_board_stream_or_show_password_prompt (test_probe_menu_mail_notices.NoticeOracle.test_toggle_cannot_change_vault_or_board_stream_or_show_password_prompt) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.002s
+
+OK

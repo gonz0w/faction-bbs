@@ -1,0 +1,31 @@
+{
+  "review": "Separate final policy disposition and evidence prose source review",
+  "time_utc": "2026-10-27T15:09:28Z",
+  "result": "pass",
+  "sources": {
+    "PROJECT.md": "bf53e107414c1e6829c8eca2b6b5bf9e352676279bebe71814cc4dfb447f7d8a",
+    "dev-docs/evidence/menu-mail-notices/README.md": "e69d8f375b1311bfda26d45802dc9543491542a1e813bd2fee1644924fac69e9",
+    "tools/check_menu_mail_notices_evidence.py": "d3b118709a66fe08bbe0aaf2abbda21648041ea1b8a7287db9f13b67d0c2b724",
+    "dev-docs/evidence/menu-mail-notices/integration/finalize.py": "590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed"
+  },
+  "canonical_decision": {
+    "url": "https://github.com/gonz0w/faction-bbs/issues/239#issuecomment-6445428781",
+    "local_snapshot_sha256": "9f10bab4d394493f4193a26bcc3a16a03b24d14ffe64f7bc5bbef1f5ab864d96"
+  },
+  "finding": "No discrepancy between recorded approval, PROJECT.md scope and evidence README.",
+  "strict_tdd_complete": false,
+  "historical_gap": "Already-green stale O/E notice verification helper and expected bytes changed together without observed prior correction RED; history remains a gap.",
+  "policy_satisfied_for_this_correction_only": true,
+  "scope": "One-time stale O/E helper correction only; preserved history, substantive final tests, actual host/NetBSD routes and separate review accepted as alternative; ends at owning PR merge/abandonment.",
+  "other_gates": "All remaining tests/source preservation/privacy/original review/fixture cleanup/current-head CI/merge requirements remain binding; future helper changes retain strict TDD.",
+  "new_guard_or_finalizer_behavior": false,
+  "pending": [
+    "Final derived TDD record verification",
+    "Exact pending draft and publication manifest binding",
+    "Independent same-selection publication scan",
+    "Actual observed stop/saved proof and root removal",
+    "Actual results.json link validation after file exists"
+  ],
+  "no_overall_acceptance_claim": true,
+  "repository_edits": false
+}

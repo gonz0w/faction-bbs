@@ -1,0 +1,19 @@
+from lab import *
+import hashlib,tarfile
+names=set(json.loads((P/'sources/native-final02-before.json').read_text()))
+names.update(subprocess.check_output(['git','ls-files','.agent-temper','.codex/agents','AGENTS.md','PROJECT.md'],cwd=R,text=True).splitlines())
+manifest={};source=P/'source-final03';source.mkdir(mode=0o700)
+for name in sorted(names):
+ data=(R/name).read_bytes();h=hashlib.sha256(data).hexdigest();(P/'objects'/h).write_bytes(data);manifest[name]=h;dest=source/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(data)
+assert manifest['crates/faction-client/src/main.rs']=='4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11';assert manifest['tools/probe_menu_mail_notices.py']=='dab427388a064d85eaf129ffb876dccd09b2d8062a7a78c5cbc74869f97f814f'
+(P/'sources/native-final03-before.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/'native-source-final03.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for name in sorted(manifest):t.add(source/name,arcname=name,recursive=False)
+script=(P/'native_build01.py').read_bytes().replace(b'source23901',b'source23903').replace(b'build-final01',b'build-final03').replace(b'expected-source01',b'expected-source03')
+(P/'native_build03.py').write_bytes(script);(P/'objects'/hashlib.sha256(script).hexdigest()).write_bytes(script)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23903; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source23903; tar -xzf - -C /home/factionbuild/source23903; chown -R factionbuild:factionbuild /home/factionbuild/source23903',archive.read_bytes(),180)
+remote('cat > /home/factionbuild/proof239/expected-source03.json; chown factionbuild:factionbuild /home/factionbuild/proof239/expected-source03.json',(P/'sources/native-final03-before.json').read_bytes())
+remote('cat > /home/factionbuild/proof239/native-build03.py; chown factionbuild:factionbuild /home/factionbuild/proof239/native-build03.py',script)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof239/native-build03.py > /home/factionbuild/proof239/build-launch03.log 2>&1 < /dev/null &'",timeout=10)
+print('Frozen final',len(manifest),'inputs incl current adopted policy; complete native build03 launched.')

@@ -1,0 +1,34 @@
+{
+  "review": "separate CR protocol oracle correction review",
+  "time_utc": "2026-10-27T14:38:11Z",
+  "sources": {
+    "tools/probe_menu_mail_notices.py": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+    "tools/test_probe_menu_mail_notices.py": "38e0bd05f688ae12897232846e37e88eca982df5a17825751f835ace6a98d723"
+  },
+  "original_source": "/private/tmp/faction239-native-OWNED/source-final03/tools/probe_menu_mail_notices.py",
+  "original_source_sha256": "dab427388a064d85eaf129ffb876dccd09b2d8062a7a78c5cbc74869f97f814f",
+  "native_red_log_sha256": "4404a0b2822d51cb213a50e1a6286e3307279face1fc227dbda4e8aae1d24d13",
+  "native_green_log_sha256": "75ff54e727b57e4bd7b88956ed0c92c4b9a416e6f0976707e8fb54aa385ac0bd",
+  "actual_tests": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools",
+      "-p",
+      "test_probe_menu_mail_notices.py",
+      "-v"
+    ],
+    "returncode": 0,
+    "log_sha256": "d5a2fc98faa3700dada256e94a240bc9ef01e47d0a91865e2562051611126cb8"
+  },
+  "observed_red": "8 tests, one CR-terminator behavior failure against dab42738; original LF and CRLF remain accepted",
+  "findings": [],
+  "limits": [
+    "Fresh six runtime capture IDs and original private audit pending"
+  ],
+  "repository_edits": false
+}

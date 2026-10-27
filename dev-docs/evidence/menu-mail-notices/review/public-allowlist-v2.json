@@ -1,0 +1,175 @@
+{
+  "excluded_original_material": "No original private capture directory, raw trace, terminal transcript, generated input/marker file, profile/settings, key or vault is selected.",
+  "excluded_private_inventory_records": [
+    "host-original-capture-review.json",
+    "host-shared-original-capture-review.json",
+    "native-original-capture-review.json",
+    "native-shared-original-capture-review.json"
+  ],
+  "files": {
+    "audit_host.py": {
+      "bytes": 8546,
+      "sha256": "9a6bdbe0cdc965dce5b0c859d8561b29643ff408501d14a16ddf5ea28ab43e18"
+    },
+    "audit_host_shared.py": {
+      "bytes": 8859,
+      "sha256": "c17d410c1f40d97bc96e8e30b7254848b2b3599c73bbfa21a8ded97663d07d7b"
+    },
+    "audit_host_v2.py": {
+      "bytes": 8648,
+      "sha256": "7a38d53d6b2a50a5b5984399f371b144b794d1a5e348fb9c4941dc73b951ddcc"
+    },
+    "audit_host_v3.py": {
+      "bytes": 8835,
+      "sha256": "0e1d12feeb8fbad71f4708dba8de9462a1421315403e866851f5bdf840aa4be3"
+    },
+    "audit_host_v4.py": {
+      "bytes": 8844,
+      "sha256": "3649d87c29144e6978cdb672b6a5ea1c83de739e642560869afa250781b13060"
+    },
+    "audit_native.py": {
+      "bytes": 9940,
+      "sha256": "73c1886e3584f9bdee43a82785d252473211d7bd33ce6b45608ff9ebfff2ff2e"
+    },
+    "audit_native_shared.py": {
+      "bytes": 10663,
+      "sha256": "335d1a0762150f28dca4d0c01ddff3ee5171269e443ce5415f25db4362535b5c"
+    },
+    "audit_native_v2.py": {
+      "bytes": 9941,
+      "sha256": "8328c059d6ff10c0fc44b7d2b8636ddafa5f780d4e3515e81b05d3ea42fa3151"
+    },
+    "canonical-owner-disposition.json": {
+      "bytes": 1089,
+      "sha256": "9f10bab4d394493f4193a26bcc3a16a03b24d14ffe64f7bc5bbef1f5ab864d96"
+    },
+    "docs-recheck.json": {
+      "bytes": 867,
+      "sha256": "1c686a73a688f932724b19a75372c795a1137ec75774942375c8df9f2bb5db5a"
+    },
+    "final-prose-review.json": {
+      "bytes": 5605,
+      "sha256": "719696372db2ca8b0fb750123077401a6a68aa13968f5583b198292949e1871e"
+    },
+    "finalization-tests.log": {
+      "bytes": 2833,
+      "sha256": "63ce275042647d081bf70756fc7777c1c2d073407cb4c0b60d8f45a312851a63"
+    },
+    "finalizer-static-review.json": {
+      "bytes": 1166,
+      "sha256": "ff92dc54a0256142780f5edfd44b47a13ea027557a5f3453d85997396e9242c3"
+    },
+    "guard-tests.log": {
+      "bytes": 1853,
+      "sha256": "a5ebaf1668d6dbc73aad356a69d851f30958ca24e8abc6fb395db7e8f467caf9"
+    },
+    "host-audit-fixture-correction.json": {
+      "bytes": 453,
+      "sha256": "eac834f4e8762a3becac6c681b874f6a51e6ae3e152b977612d763e91bf672e3"
+    },
+    "host-audit-profile-correction.json": {
+      "bytes": 449,
+      "sha256": "61a02d0cf41f60c3df2f1e9dd186f6442877b61903e8a7986667f22cf83ef2f8"
+    },
+    "host-audit-setup-correction.json": {
+      "bytes": 610,
+      "sha256": "505457c032ff44cc5ce06fb3e10a57476b27871626372e504284dfe4bca4e887"
+    },
+    "host-audit-sources/check_restricted_ssh.py": {
+      "bytes": 12775,
+      "sha256": "dd2d28d58865162d1b6c06967b6884a8dbf913968f942b8c365a1e07a0896404"
+    },
+    "host-audit-sources/probe_mail_correspondents.py": {
+      "bytes": 25941,
+      "sha256": "318c8daa5f9918c17f3c4f18588ef0f855f6e24d81d27e99884d59f565778599"
+    },
+    "host-audit-sources/probe_mail_inbox.py": {
+      "bytes": 15335,
+      "sha256": "5c203b8072934ff31c54ff2389352a20f214bc5cdef2a7e0c4551bcd4598224c"
+    },
+    "host-audit-sources/probe_mail_reply.py": {
+      "bytes": 26512,
+      "sha256": "7e23ce635b74a7d5ac7c4383edfed7a58ed1d35f0d470a8a4f52a8cfbb0e4854"
+    },
+    "host-audit-sources/probe_menu_mail.py": {
+      "bytes": 19750,
+      "sha256": "ce153e5020b84d6db1d4335b12cd382861b95fef06a722d1884ecafcb6e5db3d"
+    },
+    "host-audit-sources/probe_menu_mail_notices.py": {
+      "bytes": 21080,
+      "sha256": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29"
+    },
+    "host-audit-sources/probe_visit_mail.py": {
+      "bytes": 24280,
+      "sha256": "af2144cb780fb9fce0681143d6d5af06118a5b5f8a4056b9f31d9c886770fbdd"
+    },
+    "host-audit-sources/smoke_board_launcher.py": {
+      "bytes": 4306,
+      "sha256": "b5d557391f3efac604463fb0888f9125269a36646890593c7473be97dd16404b"
+    },
+    "host-audit-sources/smoke_local_console.py": {
+      "bytes": 14171,
+      "sha256": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99"
+    },
+    "host-audit-sources/smoke_native_client_ssh.py": {
+      "bytes": 13937,
+      "sha256": "9c497245465273b89558f08910dfbadff3c618d67e3e1f56d20ee85e0f9322b4"
+    },
+    "host-audit-sources/test_probe_menu_mail_notices.py": {
+      "bytes": 7634,
+      "sha256": "38e0bd05f688ae12897232846e37e88eca982df5a17825751f835ace6a98d723"
+    },
+    "native-audit-path-correction.json": {
+      "bytes": 361,
+      "sha256": "1a18e5ebdccf7b99d43d37917322626c850fb6e02dba0211d4a69d1561e23abe"
+    },
+    "original-six-unbound-review.json": {
+      "bytes": 2291,
+      "sha256": "b83fbf52c5a066f1681e86180c0e2dc887533e2156c53446483413a253812675"
+    },
+    "policy-disposition-review.json": {
+      "bytes": 1994,
+      "sha256": "c3defee6b5904008fd407f78d7403bb718a861e20a6393dca785cc997c23cc51"
+    },
+    "policy-hold-review.json": {
+      "bytes": 1254,
+      "sha256": "560818a0f158a4566d7cf31584a9643190cf136b5ab7a6c8b9c5250bf8c4fe8b"
+    },
+    "probe-cr-review.json": {
+      "bytes": 1356,
+      "sha256": "b6f1baa07d9b9e8b09f624a2401a5df149d53a4bfdfeff61c693986f42436ab7"
+    },
+    "probe-cr-tests.log": {
+      "bytes": 1576,
+      "sha256": "d5a2fc98faa3700dada256e94a240bc9ef01e47d0a91865e2562051611126cb8"
+    },
+    "probe-tests.log": {
+      "bytes": 1397,
+      "sha256": "415356d68c4c8568f6cbfe97e0e2f1bad2c2c1d2c0113500c35048b31cf1c6cd"
+    },
+    "public-allowlist.json": {
+      "bytes": 6220,
+      "sha256": "e9e09f3e05cfca7ca442fae18ec3822f0489efdf58b390d7da1c9f07ec53438d"
+    },
+    "runtime-composition-review.json": {
+      "bytes": 1566,
+      "sha256": "98848ac381f02fde6d3785a1eaf7359cacdc701113d8009f2c061f9f0cc7a5eb"
+    },
+    "runtime-composition-tests.log": {
+      "bytes": 3007,
+      "sha256": "0a4deed05666ce087e09449dcaf89437955f78634ac07568abbb82cb36d9908d"
+    },
+    "static-review.json": {
+      "bytes": 3265,
+      "sha256": "2cf02a53240061a70f3619ca6782f9d69ae60433e33fb90dc55a2d69dc21a659"
+    }
+  },
+  "policy_hold": "Prior hold chronology preserved. Actual owner narrow disposition recorded and separately reviewed; strict_tdd_complete remains false and all other gates still required.",
+  "preliminary_generated_value_scan": {
+    "matches": 0,
+    "scope": "Reviewer allowlist v2 only; final independent candidate scan mandatory",
+    "values_scanned": 42
+  },
+  "schema": 1,
+  "scope": "Explicit safe reviewer publication allowlist; final independent candidate scan remains mandatory"
+}

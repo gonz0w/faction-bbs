@@ -1,0 +1,25 @@
+test_ci_registration (test_menu_mail_notices_evidence.CI.test_ci_registration) ... ok
+test_real_pty_tests_use_existing_all_target_network_command (test_menu_mail_notices_evidence.CI.test_real_pty_tests_use_existing_all_target_network_command) ... ok
+test_binary_profile_and_build_source_bindings (test_menu_mail_notices_evidence.Evidence.test_binary_profile_and_build_source_bindings) ... ok
+test_capture_association_mismatches (test_menu_mail_notices_evidence.Evidence.test_capture_association_mismatches) ... ok
+test_cleanup_tdd_publication_and_log_count_lies (test_menu_mail_notices_evidence.Evidence.test_cleanup_tdd_publication_and_log_count_lies) ... ok
+test_complete_matrix (test_menu_mail_notices_evidence.Evidence.test_complete_matrix) ... ok
+test_duplicate_capture_or_substituted_native (test_menu_mail_notices_evidence.Evidence.test_duplicate_capture_or_substituted_native) ... ok
+test_final_sources_native_count_and_limits (test_menu_mail_notices_evidence.Evidence.test_final_sources_native_count_and_limits) ... ok
+test_positive_io_and_privacy_scan (test_menu_mail_notices_evidence.Evidence.test_positive_io_and_privacy_scan) ... ok
+test_pre_capture_input_hashes_and_original_record_identity (test_menu_mail_notices_evidence.Evidence.test_pre_capture_input_hashes_and_original_record_identity) ... ok
+test_route_requires_executed_probe_not_any_available_source (test_menu_mail_notices_evidence.Evidence.test_route_requires_executed_probe_not_any_available_source) ... ok
+test_route_semantics_with_coherent_associations (test_menu_mail_notices_evidence.Evidence.test_route_semantics_with_coherent_associations) ... ok
+test_runtime_python_override_preserves_exact_compiled_sources (test_menu_mail_notices_evidence.Evidence.test_runtime_python_override_preserves_exact_compiled_sources) ... ok
+test_source_drift_escape_and_symlink (test_menu_mail_notices_evidence.Evidence.test_source_drift_escape_and_symlink) ... ok
+test_complete_actual_review_scan_and_stop_preconditions (test_menu_mail_notices_evidence.Finalization.test_complete_actual_review_scan_and_stop_preconditions) ... ok
+test_owned_roots_require_exact_names_mode_and_markers (test_menu_mail_notices_evidence.Finalization.test_owned_roots_require_exact_names_mode_and_markers) ... ok
+test_parent_command_or_live_owned_process_prevents_removal (test_menu_mail_notices_evidence.Finalization.test_parent_command_or_live_owned_process_prevents_removal) ... ok
+test_rejects_live_or_changed_saved_state (test_menu_mail_notices_evidence.Finalization.test_rejects_live_or_changed_saved_state) ... ok
+test_rejects_pending_or_missing_original_capture_review (test_menu_mail_notices_evidence.Finalization.test_rejects_pending_or_missing_original_capture_review) ... ok
+test_rejects_wrong_selection_capture_ids_and_unscanned_values (test_menu_mail_notices_evidence.Finalization.test_rejects_wrong_selection_capture_ids_and_unscanned_values) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.099s
+
+OK

@@ -1,0 +1,60 @@
+{
+  "client_binary_sha256": "43f715c95525201aa64a6f3cc387543714665b8c7cfbc119a450218e80fa988a",
+  "fixture_binary_sha256": "e6aa7b3d7e8b2cb1d5eb46f55666a6f7811935f32578ddee6ae33b66d9dd75fc",
+  "profile_sha256": "dbcaf03480ae1f27fcfdc6d7a0665bc19efa65725af1db9610e92867cb867746",
+  "ssh_executable": "/usr/bin/ssh",
+  "result": "pass",
+  "platform": "NetBSD",
+  "machine": "evbarm",
+  "scope": "same-ssh-shared-main-files-mail-notices",
+  "unicode": false,
+  "count": 3,
+  "checks": [
+    "main_to_files_shares_consent_and_stale_snapshot",
+    "files_to_main_opt_out_clears_snapshot_and_on_is_unknown",
+    "corrected_GIO_and_board_files_private_markers_absent"
+  ],
+  "capture_id": "0cd01e5c506284e2fab4c925331c0178",
+  "source_sha256": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+  "marker_count": 27,
+  "private_input_hashes": {
+    "trace_sha256": "75d6c733bf1d6bc97b251e00e077316b1365ff6fc9a7f3e94a90a3b71618ebf8",
+    "marker_set_sha256": "525b9aa6dbf87e73134a9ac4f0a354e5b43c3814f58ea4192f4c1df268bc3666",
+    "file_scan_input_sha256": "8160af019ba821e637fdcbc272397aa5b66cd1845d70b4e9618d9dfd78a2d04c"
+  },
+  "privacy_scan": {
+    "board_files": 4,
+    "store_files": 1,
+    "log_files": 2,
+    "matches": 0,
+    "symlinks": 0
+  },
+  "board_io_reconstruction": {
+    "records": 175,
+    "streams": 7,
+    "decoded_bytes": 42580,
+    "read_bytes": 17707,
+    "write_bytes": 24873
+  },
+  "private_matches": 0,
+  "files_disabled": false,
+  "actual_home_transport_error": "Connect",
+  "same_ssh_pid_until_normal_close": true,
+  "automatic_redial_observed": false,
+  "private_fixture_retained_for_lead": true,
+  "protocol_cycles": {
+    "parks": 1,
+    "backs": 7,
+    "nonces": 7
+  },
+  "file_protocol_matches": 1,
+  "canonical_state_unchanged": true,
+  "notice_toggle_local_only": true,
+  "consent_off_on_reenable_unknown": true,
+  "new_visit_notices_off": true,
+  "safe_back_default_after_redraw": true,
+  "locked_return_same_ssh": true,
+  "notice_cells_max": 39,
+  "main_open_hint": "O",
+  "files_open_hint": "E"
+}

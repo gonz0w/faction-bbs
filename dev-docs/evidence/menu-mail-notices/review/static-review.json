@@ -1,0 +1,69 @@
+{
+  "review_type": "separate static production/docs/tooling review; actual oracle/guard unit checks",
+  "time_utc": "2026-10-27T14:32:11Z",
+  "sources": {
+    "AGENTS.md": "549ba394c1d6c7b0c21f8f81947f34ed7b3fc385a8838f03c67a9ae2722b7988",
+    "PROJECT.md": "f10c9dc924d13ef130b026cf5adba2b614bcfd419698038048d44181cbe41a91",
+    ".agent-temper/SOURCE.md": "03f31c0d347e7c36bb714c3e0839b82270301061a4a9512d576dde92414c4458",
+    "crates/faction-client/src/main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+    "crates/faction-client/src/visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61",
+    "README.md": "9b33a6e71c9bb84572f70961eb0c050afbf8fcd6a752951e78277a58e033aceb",
+    "docs/main-menu-mail.md": "9ca6e2d506dd273dcd6a2895503c6090550d8d95d93fb8a7962fe2ce96f8bafa",
+    "docs/local-unread-mail.md": "f8a8f2f95c12ea9f0cda21ba222727ff8018606e0a7665b15c50d40e8b5836d8",
+    "dev-docs/main-menu-mail.md": "e273be10498e39d548a47cc555977c090c382e8e7910721436159d28f7941f11",
+    "tools/probe_menu_mail_notices.py": "dab427388a064d85eaf129ffb876dccd09b2d8062a7a78c5cbc74869f97f814f",
+    "tools/check_menu_mail_notices_evidence.py": "77a1280b35ed10b1965f7aec5d146703b4b8ae6ee2d99cec01891d54bafcba9d",
+    "tools/test_probe_menu_mail_notices.py": "34e29c2cf1036b4fcd86a988244968933487888486b28d541bdf5e4bf5e849b9",
+    "tools/test_menu_mail_notices_evidence.py": "dd93405a3cafdd1cfc1cfb028483b973e564c612c006e1c8514f1ff0dc868023",
+    ".github/workflows/documentation.yml": "2be2723d1cea0ca64aadf8a7a9a55049bd0a25f41429b775dbc33b17186e97f2",
+    ".gitattributes": "3114c2665a066b22571e534c8b3ad1be4edffa2f3be0d4fc4a3523992d38d864"
+  },
+  "checks": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_probe_menu_mail_notices.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "log": "/private/tmp/faction239-review-OWNED/probe-tests.log",
+      "log_sha256": "415356d68c4c8568f6cbfe97e0e2f1bad2c2c1d2c0113500c35048b31cf1c6cd"
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_menu_mail_notices_evidence.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "log": "/private/tmp/faction239-review-OWNED/guard-tests.log",
+      "log_sha256": "a5ebaf1668d6dbc73aad356a69d851f30958ca24e8abc6fb395db7e8f467caf9"
+    }
+  ],
+  "relative_link_targets_checked": 88,
+  "client_candidate_manifest_sha256": "0faef202b55a17f31b03ef14263dacb731bd5c3456b711ba2b56be9fc487a6f2",
+  "client_candidate_files_verified": 47,
+  "candidate_private_scan_status": "pending",
+  "runtime_private_capture_review": "pending",
+  "cleanup": "pending; no removal requested or performed",
+  "remaining_docs_precision": "declined Open confirmation retains existing snapshot; docs cancellation wording reported to lead",
+  "requested_role": "temper_reviewer",
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "high",
+  "backend_routing_metadata": "unavailable; unverified",
+  "repository_edits": false
+}

@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""Check immutable device-local main-menu notice observations; never start fixtures."""
+import hashlib
+import json
+from pathlib import Path
+import re
+
+ROOT=Path(__file__).resolve().parents[1]
+RESULT_SHA256=""
+PROFILE=dict(normal_sessions=8,launch_ms=5000,credential_permits=2,kernel_slots=2,
+             owner_helpers=3,drain_seconds=5,parked_prompt_seconds=120,nonce_budget=64)
+CLAIMS={'background_polling','credential_lease','automatic_read_ack','schema_change',
+        'new_dependency','new_crypto','remote_notices','physical_hardware','capacity','production_deployment'}
+SCOPES=dict(main='same-ssh-main-menu-mail-notices',shared='same-ssh-shared-main-files-mail-notices')
+CONTROLS=dict(main={'fixed_O_B_N_and_safe_back_defaults','local_toggle_no_unlock_home_or_protocol',
+    'unknown_stale_off_cleared_on_unknown','canceled_wrong_unlock_unknown','fresh_confirmation_typeahead_discard',
+    'canonical_snapshot_unchanged','same_SSH_lock_return_new_visit_off',
+    'corrected_GIO_and_board_files_private_markers_absent'},shared={
+    'main_to_files_shares_consent_and_stale_snapshot',
+    'files_to_main_opt_out_clears_snapshot_and_on_is_unknown',
+    'corrected_GIO_and_board_files_private_markers_absent'})
+KEYS=dict(main={p+'_'+m for p in ('host','netbsd') for m in ('classic','unicode')},shared={'host','netbsd'})
+PRODUCTION={'crates/faction-client/src/main.rs','crates/faction-client/src/visit_mail.rs'}
+RECORDS={'associations','native','cleanup','tdd','publication','rust'}
+
+
+def raw(root,ref):
+    path=Path(ref['path'])
+    assert not path.is_absolute() and '..' not in path.parts
+    assert re.fullmatch('[0-9a-f]{64}',ref['sha256'])
+    target=root/path
+    assert not target.is_symlink() and target.resolve().is_relative_to(root.resolve())
+    data=target.read_bytes()
+    assert hashlib.sha256(data).hexdigest()==ref['sha256'],str(path)
+    return data
+
+
+def value(root,ref):return json.loads(raw(root,ref))
+
+
+def positive(value):return type(value) is int and value>0
+
+
+def route(root,ref,kind,key,sources):
+    data=value(root,ref)
+    assert data['result']=='pass' and data['scope']==SCOPES[kind]
+    assert data['platform']==('Darwin' if key.startswith('host') else 'NetBSD')
+    assert data['unicode'] is key.endswith('_unicode')
+    assert data['source_sha256'] in sources
+    assert data['count']==len(data['checks'])==len(CONTROLS[kind])
+    assert set(data['checks'])==CONTROLS[kind]
+    assert data['files_disabled'] is (kind=='main')
+    assert data['actual_home_transport_error']=='Connect'
+    assert data['automatic_redial_observed'] is False
+    for field in ('same_ssh_pid_until_normal_close','notice_toggle_local_only','canonical_state_unchanged',
+                  'consent_off_on_reenable_unknown','new_visit_notices_off',
+                  'safe_back_default_after_redraw','locked_return_same_ssh'):
+        assert data[field] is True,field
+    assert type(data['notice_cells_max']) is int and 0<data['notice_cells_max']<=39
+    assert data['main_open_hint']=='O'
+    if kind=='shared':assert data['files_open_hint']=='E'
+    assert re.fullmatch('[0-9a-f]{32}',data['capture_id'])
+    inputs=data['private_input_hashes']
+    assert set(inputs)=={'trace_sha256','marker_set_sha256','file_scan_input_sha256'}
+    assert all(re.fullmatch('[0-9a-f]{64}',sha) for sha in inputs.values())
+    assert positive(data['marker_count']) and data['private_matches']==data['file_protocol_matches']==0
+    scan=data['privacy_scan']
+    assert scan['matches']==scan['symlinks']==0
+    assert all(positive(scan[key]) for key in ('board_files','store_files','log_files'))
+    io=data['board_io_reconstruction']
+    assert all(positive(io[key]) for key in ('records','streams','decoded_bytes','read_bytes','write_bytes'))
+    assert io['decoded_bytes']==io['read_bytes']+io['write_bytes']
+    return data
+
+
+def validate(root,record):
+    assert record['schema']==1 and record['issue']==239 and record['result']=='pass'
+    assert record['profile']==PROFILE
+    assert set(record['claims'])==CLAIMS and all(v is False for v in record['claims'].values())
+    assert record['sources'] and record['prior_records'] and set(record['records'])>=RECORDS
+    for ref in record['sources']+record['prior_records']:raw(root,ref)
+    sources={ref['sha256'] for ref in record['sources']}
+    assert PRODUCTION<=set(record['production'])
+    assert all(sha in sources for sha in record['production'].values())
+    finals={}
+    labels=set()
+    for stage in record['source_stages']:
+        assert stage['label'] not in labels;labels.add(stage['label'])
+        files=value(root,stage['manifest'])
+        assert files and all(sha in sources for sha in files.values())
+        if stage['label'] in ('host-final','native-final'):
+            finals[stage['label']]=files
+            assert all(files[name]==sha for name,sha in record['production'].items())
+    assert set(finals)=={'host-final','native-final'}
+    assert set(record['routes'])==set(KEYS)
+    observed={}
+    for kind,keys in KEYS.items():
+        assert set(record['routes'][kind])==keys
+        observed[kind]={key:route(root,ref,kind,key,sources) for key,ref in record['routes'][kind].items()}
+        for key,data in observed[kind].items():
+            stage='host-final' if key.startswith('host') else 'native-final'
+            assert data['source_sha256']==finals[stage]['tools/probe_menu_mail_notices.py']
+    records={key:value(root,ref) for key,ref in record['records'].items()}
+    assert all(v['result']=='pass' for v in records.values())
+    native=records['native']
+    assert native['files']==finals['native-final'] and native['all_source_match'] is True
+    assert native['source_count']==len(native['files'])>0
+    assert native['compile_memory_mib']==2048 and 1000*1024**2<native['runtime_physmem']<1024**3
+    associations=records['associations']['routes']
+    assert set(associations)==set(KEYS)
+    ids=set()
+    for kind,routes in observed.items():
+        assert set(associations[kind])==KEYS[kind]
+        for key,data in routes.items():
+            match=associations[kind][key]
+            assert data['capture_id'] not in ids;ids.add(data['capture_id'])
+            assert match['capture_id']==data['capture_id'] and match['source_sha256']==data['source_sha256']
+            assert match['result_sha256']==record['routes'][kind][key]['sha256']
+            assert match['private_input_hashes']==data['private_input_hashes']
+            assert match['generated_before_capture'] is True and match['input_trace_unchanged'] is True
+    assert all(records['cleanup'][key] is True for key in
+               ('owned_removed','saved_stopped','saved_hashes_unchanged','saved_sizes_mtimes_unchanged','forwards_closed'))
+    tdd=records['tdd']
+    assert tdd['captured_before_edit'] is True and type(tdd['red_exit']) is int and tdd['red_exit']!=0
+    assert tdd['green_exit']==0
+    publication=records['publication']
+    assert positive(publication['generated_private_values_scanned'])
+    assert publication['private_matches']==publication['raw_private_key_or_vault_matches']==0
+    assert publication['explicit_manifests_verified'] is True
+    runs=records['rust']['runs']
+    assert set(runs)=={'workspace','network','native','netbsd'}
+    for run in runs.values():
+        counts=re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored',raw(root,run['log']).decode())
+        assert counts and all(int(f)==0 for p,f,i in counts)
+        assert sum(int(p) for p,f,i in counts)==run['passed']>0
+        assert sum(int(i) for p,f,i in counts)==run['ignored']>=0
+    return records
+
+
+def check():
+    data=(ROOT/'dev-docs/evidence/menu-mail-notices/results.json').read_bytes()
+    assert RESULT_SHA256 and hashlib.sha256(data).hexdigest()==RESULT_SHA256,'immutable menu notice evidence changed'
+    validate(ROOT,json.loads(data))
+    print('Menu notice evidence passed: local consent, source-bound main/Files routes, unchanged mail state, private I/O and cleanup; software observations only.')
+
+
+if __name__=='__main__':check()

@@ -1,0 +1,151 @@
+[
+  {
+    "name": "shutdown1-host-default",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "--release",
+      "--locked",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "shutdown1-host-native",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "--release",
+      "--locked",
+      "--features",
+      "native-mail",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "shutdown1-host-network",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "--release",
+      "--locked",
+      "--features",
+      "network-mail",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "shutdown1-clippy-default",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "shutdown1-clippy-native",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--features",
+      "native-mail",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "shutdown1-clippy-network",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--features",
+      "network-mail",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  },
+  {
+    "name": "shutdown1-fmt",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "returncode": 0,
+    "source_hashes": {
+      "main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+      "visit_mail.rs": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61"
+    }
+  }
+]

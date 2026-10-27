@@ -1,0 +1,17 @@
+............F.......
+======================================================================
+FAIL: test_runtime_python_override_preserves_exact_compiled_sources (test_menu_mail_notices_evidence.Evidence.test_runtime_python_override_preserves_exact_compiled_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 87, in test_runtime_python_override_preserves_exact_compiled_sources
+    self.guard.validate(self.root,self.record)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cam/DEV/faction-bbs/tools/check_menu_mail_notices_evidence.py", line 111, in validate
+    assert native['files']==finals['native-final'] and native['all_source_match'] is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.079s
+
+FAILED (failures=1)

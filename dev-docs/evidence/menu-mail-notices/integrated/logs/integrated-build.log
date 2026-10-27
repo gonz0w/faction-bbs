@@ -1,0 +1,5 @@
+   Compiling faction-access v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-access)
+   Compiling faction-files v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-files)
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+   Compiling faction-service v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-service)
+    Finished `release` profile [optimized] target(s) in 2.34s

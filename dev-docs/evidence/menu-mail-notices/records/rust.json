@@ -1,0 +1,42 @@
+{
+  "historical_full_optional_suites_not_relabelled": true,
+  "result": "pass",
+  "runs": {
+    "native": {
+      "ignored": 2,
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/client/public-shutdown-candidate/logs/shutdown1-host-native.log",
+        "sha256": "0c6581ea6d8b835216a58829f57f84fbf3b4e4d271f8d67794a3ba9c37407f3c"
+      },
+      "passed": 58,
+      "scope": "client-binary-only-native-mail"
+    },
+    "netbsd": {
+      "ignored": 5,
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/native/logs/native-build03/tests-build.log",
+        "sha256": "58249c71a455caba0ab246490353b67c1562ea7d606a6b997ed3521ad3217b62"
+      },
+      "passed": 283,
+      "scope": "native-final03-actual-commands"
+    },
+    "network": {
+      "ignored": 2,
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/client/public-shutdown-candidate/logs/shutdown1-host-network.log",
+        "sha256": "cff00102ae3979e800abacbd7ff8f9b0720b0e4c7ac2467abef962ecaac32aa3"
+      },
+      "passed": 62,
+      "scope": "client-binary-only-network-mail"
+    },
+    "workspace": {
+      "ignored": 0,
+      "log": {
+        "path": "dev-docs/evidence/menu-mail-notices/integrated/logs/final-corrected-workspace.log",
+        "sha256": "7541e8a07f716e6e67cb6732781c3a6a4c3d408f3cdc5b5e0b36fad1f6fe5979"
+      },
+      "passed": 479,
+      "scope": "workspace-release-serial"
+    }
+  }
+}

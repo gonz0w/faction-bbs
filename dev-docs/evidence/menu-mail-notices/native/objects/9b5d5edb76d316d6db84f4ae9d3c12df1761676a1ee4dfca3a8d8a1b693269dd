@@ -1,0 +1,10 @@
+from pathlib import Path
+import os,platform,subprocess,json,time
+native=platform.system()=='NetBSD';P=Path('/home/factionbuild/proof239') if native else Path('/private/tmp/faction239-native-OWNED');D=Path('/home/factionbuild/device239') if native else P;B=Path('/home/factionbuild/target239-network/release') if native else P/'bin/host-network02';F=B/'examples' if native else B;client=P/'build-final03/faction-client-network' if native else B/'faction-client';default=P/'build-final03/faction-client-default' if native else P/'bin/host-default02/faction-client';out=P/'compatibility';out.mkdir(mode=0o700);settings=D/'settings-files.json' if native else P/'host-files-settings.json';steps=[]
+commands=[('files',[str(P/'files_driver.py'),'--client',str(client),'--checkpoint-fixture',str(F/'checkpoint_ui_fixture'),'--mail-fixture',str(F/'home_mail_fixture'),'--public-ca','/home/factionbuild/source23903/crates/faction-xmpp/tests/fixtures/local-ca.pem' if native else '/Users/cam/DEV/faction-bbs/crates/faction-xmpp/tests/fixtures/local-ca.pem','--settings',str(settings),'--private-root',str(D),'--output',str(out/'files.json')]),('default-unconfigured',[str(P/'files_v1.py'),'--settings',str(settings),'--private-root',str(D),'--old-client',str(client),'--default-client',str(default),'--output',str(out/'default-unconfigured.json')])]
+for name,args in commands:
+ command=[os.sys.executable]+args;start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(command,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ steps.append(dict(name=name,command=command,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.private.json').write_text(json.dumps(steps,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Existing Files14 and current default/unconfigured network2 controls passed:',platform.system())

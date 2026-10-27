@@ -1,0 +1,10 @@
+from pathlib import Path
+import os,subprocess,json,time
+P=Path('/private/tmp/faction239-native-OWNED');R=P/'runtime-code02';B=P/'bin/host-network02';out=P/'host-main';out.mkdir(mode=0o700);ids=json.loads((P/'capture-ids.private.json').read_text());steps=[]
+for mode in ['classic','unicode']:
+ command=['python3',str(R/'probe_menu_mail_notices.py'),'--client',str(B/'faction-client'),'--fixture',str(B/'mail_correspondents_fixture'),'--owned-root',str(P),'--settings',str(P/'host-settings.json'),'--mail-fixture',str(B/'home_mail_fixture'),'--public-ca','/Users/cam/DEV/faction-bbs/crates/faction-xmpp/tests/fixtures/local-ca.pem','--capture-id',ids['host_'+mode],'--output',str(out/(mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])
+ start=time.monotonic()
+ with (out/(mode+'.raw.log')).open('wb') as log:r=subprocess.run(command,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ steps.append(dict(name=mode,command=command,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.private.json').write_text(json.dumps(steps,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Actual host classic/Unicode main notices passed.')

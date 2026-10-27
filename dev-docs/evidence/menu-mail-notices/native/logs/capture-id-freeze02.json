@@ -1,0 +1,12 @@
+{
+  "capture_ids": {
+    "host_classic": "5c18f37f7f865b6ea5e3ea3a2521ec9d",
+    "host_unicode": "4ca7f3eb04292c314d2f1c0e6687f358",
+    "netbsd_classic": "95a2a66c9d2e1271c5b3128eb1e55833",
+    "netbsd_unicode": "6e261d1ec5eca644b85b944e65f4b95e",
+    "shared_host": "ef93c294297ba4595aea95dce0752a9a",
+    "shared_netbsd": "0cd01e5c506284e2fab4c925331c0178"
+  },
+  "source_sha256": "b5b2bb69b7c394f49797bb698c6a2bc766a934570f5159dc2dae77733f9e5d29",
+  "fixed_before_measurement": true
+}

@@ -1,0 +1,42 @@
+{
+  "actual-red-main.rs": {
+    "sha256": "e68e2af7c78d87ac1360dc7574a378f2adf776c82c5a525af425f3938434f78d",
+    "saved_source": "source/actual-red-main.rs"
+  },
+  "actual-red-visit_mail.rs": {
+    "sha256": "98770e98cdf07bceda811541cc7173f0e5a0dc7c7913ea233c6705c93a6cb8f0",
+    "committed_source": "53502816100152714c99d6c9a94aef052575c31a:crates/faction-client/src/visit_mail.rs"
+  },
+  "candidate1-main.rs": {
+    "sha256": "5daeabfb93c81a3ff77be4b7f58f046111725ad03fd4480b1bbe026fae4ef9e7",
+    "saved_source": "source/candidate1-main.rs"
+  },
+  "candidate1-visit_mail.rs": {
+    "sha256": "1e6a384f0b07522fc419782f14a70c01f272f215996d94f21700ea95508893ff",
+    "saved_source": "source/candidate1-visit_mail.rs"
+  },
+  "candidate2-main.rs": {
+    "sha256": "03136e1bea14b26aac37cea2f82bf76c3f79798f31ecb02c204fe814e8a15236",
+    "saved_source": "source/candidate2-main.rs"
+  },
+  "candidate2-visit_mail.rs": {
+    "sha256": "54b97647c75607c312bc4d27f59bc6777b0de0e06100c6a4c8da370c777197c6",
+    "saved_source": "source/candidate2-visit_mail.rs"
+  },
+  "final-main.rs": {
+    "sha256": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+    "saved_source": "source/final-main.rs"
+  },
+  "final-visit_mail.rs": {
+    "sha256": "164b5aaf70442118a2ca218f3ff15f6d6cb5ad12461b57d23c02b34962876e61",
+    "saved_source": "source/final-visit_mail.rs"
+  },
+  "red-main.rs": {
+    "sha256": "f1ed0a8c013b3ed9d4121274f2e6525333e8bcfc2c8e35780326706fdbd28208",
+    "saved_source": "source/red-main.rs"
+  },
+  "red-visit_mail.rs": {
+    "sha256": "98770e98cdf07bceda811541cc7173f0e5a0dc7c7913ea233c6705c93a6cb8f0",
+    "committed_source": "53502816100152714c99d6c9a94aef052575c31a:crates/faction-client/src/visit_mail.rs"
+  }
+}

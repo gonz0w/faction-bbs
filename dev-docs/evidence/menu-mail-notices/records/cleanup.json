@@ -1,0 +1,14 @@
+{
+  "forwards_closed": true,
+  "owned_removed": true,
+  "removed_roots": [
+    "faction239-client-OWNED0700",
+    "faction239-evidence-OWNED",
+    "faction239-native-OWNED",
+    "faction239-review-OWNED"
+  ],
+  "result": "pass",
+  "saved_hashes_unchanged": true,
+  "saved_sizes_mtimes_unchanged": true,
+  "saved_stopped": true
+}

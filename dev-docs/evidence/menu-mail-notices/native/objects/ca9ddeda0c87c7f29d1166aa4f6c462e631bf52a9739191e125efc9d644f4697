@@ -1,0 +1,16 @@
+from pathlib import Path
+import os,json,subprocess,time,platform
+native=platform.system()=='NetBSD';P=Path('/home/factionbuild/proof239') if native else Path('/private/tmp/faction239-native-OWNED');D=Path('/home/factionbuild/device239') if native else P;C=P/'runtime-code03';B=Path('/home/factionbuild/target239-network/release') if native else P/'bin/host-network02';client=P/'build-final03/faction-client-network' if native else B/'faction-client';fixture_dir=B/'examples' if native else B;out=P/'local-regressions';out.mkdir(mode=0o700);os.umask(0o077);(D/'OWNERSHIP').write_text('Issue239 owned disposable local controls.\n')
+commands=[]
+for mode in ['classic','unicode']:
+ commands.append(('correspondents-'+mode,[str(C/'probe_mail_correspondents.py'),'--client',str(client),'--fixture',str(fixture_dir/'mail_correspondents_fixture'),'--owned-root',str(D),'--output',str(out/('correspondents-'+mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])))
+commands.append(('inbox',[str(C/'probe_mail_inbox.py'),'--client',str(client),'--fixture',str(fixture_dir/'checkpoint_ui_fixture'),'--owned-root',str(D),'--online','--output',str(out/'inbox.json')]))
+for mode in ['classic','unicode']:
+ commands.append(('reply-'+mode,[str(C/'probe_mail_reply.py'),'--client',str(client),'--fixture',str(fixture_dir/'mail_reply_fixture'),'--owned-root',str(D),'--output',str(out/('reply-'+mode+'.json'))]+(['--unicode'] if mode=='unicode' else [])))
+steps=[]
+for name,args in commands:
+ command=[os.sys.executable]+args;start=time.monotonic()
+ with (out/(name+'.raw.log')).open('wb') as log:r=subprocess.run(command,stdout=log,stderr=log,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+ steps.append(dict(name=name,command=command,returncode=r.returncode,elapsed_seconds=time.monotonic()-start));(out/'execution.private.json').write_text(json.dumps(steps,indent=2)+'\n')
+ if r.returncode:raise SystemExit(r.returncode)
+print('Existing local inbox/correspondents/reply controls passed:',len(steps),platform.system())

@@ -1,0 +1,6 @@
+{
+  "tools/test_menu_mail_notices_evidence.py": "62e693c9d3f1130130457b00416f48bf1c8d3736aff0a6763bc9ccaea8f30423",
+  ".github/workflows/documentation.yml": "2be2723d1cea0ca64aadf8a7a9a55049bd0a25f41429b775dbc33b17186e97f2",
+  "tools/check_menu_mail_notices_evidence.py": "77a1280b35ed10b1965f7aec5d146703b4b8ae6ee2d99cec01891d54bafcba9d",
+  "dev-docs/evidence/menu-mail-notices/integration/finalize.py": "590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed"
+}

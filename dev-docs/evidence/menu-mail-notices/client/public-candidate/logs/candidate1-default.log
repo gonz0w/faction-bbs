@@ -1,0 +1,61 @@
+   Compiling faction-client v0.1.0-alpha.1 (/Users/cam/DEV/faction-bbs/crates/faction-client)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.60s
+     Running unittests src/main.rs (/private/tmp/faction239-client-OWNED0700/target/debug/deps/faction_client-e38c5cd7c9581673)
+
+running 40 tests
+test launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys ... ok
+test stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order ... ok
+test launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough ... ok
+test stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read ... ok
+test connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority ... ok
+test connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments ... ok
+test passport_data::tests::seal_controls_shapes_and_rights_are_checked ... ok
+test stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered ... ok
+test launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation ... ok
+test tests::files_mail_actions_are_local_configured_and_keep_classic_entries ... ok
+test stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions ... ok
+test launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile ... ok
+test launcher::tests::home_mail_catalog_requires_supported_complete_private_references ... ok
+test tests::main_menu_mail_offers_exact_fixed_local_choices ... ok
+test passport_data::tests::data_is_bounded_inert_and_selective ... ok
+test launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry ... ok
+test stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output ... ok
+test stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks ... ok
+test tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors ... ok
+test tests::main_mail_pty_renders_notices_and_keeps_enter_safe ... ok
+test launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options ... ok
+test stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate ... ok
+test transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo ... ok
+test travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority ... ok
+test travel::tests::byte_limits_are_explicit_strict_and_atomic ... ok
+test visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count ... ok
+test visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears ... ok
+test visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads ... ok
+test visit_mail::tests::only_configured_visits_offer_mail_and_notices ... ok
+test passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization ... FAILED
+test sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes ... ok
+test profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions ... ok
+test transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority ... ok
+test transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline ... ok
+test transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls ... ok
+test transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output ... ok
+test transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail ... ok
+test tests::main_mail_pty_n_redraws_unknown_and_resets_back_default ... ok
+test mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection ... ok
+test transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits ... ok
+
+failures:
+
+---- passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization stdout ----
+
+thread 'passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization' (3079541) panicked at crates/faction-client/src/passport_store.rs:137:45:
+called `Result::unwrap()` on an `Err` value: Os { code: 35, kind: WouldBlock, message: "Resource temporarily unavailable" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization
+
+test result: FAILED. 39 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+error: test failed, to rerun pass `-p faction-client --bin faction-client`

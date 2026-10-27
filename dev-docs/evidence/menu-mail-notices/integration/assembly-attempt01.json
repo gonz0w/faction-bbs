@@ -1,0 +1,13 @@
+{
+  "result": "setup-failure",
+  "behavioral_red": false,
+  "source": {
+    "path": "dev-docs/evidence/menu-mail-notices/integration/objects/e3329121cd2caf72915667129fa29de6bf4efaa139b799e812740596008666bd",
+    "sha256": "e3329121cd2caf72915667129fa29de6bf4efaa139b799e812740596008666bd"
+  },
+  "log": {
+    "path": "dev-docs/evidence/menu-mail-notices/integration/logs/assembly-attempt01-setup.log",
+    "sha256": "e224ab8ec64905a43966daba9bc343c71eb0906ce0af394ec232cc7c8778f2d1"
+  },
+  "reason": "Inherited inbox verdict has no declared scope field; exact fourteen controls were retained."
+}

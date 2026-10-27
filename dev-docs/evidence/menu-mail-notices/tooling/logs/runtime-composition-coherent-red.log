@@ -1,0 +1,17 @@
+............F.......
+======================================================================
+FAIL: test_runtime_python_override_preserves_exact_compiled_sources (test_menu_mail_notices_evidence.Evidence.test_runtime_python_override_preserves_exact_compiled_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 90, in test_runtime_python_override_preserves_exact_compiled_sources
+    self.change_record('builds',lambda d:d['platforms']['host']['runtime_overrides'].update({'crates/faction-client/src/main.rs':other['sha256']}));self.reject()
+                                                                                                                                                    ~~~~~~~~~~~^^
+  File "/Users/cam/DEV/faction-bbs/tools/test_menu_mail_notices_evidence.py", line 44, in reject
+    with self.assertRaises(AssertionError):self.guard.validate(self.root,self.record)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: AssertionError not raised
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.079s
+
+FAILED (failures=1)

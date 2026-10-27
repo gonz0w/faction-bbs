@@ -1,0 +1,159 @@
+{
+  "default_network_driver_sha256": "8ee136a2a87ed097d293514bfca29dc8b70a06e8720f0b5772adc9f2387791ef",
+  "existing_oracle_source_sha256": {
+    "check_correspondents_evidence.py": "1e4f4738970081d10ab4a1a9756b1d8331a9ce4da2fc58569dba7aa0189f6d50",
+    "check_menu_mail_evidence.py": "5f364d879102ce8ed1bcb726eb903299dac1f3069dce2d623ab145de74b9df9c",
+    "check_reply_evidence.py": "8645b8dff019787886dd4d928a820fc9e8280c5a74ece7f7ec6042401e87fc25"
+  },
+  "result": "pass",
+  "routes": {
+    "host": {
+      "compatibility/default-unconfigured": {
+        "count": 2,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/compatibility/default-unconfigured.json",
+          "sha256": "62bfe7dacf23f0d28e0cd09695cc9027e12f889589311a13c2eae715309c0587"
+        },
+        "scope": "actual-unconfigured-network-and-default-native-v1-files-rpc"
+      },
+      "compatibility/files": {
+        "count": 14,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/compatibility/files.json",
+          "sha256": "48073051c1f40717e517e9ee1d448ae0b2f7e6c7bdc17963507f74683cf914d5"
+        },
+        "scope": "same-ssh-parked-files-local-mail-restricted-sftp"
+      },
+      "local-regressions/correspondents-classic": {
+        "count": 8,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/local-regressions/correspondents-classic.json",
+          "sha256": "e1981462a1214eb227ef0edbf695b093122d7269fafc0b03d8fb507baf932782"
+        },
+        "scope": "device-local-mail-correspondents"
+      },
+      "local-regressions/correspondents-unicode": {
+        "count": 8,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/local-regressions/correspondents-unicode.json",
+          "sha256": "3746109184b7765c3a7b7a7fe12fd5a19cbc7d91c255925acc4160b443dcb509"
+        },
+        "scope": "device-local-mail-correspondents"
+      },
+      "local-regressions/inbox": {
+        "count": 14,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/local-regressions/inbox.json",
+          "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+        },
+        "scope": null
+      },
+      "local-regressions/reply-classic": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/local-regressions/reply-classic.json",
+          "sha256": "81971c2f8bef55c169913e769691f722247a56adcfc8f69853edcfe591640473"
+        },
+        "scope": "device-local-inbox-reply"
+      },
+      "local-regressions/reply-unicode": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/local-regressions/reply-unicode.json",
+          "sha256": "829406389d0365e9c30695f2a3f5499db93809ec1ff60bbe5c9d370704b0ffe2"
+        },
+        "scope": "device-local-inbox-reply"
+      },
+      "main-regressions/classic": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/main-regressions/classic.json",
+          "sha256": "ba0ec68492e9cb2f7b18a075a0c6fb8073aa79533f0bd73a004f309f0a7360ed"
+        },
+        "scope": "main-menu-local-mail-files-disabled-same-ssh"
+      },
+      "main-regressions/unicode": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/host/main-regressions/unicode.json",
+          "sha256": "2cc45f575d29558e8b3c9a3c70f83dd54e01aea18b1a16ecc81e687e4f978121"
+        },
+        "scope": "main-menu-local-mail-files-disabled-same-ssh"
+      }
+    },
+    "netbsd": {
+      "compatibility/default-unconfigured": {
+        "count": 2,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/compatibility/default-unconfigured.json",
+          "sha256": "62bfe7dacf23f0d28e0cd09695cc9027e12f889589311a13c2eae715309c0587"
+        },
+        "scope": "actual-unconfigured-network-and-default-native-v1-files-rpc"
+      },
+      "compatibility/files": {
+        "count": 14,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/compatibility/files.json",
+          "sha256": "a4502cbc6b70b824ebd28ba76089c2bf7581f45ebea54d2b8b0d10e4728ac4ee"
+        },
+        "scope": "same-ssh-parked-files-local-mail-restricted-sftp"
+      },
+      "local-regressions/correspondents-classic": {
+        "count": 8,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/local-regressions/correspondents-classic.json",
+          "sha256": "af690ebb428cbb567354ecae52f32dbf77fbf2ea9a12a36d670cca1cb4dcdeab"
+        },
+        "scope": "device-local-mail-correspondents"
+      },
+      "local-regressions/correspondents-unicode": {
+        "count": 8,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/local-regressions/correspondents-unicode.json",
+          "sha256": "be412530070e6222479ebe399e987f78253f1ed58e7cfb8c34c5908aee56a33d"
+        },
+        "scope": "device-local-mail-correspondents"
+      },
+      "local-regressions/inbox": {
+        "count": 14,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/local-regressions/inbox.json",
+          "sha256": "409290764c9e2c60552a927d3fb2a10eb05881079328d33143e09d7b81eb7016"
+        },
+        "scope": null
+      },
+      "local-regressions/reply-classic": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/local-regressions/reply-classic.json",
+          "sha256": "f33d57ceda649988555dacc65eddb2d6cc9e9f3deed55e5638d560128943ae00"
+        },
+        "scope": "device-local-inbox-reply"
+      },
+      "local-regressions/reply-unicode": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/local-regressions/reply-unicode.json",
+          "sha256": "042d67a1852e476086f65e1b634dd335eb176c76f3b614cd6d17c27c95ff48e7"
+        },
+        "scope": "device-local-inbox-reply"
+      },
+      "main-regressions/classic": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/main-regressions/classic.json",
+          "sha256": "b1315680cb6c97168fd8c2697f9ccbf47a265763c816fb2975f2a407d38254d4"
+        },
+        "scope": "main-menu-local-mail-files-disabled-same-ssh"
+      },
+      "main-regressions/unicode": {
+        "count": 11,
+        "result": {
+          "path": "dev-docs/evidence/menu-mail-notices/native/logs/regressions/netbsd/main-regressions/unicode.json",
+          "sha256": "03bee405c76c56baad23516e895042c07d0d49cb54b480d71c1d9d083eeddf11"
+        },
+        "scope": "main-menu-local-mail-files-disabled-same-ssh"
+      }
+    }
+  }
+}

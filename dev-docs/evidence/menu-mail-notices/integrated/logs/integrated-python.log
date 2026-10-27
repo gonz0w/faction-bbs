@@ -1,0 +1,17 @@
+....................................................................................................................................................................................................................................................................................................E................................................................................................................................................................
+======================================================================
+ERROR: test_live_loopback_listener_refuses_start (test_playground.PlaygroundTests.test_live_loopback_listener_refuses_start)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/cam/DEV/faction-bbs/tools/test_playground.py", line 131, in test_live_loopback_listener_refuses_start
+    listener.bind(('127.0.0.1', 0))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted
+
+----------------------------------------------------------------------
+Ran 453 tests in 71.961s
+
+FAILED (errors=1)
+Preview already running; data preserved.
+Roaming evidence passed: source-bound host/NetBSD, restricted SSH, component replay, recovery and cleanup; no production claim.
+Signer evidence passed: source-bound host/NetBSD qualification, preserved rejected baseline, compatibility and cleanup; no production claim.

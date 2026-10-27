@@ -9,8 +9,9 @@ file areas or its transfer service enabled.
 
 Configure the optional native client's [home-mail paths](picker-home-mail.md) and
 [encrypted home mail](online-mail.md). Select the sysop's displayed mail hotkey or
-use arrows and Enter. In the native client's local view, choose **Open** or
-**Back**. Open asks for a fresh local confirmation and hidden checkpoint unlock.
+use arrows and Enter. In the native client's local view, choose **O: Open**,
+**B: Back** or **N: Local notices**. Enter initially chooses Back. Open asks for
+a fresh local confirmation and hidden checkpoint unlock.
 An offer from the board alone cannot unlock a store or contact your home.
 
 Use the existing local inbox/history, compose and explicit acknowledgement actions.
@@ -41,10 +42,32 @@ adapters provide an explanatory main-menu return; they do not perform the shared
 native handoff or decrypt private mail on the server.
 
 Existing [parked Files mail](local-unread-mail.md) and Files/SFTP controls remain
-available through their current workflow. Notices stay off by default, local,
-stale/unknown and opt-in. This main-menu action adds no background refresh, cached
-unlock, automatic acknowledgement, private live chat or encrypted attachments.
+available through their current workflow. This main-menu action adds no background
+refresh, cached unlock, automatic acknowledgement, private live chat or encrypted
+attachments.
 It does not intercept a room draft, game, chat, transfer or terminal probe.
+
+## Local notices
+
+**N** turns notices on or off and redraws the local choice. It does not unlock
+mail, prompt for a password, contact your home or start another board exchange.
+After a toggle, Enter chooses Back again and queued input is discarded.
+
+Notices start off for each board visit. When enabled, they first show **LOCKED**
+and **unread unknown**. A successful explicit mail lock can retain only unread,
+retained-history and pending-ciphertext counts. Unread remains unknown when local
+read tracking is disabled. Snapshots are labelled **stale local snapshot**; they
+do not represent a fresh or complete home inbox. A cancelled unlock or unsuccessful
+console run clears the snapshot and leaves unread unknown. Declining the Open
+confirmation leaves it unchanged. A home refresh can fail while the unlocked local
+store remains healthy; a later graceful lock can still leave stale local counts.
+
+**L: Lock and exit** still returns directly to the BBS main menu. Select the mail
+entry again to see the retained local snapshot. The main-menu entry and Files use
+one visit-local notice setting and snapshot: the main-menu hint uses **O** to open,
+and Files uses **E**. Turning notices off clears the snapshot. Turning them on
+again shows unknown until another successful explicit lock. Reconnecting starts
+with notices off. No sender, subject, body or count is sent to the board.
 
 ## Sysop configuration
 

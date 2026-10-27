@@ -1,0 +1,152 @@
+"""One-off issue239 data assembly from explicit, hash-verified public selections.
+
+Leaves the result pending. The separately reviewed finalizer owns actual cleanup
+and final result pinning; this recipe does not claim those events occurred.
+"""
+from pathlib import Path
+import hashlib,json,re,sys
+R=Path('/Users/cam/DEV/faction-bbs');O=Path('/private/tmp/faction239-evidence-OWNED')
+C=O/'assembly-candidate';P=Path('dev-docs/evidence/menu-mail-notices');D=C/P
+sys.path.insert(0,str(R/'tools'))
+import check_menu_mail_notices_evidence as guard
+import check_correspondents_evidence as correspondents
+import check_reply_evidence as reply
+import check_menu_mail_evidence as menu
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def ref(p):return dict(path=str(p.relative_to(C)),sha256=sha(p))
+def raw(v):
+    path=Path(v['path']);assert not path.is_absolute() and '..' not in path.parts
+    p=C/path if (C/path).exists() else R/path
+    assert not p.is_symlink() and sha(p)==v['sha256'],str(path)
+    return p.read_bytes()
+def value(v):return json.loads(raw(v))
+def write(name,data):
+    p=D/name;p.parent.mkdir(parents=True,exist_ok=True)
+    p.write_text(json.dumps(data,indent=2,sort_keys=True)+'\n');return ref(p)
+
+native=json.loads((D/'native/summary.json').read_bytes())
+tooling=json.loads((D/'tooling/tooling.json').read_bytes())
+integrated=json.loads((D/'integrated/integrated.json').read_bytes())
+corrected=json.loads((D/'integrated/corrected.json').read_bytes())
+retained={}
+for package in (native,tooling,integrated,corrected):
+    for v in package['sources']:raw(v);retained[v['path']]=v
+for v in json.loads((D/'client/relocations.json').read_bytes()).values():raw(v);retained[v['path']]=v
+by_hash={v['sha256']:v for v in retained.values()}
+# Preserve current prose/policy independently of earlier immutable compiler maps.
+docs={}
+for name in ('PROJECT.md','README.md','docs/main-menu-mail.md','docs/local-unread-mail.md','dev-docs/main-menu-mail.md'):
+    h=sha(R/name);docs[name]=h
+    if h not in by_hash:
+        p=D/'policy/objects'/h;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes((R/name).read_bytes());by_hash[h]=ref(p)
+    retained[by_hash[h]['path']]=by_hash[h]
+policy_map=write('records/current-prose-and-policy.json',docs)
+assert 'One-time issue #239 oracle TDD disposition' in (R/'PROJECT.md').read_text()
+assert '6445428781' in (R/'PROJECT.md').read_text()
+# Original manifests remain unchanged; these flat maps merely resolve their names.
+stages=list(native['source_stages'])
+for package,prefix in ((tooling,'tooling-'),(integrated,'historical-integrated-'),(corrected,'corrected-integrated-')):
+    stages.extend(dict(label=prefix+s['label'],manifest=s['manifest']) for s in package['source_stages'])
+variants=json.loads((D/'client/public-candidate/variants.json').read_bytes())
+for label in ('red','actual-red','candidate1','candidate2','final'):
+    files={'crates/faction-client/src/'+name:variants[label+'-'+name]['sha256'] for name in ('main.rs','visit_mail.rs')}
+    stages.append(dict(label='client-'+label,manifest=write('records/client-'+label+'-sources.json',files)))
+base=json.loads((D/'client/public-candidate/baseline.json').read_bytes())
+stages.append(dict(label='client-baseline',manifest=write('records/client-baseline-sources.json',{name:v['sha256'] for name,v in base.items()})))
+current={name:sha(R/name) for name in guard.PRODUCTION}
+stages.append(dict(label='client-corrected-test-harness',manifest=write('records/client-corrected-harness-sources.json',current)))
+review_files={str(p.relative_to(D)):sha(p) for p in (D/'review').rglob('*.py')}
+stages.append(dict(label='review-published-source-variants',manifest=write('records/review-source-variants.json',review_files)))
+stages.append(dict(label='current-prose-and-owner-disposition',manifest=policy_map))
+# Bind unchanged regression oracles. Current network/default v1 uses the same
+# actual restricted-Files driver; it intentionally has no older-client claim.
+checks={}
+for platform,routes in value(native['records']['regressions'])['routes'].items():
+    assert set(routes)=={'compatibility/default-unconfigured','compatibility/files',
+        'local-regressions/correspondents-classic','local-regressions/correspondents-unicode',
+        'local-regressions/inbox','local-regressions/reply-classic','local-regressions/reply-unicode',
+        'main-regressions/classic','main-regressions/unicode'}
+    checks[platform]={}
+    for name,v in routes.items():
+        data=value(v);assert data['result']=='pass'
+        mode=name.rsplit('-',1)[-1]
+        if name.startswith('local-regressions/correspondents-'):
+            correspondents.route(C,v,'local',platform,mode=='unicode',set(by_hash))
+        elif name.startswith('local-regressions/reply-'):
+            reply.route(C,v,'local',platform,mode,set(by_hash))
+        elif name=='local-regressions/inbox':
+            assert data['count']==len(data['checks'])==len(reply.INBOX_CONTROLS)
+            assert set(data['checks'])==reply.INBOX_CONTROLS
+            assert data['private_fixture_removed'] is True and data['provider_contact'] is False and data['read_receipt_sent'] is False
+        elif name.startswith('main-regressions/'):
+            menu.route(data,name.endswith('/unicode'),'Darwin' if platform=='host' else 'NetBSD')
+        elif name=='compatibility/files':
+            assert data['count']==len(data['checks'])==len(reply.FILES_CONTROLS) and set(data['checks'])==reply.FILES_CONTROLS
+            assert data['scope']=='same-ssh-parked-files-local-mail-restricted-sftp'
+            assert data['same_ssh_pid_until_explicit_disconnect'] is True and data['restricted_sftp'] is True
+            assert data['privacy_scan']['matches']==data['privacy_scan']['symlinks']==0
+        else:
+            assert data['count']==len(data['checks'])==2
+            assert set(data['checks'])=={'current-network-native-v1_files_rpc_same_ssh_return','current-default-native-v1_files_rpc_same_ssh_return'}
+            assert data['scope']=='actual-unconfigured-network-and-default-native-v1-files-rpc' and data['private_mail_not_opened'] is True
+        checks[platform][name]=dict(result=v,count=data['count'],scope=data['scope'])
+compatibility=write('records/compatibility.json',dict(result='pass',routes=checks,
+    existing_oracle_source_sha256={name:sha(R/'tools'/name) for name in ('check_correspondents_evidence.py','check_reply_evidence.py','check_menu_mail_evidence.py')},
+    default_network_driver_sha256='8ee136a2a87ed097d293514bfca29dc8b70a06e8720f0b5772adc9f2387791ef'))
+# Parse current actual logs; historical e635 optional all-target runs stay historical.
+runs={}
+for name,path,scope in (
+ ('workspace','integrated/logs/final-corrected-workspace.log','workspace-release-serial'),
+ ('network','client/public-shutdown-candidate/logs/shutdown1-host-network.log','client-binary-only-network-mail'),
+ ('native','client/public-shutdown-candidate/logs/shutdown1-host-native.log','client-binary-only-native-mail'),
+ ('netbsd','native/logs/native-build03/tests-build.log','native-final03-actual-commands')):
+    p=D/path;rows=re.findall(rb'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored',p.read_bytes())
+    assert rows and all(int(f)==0 for p,f,i in rows)
+    runs[name]=dict(passed=sum(int(p) for p,f,i in rows),ignored=sum(int(i) for p,f,i in rows),log=ref(p),scope=scope)
+rust=write('records/rust.json',dict(result='pass',runs=runs,historical_full_optional_suites_not_relabelled=True))
+red=ref(D/'client/public-candidate/logs/actual-red-pty.log')
+assert b'0 passed; 2 failed' in raw(red)
+tdd=write('records/tdd.json',dict(result='pass',policy_satisfied=True,strict_tdd_complete=False,
+    captured_before_edit=True,red_exit=101,green_exit=0,actual_product_ui_red=red,
+    actual_fixed_choice_red=ref(D/'client/public-candidate/logs/actual-red-entries.log'),
+    final_corrected_product_green=ref(D/'client/public-shutdown-candidate/logs/shutdown1-host-network.log'),
+    guard_red=ref(D/'tooling/logs/binary-source-bindings-red.log'),guard_green=ref(D/'tooling/logs/runtime-composition-green.log'),
+    original_five_test_probe_interface_red=dict(kind='missing-module',loader_failures=1,executed_assertion_bodies=0),
+    historical_gap=dict(scope='already-green stale O/E notice oracle correction',original_record=283,
+        pre_correction_red_available=False,oracle_and_expected_bytes_changed_together=True,
+        later_reds_qualify_only_their_own_changes=True,retrospective_red_claimed=False),
+    owner_decision=dict(url='https://github.com/gonz0w/faction-bbs/issues/239#issuecomment-6445428781',
+        scope='one stale O/E verification-helper correction only',one_time=True,other_gates_unchanged=True,
+        current_project_source=by_hash[docs['PROJECT.md']]),
+    limits=['Raw ciphertext equality was an exact-source in-memory assertion; retained logical inspections agree.',
+            'Board-file scan response survives in the source-bound route verdict, not an independent historical filesystem rescan.']))
+# Freeze this exact one-off assembly recipe before its output is selected.
+recipe=D/'integration/assemble.py';recipe.write_bytes(Path(__file__).read_bytes())
+stages.append(dict(label='assembly-recipe',manifest=write('records/assembly-source.json',{'integration/assemble.py':sha(recipe)})))
+# Sources include immutable selected payload and verified prior source objects;
+# the pending/final result and later selection-bound proofs are derived separately.
+for p in D.rglob('*'):
+    if p.is_file() and p.name not in ('results.draft.json','results.json'):
+        v=ref(p);retained[v['path']]=v
+available={v['sha256'] for v in retained.values()}
+for v in retained.values():raw(v)
+assert len({s['label'] for s in stages})==len(stages)
+for stage in stages:assert all(h in available for h in value(stage['manifest']).values()),stage['label']
+finals={s['label']:value(s['manifest']) for s in stages if s['label'] in ('host-final','native-final')}
+for files in finals.values():assert all(files[name]==h for name,h in current.items())
+for kind,routes in native['routes'].items():
+    for key,v in routes.items():guard.route(C,v,kind,key,available)
+record=dict(schema=1,issue=239,result='pending',profile=guard.PROFILE,claims={k:False for k in guard.CLAIMS},
+    production=current,sources=sorted(retained.values(),key=lambda v:v['path']),
+    prior_records=[dict(path='dev-docs/evidence/'+folder+'/results.json',sha256=sha(R/'dev-docs/evidence'/folder/'results.json'))
+        for folder in ('main-menu-mail','local-unread-mail','mail-correspondents')],
+    source_stages=stages,routes=native['routes'],records=dict(native['records'],rust=rust,tdd=tdd,compatibility=compatibility))
+write('results.draft.json',record)
+manifest={str(p.relative_to(C)):sha(p) for p in sorted(D.rglob('*')) if p.is_file() and
+    p.name not in ('results.draft.json','results.json','candidate-manifest.json','private-capture-review.json','publication-scan-final.json','owned-stop-result.json','cleanup.json')}
+selection=write('integration/candidate-manifest.json',manifest)
+print(json.dumps(dict(result='pending',policy_satisfied=True,strict_tdd_complete=False,
+    draft=ref(D/'results.draft.json'),selection=selection,payload_files=len(manifest),source_refs=len(retained),
+    source_stages=len(stages),rust_counts={k:[v['passed'],v['ignored']] for k,v in runs.items()},
+    scan_stop_cleanup_and_full_validation_not_claimed=True),indent=2))

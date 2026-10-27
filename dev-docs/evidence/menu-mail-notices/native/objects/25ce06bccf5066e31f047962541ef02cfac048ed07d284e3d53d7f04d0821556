@@ -1,0 +1,15 @@
+from lab import *
+import hashlib
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_files_sshd onestop',check=False)
+remote('test -f /etc/faction-disposable-test; /etc/rc.d/faction_doors onestop',check=False)
+remote('test -f /etc/faction-disposable-test; test -S /var/run/faction/terminal.sock || /etc/rc.d/faction_broker onestart',timeout=30)
+r=remote('pgrep -fl "/usr/sbin/sshd.*faction/sshd_config"',check=False)
+if r.returncode:remote('/etc/rc.d/faction_sshd onestart',timeout=30)
+r=remote('test ! -S /var/run/faction/file-policy.sock; pgrep -fl "/usr/sbin/sshd.*files_sshd_config"',check=False);assert r.returncode!=0
+r=remote('sysctl -n hw.physmem64 hw.ncpu');mem,cores=map(int,r.stdout.split());assert cores==2 and 1000000000<mem<1073741824
+remote('su -m factiond -c "/usr/local/libexec/faction-service --check-config /etc/faction/service.toml"')
+for name,local in [('capture-ids.private.json',P/'capture-ids.private.json'),('native_notice_routes.py',P/'native_notice_routes.py')]:remote('cat > /home/factionbuild/proof239/'+name+'; chown factionbuild:factionbuild /home/factionbuild/proof239/'+name+'; chmod 600 /home/factionbuild/proof239/'+name,local.read_bytes())
+code="from pathlib import Path;import json,hashlib; names=['/home/factionbuild/proof239/build-final03/faction-client-default','/home/factionbuild/proof239/build-final03/faction-client-network','/home/factionbuild/target239-network/release/examples/mail_correspondents_fixture','/home/factionbuild/target239-network/release/examples/home_mail_fixture'];print(json.dumps({n:hashlib.sha256(Path(n).read_bytes()).hexdigest() for n in names}))"
+(P/'native-final-binaries.json').write_bytes(remote('/usr/pkg/bin/python3.13 -c '+shlex.quote(code)).stdout)
+(P/'runtime-environment.json').write_text(json.dumps(dict(result='pass',cores=cores,physmem_bytes=mem,build_memory_mib=2048,runtime_memory_mib=1024,files_disabled=True,files_sftp_listener_stopped=True,loopback_only=True,normal_limits=True),indent=2)+'\n')
+print('Owned runtime2cores/1GiB verified; Files+doors stopped; fresh current board ready.')

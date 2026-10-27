@@ -1,0 +1,9 @@
+{
+  "main.rs_sha256": "e6351493ab34034459ceea4054876f392fc70e5318b1eb62629b28dee688a4a3",
+  "saved_source": "source/final-main.rs",
+  "native_log": "logs/native-pty-shutdown-red.log",
+  "native_log_sha256": "1b4e3c5a2919836592fdb84e49971495b767f63e09dcb4a62c4596e91a9a0190",
+  "native_source_map": "/private/tmp/faction239-native-OWNED/sources/native-final01-before.json",
+  "actual_result": "57 passed; 5 failed; 2 ignored; every main_mail_pty test reached expected UI steps and failed waiting for worker completion at line1164",
+  "interpretation": "Shutdown drain deadlock suspected: helper stops consuming PTY output before Terminal destructor/descriptor close; closing master lets worker.join complete. Native candidate proof pending."
+}

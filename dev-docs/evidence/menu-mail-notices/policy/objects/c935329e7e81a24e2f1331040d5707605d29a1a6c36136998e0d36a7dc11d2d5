@@ -1,0 +1,51 @@
+# Main-menu local mail notices: software evidence
+
+Issue [#239](https://github.com/gonz0w/faction-bbs/issues/239) covers the
+visit-local notice choice described in the [member guide](../../../docs/main-menu-mail.md)
+and [technical handoff](../../main-menu-mail.md). This record concerns manual,
+locked or stale local snapshots; it does not establish that a home is current.
+
+## Observations
+
+Source-bound host and NetBSD classic and Unicode main-menu routes exercised the
+choice with Files disabled. They observed a real TCP refusal at the home, unknown
+status after wrong or cancelled unlock, a stale snapshot after successful graceful
+lock, consent clearing and re-enabling as unknown, and notices off on a new visit.
+The routes returned to the same SSH session. Saved logical mail state before and
+after was equal; ciphertext equality was checked in memory by the executed source.
+The source-bound board I/O and database, store and log scans found no selected
+private markers. These scans are not an independent historical rescan of board
+files.
+
+Separate host and NetBSD shared Files routes observed the same visit-local consent
+and snapshot across both entry points. Existing inbox, correspondents, reply and
+main-menu compatibility controls returned successfully on both systems. The
+[result record](results.json) identifies the selected sources, routes and other
+observations. The offline [evidence guard](../../../tools/check_menu_mail_notices_evidence.py)
+validates saved route, build, source and cleanup records; it does not rerun the
+original sessions. The guarded [finalizer](integration/finalize.py) requires
+private original-capture review and a scan of the same publication selection.
+Acceptance of the final record also requires actual stop and removal of owned
+fixtures and proof that the saved playground remains intact.
+
+## Preserved failures and limits
+
+The first native raw-PTY tests reached their visible steps but timed out during
+test-worker teardown. The corrected test harness drains shutdown output while
+waiting; it retains the original assertions and deadline. The original failure and
+both source variants are preserved. An initial route probe also failed because its
+protocol counter expected LF while the real PTY sent CR. Its failure and the
+substantive correction are separate from product behavior RED.
+
+The original five-test probe's source was recovered from independently checked
+contemporaneous literal session inputs. Its missing-module RED was one failed
+loader test, not five executed assertion bodies. A later O/E edit is not a
+retroactive RED. Preservation gaps and rejected setups do not establish a
+behavioral failure.
+
+Original traces and generated private material require private review; raw
+captures, credentials, keys and mail stores are not publication material. The
+final record must report the actual scan and cleanup receipts before claiming
+publication or teardown. The saved owner playground remains stopped and intact.
+These are bounded software-fixture observations, not physical hardware,
+capacity, security certification, graphical, production or routing-quality claims.

@@ -1,0 +1,121 @@
+[
+  {
+    "label": "pre-native-capture",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/pre-native-capture.json",
+      "sha256": "85ee21571705e6a3e8d4ce0277ee31fb67ca104ec0c6e376f64eeb349a6268a5"
+    }
+  },
+  {
+    "label": "native-failed01",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/native-failed01.json",
+      "sha256": "4b51a8f775b35c2358c2d15726b9635f697d0de6ebd850a65fe6d1e9ecbc6504"
+    }
+  },
+  {
+    "label": "native-targeted02",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/native-targeted02.json",
+      "sha256": "a2607cb35e1a5b61dbf9accb2e01556901825d90265d577eb8559c11d0b9241a"
+    }
+  },
+  {
+    "label": "native-compiled03",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/native-compiled03.json",
+      "sha256": "b14fb943b770c53d9ecf3810f490940f81aec27b33017083b8a68a8029a5bc66"
+    }
+  },
+  {
+    "label": "host-compiled01",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/host-compiled01.json",
+      "sha256": "075dfddcf95d253e2b9c470533fda31b838fa852a9e078fe0171912a2047b218"
+    }
+  },
+  {
+    "label": "host-compiled02",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/host-compiled02.json",
+      "sha256": "f300641535c4fc4be3091896dbca064756e62bb25cae28fa1d524e73ea99bd37"
+    }
+  },
+  {
+    "label": "host-final",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/host-final.json",
+      "sha256": "934ca39bc14b6ffd6bf7c3fc824a9c07c76133901a42e8fd139dadc0a15b538e"
+    }
+  },
+  {
+    "label": "native-final",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/native-final.json",
+      "sha256": "dc9ab638b678a2f25fb8b902a9b497f17240484a665650fcd31d56ac7283eb14"
+    }
+  },
+  {
+    "label": "runtime-code01",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/runtime-code01.json",
+      "sha256": "0e947fbe4e92451e1758d455d0a2791cfa9525b87a45e3efdef08ea210cb9784"
+    }
+  },
+  {
+    "label": "runtime-code02",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/runtime-code02.json",
+      "sha256": "5a2cef12cf710eab6d96f65222ea70d6d4b10e84351d362045235876be16d566"
+    }
+  },
+  {
+    "label": "runtime-code03",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/runtime-code03.json",
+      "sha256": "aedbd5bb36b4eaf273f23d88c84e8c223eb44a6d00b8003c53a449fed086e507"
+    }
+  },
+  {
+    "label": "probe-association-red",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/probe-association-red.json",
+      "sha256": "df6e6da841083dd1e27e737f6370d9778119c1de357811c4841794a647dd8186"
+    }
+  },
+  {
+    "label": "probe-binary-binding-red",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/probe-binary-binding-red.json",
+      "sha256": "e29c5d4bfdc6e2afbf97ebf336719d324ad89dea6b977920dd6cf19965537928"
+    }
+  },
+  {
+    "label": "probe-CR-red",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/probe-CR-red.json",
+      "sha256": "88736fecb24a2fbfaa14cc47b54414be03062ddbdf7b2e70bc8a0ef8b6287046"
+    }
+  },
+  {
+    "label": "probe-original-interface-red",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/probe-original-interface-red.json",
+      "sha256": "25a3025bef3584bfde0119d84fce7baafa84f78e2eb25f02772126d0cf645990"
+    }
+  },
+  {
+    "label": "probe-original-first-green",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/probe-original-first-green.json",
+      "sha256": "bbb23d28af631ddb04e9b75e14f87c4c3d766c0959e049cdf3da2ada8804888e"
+    }
+  },
+  {
+    "label": "orchestration-final",
+    "manifest": {
+      "path": "dev-docs/evidence/menu-mail-notices/native/maps/orchestration-final.json",
+      "sha256": "66fa9361651fb58ee1da6684f002f63338a6c9ebf7e689d73f011b8167b55b3a"
+    }
+  }
+]

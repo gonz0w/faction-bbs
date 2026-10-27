@@ -1,0 +1,114 @@
+[
+  {
+    "log": "logs/red-pty.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "main_mail_pty",
+      "--",
+      "--nocapture"
+    ],
+    "returncode": 101
+  },
+  {
+    "log": "logs/actual-red-pty.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "main_mail_pty",
+      "--",
+      "--nocapture"
+    ],
+    "returncode": 101
+  },
+  {
+    "log": "logs/actual-red-entries.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "main_menu_mail_offers_exact_fixed_local_choices",
+      "--",
+      "--nocapture"
+    ],
+    "returncode": 101
+  },
+  {
+    "log": "logs/candidate1-default.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client"
+    ],
+    "returncode": 101
+  },
+  {
+    "log": "logs/candidate2-default.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--bin",
+      "faction-client",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0
+  },
+  {
+    "log": "logs/final-default.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0
+  },
+  {
+    "log": "logs/final-native.log",
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "-p",
+      "faction-client",
+      "-p",
+      "faction-omemo",
+      "--features",
+      "faction-client/native-mail",
+      "--all-targets",
+      "--release",
+      "--locked",
+      "--",
+      "--test-threads=1"
+    ],
+    "returncode": 0
+  }
+]

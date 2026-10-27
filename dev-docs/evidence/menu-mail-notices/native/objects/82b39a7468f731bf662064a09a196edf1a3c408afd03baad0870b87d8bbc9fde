@@ -1,0 +1,20 @@
+from lab import *
+import hashlib,tarfile
+names=set(json.loads((R/'dev-docs/evidence/mail-correspondents/native/maps/native-final01-before.json').read_text()))
+names.update(['tools/probe_menu_mail_notices.py','tools/test_probe_menu_mail_notices.py'])
+manifest={};source=P/'source-final01';source.mkdir(mode=0o700)
+for name in sorted(names):
+ data=(R/name).read_bytes();h=hashlib.sha256(data).hexdigest();(P/'objects'/h).write_bytes(data);manifest[name]=h
+ d=source/name;d.parent.mkdir(parents=True,exist_ok=True);d.write_bytes(data)
+assert manifest['crates/faction-client/src/main.rs'].startswith('e635') and manifest['crates/faction-client/src/visit_mail.rs'].startswith('164b')
+(P/'sources/native-final01-before.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
+archive=P/'native-source-final01.tar.gz'
+with tarfile.open(archive,'w:gz') as t:
+ for name in sorted(manifest):t.add(source/name,arcname=name,recursive=False)
+script=(P/'orchestration/native_build03.py').read_bytes().replace(b'source23501',b'source23901').replace(b'proof235',b'proof239').replace(b'target235',b'target239').replace(b'cargo233',b'cargo239').replace(b'build-final03',b'build-final01')
+(P/'native_build01.py').write_bytes(script);(P/'objects'/hashlib.sha256(script).hexdigest()).write_bytes(script)
+remote('test -f /etc/faction-disposable-test; test ! -e /home/factionbuild/source23901; install -d -o factionbuild -g factionbuild -m 700 /home/factionbuild/source23901; tar -xzf - -C /home/factionbuild/source23901; chown -R factionbuild:factionbuild /home/factionbuild/source23901',archive.read_bytes(),180)
+remote('cat > /home/factionbuild/proof239/expected-source01.json; chown factionbuild:factionbuild /home/factionbuild/proof239/expected-source01.json',(P/'sources/native-final01-before.json').read_bytes())
+remote('cat > /home/factionbuild/proof239/native-build01.py; chown factionbuild:factionbuild /home/factionbuild/proof239/native-build01.py',script)
+remote("su - factionbuild -c 'nohup /usr/pkg/bin/python3.13 /home/factionbuild/proof239/native-build01.py > /home/factionbuild/proof239/build-launch01.log 2>&1 < /dev/null &'",timeout=10)
+print('Frozen',len(manifest),'inputs; native build launched against verified owned cache.2cores/2GiB/jobs2.')

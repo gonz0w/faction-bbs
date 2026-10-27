@@ -1,0 +1,73 @@
+from pathlib import Path
+import hashlib,json,shutil,re,os
+R=Path('/Users/cam/DEV/faction-bbs');P=Path('/private/tmp/faction239-native-OWNED');Q=P/'public-staging';Q.mkdir(mode=0o700);PUB='dev-docs/evidence/menu-mail-notices/native/'
+os.umask(0o077)
+def digest(data):return hashlib.sha256(data).hexdigest()
+def put(name,data):
+ f=Q/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_bytes(data if isinstance(data,bytes) else data.encode());return dict(path=PUB+name,sha256=digest(f.read_bytes()))
+def copy(name,source):return put(name,Path(source).read_bytes())
+def ref(name):return dict(path=PUB+name,sha256=digest((Q/name).read_bytes()))
+def obj(value):return (json.dumps(value,sort_keys=True,indent=2)+'\n').encode()
+N=R/'dev-docs/evidence/mail-correspondents/native';reuse=json.loads((N/'reuse.json').read_text());lookup={h:dict(path=x['repository_path'],sha256=h) for h,x in reuse.items()}
+for f in (N/'objects').iterdir():
+ if f.is_file() and re.fullmatch('[0-9a-f]{64}',f.name):lookup[f.name]=dict(path=str(f.relative_to(R)),sha256=f.name)
+maps={
+ 'pre-native-capture':'baseline.json','native-failed01':'native-final01-before.json','native-targeted02':'native-final02-before.json',
+ 'native-compiled03':'native-final03-before.json','host-compiled01':'host-compile-before.json','host-compiled02':'host-compile-before02.json',
+ 'host-final':'host-runtime-final.json','native-final':'native-runtime-final.json','runtime-code01':'runtime-code01.json',
+ 'runtime-code02':'runtime-code02.json','runtime-code03':'runtime-code03.json','probe-association-red':'probe-association-red.json',
+ 'probe-binary-binding-red':'probe-binary-binding-red.json','probe-CR-red':'probe-CR-red.json'}
+stages=[];allhashes=set()
+for label,name in maps.items():
+ data=(P/'sources'/name).read_bytes();m=json.loads(data);allhashes.update(m.values());stages.append(dict(label=label,manifest=put('maps/'+label+'.json',data)))
+extra={
+ 'probe-original-interface-red':{'tools/test_probe_menu_mail_notices.py':'ffe873a3fd04776f2c60bde59236156f4025de73803f8d21572d7ba6cf2732a2'},
+ 'probe-original-first-green':{'tools/test_probe_menu_mail_notices.py':'ffe873a3fd04776f2c60bde59236156f4025de73803f8d21572d7ba6cf2732a2','tools/probe_menu_mail_notices.py':'639e3e238d6ef1823e170a2d7c27dd8b32c3ff9dea0e7d839b2cc9f4dab6f2aa'}}
+executed=['boot.py','lab.py','serial-controller.py','prepare_locked_cache.py','freeze_and_build.py','native_build01.py','configure239.py','freeze_candidate02.py','native_targeted02.py','freeze_and_build03.py','native_build03.py','build_host_pins.py','build_host_pins02.py','prepare_runtime239.py','prepare_runtime23902.py','prepare_runtime23903.py','collect_and_reboot23903.py','runtime_ready239.py','host_notice_routes.py','host_notice_routes02.py','native_notice_routes02.py','local_regressions239.py','main_regressions239.py','enable_files239.py','shared_notice239.py','files_driver.py','files_v1.py','owned_fixture_cleanup.py','compatibility239.py','collect_native_primary_private.py','collect_native_shared_private.py']
+extra['orchestration-final']={}
+for name in executed:
+ data=(P/name).read_bytes();h=digest(data);(P/'objects'/h).write_bytes(data);extra['orchestration-final']['orchestration/'+name]=h
+for label,m in extra.items():allhashes.update(m.values());stages.append(dict(label=label,manifest=put('maps/'+label+'.json',obj(m))))
+sources=[];usedreuse={}
+for h in sorted(allhashes):
+ if h in lookup:
+  record=lookup[h];assert digest((R/record['path']).read_bytes())==h;sources.append(record);usedreuse[h]=dict(repository_path=record['path'],sha256=h)
+ else:
+  data=(P/'objects'/h).read_bytes();assert digest(data)==h;sources.append(put('objects/'+h,data))
+put('reuse.json',obj(usedreuse));put('source-stages.json',obj(stages));put('sources.json',obj(sources))
+for name in ['probe-interface-red.log','probe-unit-green01.log','probe-association-red.log','probe-association-green.log','probe-binary-binding-red.log','probe-binary-binding-green.log','probe-CR-red.log','probe-CR-green.log','host-network-build02.log','host-default-build02.log','native-launch03.log','runtime-helper-stage03.log','runtime-reboot03.log','runtime-ready23902.log','host-build-pins02.log','setup-write-failure01.log','boot01.log','boot02.log']:
+ copy('logs/'+name,P/'logs'/name)
+for name in ['build-result.json','source-observed.json','source-after.json','server-build.log','default-build.log','network-build.log','tests-build.log']:copy('logs/native-build03/'+name,P/'native-build03'/name)
+for name in ['build-result.json','source-observed.json','server-build.log','default-build.log','network-build.log','tests-build.log']:copy('logs/native-failed01/'+name,P/'native-build-failed01'/name)
+for name in ['result.json','source-before.json','source-after.json','targeted.log']:copy('logs/native-targeted02/'+name,P/'native-targeted02'/name)
+for name in ['recovery-receipt.json','recovery-independent-verification.json','original-session-records-selected.jsonl','original-implementation-and-hint-records-selected.jsonl','recovered-original-tool-input-0181eb.txt','recovered-original-tool-input-9511fa.txt','recovered-original-five-test-source.py']:copy('logs/provenance/'+name,P/'sources'/name)
+for name in ['cache-preparation-proof.json','locked-download-receipts.json','host-build-results02.json','host-network-binaries02.json','host-default-binaries02.json','native-final-binaries.json','runtime-environment.json','server-config-proof.json','files-regression-environment.json','capture-id-freeze02.json']:copy('logs/'+name,P/name)
+routes={'main':{},'shared':{}};associations={'result':'pass','routes':{'main':{},'shared':{}}}
+routepaths={'main':{'host_classic':P/'host-main02/classic.json','host_unicode':P/'host-main02/unicode.json','netbsd_classic':P/'native-main02/classic.json','netbsd_unicode':P/'native-main02/unicode.json'},'shared':{'host':P/'shared-host.json','netbsd':P/'shared-netbsd.json'}}
+captures=list(P.glob('menu-notices-OWNED-*/private-input-association.json'))+list((P/'native-primary-private').glob('*/private-input-association.json'))+list((P/'native-shared-private').glob('*/private-input-association.json'))
+for kind,entries in routepaths.items():
+ for key,path in entries.items():
+  result=json.loads(path.read_text());assert result['result']=='pass';routes[kind][key]=copy('logs/routes/'+kind+'-'+key+'.json',path);copy('logs/routes/'+kind+'-'+key+'.raw.log',path.with_suffix('.raw.log'))
+  candidates=[f.parent for f in captures if json.loads(f.read_text())['capture_id']==result['capture_id']];assert len(candidates)==1;root=candidates[0]
+  initial=json.loads((root/'private-input-association.json').read_text());start=json.loads((root/'trace-input-association.private.json').read_text());final=json.loads((root/'capture-result-association.private.json').read_text());assert final['result_sha256']==digest(path.read_bytes())
+  assert initial['marker_set_sha256']==start['marker_file_sha256_at_trace_start']==digest((root/'private-markers.json').read_bytes())
+  assert initial['file_scan_input_sha256']==start['scan_input_sha256_at_trace_start']==digest((root/'board-file-scan-input.private.json').read_bytes())
+  assert result['private_input_hashes']['trace_sha256']==digest((root/'board-io.private.log').read_bytes())
+  match={k:result[k] for k in ['capture_id','source_sha256','client_binary_sha256','fixture_binary_sha256','profile_sha256','private_input_hashes']};match.update(result_sha256=digest(path.read_bytes()),generated_before_capture=initial['generated_before_capture'],input_trace_unchanged=True,pre_input_record_sha256=digest((root/'private-input-association.json').read_bytes()),trace_input_record_sha256=digest((root/'trace-input-association.private.json').read_bytes()),result_association_record_sha256=digest((root/'capture-result-association.private.json').read_bytes()),marker_file_sha256_at_trace_start=start['marker_file_sha256_at_trace_start'],scan_input_sha256_at_trace_start=start['scan_input_sha256_at_trace_start']);associations['routes'][kind][key]=match
+put('records/associations.json',obj(associations))
+overrides={n:digest((R/n).read_bytes()) for n in ['tools/probe_menu_mail_notices.py','tools/test_probe_menu_mail_notices.py']}
+hostbins=json.loads((P/'host-network-binaries02.json').read_text());nativebins=json.loads((P/'native-final-binaries.json').read_text());builds={'result':'pass','platforms':{}}
+for platform,label,compiled,client,fixture,log in [('host','host-final','host-compiled02',hostbins['faction-client'],hostbins['mail_correspondents_fixture'],'logs/host-network-build02.log'),('netbsd','native-final','native-compiled03',nativebins['/home/factionbuild/proof239/build-final03/faction-client-network'],nativebins['/home/factionbuild/target239-network/release/examples/mail_correspondents_fixture'],'logs/native-build03/network-build.log')]:
+ runtime=json.loads((Q/'maps'/f'{label}.json').read_text());raw=json.loads((Q/'maps'/f'{compiled}.json').read_text());delta={k:v for k,v in runtime.items() if raw.get(k)!=v};assert set(delta)<=set(overrides)
+ builds['platforms'][platform]=dict(source_manifest_sha256=ref(f'maps/{label}.json')['sha256'],compiled_manifest=ref(f'maps/{compiled}.json'),runtime_overrides=delta,client_binary_sha256=client,fixture_binary_sha256=fixture,build_source_match=True,build_log=ref(log))
+put('records/builds.json',obj(builds))
+files=json.loads((Q/'maps/native-final.json').read_text());env=json.loads((P/'runtime-environment.json').read_text());put('records/native.json',obj(dict(result='pass',files=files,all_source_match=True,source_count=len(files),compile_memory_mib=2048,runtime_physmem=env['physmem_bytes'],cores=2,compiler_inputs=ref('maps/native-compiled03.json'),interpreted_runtime_overrides=overrides,capacity_claim=False,physical_hardware=False)))
+regressions={}
+for platform,prefix in [('host',''),('netbsd','native-')]:
+ regressions[platform]={}
+ for category,names in [('local-regressions',['correspondents-classic','correspondents-unicode','inbox','reply-classic','reply-unicode']),('main-regressions',['classic','unicode']),('compatibility',['files','default-unconfigured'])]:
+  for name in names:
+   path=P/(prefix+category)/(name+'.json');data=json.loads(path.read_text());assert data['result']=='pass';regressions[platform][category+'/'+name]=copy('logs/regressions/'+platform+'/'+category+'/'+name+'.json',path);copy('logs/regressions/'+platform+'/'+category+'/'+name+'.raw.log',path.with_suffix('.raw.log'))
+put('records/regressions.json',obj(dict(result='pass',routes=regressions)))
+put('summary.json',obj(dict(result='pass',issue=239,source_stages=stages,sources=sources,routes=routes,records={n:ref('records/'+n+'.json') for n in ['associations','builds','native','regressions']},raw_private_captures_included=False,private_roots_retained_for_lead=True,requested_role='temper_implementer',requested_model='gpt-6.1-sol',requested_effort='high',actual_backend_routing='unverified',native_tests_passed=283,native_tests_ignored=5,source_preservation_recovery='Original5test source recovered verbatim from independently observed original session records; no pre-edit file hash. Loader RED was1failed import, not5executed tests. Later helper/binary/CR REDs independently preserved.')))
+manifest={str(f.relative_to(Q)):digest(f.read_bytes()) for f in Q.rglob('*') if f.is_file() and f.name!='manifest.json'};put('manifest.json',obj(manifest));print('Explicit public native candidate:',len(manifest),'files,',len(sources),'source refs,',len(usedreuse),'verified reusedobjects.')

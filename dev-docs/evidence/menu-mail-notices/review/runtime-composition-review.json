@@ -1,0 +1,35 @@
+{
+  "review": "separate compiled-source/runtime-Python composition delta audit",
+  "time_utc": "2026-10-27T14:38:42Z",
+  "sources": {
+    "tools/check_menu_mail_notices_evidence.py": "d3b118709a66fe08bbe0aaf2abbda21648041ea1b8a7287db9f13b67d0c2b724",
+    "tools/test_menu_mail_notices_evidence.py": "62e693c9d3f1130130457b00416f48bf1c8d3736aff0a6763bc9ccaea8f30423",
+    "dev-docs/evidence/menu-mail-notices/integration/finalize.py": "590fb3f1fa153817abb380c6e9334c78cb6cf49aaf07b85ce0d400b12e833eed"
+  },
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools",
+    "-p",
+    "test_menu_mail_notices_evidence.py",
+    "-v"
+  ],
+  "returncode": 0,
+  "log_sha256": "0a4deed05666ce087e09449dcaf89437955f78634ac07568abbb82cb36d9908d",
+  "preserved_reds": {
+    "runtime-composition-red.log": "fe4027c02b09b5c2d205e2d3a07da7966a056f1f9b8b6ef4eb70cb11e4984fbe",
+    "runtime-composition-coherent-red.log": "d2b137125a3a25f3e0155959cdf5c4d935cba57a772ed626f1bdea660ac31ebe",
+    "runtime-composition-green.log": "a192fb149b01873c3ecdb2391bcbce111c5961a2142c82900ca4a430bfb98058"
+  },
+  "findings": [],
+  "observed_semantics": "Compiled manifest retains all original available source bytes; runtime superset, exact override delta and only two interpreted notice-probe Python paths; main/visit identical to compiled sources.",
+  "limits": [
+    "Runtime capture original audit and actual selection/stop/cleanup pending"
+  ],
+  "repository_edits": false,
+  "no_finalizer_execution": true
+}

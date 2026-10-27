@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "-p",
+    "faction-client",
+    "--features",
+    "network-mail",
+    "--bin",
+    "faction-client",
+    "main_mail_pty",
+    "--",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 9.734615512000119
+}

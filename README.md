@@ -118,7 +118,10 @@ The protocols have separate jobs:
 
 Sysops can add an optional [main-menu encrypted home-mail entry](docs/main-menu-mail.md).
 The native client unlocks locally and returns to the same board visit; ordinary
-SSH keeps an explanatory fallback, and Files/SFTP need not be enabled.
+SSH keeps an explanatory fallback, and Files/SFTP need not be enabled. In the
+native entry, **N: Local notices** opts into locked, stale device-local counts for
+that visit. The same setting applies in Files; enabling it never unlocks mail or
+contacts a home server.
 The [local inbox](docs/local-mail-inbox.md) includes a device-local correspondent
 picker for browsing one retained account/device at a time. The manual inbox also
 offers deliberate replies to a selected received message; queueing stays on the
