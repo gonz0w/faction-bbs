@@ -1,7 +1,12 @@
 //! Experimental member-only atomic OMEMO checkpoints. No transport or UI unlock authority.
 use crate::mail_data::{Data, address, hex, invalid, unhex};
 use crate::mail_vault::{Store, Vault, kdf, open, random, seal, valid};
-use faction_omemo::{Bundle, Device, Message, sce};
+use faction_omemo::{
+    Bundle, Device, Message,
+    attachment::{self, Descriptor},
+    blob::MAX_BLOB_BYTES,
+    sce,
+};
 use rustix::fs::{self, AtFlags, Mode, OFlags};
 use sha2::{Digest, Sha256};
 use std::{
@@ -14,6 +19,7 @@ const MAGIC: &[u8; 8] = b"FACTVLT2";
 const SCHEMA: &[u8; 8] = b"FACTCP02";
 const ARCHIVE_SCHEMA: &[u8; 8] = b"FACTCP03";
 const READ_SCHEMA: &[u8; 8] = b"FACTCP04";
+const ATTACHMENT_SCHEMA: &[u8; 8] = b"FACTCP05";
 const NAME: &str = "mail.fkv";
 const HEADER: usize = 184;
 const PREFIX: usize = 208;
@@ -59,6 +65,33 @@ fn num(out: &mut Vec<u8>, n: u32) {
 fn field(out: &mut Vec<u8>, raw: &[u8]) {
     num(out, raw.len() as u32);
     out.extend_from_slice(raw);
+}
+fn checked_descriptor(descriptor: &Descriptor) -> io::Result<()> {
+    if descriptor.size > MAX_BLOB_BYTES as u64 {
+        return Err(invalid());
+    }
+    native(descriptor.validate())
+}
+// Canonical private descriptor fields; no random XML padding or secret formatting.
+fn descriptor_fields(out: &mut Vec<u8>, descriptor: &Descriptor) {
+    field(out, descriptor.name.as_bytes());
+    field(out, descriptor.media_type.as_bytes());
+    out.extend_from_slice(&descriptor.size.to_be_bytes());
+    out.extend_from_slice(&*descriptor.hash);
+    out.extend_from_slice(&*descriptor.key);
+    out.extend_from_slice(&*descriptor.iv);
+    field(out, descriptor.locator.as_bytes());
+}
+fn copy_descriptor(descriptor: &Descriptor) -> Descriptor {
+    Descriptor {
+        name: descriptor.name.clone(),
+        media_type: descriptor.media_type.clone(),
+        size: descriptor.size,
+        hash: descriptor.hash.clone(),
+        key: descriptor.key.clone(),
+        iv: descriptor.iv.clone(),
+        locator: descriptor.locator.clone(),
+    }
 }
 impl Wire {
     fn validate(&self) -> io::Result<()> {
@@ -112,6 +145,7 @@ pub struct Record {
     operation: [u8; 16],
     frame: [u8; 32],
     intent: [u8; 32],
+    attachment: Option<Descriptor>,
 }
 /// Counts from retained authenticated state on this device only. `None` means
 /// read tracking is disabled, never zero unseen mail at a home server.
@@ -131,6 +165,7 @@ pub struct Inspection<'a> {
     pub expires: u64,
     pub history_only: bool,
     pub started: bool,
+    pub attachments_enabled: bool,
     pub archive_enabled: bool,
     pub archive_cursor_present: bool,
     pub peer: Option<PeerInspection<'a>>,
@@ -148,6 +183,11 @@ pub struct OutboxInspection<'a> {
     pub sent_at: u64,
 }
 impl Record {
+    /// Authenticated retained metadata for trusted member-device code. The locator
+    /// is inert; this does not authorize any fetch or filename-derived save.
+    pub fn attachment(&self) -> Option<&Descriptor> {
+        self.attachment.as_ref()
+    }
     /// Stable authenticated received-frame identity for a trusted local read
     /// decision. Sent records cannot become unread or acquire a read receipt.
     pub fn received_id(&self) -> Option<[u8; 32]> {
@@ -209,6 +249,7 @@ struct State {
     outbox: Vec<Pending>,
     archive: Option<ArchiveCheckpoint>,
     read: Option<Vec<bool>>,
+    attachments: bool,
 }
 struct Reader<'a>(&'a [u8]);
 impl<'a> Reader<'a> {
@@ -252,6 +293,19 @@ impl<'a> Reader<'a> {
             .map_err(|_| invalid())?
             .into())
     }
+    fn descriptor(&mut self) -> io::Result<Descriptor> {
+        let descriptor = Descriptor {
+            name: Zeroizing::new(self.string(255)?),
+            media_type: Zeroizing::new(self.string(127)?),
+            size: self.big()?,
+            hash: Zeroizing::new(self.array()?),
+            key: Zeroizing::new(self.array()?),
+            iv: Zeroizing::new(self.array()?),
+            locator: Zeroizing::new(self.string(512)?),
+        };
+        checked_descriptor(&descriptor)?;
+        Ok(descriptor)
+    }
     fn wire(&mut self) -> io::Result<Wire> {
         Ok(Wire {
             namespace: self.string(32)?,
@@ -289,6 +343,7 @@ impl State {
             outbox: vec![],
             archive: None,
             read: None,
+            attachments: false,
         })
     }
     fn active(&self, now: u64) -> io::Result<&Peer> {
@@ -313,7 +368,9 @@ impl State {
     fn encode(&self) -> io::Result<Zeroizing<Vec<u8>>> {
         self.validate()?;
         let mut out = Zeroizing::new(
-            if self.read.is_some() {
+            if self.attachments {
+                ATTACHMENT_SCHEMA
+            } else if self.read.is_some() {
                 READ_SCHEMA
             } else if self.archive.is_some() {
                 ARCHIVE_SCHEMA
@@ -350,13 +407,19 @@ impl State {
             out.extend_from_slice(&r.operation);
             out.extend_from_slice(&r.frame);
             out.extend_from_slice(&r.intent);
+            if self.attachments {
+                out.push(u8::from(r.attachment.is_some()));
+                if let Some(descriptor) = &r.attachment {
+                    descriptor_fields(&mut out, descriptor);
+                }
+            }
         }
         num(&mut out, self.outbox.len() as u32);
         for p in &self.outbox {
             out.extend_from_slice(&p.operation);
             p.wire.encode_into(&mut out)?;
         }
-        if self.read.is_some() {
+        if self.read.is_some() || self.attachments {
             out.push(u8::from(self.archive.is_some()));
         }
         if let Some(archive) = &self.archive {
@@ -367,6 +430,9 @@ impl State {
             if let Some(after) = &archive.after {
                 field(&mut out, after.as_bytes());
             }
+        }
+        if self.attachments {
+            out.push(u8::from(self.read.is_some()));
         }
         if let Some(read) = &self.read {
             num(&mut out, read.len() as u32);
@@ -385,7 +451,11 @@ impl State {
         }
         let mut r = Reader(raw);
         let schema = r.take(8)?;
-        if schema != SCHEMA && schema != ARCHIVE_SCHEMA && schema != READ_SCHEMA {
+        if schema != SCHEMA
+            && schema != ARCHIVE_SCHEMA
+            && schema != READ_SCHEMA
+            && schema != ATTACHMENT_SCHEMA
+        {
             return Err(invalid());
         }
         let revision = r.big()?;
@@ -429,6 +499,11 @@ impl State {
                 operation: r.array()?,
                 frame: r.array()?,
                 intent: r.array()?,
+                attachment: if schema == ATTACHMENT_SCHEMA && r.boolean()? {
+                    Some(r.descriptor()?)
+                } else {
+                    None
+                },
             });
         }
         let count = r.number()? as usize;
@@ -444,7 +519,7 @@ impl State {
         }
         let has_archive = if schema == ARCHIVE_SCHEMA {
             true
-        } else if schema == READ_SCHEMA {
+        } else if schema == READ_SCHEMA || schema == ATTACHMENT_SCHEMA {
             r.boolean()?
         } else {
             false
@@ -463,7 +538,7 @@ impl State {
         } else {
             None
         };
-        let read = if schema == READ_SCHEMA {
+        let read = if schema == READ_SCHEMA || schema == ATTACHMENT_SCHEMA && r.boolean()? {
             let count = r.number()? as usize;
             if count > MAX_HISTORY {
                 return Err(invalid());
@@ -494,6 +569,7 @@ impl State {
             outbox,
             archive,
             read,
+            attachments: schema == ATTACHMENT_SCHEMA,
         };
         s.validate()?;
         s.device()?;
@@ -538,6 +614,12 @@ impl State {
             return Err(invalid());
         }
         for (i, r) in self.history.iter().enumerate() {
+            if let Some(descriptor) = &r.attachment {
+                if !self.attachments {
+                    return Err(invalid());
+                }
+                checked_descriptor(descriptor)?;
+            }
             if !address(&r.address)
                 || !device_id(r.device)
                 || !checked_time(r.sent_at)
@@ -867,6 +949,7 @@ impl CheckpointVault {
             expires: self.state.expires,
             history_only: self.state.history_only,
             started: self.state.started,
+            attachments_enabled: self.state.attachments,
             archive_enabled: self.state.archive.is_some(),
             archive_cursor_present: self
                 .state
@@ -900,6 +983,17 @@ impl CheckpointVault {
     pub fn legacy(&self) -> io::Result<&Data> {
         self.healthy()?;
         Ok(&self.state.legacy)
+    }
+    /// Deliberate, idempotent local FACTCP05 adoption. Retained protocol/history,
+    /// optional archive/read state and unlocking wrappers remain unchanged.
+    pub fn enable_attachments(&mut self) -> io::Result<()> {
+        self.healthy()?;
+        if self.state.attachments {
+            return Ok(());
+        }
+        let mut candidate = self.state.duplicate()?;
+        candidate.attachments = true;
+        self.commit(candidate)
     }
     /// Deliberate local-only FACTCP04 opt-in. Existing received history starts
     /// unread; no native key, archive cursor, pending frame or wrapper changes.
@@ -1033,6 +1127,28 @@ impl CheckpointVault {
         field(&mut raw, body.as_bytes());
         Ok(Sha256::digest(&*raw).into())
     }
+    fn attachment_intent(
+        &self,
+        subject: &str,
+        body: &str,
+        descriptor: &Descriptor,
+        sent_at: u64,
+    ) -> io::Result<[u8; 32]> {
+        checked_descriptor(descriptor)?;
+        if !text(subject, 128) || !text(body, 1024) || !checked_time(sent_at) {
+            return Err(invalid());
+        }
+        let peer = self.state.peer.as_ref().ok_or_else(invalid)?;
+        let mut raw = Zeroizing::new(b"Faction outbound attachment intent v1\0".to_vec());
+        field(&mut raw, peer.address.as_bytes());
+        num(&mut raw, peer.device);
+        raw.extend_from_slice(&peer.identity);
+        raw.extend_from_slice(&sent_at.to_be_bytes());
+        field(&mut raw, subject.as_bytes());
+        field(&mut raw, body.as_bytes());
+        descriptor_fields(&mut raw, descriptor);
+        Ok(Sha256::digest(&*raw).into())
+    }
     /// Queue/send boundary: return ciphertext only after full-state durable commit.
     /// Same ID+intent retries exact bytes; completed IDs never reseal a second time.
     pub fn queue(
@@ -1043,9 +1159,40 @@ impl CheckpointVault {
         sent_at: u64,
         now: u64,
     ) -> io::Result<Wire> {
+        self.queue_inner(operation, subject, body, None, sent_at, now)
+    }
+    /// Queue one caller-supplied descriptor for separately retained ciphertext.
+    /// This never encrypts, uploads, fetches or persists bulk attachment bytes.
+    pub fn queue_attachment(
+        &mut self,
+        operation: [u8; 16],
+        subject: &str,
+        body: &str,
+        descriptor: &Descriptor,
+        sent_at: u64,
+        now: u64,
+    ) -> io::Result<Wire> {
+        self.queue_inner(operation, subject, body, Some(descriptor), sent_at, now)
+    }
+    fn queue_inner(
+        &mut self,
+        operation: [u8; 16],
+        subject: &str,
+        body: &str,
+        descriptor: Option<&Descriptor>,
+        sent_at: u64,
+        now: u64,
+    ) -> io::Result<Wire> {
         self.healthy()?;
         let peer = self.state.active(now)?;
-        let intent = self.intent(subject, body, sent_at)?;
+        let intent = if let Some(descriptor) = descriptor {
+            if !self.state.attachments {
+                return Err(invalid());
+            }
+            self.attachment_intent(subject, body, descriptor, sent_at)?
+        } else {
+            self.intent(subject, body, sent_at)?
+        };
         if operation == [0; 16] {
             return Err(invalid());
         }
@@ -1072,13 +1219,24 @@ impl CheckpointVault {
         {
             return Err(invalid());
         }
-        let plain = native(sce::encode(
-            &self.state.legacy.home,
-            &peer.address,
-            sent_at,
-            subject,
-            body,
-        ))?;
+        let plain = native(if let Some(descriptor) = descriptor {
+            attachment::encode(
+                &self.state.legacy.home,
+                &peer.address,
+                sent_at,
+                subject,
+                body,
+                descriptor,
+            )
+        } else {
+            sce::encode(
+                &self.state.legacy.home,
+                &peer.address,
+                sent_at,
+                subject,
+                body,
+            )
+        })?;
         let mut candidate = self.state.duplicate()?;
         let mut d = candidate.device()?;
         let m = native(d.seal(&plain))?;
@@ -1105,6 +1263,7 @@ impl CheckpointVault {
             operation,
             frame: wire.digest()?,
             intent,
+            attachment: descriptor.map(copy_descriptor),
         });
         if let Some(read) = &mut candidate.read {
             read.push(false);
@@ -1191,22 +1350,27 @@ impl CheckpointVault {
             prekey: wire.prekey,
             payload: wire.payload.clone(),
         }))?;
-        let (content, sent_at) = if network {
-            native(sce::decode_network(
-                &plain,
-                &peer.address,
-                &candidate.legacy.home,
-            ))?
+        // Both parsers accept exact disjoint shapes on the same authenticated
+        // candidate. The strict text parser and non-adopted stores stay unchanged.
+        let decoded = if network {
+            sce::decode_network(&plain, &peer.address, &candidate.legacy.home)
         } else {
-            (
-                native(sce::decode(
-                    &plain,
-                    &peer.address,
-                    &candidate.legacy.home,
-                    wire.sent_at,
-                ))?,
-                wire.sent_at,
-            )
+            sce::decode(&plain, &peer.address, &candidate.legacy.home, wire.sent_at)
+                .map(|content| (content, wire.sent_at))
+        };
+        let (content, descriptor, sent_at) = match decoded {
+            Ok((content, sent_at)) => (content, None, sent_at),
+            Err(_) if candidate.attachments => {
+                let (content, sent_at) = native(if network {
+                    attachment::decode_network(&plain, &peer.address, &candidate.legacy.home)
+                } else {
+                    attachment::decode(&plain, &peer.address, &candidate.legacy.home, wire.sent_at)
+                        .map(|content| (content, wire.sent_at))
+                })?;
+                checked_descriptor(&content.attachment)?;
+                (content.text, Some(content.attachment), sent_at)
+            }
+            Err(_) => return Err(invalid()),
         };
         let mut canonical = wire.clone();
         canonical.sent_at = sent_at;
@@ -1225,6 +1389,7 @@ impl CheckpointVault {
             operation: [0; 16],
             frame,
             intent: [0; 32],
+            attachment: descriptor,
         });
         if let Some(read) = &mut candidate.read {
             read.push(false);
@@ -1375,6 +1540,7 @@ impl CheckpointVault {
             }
             candidate.archive = Some(fresh);
         }
+        candidate.attachments = old.attachments;
         candidate.history = old.history;
         candidate.read = old.read;
         self.commit(candidate)
@@ -1437,3 +1603,7 @@ mod archive_checkpoint_tests;
 #[cfg(test)]
 #[path = "unread_checkpoint_tests.rs"]
 mod unread_checkpoint_tests;
+
+#[cfg(test)]
+#[path = "attachment_checkpoint_tests.rs"]
+mod attachment_checkpoint_tests;

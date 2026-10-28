@@ -266,3 +266,8 @@ dev-docs/evidence/attachment-blobs-save/save/green-integration.log whitespace=-b
 dev-docs/evidence/attachment-blobs-save/save/review-final-integration.log whitespace=-blank-at-eof
 dev-docs/evidence/attachment-blobs-save/save/review-final-unit.log whitespace=-blank-at-eof
 dev-docs/evidence/attachment-blobs-save/metadata/staged-whitespace-before.txt whitespace=-blank-at-eol
+
+# Issues257/258 bounded public facts and immutable reviewed source snapshots.
+dev-docs/evidence/attachment-mail/** -text
+dev-docs/evidence/attachment-mail/sources/** linguist-generated=true
+dev-docs/evidence/attachment-mail/*.json linguist-generated=true

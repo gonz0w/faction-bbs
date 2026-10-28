@@ -35,7 +35,7 @@ keeps v1's offsets, fixed KDF parameters and nonce/key sizes, but uses:
 | Outer magic, bytes 0..8 | `FACTVLT2` |
 | Wrap AAD | `Faction local mail vault v2`, NUL, purpose (`password`/`recovery`), header bytes 0..40 |
 | Payload AAD | `Faction checkpoint payload v2`, NUL, bytes 0..208 |
-| Decoded payload magic | `FACTCP02`; explicit archive/read upgrades use `FACTCP03` / `FACTCP04`. |
+| Decoded payload magic | `FACTCP02`; explicit archive/read upgrades use `FACTCP03` / `FACTCP04`, and explicit attachment opt-in uses `FACTCP05`. |
 | Decrypted/file caps | 524288 / 524512 bytes |
 
 See [v1 offsets](native-mail-vault.md). No file-controlled KDF algorithm/cost
@@ -44,7 +44,7 @@ explicit upgrade/reset rotates data key, salt, both wraps and recovery secret.
 Current and backup files cannot revoke secrets for older copies.
 
 Payload integers are unsigned big-endian; strings/blobs have a u32 byte length;
-booleans must be 0/1 and exact EOF is required. The order is:
+booleans must be 0/1 and exact EOF is required. The core order is:
 
 1. Magic, u64 revision, length-prefixed unchanged v1 `Data` encoding (drafts/pins).
 2. Local device u32, full Ed identity32, native snapshot blob.
@@ -55,12 +55,25 @@ booleans must be 0/1 and exact EOF is required. The order is:
    intent digest32. Receive records use zero operation/intent; send IDs are nonzero.
 5. Outbox count and entries: operation16 then full canonical `Wire`.
 
+In FACTCP05, each history record appends a descriptor-present boolean after the
+intent digest. If present, the descriptor is name and media type (each u32-length
+UTF-8 bytes), size u64, hash32, key32, IV12, and locator (u32-length UTF-8
+bytes), in that order. Following the unchanged outbox are an archive-present
+boolean and optional existing archive fields, then a read-present boolean and
+optional existing read count/booleans. The magic itself is the attachment
+capability marker; there is no extra capability flag. FACTCP02/03/04 retain their
+existing encodings. Descriptor validation and the existing counts and bounds
+apply on decode before native state is usable.
+
 `Wire` fields are namespace/from/to strings, sender/recipient device u32, sender
 Ed identity32, sent time u64, key blob, prekey boolean and payload blob. The frame
 hash is SHA-256 of `Faction encrypted frame v2`, NUL, then those exact fields.
 The outbound intent hash uses `Faction outbound intent v2`, NUL, recipient address/
 device/Ed identity, original sending time and length-prefixed subject/body.
-Digests and private metadata live inside authenticated ciphertext. The input
+For attachment mail, a distinct deterministic intent uses `Faction outbound
+attachment intent v1`, NUL, then recipient address/device/full identity, sending
+time, subject/body and the canonical descriptor fields above. The ordinary text
+intent remains unchanged. Digests and private metadata live inside authenticated ciphertext. The input
 namespace is exactly `urn:xmpp:omemo:2`; no fallback profile is accepted.
 
 Bounds: one local identity and one deliberately verified peer per vault; legacy
@@ -187,3 +200,9 @@ The [encrypted local read-state contract](local-mail-read-state.md) defines the
 explicit FACTCP04 transition, received-frame/index-bound local acknowledgements,
 strict metadata validation and preservation through backup/recovery/fresh devices.
 No read receipt or BBS authority is added.
+
+## Attachment opt-in
+
+`enable_attachments` deliberately migrates to FACTCP05; ordinary unlock, queue and receive do not upgrade earlier formats. `attachments_enabled` reports the choice. Earlier formats retain their existing attachment rejection. The encrypted history retains an optional descriptor per record and independently present archive and read state. No descriptor or key sidecar is written. Existing checkpoint, history, outbox and native limits remain in force.
+
+The [attachment mail contract](attachment-mail.md) describes descriptor-bound queue/retry, authenticated receipt and local verification of explicitly supplied ciphertext. The checkpoint does not persist or transfer bulk bytes. Recovery remains history-only and does not restore live ratchets.

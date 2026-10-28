@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "owned_temporary_roots": [
+    {
+      "label": "core",
+      "same_uid": true,
+      "mode": "0700",
+      "marker_sha256": "ddb6ff4f6e1f0915193be1c29e58979bd1d90733bd5800c2aae3bce1a5f57879",
+      "lsof_exit": 1,
+      "open_handle_count": 0,
+      "absent_after_removal": true
+    },
+    {
+      "label": "bridge",
+      "same_uid": true,
+      "mode": "0700",
+      "marker_sha256": "a6f54886ebf183bf56c57cf76f711db2c6184d1fab937b8c21bf820ff8050a25",
+      "lsof_exit": 1,
+      "open_handle_count": 0,
+      "absent_after_removal": true
+    },
+    {
+      "label": "product",
+      "same_uid": true,
+      "mode": "0700",
+      "marker_sha256": "ffbcb2ac7d8e2c3eecbea510fe3ec4c29c4d7cbe302e7be14fdbf1a097dc4d10",
+      "lsof_exit": 1,
+      "open_handle_count": 0,
+      "absent_after_removal": true
+    },
+    {
+      "label": "lead",
+      "same_uid": true,
+      "mode": "0700",
+      "marker_sha256": "e3c82c4d36be63290420f20966e37bdcbded59b0a8f2a6979e470813ff96f416",
+      "lsof_exit": 1,
+      "open_handle_count": 0,
+      "absent_after_removal": true
+    },
+    {
+      "label": "reviewer",
+      "same_uid": true,
+      "mode": "0700",
+      "marker_sha256": "80eb956d2d2dc1cb23009f0fe14ad94dcaa3b75c0b91934b062b0e0770fee06e",
+      "lsof_exit": 1,
+      "open_handle_count": 0,
+      "absent_after_removal": true
+    }
+  ],
+  "original_capture_retention": "Owner-private immutable archive outside Git; retained deliberately, not an active runtime or work tracker.",
+  "archive_sha256": "3802a6d823249292abc01506fadd9bcad33581c9a6d099edc675d06beaf18416",
+  "private_cleanup_record_sha256": "6ffa546c9eeb56881294f45e1510edc48cb5e44197d0f61efde5d3799fd35ed5",
+  "saved_playground": "No operation; remains stopped and intact.",
+  "limits": "Ordinary removal, not secure erasure. No VM, package, provider, public listener or host-policy activation."
+}

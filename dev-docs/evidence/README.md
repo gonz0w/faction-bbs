@@ -408,3 +408,13 @@ existing Files/SFTP regressions.
 - [Selected-record encrypted replies](inbox-reply/README.md) — source-bound host/NetBSD classic/Unicode queue, private-I/O, compatibility and teardown observations for #233.
 
 - [Retained encrypted-mail correspondents](mail-correspondents/README.md) — bounded account/device navigation with source-bound host/NetBSD classic/Unicode, same-SSH privacy and compatibility observations for #235.
+
+
+The [pre-attachment checkpoint baseline](attachment-mail-baseline-manifest.json)
+preserves ten exact committed inputs from `0880fbd`, including the prior checkpoint,
+module exports, home adapter, descriptor codec, regression tests and resolver.
+The existing historical resolver selects these pinned bytes before attachment
+format changes; older observations and their checksums are unchanged. This is
+source preservation, not a replay of those earlier runtime observations. The
+resolver regression checks resolution after a simulated live-source edit and
+refuses a changed baseline manifest.

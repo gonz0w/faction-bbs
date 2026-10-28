@@ -34,7 +34,9 @@ pub struct Content {
 }
 
 impl Descriptor {
-    pub(crate) fn validate(&self) -> Result<()> {
+    /// Validate only this metadata subset. This does not authenticate a sender,
+    /// authorize a locator or verify actual blob bytes.
+    pub fn validate(&self) -> Result<()> {
         let name = self.name.as_str();
         let media = self.media_type.as_str();
         let locator = self.locator.as_str();

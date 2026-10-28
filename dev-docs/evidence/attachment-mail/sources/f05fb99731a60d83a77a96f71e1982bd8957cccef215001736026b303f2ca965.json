@@ -1,0 +1,16 @@
+{
+  "source_revision": "0880fbd0d047f30ee2361a32a276b8d18b954d5a",
+  "source_root": "sources/pre257-attachments",
+  "files": {
+    "crates/faction-client/src/mail_checkpoint.rs": "7401014e3ded0a204c259075f477a550b432b3c095790a8593e5b339927c38fe",
+    "crates/faction-client/src/lib.rs": "e3a74a55cbdfc304e93f20b1d5bbf0a469963e3adf05095972152f0f454ab288",
+    "crates/faction-client/src/mail_network.rs": "1b2bab0d6459443ed6a28a8096cb9ca85b8ec6e70c0307b0d86c2107466eed84",
+    "crates/faction-omemo/src/attachment.rs": "8b05fdff3668500b7d59634575aa5842190333f7eff5baf58a610446c2bb5e9e",
+    "crates/faction-client/src/checkpoint_tests.rs": "9318450880e3e30aecd2debcc4451d7329c8ec3c64ac40e52e29006faea2b6d9",
+    "crates/faction-client/src/archive_checkpoint_tests.rs": "44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5",
+    "crates/faction-client/src/unread_checkpoint_tests.rs": "1e29b853f86560acc8fc24c7033cf10a032012090718e2ca13e0d2605aa70e06",
+    "crates/faction-client/tests/attachment_rejection.rs": "e0098e75f3f4fda9ed3706c1122404b6901843eed54a65d983e7e453a6eb2376",
+    "tools/evidence_sources.py": "3a659ab446cc199c893120111826e1d1bf9bd854df785a135511f39a92c6eeee",
+    "tools/test_evidence_sources.py": "02be91d5c07f80d7e4d21afb783fd1d96f0b445b6a6eeb36704b4486073d0dd0"
+  }
+}

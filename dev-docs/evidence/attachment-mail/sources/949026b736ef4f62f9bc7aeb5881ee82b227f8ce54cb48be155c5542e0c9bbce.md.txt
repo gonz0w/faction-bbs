@@ -1,0 +1,21 @@
+# Durable attachment messages in native mail
+
+The optional `native-mail` library supports an explicitly enabled encrypted checkpoint containing one attachment descriptor per mail history record. `native-mail` alone provides local checkpoint, queue, receive and consumption APIs. Home-network delivery of the encrypted attachment **message** uses the existing `network-mail` feature and adapter. Local verification and saving require separately supplied ciphertext. It does not transfer or persist bulk attachment bytes. See [#257](https://github.com/gonz0w/faction-bbs/issues/257), [#258](https://github.com/gonz0w/faction-bbs/issues/258), and the still-open parent [#88](https://github.com/gonz0w/faction-bbs/issues/88).
+
+## Opt in and send
+
+`CheckpointVault::enable_attachments` explicitly migrates a checkpoint to `FACTCP05` inside the unchanged `FACTVLT2` envelope; `attachments_enabled` inspects the choice. Unlock and ordinary mail calls do not silently migrate `FACTCP02`, `FACTCP03` or `FACTCP04`, which retain their earlier attachment rejection. The migration retains existing history, pending ciphertext, verified peer and native state, and independently present archive and read state. It does not enroll a peer, restart a session, acknowledge mail or mark it read. The [checkpoint contract](native-mail-checkpoints.md) describes the envelope and publication rules.
+
+A trusted local caller first prepares ciphertext and a valid [descriptor](attachment-metadata.md), and retains or obtains the ciphertext separately. `queue_attachment(operation, subject, body, &descriptor, sent_at, now)` validates the descriptor and usable blob limit before advancing native state. The encrypted checkpoint contains the descriptor, including its private key, IV, hash, name and locator, with the history record. `Record::attachment` borrows it for trusted local use. Bulk ciphertext is not stored in the checkpoint.
+
+The attachment intent binds the verified recipient, original sending time, subject, body and every descriptor field using a distinct deterministic domain. An identical pending operation returns the exact persisted `Wire` after reopen; changing the intent rejects, and an acknowledged operation cannot reseal. The existing `network-mail` home adapter uses that persisted wire and the existing explicit acknowledgement decision. The [checkpoint contract](native-mail-checkpoints.md) describes retry and failure semantics.
+
+## Receive and consume
+
+Live, network and archive receipt share the authenticated transaction. It preserves the existing verified-peer and time checks, duplicate behavior and, for archive pages, cursor handling. The descriptor is accepted independently of whether the bulk ciphertext is available. The caller can inspect the descriptor only from retained encrypted history.
+
+`mail_attachments::verify_received` requires an attachment-enabled healthy vault, a retained received-record index, its expected frame identity and explicitly supplied ciphertext. It obtains the actual stored descriptor and verifies the bytes with the existing blob primitive. `save_received` performs the same verification before the existing safe save to an explicit absolute destination selected by the caller. Cancellation means making no save call. Its fixed diagnostics preserve the distinction between `BeforePublication` and `PublicationUncertain`: after uncertain publication inspect the destination before retrying. See [blob and save](attachment-blobs-save.md) for limits and filesystem assumptions.
+
+Accepted historical attachments remain locally consumable after session expiry, revocation, history-only backup/recovery or a fresh device change. Those states do not resume the old live protocol. The locator is inert: it does not authorize a connection or cause a fetch. No upload, download, spool, public HTTP endpoint, private blob service, attachment UI or CLI action is provided here.
+
+The existing 512 KiB checkpoint, 64 history records, eight pending messages, 8192-byte SCE, 8208-byte payload and 1 MiB plaintext blob limits remain. This is not a two-home bulk transport, modern-client interoperability, fresh NetBSD qualification or full attachment product claim. Storage authorization, quotas, expiry, transport and the other original requirements of #88 remain open. Ordinary classic access and text mail remain available.

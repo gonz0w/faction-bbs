@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "review_kind": "Separate peer-agent source, behavior replay, provenance and safe-public-package examination; not independent human assurance.",
+  "unresolved_actionable_findings": 0,
+  "actual_replay_pass_entries": 14,
+  "final_source_bindings": 19,
+  "private_archive_members_verified": 1126,
+  "public_files_before_final_metadata": 21,
+  "raw_private_corpus_published": false,
+  "review_record_sha256": "9794936437d350a7f12119f332e8d26788d21386285ddecc4254fdffebcb75fa",
+  "private_archive_sha256": "3802a6d823249292abc01506fadd9bcad33581c9a6d099edc675d06beaf18416",
+  "native_role_discovery_and_backend_telemetry": "unverified"
+}

@@ -1783,4 +1783,246 @@ mod tests {
             );
         }
     }
+    fn attachment_fixture() -> (faction_omemo::attachment::Descriptor, Vec<u8>) {
+        let encrypted =
+            faction_omemo::blob::encrypt(b"manual supplied attachment bytes\0\xff").unwrap();
+        (
+            faction_omemo::attachment::Descriptor {
+                name: zeroize::Zeroizing::new("remote-name-never-selected.bin".into()),
+                media_type: zeroize::Zeroizing::new("application/octet-stream".into()),
+                size: encrypted.size,
+                hash: encrypted.hash,
+                key: encrypted.key,
+                iv: encrypted.iv,
+                locator: zeroize::Zeroizing::new("https://blob.invalid/inert-no-fetch".into()),
+            },
+            encrypted.ciphertext,
+        )
+    }
+    struct AttachmentWriteScript {
+        inner: PresenceScript,
+        fail_message: bool,
+    }
+    impl Channel for AttachmentWriteScript {
+        async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {
+            if self.fail_message && xml.is("message", "jabber:client") {
+                return Err(faction_xmpp::Error::Lost);
+            }
+            self.inner.send(xml).await
+        }
+        async fn next(&mut self) -> Result<faction_xmpp::Element, faction_xmpp::Error> {
+            self.inner.next().await
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn attachment_manual_bytes_home_delivery_live_archive_restart_and_explicit_save() {
+        let (owned, mut alice, mut bob, bob_settings) = pair();
+        let marker = b"Owned issue 258 scripted home manual-byte fixture";
+        fs::write(owned.0.join("OWNER258"), marker).unwrap();
+        let selected = owned.0.join("selected258");
+        fs::create_dir(&selected).unwrap();
+        fs::set_permissions(&selected, fs::Permissions::from_mode(0o700)).unwrap();
+        alice.enable_attachments().unwrap();
+        bob.enable_attachments().unwrap();
+        // Archive-enabled sender Sync writes persisted frames then returns; the
+        // receiver first proves the existing live Channel path independently.
+        alice.enable_archive(NOW).unwrap();
+        let (descriptor, ciphertext) = attachment_fixture();
+        let first = alice
+            .queue_attachment(
+                [121; 16],
+                "attachment",
+                "manual bytes",
+                &descriptor,
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        drop(alice);
+        let mut alice = CheckpointVault::unlock(
+            crate::mail_vault::Store::at(&owned.0.join("alice"), false).unwrap(),
+            PASS,
+            false,
+        )
+        .unwrap();
+        assert!(alice.pending(NOW).unwrap() == [first.clone()]);
+        assert!(
+            alice
+                .queue_attachment(
+                    [121; 16],
+                    "attachment",
+                    "manual bytes",
+                    &descriptor,
+                    NOW,
+                    NOW
+                )
+                .unwrap()
+                == first
+        );
+        let alice_settings = Settings {
+            account: "alice@home.test".into(),
+            endpoint: "127.0.0.1:9".parse().unwrap(),
+            domain: "home.test".into(),
+            ca: vec![],
+            pin: [0; 32],
+        };
+        let (bundle, prekeys) = bob.publication(NOW).unwrap();
+        let mut outbound = AttachmentWriteScript {
+            inner: PresenceScript {
+                read_after_pending: false,
+                sent: vec![],
+                peer: "bob@away.test".into(),
+                device: 202,
+                bundle,
+                prekeys,
+            },
+            fail_message: true,
+        };
+        let before = fs::read(owned.0.join("alice/mail.fkv")).unwrap();
+        let ready = preflight(&alice, &alice_settings, Mode::Sync, NOW).unwrap();
+        assert!(matches!(
+            exchange(
+                &mut alice,
+                &alice_settings,
+                &mut outbound,
+                Mode::Sync,
+                ready
+            )
+            .await,
+            Err(Error::Transport(faction_xmpp::Error::Lost))
+        ));
+        assert!(fs::read(owned.0.join("alice/mail.fkv")).unwrap() == before);
+        assert!(alice.pending(NOW).unwrap() == [first.clone()]);
+        outbound.fail_message = false;
+        outbound.inner.sent.clear();
+        let ready = preflight(&alice, &alice_settings, Mode::Sync, NOW).unwrap();
+        let report = exchange(
+            &mut alice,
+            &alice_settings,
+            &mut outbound,
+            Mode::Sync,
+            ready,
+        )
+        .await
+        .unwrap();
+        assert_eq!(report.sent, 1);
+        assert!(alice.pending(NOW).unwrap() == [first.clone()]);
+        let delivered = outbound
+            .inner
+            .sent
+            .iter()
+            .find(|xml| xml.is("message", "jabber:client"))
+            .unwrap()
+            .clone();
+        assert!(delivered == crate::mail_wire::message(&first, [121; 16]).unwrap());
+        let mut live = interleaved(delivered.clone(), std::time::Duration::ZERO);
+        live.reads.insert(1, (std::time::Duration::ZERO, delivered));
+        let ready = preflight(&bob, &bob_settings, Mode::Publish, NOW).unwrap();
+        let report = exchange(&mut bob, &bob_settings, &mut live, Mode::Publish, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.accepted, 1);
+        assert_eq!(report.duplicates, 1);
+        assert_eq!(bob.history().unwrap().len(), 1);
+        bob.enable_archive(NOW).unwrap();
+        let second = alice
+            .queue_attachment(
+                [122; 16],
+                "archive attachment",
+                "manual bytes",
+                &descriptor,
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        let mut damaged = alice
+            .queue_attachment(
+                [123; 16],
+                "bad archive frame",
+                "manual bytes",
+                &descriptor,
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        damaged.payload[0] ^= 1;
+        let mut archive = MamScript::new(vec![first.clone(), second, damaged]);
+        let ready = preflight(&bob, &bob_settings, Mode::CatchUp, NOW).unwrap();
+        assert!(matches!(
+            exchange(&mut bob, &bob_settings, &mut archive, Mode::CatchUp, ready).await,
+            Err(Error::State)
+        ));
+        assert_eq!(bob.history().unwrap().len(), 2);
+        assert!(bob.archive_checkpoint(NOW).unwrap().after.as_deref() == Some("item2"));
+        drop(bob);
+        let bob = CheckpointVault::unlock(
+            crate::mail_vault::Store::at(&owned.0.join("bob"), false).unwrap(),
+            PASS,
+            false,
+        )
+        .unwrap();
+        assert!(bob.archive_checkpoint(NOW).unwrap().after.as_deref() == Some("item2"));
+        for index in 0..2 {
+            let frame = bob.history().unwrap()[index].received_id().unwrap();
+            let verified =
+                crate::mail_attachments::verify_received(&bob, index, frame, &ciphertext).unwrap();
+            assert!(verified.as_bytes() == b"manual supplied attachment bytes\0\xff");
+            let destination = selected.join(format!("explicit-{index}"));
+            crate::mail_attachments::save_received(&bob, index, frame, &ciphertext, &destination)
+                .unwrap();
+            assert!(fs::read(&destination).unwrap() == b"manual supplied attachment bytes\0\xff");
+            assert_eq!(fs::metadata(destination).unwrap().mode() & 0o7777, 0o600);
+        }
+        assert_eq!(fs::read_dir(&selected).unwrap().count(), 2);
+        assert!(!selected.join("remote-name-never-selected.bin").exists());
+        // Authenticated own archive echo remains a duplicate and never ACKs.
+        let mut echo = MamScript::new(vec![first.clone()]);
+        let ready = preflight(&alice, &alice_settings, Mode::CatchUp, NOW).unwrap();
+        let report = exchange(&mut alice, &alice_settings, &mut echo, Mode::CatchUp, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.duplicates, 1);
+        assert!(alice.pending(NOW).unwrap()[0] == first);
+        drop(alice);
+        drop(bob);
+        assert!(fs::read(owned.0.join("OWNER258")).unwrap() == marker);
+        let root = owned.0.clone();
+        drop(owned);
+        assert!(!root.exists());
+    }
+    #[test]
+    fn attachment_poisoned_history_fails_before_any_save_action() {
+        let (owned, mut alice, mut bob, _settings) = pair();
+        let marker = b"Owned issue 258 poisoned bridge fixture";
+        fs::write(owned.0.join("OWNER258"), marker).unwrap();
+        alice.enable_attachments().unwrap();
+        bob.enable_attachments().unwrap();
+        let (descriptor, ciphertext) = attachment_fixture();
+        let wire = alice
+            .queue_attachment(
+                [124; 16],
+                "attachment",
+                "manual bytes",
+                &descriptor,
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        bob.receive(&wire, NOW).unwrap();
+        let frame = bob.history().unwrap()[0].received_id().unwrap();
+        bob.fail_once(crate::mail_checkpoint::Fault::BeforeWrite);
+        assert!(bob.revoke().is_err());
+        let selected = owned.0.join("uncreated-destination");
+        assert_eq!(
+            crate::mail_attachments::save_received(&bob, 0, frame, &ciphertext, &selected),
+            Err(crate::mail_attachments::Error::State)
+        );
+        assert!(!selected.exists());
+        assert!(fs::read(owned.0.join("OWNER258")).unwrap() == marker);
+        drop(alice);
+        drop(bob);
+        let root = owned.0.clone();
+        drop(owned);
+        assert!(!root.exists());
+    }
 }
