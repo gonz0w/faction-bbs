@@ -1,0 +1,11 @@
+{
+  "all_regular_member_digests_verified": true,
+  "archive": "local/evidence/attachment-desk-263-264/originals.tar.gz",
+  "archive_members": 143,
+  "archive_mode": "0600",
+  "bytes": 13409791,
+  "original_regular_files": 142,
+  "parent_mode": "0700",
+  "raw_private_data_public": false,
+  "sha256": "4f1d5ac54280d519543d6b3aca7c2fa467a4ec0d08620410288da4b5e2dd99f7"
+}

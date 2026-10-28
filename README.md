@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-10-26 · no supported release yet.**
+**Working hobby preview · updated 2026-10-28 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -38,10 +38,11 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [picker E entry](docs/picker-home-mail.md) opens native mail between board visits.
   [Local read tracking and Files-desk mail](docs/local-unread-mail.md) add encrypted
   unread decisions and a parked in-session entry. A [selectable local inbox](docs/local-mail-inbox.md)
-  adds bounded unread navigation and selected-message reading. The experimental
-  [attachment library](dev-docs/private-attachment-storage.md) adds durable private
-  ciphertext storage and automatic upload/fetch cycles. Attachment menus, deployed
-  home integration, background notifications and production roaming remain incomplete.
+  adds bounded unread navigation and selected-message reading. The default-off
+  [private attachment desk](docs/private-attachments.md) adds
+  explicit local queue, upload, fetch and save to native home mail. Compatible
+  home storage is required; provider deployment, background notifications and
+  production roaming remain incomplete.
 
 ## What you can do
 

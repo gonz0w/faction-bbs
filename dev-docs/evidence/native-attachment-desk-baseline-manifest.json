@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "source_revision": "ea10834d79242d51eeceaa388984c79f6241c8ee",
+  "source_root": "sources/pre263-264-desk",
+  "files": {
+    "crates/faction-client/src/checkpoint_ui.rs": "f1abeba66a0b227ef01e255821318ea093186a6ed1793dfabec334799256873b",
+    "crates/faction-client/src/checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab",
+    "crates/faction-client/src/checkpoint_ui_reply.rs": "0c3660f7ea1e10af56db91b4c45c2309a4658af1318c9269b66b23b49958f7ea",
+    "crates/faction-client/src/lib.rs": "750caef3421c265798f46ab918b646d1eedad9afa2795313023bfb5fef18017c",
+    "crates/faction-client/src/mail_blob_transfer.rs": "062aef4c9be785562d455872d3c915ae026e7ba55e307f31baf3171376c9a703",
+    "crates/faction-client/src/main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+    "tools/probe_attachment_transfer.py": "2064de1cad1276cd7f4a0420a1bdfd5f2ac59c2e6909622565efea12d60fedc3"
+  }
+}

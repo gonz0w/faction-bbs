@@ -429,3 +429,16 @@ The [parallel recovery fixture correction](attachment-transfer-ci/README.md)
 preserves the first attachment CI failure, reproduced lock/name/readiness races
 and twenty corrected default-parallel replays. Its two test inputs are separate
 from the unchanged production/TLS observation and original source record.
+
+
+The [native attachment desk baseline](native-attachment-desk-baseline-manifest.json)
+preserves seven exact pre-edit source inputs from `ea10834`. Its SHA-256 is
+`153c7dc0ba259b840af63e424a869c659072281302f7f2da919c89ea51a75b00`.
+This is source preservation, not a new runtime observation; prior results remain
+unchanged. Host console and TLS proof for the desk is recorded separately.
+
+[Native attachment desk evidence](attachment-desk/README.md) records the final
+production-console two-home PTY/TLS journey, exact source/binary identities,
+test-first and recovery controls, and private retention for #263/#264. It leaves
+provider/device-attestation, independent interoperability and fresh NetBSD
+qualification distinct from the observed host software result.

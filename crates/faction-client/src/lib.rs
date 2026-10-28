@@ -27,3 +27,6 @@ pub mod mail_blob_wire;
 
 #[cfg(feature = "network-mail")]
 pub mod mail_blob_transfer;
+
+#[cfg(feature = "network-mail")]
+pub mod attachment_source;

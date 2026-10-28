@@ -1,0 +1,14 @@
+{
+  "author_of_change": false,
+  "backend_model_telemetry": "unavailable",
+  "cache_exact_inventory_correction": "reviewed; no hash/cache assertions weakened",
+  "independent_human_assurance": false,
+  "public_evidence_review": "separate final integration review",
+  "requested_effort": "high",
+  "requested_model": "gpt-6.1-sol",
+  "reviewed_binary_digests": 3,
+  "reviewed_source_inputs": 16,
+  "role": "temper_reviewer",
+  "source_and_final_pty_proof": "pass; no remaining actionable finding",
+  "technical_doc_finding": "resolved"
+}
