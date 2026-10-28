@@ -1,6 +1,6 @@
 # Experimental attachment metadata in native SCE
 
-The native-only [`attachment` codec](../crates/faction-omemo/src/attachment.rs) encodes and decodes one bounded candidate descriptor alongside subject and body inside SCE. It is experimental metadata handling, not attachment delivery or adoption of a complete XMPP file-sharing profile. The default feature set remains empty. Existing text-only SCE APIs reject this extension. An explicitly enabled checkpoint can accept and persist it through [attachment mail](attachment-mail.md).
+The native-only [`attachment` codec](../crates/faction-omemo/src/attachment.rs) encodes and decodes one bounded candidate descriptor alongside subject and body inside SCE. It is experimental metadata handling, not adoption of a complete XMPP file-sharing profile. The default feature set remains empty. Existing text-only SCE APIs reject this extension. An explicitly enabled checkpoint can accept and persist it through [attachment mail](attachment-mail.md).
 
 ## Candidate contract
 
@@ -13,7 +13,7 @@ SCE content contains exactly one `urn:xmpp:sfs:0` file-sharing element with `dis
 | Name | 1–255 UTF-8 bytes; no controls, slash or backslash, and not `.` or `..`. It is not a filesystem path. |
 | Media type | 1–127 ASCII bytes; one nonempty token on each side of `/`, without parameters. |
 | Size | Canonical unsigned decimal `u64`, including zero; `size + 16` must not overflow. This is an assertion, not an allocation or blob-size limit. |
-| Locator | 1–512 printable ASCII bytes, beginning `https://` with a nonempty authority; no credentials, whitespace, backslash, query or fragment. It is inert and does not authorize a destination. |
+| Locator | Either the exact private identifier `urn:faction:blob:1:<64 lowercase hexadecimal ciphertext SHA-256>` or 1–512 printable ASCII bytes beginning `https://` with a nonempty authority and no credentials, whitespace, backslash, query or fragment. Neither form grants destination authority; HTTPS remains inert. |
 
 These restrictions are a narrow candidate subset, not complete filename, MIME or URL validation. The codec neither opens the locator nor saves a file. Owned XML, keys and private metadata use zeroizing buffers; parser normalization and OS copies are not guaranteed erased. Errors do not expose descriptor contents.
 
@@ -25,4 +25,4 @@ On macOS 27.2 ARM64 with Rust 1.96, Apple Clang 21 and the existing OpenSSL 3.6.
 
 The [saved host evidence](evidence/attachment-metadata/README.md) preserves the executed variants, original failures, final commands and separate review. It does not rerun the tests.
 
-The codec itself does not encrypt or verify blob bytes, verify the asserted size or hash, or prove caller-supplied key freshness. Separate [experimental blob and explicit-save primitives](attachment-blobs-save.md) verify actual bytes against an authenticated descriptor and can save the verified value to a caller-selected local path. The codec does not route numeric device IDs, fetch or upload, store blobs durably, or transfer attachment bytes. The opt-in checkpoint stores descriptor keys; the existing `network-mail` adapter can deliver attachment messages; private bulk storage, recipient authorization and full file delivery remain separate work under [#88](https://github.com/gonz0w/faction-bbs/issues/88). The earlier [historical byte proof](research/0059-attachment-byte-proof.md) is a separate bounded observation and does not establish this descriptor's interoperability.
+The codec itself does not encrypt or verify blob bytes, verify the asserted size or hash, or prove caller-supplied key freshness. Separate [experimental blob and explicit-save primitives](attachment-blobs-save.md) verify actual bytes against an authenticated descriptor and can save the verified value to a caller-selected local path. The codec itself does not route numeric device IDs, fetch, upload or store blobs. The opt-in checkpoint stores descriptor keys. Separate [private storage and transfer](private-attachment-storage.md) APIs handle bounded ciphertext under an externally supplied trust policy; the broader requirements remain under [#88](https://github.com/gonz0w/faction-bbs/issues/88). The earlier [historical byte proof](research/0059-attachment-byte-proof.md) is a separate bounded observation and does not establish this descriptor's interoperability.

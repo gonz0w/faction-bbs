@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "issues": [
+    260,
+    261
+  ],
+  "base_commit": "c48ac5a564bad850b5c48def9ce51e97c756824f",
+  "observations_date": "2026-10-28",
+  "host_only": true,
+  "fresh_netbsd_execution": false,
+  "provider_deployment": false,
+  "device_attestation": false,
+  "dependency_inputs_unchanged": true,
+  "checks": {
+    "store": {
+      "passed": 16,
+      "ignored_child_helpers": 1,
+      "real_process_death_points": 5,
+      "expiry_publication_fault_points": 5
+    },
+    "network_client_library": {
+      "passed": 112,
+      "ignored_helpers": 5
+    },
+    "network_client_binary": {
+      "passed": 68,
+      "ignored_helpers": 3
+    },
+    "network_client_integration": {
+      "passed": 22
+    },
+    "omemo_focused": {
+      "passed": 14
+    },
+    "fixture_privacy_helper": {
+      "passed": 1
+    },
+    "default_client_and_files_all_targets": {
+      "passed": 64,
+      "ignored_helpers": 1
+    },
+    "python_tooling": {
+      "passed": 484
+    },
+    "new_python_helper_tests": {
+      "passed": 5
+    }
+  },
+  "failures_retained": [
+    "Missing store/transfer/wire interfaces before their producers",
+    "Exact private URN refused before descriptor extension",
+    "Ordinary Sync sent managed plus text wire before ordering guard",
+    "Clock rollback revived an expired object before watermark correction",
+    "Distinct missing/denied remote replies before uniform refusal",
+    "Missing whole-call deadline helper before implementation",
+    "Missing fixture helper/selector/namespace interfaces before their implementations",
+    "Fixture initialization attempted archive opt-in before peer enrollment",
+    "Fixture standalone parsing lost inherited stream namespace",
+    "Initial broad integration run refused a symlinked inherited TMPDIR; canonical /private/tmp rerun passed",
+    "Test-only compile and lint failures retained by implementers"
+  ],
+  "scope_notes": [
+    "Library and authenticated embedding contract; no stock provider plugin or member-facing attachment UI",
+    "Ciphertext spool and checkpoint are separate publications; an unqueued intent can leave a bounded opaque orphan",
+    "Per-session stanza/XML/event limits remain; upload may make a second sequential Session under one cooperative outer ten-second deadline",
+    "TLS byte counters are observed at the home fixture, not exported client guard telemetry",
+    "Store process-death points are distinct from deterministic integrated queue-failure/reopen characterization"
+  ],
+  "additional_local_checks_passed": [
+    "workspace formatting",
+    "files/native/network scoped Clippy with warnings denied",
+    "unchanged default/native/network dependency inventories and no-JS policy",
+    "repository links/policy/archive hashes",
+    "historical evidence-source guard"
+  ]
+}

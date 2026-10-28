@@ -418,3 +418,9 @@ format changes; older observations and their checksums are unchanged. This is
 source preservation, not a replay of those earlier runtime observations. The
 resolver regression checks resolution after a simulated live-source edit and
 refuses a changed baseline manifest.
+
+[Automatic private attachment evidence](attachment-transfer/README.md) records
+bounded ciphertext storage, genuine test-first corrections and actual two-home
+TLS upload/offline fetch with explicit save. Exact inputs, failed-run distinctions,
+private capture retention and owned cleanup remain separate from provider adoption,
+cryptographic device attestation, NetBSD qualification and capacity support.

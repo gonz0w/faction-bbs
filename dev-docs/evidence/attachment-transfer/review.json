@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "role": "temper_reviewer via explicit Sol/high mapping",
+  "native_role_and_backend_metadata_verified": false,
+  "review_type": "read-only second examination, not independent assurance",
+  "integrated_input_manifest_sha256": "718087020efc2e3a88f2ab9ecc4b7a5f8f6a66954d7597789ecdf959b0348c76",
+  "executed_tls_input_manifest_sha256": "e14b12d82778c7e5ef3687f53a837e47c6dd86a4c861b318bec1678c1fcdc72d",
+  "blocking_source_findings_remaining": 0,
+  "resolved_findings": [
+    "authorized expiry observation was not durable",
+    "remote failure classes exposed object presence",
+    "whole operation needed one timeout across sequential sessions"
+  ],
+  "reviewer_recompiled": false,
+  "source_hash_whitespace_and_original_execution_records_reviewed": true,
+  "publication_metadata_review": "accepted after separate source/archive/mode/manifest/member/cleanup/privacy verification",
+  "hosted_checks": "required separately on exact PR head/current main"
+}

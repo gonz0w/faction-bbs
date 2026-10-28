@@ -63,10 +63,20 @@ impl Descriptor {
         {
             return Err(Error);
         }
-        let rest = locator.strip_prefix("https://").ok_or(Error)?;
-        let authority = rest.split('/').next().ok_or(Error)?;
-        if authority.is_empty() || authority.contains('@') {
-            return Err(Error);
+        if let Some(digest) = locator.strip_prefix("urn:faction:blob:1:") {
+            if digest.len() != 64
+                || !digest
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+            {
+                return Err(Error);
+            }
+        } else {
+            let rest = locator.strip_prefix("https://").ok_or(Error)?;
+            let authority = rest.split('/').next().ok_or(Error)?;
+            if authority.is_empty() || authority.contains('@') {
+                return Err(Error);
+            }
         }
         self.size.checked_add(16).ok_or(Error)?;
         Ok(())

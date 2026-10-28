@@ -1,6 +1,7 @@
 //! Versioned bounded policy IPC. Never carries file bytes or BBS credentials.
 #![forbid(unsafe_code)]
 pub mod native;
+pub mod private_blobs;
 use std::{
     io::{self, Read, Write},
     os::{fd::AsFd, unix::net::UnixStream},

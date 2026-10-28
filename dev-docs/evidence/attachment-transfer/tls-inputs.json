@@ -1,0 +1,19 @@
+{
+  "files": {
+    "crates/faction-client/src/lib.rs": "750caef3421c265798f46ab918b646d1eedad9afa2795313023bfb5fef18017c",
+    "crates/faction-client/src/mail_network.rs": "fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20",
+    "crates/faction-client/src/mail_blob_transfer.rs": "062aef4c9be785562d455872d3c915ae026e7ba55e307f31baf3171376c9a703",
+    "crates/faction-client/src/mail_blob_wire.rs": "37976ea0a847d3bb905eaf8834e11946234de8fc6b37b00b7d1fd341315cc7b4",
+    "crates/faction-client/examples/mail_blob_fixture.rs": "8e903094728db1984521771b946be7fe08ca6e97a0b970dab6e0d52cc7f144d9",
+    "crates/faction-files/src/lib.rs": "243489821834ee348de567a4d69b3fb6ffcffe312cd9b3eedf781d5ac6e6d6ca",
+    "crates/faction-files/src/private_blobs.rs": "772cd79d9a3a38196495c0493cb1f963c5cf61753bf7f56b4344d977d96d1afd",
+    "crates/faction-files/src/private_blobs/codec.rs": "74aef2476b13296003d39b6cda76d97dbadca4dc3511b1dd03740d8f84452b7d",
+    "crates/faction-files/src/private_blobs/disk.rs": "4d8f383d143c548c8b94561b0ff926ec02c46642a6fb91b3c46d0ae55e9a791f",
+    "crates/faction-omemo/src/attachment.rs": "fd2f7337b462689ab581ff96893ee0b3440e1c964fd22311c8dfebe6e612f102",
+    "tools/probe_attachment_transfer.py": "2064de1cad1276cd7f4a0420a1bdfd5f2ac59c2e6909622565efea12d60fedc3",
+    "tools/test_probe_attachment_transfer.py": "d8ba41c5c4aa864801820f8cae6a13713a6ecedeb17bb175a74b9570d4934127",
+    "tools/probe_xmpp_transport.py": "79c730d3c2e82354589c456947684f93bd284df46ed2b9516675286b3a6f57ff"
+  },
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "binary_sha256": "9d7d6268ed4fb42d6112363795396e26de002913e683fd20ee0d55ecd5441424"
+}

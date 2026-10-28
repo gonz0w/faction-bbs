@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "capture_roots": [
+    {
+      "root_name": "faction260-store-OWNED",
+      "owner_and_marker_verified": true,
+      "lsof_exit": 1,
+      "lsof_output_empty": true
+    },
+    {
+      "root_name": "faction261-transfer-OWNED",
+      "owner_and_marker_verified": true,
+      "lsof_exit": 1,
+      "lsof_output_empty": true
+    },
+    {
+      "root_name": "faction260-261-lead-OWNED",
+      "owner_and_marker_verified": true,
+      "lsof_exit": 1,
+      "lsof_output_empty": true
+    }
+  ],
+  "all_owned_work_roots_removed": true,
+  "private_archive_retained": true,
+  "private_archive_sha256": "d17cee3a21947c94f065f6db86eced7adf7e8aa368660d8d9696e361732ff9e7",
+  "owner_playground_started_or_changed": false
+}
