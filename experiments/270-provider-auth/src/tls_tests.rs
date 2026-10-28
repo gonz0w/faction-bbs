@@ -207,6 +207,31 @@ fn binding() -> Binding {
         expires: t + 100,
     }
 }
+fn connection_is_refused(addr: SocketAddr) -> bool {
+    // NetBSD can report write readiness with a pending socket error. Require
+    // actual refusal, including when connect_timeout returns apparent success.
+    match TcpStream::connect_timeout(&addr, Duration::from_millis(100)) {
+        Err(error) => error.kind() == io::ErrorKind::ConnectionRefused,
+        Ok(stream) => matches!(
+            stream.take_error(),
+            Ok(Some(error)) if error.kind() == io::ErrorKind::ConnectionRefused
+        ),
+    }
+}
+#[test]
+fn refused_connection_observer_rejects_live_and_retained_listeners() {
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    assert!(!connection_is_refused(addr), "live listener is reachable");
+    let retained = listener.try_clone().unwrap();
+    drop(listener);
+    assert!(
+        !connection_is_refused(addr),
+        "retained listener is still reachable"
+    );
+    drop(retained);
+    assert!(connection_is_refused(addr), "final listener is closed");
+}
 fn cycle<T>(
     server: &mut Server,
     a: &mut Authority,
@@ -229,7 +254,7 @@ fn cycle<T>(
         (value, report)
     });
     drop(listener);
-    assert!(TcpStream::connect_timeout(&addr, Duration::from_millis(100)).is_err());
+    assert!(connection_is_refused(addr));
     result
 }
 #[test]

@@ -45,7 +45,8 @@ It requires client certificate verification and checks the server CA, name and
 exact leaf pin; leaf validity is checked on each dispatch. It disables 0-RTT,
 tickets and resumption. Synthetic certificate keys are held in memory. Actual
 runtime observations and their scope belong in the
-[evidence record](evidence/provider-authority/README.md), not in this contract.
+[host evidence](evidence/provider-authority/README.md) and
+[native NetBSD evidence](evidence/provider-authority-netbsd/README.md), not in this contract.
 The deadline is cooperative at the filesystem boundary and cannot preempt a
 blocked filesystem operation.
 
@@ -56,6 +57,6 @@ resolve the outcome. The existing [storage contract](private-attachment-storage.
 retains its object, byte, chunk and retention limits.
 
 This experiment does not implement a provider, own-home delegated transport,
-independent client interoperability, hardware attestation or a new NetBSD runtime
-qualification. Mail and attachment private keys and decryption remain on the member
-device. The ordinary classic, SSH and UI paths retain their existing limits.
+independent client interoperability or hardware attestation. The native NetBSD
+serial and default-parallel runs are bounded software evidence, not provider or production
+support. Mail and attachment private keys and decryption remain on the member device. The ordinary classic, SSH and UI paths retain their existing limits.

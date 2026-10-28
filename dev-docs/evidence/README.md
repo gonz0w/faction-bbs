@@ -453,3 +453,7 @@ their qualification fields remain unchanged.
 [Provider authority evidence](provider-authority/README.md) records the isolated
 synthetic authority and TLS experiment separately from provider deployment and
 previous attachment qualifications.
+
+[Native NetBSD provider-authority qualification](provider-authority-netbsd/README.md) records
+the original refusal-observer failure, test-first correction and complete native
+authority/TLS controls, separately from historical host evidence and provider adoption.

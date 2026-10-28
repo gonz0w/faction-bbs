@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "original_source_commit": "39bfd2cecf5d073665d5f8a73349ad37fe9de0f2",
+  "original_binary_sha256": "7530ac7bc3d4a5d836de44daea6b50b41c6149ca0b019059b7af0ab3db4679e2",
+  "original_source_tls_tests_sha256": "04359a6a1f62da777b88708f6931f3642241f739aba20bc3c1d38316e25f5cc9",
+  "original_runs": {
+    "native-guard": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.7315609455108643,
+      "test_summaries": [],
+      "test_names": []
+    },
+    "native-build": {
+      "exit_code": 0,
+      "elapsed_seconds": 15.805763959884644,
+      "test_summaries": [],
+      "test_names": []
+    },
+    "native-serial": {
+      "exit_code": 101,
+      "elapsed_seconds": 27.759181022644043,
+      "test_summaries": [
+        "FAILED. 12 passed; 10 failed; 0 ignored; 0 measured; 0 filtered out; finished in 27.53s"
+      ],
+      "test_names": [
+        "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+        "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+        "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+        "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+        "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+        "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+        "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+        "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+        "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+        "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+        "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+        "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+        "tls::tests::actual_verified_sender_upload_then_exact_recipient_download_and_retry",
+        "tls::tests::cancellation_and_trickle_recompute_the_same_absolute_io_deadline",
+        "tls::tests::deadline_regression_client_rechecks_after_successful_tls_before_pin_admission",
+        "tls::tests::deadline_regression_server_rechecks_after_successful_tls_before_authority",
+        "tls::tests::deadline_regression_tcp_wait_and_tls_share_one_five_second_admission_budget",
+        "tls::tests::eight_attempts_quota_conflicting_duplicate_and_lost_response_recovery",
+        "tls::tests::forged_binding_and_malformed_oversized_or_trailing_frames_do_not_mutate",
+        "tls::tests::live_policy_changes_and_actual_leaf_expiry_deny_the_next_operation",
+        "tls::tests::real_stalled_handshake_and_frame_observe_five_and_ten_second_absolute_limits",
+        "tls::tests::tls_refusals_have_actual_stages_and_zero_application_dispatch"
+      ]
+    },
+    "native-parallel": {
+      "exit_code": 101,
+      "elapsed_seconds": 28.258255004882812,
+      "test_summaries": [
+        "FAILED. 12 passed; 10 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.16s"
+      ],
+      "test_names": [
+        "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+        "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+        "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+        "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+        "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+        "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+        "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+        "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+        "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+        "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+        "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+        "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+        "tls::tests::actual_verified_sender_upload_then_exact_recipient_download_and_retry",
+        "tls::tests::cancellation_and_trickle_recompute_the_same_absolute_io_deadline",
+        "tls::tests::deadline_regression_client_rechecks_after_successful_tls_before_pin_admission",
+        "tls::tests::deadline_regression_server_rechecks_after_successful_tls_before_authority",
+        "tls::tests::deadline_regression_tcp_wait_and_tls_share_one_five_second_admission_budget",
+        "tls::tests::eight_attempts_quota_conflicting_duplicate_and_lost_response_recovery",
+        "tls::tests::forged_binding_and_malformed_oversized_or_trailing_frames_do_not_mutate",
+        "tls::tests::live_policy_changes_and_actual_leaf_expiry_deny_the_next_operation",
+        "tls::tests::real_stalled_handshake_and_frame_observe_five_and_ten_second_absolute_limits",
+        "tls::tests::tls_refusals_have_actual_stages_and_zero_application_dispatch"
+      ]
+    },
+    "native-store": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.4911229610443115,
+      "test_summaries": [
+        "ok. 7 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.19s",
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s"
+      ],
+      "test_names": [
+        "native::tests::native_controls_are_versioned_bounded_and_strictly_framed",
+        "private_blobs::disk::tests::actual_process_death_at_each_boundary_reopens_exact_old_or_new_snapshot",
+        "private_blobs::disk::tests::an_inherited_open_description_retains_the_lock_until_the_last_reference_closes",
+        "private_blobs::disk::tests::authorized_expiry_clock_publication_failures_preserve_poison_and_uncertainty",
+        "private_blobs::disk::tests::death_helper",
+        "private_blobs::disk::tests::each_write_sync_and_publication_error_poison_requires_safe_reopen",
+        "private_blobs::disk::tests::fixture_lifetime_excludes_other_store_and_process_launch_windows",
+        "tests::malformed_or_unbounded_policy_frames_have_no_interpretation",
+        "transfer::tests::file_store_refuses_symlink_hardlink_and_untrusted_mode",
+        "an_authorized_expiry_observation_survives_reopen_and_cannot_revive_by_rollback",
+        "an_unauthorized_future_request_neither_advances_clock_nor_discloses_expiry",
+        "canonical_codecs_reject_unknown_truncated_trailing_invalid_and_oversized_input",
+        "every_current_policy_gate_and_exact_principal_binding_precede_disclosure_or_mutation",
+        "exact_retries_are_immutable_and_digest_length_offsets_and_chunks_fail_closed",
+        "filesystem_refuses_links_permissions_corruption_and_live_lock_without_unlink",
+        "incomplete_reservations_count_expiry_never_renews_and_explicit_owner_cleanup_is_authorized",
+        "maximum_complete_ciphertext_reopens_verified_with_bounded_regular_file_bytes",
+        "partial_ciphertext_survives_reopen_and_recipient_only_reads_committed_exact_bytes",
+        "successful_read_highwater_is_durable_and_rollback_denials_do_not_change_storage"
+      ]
+    }
+  },
+  "original_commands": {
+    "native-build": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline --no-run",
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml -p faction-files --all-targets --release --locked --offline --no-run",
+      "cargo clippy --manifest-path experiments/270-provider-auth/Cargo.toml --all-targets --release --locked --offline -- -D warnings"
+    ],
+    "native-serial": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline -- --test-threads=1 --nocapture"
+    ],
+    "native-parallel": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline -- --nocapture"
+    ],
+    "native-store": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml -p faction-files --all-targets --release --locked --offline -- --test-threads=1 --nocapture"
+    ]
+  },
+  "original_failed_assertion": "tls_tests.rs:232; apparent connect_timeout success after sole listener drop. Later per-function variants were not all reached.",
+  "observer_tdd": {
+    "red_source_sha256": "6ebcfcb677d95d22e0f7bd7e93703a66d0c30f8a6e27e29933eab7517578799e",
+    "red_binary_sha256": "2996c227c6ff5543aec048fb0cf4a22a86f34abbbf06f6fb8ba8b9665d0a7160",
+    "red_observed": "live and retained listener checks pass; final-drop closure predicate fails",
+    "green_source_sha256": "75c1ce6c8ce302ee7db187b846dfbb7a77bbe7c65de3442b7bc42b5a34fd87b6",
+    "green_binary_sha256": "3554eda13e04206898fed0f370062ac62b665c1ef825f361a1fa119eb6b2f375",
+    "green_observed": "identical focused native regression passes",
+    "refactor": "No further refactor; test-only helper remains one original 100-ms probe requiring actual ConnectionRefused."
+  },
+  "observer_red_snapshot": "sources/observer-red.rs",
+  "observer_green_snapshot": "sources/tls_tests.rs",
+  "observer_runs": {
+    "native-observer-red": {
+      "exit_code": 101,
+      "elapsed_seconds": 1.5850303173065186,
+      "test_summaries": [
+        "FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s"
+      ],
+      "test_names": [
+        "tls::tests::refused_connection_observer_rejects_live_and_retained_listeners"
+      ]
+    },
+    "native-observer-green": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.6143808364868164,
+      "test_summaries": [
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.00s"
+      ],
+      "test_names": [
+        "tls::tests::refused_connection_observer_rejects_live_and_retained_listeners"
+      ]
+    }
+  },
+  "observer_commands": {
+    "native-observer-red": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline tls::tests::refused_connection_observer_rejects_live_and_retained_listeners -- --exact --nocapture"
+    ],
+    "native-observer-green": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline tls::tests::refused_connection_observer_rejects_live_and_retained_listeners -- --exact --nocapture"
+    ]
+  },
+  "native_socket_diagnostic": {
+    "revision": 2,
+    "positive_live_listener_and_byte_control": true,
+    "negative_connect_timeout_returned_ok": true,
+    "negative_immediate_so_error_errno": 61,
+    "negative_peer_addr_errno": 57,
+    "negative_local_addr_errno": 22,
+    "negative_read_eof": true,
+    "negative_write_errno": 32,
+    "python_closed_port_errno": 61,
+    "rust_observation_total_us": 114,
+    "outer_observation_seconds": 0.0028961250000065775,
+    "source_sha256": "311ec828d015f45c7d02cb07f0c9fe5960a5846d5c0965cd7fc01acbe0407f22",
+    "binary_sha256": "2f30c6e20d1c2bc576021887b22b4c80fcf211f6efb94f81103550f84472a4fe"
+  },
+  "setup_notes": [
+    "Native Cargo source cache was empty; exact qualified sources and needed inert index metadata were staged offline from existing host cache.",
+    "Broader 66-package host cache archive was never staged in the guest; the selected source archive contained 39 packages across the three qualified target graphs.",
+    "Two administrative PATH failures and the first diagnostic failing after socket-state observations are setup/diagnostic failures, not product RED or passing controls.",
+    "Original failures, diagnostic variants, commands, executed bytes and rejected candidates are retained privately."
+  ],
+  "no_retrospective_or_waived_red": true
+}

@@ -22,8 +22,12 @@ TCP/TLS admission delay also denied without dispatch; the owned handler joined w
 refused further connections. No fixture roots remained. These host observations
 do not establish a NetBSD, hardware or capacity result.
 
-[Evidence](../../dev-docs/evidence/provider-authority/README.md) records source,
-runtime observations and their limits.
+[Host evidence](../../dev-docs/evidence/provider-authority/README.md) records those
+original observations. A separate [native NetBSD record](../../dev-docs/evidence/provider-authority-netbsd/README.md)
+records serial and default-parallel runs of 23 tests each: the original 22
+controls and one TCP-observer regression. The native source starts from accepted revision `39bfd2c` with a
+test-only closure-observer correction; production Rust and default paths are
+unchanged. The historical host record remains bound to its original source.
 
 ## Reproducing the isolated checks
 

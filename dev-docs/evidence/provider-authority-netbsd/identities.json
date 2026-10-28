@@ -1,0 +1,209 @@
+{
+  "tools": {
+    "rustc": {
+      "identity": {
+        "path": "/usr/pkg/bin/rustc",
+        "resolved_path": "/usr/pkg/bin/rustc",
+        "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb",
+        "bytes": 14128
+      },
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-unknown-netbsd\nrelease: 1.96.0\nLLVM version: 22.1.2"
+    },
+    "cargo": {
+      "identity": {
+        "path": "/usr/pkg/bin/cargo",
+        "resolved_path": "/usr/pkg/bin/cargo",
+        "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42",
+        "bytes": 43795088
+      },
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)"
+    },
+    "cc": {
+      "identity": {
+        "path": "/usr/bin/cc",
+        "resolved_path": "/usr/bin/cc",
+        "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242",
+        "bytes": 1419696
+      },
+      "version": "cc (nb3 20260326) 12.5.0\nCopyright (C) 2022 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    },
+    "openssl": {
+      "identity": {
+        "path": "/usr/bin/openssl",
+        "resolved_path": "/usr/bin/openssl",
+        "sha256": "29a8c4bd9def254d973ca9946fced30a89f95e914a46f1e42333a25b5e303627",
+        "bytes": 7572992
+      },
+      "version": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)\nNetBSD 11.0\nNetBSD-aarch64\noptions:  bn(64,64)\ngcc version 12.5.0 (NetBSD nb3 20260326) \nOPENSSLDIR: \"/etc/openssl\"\nENGINESDIR: \"/usr/lib/openssl/engines\"\nMODULESDIR: \"/usr/lib/openssl/modules\"\nSeeding source: os-specific\nCPUINFO: OPENSSL_armcap=0x87d"
+    },
+    "rustfmt": {
+      "identity": {
+        "path": "/usr/pkg/bin/rustfmt",
+        "resolved_path": "/usr/pkg/bin/rustfmt",
+        "sha256": "8d10878f8e44214ced0050ac3f953315485671958d5aa4c5c2be94fbbb0b25a9",
+        "bytes": 6824568
+      },
+      "version": "rustfmt 1.9.0-stable (f246580199 2026-05-28)"
+    },
+    "cargo-clippy": {
+      "identity": {
+        "path": "/usr/pkg/bin/cargo-clippy",
+        "resolved_path": "/usr/pkg/bin/cargo-clippy",
+        "sha256": "1437f57ffe3ac2caf98e0af5b5e2392b98951b539242c5cbcfaf333c2afa75bd",
+        "bytes": 1832248
+      },
+      "version": "clippy 0.1.96 (f246580199 2026-05-28)"
+    },
+    "python3.13": {
+      "identity": {
+        "path": "/usr/pkg/bin/python3.13",
+        "resolved_path": "/usr/pkg/bin/python3.13",
+        "sha256": "07f1f1fc61dbb8823d9219a9a35dd0ce81f9c5526d74f5a5dde5fe9509266ec7",
+        "bytes": 68584
+      },
+      "version": "Python 3.13.14"
+    }
+  },
+  "loader": {
+    "path": "/usr/libexec/ld.elf_so",
+    "resolved_path": "/libexec/ld.elf_so",
+    "sha256": "0620b2dd6ab034293bda220a88eb1801ae7eaf01c7e272721e924cc5c3556a07",
+    "bytes": 228016
+  },
+  "openssl_headers": {
+    "/usr/include/openssl/opensslv.h": {
+      "path": "/usr/include/openssl/opensslv.h",
+      "resolved_path": "/usr/include/openssl/opensslv.h",
+      "sha256": "256985d6271826835673eb59dec8369dbbead0b5055864b8b7e69effac426e52",
+      "bytes": 3447
+    },
+    "/usr/include/openssl/ssl.h": {
+      "path": "/usr/include/openssl/ssl.h",
+      "resolved_path": "/usr/include/openssl/ssl.h",
+      "sha256": "da3d4ac8623a3e6619b20e3fb8fb34b943b510588c361e6716d036e8c0d1ebc3",
+      "bytes": 122031
+    }
+  },
+  "binaries": {
+    "faction_provider_auth_research-0bbce5cff88d90d9": {
+      "sha256": "3554eda13e04206898fed0f370062ac62b665c1ef825f361a1fa119eb6b2f375",
+      "bytes": 1639400,
+      "file_description": "ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /usr/libexec/ld.elf_so, for NetBSD 11.0, not stripped",
+      "resolved_libraries": {
+        "/lib/libcrypt.so.1": {
+          "path": "/lib/libcrypt.so.1",
+          "resolved_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "bytes": 80048
+        },
+        "/usr/lib/libc.so.12": {
+          "path": "/usr/lib/libc.so.12",
+          "resolved_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "bytes": 2644584
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "path": "/usr/lib/libcrypto.so.16",
+          "resolved_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "bytes": 6244640
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "path": "/usr/lib/libgcc_s.so.1",
+          "resolved_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "bytes": 149040
+        },
+        "/usr/lib/libpthread.so.1": {
+          "path": "/usr/lib/libpthread.so.1",
+          "resolved_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "bytes": 166600
+        },
+        "/usr/lib/libssl.so.16": {
+          "path": "/usr/lib/libssl.so.16",
+          "resolved_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509",
+          "bytes": 1262704
+        }
+      }
+    },
+    "faction_files-c9cfc506bb2ebff6": {
+      "sha256": "2c9720f66d457652c84bf99dc453ac88bf499dc1865b25370ae1110ca077b2fe",
+      "bytes": 1292168,
+      "file_description": "ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /usr/libexec/ld.elf_so, for NetBSD 11.0, not stripped",
+      "resolved_libraries": {
+        "/usr/lib/libc.so.12": {
+          "path": "/usr/lib/libc.so.12",
+          "resolved_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "bytes": 2644584
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "path": "/usr/lib/libgcc_s.so.1",
+          "resolved_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "bytes": 149040
+        },
+        "/usr/lib/libpthread.so.1": {
+          "path": "/usr/lib/libpthread.so.1",
+          "resolved_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "bytes": 166600
+        }
+      }
+    },
+    "faction_files-732f678b17299799": {
+      "sha256": "e62f5077af9d6f9774b1e01bdcb4d7c7129aab132438e2a1ee3f6edaf0116f0e",
+      "bytes": 1098184,
+      "file_description": "ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /usr/libexec/ld.elf_so, for NetBSD 11.0, not stripped",
+      "resolved_libraries": {
+        "/usr/lib/libc.so.12": {
+          "path": "/usr/lib/libc.so.12",
+          "resolved_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "bytes": 2644584
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "path": "/usr/lib/libgcc_s.so.1",
+          "resolved_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "bytes": 149040
+        },
+        "/usr/lib/libpthread.so.1": {
+          "path": "/usr/lib/libpthread.so.1",
+          "resolved_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "bytes": 166600
+        }
+      }
+    },
+    "private_blobs-7436aa5282257498": {
+      "sha256": "8174f59360abca058d9b770027cd575dc4f23b2479ad441f8be48755fe79341b",
+      "bytes": 1261016,
+      "file_description": "ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /usr/libexec/ld.elf_so, for NetBSD 11.0, not stripped",
+      "resolved_libraries": {
+        "/usr/lib/libc.so.12": {
+          "path": "/usr/lib/libc.so.12",
+          "resolved_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "bytes": 2644584
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "path": "/usr/lib/libgcc_s.so.1",
+          "resolved_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "bytes": 149040
+        },
+        "/usr/lib/libpthread.so.1": {
+          "path": "/usr/lib/libpthread.so.1",
+          "resolved_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "bytes": 166600
+        }
+      }
+    }
+  },
+  "schema": 1,
+  "scope": "Observed native tools, selected files, ELF and ldd-resolved libraries; not a hermetic build or whole-loader attestation"
+}
