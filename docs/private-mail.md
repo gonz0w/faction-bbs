@@ -114,18 +114,9 @@ E2EE envelope. Treat remote locators as untrusted, enforce destination/size/time
 bounds and require local confirmation before saving. Never send a private attachment
 through the current sysop-readable file area and call it server-blind.
 
-The [attachment profile comparison](../dev-docs/research/0058-encrypted-attachment-profile.md)
-proposes a bounded experiment using structured XEP-0447/0448 metadata inside
-authenticated OMEMO/SCE. This is research, not an adopted format or an available
-attachment feature. A [local byte proof](../dev-docs/research/0059-attachment-byte-proof.md)
-matched bounded historical AES-256-GCM inputs with an unchanged reference on one
-macOS host ([saved evidence](../dev-docs/evidence/attachment-bytes/README.md)). It also retained reference chunk decryption failures; it does not qualify
-streaming or private delivery. An [experimental native metadata codec](../dev-docs/attachment-metadata.md)
-now handles one bounded descriptor inside authenticated SCE; current mail
-checkpoints reject it and attachments are not available for delivery. Separate [experimental device-library primitives](../dev-docs/attachment-blobs-save.md) encrypt and verify bounded bytes and explicitly save verified bytes locally, but do not make attachments available in mail or establish modern-client interoperability. Authenticated private
-storage, recipient authorization and durable attachment keys remain unproven.
-Historical XEP-0454 is a byte-level comparison, not the candidate format. Necessary
-routing, sizes and timing can still be visible; there is no plaintext fallback.
+The experimental native library now supports [durable attachment messages](../dev-docs/attachment-mail.md) after explicit checkpoint opt-in. The encrypted history retains the descriptor and device-private key material; the existing `network-mail` feature and adapter carry the encrypted message over the home network. The `native-mail` feature alone supplies local checkpoint, queue, receive and consumption APIs. A trusted local caller must retain and supply the separate ciphertext to verify it against a retained received record and explicitly choose a destination to save it. There is no attachment UI or automatic upload, fetch or bulk-byte storage. The locator is inert. Classic access and text mail remain available.
+
+The [attachment profile comparison](../dev-docs/research/0058-encrypted-attachment-profile.md), [metadata codec](../dev-docs/attachment-metadata.md), and [blob and safe-save primitives](../dev-docs/attachment-blobs-save.md) describe the narrow experiments and their limits. This does not establish private storage or authorization, quotas, expiry, two-home bulk delivery, modern-client interoperability or fresh NetBSD qualification. Those original requirements remain open under #88. Necessary routing, sizes and timing can still be visible; there is no plaintext fallback.
 
 ## What the proof does and does not establish
 

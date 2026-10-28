@@ -1,0 +1,554 @@
+{
+  "schema": 1,
+  "issues": [
+    257,
+    258
+  ],
+  "base_revision": "0880fbd0d047f30ee2361a32a276b8d18b954d5a",
+  "scope": "Generated public facts and reviewed current implementation/test/document inputs only. No raw local capture corpus, execution log, member state, private endpoint or runtime artifact is published.",
+  "sources": {
+    "crates/faction-client/src/attachment_checkpoint_tests.rs": {
+      "sha256": "7ddb80362798a237a8ac4f7e5f81f811da94428cc3fc4309ca0eefca0670df8b",
+      "snapshot": "sources/7ddb80362798a237a8ac4f7e5f81f811da94428cc3fc4309ca0eefca0670df8b.rs"
+    },
+    "crates/faction-client/src/lib.rs": {
+      "sha256": "2837086fc8e2128a503ad4396b7300a63316e7d7d05fb7c8796e548ad92b5fef",
+      "snapshot": "sources/2837086fc8e2128a503ad4396b7300a63316e7d7d05fb7c8796e548ad92b5fef.rs"
+    },
+    "crates/faction-client/src/mail_attachments.rs": {
+      "sha256": "1daf417e7f65a39215df5d161f11ac9e1e9f48c2a5fd64a87c4d350da3c7e6c4",
+      "snapshot": "sources/1daf417e7f65a39215df5d161f11ac9e1e9f48c2a5fd64a87c4d350da3c7e6c4.rs"
+    },
+    "crates/faction-client/src/mail_checkpoint.rs": {
+      "sha256": "5cf83aefb55288b42d9370b24e058ca2a35874e4189c2b5be74404ac10fb0087",
+      "snapshot": "sources/5cf83aefb55288b42d9370b24e058ca2a35874e4189c2b5be74404ac10fb0087.rs"
+    },
+    "crates/faction-client/src/mail_network.rs": {
+      "sha256": "f1bf5de33d3e5cad511459724131b91c789709bc585524f55644fe718607e36e",
+      "snapshot": "sources/f1bf5de33d3e5cad511459724131b91c789709bc585524f55644fe718607e36e.rs"
+    },
+    "crates/faction-client/tests/attachment_checkpoint_schema.rs": {
+      "sha256": "3510bcd1e12f53131d930a474eae8063796c712705a3ec24fb300b7295f408f5",
+      "snapshot": "sources/3510bcd1e12f53131d930a474eae8063796c712705a3ec24fb300b7295f408f5.rs"
+    },
+    "crates/faction-client/tests/attachment_checkpoint_transactions.rs": {
+      "sha256": "6439006b39105e5c3a4db934922d666ea8fe5b85ba4b985f3a288da55d13a660",
+      "snapshot": "sources/6439006b39105e5c3a4db934922d666ea8fe5b85ba4b985f3a288da55d13a660.rs"
+    },
+    "crates/faction-client/tests/attachment_mail_delivery.rs": {
+      "sha256": "98d9aa3f3ee905ef693fc845a1f814de861333d8465e2f272a21c5886d483a65",
+      "snapshot": "sources/98d9aa3f3ee905ef693fc845a1f814de861333d8465e2f272a21c5886d483a65.rs"
+    },
+    "crates/faction-omemo/src/attachment.rs": {
+      "sha256": "190eef51c8576102496625da83de2053d4d09708a3366cb9eab1495ba5e90bd6",
+      "snapshot": "sources/190eef51c8576102496625da83de2053d4d09708a3366cb9eab1495ba5e90bd6.rs"
+    },
+    "dev-docs/attachment-blobs-save.md": {
+      "sha256": "ec4afd04b191ef96e60d588448d18d1afdd86b87b1d1b9c568f6effb7836d9b7",
+      "snapshot": "sources/ec4afd04b191ef96e60d588448d18d1afdd86b87b1d1b9c568f6effb7836d9b7.md.txt"
+    },
+    "dev-docs/attachment-mail.md": {
+      "sha256": "949026b736ef4f62f9bc7aeb5881ee82b227f8ce54cb48be155c5542e0c9bbce",
+      "snapshot": "sources/949026b736ef4f62f9bc7aeb5881ee82b227f8ce54cb48be155c5542e0c9bbce.md.txt"
+    },
+    "dev-docs/attachment-metadata.md": {
+      "sha256": "7f1895cd7d82fff19481a77adf627ca4e86e9d5ec53edbce3c6013ffce3583da",
+      "snapshot": "sources/7f1895cd7d82fff19481a77adf627ca4e86e9d5ec53edbce3c6013ffce3583da.md.txt"
+    },
+    "dev-docs/evidence/README.md": {
+      "sha256": "0b9dd42e011afce31c524b04db8a95480d7667c2aa0d6019d377fea1f61c2935",
+      "snapshot": "sources/0b9dd42e011afce31c524b04db8a95480d7667c2aa0d6019d377fea1f61c2935.md.txt"
+    },
+    "dev-docs/evidence/attachment-mail-baseline-manifest.json": {
+      "sha256": "f05fb99731a60d83a77a96f71e1982bd8957cccef215001736026b303f2ca965",
+      "snapshot": "sources/f05fb99731a60d83a77a96f71e1982bd8957cccef215001736026b303f2ca965.json"
+    },
+    "dev-docs/native-mail-checkpoints.md": {
+      "sha256": "c73d9733d86bde9877929759bf50dde4cf9aed25f17d55835cc1c28170fd0f51",
+      "snapshot": "sources/c73d9733d86bde9877929759bf50dde4cf9aed25f17d55835cc1c28170fd0f51.md.txt"
+    },
+    "docs/private-mail.md": {
+      "sha256": "9e36138712f40a0502afd483f68e85567c00171d0ef00119f6d48ad15a3b1890",
+      "snapshot": "sources/9e36138712f40a0502afd483f68e85567c00171d0ef00119f6d48ad15a3b1890.md.txt"
+    },
+    "tools/evidence_sources.py": {
+      "sha256": "ce878857bd31099fd6558a6e9a57b7e3ef7fe2dc54fc3c882e108b6909bb6df6",
+      "snapshot": "sources/ce878857bd31099fd6558a6e9a57b7e3ef7fe2dc54fc3c882e108b6909bb6df6.py"
+    },
+    "tools/test_evidence_decode_cache.py": {
+      "sha256": "0aa33bd2b138394ae1ddf3ee9de6a11bccaa952c314fa1e9d4476f8eca5f921e",
+      "snapshot": "sources/0aa33bd2b138394ae1ddf3ee9de6a11bccaa952c314fa1e9d4476f8eca5f921e.py"
+    },
+    "tools/test_evidence_sources.py": {
+      "sha256": "3ccfcce5c9e133ef0d4d199e1420652906d157a862be06fdac54758559273829",
+      "snapshot": "sources/3ccfcce5c9e133ef0d4d199e1420652906d157a862be06fdac54758559273829.py"
+    }
+  },
+  "core_observed_chronology": [
+    {
+      "stage": "red-api",
+      "log": "257.log",
+      "exit": 101,
+      "original_log_sha256": "c409d645a518a06902ac861292f58c02061170f9f6e3fdc7f5478c76a700fb1d"
+    },
+    {
+      "stage": "red-api",
+      "log": "258.log",
+      "exit": 101,
+      "original_log_sha256": "9a8343b18ec855c14e5c30f5958a45cff6d5d4553f06b6caa13553dd5430027a"
+    },
+    {
+      "stage": "green01",
+      "log": "run.log",
+      "exit": 0,
+      "original_log_sha256": "51221d0d42eaa059451e6fff4f3a0577b45f9ea07f4e1f9f50ddd9f3d1873d7a",
+      "private_passed": 5,
+      "private_ignored": 1,
+      "public_harnesses_filtered": true
+    },
+    {
+      "stage": "green02-public",
+      "log": "run.log",
+      "exit": 0,
+      "original_log_sha256": "dbce5983a2944675a63fc837d1e4ec19b07003427a35dac94fb86ed4c51b29a5",
+      "public_schema_passed": 1,
+      "public_transactions_passed": 4
+    },
+    {
+      "stage": "green03-private",
+      "log": "run.log",
+      "exit": 0,
+      "original_log_sha256": "4c8bbef44035972d9abd3303a162d0f6e3ee1d138adb88c4b8ecf30263a62dd5",
+      "private_passed": 11,
+      "private_ignored": 1,
+      "prebounded_status_helper": true
+    },
+    {
+      "stage": "red-bounded-helper",
+      "log": "run.log",
+      "exit": 101,
+      "original_log_sha256": "4d10b234b04e33ec852872ba0e88bf54b4355a3fe98a47d6738a5a351a548860"
+    },
+    {
+      "stage": "green-bounded-helper",
+      "log": "run.log",
+      "exit": 0,
+      "original_log_sha256": "ca370d63e413f91a7087400a17de72ebddcc70f5bfedc647135a56f62cd60f5e",
+      "passed": 20,
+      "ignored": 2,
+      "ignored_helpers_invoked_by_parents": true,
+      "new_core_behavior_entries": 12,
+      "existing_save_harness_pass_entries": 8
+    },
+    {
+      "stage": "core-regressions",
+      "log": "run.log",
+      "exit": 0,
+      "original_log_sha256": "9c75f6478d191229d62bd09817a3776854e8efba7dd71957d7f34b90bcbb4ac3",
+      "passed": 39,
+      "ignored": 3,
+      "filtered": 26,
+      "ignored_helpers_invoked_by_parents": true
+    },
+    {
+      "stage": "clippy01",
+      "log": "run.log",
+      "exit": 101,
+      "original_log_sha256": "a837b5e772d904ccc842814b736bc29f3471f915960a335e173ff4626bc79233"
+    },
+    {
+      "stage": "clippy02",
+      "log": "test.log",
+      "exit": 0,
+      "original_log_sha256": "6975a02a856661d28a0b7e70abae20f2e38e4a3881bea9911b916fdce46ee55b",
+      "passed": 1,
+      "filtered": 67
+    },
+    {
+      "stage": "clippy02",
+      "log": "clippy.log",
+      "exit": 0,
+      "original_log_sha256": "83f6a1b46c55ced6c45e1b6b68a7adf996f5a008f7808de753a4c5c6172487e6"
+    }
+  ],
+  "lead_check_observations": [
+    {
+      "stage": "final-build-checks",
+      "entry": 0,
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "-p",
+        "faction-client",
+        "-p",
+        "faction-omemo",
+        "--no-default-features",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit": 0,
+      "seconds": 27.19199429100263,
+      "original_log_sha256": "07178e362c48dfc88af6e19cf9df5a6cb0f70822fc8379c88977a1e272992298",
+      "original_record_sha256": "dba6e7826325b9220a88ee2b0b00abd4cf26b60987c96c9af381a7b9d5448db9"
+    },
+    {
+      "stage": "final-build-checks",
+      "entry": 1,
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "clippy",
+        "-p",
+        "faction-client",
+        "-p",
+        "faction-omemo",
+        "--features",
+        "faction-client/network-mail",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 17.2886269169976,
+      "original_log_sha256": "601011e298f8b9057d4eaa7a48bcf51b12ab237ea39e276c4370f0b8d553b826",
+      "original_record_sha256": "dba6e7826325b9220a88ee2b0b00abd4cf26b60987c96c9af381a7b9d5448db9"
+    },
+    {
+      "stage": "final-build-checks",
+      "entry": 2,
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 1,
+      "seconds": 0.4853636670159176,
+      "original_log_sha256": "664ee4920c87f4cb269ddb07f132fb9ce703d3b7db496bfa04020e8c49334f86",
+      "original_record_sha256": "dba6e7826325b9220a88ee2b0b00abd4cf26b60987c96c9af381a7b9d5448db9"
+    },
+    {
+      "stage": "final-policy-checks",
+      "entry": 0,
+      "command": [
+        "python3",
+        "tools/check_rust_dependencies.py"
+      ],
+      "exit": 0,
+      "seconds": 0.5730607910081744,
+      "original_log_sha256": "9f2da40b9a52bbfaff1b4352567f5f3410cb97eb4aa14672a2c82f84f98ed6cb",
+      "original_record_sha256": "1a2122d57f151ad3296e9460e63e67cc30030fabec6dee13d7688d11913f23d6"
+    },
+    {
+      "stage": "final-policy-checks",
+      "entry": 1,
+      "command": [
+        "python3",
+        "tools/check_omemo_dependencies.py"
+      ],
+      "exit": 0,
+      "seconds": 0.4054640000103973,
+      "original_log_sha256": "bc1b22ab9c0a65a0267c0e232410138eb482858659d50518f5f0f50410addac8",
+      "original_record_sha256": "1a2122d57f151ad3296e9460e63e67cc30030fabec6dee13d7688d11913f23d6"
+    },
+    {
+      "stage": "final-policy-checks",
+      "entry": 2,
+      "command": [
+        "python3",
+        "tools/check_network_mail_dependencies.py"
+      ],
+      "exit": 0,
+      "seconds": 2.3542138329939917,
+      "original_log_sha256": "74fb42a22c155e451d4402b68c13e624cc9257d1155c67308e3dfb820dd9f973",
+      "original_record_sha256": "1a2122d57f151ad3296e9460e63e67cc30030fabec6dee13d7688d11913f23d6"
+    },
+    {
+      "stage": "final-policy-checks",
+      "entry": 3,
+      "command": [
+        "python3",
+        "tools/check_xmpp_transport_dependencies.py"
+      ],
+      "exit": 1,
+      "seconds": 0.15219483399414457,
+      "original_log_sha256": "bf34f1b0d385813333baa84326d58fd4d7c70753fc36ed6363d290138565a725",
+      "original_record_sha256": "1a2122d57f151ad3296e9460e63e67cc30030fabec6dee13d7688d11913f23d6"
+    },
+    {
+      "stage": "final-format-policy",
+      "entry": 0,
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.44027466702391393,
+      "original_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_record_sha256": "e1ddc0d672462fc54e5afd157c20a60c5af674aa94c72c74ef266b6b8952b53c"
+    },
+    {
+      "stage": "final-format-policy",
+      "entry": 1,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_*.py"
+      ],
+      "exit": 1,
+      "seconds": 79.0250177080161,
+      "original_log_sha256": "e2a52e503333b3f368675dc68ecf870427b888b5bc67f8e41f4734799baa7a43",
+      "original_record_sha256": "e1ddc0d672462fc54e5afd157c20a60c5af674aa94c72c74ef266b6b8952b53c"
+    },
+    {
+      "stage": "final-tooling-reconciled",
+      "entry": 0,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_*.py"
+      ],
+      "exit": 1,
+      "seconds": 75.12410895799985,
+      "original_log_sha256": "cc063a15f04580d48908c3576d0ddc25faee46f14830e228f21ea74a9c438753",
+      "original_record_sha256": "0f12a636e8d2246bdca6662f9afabc73c8c9f7ec85ac81c314e7b1466945a03e"
+    },
+    {
+      "stage": "final-tooling-normal-capability",
+      "entry": 0,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_playground.py"
+      ],
+      "exit": 0,
+      "seconds": 0.0600895420066081,
+      "original_log_sha256": "f7d82deb001d79782a6d8e3a83560f32a8d9d6ed97b0e8132cde6dc1d979c36e",
+      "original_record_sha256": "813a04cc6c0fac22b7df7ff48ee30517ab3037c9d28af109e04c5718fe389457"
+    },
+    {
+      "stage": "final-tooling-normal-capability",
+      "entry": 1,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_*.py"
+      ],
+      "exit": 0,
+      "seconds": 73.13425854200614,
+      "original_log_sha256": "c2bb4c0d7b1ffc42fd899c245aeaff434d30aa656b7f611d9f8c2a7b37eb78de",
+      "original_record_sha256": "813a04cc6c0fac22b7df7ff48ee30517ab3037c9d28af109e04c5718fe389457"
+    },
+    {
+      "stage": "final-tooling-normal-capability",
+      "entry": 2,
+      "command": [
+        "python3",
+        "tools/check_repository.py"
+      ],
+      "exit": 0,
+      "seconds": 2.6134350830106996,
+      "original_log_sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+      "original_record_sha256": "813a04cc6c0fac22b7df7ff48ee30517ab3037c9d28af109e04c5718fe389457"
+    },
+    {
+      "stage": "resolver-consumer-fix",
+      "entry": 0,
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_evidence_decode_cache.py"
+      ],
+      "exit": 0,
+      "seconds": 0.2100434580061119,
+      "original_log_sha256": "8f995b9ff015107c1f92c6fd8c7b8065308955913874a8e321adbd21768d5077",
+      "original_record_sha256": "32bf64c4af3b755baa622d0bc0b4d6a65a529cb95dcafa07659d00d1743b79bf"
+    },
+    {
+      "stage": "historical-checks",
+      "entry": 0,
+      "command": [
+        "python3",
+        "tools/check_unread_mail_evidence.py"
+      ],
+      "exit": 0,
+      "seconds": 10.75924154202221,
+      "original_log_sha256": "aec7fe62ac1d2e48ee972540b28f57fb7756f369e51632594af7f31d63c6dad7",
+      "original_record_sha256": "cbf333d00d923fe85870d4c5465fe05af7406c51c608e15c7ad08e654e5e86dd"
+    },
+    {
+      "stage": "historical-checks",
+      "entry": 1,
+      "command": [
+        "python3",
+        "tools/check_evidence_sources.py"
+      ],
+      "exit": 0,
+      "seconds": 16.13871491700411,
+      "original_log_sha256": "d1f058c908a6af4ddcab84e8fa15b505fd8fe153c20a6b694d9ce78bdca09fb3",
+      "original_record_sha256": "cbf333d00d923fe85870d4c5465fe05af7406c51c608e15c7ad08e654e5e86dd"
+    },
+    {
+      "stage": "historical-checks",
+      "entry": 2,
+      "command": [
+        "python3",
+        "tools/check_repository.py"
+      ],
+      "exit": 0,
+      "seconds": 3.7024894159985706,
+      "original_log_sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+      "original_record_sha256": "cbf333d00d923fe85870d4c5465fe05af7406c51c608e15c7ad08e654e5e86dd"
+    },
+    {
+      "stage": "resolver-red",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_evidence_sources.py"
+      ],
+      "exit": 1,
+      "original_log_sha256": "ab28873d2c18baff11cf1502a794c6f194f9d0da02500437a89b00e6fb214b5f",
+      "original_record_sha256": "edde6f787997c65fa81b249d4c466884d6eefc5c2bc07f89b5ce8835f576ff32"
+    },
+    {
+      "stage": "resolver-green",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_evidence_sources.py"
+      ],
+      "exit": 0,
+      "original_log_sha256": "a75cc7230c355e5f33fb6daac16e4775fb736650a8cbff4f8826db63a8b384ee",
+      "original_record_sha256": "2460e88aabe64dc8423eec3731e658510edc32cfc022b91ead80c3ba84f965a8"
+    }
+  ],
+  "bridge_observations": [
+    {
+      "stage": "native",
+      "passed": 6,
+      "ignored": 0,
+      "original_log_sha256": "99da9b47395de76174429e15a5fc0beb568fbf599aee1e39026eca2e62d443c9"
+    },
+    {
+      "stage": "network-wire",
+      "passed": 6,
+      "ignored": 0,
+      "original_log_sha256": "47f3d023c8096e4d1860b27ba07055037c0faafa2308bf8a0b1c70f3fc76ecc0"
+    },
+    {
+      "stage": "scripted-home",
+      "passed": 2,
+      "ignored": 0,
+      "original_log_sha256": "ad7fac6515d6be55c82c6e09acdd332e2fe50b38f1b4607dc71dbf477c8b7b40"
+    }
+  ],
+  "separate_review": {
+    "kind": "separate peer-agent examination, not independent human assurance",
+    "remaining_actionable_findings": 0,
+    "actual_replay_pass_entries": 14,
+    "original_review_sha256": "2879e168a3ebb02a6b01dd8fdfaf8715d8f91a329cdf47b97f52c022e41b927f",
+    "replay": [
+      {
+        "exit": 0,
+        "seconds": 62.328,
+        "original_log_sha256": "e13f4c3a224d6137a51b13f2d1a1ceddefeb6c0634633bcfdbbb33a45e76c34f",
+        "source_unchanged": true
+      },
+      {
+        "exit": 0,
+        "seconds": 7.14,
+        "original_log_sha256": "2f5f977b2a9c41aefb7564ae35ce1cf9d39b706b336b80e38a853b83c80faa56",
+        "source_unchanged": true
+      },
+      {
+        "exit": 0,
+        "seconds": 2.347,
+        "original_log_sha256": "99da350947615f14a605deee39cea94fd303ff7132c223b2e8b603af8a958c21",
+        "source_unchanged": true
+      },
+      {
+        "exit": 0,
+        "seconds": 0.238,
+        "original_log_sha256": "007e824798c4afbad5e5bdee024be4cba3b1198daaa5fdfcb468e72430b3d86c",
+        "source_unchanged": true
+      }
+    ]
+  },
+  "private_original_retention": {
+    "sha256": "3802a6d823249292abc01506fadd9bcad33581c9a6d099edc675d06beaf18416",
+    "bytes": 2881533,
+    "original_files": 1125,
+    "archive_members": 1126,
+    "all_members_regular_and_verified": true,
+    "directory_mode": "0700",
+    "archive_mode": "0600",
+    "git_ignored": true,
+    "published": false
+  },
+  "limitations": [
+    "Caller supplies and retains bulk ciphertext separately; locator is inert.",
+    "No automatic bulk transfer, private blob service, UI/CLI action, modern-client interoperability, new NetBSD or capacity qualification.",
+    "The standalone208 research graph was unavailable locally offline because an existing locked package was not cached; unchanged hosted checks remain required.",
+    "Filtered harness entries and ignored helpers are not independent behavior passes; parent-invoked children are described separately.",
+    "Raw historical originals are owner-private outside Git; public hashes attest saved identities, not the truth of test assertions."
+  ],
+  "unchanged_dependency_inputs": {
+    "Cargo.toml": "30fdcc2de04b1e4007b735b0f231530fa253e988973036536ea6eba3d1bff8ad",
+    "Cargo.lock": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+    "crates/faction-client/Cargo.toml": "f4a5afdbe7e12495e2f0cbf54a8bb64b6ca337b34625d9e50556eb4b368428c8",
+    "crates/faction-omemo/Cargo.toml": "1d896e1b3c99a49e5c4b96763b2f10811fe966dae74b63926710c3aaf9638650",
+    "crates/faction-xmpp/Cargo.toml": "8760779a49e3f530615890d468a38c7c834e50e14469f83dbc715734fc190714",
+    "crates/faction-xmpp/Cargo.lock": "f0a02394b6768cf8a69506bc058bcfcfaaf17d86f395ac296f3b801020e81517",
+    "experiments/208-xmpp-transport/Cargo.toml": "bd7721d38ba15bc12fdce04cb527b63377073ca1cae2b9cc4e3d9da9b1c585ac",
+    "experiments/208-xmpp-transport/Cargo.lock": "c6c52014bcd9afc6dc99c5d14096eb48314874e81ab85b460de6b9db8ba28a71"
+  }
+}

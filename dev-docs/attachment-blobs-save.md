@@ -1,6 +1,6 @@
 # Experimental attachment bytes and explicit save
 
-These native-only member-device library primitives encrypt and verify bounded attachment bytes and save an already verified value to a caller-selected local file. They do not deliver attachments. The [candidate metadata codec](attachment-metadata.md) is separate; existing text SCE APIs and the current checkpoint still reject its attachment extension.
+These native-only member-device library primitives encrypt and verify bounded attachment bytes and save an already verified value to a caller-selected local file. They do not deliver attachments. The [candidate metadata codec](attachment-metadata.md) is separate; existing text SCE APIs reject its attachment extension. The explicitly enabled [attachment mail](attachment-mail.md) checkpoint accepts and retains descriptors.
 
 ## Encrypt and verify
 
@@ -20,4 +20,4 @@ Focused host checks observed 21 native library passes, five blob-contract passes
 
 One 1 MiB cap observation on a single host in a debug test process reported 8,552,448 bytes process RSS, 8.614 ms encryption and 0.544 ms verification. The process includes the test harness, fixtures and library; this is neither per-call allocation nor whole-host capacity evidence. Original executed inputs and logs are retained for review.
 
-There is no attachment UI, transport, fetch or upload, private server storage, durable attachment keys or history, or modern-client interoperability qualification. No NetBSD replay or whole-host capacity support follows from these host observations. Parent [#88](https://github.com/gonz0w/faction-bbs/issues/88) remains open.
+The opt-in checkpoint retains attachment descriptors and keys in encrypted history; the existing `network-mail` adapter can deliver their messages. There is no attachment UI, bulk-byte transport, fetch or upload, private server storage, or modern-client interoperability qualification. No NetBSD replay or whole-host capacity support follows from these host observations. Parent [#88](https://github.com/gonz0w/faction-bbs/issues/88) remains open.
