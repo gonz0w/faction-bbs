@@ -1,0 +1,9 @@
+{
+  "rust_test_binaries": 32,
+  "passed": 299,
+  "failed": 0,
+  "existing_subprocess_helpers_ignored": 10,
+  "collector_unit_tests": 21,
+  "actual_native_os": "NetBSD11/aarch64",
+  "configured_runtime_memory_mib": 1024
+}

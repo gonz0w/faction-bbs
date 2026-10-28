@@ -79,6 +79,9 @@ error. It reports actual partial or completed bytes; there is no background retr
 or automatic reconnect. Ctrl-C or Ctrl-D cancels and locks. Retry deliberately
 after checking the reported state. These limits do not change normal board budgets.
 
-The desk is a software preview. Existing host transfer evidence does not establish
-a deployed provider, fresh NetBSD or SSH qualification, a security audit, or a
-capacity claim. Text mail and classic board access remain separate and available.
+The desk is a software preview. A [NetBSD 11 ARM64 software qualification](../dev-docs/evidence/netbsd-attachments/README.md)
+exercised the production console and a 1 MiB transfer with both test homes, the
+client and handler on loopback inside one guest. This does not establish deployed
+provider behavior, device attestation, independent client interoperability,
+same-SSH tracing, physical hardware, a security audit or capacity. Text mail
+and classic board access remain separate and available.

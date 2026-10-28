@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "files": {
+    "Cargo.lock": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+    "crates/faction-client/examples/mail_blob_fixture.rs": "9bfd43e8ee31baac40caaaecf67d2e0dd428165fca6d175cb8d2625a8366c23a",
+    "crates/faction-client/examples/mail_reply_fixture.rs": "ac25374146900cd59a8c21bc874d3e6f1d9aaddf22151ad1e6e629bface58be8",
+    "crates/faction-client/src/attachment_source.rs": "4d2fd9cead109d80771fc2e4afb21fae68db7e5cecad186433e073e2a9fe2153",
+    "crates/faction-client/src/checkpoint_ui.rs": "e64aeb28478409201171599e145463a8755133a39f9cdb4dbded3da4cdd94b03",
+    "crates/faction-client/src/checkpoint_ui_attachments.rs": "25580e8e5210821fcae2e69e0bf34bfa2fc1b0763179a555f0f464fc2d554f4a",
+    "crates/faction-client/src/checkpoint_ui_inbox.rs": "6b9e67c30a15e7dfc6ca725e6398a66e2bcc73db9e7740a0453ca8b989c3dfab",
+    "crates/faction-client/src/checkpoint_ui_reply.rs": "0c3660f7ea1e10af56db91b4c45c2309a4658af1318c9269b66b23b49958f7ea",
+    "crates/faction-client/src/lib.rs": "37b1425ce37d2669e25a249563017cfde83d0201224953ccd6c2a9a6dbc45588",
+    "crates/faction-client/src/mail_blob_transfer.rs": "062aef4c9be785562d455872d3c915ae026e7ba55e307f31baf3171376c9a703",
+    "crates/faction-client/src/main.rs": "4f394b707498d4532c1ae51794c6d786896ca3ba5651b0e855eae2c7cf161c11",
+    "tools/probe_attachment_transfer.py": "2064de1cad1276cd7f4a0420a1bdfd5f2ac59c2e6909622565efea12d60fedc3",
+    "tools/probe_mail_attachments.py": "3050db2b48c468c41163cefda17bdecd1733c344b92118b81c1b837c3149f621",
+    "tools/probe_xmpp_transport.py": "79c730d3c2e82354589c456947684f93bd284df46ed2b9516675286b3a6f57ff",
+    "tools/smoke_board_launcher.py": "b5d557391f3efac604463fb0888f9125269a36646890593c7473be97dd16404b",
+    "tools/smoke_local_console.py": "682b3b46b326892e7394d7dcb182264ccec3e4149b891551872c3813d3ab9a99",
+    "tools/check_evidence_sources.py": "ed492d64f1c840916597afdc45ff8d0444c554880248d111350bf2cf1655b2a5",
+    "tools/evidence_sources.py": "3a255aaa94d0808c653577e0caa7fa59f1389f9d53c6bbe1401d950493927210",
+    "tools/test_evidence_decode_cache.py": "72e832082620387e21e6f5ec77336c171d1469f15ad5bf901daafc56cb66bd55",
+    "tools/test_evidence_sources.py": "6dc3f5cd4a6d534ddbeb229e9ee536f46ffd0f4fb532428a9112f13ae36c5aff",
+    "tools/test_mail_attachments_probe.py": "34813f0c99f0653e9cea2bf5059df0418b0b35be644e47a9d1e97255624dcd10"
+  },
+  "binaries": {
+    "faction-client": "9ac8651ef9aa8428aeb1585676d12c5d4faffa64f453d43256c8a1d5f9906508",
+    "mail_blob_fixture": "59bc9d4f9877a2a309da7affcbff89a6179bb7ddff8419f261071d41b4b89b06",
+    "mail_reply_fixture": "e0edc0f0f20dee11410a040a705ecf0a5fa76eabf1d061cd543fb587d56d106a"
+  },
+  "results": {
+    "transfer": "817fb1717faa5f8026c0dc72d3b04700936e54b19cbb7b8cc37bd6a14e8ac5bf",
+    "console": "acc51dfa4c208ad7bcee56124f7f3af33fb30b07f5ef69915890947ee7ba34eb"
+  }
+}

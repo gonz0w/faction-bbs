@@ -1,0 +1,64 @@
+{
+  "actual_native_collection": "passed after staging permission correction; output binds exact results/sources/binaries",
+  "build": {
+    "configured_memory_mib": 2048,
+    "cpus": 2,
+    "jobs": 2,
+    "observed_physical_memory_bytes": 2128732160,
+    "seconds": 99.846
+  },
+  "capacity_claim": false,
+  "collector_unit_tests": 21,
+  "committed_source_archive_sha256": "c159dd03f64fdf5ad88c09005c59dc2774817dd2a63c299c63c5c9d775b6586a",
+  "device_attestation": false,
+  "independent_modern_client_interoperability": false,
+  "inert_locked_index_metadata_completed": true,
+  "native_compiler_host": "aarch64-unknown-netbsd",
+  "new_runtime_or_provider_adopted": false,
+  "original_runtime_keys_and_vaults": "removed by existing probes; command and console captures retained privately",
+  "physical_hardware": false,
+  "provider_deployment": false,
+  "public_source_commit": "c685282ae727d8cc2327f66a690e4b0c70c640ff",
+  "registry_archive_checksums_matched_locked_graph": true,
+  "runtime": {
+    "configured_memory_mib": 1024,
+    "cpus": 2,
+    "observed_physical_memory_bytes": 1054990336
+  },
+  "rust_tests": {
+    "failed": 0,
+    "passed": 299,
+    "runtime_seconds": 69.788,
+    "subprocess_helper_entries_ignored": 10,
+    "test_entries": 32
+  },
+  "same_SSH_trace": false,
+  "selected_registry_packages": 159,
+  "separate_nonauthor_review": "collector + native results and source/binary bindings passed; final publication review is separate",
+  "setup_and_refusal_variants": [
+    "guest administrative PATH omitted chown; corrected explicit base PATH",
+    "offline resolution required inert r-efi/other locked index entries; no unselected source archives adopted",
+    "runtime argv incorrectly reconstructed from ps command text; explicit literal argv corrected; no product change",
+    "collector correctly refused group-writable 0664 Git-archive staging; narrowed staged source permissions without changing bytes or result/binary identities",
+    "additional system-library metadata initially omitted NetBSD /lib path; corrected observed base-library prefix"
+  ],
+  "source_and_runtime_identities_not_hermetic_or_loader_attestation": true,
+  "source_license_feature_no_JS_preflight": "pass, existing inventory unchanged",
+  "temper_roles": {
+    "analyst": "requested Astra/high",
+    "backend_model_telemetry": "unverified",
+    "implementer": "requested Sol/high",
+    "native_role_discovery": "not exposed; approved explicit mappings",
+    "product": "requested Terra/medium",
+    "reviewer": "requested Sol/high; nonauthor",
+    "workflow": "requested Luna/medium"
+  },
+  "tooling_test_first": {
+    "actual_host_CLI_refused_native_claim": true,
+    "host_UNIT_tests_GREEN": 21,
+    "initial_missing_module_RED": true,
+    "native_UNIT_tests_GREEN": 21,
+    "role_alias_and_huge_number_RED": true
+  },
+  "whole_SSH_flow_not_requalified": true
+}

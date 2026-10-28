@@ -41,8 +41,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   adds bounded unread navigation and selected-message reading. The default-off
   [private attachment desk](docs/private-attachments.md) adds
   explicit local queue, upload, fetch and save to native home mail. Compatible
-  home storage is required; provider deployment, background notifications and
-  production roaming remain incomplete.
+  home storage is required. A [NetBSD 11 ARM64 software qualification](dev-docs/evidence/netbsd-attachments/README.md)
+  exercises the desk and a two-home transfer inside one guest; provider deployment,
+  independent client interoperability, background notifications and production roaming remain incomplete.
 
 ## What you can do
 
