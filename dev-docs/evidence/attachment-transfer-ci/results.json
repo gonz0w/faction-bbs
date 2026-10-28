@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "issue": 260,
+  "pull_request": 262,
+  "original_reviewed_commit": "6645e4752fd4e32b6e7b2e8b970858fdd90ff3aa",
+  "original_ci": {
+    "run": 40692293173,
+    "job": 122834001679,
+    "result": "failure",
+    "log_sha256": "8b946f72acac7bc9ce050f2d0ce95a3813e8028e7574e11664f9da997ba6e68a"
+  },
+  "red_observations": [
+    "Actual CI Busy on immediate reopen; same unchanged-source local reproduction",
+    "Unchanged-source timestamp fixture name collisions",
+    "Coordinator regression allowed a second fixture before the first lifetime ended",
+    "First correction exposed marker creation-before-complete-write race; exact assertion saw empty bytes",
+    "Second correction exposed public-test timestamp collision"
+  ],
+  "changed_test_files": [
+    "crates/faction-files/src/private_blobs/tests.rs",
+    "crates/faction-files/tests/private_blobs.rs"
+  ],
+  "production_changes": false,
+  "workflow_or_limits_or_assertion_weakening": false,
+  "verification": {
+    "parallel_all_targets_runs": 20,
+    "passed_each_run": 18,
+    "ignored_controlled_helpers_each_run": 1,
+    "real_process_death_points_each_run": 5,
+    "parallel_loop_seconds": 53.892,
+    "all_repeat_log_hashes_verified": true,
+    "serial_passed": 18,
+    "scoped_clippy_warnings_denied": "pass",
+    "format_and_whitespace": "pass"
+  },
+  "inference_limit": "Inherited-open-description spawn timing is source-supported; exact failing syscall interleaving was not traced."
+}

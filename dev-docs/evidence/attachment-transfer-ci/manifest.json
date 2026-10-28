@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "files": {
+    "dev-docs/evidence/attachment-transfer-ci/README.md": "38b7346edf13d8e40ab83e44d7cd7527bc6d0b0a0689f373bcd3c33b49c234b3",
+    "dev-docs/evidence/attachment-transfer-ci/after/crates/faction-files/src/private_blobs/tests.rs": "3995e5b2e89d4cc05ca93313e4651fe70788f0b9ad22ac2824a1aff2cff14db0",
+    "dev-docs/evidence/attachment-transfer-ci/after/crates/faction-files/tests/private_blobs.rs": "fd625340c2d87f76e3fca967b377e798f66ccafefc0fdadac1d224fc82d60f3f",
+    "dev-docs/evidence/attachment-transfer-ci/before/crates/faction-files/src/private_blobs/tests.rs": "051d6a322171c736e48f0bfdddf719eed855bd3ea30f6fa2309f9209a1ca4a44",
+    "dev-docs/evidence/attachment-transfer-ci/before/crates/faction-files/tests/private_blobs.rs": "093043e705a3337476722871fa2d59f1195d03e17f2b7a8c49b6b5e29389ec43",
+    "dev-docs/evidence/attachment-transfer-ci/cleanup.json": "048be24f788a7a307d1550541fe8db2754ba6e053f67a476adb3958d206cf6be",
+    "dev-docs/evidence/attachment-transfer-ci/private-retention.json": "7677cfce12b14a5da9d7b5af2a12a0f1a1b250b84fa853c2a16a677f7155bd3a",
+    "dev-docs/evidence/attachment-transfer-ci/results.json": "f280fca1f28f6e888b8500ac258d2d1c45cfde466b93dde7bdb4eefaac5076f3",
+    "dev-docs/evidence/attachment-transfer-ci/review.json": "279d1c28fed6cba775adcb84583b7f433af34b2f9c5566d63fbd3559211333b8"
+  }
+}

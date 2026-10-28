@@ -2,12 +2,20 @@ use faction_files::private_blobs::{
     Access, Action, Binding, CHUNK, Error, Principal, Request, Response, Store,
 };
 use sha2::{Digest, Sha256};
-use std::{cell::Cell, fs, os::unix::fs::DirBuilderExt, path::PathBuf};
+use std::{
+    cell::Cell,
+    fs,
+    os::unix::fs::DirBuilderExt,
+    path::PathBuf,
+    sync::atomic::{AtomicU64, Ordering},
+};
+static NEXT_FIXTURE: AtomicU64 = AtomicU64::new(0);
 struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
+        let unique = NEXT_FIXTURE.fetch_add(1, Ordering::Relaxed);
         let p = std::env::temp_dir().canonicalize().unwrap().join(format!(
-            "faction260-{}-{}",
+            "faction260-{}-{unique}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
