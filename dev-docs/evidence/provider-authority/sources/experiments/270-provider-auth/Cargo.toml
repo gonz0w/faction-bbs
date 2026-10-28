@@ -1,0 +1,16 @@
+[package]
+name = "faction-provider-auth-research"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+license = "BSD-3-Clause"
+publish = false
+
+[workspace]
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+faction-files = { path = "../../crates/faction-files" }
+openssl = "=0.10.81"

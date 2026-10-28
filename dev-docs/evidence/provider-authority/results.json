@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "scope": "isolated synthetic local TLS-to-store experiment; product entry points unchanged",
+  "platform": {
+    "os": "macOS27.2",
+    "darwin": "27.2.0",
+    "architecture": "arm64",
+    "host_cpus": 18,
+    "host_physical_bytes": 137438953472,
+    "compiler_jobs": 2,
+    "active_fixture_connections": 1,
+    "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n"
+  },
+  "openssl": {
+    "runtime": "3.6.3 (9 Jun 2026)",
+    "default_command_version_not_selected": "4.1.0",
+    "linked_library_files": [
+      {
+        "name": "libssl.3.dylib",
+        "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc"
+      },
+      {
+        "name": "libcrypto.3.dylib",
+        "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d"
+      }
+    ],
+    "loaded_library_or_hermetic_attestation": false
+  },
+  "test_binary_sha256": "6caaad6de01c481333c13d2a92bcc995bfc7cd7fa18cebd1e49f76ffcdfc5fe3",
+  "tests": {
+    "core": 12,
+    "tls_functions": 10,
+    "final_author_passed": 22,
+    "final_author_ignored": 0,
+    "root_store_regressions_passed": 18,
+    "root_store_ignored_invoked_helper": 1,
+    "author_test_harness_s": 31.53,
+    "author_command_wall_s": 32.81019391599693
+  },
+  "selected_registry_sources": {
+    "unique": 39,
+    "Linux": 39,
+    "NetBSD": 38,
+    "Darwin": 38,
+    "new_dependency_versions": 0
+  },
+  "deadline_observations_ms": {
+    "socket_handshake_stall": 5000,
+    "socket_frame_stall": 10006,
+    "controlled_client_post_BIO": 5127,
+    "controlled_server_post_BIO": 5117,
+    "combined_delayed_TCP_and_TLS": 5000
+  },
+  "controlled_scheduling_is_not_verifier_performance": true,
+  "initial_certificate_refusals_dispatched": 0,
+  "deadline_regressions_after_fix_dispatched": 0,
+  "report_dispatched_counts_authority_entries_including_denial": true,
+  "refusal_stages": {
+    "server_handshake": [
+      "no certificate",
+      "wrong client CA",
+      "expired client certificate",
+      "future client certificate"
+    ],
+    "server_authority": [
+      "valid unmapped certificate",
+      "missing policy",
+      "unapproved binding"
+    ],
+    "client_handshake": [
+      "wrong server name",
+      "wrong server CA"
+    ],
+    "client_pin": [
+      "wrong exact server pin"
+    ],
+    "client_configuration": [
+      "wrong private key",
+      "copied certificate without private key"
+    ]
+  },
+  "limits": {
+    "bindings": 32,
+    "invited_homes": 32,
+    "lifetime_digest_tombstones": 32,
+    "handles": 8,
+    "admission_ms": 5000,
+    "cycle_ms": 10000,
+    "requests": 8,
+    "wire_bytes": 8192,
+    "drain_ms": 5000,
+    "store_objects": 8,
+    "store_object_bytes": 1048592,
+    "store_reserved_bytes": 8388736,
+    "chunk_bytes": 4096,
+    "retention_s": 604800
+  },
+  "limits_of_evidence": [
+    "fixture generates fresh synthetic TLS keys in memory; no secret replay transcript retained",
+    "cooperative filesystem checks cannot preempt blocked I/O",
+    "in-memory registry is not durable enrollment or anti-rollback",
+    "no provider, SASL EXTERNAL, own-home delegation, OMEMO private-key possession, hardware, native NetBSD runtime, security-audit or250-user claim",
+    "source and linked-file identities are not whole-loader/build attestation"
+  ],
+  "lead": {
+    "lead-final-fmt": {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "fmt",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "wall_s": 0.054,
+      "test_summaries": []
+    },
+    "lead-final-clippy": {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "clippy",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--all-targets",
+        "--release",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "wall_s": 0.183,
+      "test_summaries": []
+    },
+    "lead-final-serial": {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit": 0,
+      "wall_s": 31.935,
+      "test_summaries": [
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 31.53s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "lead-final-parallel": {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "wall_s": 31.266,
+      "test_summaries": [
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 31.20s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    }
+  }
+}
