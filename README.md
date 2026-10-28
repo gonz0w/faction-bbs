@@ -45,8 +45,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   exercises the desk and a two-home transfer inside one guest; provider deployment,
   independent client interoperability, background notifications and production roaming remain incomplete.
   [Experimental provider authority](dev-docs/provider-authority.md) explores a
-  separate synthetic TLS boundary; it does not enable provider enrollment or
-  change the existing native home-mail route.
+  separate synthetic TLS boundary, with a [native NetBSD software qualification](dev-docs/evidence/provider-authority-netbsd/README.md).
+  It does not enable provider enrollment or change the existing native home-mail route.
 
 ## What you can do
 

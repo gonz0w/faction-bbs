@@ -1,0 +1,356 @@
+{
+  "schema": 1,
+  "issue": 274,
+  "date": "2026-10-28",
+  "scope": "Native NetBSD software qualification of the isolated synthetic authority/TLS-to-store experiment",
+  "source": "Accepted base plus the one test-only override; see inputs.json",
+  "platform": "NetBSD 11.0 evbarm",
+  "original_dependency_build_resources": {
+    "cpus": 2,
+    "physical_memory_bytes": 2128732160,
+    "machine_arch": "aarch64",
+    "cargo_build_jobs": 2
+  },
+  "test_correction_compile_resources": {
+    "cpus": 2,
+    "physical_memory_bytes": 1054990336,
+    "machine_arch": "aarch64",
+    "cargo_build_jobs": 2
+  },
+  "runtime_resources": {
+    "cpus": 2,
+    "physical_memory_bytes": 1054990336,
+    "configured_memory_mib": 1024,
+    "machine_arch": "aarch64"
+  },
+  "commands": {
+    "native-final-serial": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline -- --test-threads=1 --nocapture"
+    ],
+    "native-final-parallel": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked --offline -- --nocapture"
+    ],
+    "native-final-store": [
+      "cargo test --manifest-path experiments/270-provider-auth/Cargo.toml -p faction-files --all-targets --release --locked --offline -- --test-threads=1 --nocapture"
+    ],
+    "native-final-verification": [
+      "cargo fmt --manifest-path experiments/270-provider-auth/Cargo.toml -- --check",
+      "cargo clippy --manifest-path experiments/270-provider-auth/Cargo.toml --all-targets --release --locked --offline -- -D warnings"
+    ]
+  },
+  "runs": {
+    "native-final-serial": {
+      "exit_code": 0,
+      "elapsed_seconds": 53.99217104911804,
+      "test_summaries": [
+        "ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.85s",
+        "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "test_names": [
+        "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+        "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+        "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+        "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+        "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+        "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+        "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+        "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+        "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+        "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+        "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+        "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+        "tls::tests::actual_verified_sender_upload_then_exact_recipient_download_and_retry",
+        "tls::tests::cancellation_and_trickle_recompute_the_same_absolute_io_deadline",
+        "tls::tests::deadline_regression_client_rechecks_after_successful_tls_before_pin_admission",
+        "tls::tests::deadline_regression_server_rechecks_after_successful_tls_before_authority",
+        "tls::tests::deadline_regression_tcp_wait_and_tls_share_one_five_second_admission_budget",
+        "tls::tests::eight_attempts_quota_conflicting_duplicate_and_lost_response_recovery",
+        "tls::tests::forged_binding_and_malformed_oversized_or_trailing_frames_do_not_mutate",
+        "tls::tests::live_policy_changes_and_actual_leaf_expiry_deny_the_next_operation",
+        "tls::tests::real_stalled_handshake_and_frame_observe_five_and_ten_second_absolute_limits",
+        "tls::tests::refused_connection_observer_rejects_live_and_retained_listeners",
+        "tls::tests::tls_refusals_have_actual_stages_and_zero_application_dispatch"
+      ]
+    },
+    "native-final-parallel": {
+      "exit_code": 0,
+      "elapsed_seconds": 54.030298948287964,
+      "test_summaries": [
+        "ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.88s",
+        "ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "test_names": [
+        "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+        "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+        "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+        "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+        "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+        "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+        "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+        "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+        "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+        "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+        "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+        "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+        "tls::tests::actual_verified_sender_upload_then_exact_recipient_download_and_retry",
+        "tls::tests::cancellation_and_trickle_recompute_the_same_absolute_io_deadline",
+        "tls::tests::deadline_regression_client_rechecks_after_successful_tls_before_pin_admission",
+        "tls::tests::deadline_regression_server_rechecks_after_successful_tls_before_authority",
+        "tls::tests::deadline_regression_tcp_wait_and_tls_share_one_five_second_admission_budget",
+        "tls::tests::eight_attempts_quota_conflicting_duplicate_and_lost_response_recovery",
+        "tls::tests::forged_binding_and_malformed_oversized_or_trailing_frames_do_not_mutate",
+        "tls::tests::live_policy_changes_and_actual_leaf_expiry_deny_the_next_operation",
+        "tls::tests::refused_connection_observer_rejects_live_and_retained_listeners",
+        "tls::tests::real_stalled_handshake_and_frame_observe_five_and_ten_second_absolute_limits",
+        "tls::tests::tls_refusals_have_actual_stages_and_zero_application_dispatch"
+      ]
+    },
+    "native-final-store": {
+      "exit_code": 0,
+      "elapsed_seconds": 0.49289798736572266,
+      "test_summaries": [
+        "ok. 7 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.20s",
+        "ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+      ],
+      "test_names": [
+        "native::tests::native_controls_are_versioned_bounded_and_strictly_framed",
+        "private_blobs::disk::tests::actual_process_death_at_each_boundary_reopens_exact_old_or_new_snapshot",
+        "private_blobs::disk::tests::an_inherited_open_description_retains_the_lock_until_the_last_reference_closes",
+        "private_blobs::disk::tests::authorized_expiry_clock_publication_failures_preserve_poison_and_uncertainty",
+        "private_blobs::disk::tests::death_helper",
+        "private_blobs::disk::tests::each_write_sync_and_publication_error_poison_requires_safe_reopen",
+        "private_blobs::disk::tests::fixture_lifetime_excludes_other_store_and_process_launch_windows",
+        "tests::malformed_or_unbounded_policy_frames_have_no_interpretation",
+        "transfer::tests::file_store_refuses_symlink_hardlink_and_untrusted_mode",
+        "an_authorized_expiry_observation_survives_reopen_and_cannot_revive_by_rollback",
+        "an_unauthorized_future_request_neither_advances_clock_nor_discloses_expiry",
+        "canonical_codecs_reject_unknown_truncated_trailing_invalid_and_oversized_input",
+        "every_current_policy_gate_and_exact_principal_binding_precede_disclosure_or_mutation",
+        "exact_retries_are_immutable_and_digest_length_offsets_and_chunks_fail_closed",
+        "filesystem_refuses_links_permissions_corruption_and_live_lock_without_unlink",
+        "incomplete_reservations_count_expiry_never_renews_and_explicit_owner_cleanup_is_authorized",
+        "maximum_complete_ciphertext_reopens_verified_with_bounded_regular_file_bytes",
+        "partial_ciphertext_survives_reopen_and_recipient_only_reads_committed_exact_bytes",
+        "successful_read_highwater_is_durable_and_rollback_denials_do_not_change_storage"
+      ]
+    },
+    "native-final-verification": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.1774957180023193,
+      "test_summaries": [],
+      "test_names": []
+    }
+  },
+  "observations": {
+    "native-final-serial": {
+      "controlled-client-post-BIO": {
+        "elapsed_ms": 5742,
+        "result_and_report": "result=Err(Deadline) report=Report { stage: Complete, dispatched: 0 }"
+      },
+      "controlled-server-post-BIO": {
+        "elapsed_ms": 5717,
+        "result_and_report": "result=Err(Frame) report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "delayed-TCP-plus-stalled-TLS": {
+        "elapsed_ms": 5003,
+        "result_and_report": "report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "stalled-handshake": {
+        "elapsed_ms": 5001,
+        "result_and_report": "report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "stalled-frame": {
+        "elapsed_ms": 10035,
+        "result_and_report": "report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "tls_refusals": [
+        {
+          "variant": 0,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 1,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 2,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 3,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 4,
+          "client_stage": "Frame",
+          "server_stage": "Denied",
+          "dispatched": 0
+        },
+        {
+          "variant": 5,
+          "client_stage": "Handshake",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 6,
+          "client_stage": "Pin",
+          "server_stage": "Cancelled",
+          "dispatched": 0
+        },
+        {
+          "variant": 7,
+          "client_stage": "Configuration",
+          "server_stage": "Cancelled",
+          "dispatched": 0
+        },
+        {
+          "variant": 8,
+          "client_stage": "Frame",
+          "server_stage": "Denied",
+          "dispatched": 0
+        },
+        {
+          "variant": 9,
+          "client_stage": "Handshake",
+          "server_stage": "Cancelled",
+          "dispatched": 0
+        },
+        {
+          "variant": 10,
+          "client_stage": "Frame",
+          "server_stage": "Denied",
+          "dispatched": 0
+        }
+      ],
+      "copied_certificate_without_key": "client configuration failure; zero dispatch"
+    },
+    "native-final-parallel": {
+      "controlled-client-post-BIO": {
+        "elapsed_ms": 5768,
+        "result_and_report": "result=Err(Deadline) report=Report { stage: Complete, dispatched: 0 }"
+      },
+      "controlled-server-post-BIO": {
+        "elapsed_ms": 5728,
+        "result_and_report": "result=Err(Frame) report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "delayed-TCP-plus-stalled-TLS": {
+        "elapsed_ms": 5010,
+        "result_and_report": "report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "stalled-handshake": {
+        "elapsed_ms": 5003,
+        "result_and_report": "report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "stalled-frame": {
+        "elapsed_ms": 10032,
+        "result_and_report": "report=Report { stage: Deadline, dispatched: 0 }"
+      },
+      "tls_refusals": [
+        {
+          "variant": 0,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 1,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 2,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 3,
+          "client_stage": "Frame",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 4,
+          "client_stage": "Frame",
+          "server_stage": "Denied",
+          "dispatched": 0
+        },
+        {
+          "variant": 5,
+          "client_stage": "Handshake",
+          "server_stage": "Cancelled",
+          "dispatched": 0
+        },
+        {
+          "variant": 6,
+          "client_stage": "Pin",
+          "server_stage": "Cancelled",
+          "dispatched": 0
+        },
+        {
+          "variant": 7,
+          "client_stage": "Configuration",
+          "server_stage": "Cancelled",
+          "dispatched": 0
+        },
+        {
+          "variant": 8,
+          "client_stage": "Frame",
+          "server_stage": "Denied",
+          "dispatched": 0
+        },
+        {
+          "variant": 9,
+          "client_stage": "Handshake",
+          "server_stage": "Handshake",
+          "dispatched": 0
+        },
+        {
+          "variant": 10,
+          "client_stage": "Frame",
+          "server_stage": "Denied",
+          "dispatched": 0
+        }
+      ],
+      "copied_certificate_without_key": "client configuration failure; zero dispatch"
+    }
+  },
+  "configured_bounds": {
+    "bindings": 32,
+    "invited_homes": 32,
+    "lifetime_digest_tombstones": 32,
+    "handles": 8,
+    "admission_ms": 5000,
+    "cycle_ms": 10000,
+    "requests": 8,
+    "wire_bytes": 8192,
+    "drain_ms": 5000,
+    "store_objects": 8,
+    "store_object_bytes": 1048592,
+    "store_reserved_bytes": 8388736,
+    "chunk_bytes": 4096,
+    "retention_s": 604800
+  },
+  "limitations": [
+    "Original unchanged source had 12 authority passes and 10 TLS failures; those exact runs and the separate diagnostic failure remain retained.",
+    "Corrected qualification covers base source plus the one explicitly hashed test-only override, not unchanged base source.",
+    "The ten original TLS functions plus one new observer regression and twelve authority tests pass serially and with the default parallel harness.",
+    "Controlled post-BIO delays are scheduling controls, not slow-provider performance; filesystem deadlines remain cooperative.",
+    "Library/loader/source identities are observations, not hermetic build/runtime attestations.",
+    "No provider, enrollment, delegation, independent-client interoperability, security-audit, physical-hardware or capacity result is established."
+  ],
+  "classic_product_entry_points_changed": false,
+  "peak_memory_throughput_or_capacity_measured": false,
+  "installed_kernel_std_source_equivalence_or_syscall_trace_established": false
+}

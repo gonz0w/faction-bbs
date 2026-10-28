@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "owned_root_removed": true,
+  "owned_processes_remaining": 0,
+  "owned_admin_forward_closed": true,
+  "owned_fixture_stores_absent": true,
+  "saved_owner_assets_compared": 86,
+  "saved_owner_assets_changed": 0,
+  "saved_owner_images_closed": 6,
+  "owned_fixture_entries_postrun": 0,
+  "test_or_diagnostic_processes_postrun": 0,
+  "non_admin_guest_tcp_listeners_postrun": 0,
+  "native_original_archive_sha256": "116820864c45ac7e8cd6895350a758f02dccd059a91486c10e9c83ae34ab34bd",
+  "retained_regular_captures": 132,
+  "all_original_captures_hash_verified": true,
+  "native_final_binary_sha256": "3554eda13e04206898fed0f370062ac62b665c1ef825f361a1fa119eb6b2f375",
+  "synthetic_tls_keys": "generated in memory; no key files published",
+  "owner_playground": "stopped and intact",
+  "provider_host_package_service_security_or_public_listener_operations": "none; inherited BBS/file workers stopped only inside owned clone"
+}

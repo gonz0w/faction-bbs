@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "platform": {
+    "system": "Darwin",
+    "release": "27.2.0",
+    "machine": "arm64"
+  },
+  "corrected_tls_tests_sha256": "75c1ce6c8ce302ee7db187b846dfbb7a77bbe7c65de3442b7bc42b5a34fd87b6",
+  "checks": [
+    {
+      "name": "source",
+      "argv": [
+        "python3",
+        "tools/check_provider_auth_dependencies.py"
+      ],
+      "exit": 0,
+      "seconds": 0.5752389580011368,
+      "stdout_sha256": "455db9893d32c8fc273ae8b62497724dd248427d0a4a8fc9d8c481ec1b415b66",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summaries": []
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "fmt",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.050487417000113055,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summaries": []
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "clippy",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--all-targets",
+        "--release",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 4.954032374982489,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c39d64883dca2cfedc7b7bddf1de20edf03e4033d9342f24831e3717c535afb5",
+      "summaries": []
+    },
+    {
+      "name": "tests",
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "experiments/270-provider-auth/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "seconds": 37.343328209011815,
+      "stdout_sha256": "596a913ed6cd713e5765778c26e473d21947c60f2107a550069cb7cb3bf2aee1",
+      "stderr_sha256": "8f14ea97dbe9b1fa1dd5fc4549de16133f308ca3dd7937af288b48325773704d",
+      "summaries": [
+        "test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 31.14s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    }
+  ],
+  "binary_sha256": "dec3b86bc6f855da551b88b022d1f446c35d419fe6cec140a4106747305e0074",
+  "scope": "Local source/fmt/Clippy and corrected full-suite replay; original host evidence is unchanged"
+}
