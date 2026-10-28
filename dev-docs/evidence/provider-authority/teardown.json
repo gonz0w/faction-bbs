@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "owned_fixture_prefixes": [
+    "faction270-owned-",
+    "faction271-owned-"
+  ],
+  "remaining_fixture_roots": [],
+  "cycle_fixture_handler_join_assertion_ms": 5000,
+  "cycle_fixture_postclose_connect_refused": true,
+  "lead_test_processes_exited": true,
+  "synthetic_private_keys": "generated in memory; no key files written or published",
+  "saved_playground_images_open": false,
+  "provider_or_vm_or_host_operations": "none",
+  "product_crates_and_root_manifest_lock_unchanged": true,
+  "raw_captures": "retained privately outside Git; scratch disposal follows verified archival"
+}

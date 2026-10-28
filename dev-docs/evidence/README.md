@@ -449,3 +449,7 @@ Both homes, client and handler shared guest loopback; this does not establish
 provider deployment, device attestation, independent client interoperability,
 same-SSH tracing, hardware, a security audit or capacity. Earlier host records and
 their qualification fields remain unchanged.
+
+[Provider authority evidence](provider-authority/README.md) records the isolated
+synthetic authority and TLS experiment separately from provider deployment and
+previous attachment qualifications.

@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "core": [
+    "missing authority module E0583 observed before producer",
+    "10 initial core tests passed on preserved formatted source",
+    "contradictory account states and wall-expiry revival each failed before fixes",
+    "overbroad terminal-denial correction broke legitimate precommit recipient retry; rejected source/log retained; final12core pass"
+  ],
+  "tls": [
+    "absent TLS module/interface RED before producer",
+    "first stalled-frame observer raced its own10s limit; corrected only observation socket to12s, server unchanged",
+    "actual client trust store182roots failed expected1; fresh isolatedCAstore correction",
+    "controlled post-BIO server/client5.1s success dispatched1 and delayedTCP+TLS7008ms failed before original-budget checks",
+    "test instrumentation missing-interface RED then actual behavioral3RED observed before productionfix",
+    "final22 tests passed with genuine late-admission refusal"
+  ],
+  "guard": [
+    "missing module RED before guard implementation",
+    "missing CI hook RED before workflow producer",
+    "comment/echo/||true bypass RED before exact-line validation",
+    "inert conditional/heredoc/job/step controls RED before constrained run-step validation",
+    "10 final policy tests pass"
+  ],
+  "setup_or_nonbehavior": [
+    "Clippy dead private authenticate before TLSconsumer; no lint waiver",
+    "Clippy style fixes preserve tests",
+    "first whole Python suite failed2 current-repository link assertions before evidence publication; not behaviorRED"
+  ],
+  "source_bound_claims": "use final formatted/frozen executed source and22test run; first unformatted core candidate not independently frozen; original command/log retained"
+}
