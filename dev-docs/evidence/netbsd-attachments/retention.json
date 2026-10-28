@@ -1,0 +1,12 @@
+{
+  "all_capture_digests_verified": true,
+  "archive": "local/evidence/netbsd-attachments-266-267/originals.tar.gz",
+  "archive_members": 104,
+  "archive_mode": "0600",
+  "bytes": 3639373,
+  "excluded_disposable_or_reproducible_assets": 6,
+  "parent_mode": "0700",
+  "raw_private_capture_public": false,
+  "sha256": "a35051a9311fd81f916f436add60a38b1b5e2f1b1954306f377b67c281e48c17",
+  "unique_regular_captures": 103
+}

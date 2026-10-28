@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "facts": {
+    "upload_cycles_after_loss": 64,
+    "two_session_timeout_seconds": 10.266,
+    "timeout_sent_no_message": true,
+    "sender_connections": 69,
+    "sender_max_requests": 6,
+    "sender_max_physical_input": 23467,
+    "uninvited_and_wrong_frame_preflight_refused": true,
+    "between_chunk_revocation_and_resume": true,
+    "fetch_cycles": 64,
+    "server_files_and_wire_private_metadata_absent": true,
+    "recipient_connections": 65,
+    "recipient_max_requests": 5,
+    "recipient_max_physical_input": 1425,
+    "handler_requests": 661,
+    "lost_response_observed": true,
+    "full_plaintext_bytes": 1048576,
+    "sender_offline_at_fetch": true,
+    "explicit_no_overwrite_save": true
+  },
+  "private_fixture_removed": true,
+  "actual_home_sessions": true,
+  "actual_rust_store": true,
+  "provider_deployment": false,
+  "device_attestation": false,
+  "wall_seconds": 84.43
+}

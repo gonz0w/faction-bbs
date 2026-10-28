@@ -1,0 +1,12 @@
+{
+  "disposable_clone_disk_removed": true,
+  "inherited_test_key_and_kernel_copies_removed": true,
+  "original_contents_sizes_mtimes_unchanged": true,
+  "original_saved_assets_compared": 6,
+  "owned_qemu_and_controller_stopped": true,
+  "private_capture_roots_retained_until_final_archive": true,
+  "reproducible_staging_archives_removed": true,
+  "runtime_fixtures_removed_by_probes_and_guest_inspection": true,
+  "saved_owner_image_chain_still_unused": true,
+  "test_loopback_forward_closed": true
+}

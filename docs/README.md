@@ -75,7 +75,7 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 
 - [Manual encrypted home mail](online-mail.md) — optional member-local connect, compose, sync and durable pending IDs.
 
-- [Private attachments in native home mail](private-attachments.md) — opt in, review, transfer and explicitly save.
+- [Private attachments in native home mail](private-attachments.md) — opt in, review, transfer and explicitly save; includes the scope of the NetBSD software qualification.
 
 - [Bounded encrypted-mail archive catch-up](archive-mail.md)
 

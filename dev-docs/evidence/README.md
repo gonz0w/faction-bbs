@@ -442,3 +442,10 @@ production-console two-home PTY/TLS journey, exact source/binary identities,
 test-first and recovery controls, and private retention for #263/#264. It leaves
 provider/device-attestation, independent interoperability and fresh NetBSD
 qualification distinct from the observed host software result.
+
+[NetBSD attachment software qualification](netbsd-attachments/README.md) records
+the separate native library, two-home transfer and production-console observations.
+Both homes, client and handler shared guest loopback; this does not establish
+provider deployment, device attestation, independent client interoperability,
+same-SSH tracing, hardware, a security audit or capacity. Earlier host records and
+their qualification fields remain unchanged.
