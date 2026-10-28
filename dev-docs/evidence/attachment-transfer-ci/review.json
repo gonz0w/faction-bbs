@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "role": "separate temper_reviewer explicit mapping",
+  "native_backend_telemetry_verified": false,
+  "review_type": "read-only second examination, not independent assurance",
+  "private_test_sha256": "3995e5b2e89d4cc05ca93313e4651fe70788f0b9ad22ac2824a1aff2cff14db0",
+  "public_test_sha256": "fd625340c2d87f76e3fca967b377e798f66ccafefc0fdadac1d224fc82d60f3f",
+  "captured_input_manifest_sha256": "474ea10821d213b4202fc3b15efa87bc056fb50c87db43c024610c53a5745fff",
+  "original_logged_replays_verified": 20,
+  "production_input_changes": 0,
+  "blocking_source_findings_remaining": 0,
+  "publication_metadata_review": "accepted after separate exact-source, log, archive, mode, cleanup and privacy verification",
+  "exact_head_hosted_checks": "required separately"
+}

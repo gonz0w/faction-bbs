@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "files": {
+    "dev-docs/evidence/attachment-transfer/README.md": "b721d37e630deec118b6506b2352fc68604b81a2a2e6d76952bbe31b4414093f",
+    "dev-docs/evidence/attachment-transfer/baseline/crates/faction-client/src/lib.rs": "2837086fc8e2128a503ad4396b7300a63316e7d7d05fb7c8796e548ad92b5fef",
+    "dev-docs/evidence/attachment-transfer/baseline/crates/faction-client/src/mail_network.rs": "f1bf5de33d3e5cad511459724131b91c789709bc585524f55644fe718607e36e",
+    "dev-docs/evidence/attachment-transfer/baseline/crates/faction-omemo/src/attachment.rs": "190eef51c8576102496625da83de2053d4d09708a3366cb9eab1495ba5e90bd6",
+    "dev-docs/evidence/attachment-transfer/cleanup.json": "10a8e31c0eacdab68b0af2375772659862fbc1dc92c60222003d7b3b31fb08af",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-client/examples/mail_blob_fixture.rs": "8e903094728db1984521771b946be7fe08ca6e97a0b970dab6e0d52cc7f144d9",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-client/src/lib.rs": "750caef3421c265798f46ab918b646d1eedad9afa2795313023bfb5fef18017c",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-client/src/mail_blob_transfer.rs": "062aef4c9be785562d455872d3c915ae026e7ba55e307f31baf3171376c9a703",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-client/src/mail_blob_wire.rs": "37976ea0a847d3bb905eaf8834e11946234de8fc6b37b00b7d1fd341315cc7b4",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-client/src/mail_network.rs": "fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-files/src/lib.rs": "243489821834ee348de567a4d69b3fb6ffcffe312cd9b3eedf781d5ac6e6d6ca",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-files/src/private_blobs/codec.rs": "74aef2476b13296003d39b6cda76d97dbadca4dc3511b1dd03740d8f84452b7d",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-files/src/private_blobs/disk.rs": "4d8f383d143c548c8b94561b0ff926ec02c46642a6fb91b3c46d0ae55e9a791f",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-files/src/private_blobs.rs": "772cd79d9a3a38196495c0493cb1f963c5cf61753bf7f56b4344d977d96d1afd",
+    "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-omemo/src/attachment.rs": "fd2f7337b462689ab581ff96893ee0b3440e1c964fd22311c8dfebe6e612f102",
+    "dev-docs/evidence/attachment-transfer/executed-tls/tools/probe_attachment_transfer.py": "2064de1cad1276cd7f4a0420a1bdfd5f2ac59c2e6909622565efea12d60fedc3",
+    "dev-docs/evidence/attachment-transfer/executed-tls/tools/probe_xmpp_transport.py": "79c730d3c2e82354589c456947684f93bd284df46ed2b9516675286b3a6f57ff",
+    "dev-docs/evidence/attachment-transfer/executed-tls/tools/test_probe_attachment_transfer.py": "d8ba41c5c4aa864801820f8cae6a13713a6ecedeb17bb175a74b9570d4934127",
+    "dev-docs/evidence/attachment-transfer/integrated-inputs.json": "718087020efc2e3a88f2ab9ecc4b7a5f8f6a66954d7597789ecdf959b0348c76",
+    "dev-docs/evidence/attachment-transfer/private-retention.json": "2ed903ca42477ffeb2beb6e4b89760130eefdac3a15df0b50595e94531b112c6",
+    "dev-docs/evidence/attachment-transfer/results.json": "bd615eba267823d7448e3591f6fe6c6d9712f0067c6b2b346b87c893e9b7b057",
+    "dev-docs/evidence/attachment-transfer/review.json": "08e6312ea8124860ad93773a8ddb22f40c2592a6cdcb8bbc43194d325a02c6bd",
+    "dev-docs/evidence/attachment-transfer/tls-inputs.json": "e14b12d82778c7e5ef3687f53a837e47c6dd86a4c861b318bec1678c1fcdc72d",
+    "dev-docs/evidence/attachment-transfer/tls-result.json": "97969dd363331552ccfd9a9ae6584679d5a77283366985da483de3d4c279da1a"
+  }
+}

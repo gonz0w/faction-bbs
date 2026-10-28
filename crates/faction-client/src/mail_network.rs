@@ -349,6 +349,31 @@ pub async fn cycle(
         .map_err(Error::Transport)?;
     exchange(vault, settings, &mut session, mode, ready).await
 }
+// The capability can only be created after the transfer module validates an
+// actual authenticated committed-store response. Fresh peer discovery remains
+// mandatory on this separate bounded Session before releasing its exact wire.
+pub(crate) async fn release_attachment(
+    vault: &mut CheckpointVault,
+    settings: &Settings,
+    password: &str,
+    release: &crate::mail_blob_transfer::Release,
+    now: u64,
+) -> Result<Report, Error> {
+    let ready = preflight(vault, settings, Mode::Sync, now)?;
+    let home = settings.transport(ready.device).map_err(Error::Transport)?;
+    let mut session = faction_xmpp::connect(&home, password)
+        .await
+        .map_err(Error::Transport)?;
+    exchange_ready(
+        vault,
+        settings,
+        &mut session,
+        Mode::Sync,
+        ready,
+        Some(release),
+    )
+    .await
+}
 async fn catch_up<C: Channel>(
     vault: &mut CheckpointVault,
     settings: &Settings,
@@ -446,6 +471,16 @@ async fn exchange<C: Channel>(
     session: &mut C,
     mode: Mode,
     ready: Ready,
+) -> Result<Report, Error> {
+    exchange_ready(vault, settings, session, mode, ready, None).await
+}
+async fn exchange_ready<C: Channel>(
+    vault: &mut CheckpointVault,
+    settings: &Settings,
+    session: &mut C,
+    mode: Mode,
+    ready: Ready,
+    release: Option<&crate::mail_blob_transfer::Release>,
 ) -> Result<Report, Error> {
     if mode == Mode::CatchUp {
         return catch_up(vault, settings, session, ready).await;
@@ -570,12 +605,28 @@ async fn exchange<C: Channel>(
         return Ok(report);
     }
     for delivery in backend(vault.pending_deliveries(clock.now()))? {
+        let managed = backend(vault.history())?.iter().any(|row| {
+            row.direction == crate::mail_checkpoint::Direction::Sent
+                && row.operation() == delivery.operation
+                && row
+                    .attachment()
+                    .is_some_and(|d| d.locator.starts_with("urn:faction:blob:1:"))
+        });
+        let permitted = release.is_some_and(|ready| {
+            ready.permits(vault, delivery.operation, &delivery.wire, clock.now())
+        });
+        if (managed || release.is_some()) && !permitted {
+            continue;
+        }
         let xml = protocol(crate::mail_wire::message(
             &delivery.wire,
             delivery.operation,
         ))?;
         session.send(&xml).await.map_err(Error::Transport)?;
         report.sent += 1;
+    }
+    if release.is_some() {
+        return Ok(report);
     }
     if backend(vault.inspection())?.archive_enabled {
         return Ok(report);
@@ -1802,6 +1853,59 @@ mod tests {
     struct AttachmentWriteScript {
         inner: PresenceScript,
         fail_message: bool,
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn ordinary_sync_skips_managed_private_attachment_but_sends_text() {
+        let (_owned, mut alice, bob, _) = pair();
+        alice.enable_attachments().unwrap();
+        alice.enable_archive(NOW).unwrap();
+        let (mut descriptor, _) = attachment_fixture();
+        *descriptor.locator = format!("urn:faction:blob:1:{}", "ab".repeat(32));
+        alice
+            .queue_attachment(
+                [124; 16],
+                "private attachment",
+                "wait for commit",
+                &descriptor,
+                NOW,
+                NOW,
+            )
+            .unwrap();
+        let text = alice
+            .queue([125; 16], "ordinary text", "independent delivery", NOW, NOW)
+            .unwrap();
+        let settings = Settings {
+            account: "alice@home.test".into(),
+            endpoint: "127.0.0.1:9".parse().unwrap(),
+            domain: "home.test".into(),
+            ca: vec![],
+            pin: [0; 32],
+        };
+        let (bundle, prekeys) = bob.publication(NOW).unwrap();
+        let mut channel = PresenceScript {
+            read_after_pending: false,
+            sent: vec![],
+            peer: "bob@away.test".into(),
+            device: 202,
+            bundle,
+            prekeys,
+        };
+        let ready = preflight(&alice, &settings, Mode::Sync, NOW).unwrap();
+        let report = exchange(&mut alice, &settings, &mut channel, Mode::Sync, ready)
+            .await
+            .unwrap();
+        assert_eq!(report.sent, 1);
+        let messages: Vec<_> = channel
+            .sent
+            .iter()
+            .filter(|v| v.is("message", "jabber:client"))
+            .collect();
+        assert_eq!(messages.len(), 1);
+        assert_eq!(
+            *messages[0],
+            crate::mail_wire::message(&text, [125; 16]).unwrap()
+        );
+        assert_eq!(alice.pending(NOW).unwrap().len(), 2);
     }
     impl Channel for AttachmentWriteScript {
         async fn send(&mut self, xml: &faction_xmpp::Element) -> Result<(), faction_xmpp::Error> {

@@ -38,8 +38,10 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [picker E entry](docs/picker-home-mail.md) opens native mail between board visits.
   [Local read tracking and Files-desk mail](docs/local-unread-mail.md) add encrypted
   unread decisions and a parked in-session entry. A [selectable local inbox](docs/local-mail-inbox.md)
-  adds bounded unread navigation and selected-message reading. Background notifications,
-  encrypted attachments and roaming remain incomplete.
+  adds bounded unread navigation and selected-message reading. The experimental
+  [attachment library](dev-docs/private-attachment-storage.md) adds durable private
+  ciphertext storage and automatic upload/fetch cycles. Attachment menus, deployed
+  home integration, background notifications and production roaming remain incomplete.
 
 ## What you can do
 

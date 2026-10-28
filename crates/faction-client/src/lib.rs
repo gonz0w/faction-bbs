@@ -21,3 +21,9 @@ pub mod mail_network;
 
 #[cfg(feature = "network-mail")]
 pub mod mail_archive;
+
+#[cfg(feature = "network-mail")]
+pub mod mail_blob_wire;
+
+#[cfg(feature = "network-mail")]
+pub mod mail_blob_transfer;

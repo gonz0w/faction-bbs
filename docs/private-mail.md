@@ -13,7 +13,7 @@ retention/completeness and recipient reading are not guaranteed.
 [Local unread decisions and the parked Files-desk entry](local-unread-mail.md)
 add explicit encrypted read state and opt-in stale local notices. Broader
 background notifications/private chat remain #99, trusted visited-board membership
-binding #91 and attachments #88. Native adapter coordination #90 is complete. The earlier
+binding #91; the broader attachment proof remains #88. Native adapter coordination #90 is complete. The earlier
 [two-home reference proof](../dev-docs/research/0045-encrypted-mail-and-roaming-proof.md)
 and [native interoperability qualification](../dev-docs/research/0054-omemo-interop-netbsd.md)
 remain separate immutable evidence; they do not establish full XMPP/OMEMO conformance.
@@ -114,9 +114,9 @@ E2EE envelope. Treat remote locators as untrusted, enforce destination/size/time
 bounds and require local confirmation before saving. Never send a private attachment
 through the current sysop-readable file area and call it server-blind.
 
-The experimental native library now supports [durable attachment messages](../dev-docs/attachment-mail.md) after explicit checkpoint opt-in. The encrypted history retains the descriptor and device-private key material; the existing `network-mail` feature and adapter carry the encrypted message over the home network. The `native-mail` feature alone supplies local checkpoint, queue, receive and consumption APIs. A trusted local caller must retain and supply the separate ciphertext to verify it against a retained received record and explicitly choose a destination to save it. There is no attachment UI or automatic upload, fetch or bulk-byte storage. The locator is inert. Classic access and text mail remain available.
+The experimental native library supports [durable attachment messages](../dev-docs/attachment-mail.md) and bounded automatic ciphertext transfer after explicit checkpoint opt-in. A trusted local caller invokes transfer cycles; no attachment UI or CLI is supplied. The device encrypts and durably spools ciphertext before queuing the encrypted descriptor and key, commits the upload before sending the exact queued wire, and fetches only for an authenticated retained message. Verification precedes an explicit local save; nothing automatically opens, executes or extracts a file. Existing HTTPS locators remain inert. The private locator is an identifier, not permission to contact a destination.
 
-The [attachment profile comparison](../dev-docs/research/0058-encrypted-attachment-profile.md), [metadata codec](../dev-docs/attachment-metadata.md), and [blob and safe-save primitives](../dev-docs/attachment-blobs-save.md) describe the narrow experiments and their limits. This does not establish private storage or authorization, quotas, expiry, two-home bulk delivery, modern-client interoperability or fresh NetBSD qualification. Those original requirements remain open under #88. Necessary routing, sizes and timing can still be visible; there is no plaintext fallback.
+The [storage and transfer contract](../dev-docs/private-attachment-storage.md), [metadata codec](../dev-docs/attachment-metadata.md), and [blob and safe-save primitives](../dev-docs/attachment-blobs-save.md) describe bounds and trust. An embedding home adapter must supply current authenticated account, device and full public identity bindings and invited-peer policy; an XMPP resource is not device attestation. No stock Prosody provider or deployment is supplied. Servers can observe account, device, public identity, ciphertext digest and size, timing and access patterns, but do not receive attachment keys, private filenames or content text. Encryption is not anonymity. Independent home BBS approval remains separate, and classic access and text mail remain unchanged. The original requirements of [#88](https://github.com/gonz0w/faction-bbs/issues/88), including independent interoperability and qualification, remain open.
 
 ## What the proof does and does not establish
 

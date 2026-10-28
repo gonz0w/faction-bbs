@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "files": {
+    "README.md": "676fc8bd952e1a20da461a4e6ca7be604ecf369b6975ee85ed0dbfb753b91efd",
+    "crates/faction-client/examples/mail_blob_fixture.rs": "9bfd43e8ee31baac40caaaecf67d2e0dd428165fca6d175cb8d2625a8366c23a",
+    "crates/faction-client/src/lib.rs": "750caef3421c265798f46ab918b646d1eedad9afa2795313023bfb5fef18017c",
+    "crates/faction-client/src/mail_blob_transfer.rs": "062aef4c9be785562d455872d3c915ae026e7ba55e307f31baf3171376c9a703",
+    "crates/faction-client/src/mail_blob_wire.rs": "37976ea0a847d3bb905eaf8834e11946234de8fc6b37b00b7d1fd341315cc7b4",
+    "crates/faction-client/src/mail_network.rs": "fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20",
+    "crates/faction-client/tests/mail_blob_transfer.rs": "307c9741a5d147b40eaaff946df416e8ee0dbe153fde8ed32c35a0554c16356a",
+    "crates/faction-client/tests/mail_blob_wire.rs": "e22c085697a6caa33dd5d9999e70202051e60d6df98df6e1cb799f2f33b339ba",
+    "crates/faction-files/src/lib.rs": "243489821834ee348de567a4d69b3fb6ffcffe312cd9b3eedf781d5ac6e6d6ca",
+    "crates/faction-files/src/private_blobs.rs": "772cd79d9a3a38196495c0493cb1f963c5cf61753bf7f56b4344d977d96d1afd",
+    "crates/faction-files/src/private_blobs/codec.rs": "74aef2476b13296003d39b6cda76d97dbadca4dc3511b1dd03740d8f84452b7d",
+    "crates/faction-files/src/private_blobs/disk.rs": "4d8f383d143c548c8b94561b0ff926ec02c46642a6fb91b3c46d0ae55e9a791f",
+    "crates/faction-files/src/private_blobs/tests.rs": "051d6a322171c736e48f0bfdddf719eed855bd3ea30f6fa2309f9209a1ca4a44",
+    "crates/faction-files/tests/private_blobs.rs": "093043e705a3337476722871fa2d59f1195d03e17f2b7a8c49b6b5e29389ec43",
+    "crates/faction-omemo/src/attachment.rs": "fd2f7337b462689ab581ff96893ee0b3440e1c964fd22311c8dfebe6e612f102",
+    "crates/faction-omemo/tests/private_attachment_locator.rs": "636b2e4b59dade4ce8a671f389a1e674806c005b136d7bd023bccec554f7cc76",
+    "dev-docs/attachment-blobs-save.md": "f9f60fd53abfe14a65a82e4acb7211ca80ef543f3946b97ec17a369e98037958",
+    "dev-docs/attachment-mail.md": "93c6f5cdd9383924355c7672a805ba1203002b6debf5d551856ecf79d9641643",
+    "dev-docs/attachment-metadata.md": "6a256769ae4f17c3246e70d27596bfa5f84e52875192b51ce0a553f07e1c1503",
+    "dev-docs/private-attachment-storage.md": "3c36c84d446c9880b10f56db1088097b028cb86069261c545ec1c0d7d285dd25",
+    "docs/private-mail.md": "e167d25708940be984bbc6a672b65c0641daaa5c09813e901665d098f6b367b0",
+    "tools/probe_attachment_transfer.py": "2064de1cad1276cd7f4a0420a1bdfd5f2ac59c2e6909622565efea12d60fedc3",
+    "tools/test_probe_attachment_transfer.py": "d8ba41c5c4aa864801820f8cae6a13713a6ecedeb17bb175a74b9570d4934127"
+  }
+}
