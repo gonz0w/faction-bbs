@@ -44,6 +44,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   home storage is required. A [NetBSD 11 ARM64 software qualification](dev-docs/evidence/netbsd-attachments/README.md)
   exercises the desk and a two-home transfer inside one guest; provider deployment,
   independent client interoperability, background notifications and production roaming remain incomplete.
+  [Provider and device boundary research](dev-docs/research/0060-provider-device-boundary.md)
+  specifies a future software proof; it does not establish provider deployment.
 
 ## What you can do
 
