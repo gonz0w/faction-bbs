@@ -136,11 +136,12 @@ class VerifiedManifestDecodeCache(unittest.TestCase):
             lookup_case(1)
             self.assertEqual(loads.call_count, 130)
 
-    def test_all_56_pinned_helpers_still_read_and_hash_on_every_lookup(self):
+    def test_all_57_pinned_helpers_still_read_and_hash_on_every_lookup(self):
         helpers = [(name, function) for name, function in inspect.getmembers(evidence, inspect.isfunction)
                    if not name.startswith('_') and (name == 'manifest' or name.endswith('_manifest'))]
-        self.assertEqual(len(helpers), 56)
+        self.assertEqual(len(helpers), 57)
         self.assertIn('attachment_mail_baseline_manifest', {name for name, _ in helpers})
+        self.assertIn('native_attachment_desk_baseline_manifest', {name for name, _ in helpers})
         paths = []
         raw_values = set()
         for _, helper in helpers:

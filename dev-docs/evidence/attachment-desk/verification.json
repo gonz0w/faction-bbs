@@ -1,0 +1,42 @@
+{
+  "attachment_integration": {
+    "passed": 22,
+    "targets": 7,
+    "wrong_key_corrupt_truncated_refusal": true
+  },
+  "cache_guard_tests": 8,
+  "cache_oracle_correction": "57 exact registered pinned helpers; per-lookup read/hash/tamper/cache assertions retained",
+  "cleanup_ownership_tests": 2,
+  "default_client_passed": 48,
+  "format": "pass",
+  "intermediate_expanded_pass": "not the accepted source-bound result; source reconstructed from recorded edits, execution-time digest unavailable",
+  "native_only_all_targets_clippy": "pass with required existing OpenSSL 3 environment",
+  "network_all_targets_clippy": "pass",
+  "normal_board_budgets_changed": false,
+  "owner_playground_started": false,
+  "preserved_failed_variants": [
+    "source fixture macOS mkfifoat unavailable",
+    "source permission-negative fixture could not rewrite its own mode-000 file",
+    "new UI in-process native test lowered core limit in parent; isolated new tests preserve existing guard",
+    "two collapsible-if lint findings; no lint exemptions",
+    "missing TLS fixture binary setup failure, not behavior RED",
+    "immediate home message counter assertion; bounded readiness preserves same expected count",
+    "first native-only check selected wrong system OpenSSL major; required existing OpenSSL 3 environment corrected",
+    "full Python run 486/487 passed before stale exact helper-count fixture correction"
+  ],
+  "required_hosted_checks": "separate integration gate, not predicted by these host results",
+  "resolver_tests": 14,
+  "source_loader": {
+    "actual_missing_interface_red": true,
+    "green": 12
+  },
+  "ui": {
+    "actual_menu_and_model_red": true,
+    "actual_zero_budget_polled_future_red": true,
+    "focused_green": 9,
+    "network_bin_existing_helpers_ignored": 3,
+    "network_bin_passed": 77,
+    "network_lib_existing_helpers_ignored": 5,
+    "network_lib_passed": 124
+  }
+}

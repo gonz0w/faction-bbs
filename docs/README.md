@@ -75,6 +75,8 @@ Development practices, experiments, and architecture decisions belong in [dev-do
 
 - [Manual encrypted home mail](online-mail.md) — optional member-local connect, compose, sync and durable pending IDs.
 
+- [Private attachments in native home mail](private-attachments.md) — opt in, review, transfer and explicitly save.
+
 - [Bounded encrypted-mail archive catch-up](archive-mail.md)
 
 - [Native home mail from the picker](picker-home-mail.md) — explicit local E entry and locked return between visits.

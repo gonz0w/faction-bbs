@@ -1,6 +1,6 @@
 # Private ciphertext storage and transfer
 
-The experimental, default-off native library path transfers ciphertext through deliberately invoked bounded cycles. It uses the existing pinned XMPP home session for the sender's own home and an explicit invited-home route for the authenticated sender when a recipient fetches. A locator never grants a destination or establishes trust. This is a library and home handler contract, not a stock Prosody provider/plugin or deployment; it starts no UI, CLI, listener, host, VM or playground.
+The experimental, default-off native library path transfers ciphertext through deliberately invoked bounded cycles. It uses the existing pinned XMPP home session for the sender's own home and an explicit invited-home route for the authenticated sender when a recipient fetches. A locator never grants a destination or establishes trust. This describes the underlying library and home handler contract, not a stock Prosody provider/plugin or deployment. The default-off `network-mail` console exposes an explicit [private attachment desk](../docs/private-attachments.md) over the managed transfer path. The library itself starts no UI, CLI, listener, host, VM or playground.
 
 ## Member-device sequence
 

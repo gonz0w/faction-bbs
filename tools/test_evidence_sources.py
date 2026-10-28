@@ -11,11 +11,30 @@ def isolated_history(digest):
     # ExitStack avoids Python 3.12's static block limit as snapshots accumulate.
     with ExitStack() as mocks:
         mocks.enter_context(patch.object(evidence,'MANIFEST_SHA256',digest))
-        for name in ('key_manifest', 'global_manifest', 'file_baseline_manifest', 'native_client_baseline_manifest', 'mail_client_baseline_manifest', 'room_reader_baseline_manifest', 'post_metadata_baseline_manifest', 'authored_articles_baseline_manifest', 'broader_articles_baseline_manifest', 'unicode_subjects_baseline_manifest', 'modern_terminals_baseline_manifest', 'kitty_graphics_baseline_manifest', 'terminal_compatibility_baseline_manifest', 'menu_themes_baseline_manifest', 'seasonal_themes_baseline_manifest', 'custom_menus_baseline_manifest', 'nightwire_baseline_manifest', 'operator_baseline_manifest', 'operator_host_baseline_manifest', 'operator_recovery_baseline_manifest', 'directory_baseline_manifest', 'board_launcher_baseline_manifest', 'room_browser_baseline_manifest', 'writing_desk_baseline_manifest', 'full_screen_baseline_manifest', 'community_wall_baseline_manifest', 'member_pages_baseline_manifest', 'local_mail_vault_baseline_manifest', 'client_vault_integration_baseline_manifest', 'gatherings_baseline_manifest', 'polls_baseline_manifest', 'catchup_baseline_manifest', 'discussion_baseline_manifest', 'gallery_baseline_manifest', 'travel_baseline_manifest', 'library_baseline_manifest', 'file_requests_baseline_manifest', 'magazine_baseline_manifest', 'editorial_baseline_manifest', 'social_baseline_manifest', 'boardwide_social_baseline_manifest', 'standalone_social_baseline_manifest', 'idle_notifications_baseline_manifest', 'who_baseline_manifest', 'connection_desk_baseline_manifest', 'passport_baseline_manifest', 'nightwire_refresh_baseline_manifest', 'checkpoint_ui_baseline_manifest', 'native_network_baseline_manifest', 'network_prekeys_baseline_manifest', 'network_dependency_baseline_manifest', 'home_mail_archive_baseline_manifest', 'archive_mail_picker_baseline_manifest', 'picker_mail_unread_baseline_manifest', 'attachment_mail_baseline_manifest'):
+        for name in ('key_manifest', 'global_manifest', 'file_baseline_manifest', 'native_client_baseline_manifest', 'mail_client_baseline_manifest', 'room_reader_baseline_manifest', 'post_metadata_baseline_manifest', 'authored_articles_baseline_manifest', 'broader_articles_baseline_manifest', 'unicode_subjects_baseline_manifest', 'modern_terminals_baseline_manifest', 'kitty_graphics_baseline_manifest', 'terminal_compatibility_baseline_manifest', 'menu_themes_baseline_manifest', 'seasonal_themes_baseline_manifest', 'custom_menus_baseline_manifest', 'nightwire_baseline_manifest', 'operator_baseline_manifest', 'operator_host_baseline_manifest', 'operator_recovery_baseline_manifest', 'directory_baseline_manifest', 'board_launcher_baseline_manifest', 'room_browser_baseline_manifest', 'writing_desk_baseline_manifest', 'full_screen_baseline_manifest', 'community_wall_baseline_manifest', 'member_pages_baseline_manifest', 'local_mail_vault_baseline_manifest', 'client_vault_integration_baseline_manifest', 'gatherings_baseline_manifest', 'polls_baseline_manifest', 'catchup_baseline_manifest', 'discussion_baseline_manifest', 'gallery_baseline_manifest', 'travel_baseline_manifest', 'library_baseline_manifest', 'file_requests_baseline_manifest', 'magazine_baseline_manifest', 'editorial_baseline_manifest', 'social_baseline_manifest', 'boardwide_social_baseline_manifest', 'standalone_social_baseline_manifest', 'idle_notifications_baseline_manifest', 'who_baseline_manifest', 'connection_desk_baseline_manifest', 'passport_baseline_manifest', 'nightwire_refresh_baseline_manifest', 'checkpoint_ui_baseline_manifest', 'native_network_baseline_manifest', 'network_prekeys_baseline_manifest', 'network_dependency_baseline_manifest', 'home_mail_archive_baseline_manifest', 'archive_mail_picker_baseline_manifest', 'picker_mail_unread_baseline_manifest', 'attachment_mail_baseline_manifest', 'native_attachment_desk_baseline_manifest'):
             mocks.enter_context(patch.object(evidence,name,return_value={'files':{}}))
         yield
 
 class ExecutedSources(unittest.TestCase):
+    def test_attachment_desk_baseline_resolves_after_live_edits(self):
+        baseline = evidence.native_attachment_desk_baseline_manifest()
+        self.assertEqual(len(baseline['files']), 7)
+        original_read = Path.read_bytes
+        def changed_live(path):
+            if path in {evidence.ROOT / name for name in baseline['files']}:
+                return b'changed live attachment desk producer'
+            return original_read(path)
+        with patch.object(Path, 'read_bytes', changed_live):
+            for name, digest in baseline['files'].items():
+                self.assertEqual(hashlib.sha256(evidence.source_bytes(name, digest)).hexdigest(), digest)
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            path = root / 'dev-docs/evidence/native-attachment-desk-baseline-manifest.json'
+            path.parent.mkdir(parents=True)
+            path.write_bytes(b'{}')
+            with self.assertRaisesRegex(AssertionError, 'frozen native attachment desk baseline changed'):
+                evidence.native_attachment_desk_baseline_manifest(root)
+
     def test_archive_mail_picker_baseline_preserves_existing_objects_and_record(self):
         manifest=evidence.archive_mail_picker_baseline_manifest()
         self.assertEqual(len(manifest['files']),644)

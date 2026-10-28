@@ -1,0 +1,29 @@
+{
+  "capacity_claim": false,
+  "checks": [
+    "fresh_factcp05_decline_and_enable_preserve_mail_read_cursor_pending_without_spool_or_network",
+    "classic_and_compact_unicode_navigation_no_spool_or_connection",
+    "fresh_confirmation_discards_queue_typeahead_and_cancel_preserves_checkpoint_without_sidecar",
+    "queue_is_local_and_lost_response_stops_without_implicit_retry",
+    "reopened_exact_operation_multicycle_upload_with_one_hidden_password_without_source",
+    "ctrl_c_cancels_active_authenticated_transfer_locks_and_restores_terminal",
+    "authenticated_metadata_and_declined_foreign_route_are_local_only",
+    "sender_offline_own_home_multicycle_fetch_local_verify_explicit_private_save_no_overwrite",
+    "server_store_and_wire_exclude_private_metadata_keys_and_plaintext",
+    "ctrl_d_locks_at_save_selection_without_publication",
+    "hostile_bidi_source_and_authenticated_filename_remain_inert_in_classic_and_unicode",
+    "hidden_passwords_absent_from_pty_output_and_terminal_echo_restored"
+  ],
+  "children_reaped": true,
+  "count": 12,
+  "exact_plaintext_bytes": 65536,
+  "max_requests_per_session": 5,
+  "netbsd_qualification": false,
+  "private_fixture_removed": true,
+  "provider_adopted": false,
+  "recipient_connections": 5,
+  "result": "pass",
+  "seconds": 18.072,
+  "sender_connections": 7,
+  "ssh_trace": false
+}

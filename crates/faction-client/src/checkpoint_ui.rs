@@ -25,6 +25,10 @@ mod inbox;
 #[path = "checkpoint_ui_reply.rs"]
 mod reply;
 
+#[cfg(feature = "network-mail")]
+#[path = "checkpoint_ui_attachments.rs"]
+mod attachments;
+
 // Default output is classic ASCII. Unicode is an explicit local capability
 // override, never inferred from TERM/remote replies. Escape controls, bidi marks,
 // invisible format characters and line separators even with the override.
@@ -493,10 +497,15 @@ impl Screen<'_> {
             for entry in list.visible() {
                 let selected = list.selected() == Some(*entry);
                 let prefix = format!(
-                    "{} {:02} {:7} ",
+                    "{} {:02} {:7}{} ",
                     if selected { '>' } else { ' ' },
                     entry.index + 1,
-                    entry.status.label()
+                    entry.status.label(),
+                    if v.history()?[entry.index].attachment().is_some() {
+                        "@"
+                    } else {
+                        ""
+                    }
                 );
                 self.print(&prefix)?;
                 self.print(&inbox::compact(
@@ -592,6 +601,11 @@ impl Screen<'_> {
         ))?;
         self.show("Subject: ", &record.subject)?;
         self.show("Body: ", &record.body)?;
+        #[cfg(feature = "network-mail")]
+        if let Some(descriptor) = record.attachment() {
+            self.attachment_details(descriptor)?;
+            self.print("Use M at the online menu for actions.\r\n")?;
+        }
         let received = record.received_id();
         if let Some(identity) = received
             && v.received_read(index, identity)?.is_some()
@@ -950,7 +964,7 @@ impl Screen<'_> {
         } else {
             "Archive checkpoints: disabled; explicit upgrade required\r\n"
         })?;
-        self.print("[I] Local inbox\r\n")?;
+        self.print("[I] Local inbox\r\n[M] Private attachments\r\n")?;
         self.print("[E] Enable local read tracking\r\n")?;
         self.print("[G] Enable archive checkpoints\r\n[A] Catch up one archive page\r\n")?;
         self.print("[U] Publish public keys   [K] Prepare verified peer\r\n")?;
@@ -964,7 +978,7 @@ impl Screen<'_> {
         loop {
             if let Some(Key::Hotkey(key)) = decoder.feed(self.byte()?, Instant::now()) {
                 let key = key.to_ascii_uppercase();
-                if b"IUKCNPVHOTRFBSDLGAE".contains(&key) {
+                if b"IUKCNPVHOTRFBSDLGAEM".contains(&key) {
                     return Ok(key);
                 }
             }
@@ -985,9 +999,13 @@ impl Screen<'_> {
         &mut self,
         v: &mut CheckpointVault,
         settings: &faction_client::mail_network::Settings,
+        root: &Path,
         key: u8,
     ) -> io::Result<()> {
         use faction_client::mail_network::{self, Mode};
+        if key == b'M' {
+            return self.attachment_desk(v, settings, root);
+        }
         if key == b'I' {
             return self.inbox_mode(v, true);
         }
@@ -1169,7 +1187,7 @@ pub fn run_online_with_status(
             if key == b'L' {
                 break;
             }
-            s.online_action(&mut vault, &settings, key)?;
+            s.online_action(&mut vault, &settings, path, key)?;
         }
         Ok(Some(vault.read_summary()?))
     })();
