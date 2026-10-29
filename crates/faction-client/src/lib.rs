@@ -30,3 +30,6 @@ pub mod mail_blob_transfer;
 
 #[cfg(feature = "network-mail")]
 pub mod attachment_source;
+
+#[cfg(feature = "device-provider")]
+pub mod mail_device_provider;

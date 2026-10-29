@@ -49,8 +49,10 @@ by the sysop; experiments and future protocols are separate from normal operatio
   An optional [provider embedding](dev-docs/provider-integration.md) exposes that
   boundary and reuses the native attachment IQ codec in process, with
   [fresh host/NetBSD software evidence](dev-docs/evidence/provider-integration/README.md).
-  It enables no provider enrollment or XMPP service and keeps the existing native
-  home-mail route and classic defaults.
+  An explicit `device-provider` client feature can select a local, same-home
+  device provider for attachment transfers; ordinary encrypted mail uses its
+  separate XMPP route. See the [attachment guide](docs/private-attachments.md).
+  This does not enroll devices or deploy a provider; classic defaults remain.
 
 ## What you can do
 

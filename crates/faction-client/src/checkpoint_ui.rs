@@ -1001,10 +1001,11 @@ impl Screen<'_> {
         settings: &faction_client::mail_network::Settings,
         root: &Path,
         key: u8,
+        provider_profile: Option<&Path>,
     ) -> io::Result<()> {
         use faction_client::mail_network::{self, Mode};
         if key == b'M' {
-            return self.attachment_desk(v, settings, root);
+            return self.attachment_desk(v, settings, root, provider_profile);
         }
         if key == b'I' {
             return self.inbox_mode(v, true);
@@ -1147,6 +1148,15 @@ impl Screen<'_> {
 pub fn run_online(path: &Path, config: &Path, unicode: bool) -> io::Result<()> {
     run_online_with_status(path, config, unicode).map(|_| ())
 }
+#[cfg(feature = "network-mail")]
+pub fn run_online_with_provider(
+    path: &Path,
+    config: &Path,
+    unicode: bool,
+    provider_profile: Option<&Path>,
+) -> io::Result<()> {
+    run_online_with_status_and_provider(path, config, unicode, provider_profile).map(|_| ())
+}
 /// Return only a healthy local retained-state snapshot after graceful locking.
 /// Cancellation, unlock/configuration failures and poisoned handles return no
 /// successful snapshot. This never establishes home completeness or freshness.
@@ -1155,6 +1165,15 @@ pub fn run_online_with_status(
     path: &Path,
     config: &Path,
     unicode: bool,
+) -> io::Result<Option<ReadSummary>> {
+    run_online_with_status_and_provider(path, config, unicode, None)
+}
+#[cfg(feature = "network-mail")]
+pub fn run_online_with_status_and_provider(
+    path: &Path,
+    config: &Path,
+    unicode: bool,
+    provider_profile: Option<&Path>,
 ) -> io::Result<Option<ReadSummary>> {
     if !path.is_absolute() || !config.is_absolute() {
         return Err(invalid());
@@ -1187,7 +1206,7 @@ pub fn run_online_with_status(
             if key == b'L' {
                 break;
             }
-            s.online_action(&mut vault, &settings, path, key)?;
+            s.online_action(&mut vault, &settings, path, key, provider_profile)?;
         }
         Ok(Some(vault.read_summary()?))
     })();

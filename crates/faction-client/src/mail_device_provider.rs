@@ -1,0 +1,673 @@
+//! Explicit authenticated binary attachment transport on the member device.
+//! A foreground cycle owns one bounded TLS worker and joins it on every exit.
+use crate::mail_checkpoint::CheckpointVault;
+use faction_files::private_blobs::{Principal, Request, Response, encode_request};
+pub use faction_provider::tls::ClientCredentials as Credentials;
+use faction_provider::tls::{CYCLE_LIMIT, ClientAdmission, HANDSHAKE_LIMIT, Stage};
+use std::{
+    net::SocketAddr,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+        mpsc::{self, SyncSender},
+    },
+    thread::{self, JoinHandle},
+    time::{Duration, Instant},
+};
+use tokio::sync::oneshot;
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Error {
+    Configuration,
+    Identity,
+    Keylog,
+    Transport(Stage),
+    Worker,
+}
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("authenticated attachment transport unavailable")
+    }
+}
+impl std::error::Error for Error {}
+/// Trusted local assertions. They never establish server-side device authority.
+pub struct Config {
+    home: String,
+    address: SocketAddr,
+    expected_name: String,
+    leaf_pin: [u8; 32],
+    expected: Principal,
+}
+impl Config {
+    pub fn new(
+        home: &str,
+        address: SocketAddr,
+        expected_name: &str,
+        leaf_pin: [u8; 32],
+        expected: Principal,
+    ) -> Result<Self, Error> {
+        for domain in [home, expected_name] {
+            Principal {
+                account: format!("policy@{domain}"),
+                device: 1,
+                identity: [1; 32],
+            }
+            .validate()
+            .map_err(|_| Error::Configuration)?;
+        }
+        expected.validate().map_err(|_| Error::Configuration)?;
+        if !address.ip().is_loopback()
+            || address.port() == 0
+            || leaf_pin == [0; 32]
+            || expected.account.split_once('@').map(|(_, domain)| domain) != Some(home)
+        {
+            return Err(Error::Configuration);
+        }
+        Ok(Self {
+            home: home.into(),
+            address,
+            expected_name: expected_name.into(),
+            leaf_pin,
+            expected,
+        })
+    }
+}
+/// Independent transport credentials, distinct from the unlocked OMEMO vault.
+/// Construction performs no network or filesystem operation.
+pub struct DeviceProvider {
+    config: Config,
+    credentials: Credentials,
+}
+impl DeviceProvider {
+    pub fn new(config: Config, credentials: Credentials) -> Self {
+        Self {
+            config,
+            credentials,
+        }
+    }
+    /// Check the current local vault before opening a connection or changing a
+    /// transfer spool. Configuration and certificate subjects are only assertions.
+    pub fn validate(&self, vault: &CheckpointVault) -> Result<(), Error> {
+        keylog()?;
+        let state = vault.inspection().map_err(|_| Error::Identity)?;
+        if vault.legacy().map_err(|_| Error::Identity)?.home != self.config.expected.account
+            || state.local_device != self.config.expected.device
+            || *state.identity != self.config.expected.identity
+        {
+            return Err(Error::Identity);
+        }
+        Ok(())
+    }
+    pub(crate) fn permits_home(&self, account: &str) -> bool {
+        account.split_once('@').map(|(_, home)| home) == Some(self.config.home.as_str())
+    }
+    pub(crate) async fn open(&self) -> Result<Worker, Error> {
+        self.open_with(|| tokio::net::TcpStream::connect(self.config.address))
+            .await
+    }
+    async fn open_with<F, C>(&self, connect: F) -> Result<Worker, Error>
+    where
+        F: FnOnce() -> C,
+        C: std::future::Future<Output = std::io::Result<tokio::net::TcpStream>>,
+    {
+        keylog()?;
+        // The conservative native clock starts before the provider's opaque
+        // admission token. TCP never retries or restarts either absolute budget.
+        let start = Instant::now();
+        let cancel = Arc::new(AtomicBool::new(false));
+        let admission = ClientAdmission::new(
+            &self.config.expected_name,
+            self.config.leaf_pin,
+            self.credentials.clone(),
+            cancel.clone(),
+        )
+        .map_err(Error::Transport)?;
+        let socket = tokio::time::timeout_at(
+            tokio::time::Instant::from_std(start + HANDSHAKE_LIMIT),
+            connect(),
+        )
+        .await
+        .map_err(|_| Error::Transport(Stage::Deadline))?
+        .map_err(|_| Error::Transport(Stage::Admission))?
+        .into_std()
+        .map_err(|_| Error::Transport(Stage::Admission))?;
+        let (send, receive) = mpsc::sync_channel::<Command>(1);
+        let (ready, initialized) = oneshot::channel();
+        let cancelled = cancel.clone();
+        #[cfg(test)]
+        let observation = Arc::new(RequestObservation::default());
+        #[cfg(test)]
+        let worker_observation = observation.clone();
+        let thread = thread::Builder::new()
+            .name("faction-device-tls".into())
+            .spawn(move || {
+                let mut client = match admission.connect(socket) {
+                    Ok(client) => {
+                        if ready.send(Ok(())).is_err() {
+                            return;
+                        }
+                        client
+                    }
+                    Err(error) => {
+                        let _ = ready.send(Err(Error::Transport(error)));
+                        return;
+                    }
+                };
+                while !cancelled.load(Ordering::SeqCst) && Instant::now() < start + CYCLE_LIMIT {
+                    match receive.recv_timeout(Duration::from_millis(100)) {
+                        Ok(Command { request, response }) => {
+                            if cancelled.load(Ordering::SeqCst) || response.is_closed() {
+                                break;
+                            }
+                            #[cfg(test)]
+                            let observation_index =
+                                worker_observation.entered.fetch_add(1, Ordering::SeqCst);
+                            let result = client.request(&request).map_err(Error::Transport);
+                            #[cfg(test)]
+                            if let Some(slot) = worker_observation
+                                .results
+                                .lock()
+                                .unwrap()
+                                .get_mut(observation_index)
+                            {
+                                *slot = Some(result.as_ref().map(|_| ()).map_err(|error| *error));
+                            }
+                            let failed = result.is_err();
+                            if response.send(result).is_err() || failed {
+                                break;
+                            }
+                        }
+                        Err(mpsc::RecvTimeoutError::Timeout) => (),
+                        Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                    }
+                }
+            })
+            .map_err(|_| Error::Worker)?;
+        #[cfg(test)]
+        WORKER_STARTS.with(|count| count.set(count.get() + 1));
+        let worker = Worker {
+            send: Some(send),
+            thread: Some(thread),
+            cancel,
+            #[cfg(test)]
+            observation,
+        };
+        initialized.await.map_err(|_| Error::Worker)??;
+        Ok(worker)
+    }
+}
+fn keylog() -> Result<(), Error> {
+    if ["SSLKEYLOGFILE", "TLSKEYLOGFILE"]
+        .iter()
+        .any(|key| std::env::var_os(key).is_some())
+    {
+        Err(Error::Keylog)
+    } else {
+        Ok(())
+    }
+}
+struct Command {
+    request: Request,
+    response: oneshot::Sender<Result<Response, Error>>,
+}
+/// No vault, OMEMO key, plaintext or descriptor key is sent to this worker.
+/// There is one request slot, one result slot and one owning foreground future.
+#[cfg(test)]
+#[derive(Default)]
+struct RequestObservation {
+    entered: std::sync::atomic::AtomicUsize,
+    results: std::sync::Mutex<[Option<Result<(), Error>>; 8]>,
+}
+pub(crate) struct Worker {
+    send: Option<SyncSender<Command>>,
+    thread: Option<JoinHandle<()>>,
+    cancel: Arc<AtomicBool>,
+    #[cfg(test)]
+    observation: Arc<RequestObservation>,
+}
+impl Worker {
+    #[cfg(test)]
+    fn request_observation(&self) -> Arc<RequestObservation> {
+        self.observation.clone()
+    }
+
+    pub(crate) async fn request(&mut self, request: Request) -> Result<Response, Error> {
+        // Bound caller-owned input before queueing it; Client rechecks framing and
+        // its original operation/deadline budget on the actual TLS connection.
+        encode_request(&request).map_err(|_| Error::Transport(Stage::Frame))?;
+        let (response, receive) = oneshot::channel();
+        self.send
+            .as_ref()
+            .ok_or(Error::Worker)?
+            .try_send(Command { request, response })
+            .map_err(|_| Error::Worker)?;
+        receive.await.map_err(|_| Error::Worker)?
+    }
+}
+impl Drop for Worker {
+    fn drop(&mut self) {
+        self.cancel.store(true, Ordering::SeqCst);
+        self.send.take();
+        // Client TCP is asynchronous; all worker TLS syscalls use the existing
+        // 100-ms cancellation slices. Joining cannot leave a detached TLS task.
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+    }
+}
+
+#[cfg(test)]
+thread_local! { static WORKER_STARTS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) }; }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{
+        fs,
+        os::unix::fs::{DirBuilderExt, PermissionsExt},
+        path::PathBuf,
+        pin::Pin,
+        sync::atomic::AtomicUsize,
+        task::{Context, Poll},
+    };
+    struct Owned(PathBuf);
+    impl Drop for Owned {
+        fn drop(&mut self) {
+            assert_eq!(
+                fs::read(self.0.join("OWNED")).unwrap(),
+                b"issue279 private connector unit"
+            );
+            fs::remove_dir_all(&self.0).unwrap();
+            assert!(!self.0.exists());
+        }
+    }
+    fn provider() -> (Owned, DeviceProvider) {
+        let mut random = [0; 16];
+        getrandom::fill(&mut random).unwrap();
+        let root = std::env::temp_dir().canonicalize().unwrap().join(format!(
+            "faction279-unit-{}",
+            crate::mail_data::hex(&random)
+        ));
+        fs::DirBuilder::new().mode(0o700).create(&root).unwrap();
+        fs::write(root.join("OWNED"), b"issue279 private connector unit").unwrap();
+        let fixture = Owned(root);
+        let openssl = if cfg!(target_os = "macos") {
+            "/opt/homebrew/opt/openssl@3/bin/openssl"
+        } else {
+            "/usr/bin/openssl"
+        };
+        let output = std::process::Command::new(openssl)
+            .args([
+                "req",
+                "-x509",
+                "-newkey",
+                "ec",
+                "-pkeyopt",
+                "ec_paramgen_curve:prime256v1",
+                "-nodes",
+                "-keyout",
+                "key.pem",
+                "-out",
+                "cert.pem",
+                "-subj",
+                "/CN=provider.test",
+                "-addext",
+                "subjectAltName=DNS:provider.test",
+                "-days",
+                "1",
+            ])
+            .current_dir(&fixture.0)
+            .output()
+            .unwrap();
+        assert!(output.status.success());
+        for entry in fs::read_dir(&fixture.0).unwrap() {
+            fs::set_permissions(entry.unwrap().path(), fs::Permissions::from_mode(0o600)).unwrap();
+        }
+        let certificate = fs::read(fixture.0.join("cert.pem")).unwrap();
+        let key = fs::read(fixture.0.join("key.pem")).unwrap();
+        let credentials = Credentials::from_pem(&certificate, &certificate, &key).unwrap();
+        use sha2::{Digest, Sha256};
+        let der = std::process::Command::new(openssl)
+            .args(["x509", "-in", "cert.pem", "-outform", "DER"])
+            .current_dir(&fixture.0)
+            .output()
+            .unwrap();
+        assert!(der.status.success());
+        let pin = Sha256::digest(&der.stdout).into();
+        let config = Config::new(
+            "home.test",
+            "127.0.0.1:1234".parse().unwrap(),
+            "provider.test",
+            pin,
+            Principal {
+                account: "alice@home.test".into(),
+                device: 101,
+                identity: [1; 32],
+            },
+        )
+        .unwrap();
+        (fixture, DeviceProvider::new(config, credentials))
+    }
+    struct PendingConnect {
+        polls: Arc<AtomicUsize>,
+        dropped: Arc<AtomicBool>,
+    }
+    impl std::future::Future for PendingConnect {
+        type Output = std::io::Result<tokio::net::TcpStream>;
+        fn poll(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<Self::Output> {
+            self.polls.fetch_add(1, Ordering::SeqCst);
+            Poll::Pending
+        }
+    }
+    impl Drop for PendingConnect {
+        fn drop(&mut self) {
+            self.dropped.store(true, Ordering::SeqCst);
+        }
+    }
+    #[tokio::test(flavor = "current_thread")]
+    async fn pending_connector_is_polled_once_and_dropped_without_worker_or_mail_release() {
+        let (_fixture, provider) = provider();
+        let calls = Arc::new(AtomicUsize::new(0));
+        let polls = Arc::new(AtomicUsize::new(0));
+        let dropped = Arc::new(AtomicBool::new(false));
+        let calls_inside = calls.clone();
+        let polls_inside = polls.clone();
+        let dropped_inside = dropped.clone();
+        let mut future = Box::pin(provider.open_with(move || {
+            calls_inside.fetch_add(1, Ordering::SeqCst);
+            PendingConnect {
+                polls: polls_inside,
+                dropped: dropped_inside,
+            }
+        }));
+        let start = Instant::now();
+        tokio::select! {result=&mut future=>panic!("pending connector returned {}",result.is_ok()),_=tokio::time::sleep(Duration::from_millis(20))=>{}}
+        drop(future);
+        assert!(start.elapsed() < Duration::from_secs(1));
+        assert!(polls.load(Ordering::SeqCst) > 0);
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert!(dropped.load(Ordering::SeqCst));
+        WORKER_STARTS.with(|count| assert_eq!(count.get(), 0));
+    }
+    #[test]
+    fn worker_start_observer_has_a_real_tcp_positive_control() {
+        let (_fixture, mut provider) = provider();
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        provider.config.address = listener.local_addr().unwrap();
+        thread::scope(|scope| {
+            let peer = scope.spawn(move || {
+                let (mut socket, _) = listener.accept().unwrap();
+                socket
+                    .set_read_timeout(Some(Duration::from_secs(2)))
+                    .unwrap();
+                let mut bytes = [0; 8192];
+                while std::io::Read::read(&mut socket, &mut bytes).unwrap_or(0) != 0 {}
+            });
+            tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap().block_on(async {
+                let mut call=Box::pin(provider.open());
+                tokio::select! {result=&mut call=>panic!("stalled TLS returned {}",result.is_ok()),_=tokio::time::sleep(Duration::from_millis(40))=>{}}
+                drop(call);
+            });
+            peer.join().unwrap();
+            WORKER_STARTS.with(|count| assert_eq!(count.get(), 1));
+        });
+    }
+    struct FaultPeer {
+        address: std::net::SocketAddr,
+        child: std::process::Child,
+        output: std::io::BufReader<std::process::ChildStdout>,
+    }
+    impl FaultPeer {
+        fn start(fixture: &Owned, frames: &[u8]) -> Self {
+            use std::io::BufRead;
+            fs::write(fixture.0.join("replies"), frames).unwrap();
+            let script = r#"import pathlib, socket, ssl, sys
+root = pathlib.Path(sys.argv[1])
+frames = (root / 'replies').read_bytes()
+position = 0
+count = 0
+while position < len(frames):
+    size = int.from_bytes(frames[position:position+4], 'big')
+    assert 0 < size <= 8192
+    position += 4 + size
+    count += 1
+assert position == len(frames) and count == 8
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+context.minimum_version = ssl.TLSVersion.TLSv1_3
+context.maximum_version = ssl.TLSVersion.TLSv1_3
+context.options |= ssl.OP_NO_TICKET
+context.num_tickets = 0
+context.load_cert_chain(root / 'cert.pem', root / 'key.pem')
+context.load_verify_locations(root / 'cert.pem')
+context.verify_mode = ssl.CERT_REQUIRED
+listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listener.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024)
+listener.bind(('127.0.0.1', 0))
+listener.listen(1)
+listener.settimeout(5)
+print('PORT', listener.getsockname()[1], flush=True)
+raw, address = listener.accept()
+assert address[0] == '127.0.0.1'
+raw.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024)
+raw.settimeout(5)
+with context.wrap_socket(raw, server_side=True) as connection:
+    connection.settimeout(5)
+    assert len(frames) < 16384
+    sent = connection.send(frames)
+    assert sent == len(frames)
+    print('QUEUED', count, 'SINGLE', sent, flush=True)
+    # Do not read any application request. All replies were already sent.
+    sys.stdin.buffer.read(1)
+listener.close()
+"#;
+            let path = fixture.0.join("write-fault-peer.py");
+            fs::write(&path, script).unwrap();
+            for file in ["replies", "write-fault-peer.py"] {
+                fs::set_permissions(fixture.0.join(file), fs::Permissions::from_mode(0o600))
+                    .unwrap();
+            }
+            let mut child = std::process::Command::new("python3")
+                .arg("-I")
+                .arg(&path)
+                .arg(&fixture.0)
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::piped())
+                .spawn()
+                .unwrap();
+            let output = std::io::BufReader::new(child.stdout.take().unwrap());
+            let mut peer = Self {
+                address: "127.0.0.1:1".parse().unwrap(),
+                child,
+                output,
+            };
+            let mut line = String::new();
+            assert!(
+                peer.output.read_line(&mut line).unwrap() > 0,
+                "fault peer did not start"
+            );
+            let port: u16 = line.trim().strip_prefix("PORT ").unwrap().parse().unwrap();
+            assert_ne!(port, 0);
+            peer.address.set_port(port);
+            peer
+        }
+        fn queued_single_batch(&mut self) -> (usize, usize) {
+            use std::io::BufRead;
+            let mut line = String::new();
+            assert!(
+                self.output.read_line(&mut line).unwrap() > 0,
+                "fault peer did not queue a single batch"
+            );
+            let fields: Vec<_> = line.split_whitespace().collect();
+            assert_eq!(fields.len(), 4);
+            assert_eq!(fields[0], "QUEUED");
+            assert_eq!(fields[2], "SINGLE");
+            (fields[1].parse().unwrap(), fields[3].parse().unwrap())
+        }
+        fn stop(&mut self) {
+            let start = Instant::now();
+            if self.child.try_wait().unwrap().is_none() {
+                self.child.kill().unwrap();
+            }
+            self.child.wait().unwrap();
+            assert!(start.elapsed() < Duration::from_secs(5));
+        }
+    }
+    impl Drop for FaultPeer {
+        fn drop(&mut self) {
+            self.stop();
+        }
+    }
+
+    struct FilledDuplicate {
+        bytes: usize,
+        blocked: std::io::ErrorKind,
+    }
+    fn fill_owned_duplicate(
+        mut socket: std::net::TcpStream,
+        cycle_start: Instant,
+    ) -> std::io::Result<FilledDuplicate> {
+        use std::io::Write;
+        // This fixed test-only corruption budget is not TLS/RPC transport data
+        // or storage authority. The final syscall is capped to remaining bytes.
+        const MAX_FAULT_BYTES: usize = 8_388_736;
+        std::thread::scope(|scope| {
+            scope
+                .spawn(move || {
+                    let result = (|| {
+                        if rustix::fs::fcntl_getfl(&socket)?.contains(rustix::fs::OFlags::NONBLOCK)
+                        {
+                            return Err(std::io::Error::other(
+                                "owned duplicate unexpectedly nonblocking",
+                            ));
+                        }
+                        let scratch = [0x5a; 8192];
+                        let mut total = 0;
+                        // The original cycle remains <=10s. Reserve its latter half for
+                        // the measured request, cancellation and unchanged <=5s drain.
+                        let fill_deadline = cycle_start + Duration::from_secs(5);
+                        while total < MAX_FAULT_BYTES {
+                            let remaining = fill_deadline.saturating_duration_since(Instant::now());
+                            if remaining.is_zero() {
+                                return Err(std::io::Error::other("raw-fault fill deadline"));
+                            }
+                            socket.set_write_timeout(Some(
+                                remaining.min(Duration::from_millis(100)),
+                            ))?;
+                            let count = (MAX_FAULT_BYTES - total).min(scratch.len());
+                            match socket.write(&scratch[..count]) {
+                                Ok(0) => return Err(std::io::ErrorKind::WriteZero.into()),
+                                Ok(bytes) => total += bytes,
+                                Err(error)
+                                    if matches!(
+                                        error.kind(),
+                                        std::io::ErrorKind::WouldBlock
+                                            | std::io::ErrorKind::TimedOut
+                                    ) =>
+                                {
+                                    return Ok(FilledDuplicate {
+                                        bytes: total,
+                                        blocked: error.kind(),
+                                    });
+                                }
+                                Err(error) => return Err(error),
+                            }
+                        }
+                        Err(std::io::Error::other(
+                            "raw-fault byte ceiling exhausted without backpressure",
+                        ))
+                    })();
+                    // Closing only this CLOEXEC descriptor does not shut down the shared
+                    // connection; the real worker remains its sole transport owner.
+                    drop(socket);
+                    result
+                })
+                .join()
+                .unwrap()
+        })
+    }
+
+    #[test]
+    fn actual_tls_write_backpressure_cancels_and_joins_with_unconsumed_replies() {
+        use faction_files::private_blobs::{Binding, CHUNK, Response, encode_response};
+        let (fixture, mut provider) = provider();
+        let principal = provider.config.expected.clone();
+        let expected = Response::Progress {
+            binding: Binding {
+                sender: principal.clone(),
+                recipient: principal,
+                id: [3; 32],
+                size: 32,
+                created: 1,
+                expires: 100,
+            },
+            offset: 0,
+            committed: false,
+        };
+        let response = encode_response(&expected).unwrap();
+        let mut frames = Vec::new();
+        for _ in 0..8 {
+            frames.extend_from_slice(&(response.len() as u32).to_be_bytes());
+            frames.extend_from_slice(&response);
+        }
+        assert!(frames.len() < 16_384);
+        let mut peer = FaultPeer::start(&fixture, &frames);
+        provider.config.address = peer.address;
+        let mut completed = 0;
+        let mut duplicate = None;
+        tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap().block_on(async {
+            let cycle_start = Instant::now();
+            let duplicate_slot = &mut duplicate;
+            let mut worker = provider.open_with(|| async {
+                let socket = tokio::net::TcpStream::connect(peer.address).await?;
+                let copy = rustix::io::fcntl_dupfd_cloexec(&socket, 0)?;
+                assert!(rustix::io::fcntl_getfd(&copy)?.contains(rustix::io::FdFlags::CLOEXEC));
+                *duplicate_slot = Some(std::net::TcpStream::from(copy));
+                Ok(socket)
+            }).await.unwrap();
+            let observed = worker.request_observation();
+            let (queued, batch_bytes) = peer.queued_single_batch();
+            assert_eq!(queued, 8);
+            assert_eq!(batch_bytes, frames.len());
+            assert_eq!(worker.request(Request::PutChunk {id: [3; 32], offset: 0, bytes: vec![9; CHUNK]}).await.unwrap(), expected);
+            completed += 1;
+            assert_eq!(observed.entered.load(Ordering::SeqCst), 1);
+            assert_eq!(observed.results.lock().unwrap()[0], Some(Ok(())));
+            // One SSL_write shorter than 16KiB forms one authenticated TLS
+            // record. A decoded first frame proves the remaining seven frames
+            // are already buffered in Client TLS, rather than an absent reply.
+            assert_eq!(queued - completed, 7);
+            assert!(peer.child.try_wait().unwrap().is_none());
+            // Synthetic raw fault bytes corrupt only this owned connection.
+            // Filler joins and closes its CLOEXEC duplicate before measurement.
+            let fill = fill_owned_duplicate(duplicate.take().unwrap(), cycle_start).unwrap();
+            assert!(fill.bytes > 0 && fill.bytes <= 8_388_736);
+            assert!(matches!(fill.blocked, std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut));
+            assert!(peer.child.try_wait().unwrap().is_none());
+            assert!(cycle_start.elapsed() < Duration::from_secs(5));
+            let measured = Instant::now();
+            let mut request = Box::pin(worker.request(Request::PutChunk {id: [3; 32], offset: 0, bytes: vec![9; CHUNK]}));
+            let pending = tokio::select! {
+                result = &mut request => { assert!(result.is_ok()); completed += 1; false },
+                _ = tokio::time::sleep(Duration::from_millis(150)) => true,
+            };
+            assert!(pending && completed < 8, "actual worker request did not remain pending while timer advanced");
+            assert!(measured.elapsed() >= Duration::from_millis(150));
+            assert_eq!(observed.entered.load(Ordering::SeqCst), 2);
+            assert_eq!(observed.results.lock().unwrap()[1], None);
+            assert!(8 - completed > 0);
+            assert!(peer.child.try_wait().unwrap().is_none());
+            drop(request);
+            assert!(worker.thread.as_ref().is_some_and(|thread| !thread.is_finished()));
+            let drain = Instant::now();
+            drop(worker);
+            assert!(drain.elapsed() < Duration::from_secs(1));
+            assert!(drain.elapsed() < Duration::from_secs(5));
+            assert!(cycle_start.elapsed() < CYCLE_LIMIT);
+            assert_eq!(observed.results.lock().unwrap()[1], Some(Err(Error::Transport(Stage::Cancelled))));
+            assert_eq!(observed.entered.load(Ordering::SeqCst), 2);
+            assert!(peer.child.try_wait().unwrap().is_none());
+            eprintln!("synthetic-composed-TLS-write queued={queued} batch_bytes={batch_bytes} completed={completed} entered=2 raw_fault_bytes={} socket_block={:?} measured_ms={} drain_ms={} cycle_ms={} result=Cancelled peer_alive=true",fill.bytes,fill.blocked,measured.elapsed().as_millis(),drain.elapsed().as_millis(),cycle_start.elapsed().as_millis());
+        });
+        WORKER_STARTS.with(|count| assert_eq!(count.get(), 1));
+        peer.stop();
+    }
+}

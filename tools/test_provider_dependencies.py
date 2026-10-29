@@ -70,11 +70,11 @@ class ProviderDependencies(unittest.TestCase):
 
     def test_inventory_qualifies_default_and_iq_graphs_on_every_target(self):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
-        with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'):
+        with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq'})
-        self.assertEqual(execute.call_count, 6)
-        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq']}
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider'})
+        self.assertEqual(execute.call_count, 18)
+        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
         actual = set()
         for call in execute.call_args_list:
             command = call.args[0]
@@ -84,6 +84,51 @@ class ProviderDependencies(unittest.TestCase):
         self.assertEqual(actual, expected)
         for profile in result['profiles'].values():
             self.assertEqual(set(profile['graphs']), set(policy.TARGETS))
+
+
+    def test_exact_client_device_provider_edge_is_accepted(self):
+        policy.validate_product_edges({'crates/faction-client/Cargo.toml': client_manifest()})
+
+    def test_device_provider_edge_cannot_leak_or_change_other_profiles(self):
+        original = client_manifest()
+        for section in ['dependencies', 'build-dependencies', 'dev-dependencies']:
+            for target in [None, 'cfg(unix)']:
+                changed = copy.deepcopy(original)
+                deps = changed if target is None else changed.setdefault('target', {}).setdefault(target, {})
+                deps.setdefault(section, {})['renamed'] = {'package': 'faction-provider', 'path': '../faction-provider'}
+                with self.subTest(section=section, target=target), self.assertRaises(ValueError):
+                    policy.validate_product_edges({'crates/faction-client/Cargo.toml': changed})
+        changes = [(['dependencies', 'faction-provider', 'optional'], False),
+                   (['dependencies', 'faction-provider', 'default-features'], True),
+                   (['dependencies', 'faction-provider', 'path'], '../other'),
+                   (['features', 'default'], ['device-provider']),
+                   (['features', 'native-mail'], ['device-provider']),
+                   (['features', 'network-mail'], ['device-provider']),
+                   (['features', 'device-provider'], ['network-mail', 'dep:faction-provider']),
+                   (['features', 'alias'], ['device-provider']), (['patch'], {}), (['replace'], {})]
+        for keys, value in changes:
+            changed = copy.deepcopy(original); destination = changed
+            for key in keys[:-1]: destination = destination[key]
+            destination[keys[-1]] = value
+            with self.subTest(keys=keys), self.assertRaises(ValueError):
+                policy.validate_product_edges({'crates/faction-client/Cargo.toml': changed})
+        for dependency in ['*', {'workspace': True}, {'path': '../faction-provider', 'optional': True}]:
+            changed = copy.deepcopy(original); changed['dependencies']['faction-provider'] = dependency
+            with self.subTest(dependency=dependency), self.assertRaises(ValueError):
+                policy.validate_product_edges({'crates/faction-client/Cargo.toml': changed})
+        with self.assertRaises(ValueError):
+            policy.validate_product_edges({'crates/faction-other/Cargo.toml': original})
+
+    def test_optional_manifest_edges_do_not_activate_ordinary_graphs(self):
+        provider = {'id': 'provider', 'name': 'faction-provider'}
+        empty = {'packages': [], 'resolve': {'nodes': []}}
+        active = {'packages': [provider], 'resolve': {'nodes': [{'id': 'provider', 'features': []}]}}
+        policy.validate_graph(empty, False)
+        policy.validate_graph(active, True)
+        with self.assertRaises(ValueError): policy.validate_graph(active, False)
+        with self.assertRaises(ValueError): policy.validate_graph(empty, True)
+        active['resolve']['nodes'][0]['features'] = ['blob-iq']
+        with self.assertRaises(ValueError): policy.validate_graph(active, True)
 
     def test_reuses_existing_verified_source_and_lock_functions(self):
         for name in ['selected_packages', 'scan_package', 'scan_local', 'verify_archive_source', 'scan_tree']:
@@ -122,6 +167,30 @@ class ProviderDependencies(unittest.TestCase):
             self.assertEqual(path.read_text(), 'reviewed')
 
 
+def client_manifest():
+    return {'features': {'default': [],
+        'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
+        'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
+        'device-provider': ['network-mail', 'dep:faction-provider', 'tokio/sync']},
+        'dependencies': {'faction-provider': {'path': '../faction-provider', 'optional': True, 'default-features': False}}}
+
+
+def native_ci_step():
+    commands = ['cargo metadata --locked --format-version 1 --filter-platform ' + target + ' --features faction-client/device-provider > /dev/null' for target in policy.TARGETS]
+    commands += ['python3 tools/check_provider_dependencies.py',
+        'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings',
+        'cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1']
+    commands += [
+        'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
+        'umask 077',
+        'mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"',
+        "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
+        'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
+    ]
+    return ('      - name: Validate the native authenticated attachment client\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n'
+            + ''.join('          ' + command + '\n' for command in commands))
+
+
 def ci_fixture():
     commands = [
         'rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy',
@@ -141,7 +210,7 @@ def ci_fixture():
     return ("jobs:\n  provider:\n    name: Optional attachment provider\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    steps:\n"
             "      - name: Validate the opt-in attachment provider\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n"
             + ''.join('          ' + command + '\n' for command in commands)
-            + '  documentation:\n    name: Documentation and policy\n    needs: [native_mail, provider]\n    if: ${{ always() }}\n    steps:\n      - name: Require optional native tests\n        env:\n          NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}\n          PROVIDER_RESULT: ${{ needs.provider.result }}\n        run: |\n          test "$NATIVE_MAIL_RESULT" = success\n          test "$PROVIDER_RESULT" = success\n')
+            + native_ci_step() + '  documentation:\n    name: Documentation and policy\n    needs: [native_mail, provider]\n    if: ${{ always() }}\n    steps:\n      - name: Require optional native tests\n        env:\n          NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}\n          PROVIDER_RESULT: ${{ needs.provider.result }}\n        run: |\n          test "$NATIVE_MAIL_RESULT" = success\n          test "$PROVIDER_RESULT" = success\n')
 
 
 class ProviderCI(unittest.TestCase):
@@ -157,6 +226,18 @@ class ProviderCI(unittest.TestCase):
             self.assertIn('--filter-platform ' + target + ' --features blob-iq > /dev/null', job)
         self.assertIn('--all-targets --release --locked --features blob-iq -- -D warnings', job)
         self.assertIn('--release --locked --features blob-iq -- --test-threads=1', job)
+
+    def test_repository_ci_exercises_native_device_provider(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn(native_ci_step(), source)
+
+    def test_native_selected_sources_and_all_targets_cannot_be_removed(self):
+        good = ci_fixture()
+        with self.assertRaises(ValueError): policy.validate_ci(good.replace(native_ci_step(), ''))
+        for command in native_ci_step().splitlines():
+            if command.strip().startswith(('cargo ', 'python3 ')):
+                with self.subTest(command=command), self.assertRaises(ValueError):
+                    policy.validate_ci(good.replace(command + '\n', '', 1 if 'device-provider' in command else 2))
 
     def test_inventory_calls_ci_guard_before_metadata(self):
         with patch.object(policy, 'validate_ci', side_effect=ValueError('refused CI contract')) as validate:

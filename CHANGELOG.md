@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add explicit local device-provider selection for native attachment transfers,
+  using the service-bound binary mTLS carrier and separate encrypted-mail release.
+  Same-home loopback scope and ordinary mail, BBS and file independence remain.
+  Final host and native qualification for this integration remains separate from
+  the earlier standalone provider/IQ record.
+
 - Add an explicitly compiled authenticated attachment-provider embedding library
   with opaque real-mTLS sessions, current typed policy/lifecycle control and an
   optional shared native blob-IQ adapter. Host and fresh NetBSD software checks

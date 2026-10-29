@@ -112,6 +112,23 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features blob-iq -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features blob-iq -- --test-threads=1
+      - name: Validate the native authenticated attachment client
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          cargo metadata --locked --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          python3 tools/check_provider_dependencies.py
+          cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings
+          cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1
+          cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"
+          printf '%s\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction280-console-OWNED/OWNED"
+          python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"
   documentation:
     name: Documentation and policy
     needs: [native_mail, provider]

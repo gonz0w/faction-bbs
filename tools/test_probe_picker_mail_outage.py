@@ -35,4 +35,25 @@ class OutageProofOracle(unittest.TestCase):
         for code,out,err in [(0,b'ok',b''),(1,b'',b'Transport(Config)\n'),(1,b'',b'Transport(Tls)\n'),(1,b'private',b'Transport(Connect)\n')]:
             with self.assertRaises(AssertionError):proof.require_connection_refused(code,out,err)
 
+class ProviderSelectionArguments(unittest.TestCase):
+    def test_absent_provider_keeps_existing_outage_client_arguments(self):
+        from argparse import Namespace
+        from pathlib import Path
+        args = Namespace(client=Path('/owned/client'))
+        self.assertEqual(proof.client_arguments(args, Path('/owned/catalog.toml')),
+                         [Path('/owned/client'), '--boards', Path('/owned/catalog.toml')])
+
+    def test_explicit_provider_reaches_same_production_picker(self):
+        from argparse import Namespace
+        from pathlib import Path
+        path = Path('/owned/private profile/provider.toml')
+        args = Namespace(client=Path('/owned/client'), device_provider=path)
+        self.assertEqual(proof.client_arguments(args, Path('/owned/catalog.toml')),
+                         [Path('/owned/client'), '--boards', Path('/owned/catalog.toml'),
+                          '--device-provider', path])
+        args.device_provider = None
+        self.assertEqual(proof.client_arguments(args, Path('/owned/catalog.toml')),
+                         [Path('/owned/client'), '--boards', Path('/owned/catalog.toml')])
+
+
 if __name__=='__main__':unittest.main()

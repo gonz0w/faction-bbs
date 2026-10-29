@@ -7,6 +7,47 @@ use faction_client::{
 };
 use faction_omemo::attachment::Descriptor;
 
+enum AttachmentTransport {
+    Iq,
+    #[cfg(feature = "device-provider")]
+    Device(Box<faction_client::mail_device_provider::DeviceProvider>),
+}
+impl AttachmentTransport {
+    fn load(path: Option<&Path>, vault: &CheckpointVault) -> io::Result<Self> {
+        match path {
+            None => Ok(Self::Iq),
+            #[cfg(feature = "device-provider")]
+            Some(path) => {
+                crate::device_provider_profile::load(path, vault).map(|p| Self::Device(Box::new(p)))
+            }
+            #[cfg(not(feature = "device-provider"))]
+            Some(_) => {
+                let _ = vault;
+                Err(invalid())
+            }
+        }
+    }
+    fn validate(&self, vault: &CheckpointVault, peer: &PeerSnapshot) -> io::Result<()> {
+        #[cfg(feature = "device-provider")]
+        if let Self::Device(provider) = self {
+            provider.validate(vault).map_err(|_| invalid())?;
+            if vault.legacy()?.home.split_once('@').map(|(_, home)| home)
+                != peer.address.split_once('@').map(|(_, home)| home)
+            {
+                return Err(invalid());
+            }
+        }
+        let _ = (vault, peer);
+        Ok(())
+    }
+    fn device(&self) -> bool {
+        match self {
+            Self::Iq => false,
+            #[cfg(feature = "device-provider")]
+            Self::Device(_) => true,
+        }
+    }
+}
 const MAX_CALLS: usize = 65;
 const TRANSFER_TIME: Duration = Duration::from_secs(60);
 #[derive(Debug, Eq, PartialEq)]
@@ -209,6 +250,7 @@ impl Screen<'_> {
         v: &mut CheckpointVault,
         settings: &Settings,
         root: &Path,
+        provider_profile: Option<&Path>,
     ) -> io::Result<()> {
         let mut decoder = Decoder::new();
         loop {
@@ -231,9 +273,21 @@ impl Screen<'_> {
             match key {
                 b'B' => return Ok(()),
                 b'E' => self.attachment_enable(v)?,
-                b'C' => self.attachment_compose(v, root)?,
-                b'U' => self.attachment_upload(v, settings, root)?,
-                b'R' => self.attachment_received(v, settings, root)?,
+                b'C' | b'U' => {
+                    let transport = match AttachmentTransport::load(provider_profile, v) {
+                        Ok(transport) => transport,
+                        Err(_) => {
+                            self.print("Selected attachment profile refused.\r\nNo fallback or connection attempted.\r\nOrdinary mail remains available.\r\n")?;
+                            continue;
+                        }
+                    };
+                    if key == b'C' {
+                        self.attachment_compose(v, root, &transport)?;
+                    } else {
+                        self.attachment_upload(v, settings, root, &transport)?;
+                    }
+                }
+                b'R' => self.attachment_received(v, settings, root, provider_profile)?,
                 _ => unreachable!(),
             }
             decoder = Decoder::new();
@@ -255,11 +309,19 @@ impl Screen<'_> {
         v.enable_attachments()?;
         self.print("Attachment checkpoints enabled.\r\n")
     }
-    fn attachment_compose(&mut self, v: &mut CheckpointVault, root: &Path) -> io::Result<()> {
+    fn attachment_compose(
+        &mut self,
+        v: &mut CheckpointVault,
+        root: &Path,
+        transport: &AttachmentTransport,
+    ) -> io::Result<()> {
         let peer = match PeerSnapshot::prepare(v, true, now()?) {
             Ok(p) => p,
             Err(_) => return self.attachment_unavailable(v),
         };
+        if transport.validate(v, &peer).is_err() {
+            return self.attachment_unavailable(v);
+        }
         self.attachment_peer(&peer)?;
         let source = self.compose_line("Absolute LOCAL source path (blank cancels): ", 1024)?;
         if source.is_empty() {
@@ -305,7 +367,7 @@ impl Screen<'_> {
             return self.print("Attachment cancelled; nothing queued.\r\n");
         }
         let timestamp = now()?;
-        if peer.recheck(v, true, timestamp).is_err() {
+        if peer.recheck(v, true, timestamp).is_err() || transport.validate(v, &peer).is_err() {
             return self.attachment_unavailable(v);
         }
         let mut operation = [0; 16];
@@ -341,11 +403,15 @@ impl Screen<'_> {
         v: &mut CheckpointVault,
         settings: &Settings,
         root: &Path,
+        transport: &AttachmentTransport,
     ) -> io::Result<()> {
         let peer = match PeerSnapshot::prepare(v, false, now()?) {
             Ok(p) => p,
             Err(_) => return self.attachment_unavailable(v),
         };
+        if transport.validate(v, &peer).is_err() {
+            return self.attachment_unavailable(v);
+        }
         let pending = v
             .inspect_outbox()?
             .into_iter()
@@ -397,6 +463,7 @@ impl Screen<'_> {
             total,
             &peer,
             None,
+            transport,
         )
     }
     fn attachment_received(
@@ -404,6 +471,7 @@ impl Screen<'_> {
         v: &mut CheckpointVault,
         settings: &Settings,
         root: &Path,
+        provider_profile: Option<&Path>,
     ) -> io::Result<()> {
         let mut count = 0;
         for (index, row) in v.history()?.iter().enumerate() {
@@ -473,6 +541,17 @@ impl Screen<'_> {
                             continue;
                         }
                     };
+                    let transport = match AttachmentTransport::load(provider_profile, v) {
+                        Ok(transport) => transport,
+                        Err(_) => {
+                            self.print("Selected attachment profile refused.\r\nNo fallback or connection attempted.\r\nOrdinary mail remains available.\r\n")?;
+                            continue;
+                        }
+                    };
+                    if transport.validate(v, &peer).is_err() {
+                        self.attachment_unavailable(v)?;
+                        continue;
+                    }
                     let row = received(v, selected)?;
                     if !peer.matches(row) {
                         self.attachment_unavailable(v)?;
@@ -508,6 +587,7 @@ impl Screen<'_> {
                         total,
                         &peer,
                         Some(&invited),
+                        &transport,
                     )?;
                 }
                 b'V' | b'S' => self.attachment_local(v, root, selected, key == b'S')?,
@@ -590,8 +670,12 @@ impl Screen<'_> {
         total: u64,
         peer: &PeerSnapshot,
         invited: Option<&InvitedHomes>,
+        transport: &AttachmentTransport,
     ) -> io::Result<()> {
         peer.recheck(v, false, now()?)?;
+        if transport.validate(v, peer).is_err() {
+            return self.attachment_unavailable(v);
+        }
         if settings.account != v.legacy()?.home {
             return self.attachment_unavailable(v);
         }
@@ -604,7 +688,14 @@ impl Screen<'_> {
             return self.print("Transfer cancelled; no connection.\r\n");
         }
         self.print("Foreground: at most 65 SDK calls / 60s.\r\nStops on first error; retry is explicit.\r\nCtrl-C/D cancels and locks.\r\n")?;
-        let password = self.line("OWN HOME account password (hidden): ", 128, true)?;
+        let password = if transport.device() && matches!(selected, TransferSelection::Fetch(_)) {
+            Zeroizing::new(String::new())
+        } else {
+            if transport.device() {
+                self.print("Device credentials authenticate storage.\r\nThis password is only for the separate\r\nencrypted-mail release after commit.\r\n")?;
+            }
+            self.line("OWN HOME account password (hidden): ", 128, true)?
+        };
         // Secret input cannot substitute for the reviewed selection/authority.
         peer.recheck(v, false, now()?)?;
         match selected {
@@ -647,6 +738,19 @@ impl Screen<'_> {
                 async {
                     match selected {
                         TransferSelection::Upload(operation) => {
+                            #[cfg(feature = "device-provider")]
+                            if let AttachmentTransport::Device(provider) = transport {
+                                return transfer::upload_device_cycle(
+                                    v,
+                                    &mut spool,
+                                    settings,
+                                    &password,
+                                    provider,
+                                    operation,
+                                    now().map_err(|_| transfer::Error::State)?,
+                                )
+                                .await;
+                            }
                             transfer::upload_cycle(
                                 v,
                                 &mut spool,
@@ -658,6 +762,18 @@ impl Screen<'_> {
                             .await
                         }
                         TransferSelection::Fetch(selection) => {
+                            #[cfg(feature = "device-provider")]
+                            if let AttachmentTransport::Device(provider) = transport {
+                                return transfer::fetch_device_cycle(
+                                    v,
+                                    &mut spool,
+                                    settings,
+                                    provider,
+                                    selection,
+                                    now().map_err(|_| transfer::Error::State)?,
+                                )
+                                .await;
+                            }
                             transfer::fetch_cycle(
                                 v,
                                 &mut spool,

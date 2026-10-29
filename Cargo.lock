@@ -365,6 +365,7 @@ dependencies = [
  "faction-client-pty",
  "faction-files",
  "faction-omemo",
+ "faction-provider",
  "faction-terminal",
  "faction-xmpp",
  "getrandom 0.4.3",
@@ -470,6 +471,14 @@ dependencies = [
  "faction-core",
  "faction-terminal",
  "rusqlite",
+]
+
+[[package]]
+name = "faction-provider"
+version = "0.1.0-alpha.1"
+dependencies = [
+ "faction-files",
+ "openssl",
 ]
 
 [[package]]

@@ -140,6 +140,13 @@ first use, full-store stops and stale-position recovery limits.
 
 With `network-mail`, **M** opens the default-off [private attachment desk](private-attachments.md) in this trusted local console. Opt in explicitly before queueing or fetching attachments; the migration preserves mail and read/archive state but older clients cannot open the new checkpoint format. Queueing is local and upload is a separate foreground action. The separate ciphertext spool needs its own backup and retention decisions. Ordinary text mail and Sync remain available.
 
+For the optional `device-provider` build, an explicitly selected private local
+profile uses a separate same-home mTLS binary transport for attachments. Profile
+validation happens when an attachment action needs it, so ordinary mail remains
+available if the provider is unavailable. Device fetch does not ask for your home
+password; upload uses it only for the later ordinary encrypted-mail release. See
+[private attachments](private-attachments.md) for configuration and failure handling.
+
 ## Stop, recover or resolve a refusal
 
 Each connection has one attempt and a shared cooperative ten-second deadline.

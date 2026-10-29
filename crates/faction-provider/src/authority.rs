@@ -101,6 +101,26 @@ impl Registry {
         Ok(entry)
     }
 }
+struct LocalServiceAccess<'a> {
+    registry: &'a Registry,
+    home: &'a str,
+}
+impl Access for LocalServiceAccess<'_> {
+    fn require(
+        &self,
+        actor: &Principal,
+        binding: &Binding,
+        action: Action,
+        now: u64,
+    ) -> Result<(), Error> {
+        for principal in [actor, &binding.sender, &binding.recipient] {
+            if principal.account.split_once('@').map(|(_, home)| home) != Some(self.home) {
+                return Err(Error::Denied);
+            }
+        }
+        self.registry.require(actor, binding, action, now)
+    }
+}
 impl Access for Registry {
     fn require(
         &self,
@@ -330,6 +350,31 @@ impl Authority {
         }
         self.dispatch(connection, handle, store, request, times.0, times.1)
     }
+    pub(crate) fn dispatch_local(
+        &self,
+        connection: &Connection,
+        handle: &Handle,
+        home: &str,
+        store: &mut Store,
+        request: Request,
+        times: (u64, u64),
+    ) -> Result<Response, Error> {
+        let slot = self
+            .slots
+            .iter()
+            .find(|s| Arc::ptr_eq(&s.token, &handle.token))
+            .ok_or(Error::Denied)?;
+        if slot
+            .principal
+            .account
+            .split_once('@')
+            .map(|(_, domain)| domain)
+            != Some(home)
+        {
+            return Err(Error::Denied);
+        }
+        self.dispatch_with(connection, handle, store, request, times, Some(home))
+    }
     /// Resolve the actor solely from current connection-owned authority. The
     /// request contains data, never an actor selector. Both principals and invited
     /// homes are revalidated through current Access on every unchanged Store call.
@@ -342,6 +387,18 @@ impl Authority {
         now: u64,
         mono_ms: u64,
     ) -> Result<Response, Error> {
+        self.dispatch_with(connection, handle, store, request, (now, mono_ms), None)
+    }
+    fn dispatch_with(
+        &self,
+        connection: &Connection,
+        handle: &Handle,
+        store: &mut Store,
+        request: Request,
+        times: (u64, u64),
+        local_home: Option<&str>,
+    ) -> Result<Response, Error> {
+        let (now, mono_ms) = times;
         if !Arc::ptr_eq(&self.instance, &connection.authority)
             || !Arc::ptr_eq(&self.instance, &handle.authority)
             || !Arc::ptr_eq(&connection.closed, &handle.connection)
@@ -368,6 +425,14 @@ impl Authority {
         if current.certificate_sha256 != slot.certificate_sha256 {
             return Err(Error::Denied);
         }
-        store.dispatch(&slot.principal, registry, request, now)
+        match local_home {
+            Some(home) => store.dispatch(
+                &slot.principal,
+                &LocalServiceAccess { registry, home },
+                request,
+                now,
+            ),
+            None => store.dispatch(&slot.principal, registry, request, now),
+        }
     }
 }

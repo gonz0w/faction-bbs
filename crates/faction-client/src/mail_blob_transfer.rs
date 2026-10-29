@@ -26,6 +26,8 @@ pub enum Error {
     Storage(blobs::Error),
     Transport(faction_xmpp::Error),
     Mail(mail_network::Error),
+    #[cfg(feature = "device-provider")]
+    Device(crate::mail_device_provider::Error),
     Save(crate::attachment_save::SaveError),
 }
 impl std::fmt::Display for Error {
@@ -398,33 +400,101 @@ fn network(v: &CheckpointVault, settings: &Settings, now: u64) -> Result<Princip
     }
     Ok(own)
 }
+#[derive(Clone, Copy)]
+enum TransferRoute<'a> {
+    Iq(&'a Settings),
+    #[cfg(feature = "device-provider")]
+    Device(
+        &'a Settings,
+        &'a crate::mail_device_provider::DeviceProvider,
+    ),
+}
+enum Carrier {
+    Iq(Box<faction_xmpp::Session>),
+    #[cfg(feature = "device-provider")]
+    Device(crate::mail_device_provider::Worker),
+}
+impl TransferRoute<'_> {
+    fn settings(&self) -> &Settings {
+        match self {
+            Self::Iq(settings) => settings,
+            #[cfg(feature = "device-provider")]
+            Self::Device(settings, _) => settings,
+        }
+    }
+    fn check(&self, vault: &CheckpointVault, now: u64) -> Result<Principal, Error> {
+        let own = network(vault, self.settings(), now)?;
+        #[cfg(feature = "device-provider")]
+        if let Self::Device(_, provider) = self {
+            provider.validate(vault).map_err(Error::Device)?;
+        }
+        Ok(own)
+    }
+    fn binding(&self, binding: &Binding) -> Result<(), Error> {
+        #[cfg(feature = "device-provider")]
+        if let Self::Device(_, provider) = self
+            && (!provider.permits_home(&binding.sender.account)
+                || !provider.permits_home(&binding.recipient.account))
+        {
+            return Err(Error::Route);
+        }
+        #[cfg(not(feature = "device-provider"))]
+        let _ = binding;
+        Ok(())
+    }
+    async fn connect(&self, device: u32, password: &str) -> Result<Carrier, Error> {
+        match self {
+            Self::Iq(settings) => {
+                let transport = settings.transport(device).map_err(Error::Transport)?;
+                faction_xmpp::connect(&transport, password)
+                    .await
+                    .map(Box::new)
+                    .map(Carrier::Iq)
+                    .map_err(Error::Transport)
+            }
+            #[cfg(feature = "device-provider")]
+            Self::Device(_, provider) => provider
+                .open()
+                .await
+                .map(Carrier::Device)
+                .map_err(Error::Device),
+        }
+    }
+}
 async fn request(
-    session: &mut faction_xmpp::Session,
+    session: &mut Carrier,
     v: &CheckpointVault,
-    settings: &Settings,
+    route: TransferRoute<'_>,
     service: &str,
     request: Request,
     count: &mut usize,
     clock: &Clock,
 ) -> Result<Response, Error> {
-    network(v, settings, clock.now())?;
+    route.check(v, clock.now())?;
     if *count == 8 {
         return Err(Error::Protocol);
     }
     *count += 1;
-    let id = format!("blob-{}", *count);
-    let xml = crate::mail_blob_wire::request(&id, &settings.account, service, &request)
-        .map_err(|_| Error::Protocol)?;
-    session.send(&xml).await.map_err(Error::Transport)?;
-    // Storage cycles accept only the matching IQ, with no unbounded interleaving.
-    let response = session.next().await.map_err(Error::Transport)?;
-    network(v, settings, clock.now())?;
-    crate::mail_blob_wire::decode_response(&response, &id, &settings.account, service).map_err(
-        |e| match e {
-            crate::mail_blob_wire::Error::Remote(e) => Error::Storage(e),
-            _ => Error::Protocol,
-        },
-    )
+    let response = match session {
+        Carrier::Iq(session) => {
+            let id = format!("blob-{}", *count);
+            let settings = route.settings();
+            let xml = crate::mail_blob_wire::request(&id, &settings.account, service, &request)
+                .map_err(|_| Error::Protocol)?;
+            session.send(&xml).await.map_err(Error::Transport)?;
+            let response = session.next().await.map_err(Error::Transport)?;
+            route.check(v, clock.now())?;
+            crate::mail_blob_wire::decode_response(&response, &id, &settings.account, service)
+                .map_err(|error| match error {
+                    crate::mail_blob_wire::Error::Remote(error) => Error::Storage(error),
+                    _ => Error::Protocol,
+                })?
+        }
+        #[cfg(feature = "device-provider")]
+        Carrier::Device(worker) => worker.request(request).await.map_err(Error::Device)?,
+    };
+    route.check(v, clock.now())?;
+    Ok(response)
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Report {
@@ -469,7 +539,65 @@ pub async fn upload_cycle(
 ) -> Result<Report, Error> {
     within_cycle(
         std::time::Duration::from_secs(10),
-        upload_inner(vault, spool, settings, password, operation, now),
+        upload_inner(
+            vault,
+            spool,
+            TransferRoute::Iq(settings),
+            password,
+            operation,
+            now,
+        ),
+    )
+    .await
+}
+/// Explicit authenticated device transport. Any failure stays on this route;
+/// ordinary XMPP is used only for the existing separate encrypted-mail release.
+#[cfg(feature = "device-provider")]
+pub async fn upload_device_cycle(
+    vault: &mut CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    password: &str,
+    provider: &crate::mail_device_provider::DeviceProvider,
+    operation: [u8; 16],
+    now: u64,
+) -> Result<Report, Error> {
+    within_cycle(
+        std::time::Duration::from_secs(10),
+        upload_inner(
+            vault,
+            spool,
+            TransferRoute::Device(settings, provider),
+            password,
+            operation,
+            now,
+        ),
+    )
+    .await
+}
+/// Same-home received ciphertext only; no account password or delegated foreign
+/// sender authority exists on the binary device transport.
+#[cfg(feature = "device-provider")]
+pub async fn fetch_device_cycle(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    provider: &crate::mail_device_provider::DeviceProvider,
+    selected: ReceivedSelection,
+    now: u64,
+) -> Result<Report, Error> {
+    let invited = InvitedHomes { homes: Vec::new() };
+    within_cycle(
+        std::time::Duration::from_secs(10),
+        fetch_inner(
+            vault,
+            spool,
+            TransferRoute::Device(settings, provider),
+            "",
+            &invited,
+            selected,
+            now,
+        ),
     )
     .await
 }
@@ -484,29 +612,27 @@ async fn within_cycle<T>(
 async fn upload_inner(
     vault: &mut CheckpointVault,
     spool: &mut Spool,
-    settings: &Settings,
+    route: TransferRoute<'_>,
     password: &str,
     operation: [u8; 16],
     now: u64,
 ) -> Result<Report, Error> {
     let clock = Clock::new(now);
-    let own = network(vault, settings, clock.now())?;
+    let own = route.check(vault, clock.now())?;
     let r = state(vault.history())?
         .iter()
         .find(|r| r.direction == Direction::Sent && r.operation() == operation)
         .ok_or(Error::Selection)?;
     peer_matches(vault, r)?;
     let b = binding(own.clone(), r)?;
+    route.binding(&b)?;
     let wire = state(vault.pending_deliveries(clock.now()))?
         .into_iter()
         .find(|p| p.operation == operation)
         .ok_or(Error::Selection)?
         .wire;
     let bytes = spool.bytes(&own, &b, clock.now())?;
-    let transport = settings.transport(own.device).map_err(Error::Transport)?;
-    let mut session = faction_xmpp::connect(&transport, password)
-        .await
-        .map_err(Error::Transport)?;
+    let mut session = route.connect(own.device, password).await?;
     let service = home(&own.account)?;
     let mut requests = 0;
     // Begin is an exact immutable idempotent status/create operation. Remote
@@ -514,7 +640,7 @@ async fn upload_inner(
     let response = request(
         &mut session,
         vault,
-        settings,
+        route,
         service,
         Request::Begin(b.clone()),
         &mut requests,
@@ -531,7 +657,7 @@ async fn upload_inner(
         let response = request(
             &mut session,
             vault,
-            settings,
+            route,
             service,
             Request::PutChunk {
                 id: b.id,
@@ -552,7 +678,7 @@ async fn upload_inner(
         let response = request(
             &mut session,
             vault,
-            settings,
+            route,
             service,
             Request::Commit { id: b.id },
             &mut requests,
@@ -573,7 +699,7 @@ async fn upload_inner(
             operation,
             wire,
         };
-        mail_network::release_attachment(vault, settings, password, &release, clock.now())
+        mail_network::release_attachment(vault, route.settings(), password, &release, clock.now())
             .await
             .map_err(Error::Mail)?
             .sent
@@ -614,39 +740,45 @@ pub async fn fetch_cycle(
 ) -> Result<Report, Error> {
     within_cycle(
         std::time::Duration::from_secs(10),
-        fetch_inner(vault, spool, settings, password, invited, selected, now),
+        fetch_inner(
+            vault,
+            spool,
+            TransferRoute::Iq(settings),
+            password,
+            invited,
+            selected,
+            now,
+        ),
     )
     .await
 }
 async fn fetch_inner(
     vault: &CheckpointVault,
     spool: &mut Spool,
-    settings: &Settings,
+    route: TransferRoute<'_>,
     password: &str,
     invited: &InvitedHomes,
     selected: ReceivedSelection,
     now: u64,
 ) -> Result<Report, Error> {
     let clock = Clock::new(now);
-    let own = network(vault, settings, clock.now())?;
+    let own = route.check(vault, clock.now())?;
     let ReceivedSelection { index, frame } = selected;
     let r = received(vault, index, frame)?;
     peer_matches(vault, r)?;
     let b = binding(own.clone(), r)?;
+    route.binding(&b)?;
     let service = home(&b.sender.account)?;
     if service != home(&own.account)? && !invited.homes.iter().any(|h| h == service) {
         return Err(Error::Route);
     }
-    let transport = settings.transport(own.device).map_err(Error::Transport)?;
-    let mut session = faction_xmpp::connect(&transport, password)
-        .await
-        .map_err(Error::Transport)?;
+    let mut session = route.connect(own.device, password).await?;
     let mut requests = 0;
     let (offset, committed) = progress(
         request(
             &mut session,
             vault,
-            settings,
+            route,
             service,
             Request::Status { id: b.id },
             &mut requests,
@@ -666,7 +798,7 @@ async fn fetch_inner(
         let response = request(
             &mut session,
             vault,
-            settings,
+            route,
             service,
             Request::GetChunk { id: b.id, offset },
             &mut requests,
