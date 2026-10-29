@@ -1,0 +1,69 @@
+{
+  "artifact_retention": {
+    "original_build": {
+      "archive_bytes": 64102400,
+      "archive_sha256": "5edcd392c319c58a62020d60a8cc8749804c913a2123023cad4a6546eba7a651",
+      "artifact_files_verified": 55,
+      "elapsed_seconds": 0.5595083329826593,
+      "exit_code": 0,
+      "source_commit": "bd120cef67d25971bc2f65d2f0a8be18340532e9"
+    },
+    "qualified_build": {
+      "bytes": 64327680,
+      "elapsed_seconds": 0.5370426250156015,
+      "files_verified": 59,
+      "sha256": "5886ae88f6d56061731e21b3dfda4b4721f4d63e1a5217d797d0714443a3f9c5",
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82"
+    },
+    "qualified_final": {
+      "bytes": 64368640,
+      "elapsed_seconds": 0.5242267909925431,
+      "files_verified": 65,
+      "sha256": "7117d2497a88affe5ed1856d68f784cd06bf48ba46f2c471d478136fe67e86d0",
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82"
+    }
+  },
+  "coordination_interruption": {
+    "classification": "coordination availability; no product code staged, compiled or tested during that interruption",
+    "reason": "Lead model capacity unavailable before first immutable-source handoff",
+    "vm_stopped": true
+  },
+  "final_source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+  "log_retention_limit": "The pre-source clone-isolate log/result names were reused at the accepted-source restart. Original tool-call exit outcomes and the separate isolated-guest-state capture remain; no product/test evidence was overwritten.",
+  "original_build": {
+    "retained_archive": {
+      "archive_bytes": 64102400,
+      "archive_sha256": "5edcd392c319c58a62020d60a8cc8749804c913a2123023cad4a6546eba7a651",
+      "artifact_files_verified": 55,
+      "elapsed_seconds": 0.5595083329826593,
+      "exit_code": 0,
+      "source_commit": "bd120cef67d25971bc2f65d2f0a8be18340532e9"
+    },
+    "runtime_qualification_executed": false,
+    "source_commit": "bd120cef67d25971bc2f65d2f0a8be18340532e9"
+  },
+  "producer_change_after_initial_handoff": false,
+  "schema": 1,
+  "setup_failures": [
+    {
+      "classification": "input-map staging ownership",
+      "outcome": "Stopped before compilation; root-owned private map was made readable to the build user by correcting ownership.",
+      "stage": "accepted-native-guard"
+    },
+    {
+      "classification": "unrelated historical experiment metadata",
+      "outcome": "Optional old experiment-208 metadata attempted an unavailable fetch; only its owned metadata subprocess was terminated. No package downloaded or installed. Required guards were rerun with Cargo forced offline.",
+      "stage": "accepted-native-guard02"
+    },
+    {
+      "classification": "collector preflight-metadata ownership",
+      "outcome": "Private tool metadata ownership corrected; original failed collection retained, then complete source-bound artifact collection verified.",
+      "stage": "original-build-retention"
+    }
+  ],
+  "test_only_delta": {
+    "path": "crates/faction-provider/tests/embedding.rs",
+    "sha256": "b72e2a0a52060a2a76d029fed6910d196bd75491ed0da1b5e122926f34500f79"
+  },
+  "typed_iq_history": "The rejected optional post-encoding finish check remains absent. Accepted producer logic and assertions were preserved; no retrospective RED, waiver or IQ network-send claim."
+}

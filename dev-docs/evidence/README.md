@@ -457,3 +457,11 @@ previous attachment qualifications.
 [Native NetBSD provider-authority qualification](provider-authority-netbsd/README.md) records
 the original refusal-observer failure, test-first correction and complete native
 authority/TLS controls, separately from historical host evidence and provider adoption.
+
+
+[Authenticated provider embedding and native IQ integration](provider-integration/README.md)
+records the actual public-runtime, binary TLS and typed IQ software controls on
+host and fresh NetBSD, with existing-object route characterization, retained failed
+variants and separate compiler/runtime envelopes. Exact source objects, identities
+and owned teardown stay distinct from production provider/enrollment, delegation
+and independent-client interoperability.

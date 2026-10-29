@@ -1,0 +1,1125 @@
+{
+  "additional_tools": {
+    "ar": {
+      "bytes": 258272,
+      "resolved_name": "ar",
+      "sha256": "b7d108433ff4f4559988b84227d801877e198b6fb661e5eb6666aafeae78dfcf",
+      "version": "GNU ar (NetBSD Binutils nb1) 2.42\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) any later version.\nThis program has absolutely no warranty."
+    },
+    "clippy-driver": {
+      "bytes": 19069160,
+      "resolved_name": "clippy-driver",
+      "sha256": "f6351652f3c3c1e4e7c3fb423a4343643e023ff8e8b52d06dd95b776974363d5",
+      "version": "clippy 0.1.96 (f246580199 2026-05-28)"
+    },
+    "ld": {
+      "bytes": 992920,
+      "resolved_name": "ld",
+      "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161",
+      "version": "GNU ld (NetBSD Binutils nb1) 2.42\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) a later version.\nThis program has absolutely no warranty."
+    },
+    "rustdoc": {
+      "bytes": 15263856,
+      "resolved_name": "rustdoc",
+      "sha256": "4e983018d1d6d8cca46bea6299dab326963aec256bca781b0afeffdbc3034c70",
+      "version": "rustdoc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)"
+    }
+  },
+  "executed_binaries": {
+    "deps/attachment_checkpoint_schema-4b42a04645831e7e": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/attachment_checkpoint_schema-b53347e640d4f1d0": {
+      "bytes": 988624,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "e20d7fafe4f3de5b1f1840f53ef89c82c723251f637d3774ef4c5a0eec44c657"
+    },
+    "deps/attachment_checkpoint_transactions-3dd65e3206a4807b": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/attachment_checkpoint_transactions-ae16516a21cd8528": {
+      "bytes": 1185232,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "74526bc663746bdd2c3256d53a52f562bb7f2c500bf21b773a68e10ad5886c43"
+    },
+    "deps/attachment_mail_delivery-9a81e5c337bffd3c": {
+      "bytes": 1250768,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "a1474b86ac23845f2a2c0b3c351dde9a1c5c32455e3e9947529973d70730f867"
+    },
+    "deps/attachment_mail_delivery-cb08e1b599dd8f0d": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/attachment_rejection-61e14dc589e90417": {
+      "bytes": 1119696,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0df49ec5a69d22dbddaf188825cae0f93dec7b802fc82b8fb992977021dd20e5"
+    },
+    "deps/attachment_rejection-d55b8cc2eb3d9be1": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/attachment_save-2b0fda2d9b6d8ae2": {
+      "bytes": 1054160,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "b900aa077c99f822a48a8565623e63eedb11626d948733502d0dcce3a02d1290"
+    },
+    "deps/attachment_save-3595c96162ea1766": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/contract-778a504a3c905766": {
+      "bytes": 3696424,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "38aec45e95472f409f6a44466c9cb9a75cd4cec4b479ff98cf6b77190274290e"
+    },
+    "deps/embedding-7bcd6819dddf524d": {
+      "bytes": 2104192,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "4ac817be02b1f0f2523818b687b6633e79a077defb519a8afa15f412db855ec6"
+    },
+    "deps/embedding-ef2a8a15f1b0ae36": {
+      "bytes": 1645040,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "c3085be49f0351725ceb426ad888db61f7b832e15ac8f6994494ef29e467d409"
+    },
+    "deps/faction_client-5a0c9d0cae25eb90": {
+      "bytes": 857520,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "a5e3396d8bbf0223cae2d6394c4b97e2f8e0b196b38cd600d91328d928781a0a"
+    },
+    "deps/faction_client-72ba64bbe232a608": {
+      "bytes": 4069056,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "/usr/lib/libutil.so.7": {
+          "bytes": 165496,
+          "resolved_system_path": "/lib/libutil.so.7.25",
+          "sha256": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f"
+        }
+      },
+      "sha256": "6d3662bc019b7171f7b258fd6583438e1afd4a71910838eade61ca3a1d310948"
+    },
+    "deps/faction_client-ecd2da7e9b0179fa": {
+      "bytes": 1316336,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libutil.so.7": {
+          "bytes": 165496,
+          "resolved_system_path": "/lib/libutil.so.7.25",
+          "sha256": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f"
+        }
+      },
+      "sha256": "7b4afd8d682fdb67397662445b783ebfec538b8242a57fa54b336b0df75c2f77"
+    },
+    "deps/faction_client-eda7109f28e0221f": {
+      "bytes": 4134528,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "1f18b05c65309db5dde81ac40e0245a1c8cccb291ffae8d3e8185cc00971b562"
+    },
+    "deps/faction_files-b4f96a4d8009e169": {
+      "bytes": 792016,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "519b050b34a489834e34ca674d7e263fada347a7777e0e3c6e2349e868a53a82"
+    },
+    "deps/faction_files-f58fd3d16e3aaa26": {
+      "bytes": 923072,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "c6a8cdda05fd5fb606bc017653b9735b771dddf51aefcae2924bd01c4d4cc35c"
+    },
+    "deps/faction_provider-55e7a796bd06c15c": {
+      "bytes": 1268208,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "1ed40edc1643e3b66f6eb240db8bd861cd80fdc5cd31c886cb59c77f3b8e3668"
+    },
+    "deps/faction_provider-98cf069dd7df3ef1": {
+      "bytes": 1268208,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "0eb04a73917a11ae9d06cbeb91adfdd83c2ee4d2cc0e153235855b5ce625c82c"
+    },
+    "deps/faction_xmpp-16eb895b0921055b": {
+      "bytes": 2188272,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "a6a434b69c1c3a143e043846c0db78d42bfda42fda13c72d681b03c8e0888abb"
+    },
+    "deps/guard-c2fbee519260ec5c": {
+      "bytes": 1609176,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libm.so.0": {
+          "bytes": 420120,
+          "resolved_system_path": "/lib/libm.so.0.14",
+          "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "b764ba534f44d2182094146811fd6891f30e23c313b6155ff51dd5d0b5d72ac7"
+    },
+    "deps/mail_blob_transfer-71cdbb627a60366e": {
+      "bytes": 1250768,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "036af95ed197241defbffb1d41a73dd617bb52566dfb0fc5ab0c53c7ad987419"
+    },
+    "deps/mail_blob_transfer-f1bdbccdbf5c723a": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/mail_blob_wire-06b6934ddae5f6cd": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "deps/mail_blob_wire-9c76365757c8baab": {
+      "bytes": 988592,
+      "libraries": {
+        "/lib/libcrypt.so.1": {
+          "bytes": 80048,
+          "resolved_system_path": "/lib/libcrypt.so.1.0",
+          "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+        },
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libcrypto.so.16": {
+          "bytes": 6244640,
+          "resolved_system_path": "/lib/libcrypto.so.16.0",
+          "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        },
+        "/usr/lib/libssl.so.16": {
+          "bytes": 1262704,
+          "resolved_system_path": "/usr/lib/libssl.so.16.0",
+          "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        }
+      },
+      "sha256": "8cc30087b77e60d917f3ab50d8b470ff11e3bcfc8c82b6bfc080faa0fbda91d9"
+    },
+    "deps/private_blobs-6c87f1799f308f15": {
+      "bytes": 923056,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "6991ec75331b454e0ccba25a6d7353ca20478b9159ff29e7f3a148e47a2a59ed"
+    },
+    "examples/checkpoint_ui_fixture-67993fc8b44cdb3a": {
+      "bytes": 857552,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "16c527180fb0ceecb9924ce5e62895bab33cf6e4da8f1cc271190b05ca50b9a5"
+    },
+    "examples/home_mail_fixture-ef19bdf35f95648c": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "examples/mail_blob_fixture-23a9fe44b8e85bce": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "examples/mail_blob_fixture-8efec14aff541930": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "e0b3f1e325e992d7d268cfec67638e07da41155cba198d78eda28d398cb7551f"
+    },
+    "examples/mail_correspondents_fixture-66f041edaadfa1e7": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "examples/mail_correspondents_fixture-c3b70aeb19a06d9f": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "examples/mail_reply_fixture-c70745b4508a1537": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "examples/mail_reply_fixture-eb1fb5a9111a181d": {
+      "bytes": 791984,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7"
+    },
+    "examples/transport_fixture-9b34347ebdc7e055": {
+      "bytes": 1090384,
+      "libraries": {
+        "/usr/lib/libc.so.12": {
+          "bytes": 2644584,
+          "resolved_system_path": "/lib/libc.so.12.224",
+          "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+        },
+        "/usr/lib/libgcc_s.so.1": {
+          "bytes": 149040,
+          "resolved_system_path": "/lib/libgcc_s.so.1.0",
+          "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+        },
+        "/usr/lib/libpthread.so.1": {
+          "bytes": 166600,
+          "resolved_system_path": "/lib/libpthread.so.1.6",
+          "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+        }
+      },
+      "sha256": "e9c0b9e4240ccb2847c365c0a16d75664d809774185c2079f90d6dc9f47426f6"
+    }
+  },
+  "loader": {
+    "bytes": 228016,
+    "sha256": "0620b2dd6ab034293bda220a88eb1801ae7eaf01c7e272721e924cc5c3556a07",
+    "system_path": "/libexec/ld.elf_so"
+  },
+  "observed_shared_libraries": {
+    "/lib/libc.so.12.224": {
+      "bytes": 2644584,
+      "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+    },
+    "/lib/libcrypt.so.1.0": {
+      "bytes": 80048,
+      "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+    },
+    "/lib/libcrypto.so.16.0": {
+      "bytes": 6244640,
+      "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+    },
+    "/lib/libgcc_s.so.1.0": {
+      "bytes": 149040,
+      "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+    },
+    "/lib/libm.so.0.14": {
+      "bytes": 420120,
+      "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+    },
+    "/lib/libpthread.so.1.6": {
+      "bytes": 166600,
+      "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+    },
+    "/lib/libutil.so.7.25": {
+      "bytes": 165496,
+      "sha256": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f"
+    },
+    "/usr/lib/libssl.so.16.0": {
+      "bytes": 1262704,
+      "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+    }
+  },
+  "retained_but_not_named_by_runtime": [
+    "deps/faction_client-e84d3662acd1dd77",
+    "deps/faction_client-f9416ce77242989e",
+    "deps/faction_files-87fdd2d11f228aef"
+  ],
+  "schema": 1,
+  "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+  "tools": {
+    "cargo": {
+      "bytes": 43795088,
+      "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)"
+    },
+    "cargo-clippy": {
+      "bytes": 1832248,
+      "sha256": "1437f57ffe3ac2caf98e0af5b5e2392b98951b539242c5cbcfaf333c2afa75bd",
+      "version": "clippy 0.1.96 (f246580199 2026-05-28)"
+    },
+    "cc": {
+      "bytes": 1419696,
+      "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242",
+      "version": "cc (nb3 20260326) 12.5.0\nCopyright (C) 2022 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+    },
+    "openssl": {
+      "bytes": 7572992,
+      "sha256": "29a8c4bd9def254d973ca9946fced30a89f95e914a46f1e42333a25b5e303627",
+      "version": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)\nNetBSD 11.0\nNetBSD-aarch64\noptions:  bn(64,64)\ngcc version 12.5.0 (NetBSD nb3 20260326) \nOPENSSLDIR: \"/etc/openssl\"\nENGINESDIR: \"/usr/lib/openssl/engines\"\nMODULESDIR: \"/usr/lib/openssl/modules\"\nSeeding source: os-specific\nCPUINFO: OPENSSL_armcap=0x87d"
+    },
+    "python3.13": {
+      "bytes": 68584,
+      "sha256": "07f1f1fc61dbb8823d9219a9a35dd0ce81f9c5526d74f5a5dde5fe9509266ec7",
+      "version": "Python 3.13.14"
+    },
+    "rustc": {
+      "bytes": 14128,
+      "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-unknown-netbsd\nrelease: 1.96.0\nLLVM version: 22.1.2"
+    },
+    "rustfmt": {
+      "bytes": 6824568,
+      "sha256": "8d10878f8e44214ced0050ac3f953315485671958d5aa4c5c2be94fbbb0b25a9",
+      "version": "rustfmt 1.9.0-stable (f246580199 2026-05-28)"
+    }
+  }
+}

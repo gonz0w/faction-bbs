@@ -1,0 +1,36 @@
+{
+  "excluded_host_paths": "Compiler/mutation build caches and redundant publication staging; identified executed binaries and actual source/log variants are retained.",
+  "excluded_native_files": "Only stopped disposable disk.qcow2 and kernel.img; original saved owner assets are unchanged and retained.",
+  "initial_development_binary_limit": "Initial development binaries were not all individually retained; final and identified later artifacts are retained.",
+  "lead_retention_setup_history": [
+    "Initial octal-text mode parsing comparison failed before archival or removal; parsing was corrected and exact modes/bytes/mtime verified.",
+    "Owned read-only archive verifier interrupted after complete host capture because random gzip seeks were expensive; all members then verified in one sequential pass."
+  ],
+  "owned_admin_forwards_closed": true,
+  "owned_fixture_stores_absent": true,
+  "owned_host_root_removed": true,
+  "owned_native_root_removed": true,
+  "owned_vm_and_controller_remaining": 0,
+  "owner_assets_verified_unchanged": 86,
+  "private_retention": {
+    "host": {
+      "all_member_bytes_and_modes_verified": true,
+      "archive_bytes": 431853510,
+      "archive_sha256": "0e190df6dae8d815f5116d1a2436e397275ac20d8073c800c3decb98aa55e0ff",
+      "regular_files": 38543,
+      "symlinks": 0
+    },
+    "native": {
+      "all_member_bytes_and_modes_verified": true,
+      "archive_bytes": 303677029,
+      "archive_sha256": "cfc66df187cec89b67fcf2abab99924ce75acbbb63b396de608bd2892d7650af",
+      "regular_files": 228,
+      "symlinks": 0
+    }
+  },
+  "provider_installation_enrollment_host_security_or_public_listener_operations": false,
+  "retention_verified_before_removal": true,
+  "saved_owner_images_closed": 6,
+  "saved_playground": "stopped and intact",
+  "schema": 1
+}

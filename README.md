@@ -47,8 +47,10 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [Experimental provider authority](dev-docs/provider-authority.md) explores a
   separate synthetic TLS boundary, with a [native NetBSD software qualification](dev-docs/evidence/provider-authority-netbsd/README.md).
   An optional [provider embedding](dev-docs/provider-integration.md) exposes that
-  boundary to a caller; it does not enable provider enrollment or change the
-  existing native home-mail route.
+  boundary and reuses the native attachment IQ codec in process, with
+  [fresh host/NetBSD software evidence](dev-docs/evidence/provider-integration/README.md).
+  It enables no provider enrollment or XMPP service and keeps the existing native
+  home-mail route and classic defaults.
 
 ## What you can do
 

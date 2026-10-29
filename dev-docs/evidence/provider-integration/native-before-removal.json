@@ -1,0 +1,19 @@
+{
+  "admin_forward_closed": true,
+  "clone_clean_standalone": true,
+  "clone_images_closed": 2,
+  "clone_retained_until_lead_archive_ack": true,
+  "controller_remaining": false,
+  "owned_capture_root_removed": false,
+  "owner_assets_verified_unchanged": 86,
+  "phase": "verified-stopped-before-lead-archive-and-owned-root-removal",
+  "postrun_fixtures_and_test_processes_empty": true,
+  "saved_owner_images_closed": 6,
+  "schema": 1,
+  "shutdown": {
+    "exit_code": 0,
+    "remaining_pids": [],
+    "wall_seconds": 16.44084920900059
+  },
+  "vm_remaining": false
+}

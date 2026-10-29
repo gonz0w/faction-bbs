@@ -74,5 +74,10 @@ attachment private keys or plaintext. TLS key possession and registry approval d
 not establish possession of an OMEMO private identity key or hardware attestation.
 Classic board access and ordinary mail remain independently available. See the
 [provider crate README](../crates/faction-provider/README.md) for its current API
-and explicit build instructions; validation of this integration is tracked with
-its implementation, rather than inferred from the earlier experiment's evidence.
+and explicit build instructions. The [host and fresh NetBSD software record](evidence/provider-integration/README.md)
+qualifies these exact runtime/IQ inputs, including committed-object route controls,
+current policy and lifecycle, default/client/store regressions and owned teardown.
+The native runtime used two CPUs/about 1 GiB; compilation used two CPUs/2 GiB and
+at most two compiler jobs. These are separate guest envelopes, not peak-memory,
+hardware or supported-capacity measurements. Earlier experiment observations remain
+unchanged and are not reused as new runtime passes.

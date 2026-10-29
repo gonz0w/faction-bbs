@@ -4,6 +4,12 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add an explicitly compiled authenticated attachment-provider embedding library
+  with opaque real-mTLS sessions, current typed policy/lifecycle control and an
+  optional shared native blob-IQ adapter. Host and fresh NetBSD software checks
+  preserve classic/default-off behavior. This adds no deployed XMPP service,
+  production enrollment, own-home delegation or independent interoperability.
+
 - Adopt a pinned Agent Temper method with explicit Faction policy, strict test-first
   and GitHub profiles, offline provenance, and concise agent navigation. Preserve
   product/security/evidence rules and required checks. Recognize only the exact
