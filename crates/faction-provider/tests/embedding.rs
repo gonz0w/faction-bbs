@@ -289,6 +289,153 @@ fn with_cancel_session<T>(
     }
     value
 }
+// Each object is committed through its own real certificate session. Self delivery
+// makes Alice's readable object and Bob's private object distinct actor controls.
+fn committed_route_objects(c: &Certs, runtime: &Runtime, store: &mut Store) -> [Binding; 2] {
+    [1, 2].map(|n| {
+        let mut b = binding();
+        b.sender = principal(n);
+        b.recipient = principal(n);
+        b.id = sha256(&[n; 32]);
+        with_session(
+            c,
+            runtime,
+            if n == 1 { &c.alice } else { &c.bob },
+            |mut s| {
+                for request in [
+                    Request::Begin(b.clone()),
+                    Request::PutChunk {
+                        id: b.id,
+                        offset: 0,
+                        bytes: vec![n; 32],
+                    },
+                    Request::Commit { id: b.id },
+                ] {
+                    assert!(s.dispatch(store, &b.sender.account, request).is_ok());
+                }
+            },
+        );
+        b
+    })
+}
+fn committed_reads(b: &Binding) -> [(Request, Response); 2] {
+    [
+        (
+            Request::Status { id: b.id },
+            Response::Progress {
+                binding: b.clone(),
+                offset: 32,
+                committed: true,
+            },
+        ),
+        (
+            Request::GetChunk {
+                id: b.id,
+                offset: 0,
+            },
+            Response::Chunk {
+                offset: 0,
+                bytes: vec![b.recipient.identity[0]; 32],
+                total: 32,
+            },
+        ),
+    ]
+}
+#[test]
+fn committed_actor_free_routes_reject_confusion_in_dispatch() {
+    let f = Fixture::new();
+    let c = Certs::new();
+    let runtime = c.runtime();
+    let mut store = f.store();
+    let [alice, bob] = committed_route_objects(&c, &runtime, &mut store);
+    with_session(&c, &runtime, &c.bob, |mut s| {
+        for (request, expected) in committed_reads(&bob) {
+            assert_eq!(
+                s.dispatch(&mut store, "bob@home.test", request),
+                Ok(expected)
+            );
+        }
+    });
+    with_session(&c, &runtime, &c.alice, |mut s| {
+        for (request, expected) in committed_reads(&alice) {
+            assert_eq!(
+                s.dispatch(&mut store, "alice@home.test", request),
+                Ok(expected)
+            );
+        }
+        for object in [&alice, &bob] {
+            for (request, _) in committed_reads(object) {
+                let before = f.bytes();
+                assert_eq!(
+                    s.dispatch(&mut store, "bob@home.test", request),
+                    Err(Error::Store(faction_files::private_blobs::Error::Denied))
+                );
+                assert_eq!(f.bytes(), before);
+            }
+        }
+    });
+}
+#[test]
+fn committed_actor_free_routes_reject_confusion_on_actual_binary_wire() {
+    let f = Fixture::new();
+    let c = Certs::new();
+    let runtime = c.runtime();
+    let mut store = f.store();
+    let [alice, bob] = committed_route_objects(&c, &runtime, &mut store);
+    // First prove Bob's private object is actually readable on the wire.
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    thread::scope(|scope| {
+        let peer = scope.spawn(|| {
+            let mut client = c
+                .client(addr, Arc::new(AtomicBool::new(false)), Some(&c.bob))
+                .unwrap();
+            for (request, expected) in committed_reads(&bob) {
+                assert_eq!(client.request(&request), Ok(expected));
+            }
+        });
+        let mut session = c
+            .server()
+            .accept(&listener, &runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        for _ in 0..2 {
+            assert_eq!(session.serve_next(&mut store, "bob@home.test"), Ok(true));
+        }
+        peer.join().unwrap();
+    });
+    drop(listener);
+    for object in [&alice, &bob] {
+        for (index, (forged, _)) in committed_reads(object).into_iter().enumerate() {
+            let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+            let addr = listener.local_addr().unwrap();
+            let (rightful, expected) = committed_reads(&alice)[index].clone();
+            thread::scope(|scope| {
+                let peer = scope.spawn(|| {
+                    let mut client = c
+                        .client(addr, Arc::new(AtomicBool::new(false)), Some(&c.alice))
+                        .unwrap();
+                    assert_eq!(client.request(&rightful), Ok(expected));
+                    assert!(client.request(&forged).is_err());
+                });
+                let mut session = c
+                    .server()
+                    .accept(&listener, &runtime, Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert_eq!(session.serve_next(&mut store, "alice@home.test"), Ok(true));
+                let before = f.bytes();
+                assert_eq!(
+                    session.serve_next(&mut store, "bob@home.test"),
+                    Err(Error::Store(faction_files::private_blobs::Error::Denied))
+                );
+                assert_eq!(f.bytes(), before);
+                let drain = Instant::now();
+                peer.join().unwrap();
+                assert!(drain.elapsed() < Duration::from_secs(5));
+            });
+        }
+    }
+}
+
 #[test]
 fn public_embedding_contract_keeps_qualified_bounds() {
     assert_eq!(HANDSHAKE_LIMIT, Duration::from_secs(5));
@@ -876,6 +1023,69 @@ mod iq_contract {
             }
         });
     }
+    #[test]
+    fn committed_actor_free_routes_reject_confusion_in_maintained_iqs() {
+        let f = Fixture::new();
+        let c = Certs::new();
+        let runtime = c.runtime();
+        let mut store = f.store();
+        let [alice, bob] = committed_route_objects(&c, &runtime, &mut store);
+        let service = IqService::new("home.test").unwrap();
+        with_session(&c, &runtime, &c.bob, |mut session| {
+            for (request, expected) in committed_reads(&bob) {
+                let iq = query("bob-positive", "bob@home.test", &request);
+                let reply = session.dispatch_iq(&mut store, &service, &iq).unwrap();
+                assert_eq!(
+                    blob_iq::decode_response(&reply, "bob-positive", "bob@home.test", "home.test"),
+                    Ok(expected)
+                );
+            }
+        });
+        with_session(&c, &runtime, &c.alice, |mut session| {
+            for (request, expected) in committed_reads(&alice) {
+                let iq = query("alice-positive", "alice@home.test", &request);
+                let reply = session.dispatch_iq(&mut store, &service, &iq).unwrap();
+                assert_eq!(
+                    blob_iq::decode_response(
+                        &reply,
+                        "alice-positive",
+                        "alice@home.test",
+                        "home.test"
+                    ),
+                    Ok(expected)
+                );
+            }
+            for object in [&alice, &bob] {
+                for (request, _) in committed_reads(object) {
+                    let iq = query("forged-existing", "bob@home.test", &request);
+                    let before = f.bytes();
+                    let reply = session.dispatch_iq(&mut store, &service, &iq).unwrap();
+                    assert_eq!(
+                        blob_iq::decode_response(
+                            &reply,
+                            "forged-existing",
+                            "bob@home.test",
+                            "home.test"
+                        ),
+                        Err(blob_iq::Error::Remote(
+                            faction_files::private_blobs::Error::Denied
+                        ))
+                    );
+                    assert_eq!(f.bytes(), before);
+                    assert_eq!(
+                        reply,
+                        blob_iq::response(
+                            &iq,
+                            "home.test",
+                            Err(faction_files::private_blobs::Error::NotFound)
+                        )
+                        .unwrap()
+                    );
+                }
+            }
+        });
+    }
+
     #[test]
     fn actor_free_iq_routes_are_assertions_and_denials_are_uniform() {
         let f = Fixture::new();
