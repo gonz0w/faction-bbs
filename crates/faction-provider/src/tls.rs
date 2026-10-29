@@ -210,14 +210,14 @@ fn read_frame(stream: &mut SslStream<DeadlineIo>) -> Result<Option<Vec<u8>>, Sta
     stream.read_exact(&mut bytes).map_err(|_| Stage::Frame)?;
     Ok(Some(bytes))
 }
-fn write_frame(stream: &mut SslStream<DeadlineIo>, bytes: &[u8]) -> Result<(), Stage> {
+fn write_frame<W: Write>(stream: &mut W, bytes: &[u8]) -> Result<(), Stage> {
     if bytes.is_empty() || bytes.len() > MAX_WIRE {
         return Err(Stage::Frame);
     }
-    stream
-        .write_all(&(bytes.len() as u32).to_be_bytes())
-        .map_err(|_| Stage::Frame)?;
-    stream.write_all(bytes).map_err(|_| Stage::Frame)?;
+    let mut frame = Vec::with_capacity(4 + bytes.len());
+    frame.extend_from_slice(&(bytes.len() as u32).to_be_bytes());
+    frame.extend_from_slice(bytes);
+    stream.write_all(&frame).map_err(|_| Stage::Frame)?;
     stream.flush().map_err(|_| Stage::Frame)
 }
 
@@ -921,3 +921,7 @@ mod socket_bio_tests {
         })
     }
 }
+
+#[cfg(test)]
+#[path = "tls_frame_tests.rs"]
+mod frame_tests;
