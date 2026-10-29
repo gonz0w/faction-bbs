@@ -77,6 +77,44 @@ exactly its configured home and local account bindings, at most 32 bindings and
 homes, and no extra fields. Approval and device identity are operator inputs, not
 proof of OMEMO key possession or BBS membership.
 
+## Check a complete proposal offline
+
+The member can separately prepare a [public device card](provider-preparation.md)
+and supply it with the selected public client certificate. Obtain the complete
+proposal through your independent approval process: it is the source of every
+binding, validity interval, flag, generation and reset epoch. The card and
+certificate are self-asserted data, not proof of possession or approval. Never
+request the member's private profile or key.
+
+Place the card, public certificate and complete approved proposal under the private
+configuration root, with the same owned `0700` directories and single-link `0600`
+file rules above. Use a fresh output path there, outside policy and blob roots and
+the configured key path:
+
+```sh
+faction-provider prepare /private/operator/config.toml /private/operator/card.toml /private/operator/client.pem /private/operator/approved.toml /private/operator/candidate.toml
+```
+
+This offline data check compares exactly one account/device target, its full identity,
+home and client certificate digest against the complete proposal. It preserves every
+binding and field present in that complete input, including disabled, revoked or false
+flags, generation and reset epoch, in canonical output. It does not infer approval, insert or enable bindings,
+compare the input with a retained policy snapshot, read private keys, connect or start
+a listener. It may run while
+the owner serves: it does not take the policy lock. A candidate is not applied or
+approved by this command, and it does not export or merge the current registry.
+
+Publication uses a new private file and does not overwrite. If a failure occurs after
+publication, inspect the destination before retrying with a fresh path; do not assume
+rollback. The card is at most 8192 bytes and the certificate and proposal at most
+65536 bytes each. The certificate must contain one unambiguous public leaf.
+
+Choose **one** separate authority-changing step: `init` for a new empty policy root,
+or `apply` for an established root after stopping its owner. Current floors and
+certificate history are checked there, so a stale candidate can still be refused.
+`apply` replaces the whole registry with the supplied proposal. Review the complete proposal against the actual retained state; never rebuild it
+from a partial card.
+
 ## Commands and recovery
 
 ```sh

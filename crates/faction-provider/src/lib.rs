@@ -4,6 +4,8 @@
 pub mod authority;
 #[cfg(feature = "durable-policy")]
 pub mod durable;
+#[cfg(feature = "preparation")]
+pub mod preparation;
 mod service;
 pub mod tls;
 use authority::{Authority, Registry};

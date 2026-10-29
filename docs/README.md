@@ -14,6 +14,7 @@ These describe current requirements, the local console and an early restricted S
 - [Run/configure ANSI menus and theme packs](theme-packs.md)
 - [Arrow-key menus, hotkeys, sysop themes and seasonal identity](menus-and-themes.md)
 - [Privacy and security requirements](security-privacy.md)
+- [Offline device-provider preparation](provider-preparation.md) — private profile and separate card handoff.
 - [Private attachment provider operator](provider-operator.md) — optional loopback setup and recovery.
 - [Optional modern extensions, public rooms, shops and games](extensions.md)
 

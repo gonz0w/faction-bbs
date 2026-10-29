@@ -7,6 +7,7 @@ use faction_client::{
 use faction_files::private_blobs::Principal;
 use rustix::fs::{self, Mode, OFlags};
 use std::{
+    ffi::OsString,
     fs::File,
     io::{self, Read},
     net::SocketAddr,
@@ -29,7 +30,7 @@ fn private_directory(file: &File) -> io::Result<()> {
 }
 /// Resolve each component by descriptor without following links. Trusted global
 /// prefixes need not be private; the selected credential root and descendants do.
-fn private_file(path: &Path, root: &Path, cap: u64) -> io::Result<Zeroizing<Vec<u8>>> {
+pub(super) fn parent(path: &Path, root: &Path) -> io::Result<(File, OsString)> {
     if !absolute(path) || !absolute(root) || !path.starts_with(root) || path == root {
         return Err(invalid());
     }
@@ -63,9 +64,13 @@ fn private_file(path: &Path, root: &Path, cap: u64) -> io::Result<Zeroizing<Vec<
         }
     }
     private_directory(&dir)?;
+    Ok((dir, name.to_os_string()))
+}
+pub(super) fn private_file(path: &Path, root: &Path, cap: u64) -> io::Result<Zeroizing<Vec<u8>>> {
+    let (dir, name) = parent(path, root)?;
     let file = File::from(fs::openat(
         &dir,
-        *name,
+        &name,
         OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
         Mode::empty(),
     )?);
@@ -88,7 +93,20 @@ fn private_file(path: &Path, root: &Path, cap: u64) -> io::Result<Zeroizing<Vec<
 pub(super) fn load(path: &Path, vault: &CheckpointVault) -> io::Result<DeviceProvider> {
     let root = path.parent().ok_or_else(invalid)?;
     let bytes = private_file(path, root, 8192)?;
-    let mut table = std::str::from_utf8(&bytes)
+    decode(&bytes, path, vault)
+}
+// Preparation and the maintained file loader validate the exact same schema,
+// vault assertions and actual transport credentials before any publication.
+pub(super) fn decode(
+    bytes: &[u8],
+    path: &Path,
+    vault: &CheckpointVault,
+) -> io::Result<DeviceProvider> {
+    let root = path.parent().ok_or_else(invalid)?;
+    if bytes.is_empty() || bytes.len() > 8192 {
+        return Err(invalid());
+    }
+    let mut table = std::str::from_utf8(bytes)
         .map_err(|_| invalid())?
         .parse::<toml::Table>()
         .map_err(|_| invalid())?;

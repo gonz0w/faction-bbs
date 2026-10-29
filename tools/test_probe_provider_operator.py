@@ -67,4 +67,43 @@ class OperatorRunnerTests(unittest.TestCase):
         self.assertNotIn('key',v['bindings'][0])
         self.assertLessEqual(len(text.encode()),65536)
 
+class PreparedModeTests(unittest.TestCase):
+    def module(self):return importlib.import_module('probe_provider_operator')
+
+    def test_prepared_mode_is_deliberate_and_default_off(self):
+        p=self.module();values=['--client','/client','--fixture','/fixture','--operator','/operator','--owned-root','/owned','--output','/owned/result.json']
+        self.assertFalse(p.make_parser().parse_args(values).prepared)
+        self.assertTrue(p.make_parser().parse_args(values+['--prepared']).prepared)
+
+    def test_invalid_device_oracle_handles_existing_and_generated_toml(self):
+        p=self.module()
+        for text in [b'device=101\n',b'device = 101\n']:
+            self.assertIn(b'202',p.invalid_device_profile(text))
+            self.assertNotIn(b'101',p.invalid_device_profile(text))
+        with self.assertRaises(ValueError):p.invalid_device_profile(b'device=202\n')
+
+    def test_each_member_action_uses_separate_normal_hidden_unlock(self):
+        p=self.module();events=[]
+        class Console:
+            def __init__(self,args,**kwargs):self.args=args;events.append(('argv',args))
+            def password(self,password,prompt):events.append(('hidden',password,prompt))
+            def expect(self,text):events.append(('expect',text))
+            def finish(self):events.append(('finish',))
+        children=[]
+        with patch.object(p,'LauncherConsole',Console):
+            p.prepare_member(Path('/client'),Path('/vault'),Path('/template'),Path('/new-profile'),Path('/new-card'),'synthetic password',True,children)
+        self.assertEqual([event[1] for event in events if event[0]=='argv'],
+            [[Path('/client'),'--device-provider-prepare',Path('/vault'),Path('/template'),Path('/new-profile'),'--unicode'],
+             [Path('/client'),'--device-provider-card',Path('/vault'),Path('/new-profile'),Path('/new-card'),'--unicode']])
+        self.assertEqual(sum(event[0]=='hidden' for event in events),2)
+        self.assertTrue(all(event[2]==p.UNLOCK for event in events if event[0]=='hidden'))
+        self.assertEqual(len(children),2)
+
+    def test_prepared_selection_reaches_both_existing_terminal_journeys(self):
+        p=self.module()
+        with patch.object(p,'require_root',return_value=Path('/owned')),patch.object(p,'one_journey',return_value={'checks':['synthetic']}) as journey:
+            p.probe(Path('/client'),Path('/fixture'),Path('/operator'),Path('/owned'),'openssl',prepared=True)
+        self.assertEqual([call.args[-1] for call in journey.call_args_list],[False,True])
+        self.assertTrue(all(call.kwargs=={'prepared':True} for call in journey.call_args_list))
+
 if __name__=='__main__':unittest.main()

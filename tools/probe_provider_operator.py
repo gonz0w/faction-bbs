@@ -27,6 +27,7 @@ import stat
 import subprocess
 import tempfile
 import time
+import tomllib
 
 
 class Operator:
@@ -114,20 +115,61 @@ def config(root):
     return path
 
 
+def invalid_device_profile(raw):
+    changed,count=re.subn(rb'(?m)^device[ \t]*=[ \t]*101[ \t]*$',b'device=202',raw)
+    if count!=1:raise ValueError('expected one synthetic selected device')
+    return changed
+
+
+def prepare_member(client,vault,template,profile_path,card_path,password,unicode,children):
+    # Each output is a separate real local action with its normal hidden unlock.
+    for action,source,destination in [('--device-provider-prepare',template,profile_path),
+                                      ('--device-provider-card',profile_path,card_path)]:
+        args=[client,action,vault,source,destination]
+        if unicode:args.append('--unicode')
+        c=LauncherConsole(args,columns=40,rows=18);children.append(c)
+        c.password(password,UNLOCK)
+        c.expect('Offline local data prepared.')
+        c.expect('Self-asserted data; no key-possession proof.')
+        c.finish()
+
+
+def checkpoint_bytes(path):
+    return {str(p.relative_to(path)):p.read_bytes() for p in path.rglob('*') if p.is_file()}
+
+
+def prepared_profiles(client,root,templates,profiles,cards,port,password,unicode,children,revision):
+    outputs=[]
+    for member,template,previous,card in zip(['alice','bob'],templates,profiles,cards):
+        values=tomllib.loads(template.read_text());values['endpoint']='127.0.0.1:'+str(port)
+        private(template,''.join(k+'='+json.dumps(v)+'\n' for k,v in values.items()).encode())
+        output=previous.parent/('prepared-profile-'+str(revision)+'.toml')
+        exported=previous.parent/('public-card-'+str(revision)+'.toml')
+        assert not output.exists() and not exported.exists()
+        before=checkpoint_bytes(root/member)
+        prepare_member(client,root/member,template,output,exported,password,unicode,children)
+        assert checkpoint_bytes(root/member)==before
+        assert tomllib.loads(exported.read_text())==tomllib.loads(card.read_text())
+        outputs.append(output)
+    return outputs
+
+
 def make_parser():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['client','fixture','operator','owned-root','output']:
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--openssl',default='openssl')
+    p.add_argument('--prepared',action='store_true',help='create profiles/cards with actual offline client commands and check complete proposals before separate init/apply')
     return p
 
 
-def one_journey(client, fixture, operator, owned_root, openssl, unicode):
+def one_journey(client, fixture, operator, owned_root, openssl, unicode, *, prepared=False):
     root = Path(tempfile.mkdtemp(prefix='journey-OWNED-', dir=owned_root))
     root.chmod(0o700)
     private(root/'OWNED', b'Owned authenticated-provider member seed\n')
     children, peers = [], []
     provider = None
+    reservation = None
     facts = []
     local_password, home_password = [secrets.token_hex(20) for _ in range(2)]
     secret = (local_password+'\n').encode()
@@ -152,7 +194,50 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
         stamp=int(time.time())
         digests=[fingerprint(pair[0]) for pair in device_pairs]
         private(proposed,proposal(identities,digests,generation=1,reset_epoch=1,approved=[True,True],stamp=stamp).encode())
-        assert command([operator,'init',configuration,proposed])==b'initialized\n'
+        templates,cards,prepared_paths=[],[],[]
+        initial_candidate=proposed
+        if prepared:
+            # Reserve a private nonzero endpoint while all data preparation runs
+            # offline. No provider or mail service has started yet.
+            reservation=socket.socket();reservation.bind(('127.0.0.1',0));reservation.listen();reservation.settimeout(.1)
+            port=reservation.getsockname()[1]
+            values=tomllib.loads(configuration.read_text());values['endpoint']='127.0.0.1:'+str(port)
+            private(configuration,''.join(k+'='+json.dumps(v)+'\n' for k,v in values.items()).encode())
+            for name,identity,pair in zip(['alice','bob'],identities,device_pairs):
+                # The old helper supplies only independent transport settings.
+                # Its manually assembled identity fields are deleted before the
+                # maintained client creates either new requested output.
+                seed_profile=profile(root,name,identity,port,pairs['good'][0],pair)
+                transport=tomllib.loads(seed_profile.read_text())
+                for field in ['account','device','identity']:del transport[field]
+                template=seed_profile.parent/'transport-template.toml'
+                private(template,''.join(k+'='+json.dumps(v)+'\n' for k,v in transport.items()).encode())
+                seed_profile.unlink()
+                output=seed_profile.parent/'prepared-profile-0.toml';card=seed_profile.parent/'public-card-0.toml'
+                assert not output.exists() and not card.exists()
+                before=checkpoint_bytes(root/name)
+                prepare_member(client,root/name,template,output,card,local_password,unicode,children)
+                assert checkpoint_bytes(root/name)==before
+                assert stat.S_IMODE(output.stat().st_mode)==0o600 and stat.S_IMODE(card.stat().st_mode)==0o600
+                exported=tomllib.loads(card.read_text())
+                assert set(exported)=={'version','account','device','identity','certificate_sha256'}
+                assert exported['account']==name+'@home.test' and exported['identity']==identity
+                assert exported['certificate_sha256']==fingerprint(pair[0]).hex()
+                server_card=server/(name+'-card.toml');server_cert=server/(name+'-device.pem')
+                private(server_card,card.read_bytes());private(server_cert,pair[0].read_bytes())
+                checked=server/(name+'-checked.toml')
+                assert command([operator,'prepare',configuration,server_card,server_cert,proposed,checked])==b'prepared candidate; not applied or approved\n'
+                assert tomllib.loads(checked.read_text())==tomllib.loads(proposed.read_text())
+                initial_candidate=checked
+                templates.append(template);cards.append(card);prepared_paths.append(output)
+            assert not list((server/'policy').iterdir()) and not list((server/'serverstore').iterdir())
+            try:unexpected,_=reservation.accept()
+            except TimeoutError:pass
+            else:unexpected.close();raise ValueError('offline preparation connected to selected endpoint')
+            reservation.close();reservation=None
+            facts.append('actual_separate_hidden_unlock_profile_card_and_checked_complete_proposal_are_offline_and_leave_checkpoints_roots_unchanged')
+        assert command([operator,'init',configuration,initial_candidate])==b'initialized\n'
+        if prepared:facts.append('separate_explicit_init_applies_prepared_complete_candidate_only')
         assert command([operator,'inspect',configuration])==b'policy generation=1 reset=1 available=1 bindings=2 history=2\n'
         provider=Operator(operator,configuration,server)
         initial_port=provider.port
@@ -169,7 +254,7 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
         bob = HomePeer(root, pairs['good'], 'bob@home.test', 202, home_password, public_mail, 1)
         peers.append(bob)
         configs = [_settings(root,name,peer,pairs['good'][0]) for name,peer in [('alice',alice),('bob',bob)]]
-        profiles = [profile(root,name,identity,provider.port,pairs['good'][0],pair)
+        profiles = prepared_paths if prepared else [profile(root,name,identity,provider.port,pairs['good'][0],pair)
                     for name,identity,pair in zip(['alice','bob'],identities,device_pairs)]
         def start(member, selected=None, storage=None):
             args = [client,'--mail-online',(root if storage is None else storage)/member,configs[0 if member=='alice' else 1]]
@@ -195,7 +280,7 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
             c.expect('Type save to verify and publish: ');c.send('save');c.expect(RECEIVED)
         # Invalid profile is lazy and refuses preparation before a spool exists.
         invalid = profiles[0].parent/'invalid.toml'
-        private(invalid, profiles[0].read_bytes().replace(b'device=101',b'device=202'))
+        private(invalid, invalid_device_profile(profiles[0].read_bytes()))
         c=start('alice',invalid);desk(c);c.raw(b'c');c.expect('Selected attachment profile refused.');c.expect(DESK)
         assert not (root/'alice/attachments').exists()
         lock(c)
@@ -274,10 +359,16 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
         with socket.socket() as stopped_socket:
             assert stopped_socket.connect_ex(('127.0.0.1',initial_port))!=0
         facts.append('maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail')
+        if prepared:
+            values=tomllib.loads(configuration.read_text());values['endpoint']='127.0.0.1:0'
+            private(configuration,''.join(k+'='+json.dumps(v)+'\n' for k,v in values.items()).encode())
         provider=Operator(operator,configuration,server)
-        # Profiles retain each original local principal; only the observed port changes.
-        for path in profiles:
-            private(path,path.read_bytes().replace(('127.0.0.1:'+str(initial_port)).encode(),('127.0.0.1:'+str(provider.port)).encode()))
+        if prepared:
+            profiles=prepared_profiles(client,root,templates,profiles,cards,provider.port,local_password,unicode,children,1)
+        else:
+            # Existing manually selected profiles retain their original path.
+            for path in profiles:
+                private(path,path.read_bytes().replace(('127.0.0.1:'+str(initial_port)).encode(),('127.0.0.1:'+str(provider.port)).encode()))
         facts.append('explicit_reopen_uses_retained_policy_and_actual_new_listener_port')
         c=start('alice',profiles[0]);desk(c);submitted=upload(c,operation)
         upload_observation=wait_transfer(c,1_048_592,started=submitted);c.expect(DESK)
@@ -309,10 +400,21 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
         old_port=provider.port
         provider.close(signal.SIGINT)
         private(proposed,proposal(identities,digests,generation=2,reset_epoch=1,approved=[False,True],stamp=stamp).encode())
-        assert command([operator,'apply',configuration,proposed])==b'applied\n'
+        revocation_candidate=proposed
+        if prepared:
+            before_policy=(server/'policy/provider-policy.snapshot').read_bytes()
+            revocation_candidate=server/'revocation-checked.toml'
+            assert command([operator,'prepare',configuration,server/'alice-card.toml',server/'alice-device.pem',proposed,revocation_candidate])==b'prepared candidate; not applied or approved\n'
+            assert (server/'policy/provider-policy.snapshot').read_bytes()==before_policy
+            assert tomllib.loads(revocation_candidate.read_text())==tomllib.loads(proposed.read_text())
+            facts.append('checked_revoked_flags_preserved_before_separate_explicit_apply')
+        assert command([operator,'apply',configuration,revocation_candidate])==b'applied\n'
         provider=Operator(operator,configuration,server)
-        for path in profiles:
-            private(path,path.read_bytes().replace(('127.0.0.1:'+str(old_port)).encode(),('127.0.0.1:'+str(provider.port)).encode()))
+        if prepared:
+            profiles=prepared_profiles(client,root,templates,profiles,cards,provider.port,local_password,unicode,children,2)
+        else:
+            for path in profiles:
+                private(path,path.read_bytes().replace(('127.0.0.1:'+str(old_port)).encode(),('127.0.0.1:'+str(provider.port)).encode()))
         c=start('alice',profiles[0]);desk(c);upload(c,operation)
         c.expect('Transfer stopped; no automatic retry.');c.expect(DESK);lock(c)
         assert snapshot.read_bytes()==before_revocation and (root/'delivery.xml').read_bytes()==delivered
@@ -328,11 +430,12 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
         assert all(local_password.encode() not in c.transcript and home_password.encode() not in c.transcript for c in children)
         facts.append('server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext')
         return dict(mode='unicode' if unicode else 'classic',checks=facts,plaintext_bytes=len(payload),
-                    maintained_operator=True,provider_restarts=3,
+                    maintained_operator=True,provider_restarts=3,prepared_offline_data=prepared,
                     ordinary_mail_connections=alice.connections+bob.connections,mail_received=True,
                     transfer_observations=dict(upload=upload_observation,fetch=fetch_observation))
     finally:
         failures=[]
+        if reservation is not None:reservation.close()
         for index,c in enumerate(children):
             try:
                 retain_capture(owned_root,'unicode-console' if unicode else 'classic-console',c.transcript)
@@ -362,15 +465,15 @@ def one_journey(client, fixture, operator, owned_root, openssl, unicode):
 
 
 
-def probe(client,fixture,operator,owned_root,openssl):
+def probe(client,fixture,operator,owned_root,openssl,*,prepared=False):
     owned_root=require_root(owned_root)
-    modes=[one_journey(client,fixture,operator,owned_root,openssl,unicode) for unicode in [False,True]]
+    modes=[one_journey(client,fixture,operator,owned_root,openssl,unicode,prepared=prepared) for unicode in [False,True]]
     return dict(result='pass',count=sum(len(mode['checks']) for mode in modes),modes=modes,
         private_fixture_removed=True,children_reaped=True,provider_deployment=False,
         independent_interoperability=False,physical_hardware=False,capacity_claim=False)
 
 if __name__=='__main__':
     args=make_parser().parse_args()
-    result=probe(args.client.resolve(),args.fixture.resolve(),args.operator.resolve(),args.owned_root,args.openssl)
+    result=probe(args.client.resolve(),args.fixture.resolve(),args.operator.resolve(),args.owned_root,args.openssl,prepared=args.prepared)
     private(args.output,(json.dumps(result,indent=2,sort_keys=True)+'\n').encode())
     print('Maintained provider operator console passed',result['count'],'controls.')

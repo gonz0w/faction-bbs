@@ -5,6 +5,8 @@ mod checkpoint_ui;
 mod connection;
 #[cfg(feature = "device-provider")]
 mod device_provider_profile;
+#[cfg(feature = "device-provider")]
+mod device_provider_setup;
 mod launcher;
 mod mail_ui;
 use faction_client::{mail_data, mail_vault};
@@ -734,6 +736,24 @@ fn provider_option(args: &[String]) -> io::Result<(Vec<String>, Option<PathBuf>)
 }
 fn run() -> io::Result<()> {
     let original = std::env::args().skip(1).collect::<Vec<_>>();
+    if original.first().is_some_and(|s| {
+        matches!(
+            s.as_str(),
+            "--device-provider-prepare" | "--device-provider-card"
+        )
+    }) {
+        #[cfg(feature = "device-provider")]
+        {
+            let selection =
+                device_provider_setup::Selection::parse(&original).map_err(io::Error::other)?;
+            return checkpoint_ui::run_device_provider_setup(&selection);
+        }
+        #[cfg(not(feature = "device-provider"))]
+        return Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "offline preparation requires an explicit device-provider build",
+        ));
+    }
     let (args, provider_profile) = provider_option(&original)?;
     #[cfg(not(feature = "network-mail"))]
     let _ = provider_profile;

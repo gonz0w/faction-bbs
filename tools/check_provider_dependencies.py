@@ -30,7 +30,8 @@ def validate_profile(manifest, workspace):
                 'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
                 'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
                     'durable-policy': ['dep:rustix'],
-                    'operator': ['durable-policy', 'dep:toml', 'dep:faction-unix']},
+                    'preparation': ['dep:toml', 'toml/display'],
+                    'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
                 'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
                                  'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
                     'rustix': {'version': '=1.1.5', 'default-features': False,
@@ -51,7 +52,7 @@ def validate_product_edges(manifests):
     features = {'default': [],
                 'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
                 'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
-                'device-provider': ['network-mail', 'dep:faction-provider', 'tokio/sync']}
+                'device-provider': ['network-mail', 'dep:faction-provider', 'faction-provider/preparation', 'tokio/sync']}
     edge = {'path': '../faction-provider', 'optional': True, 'default-features': False}
     for name, manifest in manifests.items():
         require(not any(key in manifest for key in ['patch', 'replace']), 'unreviewed dependency replacement')
@@ -79,7 +80,8 @@ def validate_graph(metadata, enabled):
                 if package['name'] == 'faction-provider']
     require(bool(selected) == enabled, 'provider leaked into an ordinary graph or is absent from the selected graph')
     if enabled:
-        require(len(selected) == 1 and not selected[0][1], 'client provider must not activate provider features')
+        require(len(selected) == 1 and selected[0][1] == ['preparation'],
+                'client provider must select only preparation; operator and durability stay separate')
 
 
 def check_inventory(path, current):
@@ -125,7 +127,7 @@ def root_warm_commands():
 def provider_warm_commands():
     return ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features ' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'blob-iq', 'durable-policy', 'operator'] for target in TARGETS]
+            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator'] for target in TARGETS]
 
 
 def validate_warm_order(job):
@@ -149,7 +151,7 @@ def operator_commands():
                  'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
                  'umask 077', 'mkdir -m 700 "$RUNNER_TEMP/faction284-console-OWNED"',
                  'printf \'%s\\n\' \'Owned maintained-provider operator proof\' > "$RUNNER_TEMP/faction284-console-OWNED/OWNED"',
-                 'python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json"']
+                 'python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json" --prepared']
     return commands
 
 
@@ -167,13 +169,15 @@ def validate_ci(text):
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' > /dev/null' for target in TARGETS]
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features blob-iq > /dev/null' for target in TARGETS]
-    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'operator'] for target in TARGETS]
+    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator'] for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked -- --test-threads=1',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features blob-iq -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
+    commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings',
+                 'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features preparation -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
     native = _step(provider, 'Validate the native authenticated attachment client')
     for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
@@ -181,16 +185,20 @@ def validate_ci(text):
     commands = ['cargo metadata --locked --format-version 1 --filter-platform ' + target
                 + ' --features faction-client/device-provider > /dev/null' for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
-                 'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings',
-                 'cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1']
+                 'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings']
     commands += [
         'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
         'umask 077',
+        'mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED"',
+        'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"',
+        'sha256sum "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"',
+        'mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED/captures"',
+        'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction286-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction286-setup-OWNED/captures" cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1',
         'mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"',
         "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
         'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
     ]
-    require(_lines(native, {'cargo', 'python3', 'umask', 'mkdir', 'printf'}) == commands,
+    require(_lines(native, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == commands,
             'native provider CI must qualify selected sources before all-target locked validation')
     # Every fresh job must materialize every graph read by the offline guard.
     warm = _step(provider, 'Warm the selected native attachment source graphs')
@@ -243,7 +251,8 @@ def inventory():
                                   tomllib.loads((ROOT / 'Cargo.lock').read_text()))
     profiles = {}; verified = {}
     for profile, features in [('default', []), ('blob-iq', ['blob-iq']),
-                              ('durable-policy', ['durable-policy']), ('operator', ['operator']),
+                              ('durable-policy', ['durable-policy']), ('preparation', ['preparation']),
+                              ('operator', ['operator']),
                               ('device-provider', ['faction-client/device-provider'])]:
         graphs = {}
         for target in TARGETS:

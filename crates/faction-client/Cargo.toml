@@ -12,7 +12,7 @@ native-mail = ["dep:faction-omemo", "faction-omemo/native"]
 
 network-mail = ["native-mail", "dep:faction-xmpp", "dep:tokio", "dep:roxmltree"]
 
-device-provider = ["network-mail", "dep:faction-provider", "tokio/sync"]
+device-provider = ["network-mail", "dep:faction-provider", "faction-provider/preparation", "tokio/sync"]
 
 [dependencies]
 faction-provider = { path = "../faction-provider", optional = true, default-features = false }
