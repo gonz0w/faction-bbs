@@ -1,6 +1,7 @@
 """Qualification contracts for the explicit opt-in provider embedding package."""
 import copy
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -214,6 +215,53 @@ def ci_fixture():
 
 
 class ProviderCI(unittest.TestCase):
+    def assert_root_graphs_warmed_before_source_guard(self, source):
+        provider = policy._job(source, 'provider')
+        name = 'Warm the selected native attachment source graphs'
+        step = policy._step(provider, name)
+        for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0',
+                        'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            self.assertEqual(step.splitlines().count('          ' + setting), 1)
+        metadata = []
+        for feature in [None, 'native-mail', 'network-mail', 'device-provider']:
+            for target in policy.TARGETS:
+                command = 'cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform ' + target
+                if feature:
+                    command += ' --features faction-client/' + feature
+                metadata.append(command + ' > /dev/null')
+        self.assertEqual(policy._lines(step, {'rustup', 'cargo'}),
+                         ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy'] + metadata)
+        first_guard = provider.index('          python3 tools/check_provider_dependencies.py\n')
+        prefix = provider[:first_guard]
+        for command in metadata:
+            self.assertEqual(prefix.splitlines().count('          ' + command), 1,
+                             'every root graph must warm online before the first offline source guard')
+        self.assertFalse(re.search(r'^          cargo (?:build|test|clippy) ', prefix, re.M),
+                         'source qualification must precede compilation')
+
+    def test_repository_warms_all_root_graphs_before_first_offline_provider_guard(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assert_root_graphs_warmed_before_source_guard(source)
+
+    def test_root_warmup_cannot_be_missing_offline_unlocked_or_after_guard(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        provider = policy._job(source, 'provider')
+        step = policy._step(provider, 'Warm the selected native attachment source graphs')
+        block = '      - name: Warm the selected native attachment source graphs\n' + step
+        for line in step.splitlines():
+            if line.strip().startswith('cargo metadata '):
+                with self.subTest(missing=line), self.assertRaises((AssertionError, ValueError)):
+                    self.assert_root_graphs_warmed_before_source_guard(source.replace(line + '\n', '', 1))
+        for old, new in [('cargo metadata --locked --manifest-path Cargo.toml', 'cargo metadata --locked --offline --manifest-path Cargo.toml'),
+                         ('cargo metadata --locked --manifest-path Cargo.toml', 'cargo metadata --manifest-path Cargo.toml')]:
+            with self.subTest(change=new), self.assertRaises((AssertionError, ValueError)):
+                self.assert_root_graphs_warmed_before_source_guard(source.replace(old, new))
+        later = source.replace(block, '')
+        later = later.replace('      - name: Validate the native authenticated attachment client\n',
+                              block + '      - name: Validate the native authenticated attachment client\n')
+        with self.assertRaises((AssertionError, ValueError)):
+            self.assert_root_graphs_warmed_before_source_guard(later)
+
     def test_repository_provider_job_exists_and_is_required(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
         self.assertIn('  provider:\n', source)
