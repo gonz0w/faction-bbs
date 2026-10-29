@@ -1,0 +1,42 @@
+{
+  "authority": "PROJECT.md and local .codex/agents role files",
+  "configured_policy": [
+    {
+      "effort": "medium",
+      "model": "gpt-6-luna",
+      "role": "temper_workflow"
+    },
+    {
+      "effort": "high",
+      "model": "gpt-6.1-sol",
+      "role": "temper_implementer"
+    },
+    {
+      "effort": "high",
+      "model": "gpt-6-astra",
+      "role": "temper_analyst"
+    },
+    {
+      "effort": "high",
+      "model": "gpt-6.1-sol",
+      "role": "temper_reviewer"
+    },
+    {
+      "effort": "medium",
+      "model": "gpt-6.1-terra",
+      "role": "temper_product"
+    }
+  ],
+  "native_requested_assignment": {
+    "no_nested_helpers": true,
+    "requested_effort": "high",
+    "requested_model": "gpt-6.1-sol",
+    "requested_role": "temper_implementer",
+    "runtime_backend_metadata": "unavailable/unverified"
+  },
+  "reported_dispatch_observation": "Lead reported two temporary concurrent-agent thread-limit refusals: reviewer resume and analyst spawn. Both succeeded after implementer completion; the analyst request remained the configured Astra/high assignment. These are concurrency observations, not model unavailability, substitution or independently observed backend routing.",
+  "review": "Separate nonauthor review is required; this package does not assert its completion. Agent review is not independent human assurance.",
+  "runtime_role_model_effort_observation": "Unavailable independent backend telemetry; configured/requested assignments do not establish actual runtime selection.",
+  "schema": 1,
+  "workflow_costs": "Token, monetary and complete agent-effort measurements unavailable; no efficiency or quality comparison."
+}

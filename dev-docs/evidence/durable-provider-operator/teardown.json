@@ -1,0 +1,112 @@
+{
+  "host": {
+    "build_cache_retained_at_publication": true,
+    "durable_unit_and_external_fixture_cleanup": "Tests check owned markers and remove their roots; subsequent exact-prefix inspection found no surviving unit/external/embedding fixture directories.",
+    "failed_fixture_originals": true,
+    "five_publication_children_killed_and_reaped_by_parent": true,
+    "historical_failed_executable_retention": {
+      "audit": "Readonly audit covered272 existing linked executables and4 retained archives; no missing executable was rebuilt or substituted.",
+      "missing": [
+        {
+          "bytes_available": false,
+          "role": "early malformed-array operator producer",
+          "sha256": "8557709024649fa5ea00761bac79b8296ce361c26afaa7e3737838a11f7d536e",
+          "source_variant": "operator.cli-run-2"
+        },
+        {
+          "bytes_available": false,
+          "role": "early failed operator CLI test executable",
+          "sha256": null,
+          "source_variant": "operator.cli-run-2"
+        },
+        {
+          "bytes_available": false,
+          "role": "later fixture-failing operator CLI test executable",
+          "sha256": null,
+          "source_variant": "operator.cli-run-3"
+        }
+      ],
+      "missing_artifacts": 3,
+      "policy_disposition": "No waiver or complete historical-executable retention claim is asserted.",
+      "retained": "Exact source variants and original failed logs/results survive. Later qualified product/test executables are retained separately and are not relabeled as these failed variants."
+    },
+    "host_bbs_three_executables_independently_retained": 3,
+    "original_sources_failed_candidates_logs_and_final_qualified_executables_retained_privately": true,
+    "private_evidence_intentionally_retained": true,
+    "production_console_children_reaped": true,
+    "production_fixture_removed": true,
+    "temporary_outer_execution_root_absent_after_atomic_relocation": true
+  },
+  "native": {
+    "available_private_corpus_retained": true,
+    "final_host_retention": {
+      "all_members_and_digests_verified": true,
+      "bytes": 9149296,
+      "files": 195,
+      "members": 203,
+      "sha256": "d356180394639ff6b9a201ae1d508cc2badeae7ba028d35b1f4edf9c040b2c3c",
+      "whole_vm_kernel_and_live_endpoints_excluded": true
+    },
+    "final_native_retention": {
+      "all_archive_members_and_digests_verified": true,
+      "bytes": 52847346,
+      "files": 1030,
+      "libraries_verified": 8,
+      "loader_verified": true,
+      "materialized_product_roles_verified": 12,
+      "members": 1154,
+      "no_owner_private_ssh_key_copied": true,
+      "sha256": "8478b6715722bdca4c755d0d9369cabbdfb111690cca4f929b69636d49855df3",
+      "source_commit": "57020dcb2c04b62a58596b1e07c2310c6b17701a",
+      "source_inputs_verified": 797,
+      "stable_executables_verified": 54,
+      "whole_vm_cache_and_inherited_owner_backups_excluded": true
+    },
+    "forced_host_kills": false,
+    "former_loopback_forwards_verified_closed": 3,
+    "guest_markers_owners_no_follow_verified": true,
+    "host_bbs_actual_executables_independently_retained": 3,
+    "host_configuration_or_package_changes": false,
+    "normal_shutdown": true,
+    "owned_bbs_file_services_stopped_before_capture": true,
+    "owned_clone_run_and_new_native_root_removed": true,
+    "owned_guest_roots_removed": 4,
+    "owned_processes_disappeared_and_reaped_by_host": true,
+    "owned_serial_controller_stopped": true,
+    "owned_vm_stopped": true,
+    "owner_private_ssh_identity_key_copied": false,
+    "preexisting_279_280_preflight_recipes_and_cache_preserved": true,
+    "private_capture_and_member_hashes_verified_before_deletion": true,
+    "saved_owner_assets_exact": 86,
+    "saved_owner_images_closed": 6,
+    "saved_owner_playground_started": false,
+    "source_commit": "57020dcb2c04b62a58596b1e07c2310c6b17701a"
+  },
+  "privacy_status": "Both separately scoped available-value scans found zero matches. No all-runtime-value coverage or security audit claim.",
+  "publication": "Only allowlisted Git-tracked project source bytes and curated factual records. No raw logs/argv, runtime identities, credentials, fixture profiles, endpoints, keys, executable bytes or whole-machine captures are published.",
+  "publication_privacy_scans": {
+    "all_runtime_values_covered": false,
+    "deduplicated_union_count_asserted": false,
+    "host_available_failed_fixture_values": {
+      "available_exact_values": 126,
+      "available_fixture_files_read": 22,
+      "candidate_files_scanned": 834,
+      "coverage": "Available retained failed synthetic host fixture JSON/TOML strings and PEM bodies/DER digests. Successful-fixture values deleted or existing only in memory are unavailable and are not covered. This is not a security audit.",
+      "known_public_source_values_excluded": 3,
+      "matches": 0,
+      "private_values_scanned": 123
+    },
+    "method": "Exact available retained values against curated records and referenced source bytes before manifest/guard insertion. Deleted successful-journey and never-retained in-memory values remain outside coverage. The final metadata-only manifest/guard contain no runtime values.",
+    "native_available_retained_fixture_values": {
+      "all_runtime_values_covered": false,
+      "available_actual_private_values": 42,
+      "candidate_files_scanned": 834,
+      "coverage": "Exact available retained native fixture corpus. Deleted successful-journey or never-retained in-memory values are unavailable. Separate from the host corpus; no deduplicated union count is asserted.",
+      "existing_fixture_files_read": 69,
+      "known_committed_public_fixture_constants": 7,
+      "matches": 0
+    },
+    "scopes_separate": true
+  },
+  "schema": 1
+}

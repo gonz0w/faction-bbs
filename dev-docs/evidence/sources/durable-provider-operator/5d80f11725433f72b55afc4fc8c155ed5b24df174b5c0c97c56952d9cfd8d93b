@@ -1,0 +1,56 @@
+"""Synthetic #214 evidence contracts; not a substitute for native execution."""
+import copy,hashlib,unittest
+from unittest.mock import patch
+import check_picker_mail_evidence as g
+
+H=hashlib.sha256(b'executed').hexdigest()
+def fixture():
+    routes={}
+    for route,platform in [('host','Darwin'),('netbsd','NetBSD')]:
+        ui=dict(result='pass',platform=platform,count=17,checks=sorted(g.UI),private_fixture_removed=True,provider_contact=False,listener_opened=False)
+        combined=dict(result='pass',platform=platform,scope='same-picker-unavailable-home-approved-board-restricted-sftp',count=8,checks=sorted(g.COMBINED),same_picker_pid=True,canonical_unchanged=True,history_unchanged=True,pending_ids_unchanged=True,archive_token_unchanged=True,nonempty_cursor=True,approved_member=True,restricted_sftp=True,payload_bytes=131328,payload_sha256=H,privacy_scan=dict(board_files=3,store_files=2,log_files=2,matches=0,symlinks=0),home_transport_error='Connect',physical_hardware=False,capacity_claim=False,private_fixture_retained_for_lead=True)
+        off=dict(result='pass',count=1,checks=['unsupported_home_mail_catalog_rejects_before_terminal_store_or_network'],private_fixture_removed=True)
+        routes[route]=dict(ui=ui,combined=combined,unsupported=dict(default=copy.deepcopy(off),native_only=copy.deepcopy(off)))
+    return dict(schema=1,issue=214,result='pass-native-picker-home-mail',routes=routes,profile=copy.deepcopy(g.PROFILE),rust={k:dict(network_passed=143,failed=0,ignored=2,helpers_invoked=True) for k in routes},build=dict(configured_mib=2048,compiler_runtime_distinct=True,fresh_1g_build_claim=False),runtime=dict(configured_mib=1024,physmem_bytes=1054990336,ncpu=2),teardown={k:True for k in g.TEARDOWN},claims={k:False for k in g.NO_CLAIMS},execution_sources={'src.rs':H},frozen_sources={'audit.py':H},source_stages=[dict(label='executed candidate',files=[dict(name='source.rs',resolved_path='saved/source',sha256=H)])])
+
+class PickerMailEvidence(unittest.TestCase):
+    def validate(self,d):g.validate(d,lambda n,h:b'executed')
+    def reject(self,change):
+        d=fixture();change(d)
+        with self.assertRaises((AssertionError,KeyError)):self.validate(d)
+    def test_complete_routes_are_required(self):
+        self.validate(fixture())
+        for change in [lambda d:d['routes'].pop('netbsd'),lambda d:d['routes']['host']['ui']['checks'].pop(),lambda d:d['routes']['netbsd']['combined'].update(count=7),lambda d:d['routes']['host']['unsupported'].pop('native_only')]:self.reject(change)
+    def test_same_process_exact_mail_state_and_actual_io_failure(self):
+        for field in ['canonical_unchanged','history_unchanged','pending_ids_unchanged','archive_token_unchanged','nonempty_cursor','approved_member','restricted_sftp']:
+            self.reject(lambda d:d['routes']['host']['combined'].update({field:False}))
+        for field,value in [('same_picker_pid',False),('home_transport_error','Tls'),('payload_sha256','not a digest'),('payload_bytes',0)]:self.reject(lambda d:d['routes']['netbsd']['combined'].update({field:value}))
+    def test_privacy_scan_cannot_omit_a_source_or_claim_leaks_pass(self):
+        for field,value in [('board_files',0),('store_files',0),('log_files',0),('matches',1),('symlinks',1)]:self.reject(lambda d:d['routes']['host']['combined']['privacy_scan'].update({field:value}))
+    def test_private_feature_and_authority_contract(self):
+        for field,value in [('menu_key','M'),('local_catalog_only',False),('implicit_upgrade',True),('background',True),('remote_unlock',True),('new_network_format',True),('classic_fallback',False)]:self.reject(lambda d:d['profile'].update({field:value}))
+    def test_resource_and_teardown_claims_are_explicit(self):
+        self.reject(lambda d:d['runtime'].update(configured_mib=2048))
+        self.reject(lambda d:d['build'].update(fresh_1g_build_claim=True))
+        for k in g.TEARDOWN:self.reject(lambda d:d['teardown'].update({k:False}))
+        for k in g.NO_CLAIMS:self.reject(lambda d:d['claims'].update({k:True}))
+    def test_sources_must_hash_to_actual_executed_bytes(self):
+        with self.assertRaises(AssertionError):g.validate(fixture(),lambda n,h:b'changed')
+        self.reject(lambda d:d.update(execution_sources={}))
+        self.reject(lambda d:d.update(source_stages=[]))
+        self.reject(lambda d:d['source_stages'][0]['files'][0].update(resolved_path='../outside'))
+    def test_record_digest_is_checked_before_parsing(self):
+        raw=b'{"schema":1}'
+        with patch.object(g,'RECORD_SHA256',hashlib.sha256(raw).hexdigest()):
+            self.assertEqual(g.load_record(raw),{'schema':1})
+            with self.assertRaises(AssertionError):g.load_record(raw+b' ')
+
+    def test_ci_runs_supported_and_both_unsupported_graphs_with_existing_gates(self):
+        text=(g.ROOT/'.github/workflows/documentation.yml').read_text()
+        native,docs=text.split('  documentation:',1)
+        self.assertIn('python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --checkpoint-fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --mail-fixture "$CARGO_TARGET_DIR/release/examples/home_mail_fixture"',native)
+        self.assertEqual(native.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
+        self.assertEqual(docs.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
+        self.assertIn('python3 tools/check_picker_mail_evidence.py',docs)
+        self.assertIn('needs: [native_mail, provider]',docs)
+        self.assertEqual(text.count('timeout-minutes: 15'),3)

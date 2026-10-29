@@ -474,3 +474,12 @@ It preserves the native transfer-budget failure, bounded TLS frame correction,
 observer and fixture corrections, exact executed inputs and separate build/runtime
 envelopes. Provider deployment, real enrollment, own-home delegation and independent
 modern-client interoperability remain separate. Earlier records stay unchanged.
+
+[Durable provider and private operator evidence](durable-provider-operator/README.md)
+records explicit restart-safe policy and maintained foreground commands at frozen
+source `57020dcb`, with host and fresh NetBSD 11 ARM64 software checks. Each OS
+completed 26 classic/Unicode production-console controls; fresh outage checks
+preserve ordinary encrypted mail, BBS and restricted SFTP access. Build and
+1 GiB native runtime envelopes remain separate. Original failed source/log
+variants and three unavailable early executable copies are distinguished from
+retained final-qualified binaries. No deployment or capacity claim follows.

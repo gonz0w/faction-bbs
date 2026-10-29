@@ -1,11 +1,11 @@
-import hashlib,json,shutil,tempfile,unittest,re,subprocess
+import hashlib,itertools,json,shutil,tempfile,unittest,re,subprocess
 from pathlib import Path
 from check_omemo_dependencies import scan_package,check_vendor
 ROOT=Path(__file__).resolve().parents[1]
 class NativePolicy(unittest.TestCase):
  def test_native_ci_is_a_dependency_of_required_documentation_gate(self):
   text=(ROOT/'.github/workflows/documentation.yml').read_text()
-  self.assertIn('needs: [native_mail, provider]',text)
+  self.assertIn('needs: [native_mail, provider, provider_operator]',text)
   self.assertIn('cargo test -p faction-client -p faction-omemo --features faction-client/native-mail',text)
   self.assertIn('python3 tools/check_omemo_dependencies.py',text)
  def test_native_failure_cancel_or_skip_cannot_skip_a_required_gate(self):
@@ -14,17 +14,23 @@ class NativePolicy(unittest.TestCase):
   self.assertIn('if: ${{ always() }}',doc[:250])
   guard=re.search(r'(?ms)^      - name: Require optional native tests\n(.*?)(?=^      - name:)',doc)
   self.assertIsNotNone(guard)
-  self.assertIn('NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}',guard.group(1))
-  run=re.search(r'(?m)^        run: (.+)$',guard.group(1)).group(1)
-  if run=='|':
-   command='\n'.join(line[10:] for line in guard.group(1).splitlines() if line.startswith('          '))
-   command='\n'.join(line for line in command.splitlines() if not line.startswith(('NATIVE_MAIL_RESULT:', 'PROVIDER_RESULT:')))
-  else: command=run
-  for native in ['success','failure','cancelled','skipped','']:
-   for provider in ['success','failure','cancelled','skipped','']:
-    code=subprocess.run(['/bin/sh','-e','-c',command],env={'NATIVE_MAIL_RESULT':native,'PROVIDER_RESULT':provider},capture_output=True).returncode
-    self.assertEqual(code==0,native==provider=='success',(native,provider))
-  self.assertIn('PROVIDER_RESULT: ${{ needs.provider.result }}',guard.group(1))
+  results={'NATIVE_MAIL_RESULT':'native_mail','PROVIDER_RESULT':'provider',
+           'PROVIDER_OPERATOR_RESULT':'provider_operator'}
+  for variable,job in results.items():
+   self.assertIn(variable+': ${{ needs.'+job+'.result }}',guard.group(1))
+  # Read only the actual run block, never execute YAML env mapping text.
+  run=re.search(r'(?m)^        run: \|\n((?:          [^\n]*\n)+)',guard.group(1))
+  self.assertIsNotNone(run)
+  command='\n'.join(line[10:] for line in run.group(1).splitlines())
+  self.assertEqual(command.splitlines(),
+   ['test "$'+variable+'" = success' for variable in results])
+  # An absent variable and an explicitly empty result must both fail closed.
+  statuses=['success','failure','cancelled','skipped','',None]
+  for values in itertools.product(statuses,repeat=3):
+   with self.subTest(results=values):
+    env={variable:value for variable,value in zip(results,values) if value is not None}
+    code=subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode
+    self.assertEqual(code==0,all(value=='success' for value in values),values)
  def test_source_and_license_refuse_javascript_and_missing_terms(self):
   with tempfile.TemporaryDirectory(prefix='faction203-policy-') as tmp:
    path=Path(tmp);(path/'Cargo.toml').write_text('')
