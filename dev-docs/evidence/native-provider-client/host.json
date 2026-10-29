@@ -1,0 +1,418 @@
+{
+  "coalesced_provider_and_affected_client_checks": {
+    "generic-write-type-red": {
+      "exit": 101,
+      "log_sha256": "b5bf1cdb8bd972258daf25256e3ab36c8ce91252edb111e5f65e4fe5a9bfc8bc",
+      "seconds": 0.727
+    },
+    "healthy-contiguous-frame-red": {
+      "exit": 101,
+      "log_sha256": "c3a74e085709277faf387a0e696daa97e817ac94c86d707b07210033e31f2fed",
+      "seconds": 0.61
+    },
+    "native-client-private-composed-green": {
+      "exit": 0,
+      "log_sha256": "a4293242b2569f0a30ee766c88a22e275d2a436fc22b7ff6240710b8408247bb",
+      "seconds": 1.722
+    },
+    "native-client-real-tls-green": {
+      "exit": 0,
+      "log_sha256": "175d814e5498657ed36bbef9572fbcfc6ea16a2a3d7c7d361d573ac325b17614",
+      "seconds": 27.153
+    },
+    "provider-default-clippy": {
+      "exit": 0,
+      "log_sha256": "7e65d4e4e1a6b0266a1f8acc74f620b9bc31f76fe826b5e94dca5f43000e5e92",
+      "seconds": 0.593
+    },
+    "provider-default-green": {
+      "exit": 0,
+      "log_sha256": "df1caf9c5fd7e2b6ffc935053ea7bed23050aa57fdd2a753d884762005a2a592",
+      "seconds": 26.333
+    },
+    "provider-iq-clippy": {
+      "exit": 0,
+      "log_sha256": "77883fcbb00f4d28273802089e25a5ddde0be934b539006dfd3d83dbd763c41e",
+      "seconds": 0.748
+    },
+    "provider-iq-green": {
+      "exit": 0,
+      "log_sha256": "67e9ce9078bc20aacca3be61aeff774cc2f61ca07b0dc8da076e81ba8b53c33a",
+      "seconds": 37.736
+    },
+    "unchanged-two-write-characterization-green": {
+      "exit": 0,
+      "log_sha256": "2f6d87c3896b40e18ceee8ec8203272c1e4be25654d3fd725ad124ee49d968c0",
+      "seconds": 0.977
+    }
+  },
+  "earlier_host_matrix": {
+    "console_profile_tests": {
+      "default": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 46
+      },
+      "device_provider": {
+        "failed": 0,
+        "ignored": 3,
+        "passed": 83
+      },
+      "native": {
+        "failed": 0,
+        "ignored": 3,
+        "passed": 66
+      },
+      "network_mail": {
+        "failed": 0,
+        "ignored": 3,
+        "passed": 79
+      }
+    },
+    "counts_overlap": true,
+    "helper_ignores": "Existing subprocess-helper harness entries remain ignored directly; parent recovery controls exercise them.",
+    "integration": [
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "3ba800ff5f45267e2c09722732431843c10c49874171f4131c25594adb9abd44",
+        "seconds": 74.007,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "device-integration-targets",
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 1,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 4,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 1,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 4,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 4,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 2,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 9,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 7,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 1,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "status": "ok"
+          }
+        ]
+      },
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "4ee8185e172c171c8bf7dd44dcfabe43c56c42199d2ef8522798c4bfeb561ed4",
+        "seconds": 26.45,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "provider-default",
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 13,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 23,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "status": "ok"
+          }
+        ]
+      },
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "415e3c4ebb6aa0d063e90d5361b01fe7276ac514018bd5a2db3852fc00b63476",
+        "seconds": 37.366,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "provider-iq",
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 13,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 32,
+            "status": "ok"
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "status": "ok"
+          }
+        ]
+      },
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "24d2870d4a8e0f19a699f39f402e533b1a3eafd5a19f3481f146bb37c0c4d53b",
+        "seconds": 2.281,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "provider-default-clippy",
+        "test_summaries": []
+      },
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "9b0cb80964b51f035e566573aec9eb23b6c34c97475c5bbd910652fb28e4d158",
+        "seconds": 5.091,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "provider-iq-clippy",
+        "test_summaries": []
+      },
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "af389a27d71e56ad57e2f35c3207f238a0cc4671f74eff3adb86fcc303449e5a",
+        "seconds": 1.727,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "files",
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 1,
+            "passed": 7,
+            "status": "ok"
+          }
+        ]
+      },
+      {
+        "exit": 0,
+        "input_map_sha256": "c36e83034df7f5e99895a17f11c849ca7d4bf62a5e03a6bade60cc468b30e344",
+        "log_sha256": "1eb46cd9b53d1f48269006a2adfb1f6a14f35f3997ebea9df858587aeda0d897",
+        "seconds": 0.452,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "stage": "production-build",
+        "test_summaries": []
+      }
+    ],
+    "isolated_same_binary_socket_control": {
+      "count": 1,
+      "log_sha256": "c54177f0f6f4e93fd9b4e1fb5f0003b668ee88013a570bc4529b1452c5425f7f",
+      "same_binary_as_failed_macro": true,
+      "scope": "short owned TMPDIR plus approved owned socket execution",
+      "source_sha256": "4d2fd9cead109d80771fc2e4afb21fae68db7e5cecad186433e073e2a9fe2153",
+      "status": "pass"
+    },
+    "library_macro": {
+      "elapsed_seconds": 436.537,
+      "exit": 101,
+      "failed": 1,
+      "failure_class": "SUN_LEN socket-path setup failure, not a product assertion",
+      "ignored": 5,
+      "interpretation": "127 body controls are qualified only across the original 126 passing tests and the corrected isolated same-binary setup-control rerun; do not replay/claim the 126 as a second run.",
+      "passed": 126,
+      "status": "not green as a whole",
+      "test_body_seconds": 433.04
+    },
+    "snapshot": "original",
+    "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe"
+  },
+  "final_build": {
+    "compiler_jobs": 1,
+    "exit": 0,
+    "log_sha256": "f24d20b788ae04bda7712063ac537311baf6864f0bb0c354b05030ed945cddc8",
+    "seconds": 2.139382916968316,
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380"
+  },
+  "final_production": {
+    "control_count": 20,
+    "execution_record_sha256": "311b9c28efc80c04e45aa860936aa458d66d085cbd89991934c75ced31469271",
+    "harness_sha256": "c217800385faa9e08328ee454f1add4027a1a6de71aedbcdba32ab5f9a94e4c3",
+    "limits": {
+      "console_action_seconds": 60,
+      "console_calls_per_action": 65,
+      "sdk_chunks_per_call": 4,
+      "upload_call_seconds_including_mail_release": 10
+    },
+    "modes": [
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "classic",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132,
+        "transfer_observations": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 2.720884
+          },
+          "upload": {
+            "calls": 64,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 3.498512
+          }
+        }
+      },
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "unicode",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132,
+        "transfer_observations": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 2.725521
+          },
+          "upload": {
+            "calls": 64,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 3.495782
+          }
+        }
+      }
+    ],
+    "provider_count_semantics": "Successful serve operations and sessions; not all attempted operations. Counts are per mode.",
+    "result": "pass",
+    "result_record_sha256": "582cf711d679ff8f53339c80c0db76dd0b266f3226aeae7bd906c167db641f9f",
+    "seconds": 65.85221904201899,
+    "snapshot": "coalesced",
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "47e4fdca35f6dad00a1215409cf9ab9a8f6fdc2eeca6af2c357b2a25776a35df"
+  },
+  "platform": "macOS arm64",
+  "remaining_host_precondition_gap": "The natural pending-TCP backlog fixture is unavailable on macOS after ECONNRESET; actual NetBSD coverage is recorded separately. Original eight-legitimate-RPC write saturation failed to establish backpressure; the passing composed write control uses explicit synthetic raw socket corruption.",
+  "schema": 1,
+  "source_gate": {
+    "checks": [
+      {
+        "exit": 0,
+        "id": "provider",
+        "log_sha256": "59a8e386f9680085d342b3bc7f3243d334634b829b8696fc2185495d54a5ca05",
+        "seconds": 3.7835337910219096
+      },
+      {
+        "exit": 0,
+        "id": "network-mail",
+        "log_sha256": "74fb42a22c155e451d4402b68c13e624cc9257d1155c67308e3dfb820dd9f973",
+        "seconds": 1.3287272079614922
+      },
+      {
+        "exit": 0,
+        "id": "authority",
+        "log_sha256": "455db9893d32c8fc273ae8b62497724dd248427d0a4a8fc9d8c481ec1b415b66",
+        "seconds": 0.6722242080140859
+      }
+    ],
+    "map_sha256": "22794ae3d4332ca992edec3e2b6bdd3f7a1e74196bb2a63f0a4aabd8ce36ea90",
+    "new_registry_package_versions": 0,
+    "ordinary_graphs_excluding_provider": 9,
+    "qualification": "Complete locked selected source/archive/license/no-JS profiles across Linux, NetBSD and macOS before compilation.",
+    "selected_input_count": 448,
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380"
+  }
+}

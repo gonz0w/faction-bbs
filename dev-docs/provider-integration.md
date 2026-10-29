@@ -62,8 +62,11 @@ Cancellation closes and joins the bounded worker; it receives no vault or OMEMO
 keys. A complete authenticated store reply permits the existing separate encrypted
 XMPP mail release. Failure or a lost reply permits no fallback or release; exact
 retry resolves uncertain durable progress. Ordinary mail and board access remain
-independent. Final host and fresh native qualification for this integration is
-separate from the historical standalone IQ evidence below.
+independent. The [native-client integration evidence](evidence/native-provider-client/README.md)
+records host and fresh NetBSD maximum-size production-console transfers and
+cancellation/recovery controls, separately from the historical standalone IQ
+evidence below. Length and payload now share one bounded TLS frame write; wire
+bytes and existing limits are unchanged.
 
 
 ## In-process IQ adapter

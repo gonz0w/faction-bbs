@@ -51,7 +51,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [fresh host/NetBSD software evidence](dev-docs/evidence/provider-integration/README.md).
   An explicit `device-provider` client feature can select a local, same-home
   device provider for attachment transfers; ordinary encrypted mail uses its
-  separate XMPP route. See the [attachment guide](docs/private-attachments.md).
+  separate XMPP route. The [host and NetBSD console proof](dev-docs/evidence/native-provider-client/README.md)
+  covers 1 MiB transfers in classic and Unicode modes, including outage and retry.
+  See the [attachment guide](docs/private-attachments.md).
   This does not enroll devices or deploy a provider; classic defaults remain.
 
 ## What you can do

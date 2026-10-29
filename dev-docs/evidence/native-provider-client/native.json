@@ -1,0 +1,598 @@
+{
+  "compatibility": {
+    "bbs_file_server_source_unchanged_by_provider_only_delta": true,
+    "codec": {
+      "passed": 25
+    },
+    "earlier_library": {
+      "existing_ignored_helpers": 5,
+      "original_fixture_setup_failures": 3,
+      "original_macro_failed": true,
+      "passed": 124,
+      "same_binary_corrected_fixture_replays_passed": 3
+    },
+    "host_outage": {
+      "approved_member": true,
+      "archive_token_unchanged": true,
+      "canonical_unchanged": true,
+      "capacity_claim": false,
+      "checks": [
+        "independent_board_registration_pending_and_explicit_approval",
+        "real_encrypted_nonempty_cursor_history_and_pending_seed",
+        "actual_closed_home_tcp_connection_failure",
+        "same_picker_send_and_archive_outage_preserve_exact_state",
+        "locked_picker_releases_store_and_requires_hidden_unlock",
+        "same_picker_approved_board_restricted_sftp_upload_review_download",
+        "same_picker_board_return_and_terminal_restoration",
+        "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+      ],
+      "count": 8,
+      "history_unchanged": true,
+      "home_transport_error": "Connect",
+      "nonempty_cursor": true,
+      "payload_bytes": 131328,
+      "pending_ids_unchanged": true,
+      "physical_hardware": false,
+      "platform": "Darwin",
+      "privacy_scan": {
+        "board_files": 4,
+        "log_files": 2,
+        "matches": 0,
+        "store_files": 3,
+        "symlinks": 0
+      },
+      "restricted_sftp": true,
+      "result": "pass",
+      "same_picker_pid": true,
+      "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+    },
+    "legacy_integration_passes": 22,
+    "native_outage": {
+      "approved_member": true,
+      "archive_token_unchanged": true,
+      "canonical_unchanged": true,
+      "capacity_claim": false,
+      "checks": [
+        "independent_board_registration_pending_and_explicit_approval",
+        "real_encrypted_nonempty_cursor_history_and_pending_seed",
+        "actual_closed_home_tcp_connection_failure",
+        "same_picker_send_and_archive_outage_preserve_exact_state",
+        "locked_picker_releases_store_and_requires_hidden_unlock",
+        "same_picker_approved_board_restricted_sftp_upload_review_download",
+        "same_picker_board_return_and_terminal_restoration",
+        "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+      ],
+      "count": 8,
+      "history_unchanged": true,
+      "home_transport_error": "Connect",
+      "nonempty_cursor": true,
+      "payload_bytes": 131328,
+      "pending_ids_unchanged": true,
+      "physical_hardware": false,
+      "platform": "NetBSD",
+      "privacy_scan": {
+        "board_files": 4,
+        "log_files": 2,
+        "matches": 0,
+        "store_files": 4,
+        "symlinks": 0
+      },
+      "restricted_sftp": true,
+      "result": "pass",
+      "same_picker_pid": true,
+      "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+    },
+    "old_passes_are_not_claimed_as_fresh_current_binary_replays": true,
+    "ordinary_cli": {
+      "default": {
+        "ignored": 0,
+        "passed": 46
+      },
+      "device_provider": {
+        "ignored": 3,
+        "passed": 83
+      },
+      "native_mail": {
+        "ignored": 3,
+        "passed": 66
+      },
+      "network_mail": {
+        "ignored": 3,
+        "passed": 79
+      }
+    },
+    "store": {
+      "ignored_existing_helper": 1,
+      "passed": 18
+    },
+    "unaffected_initial_source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe"
+  },
+  "counts_overlap": true,
+  "final_production": {
+    "caps_unchanged": true,
+    "control_count": 20,
+    "modes": [
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "classic",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132,
+        "transfer_observations": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 15.277839
+          },
+          "upload": {
+            "calls": 64,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 15.476199
+          }
+        }
+      },
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "unicode",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132,
+        "transfer_observations": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 15.190896
+          },
+          "upload": {
+            "calls": 64,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 15.279591
+          }
+        }
+      }
+    ],
+    "provider_count_semantics": "Successful serve operations and sessions per mode; not all attempts.",
+    "result": "pass"
+  },
+  "fixture_preconditions": {
+    "openssl": {
+      "configuration_sha256": "a1c45aa35abd0050b556a5b709603b4b9278886b8c8254ac7ef5a5e9d8eb638d",
+      "mode": "0600",
+      "scope": "Private test-child OpenSSL configuration; no global change."
+    },
+    "production_console_fixture_environment_injected": false,
+    "python_alias": {
+      "directory_mode": "0700",
+      "mode": "0700",
+      "scope": "Only test-child PATH prefix; no system alias or package installation",
+      "sha256": "d2a8150c06c697cbbab23d1aadfd82d0f4dae772c69fa9a15fe419868228a3af"
+    },
+    "scope": "Fixture-only test child preconditions, not product or global configuration adoption",
+    "temporary_directory": {
+      "actual_bind_passed": true,
+      "actual_legacy_unix_socket_path_bytes": 94,
+      "path_bytes": 42
+    }
+  },
+  "no_capacity_hardware_deployment_independent_interoperability_claim": true,
+  "privacy_scan": {
+    "all_runtime_values_covered": false,
+    "available_actual_private_values": 551,
+    "files_scanned": 7,
+    "known_committed_public_fixture_constants": 17,
+    "limitation": "Successful journey and in-memory-only secrets already deleted or not retained are unavailable; corpus covers only existing retained artifact values.",
+    "matches": 0,
+    "public_source_objects_must_be_independently_matched_to_committed_bytes": true,
+    "raw_captures_profiles_keys_endpoints_not_exported": true
+  },
+  "runtime_preflight": {
+    "cache_complete_archives_and_source_trees_verified": 167,
+    "cpus": 2,
+    "libraries_verified": 8,
+    "loader_verified": true,
+    "new_stable_binaries_verified": 12,
+    "physical_memory_bytes": 1054990336,
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+    "source_inputs_verified": 448
+  },
+  "schema": 1,
+  "selected_input_count": 448,
+  "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+  "source_snapshot": "coalesced",
+  "stages": [
+    {
+      "elapsed_seconds": 0.24085024999999405,
+      "log_sha256": "9f33a5ac26a5f476e781bf7b4fc9bc7843ae4a587aec39d0d97ab452c59ad57c",
+      "returncode": 0,
+      "stage": "provider-default-unit"
+    },
+    {
+      "elapsed_seconds": 27.572424000000012,
+      "log_sha256": "1f816c7ba65f21ed7409486dfe4a5b29f50dd63bd253f209b154206c0fe4d17b",
+      "returncode": 0,
+      "stage": "provider-default-embedding"
+    },
+    {
+      "elapsed_seconds": 0.6102862909999942,
+      "log_sha256": "3936a1970613a69d910a21925d42b0e7a05379c09131771bc3a4f2196d8a7a81",
+      "returncode": 0,
+      "stage": "provider-default-compile-fail"
+    },
+    {
+      "elapsed_seconds": 0.2389852919999953,
+      "log_sha256": "9ad1a5f2c35b007e72c8500ac7fd43f7cbca757b041ba25cf7d0479458d71437",
+      "returncode": 0,
+      "stage": "provider-iq-unit"
+    },
+    {
+      "elapsed_seconds": 38.695373415999995,
+      "log_sha256": "1b31504e24a49cd4b91841c28378387b42a3acd62ea9c2e7d484adf1f6f66bee",
+      "returncode": 0,
+      "stage": "provider-iq-embedding"
+    },
+    {
+      "elapsed_seconds": 0.5221977089999825,
+      "log_sha256": "fd6c0f76ca848863de3d7291c7e032e85b047b09b874b177ddcfb361cc449a65",
+      "returncode": 0,
+      "stage": "provider-iq-compile-fail"
+    },
+    {
+      "elapsed_seconds": 0.46136125000001016,
+      "log_sha256": "b0f0acedbe76b9a22eb4d6caec4902438776ebf9e2cf3253da2fdb8dd7c73aec",
+      "returncode": 0,
+      "stage": "device-private-actual_tls_write_backpressure_cancels_and_joins_with_unconsumed_replies"
+    },
+    {
+      "elapsed_seconds": 0.05924354199999016,
+      "log_sha256": "c4dbfd716b37a5e87c873e02b5d3c1179e9a835b41e565b957763bde1d9a2cc7",
+      "returncode": 0,
+      "stage": "device-private-pending_connector_is_polled_once_and_dropped_without_worker_or_mail_release"
+    },
+    {
+      "elapsed_seconds": 0.11822075000000609,
+      "log_sha256": "748da2e98e54fdd73952210a4eb6e2006fc6487afdd1203536d92e4549f66891",
+      "returncode": 0,
+      "stage": "device-private-worker_start_observer_has_a_real_tcp_positive_control"
+    },
+    {
+      "elapsed_seconds": 4.359826166999994,
+      "log_sha256": "935dcb535e5af34a3cdf83e49aa2736f2d2bbc4bdffbf7273851e41270ab6fc9",
+      "returncode": 0,
+      "stage": "device-external-all10"
+    },
+    {
+      "elapsed_seconds": 0.9899110419999886,
+      "log_sha256": "eacac5b06c340315803c952ed3d8638bfdcea8e932e7c5e29ad4766cffa33406",
+      "returncode": 0,
+      "stage": "legacy-transfer4"
+    },
+    {
+      "elapsed_seconds": 0.0038465829999836387,
+      "log_sha256": "70428a9dc7902cd1ec3c480ca233354512794550cdd97e33ebc27724fd725e0b",
+      "returncode": 0,
+      "stage": "legacy-wire2"
+    },
+    {
+      "elapsed_seconds": 78.714166667,
+      "log_sha256": "6c5d915b1dbc887babdf81f28da3b2161eb1cf4eeafc43a3d7584a2a248c804e",
+      "returncode": 0,
+      "stage": "frame-production20"
+    }
+  ],
+  "test_summaries": [
+    {
+      "stage": "provider-default-unit",
+      "test_names": [
+        "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+        "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+        "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+        "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+        "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+        "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+        "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+        "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+        "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+        "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+        "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+        "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+        "tls::frame_tests::empty_and_oversize_payloads_fail_before_any_write_or_flush",
+        "tls::frame_tests::exact_prefix_payload_and_final_flush_preserve_existing_wire_bytes",
+        "tls::frame_tests::flush_error_propagates_after_complete_wire_bytes",
+        "tls::frame_tests::healthy_writer_receives_one_contiguous_existing_frame",
+        "tls::frame_tests::partial_and_interrupted_writes_complete_the_exact_existing_frame",
+        "tls::frame_tests::write_errors_and_write_zero_propagate_without_flush",
+        "tls::socket_bio_tests::socket_bio_pending_write_observes_retry_and_cancels_before_deadline"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 19
+        }
+      ]
+    },
+    {
+      "stage": "provider-default-embedding",
+      "test_names": [
+        "actual_binary_actor_free_wrong_route_closes_without_mutation",
+        "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+        "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+        "bounded_preloaded_pem_helpers_reject_invalid_or_mismatched_credentials",
+        "committed_actor_free_routes_reject_confusion_in_dispatch",
+        "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+        "configured_binary_service_is_a_home_not_an_account_selector",
+        "configured_service_rechecks_current_full_identity_peer_policy_and_live_lifecycle",
+        "connected_client_admission_preserves_actual_ca_name_pin_and_binding_policy",
+        "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+        "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+        "forged_route_account_device_and_full_identity_never_mutate_store",
+        "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+        "local_binary_service_denies_foreign_bindings_with_existing_routed_read_controls",
+        "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+        "opaque_connected_admission_never_restarts_the_original_five_seconds",
+        "public_embedding_contract_keeps_qualified_bounds",
+        "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+        "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+        "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+        "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+        "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+        "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 23
+        }
+      ]
+    },
+    {
+      "stage": "provider-default-compile-fail",
+      "test_names": [],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ]
+    },
+    {
+      "stage": "provider-iq-unit",
+      "test_names": [
+        "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+        "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+        "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+        "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+        "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+        "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+        "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+        "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+        "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+        "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+        "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+        "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+        "tls::frame_tests::empty_and_oversize_payloads_fail_before_any_write_or_flush",
+        "tls::frame_tests::exact_prefix_payload_and_final_flush_preserve_existing_wire_bytes",
+        "tls::frame_tests::flush_error_propagates_after_complete_wire_bytes",
+        "tls::frame_tests::healthy_writer_receives_one_contiguous_existing_frame",
+        "tls::frame_tests::partial_and_interrupted_writes_complete_the_exact_existing_frame",
+        "tls::frame_tests::write_errors_and_write_zero_propagate_without_flush",
+        "tls::socket_bio_tests::socket_bio_pending_write_observes_retry_and_cancels_before_deadline"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 19
+        }
+      ]
+    },
+    {
+      "stage": "provider-iq-embedding",
+      "test_names": [
+        "actual_binary_actor_free_wrong_route_closes_without_mutation",
+        "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+        "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+        "bounded_preloaded_pem_helpers_reject_invalid_or_mismatched_credentials",
+        "committed_actor_free_routes_reject_confusion_in_dispatch",
+        "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+        "configured_binary_service_is_a_home_not_an_account_selector",
+        "configured_service_rechecks_current_full_identity_peer_policy_and_live_lifecycle",
+        "connected_client_admission_preserves_actual_ca_name_pin_and_binding_policy",
+        "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+        "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+        "forged_route_account_device_and_full_identity_never_mutate_store",
+        "iq_contract::actor_free_iq_routes_are_assertions_and_denials_are_uniform",
+        "iq_contract::committed_actor_free_routes_reject_confusion_in_maintained_iqs",
+        "iq_contract::iq_calls_share_the_original_absolute_cycle_deadline",
+        "iq_contract::local_service_foreign_routes_and_wrong_bound_principals_fail_closed",
+        "iq_contract::lost_typed_reply_reopen_exact_retry_and_explicit_delete_preserve_store_semantics",
+        "iq_contract::maintained_iqs_compose_with_real_tls_principals_and_exact_retries",
+        "iq_contract::malformed_oversized_and_denied_iqs_share_budget_with_binary_before_decode",
+        "iq_contract::public_policy_changes_and_cancel_deny_next_iq_without_mutation",
+        "iq_contract::store_quota_keeps_uniform_existing_failure_over_iq",
+        "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+        "local_binary_service_denies_foreign_bindings_with_existing_routed_read_controls",
+        "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+        "opaque_connected_admission_never_restarts_the_original_five_seconds",
+        "public_embedding_contract_keeps_qualified_bounds",
+        "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+        "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+        "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+        "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+        "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+        "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 32
+        }
+      ]
+    },
+    {
+      "stage": "provider-iq-compile-fail",
+      "test_names": [],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ]
+    },
+    {
+      "composed_write": {
+        "batch_bytes": 1472,
+        "completed": 1,
+        "cycle_ms": 418,
+        "drain_ms": 34,
+        "entered": 2,
+        "measured_ms": 207,
+        "peer_alive": true,
+        "queued": 8,
+        "raw_fault_bytes": 28593,
+        "result": "Cancelled",
+        "socket_block": "WouldBlock"
+      },
+      "stage": "device-private-actual_tls_write_backpressure_cancels_and_joins_with_unconsumed_replies",
+      "test_names": [
+        "mail_device_provider::tests::actual_tls_write_backpressure_cancels_and_joins_with_unconsumed_replies"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 131,
+          "ignored": 0,
+          "passed": 1
+        }
+      ]
+    },
+    {
+      "stage": "device-private-pending_connector_is_polled_once_and_dropped_without_worker_or_mail_release",
+      "test_names": [
+        "mail_device_provider::tests::pending_connector_is_polled_once_and_dropped_without_worker_or_mail_release"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 131,
+          "ignored": 0,
+          "passed": 1
+        }
+      ]
+    },
+    {
+      "stage": "device-private-worker_start_observer_has_a_real_tcp_positive_control",
+      "test_names": [
+        "mail_device_provider::tests::worker_start_observer_has_a_real_tcp_positive_control"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 131,
+          "ignored": 0,
+          "passed": 1
+        }
+      ]
+    },
+    {
+      "stage": "device-external-all10",
+      "test_names": [
+        "authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outage",
+        "cancellation_during_actual_pending_loopback_tcp_drops_connect_without_worker_or_retry",
+        "cancellation_during_stalled_handshake_runs_on_current_thread_and_joins_socket_worker",
+        "cancellation_during_tls_reply_wait_joins_before_return_without_release",
+        "current_vault_full_identity_is_checked_before_connection_or_spool_progress",
+        "explicit_device_configuration_refuses_remote_or_incoherent_authority_assertions",
+        "foreign_sender_home_fetch_is_refused_before_connect_or_local_spool_mutation",
+        "inherited_key_logging_is_refused_without_environment_mutation_or_connection",
+        "keylog_child",
+        "wrong_server_pin_never_reaches_storage_or_plain_attachment_fallback"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 10
+        }
+      ]
+    },
+    {
+      "stage": "legacy-transfer4",
+      "test_names": [
+        "a_failed_queue_retains_only_bounded_ciphertext_orphans_and_preserves_existing_pending_mail",
+        "explicit_invited_domains_and_invalid_local_selection_are_refused",
+        "fetched_ciphertext_requires_exact_history_and_verification_before_deliberate_save",
+        "preparation_spools_before_queue_and_reopens_exact_intent_without_reencrypting"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 4
+        }
+      ]
+    },
+    {
+      "stage": "legacy-wire2",
+      "test_names": [
+        "denied_and_nonexistent_objects_have_one_identical_remote_error",
+        "strict_iq_wrapper_preserves_binary_contract_and_exact_addresses"
+      ],
+      "totals": [
+        {
+          "failed": 0,
+          "filtered": 0,
+          "ignored": 0,
+          "passed": 2
+        }
+      ]
+    },
+    {
+      "stage": "frame-production20",
+      "test_names": [],
+      "totals": []
+    }
+  ]
+}

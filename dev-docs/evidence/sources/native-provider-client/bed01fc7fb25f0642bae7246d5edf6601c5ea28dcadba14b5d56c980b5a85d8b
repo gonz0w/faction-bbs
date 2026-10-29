@@ -1,0 +1,63 @@
+//! Binary-local private provider profile; no remote entry or endpoint discovery.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{fs, os::unix::fs::{DirBuilderExt, PermissionsExt, symlink}, path::PathBuf};
+    struct Owned(PathBuf);
+    impl Owned {
+        fn new() -> Self {
+            let mut id = [0; 16]; getrandom::fill(&mut id).unwrap();
+            let root = std::env::temp_dir().canonicalize().unwrap().join(format!("faction280-profile-OWNED-{}", faction_client::mail_data::hex(&id)));
+            fs::DirBuilder::new().mode(0o700).create(&root).unwrap();
+            fs::write(root.join("OWNED"), b"owned profile tests").unwrap();
+            Self(root)
+        }
+        fn file(&self) -> PathBuf {
+            let path=self.0.join("credential");fs::write(&path,b"bounded secret").unwrap();
+            fs::set_permissions(&path,fs::Permissions::from_mode(0o600)).unwrap();path
+        }
+    }
+    impl Drop for Owned { fn drop(&mut self) { assert_eq!(fs::read(self.0.join("OWNED")).unwrap(),b"owned profile tests");fs::remove_dir_all(&self.0).unwrap(); } }
+    #[test]
+    fn private_reader_bounds_ownership_modes_links_and_root() {
+        let f=Owned::new();let path=f.file();
+        assert_eq!(private_file(&path,&f.0,32).unwrap().as_slice(),b"bounded secret");
+        assert!(private_file(&path,&f.0,3).is_err());
+        fs::set_permissions(&path,fs::Permissions::from_mode(0o644)).unwrap();
+        assert!(private_file(&path,&f.0,32).is_err());
+        fs::set_permissions(&path,fs::Permissions::from_mode(0o600)).unwrap();
+        let link=f.0.join("link");symlink(&path,&link).unwrap();
+        assert!(private_file(&link,&f.0,32).is_err());
+        let hard=f.0.join("hard");fs::hard_link(&path,&hard).unwrap();
+        assert!(private_file(&path,&f.0,32).is_err());fs::remove_file(hard).unwrap();
+        assert!(private_file(&f.0,&f.0,32).is_err());
+        assert!(private_file(&path,&f.0.join("unrelated"),32).is_err());
+        fs::write(&path,b"").unwrap();assert!(private_file(&path,&f.0,32).is_err());
+    }
+    #[test]
+    fn decoded_profile_binds_current_vault_and_private_credentials_without_spool() {
+        const TEST: &str = "device_provider_profile::tests::decoded_profile_binds_current_vault_and_private_credentials_without_spool";
+        if std::env::var("FACTION280_PROFILE_CHILD").ok().as_deref() != Some(TEST) {
+            let result=std::process::Command::new(std::env::current_exe().unwrap()).args(["--exact",TEST,"--nocapture"]).env("FACTION280_PROFILE_CHILD",TEST).output().unwrap();
+            assert!(result.status.success(),"{} {}",String::from_utf8_lossy(&result.stdout),String::from_utf8_lossy(&result.stderr));return;
+        }
+        let f=Owned::new();
+        let openssl=if cfg!(target_os="macos") { "/opt/homebrew/opt/openssl@3/bin/openssl" } else { "openssl" };
+        let result=std::process::Command::new(openssl).args(["req","-x509","-newkey","ec","-pkeyopt","ec_paramgen_curve:P-256","-nodes","-days","2","-subj","/CN=home.test","-keyout"]).arg(f.0.join("key.pem")).arg("-out").arg(f.0.join("cert.pem")).output().unwrap();assert!(result.status.success());
+        for name in ["key.pem","cert.pem"] { fs::set_permissions(f.0.join(name),fs::Permissions::from_mode(0o600)).unwrap(); }
+        let vault=faction_client::mail_checkpoint::CheckpointVault::create(faction_client::mail_vault::Store::at(&f.0.join("vault"),true).unwrap(),faction_client::mail_data::Data::new("alice@home.test".into()).unwrap(),b"synthetic profile test passphrase",101,1792886400).unwrap().0;
+        let identity=faction_client::mail_data::hex(vault.inspection().unwrap().identity);
+        let text=format!("version=1\nhome=\"home.test\"\nendpoint=\"127.0.0.1:9\"\nname=\"home.test\"\npin=\"{}\"\naccount=\"alice@home.test\"\ndevice=101\nidentity=\"{}\"\nca=\"{}\"\ncertificate=\"{}\"\nkey=\"{}\"\n", "01".repeat(32),identity,f.0.join("cert.pem").display(),f.0.join("cert.pem").display(),f.0.join("key.pem").display());
+        let path=f.0.join("profile.toml");fs::write(&path,&text).unwrap();fs::set_permissions(&path,fs::Permissions::from_mode(0o600)).unwrap();
+        let checkpoint=fs::read(f.0.join("vault/mail.fkv")).unwrap();
+        assert!(load(&path,&vault).is_ok());
+        for changed in [text.replace("alice@home.test","other@home.test"),text.replace("device=101","device=202"),text.replace(&identity,&"02".repeat(32)),text.replace("127.0.0.1:9","192.0.2.1:9"),text.replace("version=1","version=2"),format!("{text}password=\"forbidden\"\n")] {
+            fs::write(&path,changed).unwrap();assert!(load(&path,&vault).is_err());
+        }
+        fs::write(&path,&text).unwrap();
+        fs::set_permissions(f.0.join("key.pem"),fs::Permissions::from_mode(0o644)).unwrap();assert!(load(&path,&vault).is_err());
+        fs::set_permissions(f.0.join("key.pem"),fs::Permissions::from_mode(0o600)).unwrap();
+        let link=f.0.join("key-link.pem");symlink(f.0.join("key.pem"),&link).unwrap();fs::write(&path,text.replace("key.pem","key-link.pem")).unwrap();assert!(load(&path,&vault).is_err());
+        assert_eq!(fs::read(f.0.join("vault/mail.fkv")).unwrap(),checkpoint);assert!(!f.0.join("vault/attachments").exists());
+    }
+}

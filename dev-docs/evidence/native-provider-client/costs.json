@@ -1,0 +1,312 @@
+{
+  "host": {
+    "coalesced_check_seconds": {
+      "generic-write-type-red": 0.727,
+      "healthy-contiguous-frame-red": 0.61,
+      "native-client-private-composed-green": 1.722,
+      "native-client-real-tls-green": 27.153,
+      "provider-default-clippy": 0.593,
+      "provider-default-green": 26.333,
+      "provider-iq-clippy": 0.748,
+      "provider-iq-green": 37.736,
+      "unchanged-two-write-characterization-green": 0.977
+    },
+    "earlier_stage_seconds": {
+      "all_targets_initial": {
+        "qualification_status": "failed macro/setup; isolated same-binary control separately passed",
+        "test_body": 433.04,
+        "wall": 436.537
+      },
+      "console_clippy_and_format": {
+        "console": 2.6081,
+        "default": 1.9123,
+        "format": 0.5302,
+        "network_mail": 2.7561,
+        "selected_device_provider": 1.5242
+      },
+      "console_profile_tests": {
+        "default": 4.1585,
+        "device_provider": 10.2064,
+        "native": 4.0502,
+        "network_mail": 10.6054
+      },
+      "default_clippy": 2.281,
+      "files_tests": 1.727,
+      "full_production_host_proof": 63.99,
+      "integration_targets": 74.007,
+      "iq_clippy": 5.091,
+      "provider_default_profile": 26.45,
+      "provider_iq_profile": 37.366,
+      "socket_setup_control_same_binary": 0.00887,
+      "source_gate": [
+        3.437,
+        1.271,
+        0.68
+      ],
+      "test_only_clock_correction": 5.861
+    },
+    "final_build_compiler_jobs": 1,
+    "final_incremental_build_seconds": 2.139382916968316,
+    "final_production_seconds": 65.85221904201899,
+    "memory_peak": "not measured"
+  },
+  "interpretation": "Elapsed build/test/runtime observations are separate. Incremental build times are not clean-build costs, peak memory measurements, supported capacity or an efficiency benchmark. Feature-profile test counts overlap.",
+  "native": {
+    "clock_test_compile": {
+      "cpus": 2,
+      "elapsed_seconds": 7.9249607089998335,
+      "phase": "Separate acknowledged clock-test-only compilation at 1GiB",
+      "physical_memory_bytes": 1054990336,
+      "returncode": 0
+    },
+    "clock_test_runtime": {
+      "binary_sha256_before_after_exact": true,
+      "elapsed_seconds": 7.299860541000044,
+      "log_sha256": "5dbe61856e1c5c2c86354bbdc95dd9f79124853e2d0604231d5ec7d0f7d18673",
+      "returncode": 0,
+      "source_commit": "d69b6b5129f26607c3ea0dbba825d159741caf38"
+    },
+    "compatibility_compile": {
+      "cpus": 2,
+      "elapsed_seconds": 7.853885999999875,
+      "phase": "Distinct approved compatibility COMPILATION at current 1GiB, not runtime cost",
+      "physical_memory_bytes": 1054990336,
+      "returncode": 0
+    },
+    "compatibility_runtime": {
+      "binary_sha256_before_after_exact": true,
+      "elapsed_seconds": 17.68222962499999,
+      "log_sha256": "c64969ebd86d2617aaa2b0e470e569fbabbc889ed2de94d5ed27b2f5695b24bf",
+      "returncode": 0
+    },
+    "compile_fail_doc_stages_are_compile_checks_at_runtime_envelope": true,
+    "current_warm_build": {
+      "cpus": 2,
+      "elapsed_seconds": 41.53938462600024,
+      "jobs": 2,
+      "physical_memory_bytes": 2128732160,
+      "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+      "stages": [
+        {
+          "elapsed_seconds": 2.673931166999978,
+          "jobs": 2,
+          "log_sha256": "e86d246c7417417b434877abe98a64d8a597dfd78cb5145812aa9f89005e9d30",
+          "returncode": 0,
+          "stage": "guard-provider"
+        },
+        {
+          "elapsed_seconds": 1.1861887920000527,
+          "jobs": 2,
+          "log_sha256": "022df9891752670bf26c67517fc1d61235d5c019b498fedeed2e126bbbbd7e70",
+          "returncode": 0,
+          "stage": "guard-network"
+        },
+        {
+          "elapsed_seconds": 0.49427875000003496,
+          "jobs": 2,
+          "log_sha256": "8fe457623a11a5b02573d0d644247d1b966f607afdc16fd75cd2292623087e70",
+          "returncode": 0,
+          "stage": "guard-provider-auth"
+        },
+        {
+          "elapsed_seconds": 3.1964828330000046,
+          "jobs": 2,
+          "log_sha256": "7f45fcaba75d848d265cb7114776401e2e1e933bec613b5a0f9bedece2576392",
+          "returncode": 0,
+          "stage": "provider-default-build"
+        },
+        {
+          "elapsed_seconds": 0.43190195800002584,
+          "jobs": 2,
+          "log_sha256": "6276b6d41d9b9ae6526e5b5626058685ff909873499bd7918a9a0bda10eb6874",
+          "returncode": 0,
+          "stage": "provider-default-clippy"
+        },
+        {
+          "elapsed_seconds": 3.862971000000016,
+          "jobs": 2,
+          "log_sha256": "1954e2e9646de0682477fcc294936360cd774f721d0fa3d96ad85d24db09321a",
+          "returncode": 0,
+          "stage": "provider-iq-build"
+        },
+        {
+          "elapsed_seconds": 0.5123537499999884,
+          "jobs": 2,
+          "log_sha256": "6b7b861e51b4f8f13163be86d4afe936ed17a148f180f90351cf4e0aea17970d",
+          "returncode": 0,
+          "stage": "provider-iq-clippy"
+        },
+        {
+          "elapsed_seconds": 21.754578459000072,
+          "jobs": 2,
+          "log_sha256": "9916a85b9c09a0efe2b7c61ab7523d58f1aeedffe8e0c2543f9eae1d55c47d83",
+          "returncode": 0,
+          "stage": "device-changed-path-build"
+        },
+        {
+          "elapsed_seconds": 2.7187134170000036,
+          "jobs": 2,
+          "log_sha256": "06a2392eeb416244e645e10368e267309a70eb8b6d2a3bc2eaa54b00ab9440e1",
+          "returncode": 0,
+          "stage": "device-clippy"
+        },
+        {
+          "elapsed_seconds": 4.707984500000066,
+          "jobs": 2,
+          "log_sha256": "75c85a3e7e32a746a005c9741f4c221fdb1cb5ef27b95dbf45513787fc5eb876",
+          "returncode": 0,
+          "stage": "production-binaries"
+        }
+      ]
+    },
+    "initial_build": {
+      "c_helpers": [
+        {
+          "elapsed_seconds": 0.12613000000010288,
+          "inputs": [
+            "native/faction-tty/main.c",
+            "crates/faction-unix/src/terminal_fd.c",
+            "crates/faction-unix/src/process_security.c"
+          ],
+          "jobs": 1,
+          "log_sha256": "a6d239d358b3de0347ee309b66cbca04d5e712d1fc74b8f8a161b5b56f1ec4d7",
+          "name": "faction-tty",
+          "returncode": 0
+        },
+        {
+          "elapsed_seconds": 0.03100241700008155,
+          "inputs": [
+            "native/faction-daemon/main.c"
+          ],
+          "jobs": 1,
+          "log_sha256": "67585fa66daa6bea7dace7e5e96a2615d8cd05c914c03d09d002057d95ae243b",
+          "name": "faction-daemon",
+          "returncode": 0
+        }
+      ],
+      "cpus": 2,
+      "elapsed_seconds": 532.1275548739998,
+      "jobs": 1,
+      "physical_memory_bytes": 2128732160,
+      "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+      "stages": [
+        {
+          "elapsed_seconds": 2.161585957999989,
+          "jobs": 1,
+          "log_sha256": "855907b9f8fdec0246bc4ab5c08476c1ed56d6abd43c2d604db56262748edb45",
+          "returncode": 0,
+          "stage": "guard-provider"
+        },
+        {
+          "elapsed_seconds": 1.12995433399999,
+          "jobs": 1,
+          "log_sha256": "e8e54f89e1ee7789fbf2660bdffd82c850c8a670a723938c58c46d30b378e84a",
+          "returncode": 0,
+          "stage": "guard-network"
+        },
+        {
+          "elapsed_seconds": 0.5121674999999755,
+          "jobs": 1,
+          "log_sha256": "ccfe0f90565c1c89c60ef5c2634d352963534986c5a0cd59fd3058dfbcb1ac8f",
+          "returncode": 0,
+          "stage": "guard-provider-auth"
+        },
+        {
+          "elapsed_seconds": 22.981804291000003,
+          "jobs": 1,
+          "log_sha256": "03bf0fdcd370d410d72ea62f2abd3090b069938009aeaee381afd47df2e68566",
+          "returncode": 0,
+          "stage": "client-default-build"
+        },
+        {
+          "elapsed_seconds": 0.034798500000079,
+          "jobs": 1,
+          "log_sha256": "43bf3388b86247630aa6769e14df274be030c99ca97e45f832c1e01d4ac6330b",
+          "returncode": 0,
+          "stage": "client-default-bin"
+        },
+        {
+          "elapsed_seconds": 147.03013199999998,
+          "jobs": 1,
+          "log_sha256": "689832aef726dbc7ea80520c5c6d139a0a5d7f7ad3e9e1f61997670cce7c6f4b",
+          "returncode": 0,
+          "stage": "client-network-build"
+        },
+        {
+          "elapsed_seconds": 21.015419415999986,
+          "jobs": 1,
+          "log_sha256": "28b67df019a58cf441a4d48819f781476cbe9cc298a68c7c347a373b4a32167b",
+          "returncode": 0,
+          "stage": "provider-default-build"
+        },
+        {
+          "elapsed_seconds": 5.625915040999985,
+          "jobs": 1,
+          "log_sha256": "9bedccc81f848334483a768022765942503142486dfd463d42a637ce3daf425b",
+          "returncode": 0,
+          "stage": "provider-default-clippy"
+        },
+        {
+          "elapsed_seconds": 165.0212453339999,
+          "jobs": 1,
+          "log_sha256": "c72c08e848646e0b67a519c0d454ff77161f1ff58466c2d384f42e58cc2bd313",
+          "returncode": 0,
+          "stage": "provider-iq-build"
+        },
+        {
+          "elapsed_seconds": 17.463451000000077,
+          "jobs": 1,
+          "log_sha256": "69d42f0c6e7d2254e35f83fb787425301fecd7e7ba0f92caf9f35ae4d037c327",
+          "returncode": 0,
+          "stage": "provider-iq-clippy"
+        },
+        {
+          "elapsed_seconds": 10.027524290999963,
+          "jobs": 1,
+          "log_sha256": "20614a18bed631849c4232b7dde4e6221de9c98e43db2a165412a8a5759b5478",
+          "returncode": 0,
+          "stage": "codec-build"
+        },
+        {
+          "elapsed_seconds": 4.650108584000009,
+          "jobs": 1,
+          "log_sha256": "198e05a4f6a6517bf34de60b36018a2b0a23c5409ba9c3e238fa86de1ff2d6d2",
+          "returncode": 0,
+          "stage": "store-build"
+        },
+        {
+          "elapsed_seconds": 41.119004040999926,
+          "jobs": 1,
+          "log_sha256": "019a9db0e371db4324d756765807a5614b7e7d5f10497fdb14471e88ad84cbd5",
+          "returncode": 0,
+          "stage": "server-current-bins"
+        },
+        {
+          "elapsed_seconds": 54.87704854200001,
+          "jobs": 1,
+          "log_sha256": "c60a4773076b18c69795ac856f61592e8cf0cd10afa6c6e861f335571e638102",
+          "returncode": 0,
+          "stage": "client-device-build"
+        },
+        {
+          "elapsed_seconds": 31.14923420799994,
+          "jobs": 1,
+          "log_sha256": "701b3187e41477e8de9c050b7dc6b0ea6eac9bad7b1c474b5f977021dbd294f5",
+          "returncode": 0,
+          "stage": "client-device-clippy"
+        },
+        {
+          "elapsed_seconds": 7.328161833999957,
+          "jobs": 1,
+          "log_sha256": "09503905c59692119735a1f748f3f816129ae81c37956886edd85daedc976057",
+          "returncode": 0,
+          "stage": "console-current-bins"
+        }
+      ]
+    },
+    "no_full_fresh_1gib_build_claim": true,
+    "no_peak_headroom_throughput_or_capacity_claim": true,
+    "runtime_memory_bytes": 1054990336
+  },
+  "schema": 1
+}

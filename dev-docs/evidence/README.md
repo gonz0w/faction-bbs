@@ -465,3 +465,12 @@ host and fresh NetBSD, with existing-object route characterization, retained fai
 variants and separate compiler/runtime envelopes. Exact source objects, identities
 and owned teardown stay distinct from production provider/enrollment, delegation
 and independent-client interoperability.
+
+
+[Native authenticated-provider client evidence](native-provider-client/README.md)
+records explicit private transport selection, service-bound device mTLS and
+maximum-size production-console upload/mail-receive/fetch/save on host and NetBSD.
+It preserves the native transfer-budget failure, bounded TLS frame correction,
+observer and fixture corrections, exact executed inputs and separate build/runtime
+envelopes. Provider deployment, real enrollment, own-home delegation and independent
+modern-client interoperability remain separate. Earlier records stay unchanged.

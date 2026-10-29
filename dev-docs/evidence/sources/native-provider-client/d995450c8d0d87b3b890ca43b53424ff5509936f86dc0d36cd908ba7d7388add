@@ -1,0 +1,25 @@
+#![cfg(feature = "device-provider")]
+use faction_client::mail_device_provider::Config;
+use faction_files::private_blobs::Principal;
+fn principal() -> Principal {
+    Principal { account: "alice@home.test".into(), device: 101, identity: [1; 32] }
+}
+#[test]
+fn explicit_device_configuration_refuses_remote_or_incoherent_authority_assertions() {
+    let local = "127.0.0.1:1234".parse().unwrap();
+    assert!(Config::new("home.test", local, "provider.test", [1; 32], principal()).is_ok());
+    for address in ["192.0.2.1:1234", "0.0.0.0:1234", "127.0.0.1:0", "[::]:1234"] {
+        assert!(Config::new("home.test", address.parse().unwrap(), "provider.test", [1; 32], principal()).is_err());
+    }
+    for home in ["", "HOME.test", "alice@home.test", "https://home.test", "foreign.test"] {
+        assert!(Config::new(home, local, "provider.test", [1; 32], principal()).is_err());
+    }
+    for name in ["", "PROVIDER.test", "https://provider.test", "provider.test/path"] {
+        assert!(Config::new("home.test", local, name, [1; 32], principal()).is_err());
+    }
+    assert!(Config::new("home.test", local, "provider.test", [0; 32], principal()).is_err());
+    let mut invalid = principal(); invalid.device = 0;
+    assert!(Config::new("home.test", local, "provider.test", [1; 32], invalid).is_err());
+    let mut invalid = principal(); invalid.identity = [0; 32];
+    assert!(Config::new("home.test", local, "provider.test", [1; 32], invalid).is_err());
+}

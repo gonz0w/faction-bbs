@@ -137,5 +137,9 @@ The desk is a software preview. A [NetBSD 11 ARM64 software qualification](../de
 exercised the production console and a 1 MiB transfer with both test homes, the
 client and handler on loopback inside one guest. This does not establish deployed
 provider behavior, device attestation, independent client interoperability,
-same-SSH tracing, physical hardware, a security audit or capacity. Text mail
+same-SSH tracing, physical hardware, a security audit or capacity. The separate
+[device-provider integration proof](../dev-docs/evidence/native-provider-client/README.md)
+exercises actual same-home mTLS transfers, ordinary encrypted-mail receipt and
+private save in classic and Unicode modes on host and fresh NetBSD. It retains
+the original failure observations and unchanged transfer limits. Text mail
 and classic board access remain separate and available.

@@ -1,0 +1,102 @@
+//! Private exact-byte framing controls; no TCP packetization claim.
+use super::{MAX_WIRE, Stage, write_frame};
+use std::io::{self, Write};
+
+struct Probe {
+    attempted: Vec<Vec<u8>>,
+    wire: Vec<u8>,
+    max_write: usize,
+    fail_after: Option<usize>,
+    interrupt_once: bool,
+    flush_error: bool,
+    flushes: usize,
+}
+impl Probe {
+    fn healthy() -> Self {
+        Self { attempted: Vec::new(), wire: Vec::new(), max_write: usize::MAX, fail_after: None, interrupt_once: false, flush_error: false, flushes: 0 }
+    }
+}
+impl Write for Probe {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        self.attempted.push(bytes.to_vec());
+        if self.interrupt_once {
+            self.interrupt_once = false;
+            return Err(io::ErrorKind::Interrupted.into());
+        }
+        let remaining = match self.fail_after {
+            Some(limit) if self.wire.len() >= limit => return Err(io::ErrorKind::BrokenPipe.into()),
+            Some(limit) => limit - self.wire.len(),
+            None => usize::MAX,
+        };
+        let accepted = bytes.len().min(self.max_write).min(remaining);
+        self.wire.extend_from_slice(&bytes[..accepted]);
+        Ok(accepted)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.flushes += 1;
+        if self.flush_error { Err(io::ErrorKind::BrokenPipe.into()) } else { Ok(()) }
+    }
+}
+fn expected(payload: &[u8]) -> Vec<u8> {
+    let mut wire = (payload.len() as u32).to_be_bytes().to_vec();
+    wire.extend_from_slice(payload);
+    wire
+}
+#[test]
+fn exact_prefix_payload_and_final_flush_preserve_existing_wire_bytes() {
+    for payload in [vec![0xa5], vec![0, 255, 3, 128, 9, 0, 42], vec![0x3c; MAX_WIRE]] {
+        let mut probe = Probe::healthy();
+        assert_eq!(write_frame(&mut probe, &payload), Ok(()));
+        assert_eq!(probe.wire, expected(&payload));
+        assert_eq!(&probe.wire[..4], &(payload.len() as u32).to_be_bytes());
+        assert_eq!(probe.flushes, 1);
+        assert_eq!(probe.wire.len(), payload.len() + 4);
+        assert!(probe.wire.len() <= 8196);
+    }
+}
+#[test]
+fn empty_and_oversize_payloads_fail_before_any_write_or_flush() {
+    for payload in [Vec::new(), vec![7; MAX_WIRE + 1]] {
+        let mut probe = Probe::healthy();
+        assert_eq!(write_frame(&mut probe, &payload), Err(Stage::Frame));
+        assert!(probe.attempted.is_empty());
+        assert!(probe.wire.is_empty());
+        assert_eq!(probe.flushes, 0);
+    }
+}
+#[test]
+fn partial_and_interrupted_writes_complete_the_exact_existing_frame() {
+    let payload: Vec<_> = (0..19).collect();
+    let mut probe = Probe::healthy();
+    probe.max_write = 3;
+    probe.interrupt_once = true;
+    assert_eq!(write_frame(&mut probe, &payload), Ok(()));
+    assert_eq!(probe.wire, expected(&payload));
+    assert!(probe.attempted.len() > 2);
+    assert_eq!(probe.flushes, 1);
+}
+#[test]
+fn write_errors_and_write_zero_propagate_without_flush() {
+    let payload = [1, 3, 5, 7, 9, 11, 13];
+    for accepted in [0, 2, 6] {
+        let mut probe = Probe::healthy();
+        probe.fail_after = Some(accepted);
+        assert_eq!(write_frame(&mut probe, &payload), Err(Stage::Frame));
+        assert_eq!(probe.wire, expected(&payload)[..accepted]);
+        assert_eq!(probe.flushes, 0);
+    }
+    let mut zero = Probe::healthy();
+    zero.max_write = 0;
+    assert_eq!(write_frame(&mut zero, &payload), Err(Stage::Frame));
+    assert!(zero.wire.is_empty());
+    assert_eq!(zero.flushes, 0);
+}
+#[test]
+fn flush_error_propagates_after_complete_wire_bytes() {
+    let payload = [0x12, 0x34, 0x56];
+    let mut probe = Probe::healthy();
+    probe.flush_error = true;
+    assert_eq!(write_frame(&mut probe, &payload), Err(Stage::Frame));
+    assert_eq!(probe.wire, expected(&payload));
+    assert_eq!(probe.flushes, 1);
+}
