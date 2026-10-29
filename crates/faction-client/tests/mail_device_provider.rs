@@ -459,13 +459,19 @@ fn authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outag
     let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
     let bytes = vec![73; 4 * faction_files::private_blobs::CHUNK + 37];
     let wire =
-        transfer::prepare(&mut a, &mut spool, [1; 16], selection(&bytes, epoch), epoch).unwrap();
+        transfer::prepare(&mut a, &mut spool, [1; 16], selection(&bytes, epoch), now()).unwrap();
     let settings = f.settings("alice@home.test", unused_endpoint());
     let report = f
         .serve(&runtime, &mut store, |addr| {
             let provider = f.provider(&a, 1, addr);
             run(transfer::upload_device_cycle(
-                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+                &mut a,
+                &mut spool,
+                &settings,
+                "unused",
+                &provider,
+                [1; 16],
+                now(),
             ))
         })
         .unwrap();
@@ -476,7 +482,7 @@ fn authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outag
     assert!(!report.complete);
     assert_eq!(report.requests, 5);
     assert_eq!(report.sent, 0);
-    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+    assert_eq!(a.pending(now()).unwrap().len(), 1);
     drop(spool);
     drop(a);
     a = CheckpointVault::unlock(
@@ -490,15 +496,21 @@ fn authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outag
         let result = f.serve(&runtime, &mut store, |addr| {
             let provider = f.provider(&a, 1, addr);
             run(transfer::upload_device_cycle(
-                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+                &mut a,
+                &mut spool,
+                &settings,
+                "unused",
+                &provider,
+                [1; 16],
+                now(),
             ))
         });
         assert!(matches!(result, Err(transfer::Error::Mail(_))));
-        assert_eq!(a.pending(epoch).unwrap().len(), 1);
+        assert_eq!(a.pending(now()).unwrap().len(), 1);
     }
     // Local authenticated mail receipt here isolates the storage/mail-outage
     // contract. The paired production-console proof uses the separate real relay.
-    b.receive(&wire, epoch).unwrap();
+    b.receive(&wire, now()).unwrap();
     let frame = b.history().unwrap()[0].received_id().unwrap();
     let settings = f.settings("bob@home.test", unused_endpoint());
     let mut incoming = Spool::open(&f.root.join("incoming")).unwrap();
@@ -512,7 +524,7 @@ fn authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outag
                     &settings,
                     &f.provider(&b, 2, addr),
                     selected,
-                    epoch,
+                    now(),
                 ))
             })
             .unwrap();
@@ -521,14 +533,14 @@ fn authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outag
         assert_eq!(report.sent, 0);
     }
     assert_eq!(
-        transfer::verify_fetched(&b, &mut incoming, 0, frame, epoch)
+        transfer::verify_fetched(&b, &mut incoming, 0, frame, now())
             .unwrap()
             .as_bytes(),
         bytes
     );
     let saved = f.root.join("saved.bin");
-    transfer::save_fetched(&b, &mut incoming, 0, frame, epoch, &saved).unwrap();
-    assert!(transfer::save_fetched(&b, &mut incoming, 0, frame, epoch, &saved).is_err());
+    transfer::save_fetched(&b, &mut incoming, 0, frame, now(), &saved).unwrap();
+    assert!(transfer::save_fetched(&b, &mut incoming, 0, frame, now(), &saved).is_err());
     assert_eq!(fs::read(saved).unwrap(), bytes);
 }
 #[test]
