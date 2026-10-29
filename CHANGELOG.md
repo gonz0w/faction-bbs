@@ -4,6 +4,10 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Strengthen the concurrent schema-one migration test with bounded Busy-only
+  retries and held-writer, exhaustion and non-Busy rollback controls; production
+  storage behavior is unchanged.
+
 - Add explicit offline device-provider profile and public card preparation, plus an
   operator check of a complete independently approved proposal. Preparation changes
   no authority; separate init or apply retains the existing policy checks.
