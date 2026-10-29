@@ -44,6 +44,7 @@ compatible toolchain:
 cargo test -p faction-core --release --locked --test core busy_
 cargo test -p faction-core --release --locked --test core concurrent_bootstrap_and_duplicate_submit_are_atomic
 cargo test -p faction-core --release --locked --test credential_budget
+cargo +1.96.0 test -p faction-core --release --locked --test chat migration_
 ```
 
 The concurrency test repeats five independent two-connection races. Held-writer
@@ -54,3 +55,10 @@ immediately. Exhaustion still fails the success oracle; it is not skipped or
 counted as a successful operation. Production calls retain the 100-ms database
 wait and two credential slots. These tests establish the stated atomicity and
 rejection contracts, not a latency or eventual-success guarantee under starvation.
+
+The migration controls use a test-only policy of at most three total opens,
+retrying only `Busy`. A released writer permits a later open; persistent contention
+exhausts the attempts and fails the success oracle. Other errors return immediately.
+Each schema version migrates in a separate transaction, so a completed prefix can
+remain after `Busy`. The 100-ms SQLite busy timeout is not a total `Board::open`
+deadline, and these checks do not promise success under starvation.

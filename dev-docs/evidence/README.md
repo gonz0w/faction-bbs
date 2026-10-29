@@ -490,3 +490,8 @@ separate policy application and classic/Unicode encrypted attachment delivery on
 host and fresh NetBSD. Original command/API failures and the unsafe-directory
 fixture correction remain distinct from unchanged production code. Build and
 runtime envelopes, software observations and deployment limits stay separate.
+
+[Concurrent migration validation](migration-contention/README.md) records the original
+CI Busy outcome, controlled test-only RED/GREEN correction and exact retained
+source/executable identities. Production storage bounds are unchanged; fresh host
+observations and later Linux CI remain distinct from unperformed native execution.

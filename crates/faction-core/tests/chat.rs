@@ -359,16 +359,165 @@ fn concurrent_send_serializes_channel_sequence() {
     results.sort();
     assert_eq!(results, [1, 2]);
 }
+// Three total test-only attempts, retrying only the documented storage Busy.
+// Both concurrent openers must still succeed; production timeouts stay unchanged.
+fn retry_busy<T>(mut attempt: impl FnMut() -> faction_core::Result<T>) -> faction_core::Result<T> {
+    for _ in 0..2 {
+        match attempt() {
+            Err(Error::Busy) => (),
+            result => return result,
+        }
+    }
+    attempt()
+}
+
+impl Fixture {
+    fn schema_one() -> (Self, i64) {
+        let mut f = Fixture::new();
+        let post = f
+            .board
+            .post(&f.alice, 1, &request_id().unwrap(), "retained room", None)
+            .unwrap();
+        f.board.mark_read(&f.alice, 1, post.id).unwrap();
+        let db = f.db();
+        db.execute_batch("DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; DROP TABLE chat_joins; DROP TABLE chat_messages; DROP TABLE chat_grants; DROP TABLE chat_sessions; DROP TABLE chat_channels; PRAGMA user_version=1;").unwrap();
+        (f, post.id)
+    }
+}
+
+// Compare every retained schema-one row, including credentials and approval,
+// without relying on sessions surviving a reopen. Identity is read directly.
+fn migration_data(db: &rusqlite::Connection) -> (Vec<u8>, [Vec<String>; 4]) {
+    let identity = db
+        .query_row("SELECT identity FROM board WHERE singleton=1", [], |r| {
+            r.get(0)
+        })
+        .unwrap();
+    let rows = [
+        "SELECT quote(id)||','||quote(handle)||','||quote(password_hash)||','||quote(role)||','||quote(status)||','||quote(epoch) FROM members ORDER BY id",
+        "SELECT quote(id)||','||quote(slug)||','||quote(title) FROM rooms ORDER BY id",
+        "SELECT quote(id)||','||quote(room_id)||','||quote(author_id)||','||quote(request_id)||','||quote(body)||','||quote(reply_to) FROM posts ORDER BY id",
+        "SELECT quote(member_id)||','||quote(room_id)||','||quote(last_read) FROM unread ORDER BY member_id,room_id",
+    ].map(|sql| {
+        db.prepare(sql)
+            .unwrap()
+            .query_map([], |row| row.get::<_, String>(0))
+            .unwrap()
+            .collect::<rusqlite::Result<Vec<_>>>()
+            .unwrap()
+    });
+    (identity, rows)
+}
+
+fn assert_schema_one_unchanged(db: &rusqlite::Connection, retained: &(Vec<u8>, [Vec<String>; 4])) {
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
+            .unwrap(),
+        1
+    );
+    assert_eq!(
+        db.query_row(
+            "SELECT count(*) FROM sqlite_schema WHERE name='chat_channels'",
+            [],
+            |row| row.get::<_, i64>(0)
+        )
+        .unwrap(),
+        0
+    );
+    assert_eq!(&migration_data(db), retained);
+}
+
+#[test]
+fn migration_busy_retry_succeeds_after_writer_releases() {
+    let (f, _) = Fixture::schema_one();
+    let db = f.db();
+    let retained = migration_data(&db);
+    let mut locker = f.db();
+    let mut writer = Some(
+        locker
+            .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+            .unwrap(),
+    );
+    let mut attempts = 0;
+    let result = retry_busy(|| {
+        attempts += 1;
+        let result = Board::open(&f.dir.0);
+        if attempts == 1 {
+            // Release only after the actual open returned the documented Busy.
+            assert!(matches!(result, Err(Error::Busy)));
+            assert_schema_one_unchanged(&db, &retained);
+            writer.take().unwrap().rollback().unwrap();
+        }
+        result
+    });
+    let _board = result.unwrap();
+    assert_eq!(attempts, 2);
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
+            .unwrap(),
+        20
+    );
+    assert_eq!(migration_data(&db), retained);
+}
+
+#[test]
+fn migration_busy_retry_exhaustion_preserves_schema_one() {
+    let (f, _) = Fixture::schema_one();
+    let db = f.db();
+    let retained = migration_data(&db);
+    let mut locker = f.db();
+    let writer = locker
+        .transaction_with_behavior(rusqlite::TransactionBehavior::Immediate)
+        .unwrap();
+    let mut attempts = 0;
+    let result = retry_busy(|| {
+        attempts += 1;
+        Board::open(&f.dir.0)
+    });
+    assert!(matches!(result, Err(Error::Busy)));
+    assert_eq!(attempts, 3);
+    assert_schema_one_unchanged(&db, &retained);
+    writer.rollback().unwrap();
+    let _board = Board::open(&f.dir.0).unwrap();
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
+            .unwrap(),
+        20
+    );
+    assert_eq!(migration_data(&db), retained);
+}
+
+#[test]
+fn migration_non_busy_failure_is_not_retried_and_rolls_back() {
+    let (f, _) = Fixture::schema_one();
+    let db = f.db();
+    let retained = migration_data(&db);
+    db.execute_batch("CREATE TABLE chat_messages(unrelated TEXT);")
+        .unwrap();
+    let mut attempts = 0;
+    let result = retry_busy(|| {
+        attempts += 1;
+        Board::open(&f.dir.0)
+    });
+    assert!(matches!(result, Err(Error::Storage(_))));
+    assert_eq!(attempts, 1);
+    // The failing version-one transaction rolls back; later versions were not run.
+    assert_schema_one_unchanged(&db, &retained);
+    db.execute_batch("DROP TABLE chat_messages;").unwrap();
+    let _board = Board::open(&f.dir.0).unwrap();
+    assert_eq!(
+        db.query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
+            .unwrap(),
+        20
+    );
+    assert_eq!(migration_data(&db), retained);
+}
+
 #[test]
 fn schema_one_migration_preserves_identity_rooms_and_unread() {
-    let mut f = Fixture::new();
-    let post = f
-        .board
-        .post(&f.alice, 1, &request_id().unwrap(), "retained room", None)
-        .unwrap();
-    f.board.mark_read(&f.alice, 1, post.id).unwrap();
+    let (f, post_id) = Fixture::schema_one();
     let db = f.db();
-    db.execute_batch("DROP TABLE roaming_chat;DROP TABLE roaming_transfers;DROP TABLE roaming_bindings;DROP TABLE roaming_issuers;DROP TABLE directory_submissions;DROP TABLE visit_activity;DROP TABLE social_pages;DROP TABLE social_presence;DROP TABLE social_blocks;DROP TABLE social_prefs;DROP TABLE social_cooldowns;DROP TABLE social_settings;DROP TABLE magazine_entries;DROP TABLE magazine_issues;DROP TABLE magazine_submissions;DROP TABLE file_requests;DROP INDEX discussion_author_posts;DROP TABLE discussion_bookmarks;DROP TABLE discussion_settings;DROP TRIGGER catchup_file_insert; DROP TRIGGER catchup_file_publish; DROP TABLE catchup_favorites; DROP TABLE catchup_members; DROP TABLE catchup_settings; DROP TABLE catchup_publications; DROP TABLE poll_ballots; DROP TABLE poll_choices; DROP TABLE polls; DROP TABLE poll_settings; DROP TABLE gathering_rsvps; DROP TABLE gatherings; DROP TABLE gathering_settings; DROP TABLE member_plans; DROP TABLE member_pages; DROP TABLE page_settings; DROP TABLE wall_receipts; DROP TABLE wall_notes; DROP TABLE wall_settings; DROP TABLE room_drafts; DROP TABLE post_metadata; DROP TABLE file_namespace; DROP TABLE file_transfers; DROP TABLE file_objects; DROP TABLE file_area_grants; DROP TABLE file_areas; DROP TABLE game_scores; DROP TABLE chat_joins; DROP TABLE chat_messages; DROP TABLE chat_grants; DROP TABLE chat_sessions; DROP TABLE chat_channels; PRAGMA user_version=1;").unwrap();
+    let retained = migration_data(&db);
     // A conflicting table fails the migration transaction without deleting data.
     db.execute_batch("CREATE TABLE chat_messages(unrelated TEXT);")
         .unwrap();
@@ -388,6 +537,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
         0
     );
 
+    assert_eq!(migration_data(&db), retained);
     db.execute_batch("DROP TABLE chat_messages;").unwrap();
     let barrier = Arc::new(Barrier::new(2));
     let threads: Vec<_> = (0..2)
@@ -396,7 +546,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
             let barrier = barrier.clone();
             thread::spawn(move || {
                 barrier.wait();
-                Board::open(&path).unwrap()
+                retry_busy(|| Board::open(&path)).unwrap()
             })
         })
         .collect();
@@ -404,7 +554,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
         let mut board = t.join().unwrap();
         let s = board.authenticate("alice", &f.secret).unwrap();
         assert_eq!(board.posts(&s, 1, 0).unwrap()[0].body, "retained room");
-        assert_eq!(board.unread_cursor(&s, 1).unwrap(), post.id);
+        assert_eq!(board.unread_cursor(&s, 1).unwrap(), post_id);
         let chat = board.chat_open(&s).unwrap();
         assert_eq!(board.chat_channels(&chat).unwrap()[0].name, "#lobby");
     }
@@ -413,6 +563,7 @@ fn schema_one_migration_preserves_identity_rooms_and_unread() {
             .unwrap(),
         20
     );
+    assert_eq!(migration_data(&db), retained);
 }
 #[test]
 fn slash_commands_are_bounded_and_not_irc_wire_commands() {
