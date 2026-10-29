@@ -28,6 +28,8 @@ def retain_capture(root, label, data):
     return path
 
 import argparse
+import errno
+import signal
 import base64
 import copy
 import hashlib
@@ -78,6 +80,205 @@ def wait_fact(predicate, seconds=5):
         if time.monotonic() >= deadline:
             raise ValueError('bounded fixture observation unavailable')
         time.sleep(.01)
+
+
+# These are observation limits from the existing production console contract.
+# Generic Console.expect remains unchanged for every ordinary prompt/menu.
+_TRANSFER_GAP = 15.0
+_TRANSFER_WORK = 60.0
+_TRANSFER_DRAIN = 5.0
+_TRANSFER_OUTPUT = 16_384
+_TRANSCRIPT_CAP = 4*1024*1024
+_TRANSFER_COMPLETE = b'Foreground transfer complete.\r\n'
+_TRANSFER_PROGRESS = re.compile(
+    rb'Confirmed ciphertext bytes: ([0-9]{1,7})\r\n'
+    rb'SDK call: ([0-9]{1,3}) / 65; writes: ([0-9]{1,3})\r\n')
+_TRANSFER_MARKERS = [
+    (b'Foreground time budget reached.', 'budget'),
+    (b'Transfer stopped; no automatic retry.', 'transfer_stop'),
+    (b'Stopped: progress or call bound.', 'progress_bound'),
+    (b'Home mail locked:', 'locked'),
+    (_TRANSFER_COMPLETE, 'completion'),
+]
+
+
+class TransferObservationError(ValueError):
+    def __init__(self, observation):
+        super().__init__('bounded transfer observation failed: '+observation['reason'])
+        self.observation = observation
+
+
+def _transfer_marker(buffer):
+    found = [(buffer.find(text), name) for text, name in _TRANSFER_MARKERS
+             if text in buffer]
+    return min(found) if found else None
+
+
+def _append_transfer_output(console, data):
+    transcript_room = max(0, _TRANSCRIPT_CAP-len(console.transcript))
+    buffer_room = max(0, _TRANSFER_OUTPUT-len(console.buffer))
+    console.transcript += data[:transcript_room]
+    console.buffer += data[:buffer_room]
+    return len(data) <= min(transcript_room, buffer_room)
+
+
+def _cancel_transfer(console, *, observe_stop=False, clock=None, poll=None,
+                     read=None, reap=None, kill=None):
+    """Failure-only grace, never extra work or a late success opportunity.
+
+    At the work deadline first observe the producer's own outcome for at most
+    four seconds. Record it before our cancellation; absent that evidence the
+    timeout remains an observation failure, not a proved producer failure.
+    """
+    clock = time.monotonic if clock is None else clock
+    poll = select.select if poll is None else poll
+    read = os.read if read is None else read
+    reap = os.waitpid if reap is None else reap
+    kill = os.kill if kill is None else kill
+    began = clock()
+    deadline = began+_TRANSFER_DRAIN
+    cancel_at = None if observe_stop else began
+    killed = False
+    marker_before_cancel = None
+    cancelled = False
+    result = dict(reaped=False, killed=False, marker_before_cancel=None,
+                  cancelled=False, seconds=0.0)
+    while True:
+        now = clock()
+        if now >= deadline:
+            break
+        if not cancelled:
+            marker = _transfer_marker(console.buffer)
+            if marker is not None:
+                marker_before_cancel = marker[1]
+            if observe_stop and (marker is not None or now >= began+4):
+                cancel_at = now
+            if cancel_at is not None:
+                try:console.raw(b'\x03')
+                except OSError:pass
+                cancelled = True
+        # Immediate cancellation gets four seconds to cooperate; after passive
+        # observation reserve part of the final second for kill and reap.
+        kill_at = (min(cancel_at+0.8, deadline-0.2) if observe_stop and cancelled
+                   else began+4)
+        if cancelled and not killed and now >= kill_at:
+            try:kill(console.pid, signal.SIGKILL)
+            except ProcessLookupError:pass
+            killed = True
+        try:
+            pid, _ = reap(console.pid, os.WNOHANG)
+        except ChildProcessError:
+            pid = console.pid
+        if pid:
+            console.done = True
+            result['reaped'] = True
+            break
+        next_boundary = (kill_at if cancelled and not killed else
+                         began+4 if not cancelled else deadline)
+        timeout = min(0.05, deadline-now, max(0.0, next_boundary-now))
+        try:
+            ready, _, _ = poll([console.fd], [], [], timeout)
+            if ready:
+                try:data = read(console.fd, 8192)
+                except OSError as error:
+                    if error.errno != errno.EIO:raise
+                    data = b''
+                if data:_append_transfer_output(console, data)
+        except OSError:
+            # Still reach the fixed kill/reap boundaries after a broken PTY.
+            time.sleep(min(0.01, max(0.0, deadline-clock())))
+    result.update(killed=killed, marker_before_cancel=marker_before_cancel,
+                  cancelled=cancelled, seconds=round(clock()-began, 6))
+    return result
+
+
+def wait_transfer(console, total, *, started=None, clock=None, poll=None,
+                  read=None, cancel=None):
+    """Observe confirmed foreground progress within the unchanged 60 seconds.
+
+    Only a whole validated progress record renews the 15-second gap. Noise,
+    fragments, duplicates and later output never extend the absolute deadline.
+    Keep trailing menu bytes available to the ordinary Console.expect caller.
+    """
+    if type(total) is not int or not 1 <= total <= 1_048_592:
+        raise ValueError('invalid expected transfer size')
+    clock = time.monotonic if clock is None else clock
+    poll = select.select if poll is None else poll
+    read = os.read if read is None else read
+    started = clock() if started is None else started
+    deadline = started+_TRANSFER_WORK
+    last_valid = started
+    records = []
+    offset = 0
+    seen = len(console.buffer)
+
+    def observation(reason, now):
+        return dict(reason=reason, calls=len(records), offset=offset,
+                    seconds=round(now-started, 6), progress=records)
+
+    def fail(reason):
+        result = observation(reason, clock())
+        console.transfer_observation = result
+        result['drain'] = (cancel(console) if cancel is not None else
+            _cancel_transfer(console, observe_stop=reason == 'work_deadline',
+                             clock=clock, poll=poll, read=read))
+        marker = result['drain'].get('marker_before_cancel')
+        result['classification'] = (
+            'product_stop_observed' if marker in {'budget','transfer_stop','progress_bound'}
+            else 'late_completion_observed' if marker == 'completion'
+            else 'observer_timeout_ambiguous' if reason == 'work_deadline'
+            else 'observer_rejection')
+        raise TransferObservationError(result)
+
+    if seen > _TRANSFER_OUTPUT or len(console.transcript) > _TRANSCRIPT_CAP:
+        fail('output_bound')
+    while True:
+        now = clock()
+        # Work has no success grace, including bytes returned exactly at 60s.
+        if now >= deadline:fail('work_deadline')
+        if now > last_valid+_TRANSFER_GAP:fail('idle_gap')
+        progress = _TRANSFER_PROGRESS.search(console.buffer)
+        marker = _transfer_marker(console.buffer)
+        # Parsing cannot turn a timestamp sampled before a deadline into a
+        # successful record/completion after that deadline.
+        now = clock()
+        if now >= deadline:fail('work_deadline')
+        if now > last_valid+_TRANSFER_GAP:fail('idle_gap')
+        if marker is not None and (progress is None or marker[0] < progress.start()):
+            if marker[1] != 'completion':fail('product_stop')
+            if not records or offset != total:fail('early_completion')
+            console.buffer = console.buffer[marker[0]+len(_TRANSFER_COMPLETE):]
+            result = observation('complete', now)
+            console.transfer_observation = result
+            return result
+        if progress is not None:
+            values = tuple(map(int, progress.groups()))
+            confirmed, call, writes = values
+            if (any(str(value).encode() != raw for value, raw in zip(values, progress.groups()))
+                    or call != len(records)+1 or call > 65
+                    or not offset < confirmed <= total or writes not in (0,1)
+                    or writes and confirmed != total):
+                fail('invalid_progress')
+            offset = confirmed
+            last_valid = now
+            records.append(dict(call=call, offset=confirmed, writes=writes,
+                                seconds=round(now-started, 6)))
+            console.buffer = console.buffer[progress.end():]
+            continue
+        if now >= last_valid+_TRANSFER_GAP:fail('idle_gap')
+        remaining = min(deadline-now, last_valid+_TRANSFER_GAP-now)
+        try:
+            ready, _, _ = poll([console.fd], [], [], remaining)
+            if not ready:continue
+            try:data = read(console.fd, 8192)
+            except OSError as error:
+                if error.errno != errno.EIO:raise
+                data = b''
+        except OSError:fail('io_error')
+        if not data:fail('eof')
+        seen += len(data)
+        if not _append_transfer_output(console, data) or seen > _TRANSFER_OUTPUT:
+            fail('output_bound')
 
 
 class PublicMail:
@@ -315,6 +516,7 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
         def upload(c, operation):
             c.raw(b'u');c.expect('Full operation ID (blank cancels): ');c.send(operation)
             c.expect(TRANSFER);c.send('transfer');c.password(home_password,HOME)
+            return time.monotonic()
         def select_received(c):
             c.raw(b'r');c.expect('Original record number (blank cancels): ');c.send('1');c.expect(RECEIVED)
         def save(c, destination):
@@ -399,8 +601,8 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
         assert time.monotonic()-began<5 and not (root/'delivery.xml').exists()
         (server/'stall').unlink();wait_fact(lambda:provider.status()[2]==0)
         facts.append('cancel_after_possible_durable_progress_locks_and_joins_before_reopen')
-        c=start('alice',profiles[0]);desk(c);upload(c,operation)
-        c.expect('Foreground transfer complete.');c.expect(DESK)
+        c=start('alice',profiles[0]);desk(c);submitted=upload(c,operation)
+        upload_observation=wait_transfer(c,1_048_592,started=submitted);c.expect(DESK)
         wait_fact(lambda:alice.messages==1)
         assert re.search(rb'SDK call: (?:[1-9]|[1-5][0-9]|6[0-5]) / 65',c.transcript)
         lock(c)
@@ -412,8 +614,8 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
         desk(c);select_received(c)
         assert not (root/'bob/attachments').exists()
         before=c.transcript.count(HOME.encode())
-        c.raw(b'f');c.expect(TRANSFER);c.send('transfer')
-        c.expect('Foreground transfer complete.');c.expect(RECEIVED)
+        c.raw(b'f');c.expect(TRANSFER);c.send('transfer');submitted=time.monotonic()
+        fetch_observation=wait_transfer(c,1_048_592,started=submitted);c.expect(RECEIVED)
         assert c.transcript.count(HOME.encode())==before
         c.raw(b'v');c.expect('Verified locally: 1048576 plaintext bytes.');c.expect(RECEIVED)
         destination=root/'saved'/'explicit.bin';destination.parent.mkdir(mode=0o700)
@@ -439,12 +641,16 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
         facts.append('server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext')
         return dict(mode='unicode' if unicode else 'classic',checks=facts,plaintext_bytes=len(payload),
                     provider_sessions=provider.status()[0],provider_operations=provider.status()[1],
-                    ordinary_mail_connections=alice.connections+bob.connections,mail_received=True)
+                    ordinary_mail_connections=alice.connections+bob.connections,mail_received=True,
+                    transfer_observations=dict(upload=upload_observation,fetch=fetch_observation))
     finally:
         failures=[]
         for index,c in enumerate(children):
             try:
                 retain_capture(owned_root,'unicode-console' if unicode else 'classic-console',c.transcript)
+                if hasattr(c,'transfer_observation'):
+                    retain_capture(owned_root,'transfer-observation',
+                                   (json.dumps(c.transfer_observation,sort_keys=True)+'\n').encode())
             except BaseException as error: failures.append(error)
             try:c.close()
             except BaseException as error:failures.append(error)
