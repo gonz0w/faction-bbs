@@ -1,0 +1,858 @@
+{
+  "build_and_check_stages": 33,
+  "corrected_affected_case": {
+    "binary_sha256": "0b9297ec99ec3269ee9c082e1a8b8891d031d4e226cf19cd296039de3e473ab7",
+    "filtered": 11,
+    "original_eleven_passes_not_replayed": true,
+    "passed": 1,
+    "source_sha256": "af3763817e3dc6357acba7787037d1030d78acedfc6ee1d1759cce4919df7036"
+  },
+  "counts_overlap_features": true,
+  "derived_index_limit": {
+    "all_continuation_stages_returncode_zero": true,
+    "continuation_stages": 21,
+    "derived_indexes_are_not_original_records": true,
+    "every_indexed_per_role_log_sha_verified": true,
+    "original_command_stdout_and_all_per_role_logs_unchanged": true,
+    "original_command_still_failed": true,
+    "original_failure_returncode": 101,
+    "original_metadata_alias_bytes_unavailable": true,
+    "original_runtime_metadata_alias_overwritten_by_continuation": true,
+    "original_stages": 18,
+    "product_source_assertions_limits_unchanged": true
+  },
+  "execution_history": {
+    "additional_private_orchestration_setup_failures_retained": true,
+    "historical_recipes_not_new_runtime_results": true,
+    "initial_operator_cli_failure": {
+      "actual_safe_directory_accepted": true,
+      "failed": 1,
+      "failing_case": "offline_prepare_paths_and_no_replace_leave_all_existing_bytes_intact",
+      "fixture_failure": true,
+      "input_case": 13,
+      "passed": 11
+    },
+    "metadata_alias_limitation": {
+      "derived_indexes_are_not_original_records": true,
+      "early_snapshot_filename_does_not_establish_original_metadata": true,
+      "every_indexed_log_sha_verified": true,
+      "original_execution_stdout_and_per_role_logs_retained": true,
+      "original_metadata_alias_unavailable": true
+    },
+    "no_budget_assertion_or_product_relaxation": true,
+    "post_test_wrapper_failure": {
+      "actual_corrected_case_passed": true,
+      "cause": "PermissionError reading owned derived metadata created with root ownership0600.",
+      "corrected_only_owned_metadata_owner": true,
+      "passed_test_not_replayed": true,
+      "wrapper_failed_after_case": true
+    },
+    "reviewed_test_only_supplement": {
+      "native_focused_passed": 1,
+      "original_command_not_retroactively_passed": true,
+      "producer_sources_or_binaries_changed": false,
+      "test_sha256": "af3763817e3dc6357acba7787037d1030d78acedfc6ee1d1759cce4919df7036"
+    }
+  },
+  "fixture_preconditions": {
+    "actual_missing_default_openssl_config": true,
+    "actual_missing_unversioned_python3": true,
+    "owned_test_only_openssl_config_sha256": "a1c45aa35abd0050b556a5b709603b4b9278886b8c8254ac7ef5a5e9d8eb638d",
+    "owned_test_only_python_alias_sha256": "d2a8150c06c697cbbab23d1aadfd82d0f4dae772c69fa9a15fe419868228a3af",
+    "package_changes": false,
+    "production_probe_environment_injection": false,
+    "short_tmpdir_bytes": 42,
+    "system_configuration_or_alias_changes": false,
+    "test_only_mode_fixture_correction": {
+      "cause": "Private077umask masked the fixture directory creation mode.",
+      "correction": "Explicit chmod0755 plus metadata assertion before existing product/assertions.",
+      "global_umask_changed": false,
+      "initial_candidate_mode": "0600",
+      "initial_intended_mode": "0755",
+      "initial_observed_mode": "0700"
+    }
+  },
+  "fresh_ordinary_access_controls": {
+    "host": {
+      "approved_member": true,
+      "archive_token_unchanged": true,
+      "canonical_unchanged": true,
+      "capacity_claim": false,
+      "checks": [
+        "independent_board_registration_pending_and_explicit_approval",
+        "real_encrypted_nonempty_cursor_history_and_pending_seed",
+        "actual_closed_home_tcp_connection_failure",
+        "same_picker_send_and_archive_outage_preserve_exact_state",
+        "locked_picker_releases_store_and_requires_hidden_unlock",
+        "same_picker_approved_board_restricted_sftp_upload_review_download",
+        "same_picker_board_return_and_terminal_restoration",
+        "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+      ],
+      "count": 8,
+      "history_unchanged": true,
+      "pending_ids_unchanged": true,
+      "physical_hardware": false,
+      "platform": "Darwin",
+      "restricted_sftp": true,
+      "result": "pass",
+      "same_picker_pid": true,
+      "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+    },
+    "native": {
+      "approved_member": true,
+      "archive_token_unchanged": true,
+      "canonical_unchanged": true,
+      "capacity_claim": false,
+      "checks": [
+        "independent_board_registration_pending_and_explicit_approval",
+        "real_encrypted_nonempty_cursor_history_and_pending_seed",
+        "actual_closed_home_tcp_connection_failure",
+        "same_picker_send_and_archive_outage_preserve_exact_state",
+        "locked_picker_releases_store_and_requires_hidden_unlock",
+        "same_picker_approved_board_restricted_sftp_upload_review_download",
+        "same_picker_board_return_and_terminal_restoration",
+        "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+      ],
+      "count": 8,
+      "history_unchanged": true,
+      "pending_ids_unchanged": true,
+      "physical_hardware": false,
+      "platform": "NetBSD",
+      "restricted_sftp": true,
+      "result": "pass",
+      "same_picker_pid": true,
+      "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+    }
+  },
+  "ignored_helpers_and_empty_harnesses_are_not_independent_behavior": true,
+  "limits": "Bounded software observations on a disposable NetBSD11 ARM64 guest. No physical hardware, capacity, production deployment, real enrollment, own-home delegation or independent-client interoperability claim.",
+  "metadata_scope_note": "Host27 individually retained graph outputs belong to the separate host gate. Native records actual three source-guard invocations before each applicable compilation; this record does not claim27 separately retained native raw metadata files.",
+  "original_command_failed": true,
+  "original_operator_cli": {
+    "failed": 1,
+    "passed": 11,
+    "returncode": 101
+  },
+  "package_preflight": {
+    "host_27_graph_gate_is_separate_handoff_evidence": true,
+    "inventory_sha256": "322e5db2bedd743d06a81b9b20f1ec1ac35aa1c6e27858c27da0bc205dd624e7",
+    "netbsd_device_registry_packages": 159,
+    "new_registry_versions": false,
+    "package_installations": false,
+    "registry_cache_archives_and_complete_source_trees_verified": 167,
+    "selected_registry_source_files": 7819,
+    "source_guard_returncodes": [
+      0,
+      0,
+      0
+    ],
+    "source_guards_before_initial_compilation": 3,
+    "source_guards_before_supplement_compilation": 3
+  },
+  "platform": "NetBSD11.0/aarch64",
+  "private_safe_export_identities": {
+    "native-costs.json": "3f48301d94abd2afcc16f95ca44b431ee370e7d5e463d93496f9ed48bec956a9",
+    "native-fixture-preconditions.json": "54d1d8170055ef4ef6c3a3431c5fab94e3b543c846c3bc9ed059624bc1307a34",
+    "native-history.json": "67d8b24a2756530034ebcad6da294a31b9d66d472c9c13296b9d736cbd93fa22",
+    "native-identities.json": "5d9bee0fc6d68ab0a51e950200c1f1ac3f1f2002370b8acc483f84d961b64ca3",
+    "native-inputs.json": "b5cf6b65f4ccdfef7d799cd54f5638aa05bf432d5087b58da381d8515526667c",
+    "native-packages.json": "565f0231bd83961230c1353d580519d98c0e857a706133a24c89ff1cb2db47b1",
+    "native-tests.json": "f9487f2ebf67ef7c622280b001b0052d9b7bb2e8a47b38a0cfbd9ef4bb5c1af7"
+  },
+  "production_console": {
+    "legacy": {
+      "children_reaped": true,
+      "controls": 26,
+      "modes": [
+        {
+          "checks": [
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "classic",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": false,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.201831
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.481076
+            }
+          }
+        },
+        {
+          "checks": [
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "unicode",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": false,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.20543
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.485432
+            }
+          }
+        }
+      ],
+      "private_fixture_removed": true,
+      "result": "pass"
+    },
+    "prepared": {
+      "children_reaped": true,
+      "controls": 32,
+      "modes": [
+        {
+          "checks": [
+            "actual_separate_hidden_unlock_profile_card_and_checked_complete_proposal_are_offline_and_leave_checkpoints_roots_unchanged",
+            "separate_explicit_init_applies_prepared_complete_candidate_only",
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "checked_revoked_flags_preserved_before_separate_explicit_apply",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "classic",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": true,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.226256
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.464687
+            }
+          }
+        },
+        {
+          "checks": [
+            "actual_separate_hidden_unlock_profile_card_and_checked_complete_proposal_are_offline_and_leave_checkpoints_roots_unchanged",
+            "separate_explicit_init_applies_prepared_complete_candidate_only",
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "checked_revoked_flags_preserved_before_separate_explicit_apply",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "unicode",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": true,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.084976
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 16.327389
+            }
+          }
+        }
+      ],
+      "private_fixture_removed": true,
+      "result": "pass"
+    }
+  },
+  "root_fmt_returncode": 0,
+  "runtime_source_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+  "runtime_stage_rows": [
+    {
+      "log_sha256": "be0683a1a3a4ef1e164425f5f2c2965178c3002b99351e21efe74162d4a1f6c8",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 19,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-default-build__faction_provider__test"
+    },
+    {
+      "log_sha256": "e3c68f6da2fada5fda448f3941b3c5291511405223bbefe781807d90a49d0666",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 23,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-default-build__embedding__test"
+    },
+    {
+      "log_sha256": "6c7c581614aab01e554180cf3af5b372b4aa38858c80737752c00f5e6d01282d",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 19,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-preparation-build__faction_provider__test"
+    },
+    {
+      "log_sha256": "bf88b645d64eafd98e28a56e584b0a381e0ad4637301c1a9ccac38dba67f8a16",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 23,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-preparation-build__embedding__test"
+    },
+    {
+      "log_sha256": "84482547cf697b575611512ad727749aa95dd06f14249be72c291731e63082d7",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-preparation-build__preparation__test"
+    },
+    {
+      "log_sha256": "42c71c9b365f46addd6e815cc365cd5c9bc0ab5487f254cd2c5f341a4fbd6c7b",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 19,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-blob-iq-build__faction_provider__test"
+    },
+    {
+      "log_sha256": "1a8e60a7f3632284fd0287dfde3b712dcfdeb8966fb4495dc9efb420bf4a34c8",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 32,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-blob-iq-build__embedding__test"
+    },
+    {
+      "log_sha256": "e283dd01036658e20b50dcf8e7afe61d5f28271cc545acb45e2b3f5a276c30b8",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 30,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-durable-build__faction_provider__test"
+    },
+    {
+      "log_sha256": "52c4376426c2e1c5920bd48d5a105764a3bdc2ba1475bce3f06a1649e4e72351",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 23,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-durable-build__embedding__test"
+    },
+    {
+      "log_sha256": "d1d823c14719e129a51c0d555470cea9170e1b5b38c10d2c164e5e8aead756f4",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 6,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-durable-build__durable_policy__test"
+    },
+    {
+      "log_sha256": "b5c821bac60da70a70151c6b3030e13f7853f365756cd4e2696db2d55b9690b0",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 30,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-durable-iq-build__faction_provider__test"
+    },
+    {
+      "log_sha256": "06174f41db9444ace01082f902781f785d3e25c2d52b24c7a4c68e2004f16dbd",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 32,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-durable-iq-build__embedding__test"
+    },
+    {
+      "log_sha256": "2ed314209e3a419f7028758f90fff70433534fdfe40f62bab05f80c4a35d019c",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 6,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-durable-iq-build__durable_policy__test"
+    },
+    {
+      "log_sha256": "17fd72095b39b6c6333dcfe4ba1ffdb6467cd7893cdb1adebae3b0799ec8ce02",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 30,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-operator-build__faction_provider__test"
+    },
+    {
+      "log_sha256": "148c9b243938439d7f8a5b727a86a2a74788c83d7a21876525b605b997c9d486",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 23,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-operator-build__embedding__test"
+    },
+    {
+      "log_sha256": "f68991fd011f20ff0c888e852f99078b968509f6a68f5f1649a19d92fcfaba35",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-operator-build__preparation__test"
+    },
+    {
+      "log_sha256": "5900976a70a4c70c5d8eb40e1d4af236af9511ab5442a8ee12ec912b1916b50d",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 6,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-operator-build__durable_policy__test"
+    },
+    {
+      "log_sha256": "59a71cf0ce2c0b2e6c9434e5a6be64ff300a45e5b35b464989569b9103cced73",
+      "primary_summary": {
+        "failed": 1,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 11,
+        "status": "FAILED"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-operator-build__operator_cli__test"
+    },
+    {
+      "log_sha256": "a0a858c6d9f7d90a425520a89f4c538ea47490a1fe8ef657b69ef88051dd0f1e",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 1,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "provider-operator-build__faction-provider__test"
+    },
+    {
+      "log_sha256": "7c7848227352d9d5f808d64a490ba4cbbb7f53fc94c4c254514bbb76eba14384",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-default-build__faction_client__test"
+    },
+    {
+      "log_sha256": "8152a173644822a73520e8e293a5c265dac23b34b1357cff90ea60608df8409f",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 5,
+        "measured": 0,
+        "passed": 63,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-native-build__faction_client__test"
+    },
+    {
+      "log_sha256": "3f011d85c5be120a2e32802c2a3e1e9433a4a7abb09531a3c680f8555a04b9dc",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 5,
+        "measured": 0,
+        "passed": 124,
+        "status": "ok"
+      },
+      "required_io_test_lines": [
+        "test mail_blob_transfer::tests::one_cycle_deadline_cancels_the_entire_composed_future ... ok"
+      ],
+      "stage": "client-network-build__faction_client__test"
+    },
+    {
+      "log_sha256": "7b8a08785d4234b127e66bf6d15a87f837163653b72e57ea1ea633fa932bf754",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 1,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__attachment_checkpoint_schema__test"
+    },
+    {
+      "log_sha256": "670425714a2e7265bd9ab8419e89936a34e87a7e7172bf2194a22dfdafdaf39e",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__attachment_checkpoint_transactions__test"
+    },
+    {
+      "log_sha256": "c986658edce64bafb39e62bc4f22f9d1091fa1bc66a0225212410b92b371ffc0",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 6,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__attachment_mail_delivery__test"
+    },
+    {
+      "log_sha256": "694aaa4171f22f6bd3b19472d0a1fd36913dc941e8fef60888f2307081cfd281",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 1,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__attachment_rejection__test"
+    },
+    {
+      "log_sha256": "d5f9de2766e132914c2db47f1026bd69829e5ce5ac39685a8719ce34e5d5ae19",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__attachment_save__test"
+    },
+    {
+      "log_sha256": "1866e67ccb9eddd55b4e9b1459eee186b2ca6dc1bc3bf2fce4e0497311ee42a3",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 7,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__checkpoint_ui_fixture__test"
+    },
+    {
+      "log_sha256": "117be6345f4a6fad0da603e91f9b26af5d19291aed7dddab773cc06059450b84",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 0,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__device_provider_console_fixture__test"
+    },
+    {
+      "log_sha256": "25e60b3334569f07a7328b2cda1b11bac3a2515eb275cb89a0f728b66d1cc167",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 6,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__device_provider_preparation__test"
+    },
+    {
+      "log_sha256": "53ee40e5497e1e6ca446f28be0423f6eede3347e2402416f0bfc1111793a0ed5",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 3,
+        "measured": 0,
+        "passed": 87,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__faction-client__test"
+    },
+    {
+      "log_sha256": "f336bb670da2d086ccc4db75c41a8f8807fb78b46bab5db91a1fde7da1986c2d",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 5,
+        "measured": 0,
+        "passed": 127,
+        "status": "ok"
+      },
+      "required_io_test_lines": [
+        "test mail_blob_transfer::tests::one_cycle_deadline_cancels_the_entire_composed_future ... ok",
+        "test mail_device_provider::tests::actual_tls_write_backpressure_cancels_and_joins_with_unconsumed_replies ... ok"
+      ],
+      "stage": "client-device-build__faction_client__test"
+    },
+    {
+      "log_sha256": "318fe3a43a74c1a35f7f717e6bfdc81bac9c332a17e6e05ab643ea4297edff33",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 0,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__home_mail_fixture__test"
+    },
+    {
+      "log_sha256": "2b280d82b990994e0d9ccf11fd571c7b31e52dd94aba1186433ab8b53f8ac9cb",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 1,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__mail_blob_fixture__test"
+    },
+    {
+      "log_sha256": "e6fda80766cf3cbdcdd772c0d24cda515ec2d9ed127b2c7067f0a62629870754",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__mail_blob_transfer__test"
+    },
+    {
+      "log_sha256": "32f2a971423cac98e6f0baafa445d6d304b182eaa7b726c11b1252ff4e4bab85",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 2,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__mail_blob_wire__test"
+    },
+    {
+      "log_sha256": "fc7092bda12f491fd3487903508996a5183ea0a377147ba09854dca79b9c3f07",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 0,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__mail_correspondents_fixture__test"
+    },
+    {
+      "log_sha256": "0e590aa798d5adef4a80b193cdfab2e963c01443a0688d9c65c97f5f29170ce3",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 10,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__mail_device_provider__test"
+    },
+    {
+      "log_sha256": "318fe3a43a74c1a35f7f717e6bfdc81bac9c332a17e6e05ab643ea4297edff33",
+      "primary_summary": {
+        "failed": 0,
+        "filtered": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 0,
+        "status": "ok"
+      },
+      "required_io_test_lines": [],
+      "stage": "client-device-build__mail_reply_fixture__test"
+    }
+  ],
+  "schema": 1,
+  "selected_source_inputs_verified_before_compilation": 810,
+  "source_membership_is_not_execution_count": true,
+  "test_supplement_commit": "358e35ceec242763d8ea2442a1cfc2cfc390cb7c"
+}

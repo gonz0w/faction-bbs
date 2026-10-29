@@ -1,0 +1,20 @@
+{
+  "authority": "PROJECT.md, root policy.toml and issue-scoped lead handoffs; no role grants extra authority.",
+  "configured_policy": {
+    "implementation": "temper_implementer / gpt-6.1-sol / high",
+    "lead": "Tracker writes, integration, operational boundaries and final acceptance.",
+    "separate_review": "temper_reviewer / gpt-6.1-sol / high",
+    "source_inspection": "bounded accepted source-qualification role"
+  },
+  "runtime_role_model_effort_observation": "Backend runtime telemetry unavailable; requested/configured routing is not claimed as observed.",
+  "schema": 1,
+  "separate_review": "The lead recorded nonauthor host runtime, CI/source and documentation review without findings before source49735783 froze. This evidence assembly remains subject to its own separate review.",
+  "source_review": {
+    "additional_test_only_lines": 13,
+    "integrated_source_prose_paths": 33,
+    "reviewer_runtime_replay": false,
+    "runtime_source_unchanged_between_497_and_358": true,
+    "separate_nonauthor_findings": 0
+  },
+  "workflow_costs": "No measured role/model cost or comparative quality claim."
+}

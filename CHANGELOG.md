@@ -7,6 +7,8 @@ This file records meaningful project changes. Product releases will use versione
 - Add explicit offline device-provider profile and public card preparation, plus an
   operator check of a complete independently approved proposal. Preparation changes
   no authority; separate init or apply retains the existing policy checks.
+  [Host and NetBSD software checks](dev-docs/evidence/offline-provider-preparation/README.md)
+  cover the generated-file transfer path in classic and Unicode modes.
 
 - Add optional durable provider policy and an explicit private foreground operator for preapproved same-home loopback service. Restart retains policy floors and certificate history; whole-root rollback detection, enrollment and production deployment remain out of scope. [Historical host and fresh NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) for the earlier #285 revision passed, including classic/Unicode 1 MiB restart/retry and independent ordinary mail, BBS and restricted SFTP access.
 

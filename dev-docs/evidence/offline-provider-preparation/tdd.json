@@ -1,0 +1,96 @@
+{
+  "native_original_failure_and_correction": {
+    "cause": "umask077 produced a safe0700 directory instead of the fixture intended0755; product correctly accepted the actual safe directory.",
+    "metadata_alias_limitation": {
+      "derived_indexes_are_not_original_records": true,
+      "early_snapshot_filename_does_not_establish_original_metadata": true,
+      "every_indexed_log_sha_verified": true,
+      "original_execution_stdout_and_per_role_logs_retained": true,
+      "original_metadata_alias_unavailable": true
+    },
+    "native_corrected_case": {
+      "binary_sha256": "0b9297ec99ec3269ee9c082e1a8b8891d031d4e226cf19cd296039de3e473ab7",
+      "filtered": 11,
+      "original_eleven_passes_not_replayed": true,
+      "passed": 1,
+      "source_sha256": "af3763817e3dc6357acba7787037d1030d78acedfc6ee1d1759cce4919df7036"
+    },
+    "original_command_not_relabelled": true,
+    "original_operator_cli": {
+      "failed": 1,
+      "passed": 11,
+      "returncode": 101
+    },
+    "subsequent_host_invariant_red_and_fixture_fix": "Recorded separately in the sequence; no producer or refusal assertion change.",
+    "wrapper_failure_after_passing_case": {
+      "actual_corrected_case_passed": true,
+      "cause": "PermissionError reading owned derived metadata created with root ownership0600.",
+      "corrected_only_owned_metadata_owner": true,
+      "passed_test_not_replayed": true,
+      "wrapper_failed_after_case": true
+    }
+  },
+  "no_retrospective_red": true,
+  "refactor": "Only assertion-equivalent Clippy refactors and the bounded existing profile-loader extraction; all meaningful assertions remain.",
+  "retained_nonacceptance_failures": [
+    "Initial setup EPERM/zero-test exit5 is not API or command RED.",
+    "Initial locked metadata/order failures remain setup/source-qualification history.",
+    "First shared GREEN retained the err_expect Clippy style failure; expect_err preserved the assertion and passed again.",
+    "First client GREEN retained a collapsible_if Clippy style failure; equivalent refactor passed final checks.",
+    "Two local command-path/redirection typos stopped before Cargo/product execution; they are retained setup errors, not behavior failures."
+  ],
+  "schema": 1,
+  "sequence": [
+    {
+      "green": "Accepted16 commands and87 Python checks, including37 provider source contracts; all27 metadata graphs and167 archive/source/license/no-JS reviews completed before Rust compilation.",
+      "private_receipt_sha256": "7771ca06a934d03b5e307cf8caff043e5895e4b1a4e87e0d119c9798c1c2c6a6",
+      "red": "Real PreparationProfiles assertions failed before feature/guard producers; a separate client CI staging assertion failed before its CI producer.",
+      "step": "feature/source configuration"
+    },
+    {
+      "green": "Four substantive card/schema/DER tests passed from materialized binaries.",
+      "private_green_result_sha256": "9818af3cdebb8d5834a0da527ca6915b41551d76abb5c695339815e40be2c2b2",
+      "private_red_result_sha256": "02fabc7c53b5f0666a8028c4692d4c62252b951119d54b237fd7021d3c5b2d15",
+      "red": "Rust E0432: preparation module absent at the new public consumer import, before producer edits.",
+      "step": "shared card and digest interface"
+    },
+    {
+      "green": "Original four assertions passed; subsequent adverse credential/profile/revocation and independent DER characterization passed in the six-test final suite.",
+      "private_green_result_sha256": "5601e692213902c0d6423ca15835ab376725e0430e9b42a61a28f958cee420d4",
+      "private_red_result_sha256": "2372ab0786fd5342f0865f385558a47f616b88dc9221ccf3d6b842b0b41587ff",
+      "red": "Four actual PTY consumers, including prepare and card independently, failed at the absent normal hidden-unlock prompt before client producers.",
+      "step": "maintained native CLI actions"
+    },
+    {
+      "green": "Twelve actual operator CLI controls plus all preserved runtime/authority suites passed; publisher unit control exercised seven failure phases.",
+      "private_green_result_sha256": "851e01559a9ee6f5ee615a7efa880aa1beaa458b1a65325dc3d19aaea235f094",
+      "private_red_result_sha256": "16d2c233c93442e5cc2be48f2966bcf6d6c2af2d4b1e28a61724c54b7160a0a5",
+      "red": "Actual old operator rejected the new six-argument prepare action with otherwise valid selected inputs, before producer edits.",
+      "step": "maintained operator preparation"
+    },
+    {
+      "green": "Eight Python consumers and actual32-control prepared console composition passed.",
+      "private_green_result_sha256": "b65d459741725e7b7c613b2dad832f3749374a04aa150d1e813bab61819577a3",
+      "private_red_result_sha256": "187df341b92e8a4d5c45476ed57f645a40843f0fa0e5b23a6486480c2971083c",
+      "red": "Four new prepared-mode Python consumer errors with the existing four controls still passing, before probe production.",
+      "step": "prepared production probe"
+    },
+    {
+      "green": "39 provider source-contract,8 probe and34 other Python controls passed; current graph guards reran without rewriting the original gate.",
+      "private_green_result_sha256": "fbabbd1a2f1f679a88cef3bb6a09d486474cda75a0750a0476beb910e0990909",
+      "private_red_result_sha256": "e8a9ffcdcf6df92b06d9058cc4d1692f00f8d57536f4d7e40cb6dac82dbdf7e8",
+      "red": "Two real prepared flag/source-ordering consumer failures before CI producer changes.",
+      "step": "prepared-mode CI consumer"
+    },
+    {
+      "green": "Set the intended fixture mode0755 explicitly, assert its actual mode, and retain the unchanged refusal expectation; focused1 and full12 host CLI controls passed.",
+      "historical_results_not_relabelled": true,
+      "private_green_result_sha256": "955f8a4a4cf93bf1f534649abaf871dfd70ea76ed12d649debc6ac2d7a0ffb12",
+      "private_red_result_sha256": "705337573a6b5569d2ab5e19c2de34acf70ef025c7de5fb38882ab78b47fc105",
+      "producer_unchanged": true,
+      "red": "Under actual umask077, an added invariant alone exposed that mkdir0755 produced mode0700. This is a fixture defect, not a product refusal defect.",
+      "step": "unsafe-directory test fixture supplement"
+    }
+  ],
+  "source_variants": "Exact selected measured variants are resolved by inputs.json; historical records and previous285 evidence remain unchanged."
+}

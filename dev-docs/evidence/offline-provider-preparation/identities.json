@@ -1,0 +1,1108 @@
+{
+  "host": {
+    "executables": [
+      {
+        "bytes": 2593424,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "743cad629e9ff388095b74a22ddf8690a42f3d967f6e4f424b0da9b2ca621c5a",
+        "stage": "api-green02",
+        "target": "preparation-88524d833343d980"
+      },
+      {
+        "bytes": 3736000,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "c89e1450ace165dc25cbf00be0e6b7052a8c9a471a5a0d0370e317d639b14318",
+        "stage": "cli-red01",
+        "target": "device_provider_preparation-fee655dc26539e9e"
+      },
+      {
+        "bytes": 14522032,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "c2ee5ba62244783f8baf2eee0096c1b8010d46b5df810f7add8bafe1cd840fea",
+        "stage": "cli-red01",
+        "target": "faction-client"
+      },
+      {
+        "bytes": 14870928,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "0c9476db9d81840229b178f96fae22232286d245fe8c0e26a6486969197cd520",
+        "stage": "cli-green01",
+        "target": "faction-client"
+      },
+      {
+        "bytes": 15790848,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "ad083435697fdc88ae0339a291298613abde92f69f3d8d13d82297683a9fd940",
+        "stage": "cli-green01",
+        "target": "faction_client-82c3e0037865e99d"
+      },
+      {
+        "bytes": 3952688,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "33b3f88d7f2c79785220fe5e42155918cf34af4648ca68b497dd694d7823e837",
+        "stage": "cli-green02",
+        "target": "device_provider_preparation"
+      },
+      {
+        "bytes": 15790848,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "73e0825d09756667bf5368704c38f5bb21b24d84ee95cfe8673caa0fc6da34eb",
+        "stage": "cli-green02",
+        "target": "faction-client"
+      },
+      {
+        "bytes": 14870928,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "4492639112c573289bef84dda9e62ff9e90d37fd174b8787461ab06a13cf5956",
+        "stage": "cli-green02",
+        "target": "faction-client"
+      },
+      {
+        "bytes": 3355856,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "e7accd094eeeb1c7b68bca25d21e48d41a04c566fcf6ece6ce2b28dc6828f6b7",
+        "stage": "final operator feature qualifiers",
+        "target": "operator_cli"
+      },
+      {
+        "bytes": 1336784,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "9503e25e29f2aa49f84864b4b4418cf58b5981257d6e508b9f3743c970fb5e8c",
+        "stage": "final operator feature qualifiers",
+        "target": "faction-provider"
+      },
+      {
+        "bytes": 3488136,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "0a9dd4e6c4733e8728e4287ef20f9502992236eeb4a0ad9c73efd89098c4851f",
+        "stage": "final operator feature qualifiers",
+        "target": "embedding"
+      },
+      {
+        "bytes": 2592656,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "f9fd1cc6d6ba34dd2cfa43975b5f9dde4aebfa02d8dccd5d76ca060c2f5cfaaa",
+        "stage": "final operator feature qualifiers",
+        "target": "preparation"
+      },
+      {
+        "bytes": 1716192,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "321b35e20f8e6795d1002eef7487548d08fb40de91184b769b4a45d63ae95497",
+        "stage": "final operator feature qualifiers",
+        "target": "durable_policy"
+      },
+      {
+        "bytes": 2448640,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "92fb66c019645defb6dc5d1f1778ed5ded5d9bb2099e9321d8e9444582b7d345",
+        "stage": "final operator feature qualifiers",
+        "target": "faction_provider"
+      },
+      {
+        "bytes": 3388624,
+        "materialized_before_execution": true,
+        "sha256": "6d9546bbd8a69200277e3c60251e59d98a991b4d1ce1bf4bc6ea0bd53eeb9428",
+        "stage": "prepared and legacy production console",
+        "target": "operator"
+      },
+      {
+        "bytes": 3965776,
+        "materialized_before_execution": true,
+        "sha256": "6bf65a4a3868012c75d576e7e3077e9eacc068e09f442939b45552fb20c09067",
+        "stage": "prepared and legacy production console",
+        "target": "fixture"
+      },
+      {
+        "bytes": 2593520,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "2fd39238a37f8729bf7c1cc062f71bcc20f5decfd195ff98f5c28f88fecc6e15",
+        "stage": "api-green-1793301605218197000",
+        "target": "preparation-88524d833343d980"
+      },
+      {
+        "actual_execution_role": "selected_product",
+        "bytes": 3057216,
+        "materialized_before_execution": true,
+        "sha256": "91a3df672cac2c53408df8edbb3a9ca5d36818fffda1dbd4b43c32f79d26656e",
+        "stage": "prepare-command-red",
+        "target": "faction-provider"
+      },
+      {
+        "actual_execution_role": "selected_test",
+        "bytes": 3190976,
+        "materialized_before_execution": true,
+        "sha256": "5aab69db74eb659ef420d0f88baed61bde71fc7a04d8d9bd5ba5bd5ab3013082",
+        "stage": "prepare-command-red",
+        "target": "operator_cli"
+      },
+      {
+        "actual_execution_role": "selected_test",
+        "bytes": 3354960,
+        "materialized_before_execution": true,
+        "sha256": "ba0e3e193fed687215cf1eccdd4895fb66d4c35c97396e41af14b2ccb19a31b3",
+        "stage": "prepare-green01",
+        "target": "operator_cli"
+      },
+      {
+        "bytes": 3356176,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "39336230321b96cd50798700e276b5e65d7d224ac5ca60102120a514fa63942a",
+        "stage": "native-umask-assert-red",
+        "target": "operator_cli"
+      },
+      {
+        "bytes": 3356176,
+        "hash_unchanged_after_execution": true,
+        "materialized_before_execution": true,
+        "sha256": "2762b4df8bcad164f22b9e8f809ac67e1efb27292743eaeca563c98551a323b0",
+        "stage": "native-umask-cli-green",
+        "target": "operator_cli"
+      }
+    ],
+    "libraries": {
+      "libcrypto.3.dylib": {
+        "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d",
+        "source": "existing OpenSSL3.6.3 installation; before/after identity unchanged"
+      },
+      "libssl.3.dylib": {
+        "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc",
+        "source": "existing OpenSSL3.6.3 installation; before/after identity unchanged"
+      }
+    },
+    "tools": {
+      "cargo": {
+        "sha256": "fec239e6b74df873f54ef52912bfcfcc8d8414bc14a7ae1e0be80460bae72841",
+        "version": "cargo 1.96.0 (30a34c682 2026-05-25)"
+      },
+      "openssl_cli": {
+        "version": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+      },
+      "rustc": {
+        "sha256": "c5922366bfe3d6d028a65d626f4e629b3adad066995cf0b60c8a4b617bba5ffe",
+        "version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2"
+      }
+    }
+  },
+  "host_current_bbs_seeds": {
+    "all_three_actual_executables_independently_retained": true,
+    "before_after_runtime_hashes_exact": true,
+    "binaries": {
+      "checkpoint_ui_fixture": {
+        "bytes": 2990760,
+        "sha256": "b69ffa67dc35206a6b1c30fef432708cb50be4a7885a2bce175825ebb07c825e"
+      },
+      "faction-client": {
+        "bytes": 14870928,
+        "sha256": "4492639112c573289bef84dda9e62ff9e90d37fd174b8787461ab06a13cf5956"
+      },
+      "home_mail_fixture": {
+        "bytes": 11560704,
+        "sha256": "cdc61cb75807b09364d412a35906d13616bf25c520d954e60b45d0dbe04335bc"
+      }
+    },
+    "owner_private_ssh_key_copied": false,
+    "source_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+    "source_role": "Fresh same-guest BBS/SFTP independence proof"
+  },
+  "native": {
+    "binaries": {
+      "client-default-bin__faction-client__bin": {
+        "bytes": 923104,
+        "features": [
+          "default"
+        ],
+        "sha256": "c5801a8f53849c5465dc636ef31c57c4a80c130774ff7acbe22268a8f321464d",
+        "stage": "client-default-bin",
+        "test": false
+      },
+      "client-default-build__faction_client__test": {
+        "bytes": 857520,
+        "features": [
+          "default"
+        ],
+        "sha256": "3dedad555f194a3acbb10d515f8be390fe54d7cffca2fc881f1b7e41fec9b30a",
+        "stage": "client-default-build",
+        "test": true
+      },
+      "client-device-build__attachment_checkpoint_schema__test": {
+        "bytes": 988624,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "4458a4a493c4bb3dc0ee962f2303c20e054b935dd25c5083a9bffab6065177c9",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__attachment_checkpoint_transactions__test": {
+        "bytes": 1185232,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "841e5358329bb62881b518ba6386aaacadaea6565e015b6a366fad5b11727b29",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__attachment_mail_delivery__test": {
+        "bytes": 1250768,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "11f55ba7c04a27db5fb0823fd24a012e19cfe847d5ce7133b7175cd2891812e2",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__attachment_rejection__test": {
+        "bytes": 1119696,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "4d15078b5214ef1ecc5a07cd868f407c1c4677341d92c69aaafa74e7c9bbea01",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__attachment_save__test": {
+        "bytes": 1054160,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "676bd2d8436bca62adce7e6b10ca6bf8972d27b176d11180581db2652900bc54",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__checkpoint_ui_fixture__test": {
+        "bytes": 857552,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "f5eb11382a3e7360a234eb1a1fceb9df5536d75ad6c60dcc8d1e2b5d33e97250",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__device_provider_console_fixture__test": {
+        "bytes": 791984,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__device_provider_preparation__test": {
+        "bytes": 1250800,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "e305c2237b106224b10f5b9719478b99d3f549e34814986e80566bf07014523a",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__faction-client__bin": {
+        "bytes": 3675840,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "dceb8a31357d00837877739ff4bc0e5a6b8394ba5a0194b59d6f7e727d13aece",
+        "stage": "client-device-build",
+        "test": false
+      },
+      "client-device-build__faction-client__test": {
+        "bytes": 4331216,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "40f3ed5c0258b9cd2b4f8979391864d088afd47a6fbd4d37d9c51abd5722de9e",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__faction_client__test": {
+        "bytes": 4462224,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "d2bea1f62194a1aca49d1704ae328f8b08fb4a4457c8534300dcac40d10065aa",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__home_mail_fixture__test": {
+        "bytes": 791984,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__mail_blob_fixture__test": {
+        "bytes": 791984,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "e0b3f1e325e992d7d268cfec67638e07da41155cba198d78eda28d398cb7551f",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__mail_blob_transfer__test": {
+        "bytes": 1250768,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "10ddaf6a350d9cb3e1083139c7419b30825a4ad9e9db0fc74dd959a280cde6d3",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__mail_blob_wire__test": {
+        "bytes": 988592,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "3e6e19ae71d499dc88164514fbbf098a69c47acc6f0bb1b417f54f94cf191361",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__mail_correspondents_fixture__test": {
+        "bytes": 791984,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__mail_device_provider__test": {
+        "bytes": 3872352,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "9cc6e42c343e60e49ff84ff5680947827820fab924cd7f55611a86aed062c95f",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-device-build__mail_reply_fixture__test": {
+        "bytes": 791984,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "0d6382390a0d2cb8865b2d61d9f9983bea62f9d1fbbabfa5f89affb0787af2c7",
+        "stage": "client-device-build",
+        "test": true
+      },
+      "client-native-build__faction_client__test": {
+        "bytes": 1578480,
+        "features": [
+          "default",
+          "native-mail"
+        ],
+        "sha256": "05b7fb2a5115c1af983cebb9180ee564c2457b0bf828bda2693be741968246b9",
+        "stage": "client-native-build",
+        "test": true
+      },
+      "client-network-build__faction_client__test": {
+        "bytes": 4134528,
+        "features": [
+          "default",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "e2e917c3c4e086a1fded6a197cd5a6b47c7da8433b43026fd57242d6a8417217",
+        "stage": "client-network-build",
+        "test": true
+      },
+      "console-current-bins__checkpoint_ui_fixture__example": {
+        "bytes": 792000,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "6d1731ca8ba9d65662371d56983b6185e194ffaa244d008a641cb6e39284c060",
+        "stage": "console-current-bins",
+        "test": false
+      },
+      "console-current-bins__device_provider_console_fixture__example": {
+        "bytes": 923128,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "6bd856f952bbf1d778273bde7837540ce68d5e986c87b8e40358422a13643474",
+        "stage": "console-current-bins",
+        "test": false
+      },
+      "console-current-bins__faction-client__bin": {
+        "bytes": 3675840,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "dceb8a31357d00837877739ff4bc0e5a6b8394ba5a0194b59d6f7e727d13aece",
+        "stage": "console-current-bins",
+        "test": false
+      },
+      "console-current-bins__home_mail_fixture__example": {
+        "bytes": 2954880,
+        "features": [
+          "default",
+          "device-provider",
+          "native-mail",
+          "network-mail"
+        ],
+        "sha256": "74fd8b5266bc759634d595f20095fe67e32850704363ef8eb83916f4f54c0d0e",
+        "stage": "console-current-bins",
+        "test": false
+      },
+      "faction-daemon": {
+        "bytes": 78544,
+        "features": null,
+        "sha256": "1712227c4637b1cf2ff25ba680f01fcced54cd0fc213ba0696d0bc68b89ccd1d",
+        "stage": "faction-daemon",
+        "test": false
+      },
+      "faction-tty": {
+        "bytes": 79976,
+        "features": null,
+        "sha256": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c",
+        "stage": "faction-tty",
+        "test": false
+      },
+      "operator-bin__faction-provider__bin": {
+        "bytes": 1221000,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "dabe3934f173711137093d414df754cbe1ff64120188b7b6830d9d6445d8e597",
+        "stage": "operator-bin",
+        "test": false
+      },
+      "provider-blob-iq-build__durable_policy__test": {
+        "bytes": 1090376,
+        "features": [
+          "blob-iq",
+          "default"
+        ],
+        "sha256": "83f2b6e2a504f01cc35b8a7f0ee26461652b39e9412e76bc9e6ecb71dccc1c3e",
+        "stage": "provider-blob-iq-build",
+        "test": true
+      },
+      "provider-blob-iq-build__embedding__test": {
+        "bytes": 2254416,
+        "features": [
+          "blob-iq",
+          "default"
+        ],
+        "sha256": "f5f83bd8fea2389266c37e8fa01457862431f1db75a66885a1dbc187db5ef5e3",
+        "stage": "provider-blob-iq-build",
+        "test": true
+      },
+      "provider-blob-iq-build__faction_provider__test": {
+        "bytes": 1359848,
+        "features": [
+          "blob-iq",
+          "default"
+        ],
+        "sha256": "209480c7e1ccf6167e70d34aed74166b45e1c1f67f1da5437f1cbc40d61432bf",
+        "stage": "provider-blob-iq-build",
+        "test": true
+      },
+      "provider-blob-iq-build__operator_cli__test": {
+        "bytes": 1090376,
+        "features": [
+          "blob-iq",
+          "default"
+        ],
+        "sha256": "d95cd352b368c3f5705cde0bcee51e0b65231e1d4e250cc1bf574e43edc0a6ed",
+        "stage": "provider-blob-iq-build",
+        "test": true
+      },
+      "provider-blob-iq-build__preparation__test": {
+        "bytes": 1090376,
+        "features": [
+          "blob-iq",
+          "default"
+        ],
+        "sha256": "53096b8315a3a137b40ab936e0b2815b1a82f1e865da39415b16debab907cab8",
+        "stage": "provider-blob-iq-build",
+        "test": true
+      },
+      "provider-default-build__durable_policy__test": {
+        "bytes": 1090376,
+        "features": [
+          "default"
+        ],
+        "sha256": "2f6c8fceefb334530543e99f7d9f186dc37b5f79fa6f18a0d5d1a79f4f9cb8e8",
+        "stage": "provider-default-build",
+        "test": true
+      },
+      "provider-default-build__embedding__test": {
+        "bytes": 1797240,
+        "features": [
+          "default"
+        ],
+        "sha256": "43023c4aaaf174c63d11e519be614bfa1b0bc255b92a3a1d308baedba2e0736b",
+        "stage": "provider-default-build",
+        "test": true
+      },
+      "provider-default-build__faction_provider__test": {
+        "bytes": 1359864,
+        "features": [
+          "default"
+        ],
+        "sha256": "19c4dae8e057992b75379f3057f8b6aadfd671b5198c9e802c82ae39e9ed9fb8",
+        "stage": "provider-default-build",
+        "test": true
+      },
+      "provider-default-build__operator_cli__test": {
+        "bytes": 1090376,
+        "features": [
+          "default"
+        ],
+        "sha256": "34ff6ac2f076f6973455ddd2cd0abe87fd71489249832dd802ebc8da5993e374",
+        "stage": "provider-default-build",
+        "test": true
+      },
+      "provider-default-build__preparation__test": {
+        "bytes": 1090376,
+        "features": [
+          "default"
+        ],
+        "sha256": "55a79251eade69c6b1625e64755c53d64c069a9e7c0edc7765cef159b330e67f",
+        "stage": "provider-default-build",
+        "test": true
+      },
+      "provider-durable-build__durable_policy__test": {
+        "bytes": 1196392,
+        "features": [
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "41fee53ac89b706a1e45d7c7c7742030f36930187ffa78638d23689c0e01042d",
+        "stage": "provider-durable-build",
+        "test": true
+      },
+      "provider-durable-build__embedding__test": {
+        "bytes": 1801872,
+        "features": [
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "fae40b0080cdd9d65d849af5e9c9fd1dcf477c679f5fd63cc331f903f07d3116",
+        "stage": "provider-durable-build",
+        "test": true
+      },
+      "provider-durable-build__faction_provider__test": {
+        "bytes": 1527560,
+        "features": [
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "98cef96fbdf2f40b006df9c133b2ad59d4fabf639ad33e76f41310770f7854bc",
+        "stage": "provider-durable-build",
+        "test": true
+      },
+      "provider-durable-build__operator_cli__test": {
+        "bytes": 1090376,
+        "features": [
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "ac2a9d70467948c7e5b7f03a50e20842228939d9a76bcb5be3754d2b79b6ccf1",
+        "stage": "provider-durable-build",
+        "test": true
+      },
+      "provider-durable-build__preparation__test": {
+        "bytes": 1090376,
+        "features": [
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "e479ce385158ee2e2bd856380de489d8483148a69e22a2a57176b3b9fe27509d",
+        "stage": "provider-durable-build",
+        "test": true
+      },
+      "provider-durable-iq-build__durable_policy__test": {
+        "bytes": 1209408,
+        "features": [
+          "blob-iq",
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "7d9846bf8521b32eea563e7c63fac58f386142acb3782b6d1912366875ff4061",
+        "stage": "provider-durable-iq-build",
+        "test": true
+      },
+      "provider-durable-iq-build__embedding__test": {
+        "bytes": 2259880,
+        "features": [
+          "blob-iq",
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "21ad292749a89324060f5eca5d970564e11d1914dde95805e7070f9fa15ccb24",
+        "stage": "provider-durable-iq-build",
+        "test": true
+      },
+      "provider-durable-iq-build__faction_provider__test": {
+        "bytes": 1527568,
+        "features": [
+          "blob-iq",
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "b653ce639fd81212f14778e2c53dfa207333432fb366b3b58fbcf876b55d6b2e",
+        "stage": "provider-durable-iq-build",
+        "test": true
+      },
+      "provider-durable-iq-build__operator_cli__test": {
+        "bytes": 1090376,
+        "features": [
+          "blob-iq",
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "e291c0af972a787b8dfc28c2684d66a5298da53b62a7143aa8ffbbf5704557ef",
+        "stage": "provider-durable-iq-build",
+        "test": true
+      },
+      "provider-durable-iq-build__preparation__test": {
+        "bytes": 1090376,
+        "features": [
+          "blob-iq",
+          "default",
+          "durable-policy"
+        ],
+        "sha256": "e06ffa5c5ea0be91461182c388268d7d3c39e2622b296f2f4a4128b3dd6f7499",
+        "stage": "provider-durable-iq-build",
+        "test": true
+      },
+      "provider-operator-build__durable_policy__test": {
+        "bytes": 1196392,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "9771c22c9182bbca7905da9fd5a5dad1f97508a44ff3b3942ea5d00a466636b2",
+        "stage": "provider-operator-build",
+        "test": true
+      },
+      "provider-operator-build__embedding__test": {
+        "bytes": 1801256,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "70057c013cc8d97cc42e496dc8c7fb8a3a3247ca05b8f4c15ec1079a27dcc321",
+        "stage": "provider-operator-build",
+        "test": true
+      },
+      "provider-operator-build__faction-provider__bin": {
+        "bytes": 1221000,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "dabe3934f173711137093d414df754cbe1ff64120188b7b6830d9d6445d8e597",
+        "stage": "provider-operator-build",
+        "test": false
+      },
+      "provider-operator-build__faction-provider__test": {
+        "bytes": 1113808,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "6131f62a70aa4ef5ab1111062fd89b4ba090f58204282c05854a2f339f536d1e",
+        "stage": "provider-operator-build",
+        "test": true
+      },
+      "provider-operator-build__faction_provider__test": {
+        "bytes": 1527552,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "22447280c8b2bee419393056c3d125708b377f911352d75c120008924db7c29f",
+        "stage": "provider-operator-build",
+        "test": true
+      },
+      "provider-operator-build__operator_cli__test": {
+        "bytes": 1749616,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "3a1a313f11d59e29d206983b445302b04c85c93224b95bad04397c11f9e6463e",
+        "stage": "provider-operator-build",
+        "test": true
+      },
+      "provider-operator-build__preparation__test": {
+        "bytes": 1473552,
+        "features": [
+          "default",
+          "durable-policy",
+          "operator",
+          "preparation"
+        ],
+        "sha256": "c1567a806ea7df292464a053505a99cff580829428fe035a7d2d7f03a7f67e39",
+        "stage": "provider-operator-build",
+        "test": true
+      },
+      "provider-preparation-build__durable_policy__test": {
+        "bytes": 1090376,
+        "features": [
+          "default",
+          "preparation"
+        ],
+        "sha256": "bccfb0cd12c9fcf7e299db92122e5c9454e1c5ffd662f63fd2f1ed6d9b407f31",
+        "stage": "provider-preparation-build",
+        "test": true
+      },
+      "provider-preparation-build__embedding__test": {
+        "bytes": 1797008,
+        "features": [
+          "default",
+          "preparation"
+        ],
+        "sha256": "e894d2cbd72635a4ff1dae9818464dc890da4168916c461669b6d69ce38a7339",
+        "stage": "provider-preparation-build",
+        "test": true
+      },
+      "provider-preparation-build__faction_provider__test": {
+        "bytes": 1359984,
+        "features": [
+          "default",
+          "preparation"
+        ],
+        "sha256": "3a59e032264568ccdcf185afb4b2df4d9c495e7ce8ea4616653ef808ea2709ac",
+        "stage": "provider-preparation-build",
+        "test": true
+      },
+      "provider-preparation-build__operator_cli__test": {
+        "bytes": 1090376,
+        "features": [
+          "default",
+          "preparation"
+        ],
+        "sha256": "e8183c2d54694750d4cb7da7666de6fb96cae62fe1917ca7334b92373d322d48",
+        "stage": "provider-preparation-build",
+        "test": true
+      },
+      "provider-preparation-build__preparation__test": {
+        "bytes": 1473920,
+        "features": [
+          "default",
+          "preparation"
+        ],
+        "sha256": "9e27fedc6431a8ec27778d7f4129e02c6c2e7384a3c39619598c802c9b5b6b5e",
+        "stage": "provider-preparation-build",
+        "test": true
+      },
+      "server-current-bins__faction-broker__bin": {
+        "bytes": 464288,
+        "features": [],
+        "sha256": "9af9f03132bca8fbad47d72646abaced551531f2e8037812dd73b633ed44e41e",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction-client__bin": {
+        "bytes": 923104,
+        "features": [
+          "default"
+        ],
+        "sha256": "c5801a8f53849c5465dc636ef31c57c4a80c130774ff7acbe22268a8f321464d",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction-files__bin": {
+        "bytes": 595424,
+        "features": [],
+        "sha256": "955f22edf3d61c07835e78a10f119725a9e831907976ecd3a0c6d137ecb64d0e",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction-member__bin": {
+        "bytes": 3625280,
+        "features": [],
+        "sha256": "8f48af24dda8996f5e05e743455ecaa3973b69acb3486b7ab0f454b7a2a67bf8",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction-service__bin": {
+        "bytes": 4018464,
+        "features": [],
+        "sha256": "21070f4fa8b44bec7b821d93a0a42588c8687c9c1e930cc85f755353545bb0de",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction-ssh__bin": {
+        "bytes": 398784,
+        "features": [],
+        "sha256": "706ce99a4311099edd21416b65ced8081a01aaa2ca2cba9915a44f2bc8529c1b",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction-sysop__bin": {
+        "bytes": 660952,
+        "features": [],
+        "sha256": "470e8525774cfeca5890ceac507b38ac8eda2f4dddf77ceb5ad6e62eb53bd758",
+        "stage": "server-current-bins",
+        "test": false
+      },
+      "server-current-bins__faction__bin": {
+        "bytes": 3887392,
+        "features": [],
+        "sha256": "4bdc59021dca97f2d5bcf50ca190bbd5b17a2754ab0b5e7c129e98c270f23679",
+        "stage": "server-current-bins",
+        "test": false
+      }
+    },
+    "distinct_original_elf_sha256_count": 63,
+    "libraries": {
+      "libc.so.12.224": {
+        "bytes": 2644584,
+        "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+      },
+      "libcrypt.so.1.0": {
+        "bytes": 80048,
+        "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+      },
+      "libcrypto.so.16.0": {
+        "bytes": 6244640,
+        "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+      },
+      "libgcc_s.so.1.0": {
+        "bytes": 149040,
+        "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+      },
+      "libm.so.0.14": {
+        "bytes": 420120,
+        "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+      },
+      "libpthread.so.1.6": {
+        "bytes": 166600,
+        "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+      },
+      "libssl.so.16.0": {
+        "bytes": 1262704,
+        "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+      },
+      "libutil.so.7.25": {
+        "bytes": 165496,
+        "sha256": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f"
+      }
+    },
+    "loader": {
+      "bytes": 228016,
+      "sha256": "0620b2dd6ab034293bda220a88eb1801ae7eaf01c7e272721e924cc5c3556a07"
+    },
+    "materialized_product_roles": 12,
+    "platform": "NetBSD11.0/aarch64",
+    "producer_binaries_unchanged_by_test_supplement": true,
+    "products": {
+      "checkpoint_ui_fixture": {
+        "bytes": 792000,
+        "sha256": "6d1731ca8ba9d65662371d56983b6185e194ffaa244d008a641cb6e39284c060"
+      },
+      "device_provider_console_fixture": {
+        "bytes": 923128,
+        "sha256": "6bd856f952bbf1d778273bde7837540ce68d5e986c87b8e40358422a13643474"
+      },
+      "faction": {
+        "bytes": 3887392,
+        "sha256": "4bdc59021dca97f2d5bcf50ca190bbd5b17a2754ab0b5e7c129e98c270f23679"
+      },
+      "faction-broker": {
+        "bytes": 464288,
+        "sha256": "9af9f03132bca8fbad47d72646abaced551531f2e8037812dd73b633ed44e41e"
+      },
+      "faction-client": {
+        "bytes": 3675840,
+        "sha256": "dceb8a31357d00837877739ff4bc0e5a6b8394ba5a0194b59d6f7e727d13aece"
+      },
+      "faction-daemon": {
+        "bytes": 78544,
+        "sha256": "1712227c4637b1cf2ff25ba680f01fcced54cd0fc213ba0696d0bc68b89ccd1d"
+      },
+      "faction-files": {
+        "bytes": 595424,
+        "sha256": "955f22edf3d61c07835e78a10f119725a9e831907976ecd3a0c6d137ecb64d0e"
+      },
+      "faction-member": {
+        "bytes": 3625280,
+        "sha256": "8f48af24dda8996f5e05e743455ecaa3973b69acb3486b7ab0f454b7a2a67bf8"
+      },
+      "faction-provider": {
+        "bytes": 1221000,
+        "sha256": "dabe3934f173711137093d414df754cbe1ff64120188b7b6830d9d6445d8e597"
+      },
+      "faction-service": {
+        "bytes": 4018464,
+        "sha256": "21070f4fa8b44bec7b821d93a0a42588c8687c9c1e930cc85f755353545bb0de"
+      },
+      "faction-tty": {
+        "bytes": 79976,
+        "sha256": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c"
+      },
+      "home_mail_fixture": {
+        "bytes": 2954880,
+        "sha256": "74fd8b5266bc759634d595f20095fe67e32850704363ef8eb83916f4f54c0d0e"
+      }
+    },
+    "runtime_source_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+    "source_inputs_verified": 810,
+    "stable_elf_copies": 69,
+    "supplemental_test_artifacts": {
+      "faction-provider__product": {
+        "bytes": 1221000,
+        "sha256": "dabe3934f173711137093d414df754cbe1ff64120188b7b6830d9d6445d8e597"
+      },
+      "operator_cli__test": {
+        "bytes": 1749688,
+        "sha256": "0b9297ec99ec3269ee9c082e1a8b8891d031d4e226cf19cd296039de3e473ab7"
+      }
+    },
+    "test_supplement_commit": "358e35ceec242763d8ea2442a1cfc2cfc390cb7c",
+    "tool_hashes_and_versions_observed": true,
+    "tools": {
+      "cargo": {
+        "bytes": 43795088,
+        "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42",
+        "version": "cargo 1.96.0 (30a34c682 2026-05-25) (built from a source tarball)"
+      },
+      "cc": {
+        "bytes": 1419696,
+        "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242",
+        "version": "cc (nb3 20260326) 12.5.0"
+      },
+      "clippy": {
+        "bytes": 1832248,
+        "sha256": "1437f57ffe3ac2caf98e0af5b5e2392b98951b539242c5cbcfaf333c2afa75bd",
+        "version": "clippy 0.1.96 (f246580199 2026-05-28)"
+      },
+      "openssl": {
+        "bytes": 7572992,
+        "sha256": "29a8c4bd9def254d973ca9946fced30a89f95e914a46f1e42333a25b5e303627",
+        "version": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)"
+      },
+      "python": {
+        "bytes": 68584,
+        "sha256": "07f1f1fc61dbb8823d9219a9a35dd0ce81f9c5526d74f5a5dde5fe9509266ec7",
+        "version": "Python 3.13.14"
+      },
+      "rustc": {
+        "bytes": 14128,
+        "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb",
+        "version": "rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)"
+      },
+      "rustfmt": {
+        "bytes": 6824568,
+        "sha256": "8d10878f8e44214ced0050ac3f953315485671958d5aa4c5c2be94fbbb0b25a9",
+        "version": "rustfmt 1.9.0-stable (f246580199 2026-05-28)"
+      },
+      "ssh": {
+        "bytes": 467232,
+        "sha256": "e3c362a200affcb3bcf4a34f31405ff9d7f1e57b9dd33d528669949f14cbf85d",
+        "version": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+      },
+      "sshd": {
+        "bytes": 163192,
+        "sha256": "4bf5348d6c51881309f4f357ff0ba8de2a3213554a89d14497ab8aae4bcb2907",
+        "version": "OpenSSH_10.3 NetBSD_Secure_Shell-20260408-hpn13v14-lpk, OpenSSL 3.5.7 9 Jun 2026"
+      }
+    },
+    "whole_tool_executable_bytes_not_all_archived": true
+  },
+  "retention": "Executable bytes and original command/log/source captures are private; public values here are observed identities only.",
+  "schema": 1,
+  "source_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+  "test_supplement_commit": "358e35ceec242763d8ea2442a1cfc2cfc390cb7c"
+}

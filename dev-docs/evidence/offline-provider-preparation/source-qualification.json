@@ -1,0 +1,68 @@
+{
+  "ci": {
+    "boundary_difference": "Full block includes the two-space native_mail header; body-only digest excludes that header. Both byte regions remain unchanged.",
+    "client_binary_staged_and_hashed_before_test": true,
+    "cold_metadata_ordering": "Warm all selected graphs before dependency guards inspect them; preserve the initial cold/order failures separately.",
+    "explicit_client_executable_and_private_capture_environment": true,
+    "native_mail_body_only_sha256": "d6dc9b772d59a7ea2b4a204684dee53feae687a92ddcb0dad77fbfce2874232a",
+    "native_mail_full_job_sha256": "38d6b07a15236a673b5685a55854f54718a8d036c18232bf37e4bb4936fcd5de",
+    "prepared_operator_probe_selected_only_on_operator_consumer": true
+  },
+  "final_test_supplement_commit": "358e35ceec242763d8ea2442a1cfc2cfc390cb7c",
+  "gate_scope_note": "The original/supplemental source/graph gates precede their affected compilation and remain immutable receipts; runtime producers were added after the initial gate, and the final test-only fixture correction changes no graph input.",
+  "graph_scope": {
+    "device_provider_selects_preparation_only": true,
+    "ordinary_default_native_network_graphs_exclude_preparation_operator_durable": true,
+    "platforms": [
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-netbsd",
+      "aarch64-apple-darwin"
+    ],
+    "provider_profiles": [
+      "default",
+      "blob-iq",
+      "durable-policy",
+      "preparation",
+      "operator"
+    ],
+    "registry_versions_checksums_unchanged": true,
+    "root_lock_delta": "Existing local provider dependency adds already qualified TOML; no registry-version/checksum change.",
+    "root_profiles": [
+      "default",
+      "native-mail",
+      "network-mail",
+      "device-provider"
+    ],
+    "standalone_provider_lock_unchanged": true
+  },
+  "historical_boundaries": {
+    "initial_default_toolchain_1_98": "Early read-only baseline inspection only, not the accepted Rust1.96 source gate or runtime qualification.",
+    "initial_locked_metadata_refusal": "Preserved local lock-update setup failure; accepted metadata and all compilation used the qualified unchanged registry versions.",
+    "selected_810": "Broad current tracked source/config/inventory reference scope, not a claim every file executed.",
+    "setup_exit_5_zero_tests": "Preserved unavailable/setup attempt; not a genuine behavioral RED.",
+    "whole_capture_19306": "Private source-gate repository-wide capture includes historical/supporting files. It is not a runtime execution count and is not published per variant."
+  },
+  "initial_gate": {
+    "commands": 16,
+    "compilation_followed_lead_verification": true,
+    "complete_archive_source_license_no_js_review": true,
+    "metadata_graphs": 27,
+    "private_receipt_sha256": "7771ca06a934d03b5e307cf8caff043e5895e4b1a4e87e0d119c9798c1c2c6a6",
+    "provider_contract_tests": 37,
+    "python_tests": 87,
+    "qualified_registry_archives": 167
+  },
+  "schema": 1,
+  "source_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+  "supplemental_ci_gate": {
+    "commands": 11,
+    "new_prepared_consumer_ci_has_actual_two_failure_red": true,
+    "other_python_tests": 34,
+    "prior_gate_unchanged": true,
+    "private_receipt_sha256": "fbabbd1a2f1f679a88cef3bb6a09d486474cda75a0750a0476beb910e0990909",
+    "probe_tests": 8,
+    "provider_contract_tests": 39,
+    "python_tests": 81,
+    "source_guards_inspected_current_graphs": 27
+  }
+}

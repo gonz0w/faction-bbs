@@ -1,0 +1,154 @@
+{
+  "host": {
+    "client_binary_test_harness_reported_seconds": 25.5,
+    "client_pty_harness_reported_seconds": 31.39,
+    "compiler_jobs": "Initially two under an exclusive compiler lane; later one while the operator had a separate one-job lane, preserving the team maximum of two.",
+    "legacy_console_whole_pipeline": {
+      "maximum_rss_bytes": 102563840,
+      "observer": "retained /usr/bin/time process-tree macro",
+      "private_log_sha256": "bd513a7040bfabf1ffc67873ecffd0d94d56bc9d4861c4ea82df02f77ac04322",
+      "system_seconds": 4.25,
+      "user_seconds": 41.18,
+      "wall_seconds": 64.24
+    },
+    "prepared_console_whole_pipeline": {
+      "maximum_rss_bytes": 100532224,
+      "observer": "retained /usr/bin/time process-tree macro",
+      "private_log_sha256": "b84686a1b485905318ddd09bb8580a36d38b807b5dd2f380fccd61555d47b471",
+      "system_seconds": 5.09,
+      "user_seconds": 68.48,
+      "wall_seconds": 93.07
+    }
+  },
+  "interpretation": [
+    "Console macro observations include synthetic mail peers, clients, operator and harness; they are not product-only memory or CPU measurements.",
+    "Rust harness-reported elapsed time is a different observer from the whole-console process-tree macro and must not be combined with it.",
+    "No host product-only peak-memory, hardware or supported-capacity claim follows."
+  ],
+  "native": {
+    "build": {
+      "c_helpers_jobs": 1,
+      "cpus": 2,
+      "doc_tests_are_build_envelope_compile_checks": true,
+      "elapsed_sum_seconds": 321.6313189140001,
+      "max_jobs": 2,
+      "physical_memory_bytes": 2128732160,
+      "root_fmt_returncode": 0,
+      "stage_count": 33
+    },
+    "cost_interpretation": "Per-stage monotonic elapsed measurements and their reported sums are build/test observation scopes; production macros include both display modes, setup and restarts. No product-only peak RSS was measured in this guest. Runtime and compilation used distinct envelopes.",
+    "fresh_bbs_sftp_seconds": {
+      "host": 21.22714137501316,
+      "native": 7.712914417000093
+    },
+    "host_seed_compilation": {
+      "distinct_from_runtime": true,
+      "jobs": 1,
+      "returncode": 0,
+      "rust": "1.96.0",
+      "seconds": 1.9014172090101056
+    },
+    "runtime": {
+      "compilation_performed": false,
+      "cpus": 2,
+      "elapsed_sum_seconds": 354.84871279199984,
+      "original_command_stages": 18,
+      "physical_memory_bytes": 1054990336,
+      "previously_unrun_stages": 21,
+      "production": [
+        {
+          "elapsed_seconds": 0.26369879199999957,
+          "log_sha256": "0866d09d8d922f64c852d0d5ec0264b2b02fd0d164e42c9b7543a6120395527b",
+          "returncode": 0,
+          "stage": "native-operator-harness-unit8"
+        },
+        {
+          "elapsed_seconds": 85.072922959,
+          "log_sha256": "ed5d28cd903b6c3da7cf8353253fb4bb3be9f1fd643aa1efdf6095a1aba474f8",
+          "returncode": 0,
+          "stage": "native-maintained-operator-prepared"
+        },
+        {
+          "elapsed_seconds": 82.711190958,
+          "log_sha256": "84b2aa0a3e9532d0e575ee0e88a55852ab1a0dfad86d0f25d30e2fec301eeac0",
+          "returncode": 0,
+          "stage": "native-maintained-operator-legacy"
+        }
+      ],
+      "production_macros_include_both_modes_setup_and_restarts": true
+    },
+    "test_only_supplement": {
+      "build_cpus": 2,
+      "build_memory_bytes": 2128732160,
+      "build_stages": [
+        {
+          "elapsed_seconds": 3.282227374999998,
+          "jobs": 1,
+          "log_sha256": "bb9a144fee8d98395a3420c5d4405ccb77e17a729e29ddad7f45349f4559600a",
+          "returncode": 0,
+          "stage": "guard-provider"
+        },
+        {
+          "elapsed_seconds": 1.157449542000002,
+          "jobs": 1,
+          "log_sha256": "3cfbc901f5657b129cfba89a803f901432d7c0be64c8c006b6778f1d766d369d",
+          "returncode": 0,
+          "stage": "guard-network"
+        },
+        {
+          "elapsed_seconds": 0.48338483300000235,
+          "jobs": 1,
+          "log_sha256": "56a68b7a7b7c929cd679c46970f372ee51deeb3f743747f0f101abc8e19c660f",
+          "returncode": 0,
+          "stage": "guard-provider-auth"
+        },
+        {
+          "elapsed_seconds": 0.0726204170000102,
+          "jobs": 1,
+          "log_sha256": "46a3750a81095cd9d2d8b5779b36ba4d5a8ad8669cf5e77b2537a902ce5d6ac4",
+          "returncode": 0,
+          "stage": "fmt"
+        },
+        {
+          "elapsed_seconds": 1.4316374170000046,
+          "jobs": 1,
+          "log_sha256": "0e2fa2213c8fde475814c7ef636b84f2029310b269091acaa3b351b2e3781a0c",
+          "returncode": 0,
+          "stage": "affected-test-build"
+        },
+        {
+          "elapsed_seconds": 0.24058187500000372,
+          "jobs": 1,
+          "log_sha256": "a52b9ae485554b549603ea527face2505674a850886b7710b6d65f420a3d43bf",
+          "returncode": 0,
+          "stage": "strict-clippy"
+        }
+      ],
+      "case_returncode": 0,
+      "case_seconds": 0.3205452909999984,
+      "jobs": 1,
+      "runtime_memory_bytes": 1054990336
+    }
+  },
+  "resource_contract": {
+    "binary_payload_bytes": 8192,
+    "console_calls": 65,
+    "console_seconds": 60,
+    "credential_permits": 2,
+    "drain_seconds": 5,
+    "handles": 8,
+    "iq_payload_bytes": 16384,
+    "kernel_slots": 2,
+    "lifetime_history_entries": 32,
+    "normal_admission_ms": 5000,
+    "normal_sessions": 8,
+    "owner_helpers": 3,
+    "provider_admission_seconds": 5,
+    "provider_attempts": 8,
+    "provider_connections": 1,
+    "provider_cycle_seconds": 10,
+    "sdk_call_seconds_including_mail_release": 10,
+    "sdk_chunks_per_call": 4
+  },
+  "schema": 1
+}

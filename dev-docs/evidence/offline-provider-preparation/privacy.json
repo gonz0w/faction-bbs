@@ -1,0 +1,407 @@
+{
+  "actual_exact_byte_union_values": 1052,
+  "classification_review": "Separate nonauthor review verified all15 host static values and the exact native endpoint source SHA/offset/known-host construction. No blanket endpoint, path or pattern exclusion.",
+  "corpora": [
+    {
+      "exact_distinct_values": 100,
+      "private_corpus_sha256": "54f4f9b01af429a37ff3e52dfc51aee9a12732360a8fa2c0025dc2a972c0825a",
+      "scope": "host_A_available"
+    },
+    {
+      "exact_distinct_values": 844,
+      "private_corpus_sha256": "b38081a8e3cc1a27f032ce0be5214330ca6e7dacc7340e048f45e82da186ceea",
+      "scope": "host_B_available"
+    },
+    {
+      "exact_distinct_values": 86,
+      "private_corpus_sha256": "7660ba4677eb5d6cb549b46e97c58ea4660f0f86ee2865fcb7f5bec2036e593c",
+      "scope": "host_new_failed_fixture_available"
+    },
+    {
+      "exact_distinct_values": 138,
+      "private_corpus_sha256": "8d43b227d0d79297915fac4a3c896b498bce3da95863e9cf2bb7ce5502d22319",
+      "scope": "native_available"
+    }
+  ],
+  "corpus_counts_are_not_unchecked_sums": true,
+  "final_guard_manifest_scan": "The later exact manifest and guard receive a separate final available-value scan, whose private receipt is kept outside this self-pinned record to avoid a hash cycle.",
+  "limitations": [
+    "Only retained available values are covered. Successful journey/unit/PTY fixture trees removed by maintained cleanup, hidden passwords absent from transcripts and memory-only/random values that were never retained remain outside coverage.",
+    "Host B844 corpus predates the new failed-host fixture; its86-value overlay is separate. Cross-scope union membership is deduplicated by actual bytes.",
+    "Native export-only scans are distinct from the complete resolved package/source scan.",
+    "Original corpus categories and raw positive matches remain preserved. Source-backed static classification does not mean raw zero matches."
+  ],
+  "native_endpoint_reviewed_overlay": {
+    "bytes": 16,
+    "classification": "separate reviewed overlay: this one exact previously published fixed loopback fixture literal, only in immutable reused source objects; original native category remains unchanged",
+    "evidence": {
+      "byte_offset": 7764,
+      "line": 63,
+      "path": "dev-docs/evidence/inbox-reply/lead/objects/0f8477e7f5c927cdf0dddc43634e4e21f21f3a0e49569f60a6ee41fb92044a28",
+      "sha256": "0f8477e7f5c927cdf0dddc43634e4e21f21f3a0e49569f60a6ee41fb92044a28"
+    },
+    "kinds": [
+      "actual_endpoint"
+    ],
+    "native_classification": "available_actual_private_value",
+    "value_sha256": "d2494cfe14d106a5ee7fe9784647111b0a7913d37e9a294c55eb8263a80ebc76"
+  },
+  "original_native_categories": {
+    "available_actual_private_values": 132,
+    "known_public_fixture_constants": 6,
+    "not_renumbered_by_review_overlay": true
+  },
+  "owner_ssh_material_read_or_copied_for_corpora": false,
+  "pre_manifest_payload_scan": {
+    "curated_records": 12,
+    "exact_static_matches_are_not_raw_zero": true,
+    "per_corpus": {
+      "host_A_available": {
+        "categories": {
+          "curated_records": {
+            "files": 12,
+            "matched_distinct_values": 0,
+            "raw_file_value_hits": 0,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "new_source_objects": {
+            "files": 50,
+            "matched_distinct_values": 0,
+            "raw_file_value_hits": 0,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "reused_source_objects": {
+            "files": 798,
+            "matched_distinct_values": 0,
+            "raw_file_value_hits": 0,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          }
+        },
+        "corpus_sha256": "54f4f9b01af429a37ff3e52dfc51aee9a12732360a8fa2c0025dc2a972c0825a",
+        "exact_values": 100
+      },
+      "host_B_available": {
+        "categories": {
+          "curated_records": {
+            "files": 12,
+            "matched_distinct_values": 3,
+            "raw_file_value_hits": 24,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "new_source_objects": {
+            "files": 50,
+            "matched_distinct_values": 8,
+            "raw_file_value_hits": 139,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "reused_source_objects": {
+            "files": 798,
+            "matched_distinct_values": 14,
+            "raw_file_value_hits": 1617,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          }
+        },
+        "corpus_sha256": "b38081a8e3cc1a27f032ce0be5214330ca6e7dacc7340e048f45e82da186ceea",
+        "exact_values": 844
+      },
+      "host_new_failed_fixture_available": {
+        "categories": {
+          "curated_records": {
+            "files": 12,
+            "matched_distinct_values": 2,
+            "raw_file_value_hits": 23,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "new_source_objects": {
+            "files": 50,
+            "matched_distinct_values": 5,
+            "raw_file_value_hits": 126,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "reused_source_objects": {
+            "files": 798,
+            "matched_distinct_values": 4,
+            "raw_file_value_hits": 1543,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          }
+        },
+        "corpus_sha256": "7660ba4677eb5d6cb549b46e97c58ea4660f0f86ee2865fcb7f5bec2036e593c",
+        "exact_values": 86
+      },
+      "native_available": {
+        "categories": {
+          "curated_records": {
+            "files": 12,
+            "matched_distinct_values": 0,
+            "raw_file_value_hits": 0,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "new_source_objects": {
+            "files": 50,
+            "matched_distinct_values": 3,
+            "raw_file_value_hits": 21,
+            "raw_native_actual_category_hits": 0,
+            "unclassified_file_value_hits": 0
+          },
+          "reused_source_objects": {
+            "files": 798,
+            "matched_distinct_values": 3,
+            "raw_file_value_hits": 65,
+            "raw_native_actual_category_hits": 5,
+            "unclassified_file_value_hits": 0
+          }
+        },
+        "corpus_sha256": "8d43b227d0d79297915fac4a3c896b498bce3da95863e9cf2bb7ce5502d22319",
+        "exact_values": 138
+      }
+    },
+    "private_receipt_outside_self_pinned_manifest": true,
+    "selected_distinct_paths": 860,
+    "source_objects": 848,
+    "unclassified_file_value_hits": 0
+  },
+  "schema": 1,
+  "scope": "Finite available-value scan of the exact curated payload and all resolved public source objects. Private bytes/corpora are not published.",
+  "source_backed_static_classifications": [
+    {
+      "bytes": 10,
+      "categories": [
+        "capture_xml_attribute"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 7265,
+        "line": 213,
+        "path": "dev-docs/evidence/sources/durable-provider-operator/9bfd43e8ee31baac40caaaecf67d2e0dd428165fca6d175cb8d2625a8366c23a",
+        "sha256": "9bfd43e8ee31baac40caaaecf67d2e0dd428165fca6d175cb8d2625a8366c23a"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "09886b973c58cfb889cd0763da77974ab9328bddfd6b99e8377ecacef26713a6"
+    },
+    {
+      "bytes": 11,
+      "categories": [
+        "capture_xml_attribute"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 7280,
+        "line": 213,
+        "path": "dev-docs/evidence/sources/durable-provider-operator/9bfd43e8ee31baac40caaaecf67d2e0dd428165fca6d175cb8d2625a8366c23a",
+        "sha256": "9bfd43e8ee31baac40caaaecf67d2e0dd428165fca6d175cb8d2625a8366c23a"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "2951949254ef6cae9fd4e6026633b775b6d707c8d4eb4521892efd5a02642840"
+    },
+    {
+      "bytes": 12,
+      "categories": [
+        "capture_xml_attribute"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 18863,
+        "line": 577,
+        "path": "dev-docs/evidence/sources/durable-provider-operator/fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20",
+        "sha256": "fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "3f33e57ff3a2985ee9dde209388be7c28e5c79f376ee53c0ed1d34ad30ae84ae"
+    },
+    {
+      "bytes": 15,
+      "categories": [
+        "capture_xml_attribute",
+        "principal_address"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 1524,
+        "line": 55,
+        "path": "dev-docs/evidence/archive-mail/sources/44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5",
+        "sha256": "44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "56b591601f9b2818054778cb156a1318a0175ee005c95cf7e463fefe9bba2a1c"
+    },
+    {
+      "bytes": 11,
+      "categories": [
+        "fixture_toml_value",
+        "loopback_endpoint"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 19649,
+        "line": 548,
+        "path": "dev-docs/evidence/inbox-reply/lead/objects/b4b36c3c2bb3fecf1e934de7155be8b89dfa181ac9d518b322f0780791fa74be",
+        "sha256": "b4b36c3c2bb3fecf1e934de7155be8b89dfa181ac9d518b322f0780791fa74be"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "6033b5d1088101aaf25628f7359344a16482ccb19c1ea55f43b4ad2901416be2"
+    },
+    {
+      "bytes": 1,
+      "categories": [
+        "fixture_device_value"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 36,
+        "line": 2,
+        "path": "dev-docs/evidence/archive-mail/sources/0aefa752baba551cd37f48053a4d2af767249cbcf7380f9163620913f5a72cd9",
+        "sha256": "0aefa752baba551cd37f48053a4d2af767249cbcf7380f9163620913f5a72cd9"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    {
+      "bytes": 12,
+      "categories": [
+        "capture_xml_attribute"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 12766,
+        "line": 314,
+        "path": "dev-docs/evidence/sources/native-provider-client/c217800385faa9e08328ee454f1add4027a1a6de71aedbcdba32ab5f9a94e4c3",
+        "sha256": "c217800385faa9e08328ee454f1add4027a1a6de71aedbcdba32ab5f9a94e4c3"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "6b9af93708359b3140cbedbdecb4622d937c5e13be6248a13fc166cbdf5d74a5"
+    },
+    {
+      "bytes": 13,
+      "categories": [
+        "available_metadata_absolute_path"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 765,
+        "line": 16,
+        "path": "dev-docs/evidence/inbox-reply/lead/objects/5f966fe389570df66bfd740ab90a6080f1a5713cd14f21ae66891889a32db221",
+        "sha256": "5f966fe389570df66bfd740ab90a6080f1a5713cd14f21ae66891889a32db221"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "6d722f21360c244ceeea590139bf166c807ba51fe45e9ebcedccdafa59d18633"
+    },
+    {
+      "bytes": 39,
+      "categories": [
+        "available_metadata_absolute_path"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 10671,
+        "line": 293,
+        "path": "dev-docs/evidence/sources/native-provider-client/9b945003ac27fc62292a747c88f6d036a3da4b63ee41efb97178e6f138b77013",
+        "sha256": "9b945003ac27fc62292a747c88f6d036a3da4b63ee41efb97178e6f138b77013"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "884bcf61eb96ea45a5547773ba8910341645e9613c7910e27c6341fe12c8519b"
+    },
+    {
+      "bytes": 13,
+      "categories": [
+        "capture_xml_attribute",
+        "principal_address"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 13802,
+        "line": 444,
+        "path": "dev-docs/evidence/archive-mail/sources/c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3",
+        "sha256": "c9d40c43565ba8f061c1bb5b30607439a28fc7ac37eaf1a30bbfdcb7e9b53aa3"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "a4b6585b4f5ad000d44a948c926edccdf54e65b904191a94205ae6bdf8a2ee32"
+    },
+    {
+      "bytes": 11,
+      "categories": [
+        "capture_xml_attribute"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 19350,
+        "line": 589,
+        "path": "dev-docs/evidence/sources/durable-provider-operator/fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20",
+        "sha256": "fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "b9b659a20b52360c91eb78c7d133851753d0dd01e602a233f9a0490b7bb1626d"
+    },
+    {
+      "bytes": 17,
+      "categories": [
+        "fixture_toml_value",
+        "principal_address"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 14406,
+        "line": 449,
+        "path": "dev-docs/evidence/sources/offline-provider-preparation/1d51e836e63dea7717cea695a26ea23558e8d8d076c30cb768265ca2f55cd7ce",
+        "sha256": "1d51e836e63dea7717cea695a26ea23558e8d8d076c30cb768265ca2f55cd7ce"
+      },
+      "prior_public_source_match": false,
+      "value_sha256": "c8cfe960189d392cc7d16754fcbe851eaf15266199a99e446ed606705aab16a9"
+    },
+    {
+      "bytes": 1,
+      "categories": [
+        "fixture_device_value"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 35,
+        "line": 2,
+        "path": "dev-docs/evidence/archive-mail/sources/0aefa752baba551cd37f48053a4d2af767249cbcf7380f9163620913f5a72cd9",
+        "sha256": "0aefa752baba551cd37f48053a4d2af767249cbcf7380f9163620913f5a72cd9"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+    },
+    {
+      "bytes": 11,
+      "categories": [
+        "capture_xml_attribute"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 16209,
+        "line": 496,
+        "path": "dev-docs/evidence/sources/durable-provider-operator/fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20",
+        "sha256": "fbe7ccc4a6214da1d268577e9a4477b0c257c7abd6b51ff0221c8d94bebf4e20"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "eeefc7386863bdbe43fc66dc4b4623dd134488c52d775ae9ce831d985dba0f48"
+    },
+    {
+      "bytes": 9,
+      "categories": [
+        "capture_xml_attribute",
+        "fixture_toml_value"
+      ],
+      "classification": "exact public fixture/protocol/system constant; separately reviewed source-byte evidence",
+      "evidence": {
+        "byte_offset": 1530,
+        "line": 55,
+        "path": "dev-docs/evidence/archive-mail/sources/44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5",
+        "sha256": "44a8da5ab357331f47d253b13f738de02fc5965b807be327f7568f96e2ef9ee5"
+      },
+      "prior_public_source_match": true,
+      "value_sha256": "f0d210998d1339b9b8a5a8216f9b8aca34d8ceb839916aa4050d21c0e1e5e0a0"
+    }
+  ]
+}
