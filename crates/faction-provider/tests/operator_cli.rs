@@ -1009,6 +1009,19 @@ fn offline_prepare_paths_and_no_replace_leave_all_existing_bytes_intact() {
                     .mode(0o755)
                     .create(f.root.join("unsafe-output"))
                     .unwrap();
+                fs::set_permissions(
+                    f.root.join("unsafe-output"),
+                    fs::Permissions::from_mode(0o755),
+                )
+                .unwrap();
+                assert_eq!(
+                    fs::metadata(f.root.join("unsafe-output"))
+                        .unwrap()
+                        .permissions()
+                        .mode()
+                        & 0o7777,
+                    0o755
+                );
                 destination = "unsafe-output/candidate.toml";
             }
         }
