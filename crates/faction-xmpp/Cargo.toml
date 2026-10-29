@@ -9,6 +9,8 @@ license = "BSD-3-Clause"
 [workspace]
 
 [dependencies]
+faction-files = { path = "../faction-files" }
+base64_blob = { package = "base64", version = "=0.23.1" }
 tokio-xmpp = { version = "=6.0.0", default-features = false, features = ["native-tls"] }
 native-tls = "=0.2.18"
 tokio-native-tls = "=0.3.1"

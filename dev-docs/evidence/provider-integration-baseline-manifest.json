@@ -1,0 +1,16 @@
+{
+  "files": {
+    "Cargo.lock": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+    "crates/faction-client/src/mail_blob_wire.rs": "37976ea0a847d3bb905eaf8834e11946234de8fc6b37b00b7d1fd341315cc7b4",
+    "crates/faction-xmpp/Cargo.toml": "8760779a49e3f530615890d468a38c7c834e50e14469f83dbc715734fc190714",
+    "crates/faction-xmpp/src/lib.rs": "31a51153903d2607ba54f6fd8f78d14aa380582c0e23387f284df82535bf0bf0"
+  },
+  "schema": 1,
+  "source_paths": {
+    "Cargo.lock": "dev-docs/evidence/provider-authority/sources/Cargo.lock",
+    "crates/faction-client/src/mail_blob_wire.rs": "dev-docs/evidence/attachment-transfer/executed-tls/crates/faction-client/src/mail_blob_wire.rs",
+    "crates/faction-xmpp/Cargo.toml": "dev-docs/evidence/sources/pre211-home-mail/crates/faction-xmpp/Cargo.toml",
+    "crates/faction-xmpp/src/lib.rs": "dev-docs/evidence/sources/pre211-home-mail/crates/faction-xmpp/src/lib.rs"
+  },
+  "source_revision": "184b1ce"
+}

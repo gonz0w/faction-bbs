@@ -1,0 +1,628 @@
+{
+  "classification": "Unchanged-producer characterization and test-adequacy correction; no producer-fix RED",
+  "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+  "producer_baseline_commit": "bd120cef67d25971bc2f65d2f0a8be18340532e9",
+  "test_path": "crates/faction-provider/tests/embedding.rs",
+  "test_sha256": "b72e2a0a52060a2a76d029fed6910d196bd75491ed0da1b5e122926f34500f79",
+  "source_validation": {
+    "selected_input_count": 346,
+    "changed_inputs_from_baseline": [
+      "crates/faction-provider/tests/embedding.rs"
+    ],
+    "producer_unchanged": true,
+    "before_after_match": true,
+    "source_map_label": "$OWNED_HOST/route-tests/host-source-inputs.json",
+    "source_map_sha256": "6dafd6cb3e8a1f099919dc5b8a780c5a9057951725ef5b6f4c4698ae2bacecee"
+  },
+  "tests": {
+    "default": {
+      "authority": {
+        "passed": 12,
+        "failed": 0,
+        "elapsed_seconds": 0.32,
+        "test_names": [
+          "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+          "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+          "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+          "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+          "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+          "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+          "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+          "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+          "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+          "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+          "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+          "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation"
+        ]
+      },
+      "embedding": {
+        "passed": 17,
+        "failed": 0,
+        "elapsed_seconds": 18.67,
+        "test_names": [
+          "public_embedding_contract_keeps_qualified_bounds",
+          "committed_actor_free_routes_reject_confusion_in_dispatch",
+          "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+          "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+          "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+          "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+          "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority",
+          "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+          "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+          "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+          "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+          "actual_binary_actor_free_wrong_route_closes_without_mutation",
+          "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+          "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+          "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+          "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+          "forged_route_account_device_and_full_identity_never_mutate_store"
+        ]
+      },
+      "compile_fail": {
+        "passed": 4,
+        "failed": 0,
+        "elapsed_seconds": 0.09,
+        "test_names": [
+          "src/tls.rs - tls::Session (line 348) - compile fail",
+          "src/tls.rs - tls::Session (line 336) - compile fail",
+          "src/tls.rs - tls::Session (line 344) - compile fail",
+          "src/tls.rs - tls::Session (line 340) - compile fail"
+        ]
+      },
+      "explicit_new_test_listing": [
+        "committed_actor_free_routes_reject_confusion_in_dispatch: test",
+        "committed_actor_free_routes_reject_confusion_on_actual_binary_wire: test",
+        "",
+        "2 tests, 0 benchmarks"
+      ]
+    },
+    "iq": {
+      "authority": {
+        "passed": 12,
+        "failed": 0,
+        "elapsed_seconds": 0.34,
+        "test_names": [
+          "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+          "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+          "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+          "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+          "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+          "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+          "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+          "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+          "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+          "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+          "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+          "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation"
+        ]
+      },
+      "embedding": {
+        "passed": 26,
+        "failed": 0,
+        "elapsed_seconds": 29.09,
+        "test_names": [
+          "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+          "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+          "public_embedding_contract_keeps_qualified_bounds",
+          "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+          "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+          "committed_actor_free_routes_reject_confusion_in_dispatch",
+          "actual_binary_actor_free_wrong_route_closes_without_mutation",
+          "forged_route_account_device_and_full_identity_never_mutate_store",
+          "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+          "iq_contract::actor_free_iq_routes_are_assertions_and_denials_are_uniform",
+          "iq_contract::iq_calls_share_the_original_absolute_cycle_deadline",
+          "iq_contract::committed_actor_free_routes_reject_confusion_in_maintained_iqs",
+          "iq_contract::local_service_foreign_routes_and_wrong_bound_principals_fail_closed",
+          "iq_contract::lost_typed_reply_reopen_exact_retry_and_explicit_delete_preserve_store_semantics",
+          "iq_contract::maintained_iqs_compose_with_real_tls_principals_and_exact_retries",
+          "iq_contract::malformed_oversized_and_denied_iqs_share_budget_with_binary_before_decode",
+          "iq_contract::public_policy_changes_and_cancel_deny_next_iq_without_mutation",
+          "iq_contract::store_quota_keeps_uniform_existing_failure_over_iq",
+          "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+          "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+          "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+          "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+          "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+          "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+          "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+          "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority"
+        ]
+      },
+      "compile_fail": {
+        "passed": 4,
+        "failed": 0,
+        "elapsed_seconds": 0.05,
+        "test_names": [
+          "src/tls.rs - tls::Session (line 344) - compile fail",
+          "src/tls.rs - tls::Session (line 336) - compile fail",
+          "src/tls.rs - tls::Session (line 340) - compile fail",
+          "src/tls.rs - tls::Session (line 348) - compile fail"
+        ]
+      },
+      "explicit_new_test_listing": [
+        "committed_actor_free_routes_reject_confusion_in_dispatch: test",
+        "committed_actor_free_routes_reject_confusion_on_actual_binary_wire: test",
+        "iq_contract::committed_actor_free_routes_reject_confusion_in_maintained_iqs: test",
+        "",
+        "3 tests, 0 benchmarks"
+      ]
+    }
+  },
+  "executed_binary_identities": {
+    "default": {
+      "$OWNED_HOST/route-tests/host-default-binaries/faction_provider-2dc54dd0cb0a51fe": "81bef9127fe1ffed4df41f6a6b9eaf94a541e6f37abc7b3f774d80d769c40f14",
+      "$OWNED_HOST/route-tests/host-default-binaries/embedding-5bf5bf77dafba4e5": "7654de17498e3806007236e1cea2814a24279d6d8fb4af13ab1c8eed97b53a11"
+    },
+    "iq": {
+      "$OWNED_HOST/route-tests/host-iq-binaries/embedding-8271e277e1b34f6c": "93cd3e20d9db0a35cd9a4c2a8c57eaf6a5f986c1503db085531d071416b2bf26",
+      "$OWNED_HOST/route-tests/host-iq-binaries/faction_provider-4ec69c2c142f81b6": "df4dbb81953b5328983f62da57d0583339f702adb112f7c5c39e2f91597aae33"
+    }
+  },
+  "tools": {
+    "$TOOLCHAIN/bin/cargo": {
+      "sha256": "fec239e6b74df873f54ef52912bfcfcc8d8414bc14a7ae1e0be80460bae72841",
+      "bytes": 31817288
+    },
+    "$TOOLCHAIN/bin/rustc": {
+      "sha256": "c5922366bfe3d6d028a65d626f4e629b3adad066995cf0b60c8a4b617bba5ffe",
+      "bytes": 412504
+    },
+    "$OPENSSL3/lib/libssl.3.dylib": {
+      "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc",
+      "bytes": 867008
+    },
+    "$OPENSSL3/lib/libcrypto.3.dylib": {
+      "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d",
+      "bytes": 4828048
+    },
+    "$OPENSSL3/bin/openssl": {
+      "sha256": "62d345e5c323fe6a0c3dcc154e5177e35b607f0d8c7aae7696821997f6a584a0",
+      "bytes": 875392
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.96.0",
+        "cargo"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/tool-cargo-path.stdout",
+        "sha256": "89c3b4fc4eaf4799eddd75900644771831ee0e68e9502bc6d1a53dfdc2ce9eab"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/tool-cargo-path.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.96.0",
+        "rustc"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/tool-rustc-path.stdout",
+        "sha256": "d4fde856fe61e599634ee710d60273c750a6ede54b402951e169cc11aeac47f8"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/tool-rustc-path.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "-Vv"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/tool-cargo-version.stdout",
+        "sha256": "f2f84f89b4e50d13dc34be7f59ab3d82a526f90a4d116869e04896308c8b9f85"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/tool-cargo-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "rustc",
+        "+1.96.0",
+        "-vV"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/tool-rustc-version.stdout",
+        "sha256": "aea7c77c2b0d24444d07240e4d785e4ba73b6c9e786748af2ddc22bbf4c104bf"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/tool-rustc-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "$OPENSSL3/bin/openssl",
+        "version",
+        "-a"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/tool-openssl-version.stdout",
+        "sha256": "987affe3ca060b442e64dca02abd7697d0477c9ee5fb9538afc5c97c39c56875"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/tool-openssl-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-default.stdout",
+        "sha256": "95f0190ef2ba1eda680c2eec1c04003a428f0683214a2eec444626b7719654d5"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-default.stderr",
+        "sha256": "3c1e3697e86ef6aa19078fee38e844b6a0b1fc3e31ef5f84ed2c988ae91f259e"
+      }
+    },
+    {
+      "command": [
+        "$OWNED_HOST/route-tests/host-default-binaries/embedding-5bf5bf77dafba4e5",
+        "committed_actor_free_routes",
+        "--list"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-default-listed.stdout",
+        "sha256": "2a1dde632fdc2e4f3597b299d08e0080af22c32a8ca5a4fe81ba5c659707efa4"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-default-listed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "otool",
+        "-L",
+        "$OWNED_HOST/route-tests/host-default-binaries/embedding-5bf5bf77dafba4e5"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-default-linkage.stdout",
+        "sha256": "55e1fbceebef5dde35bf6903e48ff1aa32dd02573b6cff807c7898847c2dbc5a"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-default-linkage.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--features",
+        "blob-iq"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-iq.stdout",
+        "sha256": "11cea557f0de9b094d67c7f3f6fd28de3670c479923407b4a5c87192f1c9809f"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-iq.stderr",
+        "sha256": "6c15397df01187aa2c89260591e61b36a65cda527c9234c1d9471edca4117b39"
+      }
+    },
+    {
+      "command": [
+        "$OWNED_HOST/route-tests/host-iq-binaries/embedding-8271e277e1b34f6c",
+        "committed_actor_free_routes",
+        "--list"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-iq-listed.stdout",
+        "sha256": "346f7befbb7ca72071460c6acd8b1a0405745a1ac66ee8c90c322511b1017d13"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-iq-listed.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "otool",
+        "-L",
+        "$OWNED_HOST/route-tests/host-iq-binaries/embedding-8271e277e1b34f6c"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-iq-linkage.stdout",
+        "sha256": "347edae9f3682ba9bb6b77eb49219148054c129182218db00d12ca0e32a2bfd1"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-iq-linkage.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "fmt",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--check"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-fmt.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-fmt.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-clippy-default.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-clippy-default.stderr",
+        "sha256": "72a6dde096536dbe4512d3739c20fd8ce08853c68be7d9503361c4ddbe16d920"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--all-targets",
+        "--features",
+        "blob-iq",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "$SOURCE",
+      "selected_environment": {
+        "OPENSSL_NO_VENDOR": "1",
+        "OPENSSL_INCLUDE_DIR": "$OPENSSL3/include",
+        "OPENSSL_LIB_DIR": "$OPENSSL3/lib",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "$OWNED_HOST/provider-target"
+      },
+      "exit_code": 0,
+      "stdout": {
+        "label": "$OWNED_HOST/route-tests/host-clippy-iq.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "label": "$OWNED_HOST/route-tests/host-clippy-iq.stderr",
+        "sha256": "3a371ada196ea97177d3e8063583b4835fe0920a42008105d075930909e01083"
+      }
+    }
+  ],
+  "tool_observations": {
+    "before_after_file_identities_equal": true,
+    "openssl_version": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)",
+    "cargo_version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "runtime_linkage": [
+      "$OPENSSL3/lib/libssl.3.dylib",
+      "$OPENSSL3/lib/libcrypto.3.dylib"
+    ],
+    "identity_scope": "Actual final host replay; earlier setup captures remain separate."
+  },
+  "mutation_adequacy": {
+    "source_baseline_commit": "bd120cef67d25971bc2f65d2f0a8be18340532e9",
+    "original_controls_passed": 6,
+    "strengthened_controls_failed_as_expected": 6,
+    "new_tests_per_mutant": 3,
+    "expected_exit_code": 101,
+    "separate_private_target": "$OWNED_HOST/route-tests/mutation-target",
+    "mutants": [
+      {
+        "name": "route-guard-removed",
+        "authority_source_sha256": "5368a1d581c0eaf0277154c0c7c26d19d659e16cefeb6669181ceb98681199d0",
+        "frozen_source_label": "$OWNED_HOST/route-tests/mutants/route-guard-removed-authority.rs",
+        "original_controls_passed": 3,
+        "strengthened_controls_failed": 3,
+        "retained_file_identities": {
+          "strengthened-embedding.rs": "b72e2a0a52060a2a76d029fed6910d196bd75491ed0da1b5e122926f34500f79",
+          "strengthened.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "strengthened-embedding": "a31e25205826c07daec6bd053e92555d6a944e56482864790d16d513d516edbf",
+          "strengthened.stdout": "e1b70df69964df1fa8a50062b0565437a1ba29a5a12bba3b161073c70e3f9dea",
+          "original-weak-embedding": "9444d80ef8168741dc1e2685fdb015af440b73e30d861492e5820b8f02767843",
+          "strengthened-listed.stdout": "346f7befbb7ca72071460c6acd8b1a0405745a1ac66ee8c90c322511b1017d13",
+          "original-weak-embedding.rs": "710d7dafe91a19b02cebe1eef0507774ca00be732177607d52d4e8f2b21ab2fb"
+        }
+      },
+      {
+        "name": "bad-actor-selected-from-route",
+        "authority_source_sha256": "5520e1af220cca612e489bf37bf245908e7b175ad81999064a9744686de0e2d2",
+        "frozen_source_label": "$OWNED_HOST/route-tests/mutants/bad-actor-selected-from-route-authority.rs",
+        "original_controls_passed": 3,
+        "strengthened_controls_failed": 3,
+        "retained_file_identities": {
+          "strengthened-embedding.rs": "b72e2a0a52060a2a76d029fed6910d196bd75491ed0da1b5e122926f34500f79",
+          "strengthened.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "strengthened-embedding": "d7006fa805edfbe4960e0c01aa96c121cb9300ec9ad227d36981ca9e7acf08a6",
+          "strengthened.stdout": "5b6687552d8d9600218cd1d49a66aea6855f9692d8de800b77002ac5f9e931f3",
+          "original-weak-embedding": "0cf58010a3cdcbb6850c75eac1efa20fd2aa62816a3806d68c0234558368a2f4",
+          "strengthened-listed.stdout": "346f7befbb7ca72071460c6acd8b1a0405745a1ac66ee8c90c322511b1017d13",
+          "original-weak-embedding.rs": "710d7dafe91a19b02cebe1eef0507774ca00be732177607d52d4e8f2b21ab2fb"
+        }
+      }
+    ],
+    "rejected_zero_selection_trial": {
+      "label": "$OWNED_HOST/route-tests/route-guard-removed-attempt01-stale-mtime",
+      "reason": "Preserved source mtime caused Cargo to reuse the earlier test executable; strengthened filter selected zero tests. Rejected setup result; excluded from all adequacy claims. Valid replay forces source freshness and explicitly lists all three new tests."
+    }
+  },
+  "owned_fixture_teardown": {
+    "before_count": 0,
+    "after_count": 0,
+    "fixture_marker_verified_on_drop": true,
+    "store_roots_removed_on_drop": true,
+    "runtime_listeners_owned_disposable_loopback": true,
+    "record_sha256": "2d4d538d5d8b24c9e14b9382e41d16c610b9ff549511b3f977323ee4486c0b26"
+  },
+  "limits": [
+    "Host software observations only; native qualification, whole-batch integration and CI are owned by the lead.",
+    "Mutation failures demonstrate test adequacy; actual producer behavior was unchanged.",
+    "Original weak tests and all assertions/operation and deadline limits remain present."
+  ]
+}

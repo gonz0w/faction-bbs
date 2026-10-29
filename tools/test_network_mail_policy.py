@@ -41,7 +41,9 @@ class NetworkMailPolicy(unittest.TestCase):
                 'rxml': {'version': '=0.14.0', 'default-features': False},
                 'sasl': '=0.5.2', 'futures-util': {'version': '=0.3.34', 'default-features': False, 'features': ['sink']},
                 'sha2': '=0.10.9', 'log': {'version': '=0.4.34', 'features': ['max_level_off', 'release_max_level_off']},
-                'xso': {'version': '=0.4.0', 'default-features': False}},
+                'xso': {'version': '=0.4.0', 'default-features': False},
+                'faction-files': {'path': '../faction-files'},
+                'base64_blob': {'package': 'base64', 'version': '=0.23.1'}},
              'dev-dependencies': {'base64': '=0.22.1'}})
 
     def test_selected_source_license_and_feature_inventory(self):
@@ -165,6 +167,22 @@ class NetworkMailPolicy(unittest.TestCase):
             if mutation == 'unexpected': transport['dependencies']['new-library'] = '1'
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):
                 policy.validate_profile(workspace, client, transport)
+
+    def test_shared_iq_dependencies_preserve_exact_native_profile(self):
+        workspace, client, transport = self.profiles()
+        policy.validate_profile(workspace, client, transport)
+        for name, replacement in [
+            ('faction-files', {'path': '../faction-client'}),
+            ('base64_blob', {'package': 'base64', 'version': '0.23'}),
+            ('base64_blob', {'package': 'base64', 'version': '=0.22.1'}),
+            ('base64_blob', {'version': '=0.23.1'}),
+            ('base64_blob', {'package': 'base64', 'version': '=0.23.1', 'features': ['extra']}),
+        ]:
+            altered = copy.deepcopy(transport); altered['dependencies'][name] = replacement
+            with self.subTest(name=name, dependency=replacement), self.assertRaises(ValueError):
+                policy.validate_profile(workspace, client, altered)
+        changed = copy.deepcopy(transport); changed['dev-dependencies']['base64'] = '=0.23.1'
+        with self.assertRaises(ValueError): policy.validate_profile(workspace, client, changed)
 
     def test_inventory_change_requires_deliberate_write(self):
         with tempfile.TemporaryDirectory() as tmp:

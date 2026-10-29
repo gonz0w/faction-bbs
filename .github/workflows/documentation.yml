@@ -79,9 +79,42 @@ jobs:
           cargo fmt --manifest-path experiments/270-provider-auth/Cargo.toml -- --check
           cargo clippy --manifest-path experiments/270-provider-auth/Cargo.toml --all-targets --release --locked -- -D warnings
           cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked -- --test-threads=1
+  provider:
+    name: Optional attachment provider
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Validate the opt-in attachment provider
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null
+          python3 tools/check_provider_dependencies.py
+          cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features blob-iq -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features blob-iq -- --test-threads=1
   documentation:
     name: Documentation and policy
-    needs: native_mail
+    needs: [native_mail, provider]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -89,7 +122,10 @@ jobs:
       - name: Require optional native tests
         env:
           NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}
-        run: test "$NATIVE_MAIL_RESULT" = success
+          PROVIDER_RESULT: ${{ needs.provider.result }}
+        run: |
+          test "$NATIVE_MAIL_RESULT" = success
+          test "$PROVIDER_RESULT" = success
       - name: Fetch the public repository revision
         env:
           REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git

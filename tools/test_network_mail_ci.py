@@ -29,7 +29,7 @@ class NetworkCI(unittest.TestCase):
     def test_saved_native_evidence_and_existing_failure_gate_are_required(self):
         source=(ROOT/'.github/workflows/documentation.yml').read_text()
         self.assertIn('python3 tools/check_home_mail_evidence.py',source)
-        self.assertIn('needs: native_mail',source)
+        self.assertIn('needs: [native_mail, provider]',source)
         self.assertIn('if: ${{ always() }}',source)
-        self.assertIn('run: test "$NATIVE_MAIL_RESULT" = success',source)
+        self.assertIn('test "$NATIVE_MAIL_RESULT" = success',source)
         self.assertIn('timeout-minutes: 15',source)

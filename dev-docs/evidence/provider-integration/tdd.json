@@ -1,0 +1,281 @@
+{
+  "chronology": "Semantic recorded sequence; capture filesystem timestamps are not treated as a complete execution clock.",
+  "entries": [
+    {
+      "log_bytes": 73,
+      "log_sha256": "dba6f72b94a86b4fa6fc897686bed4e0df1fa8eab02be4cfaa612d1037059d46",
+      "observation": "RED: provider manifest absent",
+      "order": 1,
+      "stage": "runtime_missing_interface",
+      "test_or_candidate_source_bytes": 648,
+      "test_or_candidate_source_sha256": "fd729cc7ef6f822bef93d691525bd841da10c79362e2a00149e6f6e5a0123572"
+    },
+    {
+      "log_bytes": 2453,
+      "log_sha256": "4cd87965c15f60d6334a184bd3f6ae15377f881fd1c041ec38661a00f5bf704b",
+      "observation": "RED: public runtime/session imports absent",
+      "order": 2,
+      "stage": "runtime_stub_interface",
+      "test_or_candidate_source_bytes": 648,
+      "test_or_candidate_source_sha256": "fd729cc7ef6f822bef93d691525bd841da10c79362e2a00149e6f6e5a0123572"
+    },
+    {
+      "log_bytes": 1626,
+      "log_sha256": "435e5c442ae54a625363417a6e1433a10633c8f0260555d5575da97757cdb137",
+      "observation": "RED: substantive consumer imports absent",
+      "order": 3,
+      "stage": "runtime_substantive_interface",
+      "test_or_candidate_source_bytes": 15333,
+      "test_or_candidate_source_sha256": "c9e2b4889060ce856b80693c86e7a276797885329979780827bf3eef7801f70d"
+    },
+    {
+      "log_bytes": 3837,
+      "log_sha256": "e89a84f06f062d6cc642b934b33953d161241bed2832c48b006df0f20fe7dc86",
+      "observation": "FAILED candidate: 8 external passed, 2 failed; retained as failure",
+      "order": 4,
+      "stage": "first_runtime_candidate",
+      "test_or_candidate_source_bytes": 15333,
+      "test_or_candidate_source_sha256": "c9e2b4889060ce856b80693c86e7a276797885329979780827bf3eef7801f70d"
+    },
+    {
+      "log_bytes": 3145,
+      "log_sha256": "0d2a815f75bbfead8519fc4745b03921933ea0356fba29cd8eac2e976bb14356",
+      "observation": "GREEN after fixture correction; 12 authority,10 external,4 compile-fail",
+      "order": 5,
+      "stage": "corrected_fixture_runtime",
+      "test_or_candidate_source_bytes": 15388,
+      "test_or_candidate_source_sha256": "d5c099c18080aa597e16b4418ee8f5dc7be41ebcef454232c17b736fe9de4161"
+    },
+    {
+      "log_bytes": 3387,
+      "log_sha256": "61bac7e8dfd1581e723139656cdb739d4e5128438a0eb7b0a01dc138d724d40a",
+      "observation": "GREEN:12 authority,13 external,4 compile-fail",
+      "order": 6,
+      "stage": "additional_contracts",
+      "test_or_candidate_source_bytes": 18339,
+      "test_or_candidate_source_sha256": "a290dc972a6fd7736d2670400698491874ca977cebfa51c1b302ecc510f2cc7a"
+    },
+    {
+      "log_bytes": 1710,
+      "log_sha256": "fc8bbda0730640c74ff0bc710619493c5241c20d96db6fd9ce7f4d0dde88ecc4",
+      "observation": "RED: Client.request and Session.serve_next absent",
+      "order": 7,
+      "stage": "binary_interface",
+      "test_or_candidate_source_bytes": 24704,
+      "test_or_candidate_source_sha256": "3cdbf227a46347156f368eada9b6c5edd13f6f7994ba92184145f98aa1b9b775"
+    },
+    {
+      "log_bytes": 702,
+      "log_sha256": "40ee4177588eb738d10af8162df198e28068b80266bd62be55ac2d9644398346",
+      "observation": "FAILED compilation, despite filename; Client _stream field missing",
+      "order": 8,
+      "stage": "binary_compile_candidate",
+      "test_or_candidate_source_bytes": 20482,
+      "test_or_candidate_source_sha256": "72f7174e76087e71b3f1bafe0b0033809de9fdec79c079968d0d76ee7122e7a2"
+    },
+    {
+      "log_bytes": 3538,
+      "log_sha256": "2ccad0461432cee1b6a473b102c99d115364c4d4a42f338369211032116a9591",
+      "observation": "GREEN:12 authority,15 external,4 compile-fail",
+      "order": 9,
+      "stage": "binary_runtime",
+      "test_or_candidate_source_bytes": 26232,
+      "test_or_candidate_source_sha256": "00a9778fd152cfc7022f6a524fde049bccbd990bdf7b42e729b4a6e5c5694bef"
+    },
+    {
+      "log_bytes": 1066,
+      "log_sha256": "112591ab5e42dbe5aa97e70974fb32f9033ec14fa7544b0d5d9f5efb995a89e6",
+      "observation": "RED: dependency checker module absent",
+      "order": 10,
+      "stage": "provider_dependency_module",
+      "test_or_candidate_source_bytes": 5587,
+      "test_or_candidate_source_sha256": "3d28a73e831c3d40e853a53532e6fd2e2dd2d1fe470b6211a80cc43fc85af6a4"
+    },
+    {
+      "log_bytes": 115,
+      "log_sha256": "e99e9dcfb2cc454775d532dee5cf99ea85295938e649de72c869726bdde1dbef",
+      "observation": "GREEN source/checksum/license/archive/no-JS/profile controls",
+      "order": 11,
+      "stage": "provider_dependency_controls"
+    },
+    {
+      "log_bytes": 2166,
+      "log_sha256": "77e8e91739b5a62f3286489b7d81c292d7ec96d771603cea267bc938e443d367",
+      "observation": "RED: changed live root lock and blob wire unresolved",
+      "order": 12,
+      "stage": "evidence_resolution",
+      "test_or_candidate_source_bytes": 20343,
+      "test_or_candidate_source_sha256": "0a3b653cfa84f967b1b94a69206e04e86e60c299a7fe28ea0eb4331b621a0b26"
+    },
+    {
+      "log_bytes": 2976,
+      "log_sha256": "010c7899dd81edf7e1df3357d2474d4d25a8577dabc6f21dff275ba9e2e53908",
+      "observation": "RED: pinned helper absent plus resolver regressions",
+      "order": 13,
+      "stage": "evidence_pin"
+    },
+    {
+      "log_bytes": 893,
+      "log_sha256": "f6f419810516162cb7d3964fd52e5b8950b9cb322dc7622bd8f5ff53655a6cb1",
+      "observation": "RED: old guard ignored tampered provider baseline",
+      "order": 14,
+      "stage": "evidence_guard"
+    },
+    {
+      "log_bytes": 301,
+      "log_sha256": "1558838beca2ca9a52cf05b99c2d74271e291f1f227682238ffcae8bbe75fc77",
+      "observation": "GREEN:17 resolver+8 cache tests+full guard",
+      "order": 15,
+      "stage": "evidence_preservation"
+    },
+    {
+      "log_bytes": 39535,
+      "log_sha256": "5e9a4a3b009df99f04d790667e34f1b9fd584bcacbfbcda32465fa5ea007ef4a",
+      "observation": "RED: independent provider job and validator absent",
+      "order": 16,
+      "stage": "provider_ci",
+      "test_or_candidate_source_bytes": 10033,
+      "test_or_candidate_source_sha256": "e445c1ccbb6f7c8c85c5c78234197c7e0c5fffba1d846a5e4da6b2753f6b4984"
+    },
+    {
+      "log_bytes": 736,
+      "log_sha256": "8617404423af59008d03d94089638fc703bbe2d9f34be753ba072d853431f040",
+      "observation": "RED: inventory omitted CI guard",
+      "order": 17,
+      "stage": "ci_inventory_hook",
+      "test_or_candidate_source_bytes": 9706,
+      "test_or_candidate_source_sha256": "63a3b3a9de17cb5c2855bc8dd85e587260e392d15a74ca815573297d0060d09e"
+    },
+    {
+      "log_bytes": 814,
+      "log_sha256": "13d14723e10b28ed849eb75f9775889a3916af4724dac1eeea49cac9bf1ba442",
+      "observation": "RED: old gate passed native success/provider failure",
+      "order": 18,
+      "stage": "ci_native_only_gate",
+      "test_or_candidate_source_bytes": 3001,
+      "test_or_candidate_source_sha256": "0ac60ef1c430ee62439f8dceb55d7ac264fe885a786ea5aca9fe5f35e83b2f38"
+    },
+    {
+      "log_bytes": 754,
+      "log_sha256": "76d6922b9263df6816e8f2e13782daf713f872c77acb8e9a2ec2d90549ff674d",
+      "observation": "GREEN: independent provider job+both-result gate; native bytes unchanged",
+      "order": 19,
+      "stage": "provider_ci_green"
+    },
+    {
+      "log_bytes": 5062,
+      "log_sha256": "439cc643cfcb4a6e5bc6d56b935bb8a106f599706f547c2140bb1a192f1f5eda",
+      "observation": "GREEN: unchanged native codec two tests",
+      "order": 20,
+      "stage": "codec_baseline",
+      "test_or_candidate_source_bytes": 4966,
+      "test_or_candidate_source_sha256": "37976ea0a847d3bb905eaf8834e11946234de8fc6b37b00b7d1fd341315cc7b4"
+    },
+    {
+      "log_bytes": 77,
+      "log_sha256": "75ab0f4ed7ed67a66651085b97c23123b8ac176232a06131f8933781e5686a3a",
+      "observation": "RED: blob-iq feature absent",
+      "order": 21,
+      "stage": "iq_feature",
+      "test_or_candidate_source_bytes": 28782,
+      "test_or_candidate_source_sha256": "1356dd22725fb8885a14b715eb8b6b3e860fa4308b39a185985f49353ce7aefd"
+    },
+    {
+      "log_bytes": 6814,
+      "log_sha256": "108d81893a1b561a63fe3bb74794bae48d1aef9ede57ca01b6dcded9319c7463",
+      "observation": "RED: exact optional profile and IQ CI coverage rejected",
+      "order": 22,
+      "stage": "iq_profile",
+      "test_or_candidate_source_bytes": 14270,
+      "test_or_candidate_source_sha256": "a9bfea3c16ae50bc0e1565dfa4564d18a35f19ba6d0cc09678fc96158f78e5f8"
+    },
+    {
+      "log_bytes": 2310,
+      "log_sha256": "327d954a64ee6126c8d554e2f77062adf5d6dd0dbbd6c6959bb81d0d4e78ab7e",
+      "observation": "RED: shared codec dependencies rejected",
+      "order": 23,
+      "stage": "network_profile",
+      "test_or_candidate_source_bytes": 11732,
+      "test_or_candidate_source_sha256": "65485271f396aed38be309570d21b694f18f62dbf490cad0a17e434c69d37024"
+    },
+    {
+      "log_bytes": 585,
+      "log_sha256": "3dcf0dd41bac5ef63a2c4dd0c13a4ad756e46d0bff1c2f0528fd84d243eb575a",
+      "observation": "GREEN: reviewed default/IQ/native/auth complete three-target source/archive/license/no-JS graphs",
+      "order": 24,
+      "stage": "iq_source_gate"
+    },
+    {
+      "log_bytes": 878,
+      "log_sha256": "3de724fbe5e2b243808988108a49aa7baa562d6cd2c12d796a99d69e6bd2dc9c",
+      "observation": "RED: IqService handler interface absent",
+      "order": 25,
+      "stage": "iq_handler_stub",
+      "test_or_candidate_source_bytes": 35720,
+      "test_or_candidate_source_sha256": "52a578a5072d7bc5679507f3d68e6203f7dd8e3161e8aa3400ef856dd6445f54"
+    },
+    {
+      "log_bytes": 29606,
+      "log_sha256": "d8bc311a55db389c0e9222f8889d9aca6a4b688c7ff73dce66ad32655e0dec8a",
+      "observation": "RED: shared codec request/response functions absent",
+      "order": 26,
+      "stage": "iq_method_stub",
+      "test_or_candidate_source_bytes": 35720,
+      "test_or_candidate_source_sha256": "52a578a5072d7bc5679507f3d68e6203f7dd8e3161e8aa3400ef856dd6445f54"
+    },
+    {
+      "log_bytes": 4343,
+      "log_sha256": "787a8a3d91d132808b4675c46f55c9c7ef9f59a1ea1df628460723e495ec744c",
+      "observation": "GREEN:12 authority,23 external,4 compile-fail",
+      "order": 27,
+      "stage": "iq_first_composed",
+      "test_or_candidate_source_bytes": 40263,
+      "test_or_candidate_source_sha256": "710d7dafe91a19b02cebe1eef0507774ca00be732177607d52d4e8f2b21ab2fb"
+    },
+    {
+      "log_bytes": 4253,
+      "log_sha256": "5830df0f46c1821424b4672b23402d665fd87e40305bd717257416ed982928cf",
+      "observation": "GREEN tests but unpreceded optional finish_iq check; rejected unshipped addition, no new RED claimed",
+      "order": 28,
+      "stage": "iq_postgreen_optional_check",
+      "test_or_candidate_source_bytes": 2431,
+      "test_or_candidate_source_sha256": "e975df4235e08b2f8992e51878a0256fb092183b5ca9cadd6a9f03f96dfe5ec5"
+    },
+    {
+      "log_bytes": 3538,
+      "log_sha256": "0deadd01b4e62d9cc63f306ed7c37ead9015b4d121afdd807c02fe55ae3b2f78",
+      "observation": "GREEN rerun of unchanged accepted tests after restoring prior behavior; no new RED claimed",
+      "order": 29,
+      "stage": "accepted_restoration_default",
+      "test_or_candidate_source_bytes": 40263,
+      "test_or_candidate_source_sha256": "710d7dafe91a19b02cebe1eef0507774ca00be732177607d52d4e8f2b21ab2fb"
+    },
+    {
+      "log_bytes": 4253,
+      "log_sha256": "57beacbb625139a8bd5de868945de9ba0c628f5a835d980bab7cb8c1e617d61d",
+      "observation": "GREEN rerun of unchanged accepted tests after restoring prior behavior; no new RED claimed",
+      "order": 30,
+      "stage": "accepted_restoration_iq",
+      "test_or_candidate_source_bytes": 40263,
+      "test_or_candidate_source_sha256": "710d7dafe91a19b02cebe1eef0507774ca00be732177607d52d4e8f2b21ab2fb"
+    },
+    {
+      "evidence": "dev-docs/evidence/provider-integration/host.json",
+      "new_producer_fix_red_claimed": false,
+      "observation": "Three new controls characterize unchanged producer behavior using committed Alice-readable and Bob-only objects with rightful read positives; all three original weak controls passed on each isolated mutant, while all three strengthened controls failed on each. Final unchanged producer passes default12+17+4 compile-fail and IQ12+26+4 compile-fail. Rejected stale-mtime zero-test trial is not adequacy evidence.",
+      "order": 31,
+      "review_finding": "https://github.com/gonz0w/faction-bbs/issues/277#issuecomment-6484835393",
+      "stage": "separate_review_existing_object_route_characterization"
+    }
+  ],
+  "qualification": "Actual runtime, binary, IQ, source/profile, preservation and CI-gate RED/GREEN history, followed by separate-review characterization of unchanged producer behavior. Existing-object controls distinguish both isolated mutants. Earlier weaker host observations and the rejected optional post-GREEN addition remain explicitly historical; no fabricated producer-fix RED or initial-development-binary retention claim.",
+  "restoration_disposition": {
+    "disposition": "https://github.com/gonz0w/faction-bbs/issues/277#issuecomment-6484410298",
+    "iq_behavior_restored_from": "iq-green01-executed/source/crates/faction-provider/src/iq.rs",
+    "iq_sha256": "a60d3004557663d650da9e14d5c1ae7ca4e356b49b5c0974405db0196e88d8af",
+    "new_red_claimed": false,
+    "rejected_postcheck_history": "final-composed-host/identities.json",
+    "test_sha256_unchanged": "710d7dafe91a19b02cebe1eef0507774ca00be732177607d52d4e8f2b21ab2fb"
+  },
+  "schema": 1
+}

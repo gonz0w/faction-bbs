@@ -165,7 +165,7 @@
           "features": [],
           "license": "BSD-3-Clause",
           "manifest": "crates/faction-xmpp/Cargo.toml",
-          "manifest_sha256": "8760779a49e3f530615890d468a38c7c834e50e14469f83dbc715734fc190714",
+          "manifest_sha256": "0f040116bdf9475b59c8f3fa070455c67ef16e05821b5da07d7f657c34b16968",
           "name": "faction-xmpp",
           "version": "0.1.0-alpha.1"
         }
@@ -2493,7 +2493,7 @@
           "features": [],
           "license": "BSD-3-Clause",
           "manifest": "crates/faction-xmpp/Cargo.toml",
-          "manifest_sha256": "8760779a49e3f530615890d468a38c7c834e50e14469f83dbc715734fc190714",
+          "manifest_sha256": "0f040116bdf9475b59c8f3fa070455c67ef16e05821b5da07d7f657c34b16968",
           "name": "faction-xmpp",
           "version": "0.1.0-alpha.1"
         }
@@ -4787,7 +4787,7 @@
           "features": [],
           "license": "BSD-3-Clause",
           "manifest": "crates/faction-xmpp/Cargo.toml",
-          "manifest_sha256": "8760779a49e3f530615890d468a38c7c834e50e14469f83dbc715734fc190714",
+          "manifest_sha256": "0f040116bdf9475b59c8f3fa070455c67ef16e05821b5da07d7f657c34b16968",
           "name": "faction-xmpp",
           "version": "0.1.0-alpha.1"
         }
@@ -6943,7 +6943,7 @@
   "manifests": {
     "Cargo.toml": "30fdcc2de04b1e4007b735b0f231530fa253e988973036536ea6eba3d1bff8ad",
     "crates/faction-client/Cargo.toml": "f4a5afdbe7e12495e2f0cbf54a8bb64b6ca337b34625d9e50556eb4b368428c8",
-    "crates/faction-xmpp/Cargo.toml": "8760779a49e3f530615890d468a38c7c834e50e14469f83dbc715734fc190714"
+    "crates/faction-xmpp/Cargo.toml": "0f040116bdf9475b59c8f3fa070455c67ef16e05821b5da07d7f657c34b16968"
   },
   "native_vendor_sha256": {
     "driver.h": "4847d58fd3388e73bbe911417753ff153e6fa9f5a99af55f549f2f8df57bc792",
@@ -6953,7 +6953,7 @@
     "omemo.h": "6871e89e0c5f9f0e2e76f4c8b7bc48631b849ace3157704b5d6ad4cb6d6485e2",
     "openssl.c": "4e4877dca3dd2ebff93fc6a8adbff117b67a1c28d665eea2721831c20c0583ce"
   },
-  "root_lock_sha256": "8eba91875652244c761f28cf24867543c016d4d7c54d3c6d911b4aa704efef1c",
+  "root_lock_sha256": "399947e71d2abaa07a2dba4d9c07d33721274d6bff539359d082bec53e849f63",
   "schema": 1,
   "scope": "product-workspace-with-default-off-network-mail",
   "selected_feature": "faction-client/network-mail",

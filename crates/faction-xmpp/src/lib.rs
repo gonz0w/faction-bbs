@@ -6,6 +6,7 @@
 //! or pending send/read closes the transport. Every call shares the connection's
 //! original cooperative ten-second deadline; this is not OS preemption.
 
+pub mod blob_iq;
 pub mod guard;
 
 use futures_util::{SinkExt, StreamExt};

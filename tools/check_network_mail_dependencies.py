@@ -33,6 +33,8 @@ LICENSES = {
     'Unlicense OR MIT', 'Zlib OR Apache-2.0 OR MIT',
 }
 TRANSPORT = {
+    'faction-files': {'path': '../faction-files'},
+    'base64_blob': {'package': 'base64', 'version': '=0.23.1'},
     'tokio-xmpp': {'version': '=6.0.0', 'default-features': False, 'features': ['native-tls']},
     'native-tls': '=0.2.18', 'tokio-native-tls': '=0.3.1',
     'tokio': {'version': '=1.54.1', 'default-features': False, 'features': ['rt', 'time', 'net', 'io-util', 'macros']},

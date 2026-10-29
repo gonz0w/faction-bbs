@@ -1,0 +1,2658 @@
+{
+  "archive_bytes": 279726080,
+  "archive_sha256": "74e177179a9631d8be8bad662501b72c1ab14544b016af94502ca67c98c4ab03",
+  "build_resources": {
+    "cpus": 2,
+    "machine_arch": "aarch64",
+    "physical_memory_bytes": 2128732160
+  },
+  "builds": [
+    {
+      "commands": [
+        "cargo test --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline --no-run",
+        "cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline -- -D warnings"
+      ],
+      "exit_code": 0,
+      "name": "provider-default",
+      "wall_seconds_including_admin_transport": 4.338592207990587
+    },
+    {
+      "commands": [
+        "cargo test --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline --features blob-iq --no-run",
+        "cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline --features blob-iq -- -D warnings"
+      ],
+      "exit_code": 0,
+      "name": "provider-iq",
+      "wall_seconds_including_admin_transport": 5.3346279169782065
+    },
+    {
+      "commands": [
+        "cargo test --manifest-path crates/faction-xmpp/Cargo.toml --all-targets --release --locked --offline --no-run"
+      ],
+      "exit_code": 0,
+      "name": "xmpp",
+      "wall_seconds_including_admin_transport": 7.302862832992105
+    },
+    {
+      "commands": [
+        "cargo test -p faction-client --features network-mail --all-targets --release --locked --offline --no-run"
+      ],
+      "exit_code": 0,
+      "name": "client-network",
+      "wall_seconds_including_admin_transport": 26.280032874987228
+    },
+    {
+      "commands": [
+        "cargo test -p faction-client --all-targets --release --locked --offline --no-run"
+      ],
+      "exit_code": 0,
+      "name": "client-default",
+      "wall_seconds_including_admin_transport": 7.132982582988916
+    },
+    {
+      "commands": [
+        "cargo test -p faction-files --all-targets --release --locked --offline --no-run"
+      ],
+      "exit_code": 0,
+      "name": "files",
+      "wall_seconds_including_admin_transport": 2.179408500000136
+    }
+  ],
+  "cargo_build_jobs": 2,
+  "cargo_network_offline": true,
+  "date_utc": {
+    "postrun": "2026-10-29T01:09:07.757203+00:00",
+    "runtime_preflight": "2026-10-29T01:04:56.330796+00:00"
+  },
+  "executed_distinct_test_or_example_binaries": 37,
+  "guards": {
+    "after_runtime_restart": {
+      "cache_archives_verified": 167,
+      "exit_code": 0,
+      "libraries_verified": 8,
+      "loader_verified": true,
+      "retained_elf_hashes_verified": 40,
+      "source_inputs_verified": 346
+    },
+    "before_build": {
+      "commands": [
+        "python3.13 tools/check_provider_dependencies.py",
+        "python3.13 tools/check_network_mail_dependencies.py",
+        "python3.13 tools/check_provider_auth_dependencies.py",
+        "python3.13 tools/check_repository.py",
+        "cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check",
+        "cargo fmt --manifest-path crates/faction-xmpp/Cargo.toml -- --check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 5.662147208000533
+    }
+  },
+  "limits": [
+    "Fresh NetBSD software VM observations only; no physical SBC, capacity or 250-member support claim.",
+    "Typed blob-IQ dispatch is in process after verified device TLS; it establishes no XMPP server/stream, SASL profile, production enrollment or ordinary account-login device authority.",
+    "The binary TLS request/reply carrier has separate actual I/O controls; no new IQ network protocol is adopted.",
+    "Device-side attachment keys/decryption and current local BBS approval remain separate from the provider boundary.",
+    "Tool/library hashes and source comparisons are observations, not hermetic SDK equivalence, a security audit or independent modern-client interoperability.",
+    "Requested Temper implementer Sol/high mapping; actual backend model/role discovery telemetry remains unverified.",
+    "Ignored subprocess helpers were not invoked directly; their existing parent recovery/interface tests ran within the approved suites."
+  ],
+  "other_retained_compiled_files_not_named_by_runtime": 3,
+  "platform": "NetBSD 11.0 evbarm",
+  "postrun": {
+    "libraries_verified": 8,
+    "loader_verified": true,
+    "non_admin_tcp_listeners": [],
+    "owned_fixture_entries": [],
+    "retained_binary_hashes_verified": 40,
+    "source_inputs_verified": 346,
+    "test_processes": []
+  },
+  "retained_elf_files": 40,
+  "runtime_resources": {
+    "cpus": 2,
+    "machine_arch": "aarch64",
+    "physical_memory_bytes": 1054990336
+  },
+  "schema": 1,
+  "scope": "fresh-opt-in-provider-and-native-blob-iq-NetBSD-software-qualification",
+  "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+  "source_inputs_verified": 346,
+  "target": "aarch64-unknown-netbsd",
+  "tests": [
+    {
+      "command": "cargo test --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline -- --test-threads=1 --nocapture",
+      "executed_binaries": [
+        "deps/faction_provider-98cf069dd7df3ef1",
+        "deps/embedding-ef2a8a15f1b0ae36"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.03,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 12
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 26.1,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 17
+        }
+      ],
+      "name": "runtime-provider-default-serial",
+      "process_time_seconds": {
+        "real": 26.18,
+        "system": 0.04,
+        "user": 0.32
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_actor_free_wrong_route_closes_without_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+          "status": "ok"
+        },
+        {
+          "name": "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_in_dispatch",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+          "status": "ok"
+        },
+        {
+          "name": "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+          "status": "ok"
+        },
+        {
+          "name": "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "forged_route_account_device_and_full_identity_never_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+          "status": "ok"
+        },
+        {
+          "name": "public_embedding_contract_keeps_qualified_bounds",
+          "status": "ok"
+        },
+        {
+          "name": "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+          "status": "ok"
+        },
+        {
+          "name": "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+          "status": "ok"
+        },
+        {
+          "name": "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+          "status": "ok"
+        },
+        {
+          "name": "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+          "status": "ok"
+        },
+        {
+          "name": "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 29
+      },
+      "wall_seconds_including_admin_transport": 26.250495250016684
+    },
+    {
+      "command": "cargo test --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline -- --nocapture",
+      "executed_binaries": [
+        "deps/faction_provider-98cf069dd7df3ef1",
+        "deps/embedding-ef2a8a15f1b0ae36"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.03,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 12
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 26.17,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 17
+        }
+      ],
+      "name": "runtime-provider-default-parallel",
+      "process_time_seconds": {
+        "real": 26.23,
+        "system": 0.05,
+        "user": 0.32
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_actor_free_wrong_route_closes_without_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+          "status": "ok"
+        },
+        {
+          "name": "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_in_dispatch",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+          "status": "ok"
+        },
+        {
+          "name": "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+          "status": "ok"
+        },
+        {
+          "name": "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "forged_route_account_device_and_full_identity_never_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "public_embedding_contract_keeps_qualified_bounds",
+          "status": "ok"
+        },
+        {
+          "name": "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+          "status": "ok"
+        },
+        {
+          "name": "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+          "status": "ok"
+        },
+        {
+          "name": "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+          "status": "ok"
+        },
+        {
+          "name": "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+          "status": "ok"
+        },
+        {
+          "name": "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+          "status": "ok"
+        },
+        {
+          "name": "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 29
+      },
+      "wall_seconds_including_admin_transport": 26.305160124989925
+    },
+    {
+      "command": "cargo test --manifest-path crates/faction-provider/Cargo.toml --doc --release --locked --offline -- --test-threads=1 --nocapture",
+      "executed_binaries": [],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.36,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 4
+        }
+      ],
+      "name": "runtime-provider-default-doc",
+      "process_time_seconds": {
+        "real": 0.48,
+        "system": 0.14,
+        "user": 0.27
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "src/tls.rs - tls::Session (line 336) - compile fail",
+          "status": "ok"
+        },
+        {
+          "name": "src/tls.rs - tls::Session (line 340) - compile fail",
+          "status": "ok"
+        },
+        {
+          "name": "src/tls.rs - tls::Session (line 344) - compile fail",
+          "status": "ok"
+        },
+        {
+          "name": "src/tls.rs - tls::Session (line 348) - compile fail",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4
+      },
+      "wall_seconds_including_admin_transport": 0.560586208011955
+    },
+    {
+      "command": "cargo test --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline --features blob-iq -- --test-threads=1 --nocapture",
+      "executed_binaries": [
+        "deps/faction_provider-55e7a796bd06c15c",
+        "deps/embedding-7bcd6819dddf524d"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.03,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 12
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 37.39,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 26
+        }
+      ],
+      "name": "runtime-provider-iq-serial",
+      "process_time_seconds": {
+        "real": 37.48,
+        "system": 0.12,
+        "user": 0.4
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_actor_free_wrong_route_closes_without_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+          "status": "ok"
+        },
+        {
+          "name": "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_in_dispatch",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+          "status": "ok"
+        },
+        {
+          "name": "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+          "status": "ok"
+        },
+        {
+          "name": "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "forged_route_account_device_and_full_identity_never_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::actor_free_iq_routes_are_assertions_and_denials_are_uniform",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::committed_actor_free_routes_reject_confusion_in_maintained_iqs",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::iq_calls_share_the_original_absolute_cycle_deadline",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::local_service_foreign_routes_and_wrong_bound_principals_fail_closed",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::lost_typed_reply_reopen_exact_retry_and_explicit_delete_preserve_store_semantics",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::maintained_iqs_compose_with_real_tls_principals_and_exact_retries",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::malformed_oversized_and_denied_iqs_share_budget_with_binary_before_decode",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::public_policy_changes_and_cancel_deny_next_iq_without_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::store_quota_keeps_uniform_existing_failure_over_iq",
+          "status": "ok"
+        },
+        {
+          "name": "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+          "status": "ok"
+        },
+        {
+          "name": "public_embedding_contract_keeps_qualified_bounds",
+          "status": "ok"
+        },
+        {
+          "name": "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+          "status": "ok"
+        },
+        {
+          "name": "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+          "status": "ok"
+        },
+        {
+          "name": "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+          "status": "ok"
+        },
+        {
+          "name": "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+          "status": "ok"
+        },
+        {
+          "name": "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 38
+      },
+      "wall_seconds_including_admin_transport": 37.56162670798949
+    },
+    {
+      "command": "cargo test --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --offline --features blob-iq -- --nocapture",
+      "executed_binaries": [
+        "deps/faction_provider-55e7a796bd06c15c",
+        "deps/embedding-7bcd6819dddf524d"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.02,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 12
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 37.34,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 26
+        }
+      ],
+      "name": "runtime-provider-iq-parallel",
+      "process_time_seconds": {
+        "real": 37.42,
+        "system": 0.05,
+        "user": 0.46
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "authority_tests::an_observed_credential_expiry_is_terminal_even_after_wall_clock_rollback",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::contradictory_account_status_across_distinct_devices_is_invalid_policy",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::exact_internal_sender_upload_and_committed_recipient_read_preserve_store_retries",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::forged_binding_account_device_and_full_identity_never_select_actor_or_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::authorized_store_expiry_semantics_quota_and_dedup_remain_unchanged",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::handles_are_bounded_closed_expired_and_bound_to_authority_and_connection",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::home_removal_credential_expiry_and_missing_policy_deny_without_clock_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::registry_shape_caps_duplicates_and_ambiguous_implicit_mappings_fail",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::replacement_requires_increasing_generation_exact_existing_mapping_and_explicit_reset_rotation",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::retired_digests_never_remap_after_removal_or_reset_and_lifetime_history_is_bounded",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::unknown_unapproved_disabled_and_credential_validity_boundaries_deny",
+          "status": "ok"
+        },
+        {
+          "name": "authority_tests::live_account_device_approval_peer_and_identity_revocation_denies_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_actor_free_wrong_route_closes_without_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "actual_binary_peer_bytes_and_responses_share_the_verified_session",
+          "status": "ok"
+        },
+        {
+          "name": "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_in_dispatch",
+          "status": "ok"
+        },
+        {
+          "name": "committed_actor_free_routes_reject_confusion_on_actual_binary_wire",
+          "status": "ok"
+        },
+        {
+          "name": "current_peer_policy_is_rechecked_for_newly_accepted_sessions",
+          "status": "ok"
+        },
+        {
+          "name": "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "forged_route_account_device_and_full_identity_never_mutate_store",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::actor_free_iq_routes_are_assertions_and_denials_are_uniform",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::committed_actor_free_routes_reject_confusion_in_maintained_iqs",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::iq_calls_share_the_original_absolute_cycle_deadline",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::local_service_foreign_routes_and_wrong_bound_principals_fail_closed",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::lost_typed_reply_reopen_exact_retry_and_explicit_delete_preserve_store_semantics",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::maintained_iqs_compose_with_real_tls_principals_and_exact_retries",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::malformed_oversized_and_denied_iqs_share_budget_with_binary_before_decode",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::public_policy_changes_and_cancel_deny_next_iq_without_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "iq_contract::store_quota_keeps_uniform_existing_failure_over_iq",
+          "status": "ok"
+        },
+        {
+          "name": "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+          "status": "ok"
+        },
+        {
+          "name": "public_embedding_contract_keeps_qualified_bounds",
+          "status": "ok"
+        },
+        {
+          "name": "malformed_and_denied_attempts_share_eight_operation_budget_before_decode",
+          "status": "ok"
+        },
+        {
+          "name": "real_cycle_expiry_and_cancellation_deny_without_store_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "real_tcp_wait_and_stalled_tls_share_five_second_admission",
+          "status": "ok"
+        },
+        {
+          "name": "real_tls_upload_exact_retry_and_recipient_read_use_only_certificate_actor",
+          "status": "ok"
+        },
+        {
+          "name": "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+          "status": "ok"
+        },
+        {
+          "name": "stop_interrupts_handshake_and_live_cancel_and_second_session_deny",
+          "status": "ok"
+        },
+        {
+          "name": "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 38
+      },
+      "wall_seconds_including_admin_transport": 37.500293000019155
+    },
+    {
+      "command": "cargo test --manifest-path crates/faction-provider/Cargo.toml --doc --release --locked --offline --features blob-iq -- --test-threads=1 --nocapture",
+      "executed_binaries": [],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.39,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 4
+        }
+      ],
+      "name": "runtime-provider-iq-doc",
+      "process_time_seconds": {
+        "real": 0.5,
+        "system": 0.14,
+        "user": 0.31
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "src/tls.rs - tls::Session (line 336) - compile fail",
+          "status": "ok"
+        },
+        {
+          "name": "src/tls.rs - tls::Session (line 340) - compile fail",
+          "status": "ok"
+        },
+        {
+          "name": "src/tls.rs - tls::Session (line 344) - compile fail",
+          "status": "ok"
+        },
+        {
+          "name": "src/tls.rs - tls::Session (line 348) - compile fail",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 4
+      },
+      "wall_seconds_including_admin_transport": 0.574771082989173
+    },
+    {
+      "command": "cargo test --manifest-path crates/faction-xmpp/Cargo.toml --all-targets --release --locked --offline -- --test-threads=1 --nocapture",
+      "executed_binaries": [
+        "deps/faction_xmpp-16eb895b0921055b",
+        "deps/contract-778a504a3c905766",
+        "deps/guard-c2fbee519260ec5c",
+        "examples/transport_fixture-9b34347ebdc7e055"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.11,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 7
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.06,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 8
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.01,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 10
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        }
+      ],
+      "name": "runtime-xmpp",
+      "process_time_seconds": {
+        "real": 0.22,
+        "system": 0.01,
+        "user": 0.1
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "session_tests::active_read_deadline_drops_transport",
+          "status": "ok"
+        },
+        {
+          "name": "session_tests::actual_xso_encoding_cannot_exceed_cap_via_empty_children",
+          "status": "ok"
+        },
+        {
+          "name": "session_tests::binding_requires_exact_identity_and_no_extra_payload",
+          "status": "ok"
+        },
+        {
+          "name": "session_tests::dropped_pending_read_cancels_and_cannot_reuse_partial_stream",
+          "status": "ok"
+        },
+        {
+          "name": "session_tests::receive_guard_rejection_is_typed_and_latched",
+          "status": "ok"
+        },
+        {
+          "name": "session_tests::rejected_output_writes_zero_bytes_and_closes_transport",
+          "status": "ok"
+        },
+        {
+          "name": "session_tests::successive_reads_and_writes_share_original_deadline",
+          "status": "ok"
+        },
+        {
+          "name": "escaped_encoded_output_is_bounded_before_any_write",
+          "status": "ok"
+        },
+        {
+          "name": "inherited_key_logging_is_refused_before_connect",
+          "status": "ok"
+        },
+        {
+          "name": "installed_trace_logger_receives_no_records",
+          "status": "ok"
+        },
+        {
+          "name": "invalid_home_never_becomes_transport_authority",
+          "status": "ok"
+        },
+        {
+          "name": "keylog_child",
+          "status": "ok"
+        },
+        {
+          "name": "outgoing_encoding_accepts_exact_limit_and_rejects_one_more_byte",
+          "status": "ok"
+        },
+        {
+          "name": "protocol_logging_stays_compile_disabled",
+          "status": "ok"
+        },
+        {
+          "name": "read_errors_preserve_loss_without_remote_error_text",
+          "status": "ok"
+        },
+        {
+          "name": "bounded_incremental_xml_accepts_fragmented_stream",
+          "status": "ok"
+        },
+        {
+          "name": "coalesced_restart_preserves_unread_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "fragmented_restart_and_repeated_fill_do_not_double_count",
+          "status": "ok"
+        },
+        {
+          "name": "guard_rejects_before_dom_consumer_observes_bad_byte",
+          "status": "ok"
+        },
+        {
+          "name": "individual_stanza_budget_rejects_before_lifetime_budget",
+          "status": "ok"
+        },
+        {
+          "name": "lifetime_byte_budget_survives_stanza_boundaries_and_restart",
+          "status": "ok"
+        },
+        {
+          "name": "parser_lookahead_unconsumed_byte_is_replayed_after_trusted_restart",
+          "status": "ok"
+        },
+        {
+          "name": "physical_byte_and_event_counters_never_exceed_fixed_caps",
+          "status": "ok"
+        },
+        {
+          "name": "rejects_depth_events_bytes_malformed_and_dtd",
+          "status": "ok"
+        },
+        {
+          "name": "root_whitespace_never_erases_the_next_stanzas_opening_byte",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 25
+      },
+      "wall_seconds_including_admin_transport": 0.30017195802065544
+    },
+    {
+      "command": "cargo test -p faction-client --features network-mail --all-targets --release --locked --offline -- --test-threads=1 --nocapture",
+      "executed_binaries": [
+        "deps/faction_client-eda7109f28e0221f",
+        "deps/faction_client-72ba64bbe232a608",
+        "deps/attachment_checkpoint_schema-b53347e640d4f1d0",
+        "deps/attachment_checkpoint_transactions-ae16516a21cd8528",
+        "deps/attachment_mail_delivery-9a81e5c337bffd3c",
+        "deps/attachment_rejection-61e14dc589e90417",
+        "deps/attachment_save-2b0fda2d9b6d8ae2",
+        "deps/mail_blob_transfer-71cdbb627a60366e",
+        "deps/mail_blob_wire-9c76365757c8baab",
+        "examples/checkpoint_ui_fixture-67993fc8b44cdb3a",
+        "examples/home_mail_fixture-ef19bdf35f95648c",
+        "examples/mail_blob_fixture-8efec14aff541930",
+        "examples/mail_correspondents_fixture-66f041edaadfa1e7",
+        "examples/mail_reply_fixture-c70745b4508a1537"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 42.49,
+          "ignored": 5,
+          "measured": 0,
+          "passed": 124
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 23.66,
+          "ignored": 3,
+          "measured": 0,
+          "passed": 77
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.19,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 1
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 1.09,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 4
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 1.25,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.08,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 1
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.02,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 4
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.81,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 4
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 2
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 7
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 1
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        }
+      ],
+      "name": "runtime-client-network",
+      "process_time_seconds": {
+        "real": 69.71,
+        "system": 6.74,
+        "user": 29.09
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "attachment_save::tests::bounded_child_death_before_and_after_publication_retains_recoverable_private_temp",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::death_child",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::deterministic_failures_keep_publication_phase_and_complete_output",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::exclusive_owned_file_is_exactly_private_even_with_restrictive_umask",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::publication_syscall_errors_preserve_known_phase_results",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::racing_destination_and_unknown_temporary_are_never_removed",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::strict_umask_child",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_save::tests::timeout_after_publication_syscall_attempt_is_uncertain",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::current_uid_is_required_even_for_otherwise_readable_metadata",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::empty_and_exact_cap_sources_are_accepted_but_cap_plus_one_is_refused",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::errors_have_only_fixed_private_status_text",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::explicit_regular_0644_source_retains_exact_zeroizing_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::explicit_source_is_literal_and_never_expands_shell_syntax",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::fifo_socket_and_directory_are_refused_without_waiting_for_a_writer",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::final_and_ancestor_symlinks_are_refused_even_when_target_is_safe",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::observed_leaf_replacement_deletion_and_symlink_are_refused",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::observed_length_permissions_timestamps_and_link_changes_refuse_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::owner_unreadable_group_or_other_writable_and_hardlinked_sources_are_refused",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::read_bound_includes_only_one_detection_byte_and_errors_retain_no_io_detail",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_source::tests::relative_dot_parent_nul_and_terminal_control_paths_are_refused",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::backup_is_history_only_until_explicit_fresh_device",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::checkpoint_crash_child",
+          "status": "ignored"
+        },
+        {
+          "name": "checkpoint_tests::checkpoint_review_parent_sync_failure_prevents_usable_initialization",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::checkpoint_review_recovery_quarantine_survives_password_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::checkpoint_review_restart_outbox_recovers_acknowledgement_id",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::delayed_keys_and_reply_ratchets_commit_with_history",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::encrypted_send_receive_retry_and_ack_survive_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::explicit_upgrade_preserves_v1_drafts_pins_and_original_backup",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::locks_wrong_secrets_malformed_bytes_and_caps_fail_closed",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::process_death_after_delivery_before_ack_retries_identical_ciphertext",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::process_death_before_and_after_publication_keeps_canonical_state",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::reset_write_ambiguity_never_rolls_back_into_a_live_handle",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::validation_tamper_trust_and_duplicates_do_not_change_canonical_state",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_tests::write_errors_poison_until_durable_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::fin_matches_only_iq_and_actual_first_last_not_total_count",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::fin_rejects_mismatch_duplicates_extra_unstable_and_more_than_four",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::incoming_uses_enrolled_identity_and_ignores_server_time",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::opaque_cursor_and_query_inputs_are_bounded",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::own_sent_echo_uses_swapped_trusted_binding_without_decryption",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::request_is_own_archive_peer_filtered_and_four_bounded",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::saved_cursor_unavailable_requires_exact_own_error_and_optional_query_echo",
+          "status": "ok"
+        },
+        {
+          "name": "mail_archive::tests::wrong_owner_query_shape_namespace_addresses_and_delay_are_rejected",
+          "status": "ok"
+        },
+        {
+          "name": "mail_blob_transfer::tests::one_cycle_deadline_cancels_the_entire_composed_future",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::archive_cas_binding_ids_and_tamper_stop_before_checkpoint_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::archive_checkpoint_crash_child",
+          "status": "ignored"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::archive_inspection_exposes_only_enabled_and_cursor_presence_even_when_inactive",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::archive_process_death_couples_message_cursor_and_native_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::archive_receive_commits_authenticated_time_cursor_and_reopen_duplicate_once",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::archive_write_failures_poison_and_preserve_atomic_candidate",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::explicit_archive_migration_preserves_v2_state_wraps_and_recovery",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::full_history_or_outbox_blocks_archive_duplicates_and_echoes",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::inactive_revoked_expired_and_poisoned_archive_operations_refuse",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::known_own_archive_echo_advances_only_cursor_even_after_retirement",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::original_recovery_secret_remains_valid_after_explicit_archive_migration",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::partial_archive_page_preserves_last_good_cursor_when_next_item_fails",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::recovery_backup_and_reset_preserve_inert_cursor_and_fresh_device_rescopes",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::archive_checkpoint_tests::schema02_stays_exact_and_schema03_rejects_malformed_or_foreign_scope",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_child_wait_times_out_and_reaps_observed_stalled_child",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_descriptor_fields_reset_backup_recovery_and_fresh_device_preserve_history",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_migration_crash_child",
+          "status": "ignored"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_migration_process_death_keeps_only_authenticated_canonical_version",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_migration_write_failures_poison_and_only_canonical_reopen_is_usable",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_retry_intent_binds_current_peer_address_device_and_full_identity",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_schema_exact_eof_flags_counts_and_descriptor_bounds_reject",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_schema_upgrade_preserves_each_old_format_and_independent_archive_read_flags",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::attachment_stalled_child",
+          "status": "ignored"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::authentic_malformed_attachment_and_wrong_wire_bindings_abort_before_any_durable_change",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::descriptor_binary_contract_roundtrips_and_rejects_each_truncation_and_malformed_field",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::every_old_schema_rejects_authentic_attachments_without_advancing_native_history_or_cursor",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::original_recovery_secret_remains_valid_after_explicit_attachment_upgrade",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::attachment_checkpoint_tests::whole_attachment_state_rejects_record_flag_and_nonzero_malformed_descriptor_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_archive_new_receive_duplicate_and_own_echo_preserve_bits_and_pending",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_crash_child",
+          "status": "ignored"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_explicit_opt_in_preserves_old_schemas_and_all_protocol_state",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_full_64_entry_metadata_is_bounded_without_evicting_history",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_history_only_backup_can_acknowledge_without_changing_active_source",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_history_only_recovery_backup_reset_and_fresh_device_keep_local_decisions",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_local_decisions_survive_protocol_expiry_and_revocation",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_malformed_length_direction_boolean_and_trailing_metadata_reject",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_process_death_before_and_after_publish_keeps_whole_read_checkpoint",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_received_only_exact_identity_idempotence_and_duplicate_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "mail_checkpoint::unread_checkpoint_tests::unread_write_failures_poison_enable_and_mark_without_partial_state",
+          "status": "ok"
+        },
+        {
+          "name": "mail_data::tests::bounded_state_and_unambiguous_addresses",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::archive_enabled_modes_avoid_presence_while_legacy_v2_keeps_presence_and_pending_is_exact",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::archive_enabled_modes_reject_interleaved_live_encrypted_before_any_commit",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::attachment_manual_bytes_home_delivery_live_archive_restart_and_explicit_save",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::attachment_poisoned_history_fails_before_any_save_action",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_cancellation_after_result_preserves_checkpoint",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_commits_native_page_without_presence_pep_or_retry",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_expired_during_connect_sends_no_query",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_full_outbox_and_foreign_settings_stop_before_transport",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_lost_idle_or_invalid_fin_commits_nothing",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_own_sent_echo_matches_durable_history_without_retiring_outbox",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_page_rejects_fifth_before_any_commit_and_reports_empty_partial",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_preflight_rejects_disabled_and_expiry_after_wait",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_saved_cursor_error_is_actionable_without_reset_or_retry",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_tampered_second_stops_at_last_good_cursor_and_reopens",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::catch_up_total_stanza_budget_and_stale_local_token_stop",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::connection_elapsed_is_counted_before_the_exchange_begins",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::delayed_iq_wait_rechecks_expiry_before_accepting_authenticated_message",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::foreign_account_and_expired_state_cannot_open_a_home_connection",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::ordinary_sync_skips_managed_private_attachment_but_sends_text",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::private_regular_local_configuration_is_preloaded",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::publication_excludes_prekey_consumed_while_awaiting_own_device_iq",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::revoked_recovered_and_poisoned_handles_stop_before_transport_setup",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::symlinks_hardlinks_fifo_and_public_files_are_refused",
+          "status": "ok"
+        },
+        {
+          "name": "mail_network::tests::unknown_fields_credentials_and_non_numeric_endpoints_are_rejected",
+          "status": "ok"
+        },
+        {
+          "name": "mail_vault::tests::encrypted_persistence_recovery_trust_and_backup",
+          "status": "ok"
+        },
+        {
+          "name": "mail_vault::tests::private_files_links_and_create_only_initialization",
+          "status": "ok"
+        },
+        {
+          "name": "mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_accepts_exact_standard_store_hint_only",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_accepts_inert_standard_root_iq_xml_language",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_accepts_inert_standard_root_message_xml_language",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_bundle_refuses_changed_identity_duplicate_or_unknown_keys",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_enforces_input_and_encoded_bounds",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_full_jid_is_scoped_and_resources_are_inert",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_message_roundtrip_excludes_clear_identity_and_time",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_outgoing_requests_storage_without_changing_ciphertext_or_retry_id",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_publishes_standard_nodes_and_public_material_only",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_reads_independent_message_and_optional_false_kex",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_reads_independent_standard_devices_and_bundle",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_rejects_language_namespace_shape_and_bounds",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_rejects_substitution_and_shape_confusion",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_rejects_underfilled_discovery_bundle",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_rejects_wrong_iq_owner_id_node_and_extra_children",
+          "status": "ok"
+        },
+        {
+          "name": "mail_wire::tests::mail_wire_requires_standard_minimum_and_bounded_public_prekeys",
+          "status": "ok"
+        },
+        {
+          "name": "network_checkpoint_tests::authenticated_network_timestamp_and_delayed_duplicate_survive_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "network_checkpoint_tests::published_prekeys_come_from_the_durable_current_identity_only",
+          "status": "ok"
+        },
+        {
+          "name": "network_checkpoint_tests::unauthenticated_timestamp_substitution_and_tampering_never_mutate_checkpoint",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::completion_separates_pending_upload_from_received_fetch",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::exact_operation_input_rejects_partial_or_zero_identity",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::exhausted_foreground_budget_never_polls_another_sdk_call",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::foreground_deadline_and_cancellation_drop_one_pending_sdk_future",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::foreground_rejects_wrong_bounds_and_regressions",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::foreground_requires_strict_progress_and_caps_calls",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::peer_preflight_refuses_unprepared_expired_changed_capacity_and_quarantine",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::received_selection_needs_exact_original_frame_and_managed_attachment",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::attachments::tests::save_phase_messages_keep_uncertain_publication_actionable",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::correspondent_empty_single_and_sixty_four_groups_clamp_pages",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::correspondent_rows_preserve_device_digits_and_are_inert_at_thirty_nine_cells",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::correspondents_group_exact_account_and_device_newest_first",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::disabled_tracking_rejects_unread_filter_instead_of_inventing_zero",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::empty_and_single_never_wrap_or_open_out_of_range",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::forty_column_subjects_are_inert_and_bounded_in_both_modes",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::full_retention_is_eleven_pages_and_only_four_final_rows",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::newest_first_six_rows_and_partial_page_clamp_selection",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::reply_refresh_keeps_original_source_and_selected_group",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::search_full_retention_pages_and_new_query_choose_newest",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::search_intersects_group_and_unread_retains_indices_and_refresh_selection",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::search_matches_literal_case_sensitive_unicode_fields_independently",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::search_validates_utf8_bytes_and_rejects_terminal_controls_without_truncation",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::inbox::tests::unread_filter_excludes_sent_and_read_refresh_keeps_original_indices",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::reply::tests::reply_eligibility_queue_reopen_and_refusals",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::reply::tests::suggested_subject_keeps_ascii_prefix_and_scalar_boundaries",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::correspondents_actual_interface_helper",
+          "status": "ignored"
+        },
+        {
+          "name": "checkpoint_ui::tests::correspondents_opens_from_actual_inbox_and_backs_to_global",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::inactivity_locks_without_remote_connection",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::inbox_output_failure_and_input_eof_helper",
+          "status": "ignored"
+        },
+        {
+          "name": "checkpoint_ui::tests::inbox_output_failure_and_input_eof_preserve_unread_and_restore_tty",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::online_entry_disables_core_limits_before_any_input",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::private_text_is_inert_in_classic_and_unicode_modes",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::search_actual_interface_helper",
+          "status": "ignored"
+        },
+        {
+          "name": "checkpoint_ui::tests::search_opens_from_actual_inbox_and_is_ephemeral",
+          "status": "ok"
+        },
+        {
+          "name": "checkpoint_ui::tests::search_prompt_edits_unicode_bounds_input_and_keeps_lock_errors",
+          "status": "ok"
+        },
+        {
+          "name": "connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments",
+          "status": "ok"
+        },
+        {
+          "name": "connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::home_mail_catalog_requires_supported_complete_private_references",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::home_mail_is_visible_local_explicit_and_fits_with_existing_entries",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation",
+          "status": "ok"
+        },
+        {
+          "name": "mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection",
+          "status": "ok"
+        },
+        {
+          "name": "passport_data::tests::data_is_bounded_inert_and_selective",
+          "status": "ok"
+        },
+        {
+          "name": "passport_data::tests::seal_controls_shapes_and_rights_are_checked",
+          "status": "ok"
+        },
+        {
+          "name": "passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization",
+          "status": "ok"
+        },
+        {
+          "name": "profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions",
+          "status": "ok"
+        },
+        {
+          "name": "sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate",
+          "status": "ok"
+        },
+        {
+          "name": "stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks",
+          "status": "ok"
+        },
+        {
+          "name": "stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order",
+          "status": "ok"
+        },
+        {
+          "name": "stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read",
+          "status": "ok"
+        },
+        {
+          "name": "stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output",
+          "status": "ok"
+        },
+        {
+          "name": "stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions",
+          "status": "ok"
+        },
+        {
+          "name": "stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered",
+          "status": "ok"
+        },
+        {
+          "name": "tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors",
+          "status": "ok"
+        },
+        {
+          "name": "tests::files_mail_actions_are_local_configured_and_keep_classic_entries",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_n_redraws_unknown_and_resets_back_default",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_renders_notices_and_keeps_enter_safe",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_menu_mail_offers_exact_fixed_local_choices",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output",
+          "status": "ok"
+        },
+        {
+          "name": "travel::tests::byte_limits_are_explicit_strict_and_atomic",
+          "status": "ok"
+        },
+        {
+          "name": "travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::context_hints_match_the_local_entry_in_every_notice_state",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::only_configured_visits_offer_mail_and_notices",
+          "status": "ok"
+        },
+        {
+          "name": "explicit_attachment_upgrade_is_idempotent_and_durable",
+          "status": "ok"
+        },
+        {
+          "name": "actual_zero_and_cap_blob_descriptors_are_accepted_but_oversize_and_invalid_metadata_do_not_mutate",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_archive_commits_descriptor_cursor_and_known_own_echo_without_retirement",
+          "status": "ok"
+        },
+        {
+          "name": "attachment_queue_requires_opt_in_then_retries_exact_durable_bytes_and_binds_every_field",
+          "status": "ok"
+        },
+        {
+          "name": "authenticated_attachment_live_network_duplicates_and_historical_keys_survive_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "accepted_hash_and_size_assertions_are_still_checked_against_supplied_bulk_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "corrupt_wrong_truncated_and_oversize_bytes_never_reach_a_save",
+          "status": "ok"
+        },
+        {
+          "name": "diagnostics_are_fixed_and_preserve_save_publication_phase",
+          "status": "ok"
+        },
+        {
+          "name": "durable_received_history_binds_real_blob_verification_and_explicit_private_save",
+          "status": "ok"
+        },
+        {
+          "name": "retained_history_remains_consumable_after_expiry_revocation_recovery_and_fresh_device",
+          "status": "ok"
+        },
+        {
+          "name": "selection_must_match_retained_received_attachment_before_any_file_action",
+          "status": "ok"
+        },
+        {
+          "name": "authentic_candidate_is_rejected_without_checkpoint_ciphertext_or_metadata_change",
+          "status": "ok"
+        },
+        {
+          "name": "authenticated_peer_descriptor_then_real_blob_verification_then_explicit_save",
+          "status": "ok"
+        },
+        {
+          "name": "existing_objects_and_unsafe_paths_remain_untouched",
+          "status": "ok"
+        },
+        {
+          "name": "explicit_private_save_preserves_exact_zero_small_and_cap_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "invalid_blob_and_canceled_selection_make_no_save_call",
+          "status": "ok"
+        },
+        {
+          "name": "a_failed_queue_retains_only_bounded_ciphertext_orphans_and_preserves_existing_pending_mail",
+          "status": "ok"
+        },
+        {
+          "name": "explicit_invited_domains_and_invalid_local_selection_are_refused",
+          "status": "ok"
+        },
+        {
+          "name": "fetched_ciphertext_requires_exact_history_and_verification_before_deliberate_save",
+          "status": "ok"
+        },
+        {
+          "name": "preparation_spools_before_queue_and_reopens_exact_intent_without_reencrypting",
+          "status": "ok"
+        },
+        {
+          "name": "denied_and_nonexistent_objects_have_one_identical_remote_error",
+          "status": "ok"
+        },
+        {
+          "name": "strict_iq_wrapper_preserves_binary_contract_and_exact_addresses",
+          "status": "ok"
+        },
+        {
+          "name": "stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate",
+          "status": "ok"
+        },
+        {
+          "name": "stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks",
+          "status": "ok"
+        },
+        {
+          "name": "stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order",
+          "status": "ok"
+        },
+        {
+          "name": "stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read",
+          "status": "ok"
+        },
+        {
+          "name": "stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output",
+          "status": "ok"
+        },
+        {
+          "name": "stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions",
+          "status": "ok"
+        },
+        {
+          "name": "stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered",
+          "status": "ok"
+        },
+        {
+          "name": "enabled::tests::privacy_audit_detects_every_selected_secret_without_disclosing_it",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 8,
+        "measured": 0,
+        "passed": 231
+      },
+      "wall_seconds_including_admin_transport": 69.77687133298605
+    },
+    {
+      "command": "cargo test -p faction-client --all-targets --release --locked --offline -- --test-threads=1 --nocapture",
+      "executed_binaries": [
+        "deps/faction_client-5a0c9d0cae25eb90",
+        "deps/faction_client-ecd2da7e9b0179fa",
+        "deps/attachment_checkpoint_schema-4b42a04645831e7e",
+        "deps/attachment_checkpoint_transactions-3dd65e3206a4807b",
+        "deps/attachment_mail_delivery-cb08e1b599dd8f0d",
+        "deps/attachment_rejection-d55b8cc2eb3d9be1",
+        "deps/attachment_save-3595c96162ea1766",
+        "deps/mail_blob_transfer-f1bdbccdbf5c723a",
+        "deps/mail_blob_wire-06b6934ddae5f6cd",
+        "examples/mail_blob_fixture-23a9fe44b8e85bce",
+        "examples/mail_correspondents_fixture-c3b70aeb19a06d9f",
+        "examples/mail_reply_fixture-eb1fb5a9111a181d"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 1.41,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 4
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 6.08,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 44
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 0
+        }
+      ],
+      "name": "runtime-client-default",
+      "process_time_seconds": {
+        "real": 7.56,
+        "system": 0.3,
+        "user": 1.22
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "mail_data::tests::bounded_state_and_unambiguous_addresses",
+          "status": "ok"
+        },
+        {
+          "name": "mail_vault::tests::encrypted_persistence_recovery_trust_and_backup",
+          "status": "ok"
+        },
+        {
+          "name": "mail_vault::tests::private_files_links_and_create_only_initialization",
+          "status": "ok"
+        },
+        {
+          "name": "mail_vault::tests::tampering_truncation_trailing_and_work_bounds_fail_closed",
+          "status": "ok"
+        },
+        {
+          "name": "connection::tests::pins_render_only_deduplicated_fingerprints_and_never_host_fields_or_comments",
+          "status": "ok"
+        },
+        {
+          "name": "connection::tests::plain_share_omits_contact_details_and_separates_unknown_remote_authority",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::catalog_is_private_bounded_and_never_contains_remote_endpoint_options",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::home_mail_catalog_requires_supported_complete_private_references",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::home_mail_key_is_explicit_and_preserves_existing_picker_keys",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::keyboard_escape_is_fragmented_bounded_and_preserves_door_passthrough",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::maximum_catalog_keyboard_pages_and_frame_fit_compact_geometry",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::optional_local_store_is_explicit_bounded_and_not_a_remote_profile",
+          "status": "ok"
+        },
+        {
+          "name": "launcher::tests::passport_catalog_is_local_optional_and_does_not_replace_navigation",
+          "status": "ok"
+        },
+        {
+          "name": "mail_ui::tests::inactivity_expires_without_input_or_a_remote_connection",
+          "status": "ok"
+        },
+        {
+          "name": "passport_data::tests::data_is_bounded_inert_and_selective",
+          "status": "ok"
+        },
+        {
+          "name": "passport_data::tests::seal_controls_shapes_and_rights_are_checked",
+          "status": "ok"
+        },
+        {
+          "name": "passport_store::tests::private_atomic_store_locks_and_refuses_links_or_reinitialization",
+          "status": "ok"
+        },
+        {
+          "name": "profile::tests::profiles_reject_remote_options_unknown_fields_and_loose_local_permissions",
+          "status": "ok"
+        },
+        {
+          "name": "sftp::tests::local_download_is_private_and_never_overwrites_or_leaves_failed_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "stream::graphics_tests::native_filter_regenerates_only_fixed_fragmented_graphics_after_local_gate",
+          "status": "ok"
+        },
+        {
+          "name": "stream::graphics_tests::native_gate_rejects_paths_oversize_pixels_wrong_order_and_interrupted_chunks",
+          "status": "ok"
+        },
+        {
+          "name": "stream::home_mail_tests::home_mail_control_is_separate_and_preserves_text_order",
+          "status": "ok"
+        },
+        {
+          "name": "stream::home_mail_tests::malformed_trailing_mail_frame_rejects_the_entire_read",
+          "status": "ok"
+        },
+        {
+          "name": "stream::recent_tests::recent_links_are_bounded_deduplicated_and_survive_fragmented_output",
+          "status": "ok"
+        },
+        {
+          "name": "stream::tests::fragmented_frames_and_terminal_queries_cannot_become_local_actions",
+          "status": "ok"
+        },
+        {
+          "name": "stream::tests::modern_text_and_rgb_survive_but_probes_sync_and_graphics_stay_filtered",
+          "status": "ok"
+        },
+        {
+          "name": "tests::client_pty_preserves_geometry_and_owns_cloexec_descriptors",
+          "status": "ok"
+        },
+        {
+          "name": "tests::files_mail_actions_are_local_configured_and_keep_classic_entries",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_arrows_traverse_three_choices_and_toggle_drops_typeahead",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_n_redraws_unknown_and_resets_back_default",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_preserves_open_back_cancel_and_invalid_input",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_renders_notices_and_keeps_enter_safe",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_mail_pty_shares_snapshot_with_files_and_opt_out_clears_it",
+          "status": "ok"
+        },
+        {
+          "name": "tests::main_menu_mail_offers_exact_fixed_local_choices",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::fragmented_mail_ack_returns_on_same_child_without_file_authority",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::mail_and_files_share_existing_frame_and_output_limits",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::mail_exchange_rejects_wrong_duplicate_and_trailing_controls",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::mail_return_discards_pre_ack_text_and_keeps_post_ack_fifo",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::matching_ack_waits_for_started_control_and_rejects_malformed_or_extra_tail",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::offer_tail_is_validated_before_dispatch_with_existing_deadline",
+          "status": "ok"
+        },
+        {
+          "name": "transport::home_mail_tests::returned_ack_preserves_legitimate_fragmented_ansi_and_utf8_output",
+          "status": "ok"
+        },
+        {
+          "name": "travel::tests::byte_limits_are_explicit_strict_and_atomic",
+          "status": "ok"
+        },
+        {
+          "name": "travel::tests::payload_validation_never_treats_estimates_or_invalid_metadata_as_authority",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::context_hints_match_the_local_entry_in_every_notice_state",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::error_or_disabled_tracking_never_claims_a_fresh_inbox_count",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::explicit_opt_in_retains_only_stale_local_counts_and_opt_out_clears",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::notices_fit_the_compact_terminal_without_control_payloads",
+          "status": "ok"
+        },
+        {
+          "name": "visit_mail::tests::only_configured_visits_offer_mail_and_notices",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 0,
+        "measured": 0,
+        "passed": 48
+      },
+      "wall_seconds_including_admin_transport": 7.629738999996334
+    },
+    {
+      "command": "cargo test -p faction-files --all-targets --release --locked --offline -- --test-threads=1 --nocapture",
+      "executed_binaries": [
+        "deps/faction_files-f58fd3d16e3aaa26",
+        "deps/faction_files-b4f96a4d8009e169",
+        "deps/private_blobs-6c87f1799f308f15"
+      ],
+      "exit_code": 0,
+      "harnesses": [
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.19,
+          "ignored": 1,
+          "measured": 0,
+          "passed": 7
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.0,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 1
+        },
+        {
+          "failed": 0,
+          "filtered_out": 0,
+          "harness_seconds": 0.2,
+          "ignored": 0,
+          "measured": 0,
+          "passed": 10
+        }
+      ],
+      "name": "runtime-files",
+      "process_time_seconds": {
+        "real": 0.42,
+        "system": 0.08,
+        "user": 0.06
+      },
+      "product_compilation_reported_during_runtime": false,
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82",
+      "tests": [
+        {
+          "name": "native::tests::native_controls_are_versioned_bounded_and_strictly_framed",
+          "status": "ok"
+        },
+        {
+          "name": "private_blobs::disk::tests::actual_process_death_at_each_boundary_reopens_exact_old_or_new_snapshot",
+          "status": "ok"
+        },
+        {
+          "name": "private_blobs::disk::tests::an_inherited_open_description_retains_the_lock_until_the_last_reference_closes",
+          "status": "ok"
+        },
+        {
+          "name": "private_blobs::disk::tests::authorized_expiry_clock_publication_failures_preserve_poison_and_uncertainty",
+          "status": "ok"
+        },
+        {
+          "name": "private_blobs::disk::tests::death_helper",
+          "status": "ignored"
+        },
+        {
+          "name": "private_blobs::disk::tests::each_write_sync_and_publication_error_poison_requires_safe_reopen",
+          "status": "ok"
+        },
+        {
+          "name": "private_blobs::disk::tests::fixture_lifetime_excludes_other_store_and_process_launch_windows",
+          "status": "ok"
+        },
+        {
+          "name": "tests::malformed_or_unbounded_policy_frames_have_no_interpretation",
+          "status": "ok"
+        },
+        {
+          "name": "transfer::tests::file_store_refuses_symlink_hardlink_and_untrusted_mode",
+          "status": "ok"
+        },
+        {
+          "name": "an_authorized_expiry_observation_survives_reopen_and_cannot_revive_by_rollback",
+          "status": "ok"
+        },
+        {
+          "name": "an_unauthorized_future_request_neither_advances_clock_nor_discloses_expiry",
+          "status": "ok"
+        },
+        {
+          "name": "canonical_codecs_reject_unknown_truncated_trailing_invalid_and_oversized_input",
+          "status": "ok"
+        },
+        {
+          "name": "every_current_policy_gate_and_exact_principal_binding_precede_disclosure_or_mutation",
+          "status": "ok"
+        },
+        {
+          "name": "exact_retries_are_immutable_and_digest_length_offsets_and_chunks_fail_closed",
+          "status": "ok"
+        },
+        {
+          "name": "filesystem_refuses_links_permissions_corruption_and_live_lock_without_unlink",
+          "status": "ok"
+        },
+        {
+          "name": "incomplete_reservations_count_expiry_never_renews_and_explicit_owner_cleanup_is_authorized",
+          "status": "ok"
+        },
+        {
+          "name": "maximum_complete_ciphertext_reopens_verified_with_bounded_regular_file_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "partial_ciphertext_survives_reopen_and_recipient_only_reads_committed_exact_bytes",
+          "status": "ok"
+        },
+        {
+          "name": "successful_read_highwater_is_durable_and_rollback_denials_do_not_change_storage",
+          "status": "ok"
+        }
+      ],
+      "totals": {
+        "failed": 0,
+        "filtered_out": 0,
+        "ignored": 1,
+        "measured": 0,
+        "passed": 18
+      },
+      "wall_seconds_including_admin_transport": 0.5037491659750231
+    }
+  ]
+}
