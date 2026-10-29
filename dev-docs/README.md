@@ -10,6 +10,7 @@ roadmap, local TODO journal or agent status log replaces GitHub.
 | [Engineering policy](../PROJECT.md) | Pinned method, selected profiles, lasting choices and stronger Faction contracts. |
 | [Workflow](workflow.md) | Issue → acceptance tests → red/green/refactor → closing PR → verified issue closure. |
 | [Architecture](architecture.md) | Current component and authority contracts, not work status. |
+| [Offline provider preparation](../docs/provider-preparation.md) | Member profile and card, and operator handoff. |
 | [Durable provider policy](provider-policy.md) | Optional persistence, authority and failure semantics. |
 | [Decisions](decisions/README.md) | Accepted/superseded technical decisions and their rationale. |
 | [Research](research/README.md) | Dated investigations and experimental observations. |

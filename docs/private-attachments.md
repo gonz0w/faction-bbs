@@ -11,6 +11,10 @@ The optional [private provider operator](provider-operator.md) can serve preappr
 
 ## Optional device-provider transport
 
+Use [offline preparation](provider-preparation.md) to create the existing private
+profile from an unlocked device and separately export a public card for a trusted
+operator. These actions do not establish approval or remote readiness.
+
 The explicit `device-provider` client feature adds an optional local profile for
 attachment transfer. Select it with `--device-provider PRIVATE_PROFILE` alongside
 `--mail-online` or `--boards`; without selection the existing IQ route remains.

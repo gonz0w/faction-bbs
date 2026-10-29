@@ -483,3 +483,10 @@ preserve ordinary encrypted mail, BBS and restricted SFTP access. Build and
 1 GiB native runtime envelopes remain separate. Original failed source/log
 variants and three unavailable early executable copies are distinguished from
 retained final-qualified binaries. No deployment or capacity claim follows.
+
+[Offline provider preparation evidence](offline-provider-preparation/README.md) records
+explicit native profile/card and checked complete-proposal commands, composed with
+separate policy application and classic/Unicode encrypted attachment delivery on
+host and fresh NetBSD. Original command/API failures and the unsafe-directory
+fixture correction remain distinct from unchanged production code. Build and
+runtime envelopes, software observations and deployment limits stay separate.

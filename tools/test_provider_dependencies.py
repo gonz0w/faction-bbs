@@ -18,7 +18,8 @@ def manifest():
             'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
             'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
                 'durable-policy': ['dep:rustix'],
-                'operator': ['durable-policy', 'dep:toml', 'dep:faction-unix']},
+                'preparation': ['dep:toml', 'toml/display'],
+                'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
             'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
                              'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
                 'rustix': {'version': '=1.1.5', 'default-features': False, 'features': ['std', 'fs', 'process'], 'optional': True},
@@ -79,9 +80,9 @@ class ProviderDependencies(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'operator'})
-        self.assertEqual(execute.call_count, 24)
-        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'operator', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator'})
+        self.assertEqual(execute.call_count, 27)
+        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
         actual = set()
         for call in execute.call_args_list:
             command = call.args[0]
@@ -129,7 +130,7 @@ class ProviderDependencies(unittest.TestCase):
     def test_optional_manifest_edges_do_not_activate_ordinary_graphs(self):
         provider = {'id': 'provider', 'name': 'faction-provider'}
         empty = {'packages': [], 'resolve': {'nodes': []}}
-        active = {'packages': [provider], 'resolve': {'nodes': [{'id': 'provider', 'features': []}]}}
+        active = {'packages': [provider], 'resolve': {'nodes': [{'id': 'provider', 'features': ['preparation']}]}}
         policy.validate_graph(empty, False)
         policy.validate_graph(active, True)
         with self.assertRaises(ValueError): policy.validate_graph(active, False)
@@ -178,18 +179,22 @@ def client_manifest():
     return {'features': {'default': [],
         'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
         'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
-        'device-provider': ['network-mail', 'dep:faction-provider', 'tokio/sync']},
+        'device-provider': ['network-mail', 'dep:faction-provider', 'faction-provider/preparation', 'tokio/sync']},
         'dependencies': {'faction-provider': {'path': '../faction-provider', 'optional': True, 'default-features': False}}}
 
 
 def native_ci_step():
     commands = ['cargo metadata --locked --format-version 1 --filter-platform ' + target + ' --features faction-client/device-provider > /dev/null' for target in policy.TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
-        'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings',
-        'cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1']
+        'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings']
     commands += [
         'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
         'umask 077',
+        'mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED"',
+        'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"',
+        'sha256sum "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"',
+        'mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED/captures"',
+        'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction286-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction286-setup-OWNED/captures" cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1',
         'mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"',
         "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
         'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
@@ -249,6 +254,9 @@ def ci_fixture():
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features preparation > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
@@ -258,6 +266,8 @@ def ci_fixture():
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features blob-iq -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features blob-iq -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features preparation -- --test-threads=1
       - name: Validate the native authenticated attachment client
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -269,9 +279,13 @@ def ci_fixture():
           cargo metadata --locked --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings
-          cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1
           cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked
           umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED"
+          cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"
+          sha256sum "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"
+          mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED/captures"
+          env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction286-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction286-setup-OWNED/captures" cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1
           mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"
           printf '%s\\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction280-console-OWNED/OWNED"
           python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"
@@ -317,6 +331,9 @@ def ci_fixture():
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features preparation > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
@@ -331,7 +348,7 @@ def ci_fixture():
           umask 077
           mkdir -m 700 "$RUNNER_TEMP/faction284-console-OWNED"
           printf '%s\\n' 'Owned maintained-provider operator proof' > "$RUNNER_TEMP/faction284-console-OWNED/OWNED"
-          python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json"
+          python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json" --prepared
   documentation:
     name: Documentation and policy
     needs: [native_mail, provider, provider_operator]
@@ -474,7 +491,8 @@ class ProviderCI(unittest.TestCase):
 def durable_manifest():
     result = manifest()
     result['features'].update({'durable-policy': ['dep:rustix'],
-        'operator': ['durable-policy', 'dep:toml', 'dep:faction-unix']})
+        'preparation': ['dep:toml', 'toml/display'],
+        'operator': ['durable-policy', 'preparation', 'dep:faction-unix']})
     result['dependencies'].update({
         'rustix': {'version': '=1.1.5', 'default-features': False,
                    'features': ['std', 'fs', 'process'], 'optional': True},
@@ -499,7 +517,7 @@ class DurableProviderProfiles(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'operator'})
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator'})
         for profile in ['durable-policy', 'operator']:
             self.assertEqual(set(result['profiles'][profile]['graphs']), set(policy.TARGETS))
 
@@ -547,7 +565,7 @@ class DurableProviderRefusals(unittest.TestCase):
             first = job.index('          python3 tools/check_provider_dependencies.py\n')
             prefix = job[:first]
             metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
-            self.assertEqual(len(metadata), 24)
+            self.assertEqual(len(metadata), 27)
             for line in metadata:
                 for replacement in ['', line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
                     changed = job.replace(line + '\n', replacement + '\n', 1)
@@ -594,6 +612,104 @@ class OperatorCIMarkerIntegration(unittest.TestCase):
             root.mkdir(mode=0o700)
             (root / 'OWNED').write_bytes(result.stdout)
             self.assertEqual(probe.require_root(root), root)
+
+
+class PreparationProfiles(unittest.TestCase):
+    def test_preparation_profile_is_accepted_without_operator_or_durability(self):
+        expected = manifest()
+        expected['features']['preparation'] = ['dep:toml', 'toml/display']
+        expected['features']['operator'] = ['durable-policy', 'preparation', 'dep:faction-unix']
+        policy.validate_profile(expected, {'workspace': {'members': []}})
+
+    def test_native_selection_allows_only_preparation_and_toml(self):
+        provider = {'id': 'provider', 'name': 'faction-provider'}
+        metadata = {'packages': [provider], 'resolve': {'nodes': [
+            {'id': 'provider', 'features': ['preparation']}]}}
+        policy.validate_graph(metadata, True)
+        for leaked in ['operator', 'durable-policy', 'blob-iq']:
+            changed = copy.deepcopy(metadata)
+            changed['resolve']['nodes'][0]['features'].append(leaked)
+            with self.subTest(leaked=leaked), self.assertRaises(ValueError):
+                policy.validate_graph(changed, True)
+
+    def test_inventory_selects_preparation_on_all_three_platforms(self):
+        metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
+        with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
+            result = json.loads(policy.inventory())
+        self.assertIn('preparation', result['profiles'])
+        self.assertEqual(set(result['profiles']['preparation']['graphs']), set(policy.TARGETS))
+        self.assertEqual(execute.call_count, 27)
+
+    def test_current_ci_warms_preparation_before_each_first_guard_and_tests_it(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        for jobname in ['provider', 'provider_operator']:
+            job = policy._job(source, jobname)
+            prefix = job[:job.index('          python3 tools/check_provider_dependencies.py\n')]
+            for target in policy.TARGETS:
+                self.assertIn('--filter-platform ' + target + ' --features preparation > /dev/null', prefix)
+        provider = policy._job(source, 'provider')
+        self.assertIn('--features preparation -- -D warnings', provider)
+        self.assertIn('--features preparation -- --test-threads=1', provider)
+
+
+class PreparationConsoleCI(unittest.TestCase):
+    def test_current_client_tests_use_staged_built_binary_and_private_capture_directory(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        step = policy._step(policy._job(source, 'provider'), 'Validate the native authenticated attachment client')
+        build = 'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked'
+        stage = 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"'
+        digest = 'sha256sum "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"'
+        directory = 'mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED/captures"'
+        consumer = 'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction286-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction286-setup-OWNED/captures" cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1'
+        for command in [build, stage, digest, directory, consumer]:
+            self.assertEqual(step.splitlines().count('          ' + command), 1)
+        self.assertLess(step.index(build), step.index(stage))
+        self.assertLess(step.index(stage), step.index(digest))
+        self.assertLess(step.index(digest), step.index(consumer))
+        self.assertLess(step.index(directory), step.index(consumer))
+
+
+    def test_staged_client_identity_environment_and_private_capture_cannot_be_removed(self):
+        good = ci_fixture()
+        step = policy._step(policy._job(good, 'provider'), 'Validate the native authenticated attachment client')
+        for command in step.splitlines():
+            if 'faction286-setup-OWNED' in command:
+                with self.subTest(missing=command), self.assertRaises(ValueError):
+                    policy.validate_ci(good.replace(command + '\n', '', 1))
+        for old, new in [('env FACTION_SETUP_CLIENT_EXE=', 'env OMITTED_CLIENT='),
+                         ('FACTION_SETUP_CAPTURE_DIR=', 'OMITTED_CAPTURE='),
+                         ('mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED/captures"',
+                          'mkdir -m 755 "$RUNNER_TEMP/faction286-setup-OWNED/captures"')]:
+            with self.subTest(change=new), self.assertRaises(ValueError):
+                policy.validate_ci(good.replace(old, new))
+
+
+
+class PreparedOperatorCI(unittest.TestCase):
+    def test_actual_operator_probe_selects_prepared_mode_only_at_the_operator_consumer(self):
+        import shlex
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        job = policy._job(source, 'provider_operator')
+        lines = [line.strip() for line in job.splitlines()
+                 if line.strip().startswith('python3 tools/probe_provider_operator.py ')]
+        self.assertEqual(len(lines), 1)
+        words = shlex.split(lines[0])
+        self.assertEqual(words.count('--prepared'), 1)
+        self.assertEqual(words[-1], '--prepared')
+        native = policy._job(source, 'provider')
+        for line in native.splitlines():
+            if line.strip().startswith('python3 tools/probe_device_provider_console.py '):
+                self.assertNotIn('--prepared', shlex.split(line))
+
+    def test_prepared_mode_cannot_be_omitted_or_moved_to_the_native_probe(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(' --prepared', ''))
+        moved = source.replace(' --prepared', '')
+        moved = moved.replace('tools/probe_device_provider_console.py --client',
+                              'tools/probe_device_provider_console.py --prepared --client')
+        with self.assertRaises(ValueError):
+            policy.validate_ci(moved)
 
 
 if __name__ == '__main__':

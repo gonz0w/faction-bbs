@@ -8,6 +8,12 @@ The [operator guide](../docs/provider-operator.md) describes the explicit standa
 CLI. Default, native, network and device-client feature graphs do not select
 `durable-policy` or `operator` automatically.
 
+The offline operator `prepare` command checks a complete independently approved
+proposal against a card and separately supplied client certificate without opening
+the runtime or reading retained policy. It preserves all authority fields and makes
+a candidate only; separate `init` or `apply` still enforces current floors and
+history. See the [operator guide](../docs/provider-operator.md).
+
 Durable and memory-only instances expose the same opaque `Control`. Durable
 mutations validate, publish and install under the dispatch mutex, so there is no
 in-memory control bypass. Invalid proposals preserve the old validated policy.

@@ -54,7 +54,12 @@ by the sysop; experiments and future protocols are separate from normal operatio
   separate XMPP route. The [host and NetBSD console proof](dev-docs/evidence/native-provider-client/README.md)
   covers 1 MiB transfers in classic and Unicode modes, including outage and retry.
   See the [attachment guide](docs/private-attachments.md).
-  An optional [private provider operator](docs/provider-operator.md) adds durable policy and a foreground loopback service using preapproved policy and independent TLS credentials. [Host and NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) cover restart/retry, encrypted transfers and ordinary-access independence. It remains a software preview; it does not enroll devices or deploy a provider. Classic defaults remain.
+  [Offline preparation](docs/provider-preparation.md) creates a private profile and
+  separate self-asserted card; the operator checks a complete independently approved
+  proposal before a separate policy action.
+  [Current host and NetBSD software checks](dev-docs/evidence/offline-provider-preparation/README.md)
+  exercise the generated files through encrypted attachment delivery and private saves.
+  An optional [private provider operator](docs/provider-operator.md) adds durable policy and a foreground loopback service using preapproved policy and independent TLS credentials. [Historical host and NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) for the earlier #285 revision cover restart/retry, encrypted transfers and ordinary-access independence. It remains a software preview; it does not enroll devices or deploy a provider. Classic defaults remain.
 
 ## What you can do
 

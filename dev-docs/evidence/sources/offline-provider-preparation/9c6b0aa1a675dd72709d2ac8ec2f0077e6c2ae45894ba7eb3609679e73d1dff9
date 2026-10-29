@@ -1,0 +1,20 @@
+{
+  "active_transitive_dependencies": [],
+  "archive_sha256": "b4ac048d71ede7ee76d585517add45da530660ef4390e49b098733c6e897f254",
+  "build_script": false,
+  "license": "MIT OR Apache-2.0",
+  "license_hashes": {
+    "LICENSE-APACHE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "LICENSE-MIT": "7b63ecd5f1902af1b63729947373683c32745c16a10e8e6292e2e2dcd7e90ae0"
+  },
+  "name": "unicode-width",
+  "review": "Width tables, no_std; not a font/emulator guarantee or independent audit.",
+  "scope": [
+    "aarch64-unknown-netbsd",
+    "x86_64-unknown-linux-gnu"
+  ],
+  "selected_features": [],
+  "source_forbids_unsafe": true,
+  "source_no_js_scan": true,
+  "version": "0.2.2"
+}

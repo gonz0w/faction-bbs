@@ -1217,6 +1217,52 @@ pub fn run_online_with_status_and_provider(
     result
 }
 
+#[cfg(feature = "device-provider")]
+pub(super) fn run_device_provider_setup(
+    selection: &crate::device_provider_setup::Selection,
+) -> io::Result<()> {
+    use crate::device_provider_setup::{self as setup, Error};
+    // Reuse the normal local terminal and hidden unlock. No recovery/create action
+    // or remote control route can enter this explicit preparation command.
+    rustix::process::setrlimit(
+        rustix::process::Resource::Core,
+        rustix::process::Rlimit {
+            current: Some(0),
+            maximum: Some(0),
+        },
+    )
+    .map_err(|_| io::Error::other(Error::Invalid))?;
+    let mut terminal = LocalTerminal::start().map_err(|_| io::Error::other(Error::Invalid))?;
+    let result = (|| {
+        let mut s = Screen {
+            term: &mut terminal,
+            activity: Instant::now(),
+            unicode: selection.unicode,
+        };
+        s.print("[LOCAL / OFFLINE] Provider preparation\r\nLocal consistency only; independent approval remains required.\r\n")
+            .map_err(|_| Error::Invalid)?;
+        setup::existing_vault(&selection.vault)?;
+        let store = Store::at(&selection.vault, false).map_err(|_| Error::Invalid)?;
+        let password = s
+            .line("LOCAL checkpoint passphrase (hidden): ", 128, true)
+            .map_err(|_| Error::Invalid)?;
+        let vault = CheckpointVault::unlock(store, password.as_bytes(), false)
+            .map_err(|_| Error::Invalid)?;
+        drop(password);
+        setup::execute(selection, &vault, now().map_err(|_| Error::Invalid)?)
+    })();
+    // Vault/unlock buffers are dropped before fixed public diagnostics.
+    let _ = terminal.print("\r\n");
+    match result {
+        Ok(()) => terminal.print("Offline local data prepared.\r\nRemote readiness and approval are unverified.\r\nSelf-asserted data; no key-possession proof.\r\n")
+            .map_err(|_| io::Error::other(Error::PublicationUncertain)),
+        Err(error) => {
+            let _ = terminal.print("Preparation locked: local operation stopped.\r\n");
+            Err(io::Error::other(error))
+        }
+    }
+}
+
 pub fn run(path: &Path, action: &str, unicode: bool) -> io::Result<()> {
     if !path.is_absolute() || !matches!(action, "init" | "upgrade" | "open" | "recover") {
         return Err(invalid());

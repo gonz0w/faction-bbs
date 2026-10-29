@@ -1,0 +1,251 @@
+{
+  "accepted_checks": [
+    {
+      "failed": 0,
+      "layer": "shared preparation API",
+      "passed": 4,
+      "private_result_sha256": "9818af3cdebb8d5834a0da527ca6915b41551d76abb5c695339815e40be2c2b2"
+    },
+    {
+      "failed": 0,
+      "layer": "actual maintained client commands under PTY",
+      "passed": 6,
+      "private_result_sha256": "5601e692213902c0d6423ca15835ab376725e0430e9b42a61a28f958cee420d4"
+    },
+    {
+      "failed": 0,
+      "helper_note": "Existing ignored subprocess entry helpers are exercised by passing parent controls; they are not additional independent tests.",
+      "ignored_helper_entries": 3,
+      "layer": "client binary unit suite",
+      "passed": 87
+    },
+    {
+      "breakdown": {
+        "durable_policy": 6,
+        "embedding": 23,
+        "operator_cli": 12,
+        "provider_library": 30,
+        "publisher_unit": 1,
+        "shared_card": 4
+      },
+      "count_note": "Feature suites overlap; helper and repeated shared-card entries must not be added as independent behavior.",
+      "layer": "operator feature target entries",
+      "reported_passes": 76
+    },
+    {
+      "failed": 0,
+      "layer": "prepared production probe Python consumers",
+      "passed": 8
+    },
+    {
+      "failed": 0,
+      "layer": "full source and evidence Python suite before source freeze",
+      "passed": 597,
+      "private_result_sha256": "8c36de7f521525f4ac9437365968ab9ac8dae0ff891b91179878ccb525823c8c"
+    },
+    {
+      "checks_are_source_or_build_qualification": true,
+      "layer": "strict Clippy, formatting and repository checks",
+      "result": "pass"
+    }
+  ],
+  "interpretation": "New local preparation and checked-candidate production were actually composed with separate deliberate init/apply and authenticated attachment/mail operations. These are bounded synthetic software controls, not deployment, enrollment, independent-client interoperability, hardware or capacity evidence.",
+  "openssl": "3.6.3",
+  "platform": "macOS arm64",
+  "production_console": {
+    "legacy": {
+      "children_reaped": true,
+      "controls": 26,
+      "modes": [
+        {
+          "checks": [
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "classic",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": false,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 2.724133
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 3.615649
+            }
+          }
+        },
+        {
+          "checks": [
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "unicode",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": false,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 2.699435
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 3.591939
+            }
+          }
+        }
+      ],
+      "private_fixture_removed": true,
+      "private_result_sha256": "8a23bf9a1c3881153a6112399f012e8ec50c352892f66b796b1abf24926168e4",
+      "result": "pass"
+    },
+    "prepared": {
+      "children_reaped": true,
+      "controls": 32,
+      "modes": [
+        {
+          "checks": [
+            "actual_separate_hidden_unlock_profile_card_and_checked_complete_proposal_are_offline_and_leave_checkpoints_roots_unchanged",
+            "separate_explicit_init_applies_prepared_complete_candidate_only",
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "checked_revoked_flags_preserved_before_separate_explicit_apply",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "classic",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": true,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 2.64845
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 3.454449
+            }
+          }
+        },
+        {
+          "checks": [
+            "actual_separate_hidden_unlock_profile_card_and_checked_complete_proposal_are_offline_and_leave_checkpoints_roots_unchanged",
+            "separate_explicit_init_applies_prepared_complete_candidate_only",
+            "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+            "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "checked_revoked_flags_preserved_before_separate_explicit_apply",
+            "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+            "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "maintained_operator": true,
+          "mode": "unicode",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "prepared_offline_data": true,
+          "provider_restarts": 3,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 2.62819
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "reason": "complete",
+              "seconds": 3.450694
+            }
+          }
+        }
+      ],
+      "private_fixture_removed": true,
+      "private_result_sha256": "098595d0979eb71320f57fc8170a5cf7c77ad4523760e605aa43ae30f03154ba",
+      "result": "pass"
+    }
+  },
+  "rust_cargo": "1.96.0",
+  "schema": 1,
+  "source_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+  "supplemental_test_only_fixture_correction": {
+    "corrected_test_source_sha256": "af3763817e3dc6357acba7787037d1030d78acedfc6ee1d1759cce4919df7036",
+    "does_not_relabel_prior_host_or_native_results": true,
+    "fmt_exit": 0,
+    "focused_green_passed": 1,
+    "full_corrected_cli_passed": 12,
+    "invariant_red_test_source_sha256": "c9835d4ad9af4ea95af2eaf2fa0e3cb2ae14a137621e72cc2868805692044cc9",
+    "original_test_source_sha256": "d52016216c174ce92e4d1487390963b46bcdd624811d6a1eae7cf180bce74a60",
+    "private_handoff_sha256": "7e7cb3f50fa8728fdb5ca14d05469a3efcc8a66e96981572d66836a86a1e712d",
+    "producer_sha256_unchanged": "6d9546bbd8a69200277e3c60251e59d98a991b4d1ce1bf4bc6ea0bd53eeb9428",
+    "red_exit": 101,
+    "scope": "Actual host umask077 invariant RED, then explicit unsafe0755 fixture correction; product behavior unchanged.",
+    "strict_clippy_exit": 0
+  },
+  "test_supplement_commit": "358e35ceec242763d8ea2442a1cfc2cfc390cb7c"
+}

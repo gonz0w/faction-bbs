@@ -11,6 +11,11 @@ loader. A caller supplies a validated registry, preloaded TLS credentials and a
 listener; production enrollment and durable anti-rollback remain separate work.
 The crate uses OpenSSL 0.10.81 with an existing OpenSSL 3 installation.
 
+The optional [offline preparation guide](../docs/provider-preparation.md) describes
+client profile and card creation and the separate checked operator proposal. The
+card is local self-asserted data, not an authority or wire protocol; existing TLS
+parsing and remote authorization remain separate.
+
 ## Verified session and binary carrier
 
 Create a `Runtime` with an `authority::Registry`, retain the runtime and configure

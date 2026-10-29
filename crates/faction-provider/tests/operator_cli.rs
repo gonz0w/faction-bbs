@@ -220,7 +220,10 @@ impl Fixture {
         s
     }
     fn command(&self, action: &str) -> Command {
-        let mut c = Command::new(env!("CARGO_BIN_EXE_faction-provider"));
+        let mut c = Command::new(
+            std::env::var_os("FACTION_287_OPERATOR_BINARY")
+                .unwrap_or_else(|| env!("CARGO_BIN_EXE_faction-provider").into()),
+        );
         c.arg(action).arg(self.root.join("config.toml"));
         c
     }
@@ -668,4 +671,474 @@ fn revoked_policy_and_reset_survive_exit_and_rightful_device_still_serves() {
         b"corrupt"
     );
     assert!(!before.is_empty());
+}
+
+/// A separately selected public certificate and card grant no authority. This
+/// command may only check an independently reviewed complete proposal.
+#[test]
+fn offline_prepare_exact_candidate_needs_separate_application() {
+    use faction_provider::preparation::Card;
+    use std::os::unix::fs::MetadataExt;
+    let f = Fixture::new();
+    let cert = f.devices[0].0.to_pem().unwrap();
+    f.write("selected-device.pem", &cert);
+    let card = Card::new(principal(1), sha256(&f.devices[0].0.to_der().unwrap())).unwrap();
+    f.write("card.toml", &card.encode().unwrap());
+    // Preparation cannot require TLS private material or retained policy bytes.
+    fs::remove_file(f.root.join("server.key")).unwrap();
+    fs::remove_file(f.root.join("ca.pem")).unwrap();
+    f.write(
+        "policy/unrelated-corrupt-state",
+        b"must never be read or changed",
+    );
+    f.write(
+        "blobs/unrelated-ciphertext",
+        b"must never be read or changed",
+    );
+    let mut command = f.command("prepare");
+    command
+        .arg(f.root.join("card.toml"))
+        .arg(f.root.join("selected-device.pem"))
+        .arg(f.root.join("proposal.toml"))
+        .arg(f.root.join("candidate.toml"));
+    let result = bounded(command);
+    assert!(result.status.success(), "{result:?}");
+    assert_eq!(
+        result.stdout,
+        b"prepared candidate; not applied or approved\n"
+    );
+    let output = f.root.join("candidate.toml");
+    let actual = fs::read_to_string(&output)
+        .unwrap()
+        .parse::<toml::Table>()
+        .unwrap();
+    let expected = f.proposal.parse::<toml::Table>().unwrap();
+    assert_eq!(actual, expected);
+    let m = fs::metadata(&output).unwrap();
+    assert_eq!(m.mode() & 0o7777, 0o600);
+    assert_eq!(m.nlink(), 1);
+    assert_eq!(
+        fs::read(f.root.join("policy/unrelated-corrupt-state")).unwrap(),
+        b"must never be read or changed"
+    );
+    assert_eq!(
+        fs::read(f.root.join("blobs/unrelated-ciphertext")).unwrap(),
+        b"must never be read or changed"
+    );
+    assert_eq!(fs::read_dir(f.root.join("policy")).unwrap().count(), 1);
+    assert_eq!(fs::read_dir(f.root.join("blobs")).unwrap().count(), 1);
+}
+
+fn preparation_inputs(f: &Fixture) {
+    let card = faction_provider::preparation::Card::new(
+        principal(1),
+        sha256(&f.devices[0].0.to_der().unwrap()),
+    )
+    .unwrap();
+    f.write("card.toml", &card.encode().unwrap());
+    f.write("selected-device.pem", &f.devices[0].0.to_pem().unwrap());
+}
+fn prepare(f: &Fixture, card: &str, certificate: &str, proposal: &str, output: &str) -> Output {
+    let mut c = f.command("prepare");
+    for value in [card, certificate, proposal, output] {
+        c.arg(f.root.join(value));
+    }
+    bounded(c)
+}
+#[test]
+fn offline_prepare_rejects_each_card_certificate_and_proposal_mismatch() {
+    let f = Fixture::new();
+    preparation_inputs(&f);
+    let original = fs::read(f.root.join("card.toml")).unwrap();
+    let expected = faction_provider::preparation::Card::decode(&original).unwrap();
+    for field in 0..4 {
+        let mut card = expected.clone();
+        match field {
+            0 => card.principal.account = "other@home.test".into(),
+            1 => card.principal.device = 3,
+            2 => card.principal.identity = [3; 32],
+            _ => card.certificate_sha256 = [3; 32],
+        };
+        f.write("card.toml", &card.encode().unwrap());
+        assert!(
+            !prepare(
+                &f,
+                "card.toml",
+                "selected-device.pem",
+                "proposal.toml",
+                "candidate.toml"
+            )
+            .status
+            .success()
+        );
+        assert!(!f.root.join("candidate.toml").exists());
+    }
+    f.write("card.toml", &original);
+    f.write("other-device.pem", &f.devices[1].0.to_pem().unwrap());
+    assert!(
+        !prepare(
+            &f,
+            "card.toml",
+            "other-device.pem",
+            "proposal.toml",
+            "candidate.toml"
+        )
+        .status
+        .success()
+    );
+    let digest = hex(&expected.certificate_sha256);
+    for text in [
+        f.proposal.replace("member1@home.test", "other@home.test"),
+        f.proposal.replace("device=1", "device=3"),
+        f.proposal.replace(&hex(&[1; 32]), &hex(&[9; 32])),
+        f.proposal.replace(&digest, &hex(&[9; 32])),
+        f.proposal.replace("home.test", "away.test"),
+        f.proposal.replace("generation=1", "generation=0"),
+        f.proposal.replace("valid_from=", "valid_from=-"),
+    ] {
+        f.write("proposal.toml", text.as_bytes());
+        assert!(
+            !prepare(
+                &f,
+                "card.toml",
+                "selected-device.pem",
+                "proposal.toml",
+                "candidate.toml"
+            )
+            .status
+            .success()
+        );
+        assert!(!f.root.join("candidate.toml").exists());
+    }
+    assert_eq!(fs::read_dir(f.root.join("policy")).unwrap().count(), 0);
+    assert_eq!(fs::read_dir(f.root.join("blobs")).unwrap().count(), 0);
+}
+#[test]
+fn offline_prepare_preserves_complete_thirty_two_binding_false_flags_and_order() {
+    use std::os::unix::fs::MetadataExt;
+    let f = Fixture::new();
+    preparation_inputs(&f);
+    let mut table = f
+        .policy(7, 9, [false, true])
+        .parse::<toml::Table>()
+        .unwrap();
+    let bindings = table.get_mut("bindings").unwrap().as_array_mut().unwrap();
+    bindings[0]["account_enabled"] = false.into();
+    bindings[0]["device_enabled"] = false.into();
+    let base = bindings[0].clone();
+    for n in 3..=32u8 {
+        let mut entry = base.clone();
+        entry["account"] = format!("member{n}@home.test").into();
+        entry["device"] = i64::from(n).into();
+        entry["identity"] = hex(&[n; 32]).into();
+        entry["certificate_sha256"] = hex(&[n; 32]).into();
+        entry["approved"] = (n % 2 == 0).into();
+        bindings.push(entry);
+    }
+    let input = table.to_string();
+    f.write("proposal.toml", input.as_bytes());
+    assert!(
+        prepare(
+            &f,
+            "card.toml",
+            "selected-device.pem",
+            "proposal.toml",
+            "candidate.toml"
+        )
+        .status
+        .success()
+    );
+    let output = fs::read(f.root.join("candidate.toml")).unwrap();
+    assert!(output.len() <= 65536);
+    assert_eq!(
+        String::from_utf8(output.clone())
+            .unwrap()
+            .parse::<toml::Table>()
+            .unwrap(),
+        table
+    );
+    assert_eq!(
+        fs::metadata(f.root.join("candidate.toml")).unwrap().mode() & 0o7777,
+        0o600
+    );
+    assert_eq!(
+        fs::read(f.root.join("proposal.toml")).unwrap(),
+        input.as_bytes()
+    );
+    assert_eq!(fs::read_dir(f.root.join("policy")).unwrap().count(), 0);
+    assert_eq!(fs::read_dir(f.root.join("blobs")).unwrap().count(), 0);
+    let mut oversized = table;
+    let rows = oversized
+        .get_mut("bindings")
+        .unwrap()
+        .as_array_mut()
+        .unwrap();
+    let mut extra = rows.last().unwrap().clone();
+    extra["account"] = "member33@home.test".into();
+    extra["device"] = 33i64.into();
+    extra["identity"] = hex(&[33; 32]).into();
+    extra["certificate_sha256"] = hex(&[33; 32]).into();
+    rows.push(extra);
+    f.write("proposal.toml", oversized.to_string().as_bytes());
+    assert!(
+        !prepare(
+            &f,
+            "card.toml",
+            "selected-device.pem",
+            "proposal.toml",
+            "overflow-candidate.toml"
+        )
+        .status
+        .success()
+    );
+    assert!(!f.root.join("overflow-candidate.toml").exists());
+}
+#[test]
+fn offline_prepare_hostile_data_refuses_without_output_or_root_mutation() {
+    let f = Fixture::new();
+    preparation_inputs(&f);
+    let card = fs::read_to_string(f.root.join("card.toml")).unwrap();
+    for text in [
+        format!("{card}\nunknown=true\n"),
+        format!("{card}\nversion=1\n"),
+        card.replace("version = 1", "version = 2"),
+        card.replace(&hex(&[1; 32]), &"AA".repeat(32)),
+        "x".repeat(8193),
+    ] {
+        f.write("card.toml", text.as_bytes());
+        assert!(
+            !prepare(
+                &f,
+                "card.toml",
+                "selected-device.pem",
+                "proposal.toml",
+                "candidate.toml"
+            )
+            .status
+            .success()
+        );
+        assert!(!f.root.join("candidate.toml").exists());
+    }
+    f.write("card.toml", card.as_bytes());
+    let certificate = f.devices[0].0.to_pem().unwrap();
+    for bytes in [
+        Vec::new(),
+        [certificate.clone(), certificate.clone()].concat(),
+        [certificate.clone(), b"junk".to_vec()].concat(),
+        f.devices[0].1.private_key_to_pem_pkcs8().unwrap(),
+        vec![b'x'; 65537],
+    ] {
+        f.write("selected-device.pem", &bytes);
+        assert!(
+            !prepare(
+                &f,
+                "card.toml",
+                "selected-device.pem",
+                "proposal.toml",
+                "candidate.toml"
+            )
+            .status
+            .success()
+        );
+        assert!(!f.root.join("candidate.toml").exists());
+    }
+    f.write("selected-device.pem", &certificate);
+    for text in [
+        format!("{}\ngeneration=1\n", f.proposal),
+        f.proposal
+            .replace("account_enabled=true", "account_enabled=true\nextra=true"),
+        format!("{}\n[[bindings]]\n", f.proposal),
+        f.proposal.replace(
+            "homes=[\"home.test\"]",
+            "homes=[\"home.test\",\"home.test\"]",
+        ),
+        "x".repeat(65537),
+    ] {
+        f.write("proposal.toml", text.as_bytes());
+        assert!(
+            !prepare(
+                &f,
+                "card.toml",
+                "selected-device.pem",
+                "proposal.toml",
+                "candidate.toml"
+            )
+            .status
+            .success()
+        );
+        assert!(!f.root.join("candidate.toml").exists());
+    }
+    assert_eq!(fs::read_dir(f.root.join("policy")).unwrap().count(), 0);
+    assert_eq!(fs::read_dir(f.root.join("blobs")).unwrap().count(), 0);
+}
+#[test]
+fn offline_prepare_paths_and_no_replace_leave_all_existing_bytes_intact() {
+    for case in 0..14 {
+        let f = Fixture::new();
+        preparation_inputs(&f);
+        let output = "candidate.toml";
+        let mut card = "card.toml";
+        let mut certificate = "selected-device.pem";
+        let mut destination = output;
+        match case {
+            0 => fs::set_permissions(f.root.join(card), fs::Permissions::from_mode(0o644)).unwrap(),
+            1 => {
+                symlink(f.root.join(card), f.root.join("card-link")).unwrap();
+                card = "card-link";
+            }
+            2 => fs::hard_link(f.root.join(card), f.root.join("card-hard")).unwrap(),
+            3 => fs::set_permissions(f.root.join(certificate), fs::Permissions::from_mode(0o644))
+                .unwrap(),
+            4 => {
+                fs::remove_file(f.root.join(certificate)).unwrap();
+                fs::create_dir(f.root.join(certificate)).unwrap();
+            }
+            5 => f.write(output, b"existing candidate"),
+            6 => symlink(f.root.join("proposal.toml"), f.root.join(output)).unwrap(),
+            7 => fs::hard_link(f.root.join("proposal.toml"), f.root.join(output)).unwrap(),
+            8 => {
+                symlink(&f.root, f.root.join("alias")).unwrap();
+                destination = "alias/candidate.toml";
+            }
+            9 => destination = "policy/candidate.toml",
+            10 => destination = "blobs/candidate.toml",
+            11 => certificate = "server.key",
+            12 => destination = "./candidate.toml",
+            _ => {
+                fs::DirBuilder::new()
+                    .mode(0o755)
+                    .create(f.root.join("unsafe-output"))
+                    .unwrap();
+                fs::set_permissions(
+                    f.root.join("unsafe-output"),
+                    fs::Permissions::from_mode(0o755),
+                )
+                .unwrap();
+                assert_eq!(
+                    fs::metadata(f.root.join("unsafe-output"))
+                        .unwrap()
+                        .permissions()
+                        .mode()
+                        & 0o7777,
+                    0o755
+                );
+                destination = "unsafe-output/candidate.toml";
+            }
+        }
+        let original = fs::read(f.root.join("proposal.toml")).unwrap();
+        assert!(
+            !prepare(&f, card, certificate, "proposal.toml", destination)
+                .status
+                .success(),
+            "case {case}"
+        );
+        assert_eq!(fs::read(f.root.join("proposal.toml")).unwrap(), original);
+        if case == 5 {
+            assert_eq!(
+                fs::read(f.root.join(output)).unwrap(),
+                b"existing candidate"
+            );
+        }
+        if !matches!(case, 5..=7) {
+            assert!(!f.root.join(output).exists());
+        }
+        assert_eq!(fs::read_dir(f.root.join("policy")).unwrap().count(), 0);
+        assert_eq!(fs::read_dir(f.root.join("blobs")).unwrap().count(), 0);
+    }
+}
+#[test]
+fn prepared_candidate_cannot_bypass_separate_init_apply_generation_or_history() {
+    let f = Fixture::new();
+    preparation_inputs(&f);
+    assert!(
+        prepare(
+            &f,
+            "card.toml",
+            "selected-device.pem",
+            "proposal.toml",
+            "candidate.toml"
+        )
+        .status
+        .success()
+    );
+    assert!(!f.run("inspect", None).status.success());
+    assert_eq!(fs::read_dir(f.root.join("policy")).unwrap().count(), 0);
+    assert!(
+        f.run(
+            "init",
+            Some(f.root.join("candidate.toml").to_str().unwrap())
+        )
+        .status
+        .success()
+    );
+    let before = f.snapshot();
+    assert!(
+        !f.run(
+            "apply",
+            Some(f.root.join("candidate.toml").to_str().unwrap())
+        )
+        .status
+        .success()
+    );
+    assert_eq!(f.snapshot(), before);
+    assert!(f.run("reset", Some("2")).status.success());
+    let after = f.snapshot();
+    assert!(
+        prepare(
+            &f,
+            "card.toml",
+            "selected-device.pem",
+            "proposal.toml",
+            "still-stale.toml"
+        )
+        .status
+        .success()
+    );
+    assert!(
+        !f.run(
+            "apply",
+            Some(f.root.join("still-stale.toml").to_str().unwrap())
+        )
+        .status
+        .success()
+    );
+    assert_eq!(f.snapshot(), after);
+    // Data consistency deliberately does not read retained tombstones. Even a
+    // matching self-asserted remap stays subject to separate durable apply.
+    let remapped = Principal {
+        account: "remapped@home.test".into(),
+        ..principal(1)
+    };
+    let card = faction_provider::preparation::Card::new(
+        remapped,
+        sha256(&f.devices[0].0.to_der().unwrap()),
+    )
+    .unwrap();
+    f.write("card.toml", &card.encode().unwrap());
+    f.write(
+        "proposal.toml",
+        f.policy(3, 2, [true, true])
+            .replace("member1@home.test", "remapped@home.test")
+            .as_bytes(),
+    );
+    assert!(
+        prepare(
+            &f,
+            "card.toml",
+            "selected-device.pem",
+            "proposal.toml",
+            "remapped-candidate.toml"
+        )
+        .status
+        .success()
+    );
+    assert!(
+        !f.run(
+            "apply",
+            Some(f.root.join("remapped-candidate.toml").to_str().unwrap())
+        )
+        .status
+        .success()
+    );
+    assert_eq!(f.snapshot(), after);
 }

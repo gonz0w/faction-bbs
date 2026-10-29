@@ -12,7 +12,8 @@ publish = false
 default = []
 blob-iq = ["dep:faction-xmpp"]
 durable-policy = ["dep:rustix"]
-operator = ["durable-policy", "dep:toml", "dep:faction-unix"]
+preparation = ["dep:toml", "toml/display"]
+operator = ["durable-policy", "preparation", "dep:faction-unix"]
 
 [dependencies]
 faction-files = { path = "../faction-files" }

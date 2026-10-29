@@ -7,6 +7,7 @@ use faction_provider::{
 };
 use rustix::fs::{self, Mode, OFlags};
 use std::{
+    ffi::OsString,
     fs::File,
     io::Read,
     net::SocketAddr,
@@ -18,6 +19,7 @@ fn absolute(path: &Path) -> bool {
         && !path
             .components()
             .any(|c| matches!(c, Component::ParentDir | Component::CurDir))
+        && path.components().collect::<PathBuf>().as_os_str() == path.as_os_str()
 }
 fn private_dir(dir: &File) -> Result<()> {
     let m = mapped(dir.metadata())?;
@@ -41,7 +43,7 @@ fn directory(path: &Path) -> Result<File> {
     private_dir(&dir)?;
     Ok(dir)
 }
-pub(super) fn private_file(path: &Path, root: &Path, cap: u64) -> Result<Vec<u8>> {
+pub(super) fn parent(path: &Path, root: &Path) -> Result<(File, OsString)> {
     if !absolute(path) || !absolute(root) || !path.starts_with(root) || path == root {
         return Err(());
     }
@@ -64,9 +66,13 @@ pub(super) fn private_file(path: &Path, root: &Path, cap: u64) -> Result<Vec<u8>
     let Component::Normal(name) = name else {
         return Err(());
     };
+    Ok((dir, name.to_os_string()))
+}
+pub(super) fn private_file(path: &Path, root: &Path, cap: u64) -> Result<Vec<u8>> {
+    let (dir, name) = parent(path, root)?;
     let file = File::from(mapped(fs::openat(
         &dir,
-        *name,
+        &name,
         OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
         Mode::empty(),
     ))?);
@@ -187,7 +193,14 @@ impl Config {
     }
 }
 pub(super) fn proposal(path: &Path, root: &Path) -> Result<Registry> {
-    let mut t = table(path, root, 65_536)?;
+    proposal_bytes(&private_file(path, root, 65_536)?)
+}
+/// The same maintained parser checks both proposed and canonically emitted bytes.
+pub(super) fn proposal_bytes(bytes: &[u8]) -> Result<Registry> {
+    if bytes.is_empty() || bytes.len() > 65_536 {
+        return Err(());
+    }
+    let mut t = mapped(mapped(std::str::from_utf8(bytes))?.parse::<toml::Table>())?;
     version(&mut t)?;
     let generation = number(&mut t, "generation")?;
     let reset = number(&mut t, "reset_epoch")?;

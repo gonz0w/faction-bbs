@@ -1,0 +1,29 @@
+[package]
+name = "faction-provider"
+version = "0.1.0-alpha.1"
+edition = "2024"
+rust-version = "1.96"
+license = "BSD-3-Clause"
+publish = false
+
+[workspace]
+
+[features]
+default = []
+blob-iq = ["dep:faction-xmpp"]
+durable-policy = ["dep:rustix"]
+preparation = ["dep:toml", "toml/display"]
+operator = ["durable-policy", "preparation", "dep:faction-unix"]
+
+[dependencies]
+faction-files = { path = "../faction-files" }
+openssl = "=0.10.81"
+faction-xmpp = { path = "../faction-xmpp", optional = true }
+rustix = { version = "=1.1.5", default-features = false, features = ["std", "fs", "process"], optional = true }
+toml = { version = "=1.1.8", default-features = false, features = ["std", "parse", "serde"], optional = true }
+faction-unix = { path = "../faction-unix", optional = true }
+
+[[bin]]
+name = "faction-provider"
+path = "src/main.rs"
+required-features = ["operator"]

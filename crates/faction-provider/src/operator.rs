@@ -2,6 +2,7 @@
 //! policy plus independently provisioned TLS material, never enrollment or keys
 //! derived from a member password. All diagnostics are fixed bounded strings.
 mod input;
+mod preparation;
 use crate::operator::input::Config;
 use faction_files::private_blobs::Store;
 use faction_provider::{BinaryService, Runtime, tls::Server};
@@ -111,6 +112,13 @@ fn serving(config: Config) -> Result<()> {
 }
 pub(super) fn run(args: impl IntoIterator<Item = std::ffi::OsString>) -> Result<()> {
     let args = args.into_iter().collect::<Vec<_>>();
+    if args.first().is_some_and(|a| a == "prepare") {
+        let result = preparation::execute(&args[1..]);
+        if result == Err(preparation::Error::PublicationUncertain) {
+            eprintln!("candidate publication may have completed; inspect output before retry");
+        }
+        return result.map_err(|_| ());
+    }
     if args.len() < 2 || args.len() > 3 {
         return Err(());
     }
