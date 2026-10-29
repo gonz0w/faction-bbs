@@ -1,0 +1,303 @@
+{
+  "ci_marker": {
+    "consumer_unchanged": true,
+    "correction": "Correct actual workflow marker output and its guard literal, preserving unchanged maintained require_root consumer.",
+    "existing_native_mail_job_unchanged": true,
+    "green": {
+      "exit": 0,
+      "observed_toolchain": "1.96.0",
+      "repository_check": 0,
+      "source_guard": 0,
+      "tests": 31,
+      "whitespace": 0
+    },
+    "new_operator_job_minutes": 15,
+    "red": {
+      "cause": "Actual CI printf output rejected by unchanged maintained probe.require_root with ValueError",
+      "errors": 1,
+      "exit": 1,
+      "tests": 31
+    }
+  },
+  "final_qualification": "Fresh observed1.96 source qualification and focused/default/durable-IQ/operator checks are recorded separately in host.json. No retrospective RED or aborted-run acceptance is claimed.",
+  "historical_artifact_limit": "Three early failed operator executable bytes are unavailable; two historical test-executable digests are also unavailable. Exact source/log/result variants remain; qualified final binaries are retained. This gap is not waived here.",
+  "schema": 1,
+  "sequence": [
+    {
+      "id": "profiles.red-source-ci",
+      "log_sha256": "6c51fb71b929896d8e738098c69c66beddabf7b52d3be28acfbb1de1dcabd13e",
+      "meaning": "Original22 preexisting tests passed; this is not the later meaningful new-contract RED."
+    },
+    {
+      "id": "profiles.red-source-ci-real",
+      "log_sha256": "ca537b050fc3fc614797178173be0bf396abad06f1c17272e3a321fe0a9bea74",
+      "meaning": "Actual27-entry new source/CI contract run failed3 assertions and2 errors against the old qualifier."
+    },
+    {
+      "id": "profiles.green-source-ci-first",
+      "log_sha256": "72b93fe0ff8d808633a00398f9b7c816cf10dd7e13e354c3154d0b9c9758613b",
+      "meaning": "First guard candidate still failed1 of27 contract entries; this run remains failed."
+    },
+    {
+      "id": "profiles.green-source-ci",
+      "log_sha256": "7ae649fb6dfe1170727e2b4d6f8dec3c3e922d76ad64f48eaf5f2aba4582a34b",
+      "meaning": "Final30-entry source/CI contract run passed before the later real marker-consumer31st case."
+    },
+    {
+      "id": "profiles.green-network-policy",
+      "log_sha256": "0adb4bb2fc99792d5812c425591f723bd2f2510012b129bcb0f611abbffe1fff",
+      "meaning": "11 existing network policy tests passed."
+    },
+    {
+      "id": "profiles.missing-durable-policy",
+      "meaning": "Locked offline metadata observed missing explicit feature before manifest changes; no compilation.",
+      "record_sha256": "8aafcb5366a58cb04fd9afa85292570d8baadf17570446186472bc7445d8563c",
+      "result": 101
+    },
+    {
+      "id": "profiles.missing-operator",
+      "meaning": "Locked offline metadata observed missing explicit feature before manifest changes; no compilation.",
+      "record_sha256": "8bdf013f1493cd13f6e831619ae8700e5af9cd0da7a9131bc6fe3e8135efc255",
+      "result": 101
+    },
+    {
+      "consumer_source": {
+        "sha256": "efd3d4512cfd49a4d190d23282125277001c5d94efbb4cc7c9ce691cc53d16f9",
+        "source_path": "dev-docs/evidence/sources/durable-provider-operator/efd3d4512cfd49a4d190d23282125277001c5d94efbb4cc7c9ce691cc53d16f9"
+      },
+      "id": "operator.substantive-probe-contract-red",
+      "log_sha256": "4581092bd468b8cd21524b66cdfe872114273bcc2bfd3f75557ff62b4de31d32",
+      "meaning": "Four substantive consumer tests observed missing probe module before implementation; their later unchanged assertions passed.",
+      "result": 1,
+      "source_identity_scope": "Author reports consumer creation immediately followed by RED and no later edits; retained bytes match frozen current source. The whole named capture was made after GREEN, and no independently timestamped pre-RED digest is asserted.",
+      "test_summaries": [
+        {
+          "errors": 4,
+          "failures": 0,
+          "passed": 0
+        }
+      ]
+    },
+    {
+      "id": "operator.missing-command-and-probe",
+      "log_sha256": "bc3ac7fc631b95b712befcf334aeaef167ce0880497b3c51c52ed74da1503b90",
+      "meaning": "Two initial absence checks observed missing maintained binary and probe before producers. Private harness source is not published.",
+      "result": 1,
+      "test_summaries": [
+        {
+          "errors": 1,
+          "failures": 1,
+          "passed": 0
+        }
+      ]
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 16.74581813812256,
+      "id": "authority.api-red-executed",
+      "log_sha256": "18d1ffc0a6190d2477989fff9ccef7d68fe987c414bddc8f15a6f8965374444b",
+      "meaning": "Observed missing durable Runtime methods before durable producers;22 E0599 compiler errors. Wrapper exit1 also includes unavailable detailed time sysctl; the compiler failure itself is explicit.",
+      "result": 1,
+      "test_summaries": [],
+      "toolchain": "1.98.0 actual default variant"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 2.8312110900878906,
+      "id": "authority.live-path-red",
+      "log_sha256": "8c7edbafd0663c380a49e9e1e702e627af5b625a06bb95aa36f7cd6def6b95f5",
+      "meaning": "Observed established snapshot recreation after deletion; the new case0 assertion failed before distinguishing initialization from established publication.",
+      "result": 101,
+      "test_summaries": [
+        {
+          "failed": 1,
+          "ignored": 0,
+          "passed": 0
+        }
+      ],
+      "toolchain": "1.98.0 actual default variant"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 5.504865884780884,
+      "id": "authority.focused-green-1",
+      "log_sha256": "73beb2c411b69e9cfb50c309d5aa71fb6fd339616bfe071d9c8ac3e5d362a5ee",
+      "meaning": "Original passing software variant retained; not substituted for requested1.96 acceptance.",
+      "result": 0,
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 29
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ],
+      "toolchain": "1.98.0 actual default variant"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 5.450350999832153,
+      "id": "authority.focused-green-2",
+      "log_sha256": "067827e5e9b885a39e8dd46264aabf7faa14b27ef3f15d47c7ecf2f2fa592c93",
+      "meaning": "Original passing software variant retained; not substituted for requested1.96 acceptance.",
+      "result": 0,
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 30
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ],
+      "toolchain": "1.98.0 actual default variant"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 30.360249757766724,
+      "id": "authority.durable-iq-clippy-1",
+      "log_sha256": "9ccd857cc5700688046098126e628d115d6b4fd959f477e4b8a2ab89d33b05b6",
+      "meaning": "Original passing software variant retained; not substituted for requested1.96 acceptance.",
+      "result": 0,
+      "test_summaries": [],
+      "toolchain": "1.98.0 actual default variant"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 194.17412996292114,
+      "id": "authority.durable-iq-regression",
+      "log_sha256": "feeabd1360eedcef060f03466e56f3a2c34826c77bce2a415b2b908f69236ed7",
+      "meaning": "Original passing software variant retained; not substituted for requested1.96 acceptance.",
+      "result": 0,
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 30
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 32
+        }
+      ],
+      "toolchain": "1.98.0 actual default variant"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 20.09986710548401,
+      "id": "authority.rust196-focused",
+      "log_sha256": "cd0aabab8be88458849846d23eed2857752f0cf2eaa914981597a53827cd0882",
+      "meaning": "Interrupted pre-gate invocation, result-15;30+6 output does not make this acceptance. Fresh qualified invocation is separate.",
+      "result": -15,
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 30
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ],
+      "toolchain": "1.96.0"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 12.239208207989577,
+      "id": "operator.cli-first-run",
+      "log_sha256": "87e0def03e6d814512c587753f4bb5cfd483c41a2b718023db274c8581c0b64b",
+      "meaning": "Compilation failed with two E0277 argument-reference type errors before any six-test execution; this is not behavioral RED.",
+      "result": 101,
+      "test_summaries": [],
+      "toolchain": "1.96.0"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 1.420207916002255,
+      "id": "operator.cli-run-2",
+      "log_sha256": "d92c6e5be64cff2abc3f4735705c7a396f0d56395db1eff0a22ec8ef5f642edb",
+      "meaning": "Actual six-test RED:3passed/3failed, including accepted malformed TOML array plus two TLS fixture setup failures; parser correction followed this run.",
+      "result": 101,
+      "test_summaries": [
+        {
+          "failed": 3,
+          "ignored": 0,
+          "passed": 3
+        }
+      ],
+      "toolchain": "1.96.0"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 1.6676294999779202,
+      "id": "operator.cli-run-3",
+      "log_sha256": "e761e2d0b1b634df4770b3aa8ce21f46018cb940ac750e769096fc3f53074b56",
+      "meaning": "Malformed-array refusal now passed;4passed/2failed, retaining fixture CA/leaf-subject verification error18. Fixture credentials were then corrected without weakening TLS production.",
+      "result": 101,
+      "test_summaries": [
+        {
+          "failed": 2,
+          "ignored": 0,
+          "passed": 4
+        }
+      ],
+      "toolchain": "1.96.0"
+    },
+    {
+      "cost_scope": "Combined build/test invocation; not isolated runtime cost.",
+      "elapsed_seconds": 1.4202820420032367,
+      "id": "operator.cli-run-4",
+      "log_sha256": "9ed75ed2bee7bc5ca8d229eb79d6ef284800f8178ba2f6ab581556bd89fa500d",
+      "meaning": "Six real process controls passed after fixture-only credential correction; no TLS producer weakening.",
+      "result": 0,
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ],
+      "toolchain": "1.96.0"
+    }
+  ],
+  "source_qualification": {
+    "complete_archive_and_extracted_source_license_no_js_checks": true,
+    "fresh_observed_qualifier": {
+      "compilation": false,
+      "guards_passed": [
+        "provider",
+        "network_mail",
+        "provider_auth"
+      ],
+      "metadata_commands": 24,
+      "toolchain": "1.96.0"
+    },
+    "metadata_commands": 24,
+    "network_policy_tests": 11,
+    "new_registry_versions": 0,
+    "ordinary_graph_exclusions_preserved": true,
+    "original_qualifier": "Original commands selected RUSTUP_TOOLCHAIN1.96.0 but did not independently capture executable/version observation; those originals remain unchanged.",
+    "selected_platforms": [
+      "Linux x86_64",
+      "NetBSD aarch64",
+      "macOS aarch64"
+    ],
+    "source_ci_tests": 31,
+    "unique_existing_registry_archives": 167
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "accepted_checks": {
+    "operator.cli-final-green": {
+      "actually_executed_test_binaries": [
+        {
+          "bytes": 1987696,
+          "semantic_id": "operator CLI tests",
+          "sha256": "679878773d5f2ee0125745ecab0ed8a7b6bd0f2d5d024ce8394b53d78e0a2786"
+        }
+      ],
+      "log_sha256": "dfccdb8eb97808b438dbd001c9b7f639c022416a6d6a5f709812294446249261",
+      "recipe": "provider-operator-cli-debug",
+      "result": 0,
+      "source_variant": "operator.cli-final-green",
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "operator.console-proof-1": {
+      "log_sha256": "619a67edf6097f746bf9f21bc241ec4d2f8c7b571955c7c7fcf8e6bc4e02b45d",
+      "recipe": "maintained-operator-console-proof",
+      "result": 0,
+      "source_variant": "operator.console-proof-1",
+      "test_summaries": [],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "operator.native-client-build-1": {
+      "log_sha256": "5ed6f0b7c9071cdf4b72bb546b280a31ed38a91d003e9ea4697b65aac84a6659",
+      "recipe": "native-client-and-member-seed-debug",
+      "result": 0,
+      "source_variant": "operator.native-client-build-1",
+      "test_summaries": [],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "operator.operator-clippy-final": {
+      "log_sha256": "4fd3acf2d8a342660e2b80e3b80ee1b18ac61d32e2a8d53e7ed6e8278f6174ac",
+      "recipe": "provider-operator-clippy-debug",
+      "result": 0,
+      "source_variant": "operator.operator-clippy-final",
+      "test_summaries": [],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "operator.probe-parser-contracts": {
+      "log_sha256": "10d44c2e32d05bdd33c194458deeb57624637dc889393baaea8646644710d211",
+      "meaning": "Four substantive Python parser/readiness/owned-child controls, not the production journey.",
+      "recipe": "probe-unit-contracts",
+      "result": 0,
+      "source_variant": "operator.probe-green-1-source",
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 4
+        }
+      ]
+    },
+    "rust196-default-clippy": {
+      "log_sha256": "68e9a70a7b24e7b844fe5373c9f272c593b32ff3cb0a8e47da50af62899ae6bb",
+      "recipe": "provider-default-clippy-release",
+      "result": 0,
+      "source_variant": "authority.rust196-default-clippy",
+      "test_summaries": [],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "rust196-default-regression": {
+      "actually_executed_test_binaries": [
+        {
+          "bytes": 1167840,
+          "semantic_id": "faction_provider",
+          "sha256": "2770c10e806b811bcf610c93cab72b7cb13032bc925e187d3c0bde8aee401f10"
+        },
+        {
+          "bytes": 923840,
+          "semantic_id": "durable_policy",
+          "sha256": "b501e7bfc920738090392be95dd021e5da898dab545d39cd5a475cadc6dac0d0"
+        },
+        {
+          "bytes": 1558384,
+          "semantic_id": "embedding",
+          "sha256": "4cccf2f12d6c120b84e671ad1e5c8f3ecd3b9e459134eec7e060da0bf23455c7"
+        },
+        {
+          "bytes": 923840,
+          "semantic_id": "operator_cli",
+          "sha256": "fdc5a4960b71aab7fab9e596e235ee14d6bec9705fbcb9645f9f06c0fca1853a"
+        }
+      ],
+      "log_sha256": "b496b5051d796cc676d1327134d19fc6bda0682a3196fa60959f876420aae955",
+      "recipe": "provider-default-release",
+      "result": 0,
+      "source_variant": "authority.rust196-default-regression",
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 19
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 23
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 0
+        }
+      ],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "rust196-durable-iq-clippy": {
+      "log_sha256": "c3ba0ab5ce455ed2a5b50ec561d41ed79422285970a9746766edaeea0c5805f2",
+      "recipe": "provider-durable-iq-clippy-release",
+      "result": 0,
+      "source_variant": "authority.rust196-durable-iq-clippy",
+      "test_summaries": [],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "rust196-durable-iq-regression": {
+      "actually_executed_test_binaries": [
+        {
+          "bytes": 1285264,
+          "semantic_id": "faction_provider",
+          "sha256": "cd6cabd03eed5f14bef2ca5a59ebebe344616126a3d47a3d3819cb8619f992e2"
+        },
+        {
+          "bytes": 1063264,
+          "semantic_id": "durable_policy",
+          "sha256": "9be904c49c7cc2dd3494142b53236b15381a032936526ef663c2a1f8b0eedd22"
+        },
+        {
+          "bytes": 1985360,
+          "semantic_id": "embedding",
+          "sha256": "e7273aede4dd3109ef9c2362cf8676f2855fd997ee9f2262dc820fe87fe3c1b3"
+        },
+        {
+          "bytes": 923840,
+          "semantic_id": "operator_cli",
+          "sha256": "051c39e2fa6a3014ce57952ce8accac2b529bdc2471985905e99fb84976c07f1"
+        }
+      ],
+      "log_sha256": "24dfbf1b3ce3bb9b8f04b6863f306b3da7350a55540002711ce11aaebecdca4b",
+      "recipe": "provider-durable-iq-release",
+      "result": 0,
+      "source_variant": "authority.rust196-durable-iq-regression",
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 30
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 32
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 0
+        }
+      ],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "rust196-focused-qualified": {
+      "log_sha256": "eb4648aa0178d512b5bc365bb75d8eee5cc6c1dff53485dfdcd958a6def148ac",
+      "recipe": "provider-durable-focused-release",
+      "result": 0,
+      "source_variant": "authority.rust196-focused-qualified",
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 30
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 6
+        }
+      ],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    },
+    "rust196-package-fmt": {
+      "log_sha256": "d865cae3535a9628a98f21e32ea6fa37c9b2e766e4a4544845109a1f7ee52724",
+      "recipe": "provider-format",
+      "result": 0,
+      "source_variant": "authority.rust196-package-fmt",
+      "test_summaries": [],
+      "toolchain": "Rust/Cargo1.96.0, explicitly selected and observed"
+    }
+  },
+  "current_source_commit": "57020dcb2c04b62a58596b1e07c2310c6b17701a",
+  "interpretation": "Feature-profile counts overlap. Disabled feature targets contain zero tests. The directly invoked death_child entry is a subprocess helper; its parent actually kills five owned child processes at publication boundaries. Additional retained build-target executables are not all claimed executed.",
+  "platform": "macOS arm64",
+  "production_console": {
+    "children_reaped": true,
+    "controls": 26,
+    "maximum_plaintext_bytes_each": 1048576,
+    "modes": [
+      {
+        "checks": [
+          "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+          "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+          "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "maintained_operator": true,
+        "mode": "classic",
+        "plaintext_bytes": 1048576,
+        "provider_restarts": 3,
+        "transfer_observations": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 2.636894
+          },
+          "upload": {
+            "calls": 64,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 3.471781
+          }
+        }
+      },
+      {
+        "checks": [
+          "offline_policy_commands_refuse_live_owner_without_policy_mutation",
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "maintained_process_stop_after_incomplete_upload_preserves_possible_durable_progress_without_mail",
+          "explicit_reopen_uses_retained_policy_and_actual_new_listener_port",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "offline_revocation_survives_restart_and_denies_old_key_without_store_or_mail_mutation",
+          "explicit_reset_retains_retired_certificate_history_across_command_exit_and_reopen",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "maintained_operator": true,
+        "mode": "unicode",
+        "plaintext_bytes": 1048576,
+        "provider_restarts": 3,
+        "transfer_observations": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 2.649247
+          },
+          "upload": {
+            "calls": 64,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 3.495182
+          }
+        }
+      }
+    ],
+    "private_fixture_removed": true,
+    "record_sha256": "a7b0d37869283cf39b59cf21ad51fb67c1908936caf568446b4f56977f11e846",
+    "result": "passed",
+    "same_home": true
+  },
+  "schema": 1
+}

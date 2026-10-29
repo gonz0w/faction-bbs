@@ -1,0 +1,310 @@
+{
+  "budget": "Build maximum2jobs for the team; native build2CPU/2GiB and runtime2CPU/about1GiB are separate envelopes.",
+  "host": {
+    "operator.cli-final-green": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 157941760,
+      "measured_wall_seconds": 1.68,
+      "scope": "Combined Cargo build/check and test invocation; incremental, not clean-build cost.",
+      "system_seconds": 0.38,
+      "user_seconds": 0.5,
+      "wall_seconds": 1.6871184160117991
+    },
+    "operator.console-proof-1": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "scope": "Runtime wall only; CPU/RSS unavailable.",
+      "wall_seconds": 63.70651595800882
+    },
+    "operator.native-client-build-1": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "scope": "Combined Cargo build/check and test invocation; incremental, not clean-build cost.",
+      "wall_seconds": 46.24690195801668
+    },
+    "operator.operator-clippy-final": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "scope": "Combined Cargo build/check and test invocation; incremental, not clean-build cost.",
+      "wall_seconds": 0.20522283401805907
+    },
+    "rust196-default-clippy": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 302350336,
+      "measured_wall_seconds": 4.65,
+      "scope": "Combined Cargo build/check and test invocation; incremental and runtime phases are not separately measured.",
+      "system_seconds": 0.49,
+      "user_seconds": 3.98,
+      "wall_seconds": 4.685407876968384
+    },
+    "rust196-default-regression": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 188219392,
+      "measured_wall_seconds": 30.21,
+      "scope": "Combined Cargo build/check and test invocation; incremental and runtime phases are not separately measured.",
+      "system_seconds": 3.13,
+      "user_seconds": 7.2,
+      "wall_seconds": 30.23690104484558
+    },
+    "rust196-durable-iq-clippy": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 948273152,
+      "measured_wall_seconds": 15.27,
+      "scope": "Combined Cargo build/check and test invocation; incremental and runtime phases are not separately measured.",
+      "system_seconds": 1.57,
+      "user_seconds": 13.36,
+      "wall_seconds": 15.303040742874146
+    },
+    "rust196-durable-iq-regression": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 1151975424,
+      "measured_wall_seconds": 202.06,
+      "scope": "Combined Cargo build/check and test invocation; incremental and runtime phases are not separately measured.",
+      "system_seconds": 8.58,
+      "user_seconds": 160.46,
+      "wall_seconds": 202.09772109985352
+    },
+    "rust196-focused-qualified": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 56066048,
+      "measured_wall_seconds": 1.73,
+      "scope": "Combined Cargo build/check and test invocation; incremental and runtime phases are not separately measured.",
+      "system_seconds": 0.21,
+      "user_seconds": 0.05,
+      "wall_seconds": 1.7478828430175781
+    },
+    "rust196-package-fmt": {
+      "cpu_and_peak_memory": "unavailable unless separately recorded below",
+      "maximum_resident_set_bytes": 37027840,
+      "measured_wall_seconds": 0.08,
+      "scope": "Combined Cargo build/check and test invocation; incremental and runtime phases are not separately measured.",
+      "system_seconds": 0.01,
+      "user_seconds": 0.04,
+      "wall_seconds": 0.11461710929870605
+    }
+  },
+  "host_compiler_jobs": 1,
+  "interpretation": "Combined build/test measurements are not runtime-only memory peaks. Wall-only observations do not establish CPU or RSS. Incremental times are not clean-build cost. No capacity, money, routing-efficiency or workflow-quality comparison is asserted.",
+  "native": {
+    "build": {
+      "c_helpers_jobs": 1,
+      "cpus": 2,
+      "doc_tests_are_compile_checks_in_build_envelope": true,
+      "elapsed_sum_seconds": 310.6042830790003,
+      "max_jobs": 2,
+      "physical_memory_bytes": 2128732160,
+      "stage_count": 27,
+      "stages": [
+        {
+          "elapsed_seconds": 2.647715999999974,
+          "jobs": 2,
+          "log_sha256": "4c1db3d8eb7a221d36b5701db34cc5e2a17b47a6ab1bcedc7098107a8971b158",
+          "returncode": 0,
+          "stage": "guard-provider"
+        },
+        {
+          "elapsed_seconds": 1.1883649989999867,
+          "jobs": 2,
+          "log_sha256": "b57ebb7818af714c44123731ecd48f1f24913ddf74d6279ceea3752ad98b37f7",
+          "returncode": 0,
+          "stage": "guard-network"
+        },
+        {
+          "elapsed_seconds": 0.4917233329999817,
+          "jobs": 2,
+          "log_sha256": "43ffb28a746c850917efd537b81f2c8cc86af133c90a72cbf41c2fd2079ae4bc",
+          "returncode": 0,
+          "stage": "guard-provider-auth"
+        },
+        {
+          "elapsed_seconds": 0.06576241699997354,
+          "jobs": 2,
+          "log_sha256": "5a44275ea0b0221c65f99729fa311496f06292e458c67d73eb8e0e22d0fdc3f6",
+          "returncode": 0,
+          "stage": "provider-fmt"
+        },
+        {
+          "elapsed_seconds": 12.725911542000006,
+          "jobs": 2,
+          "log_sha256": "c28da6c44bf3f51fd106d751b178e9cdd497e5682985012b5e5d2f66de131eee",
+          "returncode": 0,
+          "stage": "provider-default-build"
+        },
+        {
+          "elapsed_seconds": 3.6555059170000277,
+          "jobs": 2,
+          "log_sha256": "67e0db1d105fc8b4927724e74bdc455a68ca59c020444ca61cd2927b84a2e369",
+          "returncode": 0,
+          "stage": "provider-default-clippy"
+        },
+        {
+          "elapsed_seconds": 0.6400393740000254,
+          "jobs": 2,
+          "log_sha256": "3ae721b876e95e33910b573eaca40586eb8fda3f9078485fc0f479c6a278d30a",
+          "returncode": 0,
+          "stage": "provider-default-doc-compile-checks"
+        },
+        {
+          "elapsed_seconds": 3.819101791000037,
+          "jobs": 2,
+          "log_sha256": "093b40c8f45eda67aef573e4f398c12d00cf27eb3e08bf45469ec6bcab3b0312",
+          "returncode": 0,
+          "stage": "provider-durable-build"
+        },
+        {
+          "elapsed_seconds": 0.48212241600003836,
+          "jobs": 2,
+          "log_sha256": "a2e9928b67cce797e91ad49907b2b7a0b3c8601622b63c4c55fb4ae33f08b407",
+          "returncode": 0,
+          "stage": "provider-durable-clippy"
+        },
+        {
+          "elapsed_seconds": 0.6508529170000088,
+          "jobs": 2,
+          "log_sha256": "62c90607f53466f35cc8cfb001b8d20ac58981536d46284b5b6a75ac5ac095c3",
+          "returncode": 0,
+          "stage": "provider-durable-doc-compile-checks"
+        },
+        {
+          "elapsed_seconds": 93.30868645800001,
+          "jobs": 2,
+          "log_sha256": "b1461cab0834f5fde6da634567ea6fec1961db0bde6ba4a1912dafed4acf4c7d",
+          "returncode": 0,
+          "stage": "provider-durable-iq-build"
+        },
+        {
+          "elapsed_seconds": 13.121516625000027,
+          "jobs": 2,
+          "log_sha256": "9ee94618d8aea3a67d234ad78010ef7d7d94db1d2634dc909e0a46c9ad7855eb",
+          "returncode": 0,
+          "stage": "provider-durable-iq-clippy"
+        },
+        {
+          "elapsed_seconds": 0.7803095419999977,
+          "jobs": 2,
+          "log_sha256": "842c1b67b2a222afd146755f00a9ad7e82678819b83325195143cf50ae2a6a50",
+          "returncode": 0,
+          "stage": "provider-durable-iq-doc-compile-checks"
+        },
+        {
+          "elapsed_seconds": 4.9154482080000435,
+          "jobs": 2,
+          "log_sha256": "6b4c5409e513f59a23124fb459758deefa24c94443d026251cd6063671171676",
+          "returncode": 0,
+          "stage": "provider-operator-build"
+        },
+        {
+          "elapsed_seconds": 0.6664341249999666,
+          "jobs": 2,
+          "log_sha256": "6384504cf4b73932011c35fda29aa3fe36a8fbb7dc53e6c1bc0c1c2e7fc1da66",
+          "returncode": 0,
+          "stage": "provider-operator-clippy"
+        },
+        {
+          "elapsed_seconds": 0.6824019589999466,
+          "jobs": 2,
+          "log_sha256": "40b1655e6e92addc09532c278df993e7cfebf1c707000026b610d3be8b3b7276",
+          "returncode": 0,
+          "stage": "provider-operator-doc-compile-checks"
+        },
+        {
+          "elapsed_seconds": 0.03607658300001049,
+          "jobs": 2,
+          "log_sha256": "061e300a30eeeae44d64da738d1f7e9aa16de5bdceef163ca48dc7a7d4a7aca8",
+          "returncode": 0,
+          "stage": "operator-bin"
+        },
+        {
+          "elapsed_seconds": 10.161962833000018,
+          "jobs": 2,
+          "log_sha256": "6c77b355b0aab62c18e10ec085764c978d251fa38069e1ed96255e9ae4359a3e",
+          "returncode": 0,
+          "stage": "client-default-build"
+        },
+        {
+          "elapsed_seconds": 2.336250458000052,
+          "jobs": 2,
+          "log_sha256": "8d6abce375e78c4c1b226c936ec325e089ea2976b8b183b6e025491577d2c17d",
+          "returncode": 0,
+          "stage": "client-default-bin"
+        },
+        {
+          "elapsed_seconds": 4.290908124999987,
+          "jobs": 2,
+          "log_sha256": "3bd6c790eaa2e6b5744b4c16bb727e8b7ea7642866d82e7d7eb8560412972617",
+          "returncode": 0,
+          "stage": "client-native-build"
+        },
+        {
+          "elapsed_seconds": 72.5738005,
+          "jobs": 2,
+          "log_sha256": "751c5b6117f885f89e2cab05245c2d4bfed1ba24856fb256f98a06c6761cba05",
+          "returncode": 0,
+          "stage": "client-network-build"
+        },
+        {
+          "elapsed_seconds": 29.97268841600004,
+          "jobs": 2,
+          "log_sha256": "7c4f2e1a00d53175b420ae03f8bb5404a2b0f256d86e40a729f06a074b3b2018",
+          "returncode": 0,
+          "stage": "client-device-build"
+        },
+        {
+          "elapsed_seconds": 19.2890859580001,
+          "jobs": 2,
+          "log_sha256": "9442dc5535116e76ed07d428b582e87d8c076875d783dbc3558fd70ce6117f29",
+          "returncode": 0,
+          "stage": "client-device-clippy"
+        },
+        {
+          "elapsed_seconds": 27.88466270799995,
+          "jobs": 2,
+          "log_sha256": "f2a1ed94cb69e2ce3f7cdd0ed79a6567a5ed36a2c1ba69e962af2e1e4cc0d436",
+          "returncode": 0,
+          "stage": "server-current-bins"
+        },
+        {
+          "elapsed_seconds": 4.061070707999988,
+          "jobs": 2,
+          "log_sha256": "946281e58402da17c398bd7f733a3500e0b1a7b2fe3a218e4a7bb822a12ef1d8",
+          "returncode": 0,
+          "stage": "console-current-bins"
+        },
+        {
+          "elapsed_seconds": 0.12521924999998646,
+          "jobs": 1,
+          "log_sha256": "94df2b8391cd677bae4aece0fd6f11811cc47bddc04f8b94711c3e175aca5122",
+          "returncode": 0,
+          "stage": "faction-tty"
+        },
+        {
+          "elapsed_seconds": 0.03065991700009363,
+          "jobs": 1,
+          "log_sha256": "263e60ac6ece9c948789310188b3a18c7c4cd22524909db2e1e2d19fbef61a33",
+          "returncode": 0,
+          "stage": "faction-daemon"
+        }
+      ]
+    },
+    "fresh_bbs_sftp_runtime_seconds": {
+      "host": 21.742782249988522,
+      "native": 8.057369374000018
+    },
+    "host_seed_compilation": {
+      "distinct_from_runtime": true,
+      "elapsed_seconds": 1.7470389580121264,
+      "jobs": 1,
+      "returncode": 0,
+      "rust": "1.96.0"
+    },
+    "interpretation": "Build and runtime are separate actual envelopes. Stage elapsed sums are not single wall durations. No aggregate RSS/CPU is asserted where not measured. The host seed build is separate from the host ordinary-access proof.",
+    "runtime": {
+      "compilation_performed": false,
+      "compiled_test_elapsed_sum_seconds": 276.18643845600013,
+      "compiled_test_stage_count": 32,
+      "cpus": 2,
+      "per_action_limits_unchanged": true,
+      "physical_memory_bytes": 1054990336,
+      "production_macro_includes_both_modes_setup_and_restarts": true,
+      "production_macro_seconds": 81.22557104200007
+    }
+  },
+  "schema": 1
+}

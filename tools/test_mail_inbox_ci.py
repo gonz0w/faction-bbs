@@ -29,9 +29,14 @@ class InboxCiContract(unittest.TestCase):
     def test_inbox_verification_keeps_required_native_prerequisite_and_job_bounds(self):
         workflow = (ROOT / '.github/workflows/documentation.yml').read_text()
         documentation = workflow.split('  documentation:', 1)[1]
-        self.assertIn('needs: [native_mail, provider]', documentation)
+        self.assertIn('needs: [native_mail, provider, provider_operator]', documentation)
+        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT']:
+            self.assertIn('test "$'+variable+'" = success',documentation)
         self.assertIn('test "$NATIVE_MAIL_RESULT" = success', documentation)
-        self.assertEqual(workflow.count('timeout-minutes: 15'), 3)
+        self.assertEqual(workflow.count('timeout-minutes: 15'), 4)
+        for job in ['native_mail','provider','provider_operator','documentation']:
+            header=workflow.split('  '+job+':',1)[1].split('    steps:',1)[0]
+            self.assertIn('timeout-minutes: 15',header)
         self.assertNotIn('continue-on-error:', workflow)
 
 

@@ -7,6 +7,8 @@ independently verifying your peer's full identity and device. Ordinary SSH does
 not decrypt this mail. Attachment-capable storage must be available at the homes;
 this preview does not deploy a provider or establish device attestation.
 
+The optional [private provider operator](provider-operator.md) can serve preapproved same-home policy on loopback. It is a software preview and requires independently supplied credentials; it does not enroll devices or recover keys.
+
 ## Optional device-provider transport
 
 The explicit `device-provider` client feature adds an optional local profile for

@@ -1,0 +1,704 @@
+{
+  "original_documentation_block": {
+    "checks": [
+      {
+        "id": "documentation-offline-00",
+        "log_sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+        "program": "tools/check_repository.py",
+        "result": 0,
+        "wall_seconds": 3.095
+      },
+      {
+        "id": "documentation-offline-01",
+        "log_sha256": "06aafac7476b9a42160edb94eb9ddae1e5752be72c14a9a85b38fca503e75743",
+        "program": "tools/model_link_budget.py",
+        "result": 0,
+        "wall_seconds": 0.042
+      },
+      {
+        "id": "documentation-offline-02",
+        "log_sha256": "b0f55a3df686c0c3e2a38b8e80467014f144f9f85415c2fb14f4ba65ea334463",
+        "program": "tools/measure_text_replay.py",
+        "result": 0,
+        "wall_seconds": 0.065
+      },
+      {
+        "id": "documentation-offline-03",
+        "log_sha256": "b8394432e45a7f4cfac110f3beeff9e63bd9c2c9c957e5fad5764715cdd16061",
+        "program": "tools/measure_buffer_probe.py",
+        "result": 0,
+        "wall_seconds": 0.047
+      },
+      {
+        "id": "documentation-offline-04",
+        "log_sha256": "5f030c7ed8b671553d22a077ddbda68afdb4de80f8a279a5ff3d0d3eac1780d2",
+        "program": "tools/measure_native_sessions.py",
+        "result": 0,
+        "wall_seconds": 0.052
+      },
+      {
+        "id": "documentation-offline-05",
+        "log_sha256": "996f48b3f47d14498f6000d27cbb00e4d8fd43556046b05743d298f754e2be09",
+        "program": "experiments/009-local-storage/probe.py",
+        "result": 0,
+        "wall_seconds": 0.05
+      },
+      {
+        "id": "documentation-offline-06",
+        "log_sha256": "0d57ac77ffd45d403fd7d8d7d014bd19f58ddcba38fc33f5f17347e6ba784062",
+        "program": "experiments/023-netbsd-dependencies/verify_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.028
+      },
+      {
+        "id": "documentation-offline-07",
+        "log_sha256": "955efa317823fde5c95b8eaed81e75411000bd77239291eee9439048e439de26",
+        "program": "tools/probe_lua_boundary.py",
+        "result": 0,
+        "wall_seconds": 0.044
+      },
+      {
+        "id": "documentation-offline-08",
+        "log_sha256": "d1f058c908a6af4ddcab84e8fa15b505fd8fe153c20a6b694d9ce78bdca09fb3",
+        "program": "tools/check_evidence_sources.py",
+        "result": 0,
+        "wall_seconds": 17.888
+      },
+      {
+        "id": "documentation-offline-09",
+        "log_sha256": "abf5265b649951328d90172e1d25b325daf85b2706a2296d49df8daa22290f36",
+        "program": "tools/check_original_games_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.229
+      },
+      {
+        "id": "documentation-offline-10",
+        "log_sha256": "ade27100993e86bf4e8ad6715b127f9a599faae4759349643668c5fbbd840256",
+        "program": "tools/check_file_area_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.151
+      },
+      {
+        "id": "documentation-offline-11",
+        "log_sha256": "f81d6a1b679e5773d3a16e2b182b7ecbb5ba9347468d37cfc69c5e345d9fe3bd",
+        "program": "tools/check_native_client_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.172
+      },
+      {
+        "id": "documentation-offline-12",
+        "log_sha256": "0150289a263deb0447867d5d7e925286e617b39e92664df90b9d26c598159cce",
+        "program": "tools/check_room_reader_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.174
+      },
+      {
+        "id": "documentation-offline-13",
+        "log_sha256": "a0196863e88a99396362d8ca1de1a98bb8c560d15752fa6221ee167968f37911",
+        "program": "tools/check_post_metadata_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.175
+      },
+      {
+        "id": "documentation-offline-14",
+        "log_sha256": "3ec61e8f37715535e337a1d5f5f12009976484818fe376e1781714c50c68feb8",
+        "program": "tools/check_authored_articles_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.182
+      },
+      {
+        "id": "documentation-offline-15",
+        "log_sha256": "41464bbf62020b70f6493e6b4cf6890223140430638b8288d492fb38a1b2d9a2",
+        "program": "tools/check_broader_articles_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.217
+      },
+      {
+        "id": "documentation-offline-16",
+        "log_sha256": "d3a885556ca7763dce11f729e575cae8467903830ffcbb44a45914711e6d86ed",
+        "program": "tools/check_unicode_subjects_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.202
+      },
+      {
+        "id": "documentation-offline-17",
+        "log_sha256": "a0d281b5ad880b7d2e98799bfe5faa5d8bd4f28cd3fc07a3e317c6434fbbd39e",
+        "program": "tools/check_modern_terminals_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.208
+      },
+      {
+        "id": "documentation-offline-18",
+        "log_sha256": "25ac010dd9057c8347008ad0e811f493d17f079edced9653834d4bd60d717e2d",
+        "program": "tools/check_kitty_graphics_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.207
+      },
+      {
+        "id": "documentation-offline-19",
+        "log_sha256": "c713882dc044d104a7f7b245ab6dfbf4b3916a06aebef13e7635d7a2fc8e1484",
+        "program": "tools/check_terminal_compatibility_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.225
+      },
+      {
+        "id": "documentation-offline-20",
+        "log_sha256": "1e50e3bbdf8fb98b524a7fa9813dfdcfd335a733b077d9a4009911536c4f6623",
+        "program": "tools/check_menu_themes_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.225
+      },
+      {
+        "id": "documentation-offline-21",
+        "log_sha256": "09d9485da3a0cda0c1bdb0869b83d75de6ab952bc18f5d02139d12e334a8b42d",
+        "program": "tools/check_seasonal_themes_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.246
+      },
+      {
+        "id": "documentation-offline-22",
+        "log_sha256": "74a53ee308eef59ca6b594aca93be9e45663d584cedc089dfd3c8a351d7b920c",
+        "program": "tools/check_custom_menus_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.256
+      },
+      {
+        "id": "documentation-offline-23",
+        "log_sha256": "f4ad644aa5e9fdb9876ae8c18549d74adc9714920810c85db3bd8d6b7c18c135",
+        "program": "tools/check_login_paging_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.268
+      },
+      {
+        "id": "documentation-offline-24",
+        "log_sha256": "f5f4136c0ba5243350f76e9607f571646e25a9373f5e3e643049429850c31098",
+        "program": "tools/check_nightwire_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.552
+      },
+      {
+        "id": "documentation-offline-25",
+        "log_sha256": "a0ccebbe70bbc7cd54cf8c90dba8ab40289a03dd18e441b43bb3690c7f7c45f4",
+        "program": "tools/check_artwork_terminal_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.337
+      },
+      {
+        "id": "documentation-offline-26",
+        "log_sha256": "05d0de7dd3984fd123f096d51e4cdfd59368bb758fb33a95eb729b9c9dd81603",
+        "program": "tools/check_operator_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.295
+      },
+      {
+        "id": "documentation-offline-27",
+        "log_sha256": "e047dc482bfcc1415e1d25b394a3195882e9cdcf4e2223bdb63be7ac80ce5800",
+        "program": "tools/check_operator_host_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.296
+      },
+      {
+        "id": "documentation-offline-28",
+        "log_sha256": "34136f3bb1ffc7f5792c9cfe3ff917c61a084357a3f57263370c38ff8204ed44",
+        "program": "tools/check_operator_recovery_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.345
+      },
+      {
+        "id": "documentation-offline-29",
+        "log_sha256": "11c63d58a03c4ee66817850cdb7f3cdd409166c41d8db3c710c3eec5adadd67a",
+        "program": "tools/check_directory_submissions_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.392
+      },
+      {
+        "id": "documentation-offline-30",
+        "log_sha256": "2c4932cfba9323b8d9fcc88d37ea0ccd10e788d8404046b5327dd90a51150f4f",
+        "program": "tools/check_directory_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.325
+      },
+      {
+        "id": "documentation-offline-31",
+        "log_sha256": "e4d3e77fff9c52945100f3f648aa94f907fecdf6174c0bb7fc44bfe2461f14f0",
+        "program": "tools/check_board_launcher_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.478
+      },
+      {
+        "id": "documentation-offline-32",
+        "log_sha256": "0028f69dba3aff37e1b3b1a72a75236316b8f8ca14b6fc3c3a07676ce425b3fd",
+        "program": "tools/check_room_browser_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.356
+      },
+      {
+        "id": "documentation-offline-33",
+        "log_sha256": "ccb0bb96dfdd89f91a4e255983d6f75f05e66a59f606e3576b540a6c2ae0a7e7",
+        "program": "tools/check_writing_desk_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.369
+      },
+      {
+        "id": "documentation-offline-34",
+        "log_sha256": "839db9d760cb108ed57451d41903e73052d1252e2339067317e8760975d7884d",
+        "program": "tools/check_full_screen_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.387
+      },
+      {
+        "id": "documentation-offline-35",
+        "log_sha256": "6945eed43bc7c5e37a17925a4ceed61eda3ea88df22b5f7bcbcbf944417e8ffe",
+        "program": "tools/check_wall_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.402
+      },
+      {
+        "id": "documentation-offline-36",
+        "log_sha256": "775ee4821d26b420c41283dc9227c57cbfe149ed6b0ac74c50af0f89c9f64908",
+        "program": "tools/check_member_pages_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.421
+      },
+      {
+        "id": "documentation-offline-37",
+        "log_sha256": "af1bf243ef003623570df5c070c0809b031f3aa0a159e4bd1f402c5a27cbda92",
+        "program": "tools/check_local_mail_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.175
+      },
+      {
+        "id": "documentation-offline-38",
+        "log_sha256": "2673b9d74681ba2178c87d2510d4036ddec1a50bfb045d52c579e2019f71e3c6",
+        "program": "tools/check_client_vault_integration_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.588
+      },
+      {
+        "id": "documentation-offline-39",
+        "log_sha256": "4b4bee0cf880af1122b37a3e12b331501a1d4b409224e4f463943b7958b222eb",
+        "program": "tools/check_gatherings_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.427
+      },
+      {
+        "id": "documentation-offline-40",
+        "log_sha256": "bfb776318e38fa01f63fbdb884f5ca5273199a66de50e11ede98279ea94aeb82",
+        "program": "tools/check_polls_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.449
+      },
+      {
+        "id": "documentation-offline-41",
+        "log_sha256": "008c645615a07f68b85f89b54becad3411c3246e62e68d9aad65f50c15264897",
+        "program": "tools/check_catchup_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.46
+      },
+      {
+        "id": "documentation-offline-42",
+        "log_sha256": "785403e91f627a089285c73f5fcdff99e0efd7fc67ed1e49ce72d58a73bf316e",
+        "program": "tools/check_discussion_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.488
+      },
+      {
+        "id": "documentation-offline-43",
+        "log_sha256": "9ee30a0512899b38b02ad29f381d337c64b03e8ee9548957381e27e4c36affb6",
+        "program": "tools/check_gallery_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.51
+      },
+      {
+        "id": "documentation-offline-44",
+        "log_sha256": "0c627d1786c1012572b883fa2c992a64b4b02b03ba905d15dab0c7916c72e250",
+        "program": "tools/check_travel_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.523
+      },
+      {
+        "id": "documentation-offline-45",
+        "log_sha256": "04f35e863263749f73734497d2a9433aeb446e040a431cbeef432f1d2a206a54",
+        "program": "tools/check_library_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.551
+      },
+      {
+        "id": "documentation-offline-46",
+        "log_sha256": "120e2285eba3ecb32e4d635ca6f51028c298338ebb5fa326eb6c53031ca0d9ad",
+        "program": "tools/check_file_requests_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.558
+      },
+      {
+        "id": "documentation-offline-47",
+        "log_sha256": "7e92e38ff1b800c3113ec36c2a3a07be80468bb82acd0559aaa2d737715f6be5",
+        "program": "tools/check_magazine_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.583
+      },
+      {
+        "id": "documentation-offline-48",
+        "log_sha256": "f50705a3d4485c2000acdc9a935df8056bd982d8999fc3d8b5ac64f0e1f289d7",
+        "program": "tools/check_editorial_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.581
+      },
+      {
+        "id": "documentation-offline-49",
+        "log_sha256": "dc14013e957e2b3f5ddc5007cee7896d09902fa3d964ed837d42d4a9bd817b20",
+        "program": "tools/check_social_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.603
+      },
+      {
+        "id": "documentation-offline-50",
+        "log_sha256": "19f0d3e099c7d13e3f03673c35b87912757022943201f4edb919bf3bfef4bd92",
+        "program": "tools/check_boardwide_social_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.613
+      },
+      {
+        "id": "documentation-offline-51",
+        "log_sha256": "d954cc2b574bdcdf0dcdc055416753adf2783eca81e73e47b6a6d80bde9fb94a",
+        "program": "tools/check_standalone_social_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.919
+      },
+      {
+        "id": "documentation-offline-52",
+        "log_sha256": "0c863ffdf6ca8734bf6f826b78450217bc91892a2d04041f7697b6790a434046",
+        "program": "tools/check_idle_notifications_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.647
+      },
+      {
+        "id": "documentation-offline-53",
+        "log_sha256": "69159d80403f3fa6c2dbc042e34e8ab41a7460368c614e959464ffc49e57034f",
+        "program": "tools/check_who_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.656
+      },
+      {
+        "id": "documentation-offline-54",
+        "log_sha256": "cc0020c1d774ddd99777bf01849d5a7ff939f1568e1fdb64bb020019ef7819b5",
+        "program": "tools/check_connection_desk_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.674
+      },
+      {
+        "id": "documentation-offline-55",
+        "log_sha256": "d8a46eb7411f84aede493d6eb713cb1e0067d54522e7fa6eb9d03fdddb489cd4",
+        "program": "tools/check_passport_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.75
+      },
+      {
+        "id": "documentation-offline-56",
+        "log_sha256": "af636f96506b85873a9b5954b76808a4e0bad32ea3eb222e77406a799d8300cb",
+        "program": "tools/check_board_guide_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.639
+      },
+      {
+        "id": "documentation-offline-57",
+        "log_sha256": "86a9d06044c23f37b7e134bb1e8be9b9e527fb40c3bf40a5f8358ace300418cb",
+        "program": "tools/check_mail_proof_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.031
+      },
+      {
+        "id": "documentation-offline-58",
+        "log_sha256": "24da7f796ce48d4819ea1ed2f5e0f15770d195f0b3ae553719ef8e92fe0d021d",
+        "program": "tools/check_omemo_interop_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.105
+      },
+      {
+        "id": "documentation-offline-59",
+        "log_sha256": "3d65bd781ca2d20eff3e0d6e7f08e9753886a4acfde52b5e0274b542112d596e",
+        "program": "tools/check_checkpoint_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.508
+      },
+      {
+        "id": "documentation-offline-60",
+        "log_sha256": "84d35408db18ee8ce680aa033d36b3c7e36d2939cca1b48e2d73c5e86d7864e1",
+        "program": "tools/check_checkpoint_console_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.486
+      },
+      {
+        "id": "documentation-offline-61",
+        "log_sha256": "ab6e584675384fedfffd56100d673d5badc2ed3d3aa748c0a8073d8537568ee5",
+        "program": "tools/check_xmpp_transport_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.129
+      },
+      {
+        "id": "documentation-offline-62",
+        "log_sha256": "2561557be706a8beb1462d437bddd514aa4439ca629d6d394ccf7a7483021345",
+        "program": "tools/check_home_mail_evidence.py",
+        "result": 0,
+        "wall_seconds": 2.664
+      },
+      {
+        "id": "documentation-offline-63",
+        "log_sha256": "6c6cf6aed1702ddad00fc2253112e31f64f4fa58652a2aff11899a4fff1339be",
+        "program": "tools/check_archive_mail_evidence.py",
+        "result": 0,
+        "wall_seconds": 6.25
+      },
+      {
+        "id": "documentation-offline-64",
+        "log_sha256": "76a2c1c6a4b0a673538a571fc3469a22bc9719e39f3bc4b2b2c7fdb627e28880",
+        "program": "tools/check_picker_mail_evidence.py",
+        "result": 0,
+        "wall_seconds": 5.809
+      },
+      {
+        "id": "documentation-offline-65",
+        "log_sha256": "aec7fe62ac1d2e48ee972540b28f57fb7756f369e51632594af7f31d63c6dad7",
+        "program": "tools/check_unread_mail_evidence.py",
+        "result": 0,
+        "wall_seconds": 11.532
+      },
+      {
+        "id": "documentation-offline-66",
+        "log_sha256": "cfe03f57e79132e009c3711726be052c9fc83b36d39f2126723cdfc8395a30b4",
+        "program": "tools/check_mail_inbox_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.161
+      },
+      {
+        "id": "documentation-offline-67",
+        "log_sha256": "dcfad8c5bd770b521b7f43b40994080bcfdcb5563cab6dfab624d80f013ba5b9",
+        "program": "tools/check_menu_mail_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.422
+      },
+      {
+        "id": "documentation-offline-68",
+        "log_sha256": "126def518168e430e5b67b2fe4b5702766e3178bfb67cee076a21638fa033a42",
+        "program": "tools/check_reply_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.281
+      },
+      {
+        "id": "documentation-offline-69",
+        "log_sha256": "333bc55798e075e710d3217ba4a9dfca57d6ecaae6043d35940cdb627cb9df58",
+        "program": "tools/check_correspondents_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.157
+      },
+      {
+        "id": "documentation-offline-70",
+        "log_sha256": "6f091c141a5b8f06b939e7200aeb042d84c75faa131ef5dc63ee6bd7e0b0e6ec",
+        "program": "tools/check_menu_mail_notices_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.18
+      },
+      {
+        "id": "documentation-offline-71",
+        "log_sha256": "93ddfff80c864b4ac7f4a91b28d5ca8f73f6e53009977a3a902253fcbe7e0957",
+        "program": "tools/check_recorded_files.py",
+        "result": 0,
+        "wall_seconds": 0.103
+      },
+      {
+        "id": "documentation-offline-72",
+        "log_sha256": "fd4e18e6380907a04211d1fd7cb664bf95c7dab224e016f329ac243cea71e6af",
+        "program": "tools/check_recorded_files.py",
+        "result": 0,
+        "wall_seconds": 0.057
+      },
+      {
+        "id": "documentation-offline-73",
+        "log_sha256": "3f392e740890dbc5c208079c6e001c452d17517d3dfb58b342fe2be01727ab11",
+        "program": "tools/check_netbsd_application_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.106
+      },
+      {
+        "id": "documentation-offline-74",
+        "log_sha256": "1e3ed661d2d476d172c5c53d3e755f48bf581fd234869af96fdae367d9a98975",
+        "program": "tools/check_service_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.109
+      },
+      {
+        "id": "documentation-offline-75",
+        "log_sha256": "42d8ec6dbfe2c769ee83559f83690ca382f07e12dfa696215ebad16bb2a1d99c",
+        "program": "tools/check_memory_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.099
+      },
+      {
+        "id": "documentation-offline-76",
+        "log_sha256": "066b1f57a631c5cb4f19775ac276dcc42b7195820826b872501f8554de7e66f1",
+        "program": "tools/check_shared_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.143
+      },
+      {
+        "id": "documentation-offline-77",
+        "log_sha256": "12a1f3827789cb0c59baaf9989bb6d1725853c17bbdab814bf1450b372abc5dd",
+        "program": "tools/check_transport_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.146
+      },
+      {
+        "id": "documentation-offline-78",
+        "log_sha256": "7947d1b7352b5b1046af08a4f3db0148f2af1c294aa5341efffcf5787fc0ad2e",
+        "program": "tools/check_headroom_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.345
+      },
+      {
+        "id": "documentation-offline-79",
+        "log_sha256": "7d7862e126da93b7780dd5da16ef9dc036fb0a5524debd48b13b25b06aa74052",
+        "program": "tools/check_ui_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.218
+      },
+      {
+        "id": "documentation-offline-80",
+        "log_sha256": "0b427267f23c471a90f1c6143a96ecff0bc37a5390c000196d612ed459f93d50",
+        "program": "tools/check_integrated_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.226
+      },
+      {
+        "id": "documentation-offline-81",
+        "log_sha256": "84c3ceda85b0bc31ffd68334021a9b543fe376cc103a05082d7f5ddb78d124b9",
+        "program": "tools/check_confinement_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.238
+      },
+      {
+        "id": "documentation-offline-82",
+        "log_sha256": "fc872e063d770a786edf96f9275ff5781c28dcfa865189aff4a355863f40dd26",
+        "program": "tools/check_isolation_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.434
+      },
+      {
+        "id": "documentation-offline-83",
+        "log_sha256": "79d1673fb2912eca4489fa9f4f04143a1a4519e1d8d86e1013d727890b16ebbf",
+        "program": "tools/check_admission_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.531
+      },
+      {
+        "id": "documentation-offline-84",
+        "log_sha256": "50e084c9f815e5089c0c9e7ad01b3751b87686ce5b72038aa9e42c0a531a000d",
+        "program": "tools/check_sustained_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.325
+      },
+      {
+        "id": "documentation-offline-85",
+        "log_sha256": "e2b8d54258ce3ca6ace51243552da22d098ff30adbd9792553036c3ceb868638",
+        "program": "tools/check_lookup_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.296
+      },
+      {
+        "id": "documentation-offline-86",
+        "log_sha256": "b7d5c029c1bc22366d5bcd5ffb75a1191017daa31d444b229db339aef71265c4",
+        "program": "tools/check_global_evidence.py",
+        "result": 0,
+        "wall_seconds": 0.324
+      },
+      {
+        "id": "documentation-offline-87",
+        "log_sha256": "00e427fe3cdd8843cf3536a3efa2f90c7fec1379f324ca9570e014ba77d56d9d",
+        "program": "normalized documentation workflow entry",
+        "result": 1,
+        "wall_seconds": 76.591
+      },
+      {
+        "id": "documentation-offline-88",
+        "log_sha256": "3a22b9a0097c392087d5baedc3a6ce261b784b7ae19f6ae24b5c3bce846abf00",
+        "program": "normalized documentation workflow entry",
+        "result": 0,
+        "wall_seconds": 0.326
+      }
+    ],
+    "failed": 1,
+    "interpretation": "Static/source/saved-evidence and Python checks; passing historical byte guards does not rerun their earlier experiments.",
+    "invocations": 89,
+    "passed": 88
+  },
+  "original_frozen_source_commit": "57020dcb2c04b62a58596b1e07c2310c6b17701a",
+  "original_tools_discovery": {
+    "entries": 584,
+    "failures": 6,
+    "log_sha256": "00e427fe3cdd8843cf3536a3efa2f90c7fec1379f324ca9570e014ba77d56d9d"
+  },
+  "postfreeze_ci_test_only_correction": {
+    "changed_files": {
+      "tools/test_archive_mail_evidence.py": {
+        "after_sha256": "273209395cd9887d872c323a6f9cc9f86f4f733ffc79817881e6be06ec4ce774",
+        "before_sha256": "bfbb57d2b9ea5aaefd8efea8b5bf4aef9f48bf0134a148df1b168f4cd4e2805d"
+      },
+      "tools/test_checkpoint_policy.py": {
+        "after_sha256": "2bced091f19b1bb69d8cbc4acd24bf5d3a740f5d806486581889d468ef6020a4",
+        "before_sha256": "0ac60ef1c430ee62439f8dceb55d7ac264fe885a786ea5aca9fe5f35e83b2f38"
+      },
+      "tools/test_mail_inbox_ci.py": {
+        "after_sha256": "73e7f75259d4b7482634e4d55c63a6cb29b05827b462ff98c16f43a515f5944d",
+        "before_sha256": "fadebc9c941bf0f03d2ea3af9b77e36b041d416374ecdb9458e1b0014bfdcad5"
+      },
+      "tools/test_network_mail_ci.py": {
+        "after_sha256": "ec92d47849c0431d05a378c5ec0ccfcd1b0dcaf27a8d37a580d62666898136f5",
+        "before_sha256": "01df84107b6de1613777c7afc508b874005e6046b7b174e89b42ba1c981b30fd"
+      },
+      "tools/test_picker_mail_evidence.py": {
+        "after_sha256": "8252e4ddceac200c44aa87fbc758156b0ca6cac155cef4cd7829d31a3b6697b7",
+        "before_sha256": "5d80f11725433f72b55afc4fc8c155ed5b24df174b5c0c97c56952d9cfd8d93b"
+      }
+    },
+    "final": {
+      "checkpoint_guard_shell_combinations": 216,
+      "entries": 584,
+      "failed": 0,
+      "focused_five_file_entries": 29
+    },
+    "intermediate": "Actual29-entry scoped run retained3 stale timeout-count failures after needs/matrix fixture correction; not reported as passing.",
+    "runtime_native_selection_unchanged": true,
+    "scope": "Five Python CI test fixtures follow the third isolated provider-operator job; product, workflow, limits, runtime and frozen797 native inputs are unchanged.",
+    "stages": {
+      "five-files-green": {
+        "cost_scope": "Wall only; CPU/RSS not measured.",
+        "log_sha256": "6abe5bee0447ace5cc065898b9baae108e5f853afb20f89b4c3f3391e28d20bd",
+        "result": 0,
+        "source_variant": "ci-fixture.five-files-green",
+        "wall_seconds": 1.0361823340062983
+      },
+      "focused-green": {
+        "cost_scope": "Wall only; CPU/RSS not measured.",
+        "log_sha256": "858cdadd58e5e2748fecaa3806524a7bcbe95278237552d29776898fc883843b",
+        "result": 0,
+        "source_variant": "ci-fixture.focused-green",
+        "wall_seconds": 1.003501875034999
+      },
+      "full-tools-green": {
+        "cost_scope": "Wall only; CPU/RSS not measured.",
+        "log_sha256": "6301427773ac22fec593f34788393481268be185c6357034a22d8dcbd71f9faf",
+        "result": 0,
+        "source_variant": "ci-fixture.full-tools-green",
+        "wall_seconds": 77.5802711250144
+      },
+      "needs-matrix-green-timeout-red": {
+        "cost_scope": "Wall only; CPU/RSS not measured.",
+        "log_sha256": "986aa52a3ad474664a4f876c1efbc741a710fbd7836a2b623ad789fe0a5d0d5c",
+        "result": 1,
+        "source_variant": "ci-fixture.needs-matrix-green-timeout-red",
+        "wall_seconds": 1.0610942079802044
+      }
+    },
+    "workflow_unchanged": true
+  },
+  "schema": 1
+}

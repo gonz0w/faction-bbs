@@ -1,0 +1,373 @@
+"""Qualification contracts for the explicit opt-in provider embedding package."""
+import copy
+import json
+import re
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import check_provider_dependencies as policy
+import check_network_mail_dependencies as network
+import check_provider_auth_dependencies as auth
+import test_network_mail_policy as network_tests
+
+
+def manifest():
+    return {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
+            'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
+            'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
+                'durable-policy': ['dep:rustix'],
+                'operator': ['durable-policy', 'dep:toml', 'dep:faction-unix']},
+            'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
+                             'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
+                'rustix': {'version': '=1.1.5', 'default-features': False, 'features': ['std', 'fs', 'process'], 'optional': True},
+                'toml': {'version': '=1.1.8', 'default-features': False, 'features': ['std', 'parse', 'serde'], 'optional': True},
+                'faction-unix': {'path': '../faction-unix', 'optional': True}},
+            'bin': [{'name': 'faction-provider', 'path': 'src/main.rs', 'required-features': ['operator']}]}
+
+
+class ProviderDependencies(unittest.TestCase):
+    def test_exact_standalone_profile(self):
+        policy.validate_profile(manifest(), {'workspace': {'members': ['crates/faction-files']}})
+
+    def test_automatic_product_membership_and_edges_refused(self):
+        for member in ['crates/faction-provider', 'crates/*', 'crates/faction-*']:
+            with self.subTest(member=member), self.assertRaises(ValueError):
+                policy.validate_profile(manifest(), {'workspace': {'members': [member]}})
+        workspace = {'workspace': {'members': ['crates/faction-client']}}
+        active = {'dependencies': {'faction-provider': {'path': '../faction-provider', 'optional': True}}}
+        with self.assertRaises(ValueError):
+            policy.validate_product_edges({'client': active})
+        with self.assertRaises(ValueError):
+            policy.validate_product_edges({'client': {'dependencies': {'renamed': {'path': '../faction-provider'}}}})
+        policy.validate_product_edges({'client': {'dependencies': {'existing': '1'}}})
+
+    def test_profile_drift_features_vendoring_and_replacements_refused(self):
+        cases = [('patch', {}), ('replace', {}), ('features', {'default': ['online']}),
+                 ('dev-dependencies', {'extra': '*'}), ('build-dependencies', {'extra': '*'}),
+                 ('dependencies', {'openssl': {'version': '=0.10.81', 'features': ['vendored']}})]
+        for key, value in cases:
+            changed = manifest(); changed[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                policy.validate_profile(changed, {'workspace': {'members': []}})
+        for key, value in [('publish', True), ('license', 'MIT'), ('version', '0.0.0'), ('edition', '2021')]:
+            changed = manifest(); changed['package'][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                policy.validate_profile(changed, {'workspace': {'members': []}})
+        changed = manifest(); changed['dependencies']['faction-files']['path'] = '../../elsewhere'
+        with self.assertRaises(ValueError):
+            policy.validate_profile(changed, {'workspace': {'members': []}})
+        with self.assertRaises(ValueError):
+            policy.validate_profile(manifest(), {'workspace': {'members': []}, 'patch': {}})
+
+    def test_iq_feature_is_exact_optional_and_default_off(self):
+        changes = [({'default': ['blob-iq'], 'blob-iq': ['dep:faction-xmpp']}, None),
+                   ({'default': [], 'blob-iq': ['dep:faction-files']}, None),
+                   ({'default': [], 'blob-iq': ['dep:faction-xmpp'], 'extra': []}, None),
+                   (None, {'path': '../faction-xmpp'}),
+                   (None, {'path': '../other', 'optional': True}),
+                   (None, {'path': '../faction-xmpp', 'optional': True, 'features': ['extra']})]
+        for features, dependency in changes:
+            changed = manifest()
+            if features is not None: changed['features'] = features
+            if dependency is not None: changed['dependencies']['faction-xmpp'] = dependency
+            with self.subTest(profile=changed), self.assertRaises(ValueError):
+                policy.validate_profile(changed, {'workspace': {'members': []}})
+
+    def test_inventory_qualifies_default_and_iq_graphs_on_every_target(self):
+        metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
+        with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
+            result = json.loads(policy.inventory())
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'operator'})
+        self.assertEqual(execute.call_count, 24)
+        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'operator', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
+        actual = set()
+        for call in execute.call_args_list:
+            command = call.args[0]
+            self.assertIn('--locked', command); self.assertIn('--offline', command)
+            feature = command[command.index('--features') + 1] if '--features' in command else None
+            actual.add((command[command.index('--filter-platform') + 1], feature))
+        self.assertEqual(actual, expected)
+        for profile in result['profiles'].values():
+            self.assertEqual(set(profile['graphs']), set(policy.TARGETS))
+
+
+    def test_exact_client_device_provider_edge_is_accepted(self):
+        policy.validate_product_edges({'crates/faction-client/Cargo.toml': client_manifest()})
+
+    def test_device_provider_edge_cannot_leak_or_change_other_profiles(self):
+        original = client_manifest()
+        for section in ['dependencies', 'build-dependencies', 'dev-dependencies']:
+            for target in [None, 'cfg(unix)']:
+                changed = copy.deepcopy(original)
+                deps = changed if target is None else changed.setdefault('target', {}).setdefault(target, {})
+                deps.setdefault(section, {})['renamed'] = {'package': 'faction-provider', 'path': '../faction-provider'}
+                with self.subTest(section=section, target=target), self.assertRaises(ValueError):
+                    policy.validate_product_edges({'crates/faction-client/Cargo.toml': changed})
+        changes = [(['dependencies', 'faction-provider', 'optional'], False),
+                   (['dependencies', 'faction-provider', 'default-features'], True),
+                   (['dependencies', 'faction-provider', 'path'], '../other'),
+                   (['features', 'default'], ['device-provider']),
+                   (['features', 'native-mail'], ['device-provider']),
+                   (['features', 'network-mail'], ['device-provider']),
+                   (['features', 'device-provider'], ['network-mail', 'dep:faction-provider']),
+                   (['features', 'alias'], ['device-provider']), (['patch'], {}), (['replace'], {})]
+        for keys, value in changes:
+            changed = copy.deepcopy(original); destination = changed
+            for key in keys[:-1]: destination = destination[key]
+            destination[keys[-1]] = value
+            with self.subTest(keys=keys), self.assertRaises(ValueError):
+                policy.validate_product_edges({'crates/faction-client/Cargo.toml': changed})
+        for dependency in ['*', {'workspace': True}, {'path': '../faction-provider', 'optional': True}]:
+            changed = copy.deepcopy(original); changed['dependencies']['faction-provider'] = dependency
+            with self.subTest(dependency=dependency), self.assertRaises(ValueError):
+                policy.validate_product_edges({'crates/faction-client/Cargo.toml': changed})
+        with self.assertRaises(ValueError):
+            policy.validate_product_edges({'crates/faction-other/Cargo.toml': original})
+
+    def test_optional_manifest_edges_do_not_activate_ordinary_graphs(self):
+        provider = {'id': 'provider', 'name': 'faction-provider'}
+        empty = {'packages': [], 'resolve': {'nodes': []}}
+        active = {'packages': [provider], 'resolve': {'nodes': [{'id': 'provider', 'features': []}]}}
+        policy.validate_graph(empty, False)
+        policy.validate_graph(active, True)
+        with self.assertRaises(ValueError): policy.validate_graph(active, False)
+        with self.assertRaises(ValueError): policy.validate_graph(empty, True)
+        active['resolve']['nodes'][0]['features'] = ['blob-iq']
+        with self.assertRaises(ValueError): policy.validate_graph(active, True)
+
+    def test_reuses_existing_verified_source_and_lock_functions(self):
+        for name in ['selected_packages', 'scan_package', 'scan_local', 'verify_archive_source', 'scan_tree']:
+            self.assertIs(getattr(policy, name), getattr(network, name))
+        self.assertIs(policy.existing_checks, auth.existing_checks)
+        package = {'name': 'openssl', 'version': '0.10.81', 'source': policy.REGISTRY, 'checksum': 'a' * 64}
+        root = {'package': [package]}
+        self.assertEqual(len(policy.existing_checks(root, root)), 1)
+        for key, value in [('version', '0.10.82'), ('checksum', 'b' * 64), ('source', 'git+https://example.invalid')]:
+            changed = copy.deepcopy(root); changed['package'][0][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                policy.existing_checks(root, changed)
+
+    def test_source_archive_checksum_license_and_no_js_refusals(self):
+        fixtures = network_tests.NetworkMailPolicy()
+        with tempfile.TemporaryDirectory() as temporary:
+            root, archive, checksum = fixtures.fixture(Path(temporary))
+            package = fixtures.package(root)
+            self.assertEqual(policy.verify_archive_source(root, archive, checksum)['source_files'], 3)
+            for field, value in [('license', 'unknown'), ('source', 'git+https://example.invalid')]:
+                changed = dict(package, **{field: value})
+                with self.assertRaises(ValueError): policy.scan_package(changed, [], checksum)
+            for name in ['build/tool.ts', '.github/helper.js', 'fixtures/package.json']:
+                path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_text('unreviewed')
+                with self.assertRaises(ValueError): policy.scan_package(package, [], checksum)
+                path.unlink()
+            with self.assertRaises(ValueError): policy.verify_archive_source(root, archive, '0' * 64)
+            (root / 'src/lib.rs').write_text('tampered')
+            with self.assertRaises(ValueError): policy.verify_archive_source(root, archive, checksum)
+
+    def test_inventory_drift_is_read_only_until_deliberate_write(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'provider.json'; path.write_text('reviewed')
+            policy.check_inventory(path, 'reviewed')
+            with self.assertRaises(ValueError): policy.check_inventory(path, 'unreviewed')
+            self.assertEqual(path.read_text(), 'reviewed')
+
+
+def client_manifest():
+    return {'features': {'default': [],
+        'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
+        'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
+        'device-provider': ['network-mail', 'dep:faction-provider', 'tokio/sync']},
+        'dependencies': {'faction-provider': {'path': '../faction-provider', 'optional': True, 'default-features': False}}}
+
+
+def native_ci_step():
+    commands = ['cargo metadata --locked --format-version 1 --filter-platform ' + target + ' --features faction-client/device-provider > /dev/null' for target in policy.TARGETS]
+    commands += ['python3 tools/check_provider_dependencies.py',
+        'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings',
+        'cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1']
+    commands += [
+        'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
+        'umask 077',
+        'mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"',
+        "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
+        'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
+    ]
+    return ('      - name: Validate the native authenticated attachment client\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n'
+            + ''.join('          ' + command + '\n' for command in commands))
+
+
+def ci_fixture():
+    return 'name: Repository checks\n\non:\n  push:\n    branches: [main]\n  pull_request:\n  workflow_dispatch:\n\npermissions:\n  contents: read\n\nconcurrency:\n  group: repository-checks-${{ github.ref }}\n  cancel-in-progress: true\n\njobs:\n  native_mail:\n    name: Optional native mail\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    steps:\n      - name: Fetch the public repository revision\n        env:\n          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git\n          CHECKOUT_SHA: ${{ github.sha }}\n        run: |\n          git init .\n          git remote add origin "$REPOSITORY_URL"\n          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"\n          git checkout --detach FETCH_HEAD\n      - name: Validate the optional member-device checkpoint path\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-native-mail\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy\n          cargo fmt --all -- --check\n          python3 tools/check_omemo_dependencies.py\n          cargo clippy -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- -D warnings\n          cargo test -p faction-client -p faction-omemo --features faction-client/native-mail --all-targets --release --locked -- --test-threads=1\n          cargo build -p faction-client --features native-mail --bin faction-client --example checkpoint_ui_fixture --release --locked\n          python3 tools/probe_checkpoint_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture"\n          python3 tools/probe_unread_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --output "$RUNNER_TEMP/local-unread-mail.json"\n          mkdir -m 700 "$RUNNER_TEMP/inbox-owned"\n          printf \'%s\\n\' \'Owned issue219 inbox controls\' > "$RUNNER_TEMP/inbox-owned/OWNERSHIP"\n          python3 tools/probe_mail_inbox.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --owned-root "$RUNNER_TEMP/inbox-owned" --output "$RUNNER_TEMP/inbox-native.json"\n          python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported --output "$RUNNER_TEMP/picker-native-only.json"\n          cargo metadata --locked --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/network-mail > /dev/null\n          python3 tools/check_network_mail_dependencies.py\n          python3 tools/check_xmpp_transport_dependencies.py\n          cargo clippy -p faction-client -p faction-omemo --features faction-client/network-mail --all-targets --release --locked -- -D warnings\n          cargo test -p faction-client -p faction-omemo --features faction-client/network-mail --all-targets --release --locked -- --test-threads=1\n          cargo build -p faction-client --features network-mail --bin faction-client --example checkpoint_ui_fixture --example home_mail_fixture --example mail_reply_fixture --example mail_correspondents_fixture --release --locked\n          mkdir -m 700 "$RUNNER_TEMP/reply-owned"\n          printf \'CI owned reply fixtures\\n\' > "$RUNNER_TEMP/reply-owned/OWNED"\n          python3 tools/probe_mail_reply.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture" --owned-root "$RUNNER_TEMP/reply-owned" --output "$RUNNER_TEMP/reply-classic.json"\n          python3 tools/probe_mail_reply.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_reply_fixture" --owned-root "$RUNNER_TEMP/reply-owned" --unicode --output "$RUNNER_TEMP/reply-unicode.json"\n          mkdir -m 700 "$RUNNER_TEMP/correspondents-owned"\n          printf \'CI owned correspondent fixtures\\n\' > "$RUNNER_TEMP/correspondents-owned/OWNED"\n          python3 tools/probe_mail_correspondents.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_correspondents_fixture" --owned-root "$RUNNER_TEMP/correspondents-owned" --output "$RUNNER_TEMP/correspondents-classic.json"\n          python3 tools/probe_mail_correspondents.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/mail_correspondents_fixture" --owned-root "$RUNNER_TEMP/correspondents-owned" --unicode --output "$RUNNER_TEMP/correspondents-unicode.json"\n          python3 tools/probe_mail_inbox.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --owned-root "$RUNNER_TEMP/inbox-owned" --online --output "$RUNNER_TEMP/inbox-network.json"\n          python3 tools/probe_home_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --checkpoint-fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --mail-fixture "$CARGO_TARGET_DIR/release/examples/home_mail_fixture"\n          python3 tools/probe_home_archive_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --output "$RUNNER_TEMP/archive-ui.json"\n          python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --checkpoint-fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --mail-fixture "$CARGO_TARGET_DIR/release/examples/home_mail_fixture" --output "$RUNNER_TEMP/picker-home-mail.json"\n          cargo fmt --manifest-path crates/faction-xmpp/Cargo.toml -- --check\n          cargo clippy --manifest-path crates/faction-xmpp/Cargo.toml --all-targets --release --locked -- -D warnings\n          cargo test --manifest-path crates/faction-xmpp/Cargo.toml --all-targets --release --locked\n          cargo build --manifest-path crates/faction-xmpp/Cargo.toml --example transport_fixture --release --locked\n          python3 tools/probe_home_transport.py --binary "$CARGO_TARGET_DIR/release/examples/transport_fixture"\n          cargo fmt --manifest-path experiments/208-xmpp-transport/Cargo.toml -- --check\n          cargo clippy --manifest-path experiments/208-xmpp-transport/Cargo.toml --all-targets --release --locked -- -D warnings\n          cargo test --manifest-path experiments/208-xmpp-transport/Cargo.toml --all-targets --release --locked\n          cargo build --manifest-path experiments/208-xmpp-transport/Cargo.toml --release --locked\n          python3 tools/probe_xmpp_transport.py --binary "$CARGO_TARGET_DIR/release/faction-xmpp-probe"\n          python3 tools/check_provider_auth_dependencies.py\n          cargo fmt --manifest-path experiments/270-provider-auth/Cargo.toml -- --check\n          cargo clippy --manifest-path experiments/270-provider-auth/Cargo.toml --all-targets --release --locked -- -D warnings\n          cargo test --manifest-path experiments/270-provider-auth/Cargo.toml --release --locked -- --test-threads=1\n  provider:\n    name: Optional attachment provider\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    steps:\n      - name: Fetch the public repository revision\n        env:\n          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git\n          CHECKOUT_SHA: ${{ github.sha }}\n        run: |\n          git init .\n          git remote add origin "$REPOSITORY_URL"\n          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"\n          git checkout --detach FETCH_HEAD\n      - name: Warm the selected native attachment source graphs\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/native-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/native-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/native-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null\n      - name: Validate the opt-in attachment provider\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null\n          python3 tools/check_provider_dependencies.py\n          cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check\n          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings\n          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked -- --test-threads=1\n          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features blob-iq -- -D warnings\n          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features blob-iq -- --test-threads=1\n      - name: Validate the native authenticated attachment client\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          cargo metadata --locked --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null\n          python3 tools/check_provider_dependencies.py\n          cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings\n          cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1\n          cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked\n          umask 077\n          mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"\n          printf \'%s\\n\' \'Owned authenticated-provider console proof\' > "$RUNNER_TEMP/faction280-console-OWNED/OWNED"\n          python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"\n  provider_operator:\n    name: Optional durable provider operator\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    steps:\n      - name: Fetch the public repository revision\n        env:\n          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git\n          CHECKOUT_SHA: ${{ github.sha }}\n        run: |\n          git init .\n          git remote add origin "$REPOSITORY_URL"\n          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"\n          git checkout --detach FETCH_HEAD\n      - name: Validate durable provider policy and operator\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider-operator\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/native-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/native-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/native-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/network-mail > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null\n          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null\n          python3 tools/check_provider_dependencies.py\n          cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check\n          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features durable-policy -- -D warnings\n          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features durable-policy -- --test-threads=1\n          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features operator -- -D warnings\n          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator -- --test-threads=1\n          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked\n          cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked\n          umask 077\n          mkdir -m 700 "$RUNNER_TEMP/faction284-console-OWNED"\n          printf \'%s\\n\' \'Owned durable provider operator proof\' > "$RUNNER_TEMP/faction284-console-OWNED/OWNED"\n          python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json"\n  documentation:\n    name: Documentation and policy\n    needs: [native_mail, provider, provider_operator]\n    if: ${{ always() }}\n    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n    steps:\n      - name: Require optional native tests\n        env:\n          NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}\n          PROVIDER_RESULT: ${{ needs.provider.result }}\n          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}\n        run: |\n          test "$NATIVE_MAIL_RESULT" = success\n          test "$PROVIDER_RESULT" = success\n          test "$PROVIDER_OPERATOR_RESULT" = success\n      - name: Fetch the public repository revision\n        env:\n          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git\n          CHECKOUT_SHA: ${{ github.sha }}\n        run: |\n          git init .\n          git remote add origin "$REPOSITORY_URL"\n          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"\n          git checkout --detach FETCH_HEAD\n      - name: Validate documentation, policies, and archive\n        run: |\n          python3 tools/check_repository.py\n          python3 tools/model_link_budget.py --check\n          python3 tools/measure_text_replay.py --check\n          python3 tools/measure_buffer_probe.py --check\n          python3 tools/measure_native_sessions.py --check\n          python3 experiments/009-local-storage/probe.py --check\n          python3 experiments/023-netbsd-dependencies/verify_evidence.py\n          python3 tools/probe_lua_boundary.py --check\n          python3 tools/check_evidence_sources.py\n          python3 tools/check_original_games_evidence.py\n          python3 tools/check_file_area_evidence.py\n          python3 tools/check_native_client_evidence.py\n          python3 tools/check_room_reader_evidence.py\n          python3 tools/check_post_metadata_evidence.py\n          python3 tools/check_authored_articles_evidence.py\n          python3 tools/check_broader_articles_evidence.py\n          python3 tools/check_unicode_subjects_evidence.py\n          python3 tools/check_modern_terminals_evidence.py\n          python3 tools/check_kitty_graphics_evidence.py\n          python3 tools/check_terminal_compatibility_evidence.py\n          python3 tools/check_menu_themes_evidence.py\n          python3 tools/check_seasonal_themes_evidence.py\n          python3 tools/check_custom_menus_evidence.py\n          python3 tools/check_login_paging_evidence.py\n          python3 tools/check_nightwire_evidence.py\n          python3 tools/check_artwork_terminal_evidence.py\n          python3 tools/check_operator_evidence.py\n          python3 tools/check_operator_host_evidence.py\n          python3 tools/check_operator_recovery_evidence.py\n          python3 tools/check_directory_submissions_evidence.py\n          python3 tools/check_directory_evidence.py\n          python3 tools/check_board_launcher_evidence.py\n          python3 tools/check_room_browser_evidence.py\n          python3 tools/check_writing_desk_evidence.py\n          python3 tools/check_full_screen_evidence.py\n          python3 tools/check_wall_evidence.py\n          python3 tools/check_member_pages_evidence.py\n          python3 tools/check_local_mail_evidence.py\n          python3 tools/check_client_vault_integration_evidence.py\n          python3 tools/check_gatherings_evidence.py\n          python3 tools/check_polls_evidence.py\n          python3 tools/check_catchup_evidence.py\n          python3 tools/check_discussion_evidence.py\n          python3 tools/check_gallery_evidence.py\n          python3 tools/check_travel_evidence.py\n          python3 tools/check_library_evidence.py\n          python3 tools/check_file_requests_evidence.py\n          python3 tools/check_magazine_evidence.py\n          python3 tools/check_editorial_evidence.py\n          python3 tools/check_social_evidence.py\n          python3 tools/check_boardwide_social_evidence.py\n          python3 tools/check_standalone_social_evidence.py\n          python3 tools/check_idle_notifications_evidence.py\n          python3 tools/check_who_evidence.py\n          python3 tools/check_connection_desk_evidence.py\n          python3 tools/check_passport_evidence.py\n          python3 tools/check_board_guide_evidence.py\n          python3 tools/check_mail_proof_evidence.py\n          python3 tools/check_omemo_interop_evidence.py\n          python3 tools/check_checkpoint_evidence.py\n          python3 tools/check_checkpoint_console_evidence.py\n          python3 tools/check_xmpp_transport_evidence.py\n          python3 tools/check_home_mail_evidence.py\n          python3 tools/check_archive_mail_evidence.py\n          python3 tools/check_picker_mail_evidence.py\n          python3 tools/check_unread_mail_evidence.py\n          python3 tools/check_mail_inbox_evidence.py\n          python3 tools/check_menu_mail_evidence.py\n          python3 tools/check_reply_evidence.py\n          python3 tools/check_correspondents_evidence.py\n          python3 tools/check_menu_mail_notices_evidence.py\n          python3 tools/check_recorded_files.py dev-docs/evidence/mail-search/manifest.json 7942dc8503a25039d6f4457629b3c41d91ffaf186ef4a299da2fa3595a21224c\n          python3 tools/check_recorded_files.py dev-docs/evidence/attachment-bytes/manifest.json 4856304289bca15fccbb4c8c54bb8c900871ff054f823aa65f2a7a58a4bb00a3\n          python3 tools/check_netbsd_application_evidence.py\n          python3 tools/check_service_evidence.py\n          python3 tools/check_memory_evidence.py\n          python3 tools/check_shared_evidence.py\n          python3 tools/check_transport_evidence.py\n          python3 tools/check_headroom_evidence.py\n          python3 tools/check_ui_evidence.py\n          python3 tools/check_integrated_evidence.py\n          python3 tools/check_confinement_evidence.py\n          python3 tools/check_isolation_evidence.py\n          python3 tools/check_admission_evidence.py\n          python3 tools/check_sustained_evidence.py\n          python3 tools/check_lookup_evidence.py\n          python3 tools/check_global_evidence.py\n          python3 -m unittest discover -s tools -p \'test_*.py\'\n          python3 -m unittest discover -s experiments/250-attachment-bytes -p test_proof.py\n      - name: Validate optional Lua game evaluator and examples\n        run: |\n          sudo apt-get update -qq\n          sudo apt-get install -y --no-install-recommends liblua5.4-dev\n          python3 tools/build_lua_doors.py --include /usr/include/lua5.4 --library lua5.4 --output "$RUNNER_TEMP/faction-doors"\n          cc -std=c11 -D_GNU_SOURCE -Wall -Wextra -Werror -fanalyzer -I/usr/include/lua5.4 -fsyntax-only native/faction-doors/main.c\n          sudo install -d -o root -g root -m 755 "$RUNNER_TEMP/faction-door-fixtures"\n          sudo install -o root -g root -m 644 doors/examples/*.lua tools/fixtures/lua-doors/*.lua "$RUNNER_TEMP/faction-door-fixtures/"\n          python3 tools/smoke_lua_worker.py --binary "$RUNNER_TEMP/faction-doors" --scripts "$RUNNER_TEMP/faction-door-fixtures"\n      - name: Validate the local Rust core and real terminal flow\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy\n          cargo fmt --all -- --check\n          cargo fmt --manifest-path experiments/055-shared-board/Cargo.toml -- --check\n          cargo fmt --manifest-path experiments/058-transport-memory/Cargo.toml -- --check\n          cargo fmt --manifest-path experiments/058-headroom/Cargo.toml -- --check\n          cargo fmt --manifest-path experiments/055-shared-ui/Cargo.toml -- --check\n          python3 tools/check_ui_dependencies.py\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo clippy --manifest-path experiments/055-shared-ui/Cargo.toml --all-targets --release --locked -- -D warnings\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo test --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo build --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked\n          python3 tools/check_headroom_dependencies.py\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo clippy --manifest-path experiments/058-headroom/Cargo.toml --all-targets --release --locked -- -D warnings\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo test --manifest-path experiments/058-headroom/Cargo.toml --release --locked\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo build --manifest-path experiments/058-headroom/Cargo.toml --release --locked\n          python3 tools/check_transport_dependencies.py\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/transport" cargo clippy --manifest-path experiments/058-transport-memory/Cargo.toml --all-targets --release --locked -- -D warnings\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/transport" cargo build --manifest-path experiments/058-transport-memory/Cargo.toml --release --locked\n          python3 tools/check_shared_dependencies.py\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/shared" cargo clippy --manifest-path experiments/055-shared-board/Cargo.toml --all-targets --release --locked -- -D warnings\n          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/shared" cargo build --manifest-path experiments/055-shared-board/Cargo.toml --release --locked\n          python3 tools/check_rust_dependencies.py\n          cargo clippy --workspace --all-targets --release --locked -- -D warnings\n          cargo test --workspace --locked --release\n          cargo build --workspace --locked --release\n          python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported --output "$RUNNER_TEMP/picker-default-off.json"\n          python3 tools/probe_native_mail.py --client "$CARGO_TARGET_DIR/release/faction-client"\n          python3 tools/smoke_local_vault_launcher.py "$CARGO_TARGET_DIR/release/faction-client"\n          cargo build -p faction-core --example playground_seed --release --locked\n          python3 tools/smoke_playground_seed.py "$CARGO_TARGET_DIR/release/examples/playground_seed"\n          cargo build -p faction-terminal --examples --release --locked\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --output "$RUNNER_TEMP/menu-base.svg"\n          cmp docs/images/menu-base.svg "$RUNNER_TEMP/menu-base.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/autumn --output "$RUNNER_TEMP/menu-autumn.svg"\n          cmp docs/images/menu-autumn.svg "$RUNNER_TEMP/menu-autumn.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --columns 40 --output "$RUNNER_TEMP/menu-compact.svg"\n          cmp docs/images/menu-compact.svg "$RUNNER_TEMP/menu-compact.svg"\n          python3 tools/smoke_operator.py "$CARGO_TARGET_DIR/release/faction-sysop"\n          python3 tools/smoke_operator_health.py "$CARGO_TARGET_DIR/release/faction-sysop"\n          python3 tools/smoke_passport.py "$CARGO_TARGET_DIR/release/faction-client"\n          python3 tools/smoke_connection_desk.py "$CARGO_TARGET_DIR/release/faction-client"\n          python3 tools/smoke_travel.py "$CARGO_TARGET_DIR/release/faction-client"\n          python3 tools/smoke_board_launcher.py "$CARGO_TARGET_DIR/release/faction-client"\n          python3 tools/smoke_directory.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_directory_submissions.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_backup_recovery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-sysop"\n          python3 tools/build_nightwire.py --check\n          python3 tools/check_nightwire.py "$CARGO_TARGET_DIR/release/examples/preview_theme"\n          python3 tools/smoke_nightwire.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_login_paging.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 1 --output "$RUNNER_TEMP/login-longform-1.svg"\n          cmp docs/images/login-longform-1.svg "$RUNNER_TEMP/login-longform-1.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 2 --output "$RUNNER_TEMP/login-longform-2.svg"\n          cmp docs/images/login-longform-2.svg "$RUNNER_TEMP/login-longform-2.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 3 --output "$RUNNER_TEMP/login-longform-3.svg"\n          cmp docs/images/login-longform-3.svg "$RUNNER_TEMP/login-longform-3.svg"\n          python3 tools/smoke_custom_menus.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/grid --output "$RUNNER_TEMP/menu-grid.svg"\n          cmp docs/images/menu-grid.svg "$RUNNER_TEMP/menu-grid.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/grid --login --output "$RUNNER_TEMP/login-grid.svg"\n          cmp docs/images/login-grid.svg "$RUNNER_TEMP/login-grid.svg"\n          python3 tools/smoke_theme_schedule.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member" "$CARGO_TARGET_DIR/release/examples/preview_theme"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/autumn --login --output "$RUNNER_TEMP/login-autumn.svg"\n          cmp docs/images/login-autumn.svg "$RUNNER_TEMP/login-autumn.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/winter --login --output "$RUNNER_TEMP/login-winter.svg"\n          cmp docs/images/login-winter.svg "$RUNNER_TEMP/login-winter.svg"\n          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/winter --login --columns 40 --output "$RUNNER_TEMP/login-compact.svg"\n          cmp docs/images/login-compact.svg "$RUNNER_TEMP/login-compact.svg"\n          python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"\n          python3 tools/smoke_room_browser.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_writing_desk.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_standalone_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_idle_notifications.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_board_guide.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_who.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_editorial.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_magazine.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_file_requests.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_library.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_gallery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_discussion.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_catchup.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_polls.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_gatherings.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_member_pages.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_wall.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_full_screen.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_room_reader.py "$CARGO_TARGET_DIR/release/faction"\n          python3 tools/smoke_unicode_subjects.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_modern_terminals.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_kitty_graphics.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_native_graphics.py "$CARGO_TARGET_DIR/release/faction-client"\n          cargo build -p faction-articles --examples --release --locked\n          python3 tools/check_article_interop.py "$CARGO_TARGET_DIR/release/examples/emit_fixture"\n          python3 tools/smoke_local_chat.py "$CARGO_TARGET_DIR/release/faction"\n          python3 tools/smoke_export_restore.py "$CARGO_TARGET_DIR/release/faction"\n          python3 tools/smoke_member_worker.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"\n          python3 tools/smoke_broker_lifecycle.py "$CARGO_TARGET_DIR/release/faction-broker"\n          python3 tools/smoke_credential_budget.py "$CARGO_TARGET_DIR/release/faction"\n\n      - name: Validate articles with original offline INN\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n          umask 077\n          python3 - "$RUNNER_TEMP/inn-2.7.4.tar.gz" <<\'PY\'\n          import sys, urllib.request\n          from pathlib import Path\n          from tools.build_inn_reference import URL, SHA256\n          import hashlib\n          raw = urllib.request.urlopen(URL, timeout=30).read(10 * 1024 * 1024 + 1)\n          assert len(raw) <= 10 * 1024 * 1024 and hashlib.sha256(raw).hexdigest() == SHA256\n          Path(sys.argv[1]).write_bytes(raw)\n          PY\n          python3 tools/build_inn_reference.py --archive "$RUNNER_TEMP/inn-2.7.4.tar.gz" --work-dir "$RUNNER_TEMP/inn-reference"\n          python3 tools/check_inn_articles.py --reference-dir "$RUNNER_TEMP/inn-reference" --examples "$CARGO_TARGET_DIR/release/examples"\n'
+
+
+class ProviderCI(unittest.TestCase):
+    def assert_root_graphs_warmed_before_source_guard(self, source):
+        provider = policy._job(source, 'provider')
+        name = 'Warm the selected native attachment source graphs'
+        step = policy._step(provider, name)
+        for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0',
+                        'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            self.assertEqual(step.splitlines().count('          ' + setting), 1)
+        metadata = []
+        for feature in [None, 'native-mail', 'network-mail', 'device-provider']:
+            for target in policy.TARGETS:
+                command = 'cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform ' + target
+                if feature:
+                    command += ' --features faction-client/' + feature
+                metadata.append(command + ' > /dev/null')
+        self.assertEqual(policy._lines(step, {'rustup', 'cargo'}),
+                         ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy'] + metadata)
+        first_guard = provider.index('          python3 tools/check_provider_dependencies.py\n')
+        prefix = provider[:first_guard]
+        for command in metadata:
+            self.assertEqual(prefix.splitlines().count('          ' + command), 1,
+                             'every root graph must warm online before the first offline source guard')
+        self.assertFalse(re.search(r'^          cargo (?:build|test|clippy) ', prefix, re.M),
+                         'source qualification must precede compilation')
+
+    def test_repository_warms_all_root_graphs_before_first_offline_provider_guard(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assert_root_graphs_warmed_before_source_guard(source)
+
+    def test_root_warmup_cannot_be_missing_offline_unlocked_or_after_guard(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        provider = policy._job(source, 'provider')
+        step = policy._step(provider, 'Warm the selected native attachment source graphs')
+        block = '      - name: Warm the selected native attachment source graphs\n' + step
+        for line in step.splitlines():
+            if line.strip().startswith('cargo metadata '):
+                with self.subTest(missing=line), self.assertRaises((AssertionError, ValueError)):
+                    self.assert_root_graphs_warmed_before_source_guard(source.replace(line + '\n', '', 1))
+        for old, new in [('cargo metadata --locked --manifest-path Cargo.toml', 'cargo metadata --locked --offline --manifest-path Cargo.toml'),
+                         ('cargo metadata --locked --manifest-path Cargo.toml', 'cargo metadata --manifest-path Cargo.toml')]:
+            with self.subTest(change=new), self.assertRaises((AssertionError, ValueError)):
+                self.assert_root_graphs_warmed_before_source_guard(source.replace(old, new))
+        later = source.replace(block, '')
+        later = later.replace('      - name: Validate the native authenticated attachment client\n',
+                              block + '      - name: Validate the native authenticated attachment client\n')
+        with self.assertRaises((AssertionError, ValueError)):
+            self.assert_root_graphs_warmed_before_source_guard(later)
+
+    def test_repository_provider_job_exists_and_is_required(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn('  provider:\n', source)
+        policy.validate_ci(source)
+
+    def test_repository_ci_exercises_explicit_blob_iq(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        job = source.split('  provider:\n', 1)[1].split('  documentation:', 1)[0]
+        for target in policy.TARGETS:
+            self.assertIn('--filter-platform ' + target + ' --features blob-iq > /dev/null', job)
+        self.assertIn('--all-targets --release --locked --features blob-iq -- -D warnings', job)
+        self.assertIn('--release --locked --features blob-iq -- --test-threads=1', job)
+
+    def test_repository_ci_exercises_native_device_provider(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn(native_ci_step(), source)
+
+    def test_native_selected_sources_and_all_targets_cannot_be_removed(self):
+        good = ci_fixture()
+        with self.assertRaises(ValueError): policy.validate_ci(good.replace(native_ci_step(), ''))
+        for command in native_ci_step().splitlines():
+            if command.strip().startswith(('cargo ', 'python3 ')):
+                with self.subTest(command=command), self.assertRaises(ValueError):
+                    policy.validate_ci(good.replace(command + '\n', '', 1 if 'device-provider' in command else 2))
+
+    def test_inventory_calls_ci_guard_before_metadata(self):
+        with patch.object(policy, 'validate_ci', side_effect=ValueError('refused CI contract')) as validate:
+            with self.assertRaisesRegex(ValueError, 'refused CI contract'):
+                policy.inventory()
+            validate.assert_called_once()
+
+    def test_positive_straight_line_provider_job(self):
+        policy.validate_ci(ci_fixture())
+
+    def test_missing_conditional_inert_or_unlocked_commands_refused(self):
+        good = ci_fixture()
+        command = 'python3 tools/check_provider_dependencies.py'
+        for old, new in [(command, '# ' + command), (command, 'echo ' + command),
+                         (command, command + ' || true'), (' --locked', ''),
+                         (' --test-threads=1', ''), ('    steps:', '    if: false\n    steps:'),
+                         ('        run: |', '        if: false\n        run: |'),
+                         ('CARGO_BUILD_JOBS: 2', 'CARGO_BUILD_JOBS: 8'),
+                         ('timeout-minutes: 15', 'timeout-minutes: 60'),
+                         ('    runs-on: ubuntu-24.04', '    runs-on: windows-latest')]:
+            with self.subTest(change=new), self.assertRaises(ValueError):
+                policy.validate_ci(good.replace(old, new))
+        for wrapper in ["cat <<'INERT'\n", 'if false; then\n']:
+            with self.assertRaises(ValueError):
+                policy.validate_ci(good.replace('          ' + command, '          ' + wrapper + '          ' + command))
+        test = 'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked -- --test-threads=1'
+        with self.assertRaises(ValueError):
+            policy.validate_ci(good.replace('          ' + test + '\n', '').replace('          ' + command, '          ' + test + '\n          ' + command))
+
+    def test_iq_metadata_and_runtime_coverage_cannot_be_removed(self):
+        good = ci_fixture()
+        for command in good.splitlines():
+            if '--features blob-iq' in command:
+                with self.subTest(command=command), self.assertRaises(ValueError):
+                    policy.validate_ci(good.replace(command + '\n', ''))
+
+    def test_documentation_fails_closed_on_both_native_and_provider(self):
+        good = ci_fixture()
+        for old, new in [('needs: [native_mail, provider]', 'needs: native_mail'),
+                         ('          test "$PROVIDER_RESULT" = success\n', ''),
+                         ('          test "$NATIVE_MAIL_RESULT" = success\n', ''),
+                         ('test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_RESULT" = success || true'),
+                         ('if: ${{ always() }}', 'if: false'),
+                         ('        run: |\n          test', '        if: false\n        run: |\n          test')]:
+            with self.subTest(change=new), self.assertRaises(ValueError):
+                policy.validate_ci(good.replace(old, new))
+
+
+def durable_manifest():
+    result = manifest()
+    result['features'].update({'durable-policy': ['dep:rustix'],
+        'operator': ['durable-policy', 'dep:toml', 'dep:faction-unix']})
+    result['dependencies'].update({
+        'rustix': {'version': '=1.1.5', 'default-features': False,
+                   'features': ['std', 'fs', 'process'], 'optional': True},
+        'toml': {'version': '=1.1.8', 'default-features': False,
+                 'features': ['std', 'parse', 'serde'], 'optional': True},
+        'faction-unix': {'path': '../faction-unix', 'optional': True}})
+    result['bin'] = [{'name': 'faction-provider', 'path': 'src/main.rs',
+                      'required-features': ['operator']}]
+    return result
+
+
+class DurableProviderProfiles(unittest.TestCase):
+    def test_exact_optional_durable_operator_profile_accepted(self):
+        policy.validate_profile(durable_manifest(), {'workspace': {'members': []}})
+
+    def test_actual_manifest_has_deliberate_operator_binary(self):
+        import tomllib
+        actual = tomllib.loads(policy.MANIFEST.read_text())
+        self.assertEqual(actual, durable_manifest())
+
+    def test_inventory_qualifies_durable_and_operator_on_every_target(self):
+        metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
+        with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
+            result = json.loads(policy.inventory())
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'operator'})
+        for profile in ['durable-policy', 'operator']:
+            self.assertEqual(set(result['profiles'][profile]['graphs']), set(policy.TARGETS))
+
+    def test_ci_without_durable_operator_validation_is_refused(self):
+        old = ci_fixture()
+        job = '  provider_operator:\n' + policy._job(old, 'provider_operator')
+        with self.assertRaises(ValueError):
+            policy.validate_ci(old.replace(job, ''))
+
+    def test_actual_workflow_selects_both_profiles_before_compile(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        job = policy._job(source, 'provider_operator')
+        for feature in ['durable-policy', 'operator']:
+            self.assertIn('--features ' + feature + ' -- -D warnings', job)
+            self.assertIn('--features ' + feature + ' -- --test-threads=1', job)
+        self.assertIn('needs: [native_mail, provider, provider_operator]', source)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,0 +1,235 @@
+//! Narrow descriptor-relative publication using the private ciphertext-store pattern.
+use super::{Error, MAX_SNAPSHOT, Snapshot, codec};
+use rustix::fs::{self, AtFlags, FlockOperation, Mode, OFlags};
+use std::{
+    fs::File,
+    io::{Read, Write},
+    os::unix::fs::MetadataExt,
+    path::{Component, Path},
+};
+const NAME: &str = "provider-policy.snapshot";
+const TEMP: &str = "provider-policy.pending";
+const LOCK: &str = "provider-policy.lock";
+pub(crate) struct Disk {
+    dir: File,
+    lock: File,
+}
+fn storage<T>(r: std::io::Result<T>) -> Result<T, Error> {
+    r.map_err(|_| Error::Storage)
+}
+fn regular(file: &File, cap: u64) -> Result<(), Error> {
+    let m = storage(file.metadata())?;
+    if !m.is_file()
+        || m.uid() != rustix::process::geteuid().as_raw()
+        || m.mode() & 0o7777 != 0o600
+        || m.nlink() != 1
+        || m.len() > cap
+    {
+        Err(Error::Invalid)
+    } else {
+        Ok(())
+    }
+}
+fn open(dir: &File, name: &str, flags: OFlags) -> Result<File, Error> {
+    fs::openat(
+        dir,
+        name,
+        flags | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
+        Mode::from_raw_mode(0o600),
+    )
+    .map(File::from)
+    .map_err(|_| Error::Storage)
+}
+fn directory(path: &Path) -> Result<File, Error> {
+    if !path.is_absolute() || path.components().any(|c| matches!(c, Component::ParentDir)) {
+        return Err(Error::Invalid);
+    }
+    let flags = OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+    let mut dir = File::from(fs::open("/", flags, Mode::empty()).map_err(|_| Error::Storage)?);
+    for c in path.components() {
+        match c {
+            Component::Normal(name) => {
+                dir = File::from(
+                    fs::openat(&dir, name, flags, Mode::empty()).map_err(|_| Error::Storage)?,
+                )
+            }
+            Component::RootDir | Component::CurDir => (),
+            _ => return Err(Error::Invalid),
+        }
+    }
+    let m = storage(dir.metadata())?;
+    if !m.is_dir() || m.uid() != rustix::process::geteuid().as_raw() || m.mode() & 0o7777 != 0o700 {
+        return Err(Error::Invalid);
+    }
+    Ok(dir)
+}
+fn entries(dir: &File, empty: bool) -> Result<(), Error> {
+    for entry in fs::Dir::read_from(dir).map_err(|_| Error::Storage)? {
+        let entry = entry.map_err(|_| Error::Storage)?;
+        let name = entry.file_name().to_bytes();
+        if name == b"." || name == b".." {
+            continue;
+        }
+        if empty || ![NAME.as_bytes(), TEMP.as_bytes(), LOCK.as_bytes()].contains(&name) {
+            return Err(Error::Invalid);
+        }
+    }
+    Ok(())
+}
+impl Disk {
+    pub(super) fn initialize(path: &Path, state: &Snapshot) -> Result<Self, Error> {
+        state.validate()?;
+        let dir = directory(path)?;
+        entries(&dir, true)?;
+        let lock = open(&dir, LOCK, OFlags::RDWR | OFlags::CREATE | OFlags::EXCL)?;
+        let disk = Self::locked(dir, lock)?;
+        storage(disk.dir.sync_all())?;
+        disk.publish(state, true)?;
+        Ok(disk)
+    }
+    fn locked(dir: File, lock: File) -> Result<Self, Error> {
+        regular(&lock, 0)?;
+        fs::flock(&lock, FlockOperation::NonBlockingLockExclusive).map_err(|e| {
+            if e == rustix::io::Errno::WOULDBLOCK {
+                Error::Busy
+            } else {
+                Error::Storage
+            }
+        })?;
+        Ok(Self { dir, lock })
+    }
+    pub(super) fn reopen(path: &Path) -> Result<(Self, Snapshot), Error> {
+        let dir = directory(path)?;
+        let lock = open(&dir, LOCK, OFlags::RDWR)?;
+        let disk = Self::locked(dir, lock)?;
+        disk.membership()?;
+        // Validate current before touching pending. No missing/corrupt-current
+        // fallback or history bootstrap is permitted, even with valid pending.
+        let mut file = open(&disk.dir, NAME, OFlags::RDONLY)?;
+        regular(&file, MAX_SNAPSHOT as u64)?;
+        let len = storage(file.metadata())?.len() as usize;
+        let mut bytes = Vec::with_capacity(len);
+        storage(
+            Read::by_ref(&mut file)
+                .take(MAX_SNAPSHOT as u64 + 1)
+                .read_to_end(&mut bytes),
+        )?;
+        if bytes.len() != len {
+            return Err(Error::Invalid);
+        }
+        let state = codec::decode(&bytes)?;
+        storage(file.sync_all())?;
+        match fs::statat(&disk.dir, TEMP, AtFlags::SYMLINK_NOFOLLOW) {
+            Ok(_) => {
+                let pending = open(&disk.dir, TEMP, OFlags::RDONLY)?;
+                regular(&pending, MAX_SNAPSHOT as u64)?;
+                fs::unlinkat(&disk.dir, TEMP, AtFlags::empty()).map_err(|_| Error::Storage)?;
+            }
+            Err(e) if e == rustix::io::Errno::NOENT => (),
+            Err(_) => return Err(Error::Storage),
+        }
+        storage(disk.dir.sync_all())?;
+        Ok((disk, state))
+    }
+    fn membership(&self) -> Result<(), Error> {
+        let metadata = storage(self.dir.metadata())?;
+        if metadata.uid() != rustix::process::geteuid().as_raw()
+            || metadata.mode() & 0o7777 != 0o700
+        {
+            return Err(Error::Invalid);
+        }
+        entries(&self.dir, false)?;
+        regular(&self.lock, 0)?;
+        let held = fs::fstat(&self.lock).map_err(|_| Error::Storage)?;
+        let named =
+            fs::statat(&self.dir, LOCK, AtFlags::SYMLINK_NOFOLLOW).map_err(|_| Error::Storage)?;
+        if held.st_dev != named.st_dev || held.st_ino != named.st_ino {
+            return Err(Error::Invalid);
+        }
+        for name in [NAME, TEMP] {
+            match fs::statat(&self.dir, name, AtFlags::SYMLINK_NOFOLLOW) {
+                Ok(_) => regular(&open(&self.dir, name, OFlags::RDONLY)?, MAX_SNAPSHOT as u64)?,
+                Err(e) if e == rustix::io::Errno::NOENT => (),
+                Err(_) => return Err(Error::Storage),
+            }
+        }
+        Ok(())
+    }
+    pub(crate) fn write(&self, state: &Snapshot) -> Result<(), Error> {
+        self.publish(state, false)
+    }
+    fn publish(&self, state: &Snapshot, initializing: bool) -> Result<(), Error> {
+        let bytes = codec::encode(state)?;
+        self.membership()?;
+        if !initializing {
+            regular(&open(&self.dir, NAME, OFlags::RDONLY)?, MAX_SNAPSHOT as u64)?;
+        }
+        let mut temp = open(
+            &self.dir,
+            TEMP,
+            OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL,
+        )?;
+        regular(&temp, 0)?;
+        #[cfg(test)]
+        test_step(Point::Write)?;
+        storage(temp.write_all(&bytes))?;
+        #[cfg(test)]
+        test_step(Point::FileSync)?;
+        storage(temp.sync_all())?;
+        regular(&temp, MAX_SNAPSHOT as u64)?;
+        let held = fs::fstat(&temp).map_err(|_| Error::Storage)?;
+        let named =
+            fs::statat(&self.dir, TEMP, AtFlags::SYMLINK_NOFOLLOW).map_err(|_| Error::Storage)?;
+        if held.st_dev != named.st_dev || held.st_ino != named.st_ino {
+            return Err(Error::Storage);
+        }
+        #[cfg(test)]
+        test_step(Point::BeforeRename)?;
+        fs::renameat(&self.dir, TEMP, &self.dir, NAME).map_err(|_| Error::PublicationUncertain)?;
+        #[cfg(test)]
+        test_step(Point::AfterRename).map_err(|_| Error::PublicationUncertain)?;
+        #[cfg(test)]
+        test_step(Point::DirectorySync).map_err(|_| Error::PublicationUncertain)?;
+        self.dir.sync_all().map_err(|_| Error::PublicationUncertain)
+    }
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub(super) enum Point {
+    Write,
+    FileSync,
+    BeforeRename,
+    AfterRename,
+    DirectorySync,
+}
+#[cfg(test)]
+#[derive(Clone, Copy)]
+pub(super) enum Fault {
+    None,
+    Error(Point),
+    Death(Point),
+}
+#[cfg(test)]
+thread_local! {pub(super) static FAULT:std::cell::Cell<Fault>=const{std::cell::Cell::new(Fault::None)};}
+#[cfg(test)]
+fn test_step(point: Point) -> Result<(), Error> {
+    match FAULT.get() {
+        Fault::Error(p) if p == point => Err(Error::Storage),
+        Fault::Death(p) if p == point => {
+            use std::os::unix::fs::OpenOptionsExt;
+            let root = std::env::var_os("FACTION283_DEATH_ROOT").ok_or(Error::Invalid)?;
+            let mut marker = storage(
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .mode(0o600)
+                    .open(Path::new(&root).join("BOUNDARY")),
+            )?;
+            storage(marker.write_all(b"owned issue283 exact publication boundary"))?;
+            loop {
+                std::thread::park()
+            }
+        }
+        _ => Ok(()),
+    }
+}

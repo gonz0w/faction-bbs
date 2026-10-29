@@ -2,6 +2,8 @@
 //! TLS credentials authorize approved routing; they do not attest OMEMO key possession.
 //! Runtime ownership is authoritative: controls and sessions cannot retain it after drop.
 pub mod authority;
+#[cfg(feature = "durable-policy")]
+pub mod durable;
 mod service;
 pub mod tls;
 use authority::{Authority, Registry};
@@ -31,18 +33,51 @@ pub(crate) struct State {
     stopped: Arc<AtomicBool>,
     active: AtomicBool,
     socket: Mutex<Option<TcpStream>>,
+    #[cfg(feature = "durable-policy")]
+    disk: Option<durable::Disk>,
 }
 impl State {
-    fn stop(&self) {
-        self.stopped.store(true, Ordering::SeqCst);
-        if let Ok(mut a) = self.authority.lock() {
-            a.unavailable();
+    /// Validation, publication and installation share the dispatch authority lock.
+    fn update(
+        &self,
+        change: impl FnOnce(&mut Authority) -> Result<(), private_blobs::Error>,
+    ) -> Result<(), Error> {
+        let mut authority = self
+            .authority
+            .lock()
+            .map_err(|_| Error::Transport(tls::Stage::Denied))?;
+        if self.stopped.load(Ordering::SeqCst) {
+            return Err(Error::Transport(tls::Stage::Denied));
         }
+        #[cfg(feature = "durable-policy")]
+        if let Some(disk) = &self.disk {
+            let mut candidate = Authority::restore(authority.snapshot()).map_err(Error::Store)?;
+            change(&mut candidate).map_err(Error::Store)?;
+            if let Err(error) = disk.write(&candidate.snapshot()) {
+                authority.unavailable();
+                self.stopped.store(true, Ordering::SeqCst);
+                drop(authority);
+                self.close_socket();
+                return Err(Error::Store(error));
+            }
+            authority.install(candidate.snapshot());
+            return Ok(());
+        }
+        change(&mut authority).map_err(Error::Store)
+    }
+    fn close_socket(&self) {
         if let Ok(mut socket) = self.socket.lock()
             && let Some(s) = socket.take()
         {
             let _ = s.shutdown(Shutdown::Both);
         }
+    }
+    fn stop(&self) {
+        self.stopped.store(true, Ordering::SeqCst);
+        if let Ok(mut a) = self.authority.lock() {
+            a.unavailable();
+        }
+        self.close_socket();
     }
 }
 /// Sole non-cloneable owner. Drop/stop terminally invalidate all its sessions.
@@ -57,6 +92,8 @@ impl Runtime {
                 stopped: Arc::new(AtomicBool::new(false)),
                 active: AtomicBool::new(false),
                 socket: Mutex::new(None),
+                #[cfg(feature = "durable-policy")]
+                disk: None,
             }),
         }
     }
@@ -90,32 +127,23 @@ impl Control {
         }
         Ok(s)
     }
+    /// Durable runtimes acknowledge only after publication. Invalid proposals
+    /// leave live policy unchanged; any storage uncertainty requires reopen.
     pub fn replace_registry(&self, registry: Registry) -> Result<(), Error> {
-        let state = self.state()?;
-        let mut a = state
-            .authority
-            .lock()
-            .map_err(|_| Error::Transport(tls::Stage::Denied))?;
-        if state.stopped.load(Ordering::SeqCst) {
-            return Err(Error::Transport(tls::Stage::Denied));
-        }
-        a.replace_registry(registry).map_err(Error::Store)
-    }
-    pub fn unavailable(&self) -> Result<(), Error> {
         self.state()?
-            .authority
-            .lock()
-            .map_err(|_| Error::Transport(tls::Stage::Denied))?
-            .unavailable();
-        Ok(())
+            .update(|authority| authority.replace_registry(registry))
+    }
+    /// Explicitly persist unavailable policy when durability was selected.
+    /// Ordinary Runtime stop/drop never persist this policy action.
+    pub fn unavailable(&self) -> Result<(), Error> {
+        self.state()?.update(|authority| {
+            authority.unavailable();
+            Ok(())
+        })
     }
     pub fn reset(&self, reset_epoch: u64) -> Result<(), Error> {
         self.state()?
-            .authority
-            .lock()
-            .map_err(|_| Error::Transport(tls::Stage::Denied))?
-            .reset(reset_epoch)
-            .map_err(Error::Store)
+            .update(|authority| authority.reset(reset_epoch))
     }
     pub fn stop(&self) -> Result<(), Error> {
         self.state()?.stop();
