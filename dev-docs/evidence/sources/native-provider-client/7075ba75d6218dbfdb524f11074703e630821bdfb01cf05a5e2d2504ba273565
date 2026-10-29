@@ -1,0 +1,215 @@
+//! Explicit authenticated binary attachment transport on the member device.
+//! A foreground cycle owns one bounded TLS worker and joins it on every exit.
+use crate::mail_checkpoint::CheckpointVault;
+use faction_files::private_blobs::{Principal, Request, Response, encode_request};
+pub use faction_provider::tls::ClientCredentials as Credentials;
+use faction_provider::tls::{CYCLE_LIMIT, ClientAdmission, HANDSHAKE_LIMIT, Stage};
+use std::{
+    net::SocketAddr,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+        mpsc::{self, SyncSender},
+    },
+    thread::{self, JoinHandle},
+    time::{Duration, Instant},
+};
+use tokio::sync::oneshot;
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Error {
+    Configuration,
+    Identity,
+    Keylog,
+    Transport(Stage),
+    Worker,
+}
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("authenticated attachment transport unavailable")
+    }
+}
+impl std::error::Error for Error {}
+/// Trusted local assertions. They never establish server-side device authority.
+pub struct Config {
+    home: String,
+    address: SocketAddr,
+    expected_name: String,
+    leaf_pin: [u8; 32],
+    expected: Principal,
+}
+impl Config {
+    pub fn new(
+        home: &str,
+        address: SocketAddr,
+        expected_name: &str,
+        leaf_pin: [u8; 32],
+        expected: Principal,
+    ) -> Result<Self, Error> {
+        for domain in [home, expected_name] {
+            Principal {
+                account: format!("policy@{domain}"),
+                device: 1,
+                identity: [1; 32],
+            }
+            .validate()
+            .map_err(|_| Error::Configuration)?;
+        }
+        expected.validate().map_err(|_| Error::Configuration)?;
+        if !address.ip().is_loopback()
+            || address.port() == 0
+            || leaf_pin == [0; 32]
+            || expected.account.split_once('@').map(|(_, domain)| domain) != Some(home)
+        {
+            return Err(Error::Configuration);
+        }
+        Ok(Self {
+            home: home.into(),
+            address,
+            expected_name: expected_name.into(),
+            leaf_pin,
+            expected,
+        })
+    }
+}
+/// Independent transport credentials, distinct from the unlocked OMEMO vault.
+/// Construction performs no network or filesystem operation.
+pub struct DeviceProvider {
+    config: Config,
+    credentials: Credentials,
+}
+impl DeviceProvider {
+    pub fn new(config: Config, credentials: Credentials) -> Self {
+        Self {
+            config,
+            credentials,
+        }
+    }
+    /// Check the current local vault before opening a connection or changing a
+    /// transfer spool. Configuration and certificate subjects are only assertions.
+    pub fn validate(&self, vault: &CheckpointVault) -> Result<(), Error> {
+        keylog()?;
+        let state = vault.inspection().map_err(|_| Error::Identity)?;
+        if vault.legacy().map_err(|_| Error::Identity)?.home != self.config.expected.account
+            || state.local_device != self.config.expected.device
+            || *state.identity != self.config.expected.identity
+        {
+            return Err(Error::Identity);
+        }
+        Ok(())
+    }
+    pub(crate) fn permits_home(&self, account: &str) -> bool {
+        account.split_once('@').map(|(_, home)| home) == Some(self.config.home.as_str())
+    }
+    pub(crate) async fn open(&self) -> Result<Worker, Error> {
+        keylog()?;
+        // The conservative native clock starts before the provider's opaque
+        // admission token. TCP never retries or restarts either absolute budget.
+        let start = Instant::now();
+        let cancel = Arc::new(AtomicBool::new(false));
+        let admission = ClientAdmission::new(
+            &self.config.expected_name,
+            self.config.leaf_pin,
+            self.credentials.clone(),
+            cancel.clone(),
+        )
+        .map_err(Error::Transport)?;
+        let socket = tokio::time::timeout_at(
+            tokio::time::Instant::from_std(start + HANDSHAKE_LIMIT),
+            tokio::net::TcpStream::connect(self.config.address),
+        )
+        .await
+        .map_err(|_| Error::Transport(Stage::Deadline))?
+        .map_err(|_| Error::Transport(Stage::Admission))?
+        .into_std()
+        .map_err(|_| Error::Transport(Stage::Admission))?;
+        let (send, receive) = mpsc::sync_channel::<Command>(1);
+        let (ready, initialized) = oneshot::channel();
+        let cancelled = cancel.clone();
+        let thread = thread::Builder::new()
+            .name("faction-device-tls".into())
+            .spawn(move || {
+                let mut client = match admission.connect(socket) {
+                    Ok(client) => {
+                        if ready.send(Ok(())).is_err() {
+                            return;
+                        }
+                        client
+                    }
+                    Err(error) => {
+                        let _ = ready.send(Err(Error::Transport(error)));
+                        return;
+                    }
+                };
+                while !cancelled.load(Ordering::SeqCst) && Instant::now() < start + CYCLE_LIMIT {
+                    match receive.recv_timeout(Duration::from_millis(100)) {
+                        Ok(Command { request, response }) => {
+                            if cancelled.load(Ordering::SeqCst) || response.is_closed() {
+                                break;
+                            }
+                            let result = client.request(&request).map_err(Error::Transport);
+                            let failed = result.is_err();
+                            if response.send(result).is_err() || failed {
+                                break;
+                            }
+                        }
+                        Err(mpsc::RecvTimeoutError::Timeout) => (),
+                        Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                    }
+                }
+            })
+            .map_err(|_| Error::Worker)?;
+        let worker = Worker {
+            send: Some(send),
+            thread: Some(thread),
+            cancel,
+        };
+        initialized.await.map_err(|_| Error::Worker)??;
+        Ok(worker)
+    }
+}
+fn keylog() -> Result<(), Error> {
+    if ["SSLKEYLOGFILE", "TLSKEYLOGFILE"]
+        .iter()
+        .any(|key| std::env::var_os(key).is_some())
+    {
+        Err(Error::Keylog)
+    } else {
+        Ok(())
+    }
+}
+struct Command {
+    request: Request,
+    response: oneshot::Sender<Result<Response, Error>>,
+}
+/// No vault, OMEMO key, plaintext or descriptor key is sent to this worker.
+/// There is one request slot, one result slot and one owning foreground future.
+pub(crate) struct Worker {
+    send: Option<SyncSender<Command>>,
+    thread: Option<JoinHandle<()>>,
+    cancel: Arc<AtomicBool>,
+}
+impl Worker {
+    pub(crate) async fn request(&mut self, request: Request) -> Result<Response, Error> {
+        // Bound caller-owned input before queueing it; Client rechecks framing and
+        // its original operation/deadline budget on the actual TLS connection.
+        encode_request(&request).map_err(|_| Error::Transport(Stage::Frame))?;
+        let (response, receive) = oneshot::channel();
+        self.send
+            .as_ref()
+            .ok_or(Error::Worker)?
+            .try_send(Command { request, response })
+            .map_err(|_| Error::Worker)?;
+        receive.await.map_err(|_| Error::Worker)?
+    }
+}
+impl Drop for Worker {
+    fn drop(&mut self) {
+        self.cancel.store(true, Ordering::SeqCst);
+        self.send.take();
+        // Client TCP is asynchronous; all worker TLS syscalls use the existing
+        // 100-ms cancellation slices. Joining cannot leave a detached TLS task.
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+    }
+}

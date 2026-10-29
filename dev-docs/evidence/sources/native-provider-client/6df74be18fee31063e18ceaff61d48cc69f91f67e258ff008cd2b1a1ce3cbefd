@@ -1,0 +1,373 @@
+//! Owned synthetic software fixture. Seed/audit are member-side commands;
+//! serve receives public policy, server TLS credentials and ciphertext storage.
+//! No production registry file loader, enrollment or service is adopted here.
+use faction_client::{
+    mail_checkpoint::{CheckpointVault, Direction},
+    mail_data::{Data, hex, invalid},
+    mail_vault::Store,
+    mail_wire,
+};
+use faction_files::private_blobs::{self as blobs, Binding, Principal, Request};
+use faction_provider::{
+    BinaryService, Runtime,
+    authority::{CredentialBinding, Registry},
+    tls::Server,
+};
+use std::{
+    fs,
+    io::{self, Read, Write},
+    net::TcpListener,
+    os::unix::fs::{DirBuilderExt, MetadataExt, OpenOptionsExt},
+    path::Path,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    thread,
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+};
+use zeroize::Zeroizing;
+fn mapped<T, E>(value: Result<T, E>) -> io::Result<T> {
+    value.map_err(|_| invalid())
+}
+fn now() -> io::Result<u64> {
+    Ok(SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| invalid())?
+        .as_secs())
+}
+fn owned(root: &Path) -> io::Result<()> {
+    let m = fs::symlink_metadata(root)?;
+    if !root.is_absolute()
+        || !m.is_dir()
+        || m.uid() != rustix::process::geteuid().as_raw()
+        || m.mode() & 0o7777 != 0o700
+        || fs::read(root.join("OWNED"))?.len() > 256
+    {
+        return Err(invalid());
+    }
+    Ok(())
+}
+fn write(path: &Path, bytes: &[u8]) -> io::Result<()> {
+    let mut file = fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(path)?;
+    file.write_all(bytes)
+}
+fn password() -> io::Result<Zeroizing<String>> {
+    let mut raw = Zeroizing::new(Vec::new());
+    io::stdin().take(130).read_to_end(&mut raw)?;
+    if raw.len() > 129 {
+        return Err(invalid());
+    }
+    let text = std::str::from_utf8(&raw)
+        .map_err(|_| invalid())?
+        .trim_end_matches('\n');
+    if text.len() < 12 || text.len() > 128 || text.contains('\n') {
+        return Err(invalid());
+    }
+    Ok(Zeroizing::new(text.into()))
+}
+fn seed(root: &Path, pass: &str, foreign: bool) -> io::Result<()> {
+    let bob = if foreign {
+        "bob@away.test"
+    } else {
+        "bob@home.test"
+    };
+    let stamp = now()?;
+    let mut a = CheckpointVault::create(
+        Store::at(&root.join("alice"), true)?,
+        Data::new("alice@home.test".into())?,
+        pass.as_bytes(),
+        101,
+        stamp,
+    )?
+    .0;
+    let mut b = CheckpointVault::create(
+        Store::at(&root.join("bob"), true)?,
+        Data::new(bob.into())?,
+        pass.as_bytes(),
+        202,
+        stamp,
+    )?
+    .0;
+    let ab = a.bundle()?;
+    let bb = b.bundle()?;
+    a.enroll(bob, 202, &format!("ed25519:{}", hex(&bb.identity)), stamp)?;
+    b.enroll(
+        "alice@home.test",
+        101,
+        &format!("ed25519:{}", hex(&ab.identity)),
+        stamp,
+    )?;
+    a.start(&bb, stamp)?;
+    for v in [&mut a, &mut b] {
+        v.enable_attachments()?;
+        v.enable_archive(stamp)?;
+    }
+    let public = Binding {
+        sender: Principal {
+            account: "alice@home.test".into(),
+            device: 101,
+            identity: ab.identity,
+        },
+        recipient: Principal {
+            account: bob.into(),
+            device: 202,
+            identity: bb.identity,
+        },
+        id: [0; 32],
+        size: 16,
+        created: stamp,
+        expires: stamp + blobs::MAX_RETENTION,
+    };
+    write(
+        &root.join("public-principals.bin"),
+        &mapped(blobs::encode_request(&Request::Begin(public)))?,
+    )?;
+    write(
+        &root.join("public-identities.txt"),
+        format!("{}\n{}\n", hex(&ab.identity), hex(&bb.identity)).as_bytes(),
+    )?;
+    for (name, v) in [("alice", &a), ("bob", &b)] {
+        let (bundle, prekeys) = v.publication(stamp)?;
+        let xml = mail_wire::bundle_publish(
+            "public-fixture",
+            &v.legacy()?.home,
+            v.inspection()?.local_device,
+            &bundle,
+            &prekeys,
+        )?;
+        let mut bytes = Vec::new();
+        mapped(xml.write_to(&mut bytes))?;
+        write(&root.join(format!("{name}-bundle.xml")), &bytes)?;
+    }
+    println!("seeded");
+    Ok(())
+}
+fn public_binding(root: &Path) -> io::Result<Binding> {
+    let raw = fs::read(root.join("public-principals.bin"))?;
+    if raw.len() > 8192 {
+        return Err(invalid());
+    }
+    match mapped(blobs::decode_request(&raw))? {
+        Request::Begin(binding) => Ok(binding),
+        _ => Err(invalid()),
+    }
+}
+fn registry(public: &Binding, digests: &[u8], approved: bool) -> io::Result<Registry> {
+    if digests.len() != 64 {
+        return Err(invalid());
+    }
+    let stamp = now()?;
+    let generation = if approved { 1 } else { 2 };
+    let bindings = [public.sender.clone(), public.recipient.clone()]
+        .into_iter()
+        .enumerate()
+        .map(|(n, principal)| {
+            let mut certificate_sha256 = [0; 32];
+            certificate_sha256.copy_from_slice(&digests[n * 32..(n + 1) * 32]);
+            CredentialBinding {
+                certificate_sha256,
+                principal,
+                valid_from: stamp.saturating_sub(60),
+                valid_until: stamp + 3600,
+                approved,
+                account_enabled: true,
+                device_enabled: true,
+                generation,
+            }
+        })
+        .collect();
+    mapped(Registry::new(
+        generation,
+        1,
+        vec!["home.test".into()],
+        bindings,
+    ))
+}
+/// This command never opens a member vault, accepts a member password, or sees
+/// a member transport/OMEMO key. Actor selection stays inside the opaque Session.
+fn serve(root: &Path) -> io::Result<()> {
+    let public = public_binding(root)?;
+    let digests = fs::read(root.join("certificate-digests.bin"))?;
+    let runtime = Runtime::new(Some(registry(&public, &digests, true)?));
+    let server = mapped(Server::from_pem(
+        &fs::read(root.join("server.pem"))?,
+        &fs::read(root.join("server.key"))?,
+        &fs::read(root.join("ca.pem"))?,
+    ))?;
+    let service = mapped(BinaryService::new("home.test"))?;
+    let listener = TcpListener::bind("127.0.0.1:0")?;
+    fs::DirBuilder::new()
+        .mode(0o700)
+        .create(root.join("serverstore"))
+        .or_else(|e| {
+            if e.kind() == io::ErrorKind::AlreadyExists {
+                Ok(())
+            } else {
+                Err(e)
+            }
+        })?;
+    let mut store = mapped(blobs::Store::open(&root.join("serverstore")))?;
+    let cancel = Arc::new(AtomicBool::new(false));
+    let stopped = cancel.clone();
+    let control = runtime.control();
+    let watched = root.to_owned();
+    let watcher = thread::spawn(move || {
+        let started = Instant::now();
+        let mut revoked = false;
+        while !stopped.load(Ordering::SeqCst) {
+            if watched.join("stop").exists() || started.elapsed() > Duration::from_secs(180) {
+                stopped.store(true, Ordering::SeqCst);
+                let _ = control.stop();
+                break;
+            }
+            if watched.join("revoke").exists() && !revoked {
+                let installed = registry(&public, &digests, false)
+                    .and_then(|policy| mapped(control.replace_registry(policy)));
+                if let Err(error) = installed {
+                    stopped.store(true, Ordering::SeqCst);
+                    let _ = control.stop();
+                    return Err(error);
+                }
+                if let Err(error) = fs::write(watched.join("revoked"), b"current policy changed\n")
+                {
+                    stopped.store(true, Ordering::SeqCst);
+                    let _ = control.stop();
+                    return Err(error);
+                }
+                revoked = true;
+            }
+            thread::sleep(Duration::from_millis(20));
+        }
+        Ok(())
+    });
+    println!("ready {}", listener.local_addr()?.port());
+    io::stdout().flush()?;
+    let (mut sessions, mut operations) = (0, 0);
+    let result = (|| {
+        while !cancel.load(Ordering::SeqCst) {
+            let Ok(mut session) = server.accept(&listener, &runtime, cancel.clone()) else {
+                continue;
+            };
+            sessions += 1;
+            fs::write(root.join("status"), format!("{sessions} {operations} 1\n"))?;
+            while matches!(session.serve_service_next(&mut store, &service), Ok(true)) {
+                operations += 1;
+                fs::write(root.join("status"), format!("{sessions} {operations} 1\n"))?;
+                // Explicit synthetic fault: pause AFTER one real served operation.
+                // The reply may already have arrived; this is possible durable
+                // progress/cancellation evidence, not guaranteed lost-reply proof.
+                let stalled = Instant::now();
+                while root.join("stall").exists()
+                    && !cancel.load(Ordering::SeqCst)
+                    && stalled.elapsed() < Duration::from_secs(6)
+                {
+                    thread::sleep(Duration::from_millis(20));
+                }
+                if cancel.load(Ordering::SeqCst) {
+                    break;
+                }
+            }
+            drop(session);
+            fs::write(root.join("status"), format!("{sessions} {operations} 0\n"))?;
+        }
+        Ok(())
+    })();
+    cancel.store(true, Ordering::SeqCst);
+    runtime.stop();
+    mapped(watcher.join())??;
+    result
+}
+fn inspect(root: &Path, name: &str, pass: &str) -> io::Result<()> {
+    if !matches!(name, "alice" | "bob") {
+        return Err(invalid());
+    }
+    let v = CheckpointVault::unlock(Store::at(&root.join(name), false)?, pass.as_bytes(), false)?;
+    println!(
+        "{{\"pending\":{},\"received\":{},\"attachments\":{}}}",
+        v.inspect_outbox()?.len(),
+        v.history()?
+            .iter()
+            .filter(|r| r.direction == Direction::Received)
+            .count(),
+        v.history()?
+            .iter()
+            .filter(|r| r.attachment().is_some())
+            .count()
+    );
+    Ok(())
+}
+fn audit(root: &Path, pass: &str) -> io::Result<()> {
+    use base64::{Engine as _, engine::general_purpose::STANDARD};
+    let vault = CheckpointVault::unlock(
+        Store::at(&root.join("alice"), false)?,
+        pass.as_bytes(),
+        false,
+    )?;
+    let d = vault
+        .history()?
+        .iter()
+        .find_map(|r| r.attachment())
+        .ok_or_else(invalid)?;
+    let raw: Vec<&[u8]> = vec![
+        d.name.as_bytes(),
+        b"private-selected-subject",
+        b"private-selected-body",
+        d.key.as_slice(),
+        d.iv.as_slice(),
+        d.hash.as_slice(),
+    ];
+    let encoded = Zeroizing::new(
+        raw.iter()
+            .map(|v| STANDARD.encode(v).into_bytes())
+            .collect::<Vec<_>>(),
+    );
+    let mut needles = raw;
+    needles.extend(encoded.iter().map(Vec::as_slice));
+    let mut paths = fs::read_dir(root.join("server/serverstore"))?
+        .map(|entry| entry.map(|e| e.path()))
+        .collect::<Result<Vec<_>, _>>()?;
+    paths.push(root.join("mail.private"));
+    for path in paths {
+        let bytes = fs::read(path)?;
+        if bytes.len() > 16 * 1024 * 1024
+            || needles
+                .iter()
+                .any(|needle| bytes.windows(needle.len()).any(|v| v == *needle))
+        {
+            return Err(invalid());
+        }
+    }
+    println!("audited");
+    Ok(())
+}
+fn run() -> io::Result<()> {
+    let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if args.len() < 2 || args.len() > 3 {
+        return Err(invalid());
+    }
+    let root = Path::new(&args[1]);
+    owned(root)?;
+    match args[0].as_str() {
+        "seed" => {
+            if args.get(2).is_some_and(|v| v != "foreign") {
+                return Err(invalid());
+            }
+            seed(root, &password()?, args.get(2).is_some())
+        }
+        "serve" => serve(root),
+        "inspect" => inspect(root, args.get(2).ok_or_else(invalid)?, &password()?),
+        "audit" => audit(root, &password()?),
+        _ => Err(invalid()),
+    }
+}
+fn main() {
+    if run().is_err() {
+        eprintln!("Owned authenticated-provider fixture stopped");
+        std::process::exit(1);
+    }
+}

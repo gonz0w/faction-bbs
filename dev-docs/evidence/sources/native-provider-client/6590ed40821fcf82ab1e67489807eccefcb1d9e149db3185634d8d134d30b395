@@ -1,0 +1,748 @@
+#![cfg(feature = "device-provider")]
+use faction_client::mail_device_provider::Config;
+use faction_files::private_blobs::Principal;
+fn principal() -> Principal {
+    Principal {
+        account: "alice@home.test".into(),
+        device: 101,
+        identity: [1; 32],
+    }
+}
+#[test]
+fn explicit_device_configuration_refuses_remote_or_incoherent_authority_assertions() {
+    let local = "127.0.0.1:1234".parse().unwrap();
+    assert!(Config::new("home.test", local, "provider.test", [1; 32], principal()).is_ok());
+    for address in ["192.0.2.1:1234", "0.0.0.0:1234", "127.0.0.1:0", "[::]:1234"] {
+        assert!(
+            Config::new(
+                "home.test",
+                address.parse().unwrap(),
+                "provider.test",
+                [1; 32],
+                principal()
+            )
+            .is_err()
+        );
+    }
+    for home in [
+        "",
+        "HOME.test",
+        "alice@home.test",
+        "https://home.test",
+        "foreign.test",
+    ] {
+        assert!(Config::new(home, local, "provider.test", [1; 32], principal()).is_err());
+    }
+    for name in [
+        "",
+        "PROVIDER.test",
+        "https://provider.test",
+        "provider.test/path",
+    ] {
+        assert!(Config::new("home.test", local, name, [1; 32], principal()).is_err());
+    }
+    assert!(Config::new("home.test", local, "provider.test", [0; 32], principal()).is_err());
+    let mut invalid = principal();
+    invalid.device = 0;
+    assert!(Config::new("home.test", local, "provider.test", [1; 32], invalid).is_err());
+    let mut invalid = principal();
+    invalid.identity = [0; 32];
+    assert!(Config::new("home.test", local, "provider.test", [1; 32], invalid).is_err());
+}
+use faction_client::{
+    mail_blob_transfer::{self as transfer, ReceivedSelection, Selection, Spool},
+    mail_checkpoint::CheckpointVault,
+    mail_data::Data,
+    mail_device_provider::{Credentials, DeviceProvider},
+    mail_network::Settings,
+    mail_vault::Store as VaultStore,
+};
+use faction_provider::{
+    BinaryService, Runtime,
+    authority::{CredentialBinding, Registry},
+    tls::Server,
+};
+use sha2::{Digest, Sha256};
+use std::{
+    fs,
+    io::Read,
+    net::{SocketAddr, TcpListener},
+    os::unix::fs::{DirBuilderExt, PermissionsExt},
+    path::PathBuf,
+    process::Command,
+    sync::{Arc, Mutex, MutexGuard, atomic::AtomicBool},
+    thread,
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+};
+static SERIAL: Mutex<()> = Mutex::new(());
+const PASS: &[u8] = b"owned synthetic device attachment vault";
+fn now() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+}
+fn run<T>(future: impl std::future::Future<Output = T>) -> T {
+    tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(future)
+}
+struct Fixture {
+    root: PathBuf,
+    _guard: MutexGuard<'static, ()>,
+    ca: Vec<u8>,
+    certificates: [Vec<u8>; 3],
+    keys: [Vec<u8>; 3],
+    digests: [[u8; 32]; 3],
+}
+impl Fixture {
+    fn new() -> Self {
+        let guard = SERIAL.lock().unwrap_or_else(|e| e.into_inner());
+        let mut random = [0; 16];
+        getrandom::fill(&mut random).unwrap();
+        let root = std::env::temp_dir().canonicalize().unwrap().join(format!(
+            "faction279-owned-{}",
+            faction_client::mail_data::hex(&random)
+        ));
+        fs::DirBuilder::new().mode(0o700).create(&root).unwrap();
+        fs::write(
+            root.join("OWNED"),
+            b"issue279 synthetic private TLS fixture",
+        )
+        .unwrap();
+        let openssl = if cfg!(target_os = "macos") {
+            "/opt/homebrew/opt/openssl@3/bin/openssl"
+        } else {
+            "/usr/bin/openssl"
+        };
+        let invoke = |args: &[&str]| {
+            let out = Command::new(openssl)
+                .args(args)
+                .current_dir(&root)
+                .output()
+                .unwrap();
+            assert!(
+                out.status.success(),
+                "openssl fixture setup failed: {}",
+                String::from_utf8_lossy(&out.stderr)
+            );
+            out.stdout
+        };
+        invoke(&[
+            "req",
+            "-x509",
+            "-newkey",
+            "ec",
+            "-pkeyopt",
+            "ec_paramgen_curve:prime256v1",
+            "-nodes",
+            "-keyout",
+            "ca.key",
+            "-out",
+            "ca.pem",
+            "-subj",
+            "/CN=owned-fixture-ca",
+            "-days",
+            "1",
+            "-addext",
+            "basicConstraints=critical,CA:TRUE",
+        ]);
+        for (index, name) in ["provider.test", "alice", "bob"].iter().enumerate() {
+            let key = format!("leaf{index}.key");
+            let csr = format!("leaf{index}.csr");
+            let cert = format!("leaf{index}.pem");
+            let subject = format!("/CN={name}");
+            invoke(&[
+                "req",
+                "-new",
+                "-newkey",
+                "ec",
+                "-pkeyopt",
+                "ec_paramgen_curve:prime256v1",
+                "-nodes",
+                "-keyout",
+                &key,
+                "-out",
+                &csr,
+                "-subj",
+                &subject,
+            ]);
+            let extensions = if index == 0 {
+                "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:provider.test\n"
+            } else {
+                "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=clientAuth\n"
+            };
+            fs::write(root.join("extensions"), extensions).unwrap();
+            invoke(&[
+                "x509",
+                "-req",
+                "-in",
+                &csr,
+                "-CA",
+                "ca.pem",
+                "-CAkey",
+                "ca.key",
+                "-CAcreateserial",
+                "-out",
+                &cert,
+                "-days",
+                "1",
+                "-extfile",
+                "extensions",
+            ]);
+        }
+        for entry in fs::read_dir(&root).unwrap() {
+            fs::set_permissions(entry.unwrap().path(), fs::Permissions::from_mode(0o600)).unwrap();
+        }
+        let certificates =
+            std::array::from_fn(|i| fs::read(root.join(format!("leaf{i}.pem"))).unwrap());
+        let keys = std::array::from_fn(|i| fs::read(root.join(format!("leaf{i}.key"))).unwrap());
+        let digests = std::array::from_fn(|i| {
+            let cert = format!("leaf{i}.pem");
+            Sha256::digest(invoke(&["x509", "-in", &cert, "-outform", "DER"])).into()
+        });
+        let ca = fs::read(root.join("ca.pem")).unwrap();
+        Self {
+            root,
+            _guard: guard,
+            ca,
+            certificates,
+            keys,
+            digests,
+        }
+    }
+    fn vault(&self, name: &str, account: &str, device: u32, epoch: u64) -> CheckpointVault {
+        CheckpointVault::create(
+            VaultStore::at(&self.root.join(name), true).unwrap(),
+            Data::new(account.into()).unwrap(),
+            PASS,
+            device,
+            epoch,
+        )
+        .unwrap()
+        .0
+    }
+    fn pair(&self, foreign: bool) -> (CheckpointVault, CheckpointVault, u64) {
+        let epoch = now();
+        let address = if foreign {
+            "alice@foreign.test"
+        } else {
+            "alice@home.test"
+        };
+        let mut a = self.vault("alice", address, 101, epoch);
+        let mut b = self.vault("bob", "bob@home.test", 202, epoch);
+        a.enable_attachments().unwrap();
+        b.enable_attachments().unwrap();
+        let ab = a.bundle().unwrap();
+        let bb = b.bundle().unwrap();
+        a.enroll(
+            "bob@home.test",
+            202,
+            &format!("ed25519:{}", faction_omemo::encode(&bb.identity)),
+            epoch,
+        )
+        .unwrap();
+        b.enroll(
+            address,
+            101,
+            &format!("ed25519:{}", faction_omemo::encode(&ab.identity)),
+            epoch,
+        )
+        .unwrap();
+        a.start(&bb, epoch).unwrap();
+        (a, b, epoch)
+    }
+    fn principal(v: &CheckpointVault) -> Principal {
+        let s = v.inspection().unwrap();
+        Principal {
+            account: v.legacy().unwrap().home.clone(),
+            device: s.local_device,
+            identity: *s.identity,
+        }
+    }
+    fn credentials(&self, index: usize) -> Credentials {
+        Credentials::from_pem(&self.ca, &self.certificates[index], &self.keys[index]).unwrap()
+    }
+    fn provider(&self, v: &CheckpointVault, index: usize, address: SocketAddr) -> DeviceProvider {
+        DeviceProvider::new(
+            Config::new(
+                "home.test",
+                address,
+                "provider.test",
+                self.digests[0],
+                Self::principal(v),
+            )
+            .unwrap(),
+            self.credentials(index),
+        )
+    }
+    fn settings(&self, account: &str, endpoint: SocketAddr) -> Settings {
+        let path = self.root.join("mail-profile");
+        fs::write(&path,format!("version = 1\naccount = \"{account}\"\nendpoint = \"{endpoint}\"\ndomain = \"home.test\"\nca = \"{}\"\npin = \"{}\"\n",self.root.join("ca.pem").display(),faction_client::mail_data::hex(&self.digests[0]))).unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+        Settings::load(&path).unwrap()
+    }
+    fn runtime(&self, a: &CheckpointVault, b: &CheckpointVault) -> Runtime {
+        let epoch = now();
+        let bindings = [(a, 1), (b, 2)]
+            .into_iter()
+            .map(|(v, index)| CredentialBinding {
+                certificate_sha256: self.digests[index],
+                principal: Self::principal(v),
+                valid_from: epoch - 1,
+                valid_until: epoch + 3600,
+                approved: true,
+                account_enabled: true,
+                device_enabled: true,
+                generation: 1,
+            })
+            .collect();
+        Runtime::new(Some(
+            Registry::new(1, 0, vec!["home.test".into()], bindings).unwrap(),
+        ))
+    }
+    fn server(&self) -> Server {
+        Server::from_pem(&self.certificates[0], &self.keys[0], &self.ca).unwrap()
+    }
+    fn store(&self) -> faction_files::private_blobs::Store {
+        let path = self.root.join("remote");
+        fs::DirBuilder::new().mode(0o700).create(&path).unwrap();
+        faction_files::private_blobs::Store::open(&path).unwrap()
+    }
+    fn serve<T>(
+        &self,
+        runtime: &Runtime,
+        store: &mut faction_files::private_blobs::Store,
+        action: impl FnOnce(SocketAddr) -> T,
+    ) -> T {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        thread::scope(|scope| {
+            let server = scope.spawn(move || {
+                let service = BinaryService::new("home.test").unwrap();
+                if let Ok(mut session) =
+                    self.server()
+                        .accept(&listener, runtime, Arc::new(AtomicBool::new(false)))
+                {
+                    while matches!(session.serve_service_next(store, &service), Ok(true)) {}
+                }
+            });
+            let result = action(address);
+            let drain = Instant::now();
+            server.join().unwrap();
+            assert!(drain.elapsed() < Duration::from_secs(5));
+            result
+        })
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        assert_eq!(
+            fs::read(self.root.join("OWNED")).unwrap(),
+            b"issue279 synthetic private TLS fixture"
+        );
+        fs::remove_dir_all(&self.root).unwrap();
+        assert!(!self.root.exists());
+    }
+}
+fn selection(bytes: &[u8], epoch: u64) -> Selection<'_> {
+    Selection {
+        name: "private.bin",
+        media_type: "application/octet-stream",
+        bytes,
+        subject: "private subject",
+        body: "private body",
+        sent_at: epoch,
+    }
+}
+fn unused_endpoint() -> SocketAddr {
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.local_addr().unwrap()
+}
+#[test]
+fn current_vault_full_identity_is_checked_before_connection_or_spool_progress() {
+    let f = Fixture::new();
+    let (mut a, _b, epoch) = f.pair(false);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let fallback = TcpListener::bind("127.0.0.1:0").unwrap();
+    fallback.set_nonblocking(true).unwrap();
+    let settings = f.settings("alice@home.test", fallback.local_addr().unwrap());
+    let mut spool = Spool::open(&f.root.join("spool")).unwrap();
+    transfer::prepare(
+        &mut a,
+        &mut spool,
+        [1; 16],
+        selection(b"private", epoch),
+        epoch,
+    )
+    .unwrap();
+    let before = fs::read(f.root.join("spool/private-blobs.snapshot")).unwrap();
+    for change in 0..3 {
+        let mut expected = Fixture::principal(&a);
+        match change {
+            0 => expected.account = "other@home.test".into(),
+            1 => expected.device += 1,
+            _ => expected.identity[31] ^= 1,
+        };
+        let provider = DeviceProvider::new(
+            Config::new(
+                "home.test",
+                listener.local_addr().unwrap(),
+                "provider.test",
+                f.digests[0],
+                expected,
+            )
+            .unwrap(),
+            f.credentials(1),
+        );
+        assert!(provider.validate(&a).is_err());
+        assert!(
+            run(transfer::upload_device_cycle(
+                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch
+            ))
+            .is_err()
+        );
+        assert_eq!(
+            fs::read(f.root.join("spool/private-blobs.snapshot")).unwrap(),
+            before
+        );
+    }
+    assert!(listener.accept().is_err());
+    assert!(fallback.accept().is_err());
+    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+}
+#[test]
+fn foreign_sender_home_fetch_is_refused_before_connect_or_local_spool_mutation() {
+    let f = Fixture::new();
+    let (mut a, mut b, epoch) = f.pair(true);
+    let mut outgoing = Spool::open(&f.root.join("outgoing")).unwrap();
+    let wire = transfer::prepare(
+        &mut a,
+        &mut outgoing,
+        [1; 16],
+        selection(b"foreign sender", epoch),
+        epoch,
+    )
+    .unwrap();
+    b.receive(&wire, epoch).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let provider = f.provider(&b, 2, listener.local_addr().unwrap());
+    let settings = f.settings("bob@home.test", unused_endpoint());
+    let mut spool = Spool::open(&f.root.join("incoming")).unwrap();
+    let before = fs::read(f.root.join("incoming/private-blobs.snapshot")).unwrap();
+    let selected = ReceivedSelection {
+        index: 0,
+        frame: b.history().unwrap()[0].received_id().unwrap(),
+    };
+    assert!(
+        run(transfer::fetch_device_cycle(
+            &b, &mut spool, &settings, &provider, selected, epoch
+        ))
+        .is_err()
+    );
+    assert!(listener.accept().is_err());
+    assert_eq!(
+        fs::read(f.root.join("incoming/private-blobs.snapshot")).unwrap(),
+        before
+    );
+}
+#[test]
+fn authenticated_binary_progress_exact_retry_reopen_and_fetch_survive_mail_outage() {
+    let f = Fixture::new();
+    let (mut a, mut b, epoch) = f.pair(false);
+    let runtime = f.runtime(&a, &b);
+    let mut store = f.store();
+    let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    let bytes = vec![73; 4 * faction_files::private_blobs::CHUNK + 37];
+    let wire =
+        transfer::prepare(&mut a, &mut spool, [1; 16], selection(&bytes, epoch), epoch).unwrap();
+    let settings = f.settings("alice@home.test", unused_endpoint());
+    let report = f
+        .serve(&runtime, &mut store, |addr| {
+            let provider = f.provider(&a, 1, addr);
+            run(transfer::upload_device_cycle(
+                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+            ))
+        })
+        .unwrap();
+    assert_eq!(
+        report.offset,
+        (4 * faction_files::private_blobs::CHUNK) as u64
+    );
+    assert!(!report.complete);
+    assert_eq!(report.requests, 5);
+    assert_eq!(report.sent, 0);
+    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+    drop(spool);
+    drop(a);
+    a = CheckpointVault::unlock(
+        VaultStore::at(&f.root.join("alice"), false).unwrap(),
+        PASS,
+        false,
+    )
+    .unwrap();
+    spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    for _ in 0..2 {
+        let result = f.serve(&runtime, &mut store, |addr| {
+            let provider = f.provider(&a, 1, addr);
+            run(transfer::upload_device_cycle(
+                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+            ))
+        });
+        assert!(matches!(result, Err(transfer::Error::Mail(_))));
+        assert_eq!(a.pending(epoch).unwrap().len(), 1);
+    }
+    // Local authenticated mail receipt here isolates the storage/mail-outage
+    // contract. The paired production-console proof uses the separate real relay.
+    b.receive(&wire, epoch).unwrap();
+    let frame = b.history().unwrap()[0].received_id().unwrap();
+    let settings = f.settings("bob@home.test", unused_endpoint());
+    let mut incoming = Spool::open(&f.root.join("incoming")).unwrap();
+    let selected = ReceivedSelection { index: 0, frame };
+    for complete in [false, true] {
+        let report = f
+            .serve(&runtime, &mut store, |addr| {
+                run(transfer::fetch_device_cycle(
+                    &b,
+                    &mut incoming,
+                    &settings,
+                    &f.provider(&b, 2, addr),
+                    selected,
+                    epoch,
+                ))
+            })
+            .unwrap();
+        assert_eq!(report.complete, complete);
+        assert!(report.requests <= 5);
+        assert_eq!(report.sent, 0);
+    }
+    assert_eq!(
+        transfer::verify_fetched(&b, &mut incoming, 0, frame, epoch)
+            .unwrap()
+            .as_bytes(),
+        bytes
+    );
+    let saved = f.root.join("saved.bin");
+    transfer::save_fetched(&b, &mut incoming, 0, frame, epoch, &saved).unwrap();
+    assert!(transfer::save_fetched(&b, &mut incoming, 0, frame, epoch, &saved).is_err());
+    assert_eq!(fs::read(saved).unwrap(), bytes);
+}
+#[test]
+fn wrong_server_pin_never_reaches_storage_or_plain_attachment_fallback() {
+    let f = Fixture::new();
+    let (mut a, b, epoch) = f.pair(false);
+    let runtime = f.runtime(&a, &b);
+    let mut store = f.store();
+    let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    transfer::prepare(
+        &mut a,
+        &mut spool,
+        [1; 16],
+        selection(b"keep pending", epoch),
+        epoch,
+    )
+    .unwrap();
+    let before = fs::read(f.root.join("remote/private-blobs.snapshot")).unwrap();
+    let fallback = TcpListener::bind("127.0.0.1:0").unwrap();
+    fallback.set_nonblocking(true).unwrap();
+    let settings = f.settings("alice@home.test", fallback.local_addr().unwrap());
+    let result = f.serve(&runtime, &mut store, |addr| {
+        let provider = DeviceProvider::new(
+            Config::new(
+                "home.test",
+                addr,
+                "provider.test",
+                [7; 32],
+                Fixture::principal(&a),
+            )
+            .unwrap(),
+            f.credentials(1),
+        );
+        run(transfer::upload_device_cycle(
+            &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+        ))
+    });
+    assert!(result.is_err());
+    assert_eq!(
+        fs::read(f.root.join("remote/private-blobs.snapshot")).unwrap(),
+        before
+    );
+    assert!(fallback.accept().is_err());
+    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+}
+#[test]
+fn cancellation_during_stalled_handshake_runs_on_current_thread_and_joins_socket_worker() {
+    let f = Fixture::new();
+    let (mut a, _b, epoch) = f.pair(false);
+    let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    transfer::prepare(
+        &mut a,
+        &mut spool,
+        [1; 16],
+        selection(b"keep pending", epoch),
+        epoch,
+    )
+    .unwrap();
+    let settings = f.settings("alice@home.test", unused_endpoint());
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let provider = f.provider(&a, 1, listener.local_addr().unwrap());
+    thread::scope(|scope| {
+        let peer = scope.spawn(move || {
+            let (mut socket, _) = listener.accept().unwrap();
+            socket
+                .set_read_timeout(Some(Duration::from_secs(2)))
+                .unwrap();
+            let mut bytes = [0; 8192];
+            while socket.read(&mut bytes).unwrap_or(0) != 0 {}
+        });
+        let start = Instant::now();
+        run(async {
+            let mut call = Box::pin(transfer::upload_device_cycle(
+                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+            ));
+            tokio::select! {result=&mut call=>panic!("stalled handshake completed: {result:?}"),_=tokio::time::sleep(Duration::from_millis(40))=>{}}
+            drop(call);
+        });
+        assert!(start.elapsed() < Duration::from_secs(1));
+        peer.join().unwrap();
+    });
+    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+}
+#[test]
+fn cancellation_during_tls_reply_wait_joins_before_return_without_release() {
+    let f = Fixture::new();
+    let (mut a, b, epoch) = f.pair(false);
+    let runtime = f.runtime(&a, &b);
+    let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    transfer::prepare(
+        &mut a,
+        &mut spool,
+        [1; 16],
+        selection(b"keep pending", epoch),
+        epoch,
+    )
+    .unwrap();
+    let settings = f.settings("alice@home.test", unused_endpoint());
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let provider = f.provider(&a, 1, listener.local_addr().unwrap());
+    thread::scope(|scope| {
+        let (done, wait) = std::sync::mpsc::sync_channel(1);
+        let (accepted, ready) = std::sync::mpsc::sync_channel(1);
+        let fixture = &f;
+        let owner = &runtime;
+        let peer = scope.spawn(move || {
+            let session = fixture
+                .server()
+                .accept(&listener, owner, Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            accepted.send(()).unwrap();
+            wait.recv_timeout(Duration::from_secs(5)).unwrap();
+            drop(session);
+        });
+        let start = Instant::now();
+        run(async {
+            let mut call = Box::pin(transfer::upload_device_cycle(
+                &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+            ));
+            tokio::select! {result=&mut call=>panic!("stalled reply completed: {result:?}"),_=tokio::time::sleep(Duration::from_millis(200))=>{}}
+            drop(call);
+        });
+        assert!(ready.try_recv().is_ok());
+        assert!(start.elapsed() < Duration::from_secs(1));
+        done.send(()).unwrap();
+        peer.join().unwrap();
+    });
+    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+}
+#[test]
+fn cancellation_during_actual_pending_loopback_tcp_drops_connect_without_worker_or_retry() {
+    let f = Fixture::new();
+    let (mut a, _b, epoch) = f.pair(false);
+    let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    transfer::prepare(
+        &mut a,
+        &mut spool,
+        [1; 16],
+        selection(b"keep pending", epoch),
+        epoch,
+    )
+    .unwrap();
+    let settings = f.settings("alice@home.test", unused_endpoint());
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    rustix::net::listen(&listener, 1).unwrap();
+    let addr = listener.local_addr().unwrap();
+    let provider = f.provider(&a, 1, addr);
+    run(async {
+        let mut held = Vec::new();
+        let mut stalled = false;
+        for _ in 0..4 {
+            match tokio::time::timeout(
+                Duration::from_millis(30),
+                tokio::net::TcpStream::connect(addr),
+            )
+            .await
+            {
+                Ok(Ok(socket)) => held.push(socket),
+                Err(_) => {
+                    stalled = true;
+                    break;
+                }
+                other => panic!("loopback backlog setup: {other:?}"),
+            }
+        }
+        assert!(
+            stalled,
+            "owned backlog did not produce pending TCP within four sockets"
+        );
+        let start = Instant::now();
+        let mut call = Box::pin(transfer::upload_device_cycle(
+            &mut a, &mut spool, &settings, "unused", &provider, [1; 16], epoch,
+        ));
+        tokio::select! {result=&mut call=>panic!("pending TCP completed: {result:?}"),_=tokio::time::sleep(Duration::from_millis(40))=>{}}
+        drop(call);
+        assert!(start.elapsed() < Duration::from_secs(1));
+        drop(held);
+    });
+    drop(listener);
+    assert_eq!(a.pending(epoch).unwrap().len(), 1);
+}
+#[test]
+fn keylog_child() {
+    if std::env::var_os("FACTION279_KEYLOG_TEST").is_none() {
+        return;
+    }
+    let f = Fixture::new();
+    let (a, _b, _) = f.pair(false);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let provider = f.provider(&a, 1, listener.local_addr().unwrap());
+    assert!(matches!(
+        provider.validate(&a),
+        Err(faction_client::mail_device_provider::Error::Keylog)
+    ));
+    assert!(listener.accept().is_err());
+}
+#[test]
+fn inherited_key_logging_is_refused_without_environment_mutation_or_connection() {
+    for key in ["SSLKEYLOGFILE", "TLSKEYLOGFILE"] {
+        for value in ["", "owned-do-not-open"] {
+            let result = Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "keylog_child"])
+                .env_remove("SSLKEYLOGFILE")
+                .env_remove("TLSKEYLOGFILE")
+                .env("FACTION279_KEYLOG_TEST", "1")
+                .env(key, value)
+                .output()
+                .unwrap();
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stdout)
+            );
+        }
+    }
+}

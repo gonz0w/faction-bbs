@@ -1,0 +1,283 @@
+{
+  "interpretation": "Observed failures, missing interfaces and fixture setup errors retain their distinct meaning. No retrospective RED, post-GREEN optional producer check, waiver or whole-suite pass is inferred.",
+  "native_corrections": {
+    "all_original_result_and_source_identities_preserved": true,
+    "historical_recipe_record": {
+      "canonical_current_retention": false,
+      "executed_for_this_batch": false,
+      "origin": "Preserved earlier #278 recipe/preflight archive",
+      "source_commit": "a8da3cf553e5a2c7379e0cf4023af3ab56632b82"
+    },
+    "observations": [
+      {
+        "kind": "setup",
+        "reason": "Default sandbox refused a host loopback bind; the authorized scoped execution used approved escalation.",
+        "result": "failed"
+      },
+      {
+        "kind": "setup",
+        "reason": "Repeated stop returned already stopped; fresh full-width process inspection identified and then stopped the inherited disposable door worker.",
+        "result": "failed"
+      },
+      {
+        "failed": 3,
+        "ignored_existing_helpers": 5,
+        "kind": "native_initial_all_targets_library",
+        "original_command_remains_failed": true,
+        "passed": 124,
+        "reason": "Missing default OpenSSL configuration before the three transport fixtures.",
+        "result": "failed",
+        "same_binary_qualified_fixture_replays_passed": 3,
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe"
+      },
+      {
+        "kind": "native_composed_replay_setup",
+        "qualified_private_alias_replay_passed": true,
+        "reason": "Qualified Python was installed as python3.13; unversioned python3 was absent before peer spawn.",
+        "result": "failed"
+      },
+      {
+        "corrected_test_commit": "d69b6b5129f26607c3ea0dbba825d159741caf38",
+        "current_external_suite_passed": 10,
+        "failed": 1,
+        "kind": "native_original_external",
+        "only_corrected_case_replayed": true,
+        "original_command_remains_failed": true,
+        "passed": 9,
+        "reason": "Test reused stale action epoch and correctly encountered Storage(Clock).",
+        "result": "failed",
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe"
+      },
+      {
+        "kind": "original_console_observation",
+        "reason": "Generic 15-second expectation expired after six SDK calls; this was not a complete transfer qualification.",
+        "result": "failed",
+        "source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe"
+      },
+      {
+        "calls": 27,
+        "classification": "product_stop_observed",
+        "drain_seconds": 0.008389,
+        "elapsed_seconds": 60.104629,
+        "helper_commit": "f3ba2e5bcb1a43350c6499aa4bda5e8618a5028e",
+        "killed": false,
+        "kind": "reviewed_observer_original_producer",
+        "largest_valid_progress_gap_seconds": 2.226075,
+        "marker_before_cancel": "transfer_stop",
+        "offset": 442368,
+        "producer_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "reaped": true,
+        "reason": "work_deadline",
+        "result": "performance_red"
+      },
+      {
+        "checks": 20,
+        "kind": "current_production",
+        "modes": [
+          "classic",
+          "unicode"
+        ],
+        "plaintext_bytes_each": 1048576,
+        "result": "passed",
+        "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380"
+      }
+    ]
+  },
+  "schema": 1,
+  "sequence": [
+    {
+      "capture_sha256": "9f2feb702bea54240596db54f03a9552a6408472cdaca5f700582b5d9e7d52c7",
+      "id": "pre-gate-native-characterization",
+      "reason": "ran before fresh source gate; retained only as history",
+      "status": "pass but not accepted as gate evidence",
+      "tests": "transfer 4 + codec 2"
+    },
+    {
+      "capture_sha256": "9e38a7df9eece51f3cce958fc7b06570acb85359613afc909e351e7566a4f58a",
+      "id": "gated-native-characterization",
+      "reason": "rerun after current source guard; unchanged transfer and codec controls",
+      "status": "pass",
+      "tests": "transfer 4 + codec 2"
+    },
+    {
+      "capture_ids": [
+        "adapter.missing-feature-red",
+        "adapter.missing-service-red",
+        "adapter.missing-credential-admission-helper-red",
+        "adapter.missing-device-api-red",
+        "adapter.missing-device-transfer-red"
+      ],
+      "id": "missing-feature-service-admission-native-api-transfer",
+      "reason": "missing consumer surfaces; they show API absence, not behavior acceptance",
+      "status": "genuine compile/API RED captures retained"
+    },
+    {
+      "capture_sha256": "0c95884448e74a98cb4c8e0f1867f08fecd5ec167b32e834b5c67026b8743dee",
+      "id": "manual-root-lock-candidate",
+      "reason": "zero registry package/version changes; only optional local edge was corrected; no feature build during failed preflight",
+      "status": "preflight failed then corrected offline"
+    },
+    {
+      "capture_sha256": "9f07aa2838586c43a09fdd3ad3a96fdd9a483aa53223f626162bd24912da3734",
+      "id": "first-native-device-suite",
+      "reason": "Nine native-device controls passed; macOS backlog setup returned ECONNRESET before the pending-TCP production operation.",
+      "status": "test failure preserved"
+    },
+    {
+      "green_log_sha256": "5aa2fe47aa787b51ed7482566323f6afcbd82053db15c2b3418e5d6e55b7361a",
+      "id": "same-home-foreign-binding",
+      "red_log_sha256": "b0de8d40bd0072c8e5a9ab737307d1f05eede1ca3e8d1894cb970801014b64b9",
+      "status": "behavior RED then GREEN"
+    },
+    {
+      "capture_sha256": "ad4bf4ac83a1e899bb387543358db1fcf77657de8c9f7622f360292c12f9cc07",
+      "id": "macos-rpc-write-backpressure",
+      "reason": "all eight RPC write calls completed; no pending write was observed",
+      "status": "failed precondition"
+    },
+    {
+      "capture_sha256": "5cff2a0d04d2d7b28ca6c78587912ed83dc74ad3af047bc8bd56eed68602f730",
+      "id": "socket-bio-single-candidate",
+      "limitation": "not composed TLS/worker proof",
+      "status": "one actual socket-BIO candidate passed"
+    },
+    {
+      "capture_ids": [
+        "adapter.missing-distinct-composed-observer-red",
+        "adapter.distinct-composed-write-one-candidate",
+        "adapter.distinct-composed-write-runtime-candidate",
+        "adapter.distinct-composed-write-final-formatted"
+      ],
+      "id": "distinct-composed-synthetic-write",
+      "limitation": "explicit synthetic raw-network corruption; no store or mail-release claim; no cap increase",
+      "observed": {
+        "completed_before_cancel": 1,
+        "cycle_ms": 409,
+        "drain_ms": 50,
+        "peer_alive": true,
+        "queued_replies": 8,
+        "result": "StageCancelled",
+        "server_reply_batch_bytes": 1472,
+        "socket_block": "WouldBlock",
+        "synthetic_raw_fault_bytes": 269816,
+        "timer_ms": 202,
+        "worker_entries": 2
+      },
+      "status": "actual runtime test passed, formatted repeat passed"
+    },
+    {
+      "details": [
+        "proof 01 was a prompt-fixture mismatch: maintained Enter-to-return text versus incorrect fixture continuation expectation",
+        "proof 03 fixture generation ignored registry rejection and treated it as readiness; oracle rejected it",
+        "fixture generation was corrected to acknowledge only after actual success",
+        "proof 04 passed 20 controls, 10 each classic/Unicode, with 1 MiB payloads"
+      ],
+      "id": "console-proof-fixture-corrections",
+      "status": "two RED fixture failures preserved; corrected proof passed"
+    },
+    {
+      "details": [
+        "private-helper startup child leak actual RED, then 5 Python checks passed",
+        "profile child bound actual RED, then Rust profile 4 checks passed including helper kill/reap"
+      ],
+      "id": "helper-and-profile-lifecycle",
+      "status": "RED then GREEN"
+    },
+    {
+      "details": [
+        "2 helper errors and missing CLI selection/argument behavior failed first",
+        "corrected helper and optional provider forwarding passed all 6 helper tests"
+      ],
+      "id": "outage-profile-selection",
+      "status": "RED then GREEN"
+    },
+    {
+      "after_fixture_sha256": "b02546ecf05500b18d8ff0db0a819843f26cbd127ca5e1178dc344b4444a480b",
+      "before_fixture_sha256": "50389051ae38a22551e0903764fe8102fee5778075ca8e056c6fa8f8a8e91a36",
+      "id": "clock-fixture-only-correction",
+      "log_sha256": "ea4fe47f786f8bb2069045ab5eb26613841a48adf30ed4ba6b14c2f14d1f2d65",
+      "source_commit": "d69b6b5129f26607c3ea0dbba825d159741caf38",
+      "source_delta": [
+        "crates/faction-client/tests/mail_device_provider.rs"
+      ],
+      "status": "Actual native fixture failure followed by test-only current-action-time correction; no producer Clock change or producer-fix RED claim."
+    },
+    {
+      "id": "legacy-console-characterization",
+      "status": "pass, historical characterization only",
+      "tests": "9 passed"
+    },
+    {
+      "id": "production-cli-profile-selection",
+      "status": "missing-selection RED then production-selection GREEN"
+    },
+    {
+      "details": [
+        "inherited/default and unapproved short sandbox attempts failed: SUN_LEN path-length setup and EPERM respectively",
+        "short owned TMPDIR with approved owned socket execution passed one unchanged binary test",
+        "do not reinterpret the original 126 passing tests as a second green run"
+      ],
+      "id": "all-targets-socket-precondition",
+      "status": "macro command failed for setup reason; isolated same-binary control passed only after both sandbox failures were preserved"
+    },
+    {
+      "details": [
+        "default 46; native 66 + 3 ignored; network-mail 79 + 3 ignored; device-provider 83 + 3 ignored",
+        "Clippy passed for default, network-mail, device-provider; format passed",
+        "provider default profile 13 + 23 + 6; IQ profile 13 + 32 + 6; both profile Clippy rows passed",
+        "counts overlap feature profiles and are not summed into a unique-test total"
+      ],
+      "id": "provider-and-profile-final-test-matrix",
+      "status": "Historical original profile matrix; final coalesced provider counts are separate in host.json/native.json."
+    },
+    {
+      "failed_log_sha256": "1b98cdff0fe049281a02449cd382f31de82b7115ac4763b7ad169c575386df23",
+      "id": "provider-positive-read-denial-snapshot-fixture",
+      "reason": "The original test snapshot preceded rightful reads which may advance store high-water time. Capture denial baseline after positive controls, before each denial; unauthorized-no-mutation assertions retained.",
+      "status": "failed test fixture then corrected before acceptance"
+    },
+    {
+      "ciphertext_bytes": 442368,
+      "ciphertext_total": 1048592,
+      "id": "native-actual-sixty-second-performance-red",
+      "log_sha256": "ddc4606d24e91fb9dd137b34ae1531a1c6e27f52299ef50af0a8272919660955",
+      "seconds": 60.104629,
+      "source_snapshot": "observer",
+      "status": "actual unchanged-producer performance failure",
+      "teardown": "Product transfer_stop preceded harness interrupt; reaped in 0.008389 seconds without kill. Earlier premature 15-second harness failure remains separate.",
+      "validated_calls": 27
+    },
+    {
+      "id": "shared-binary-frame-coalescing",
+      "scope": "One bounded prefix+payload buffer/write_all with existing flush; same wire bytes and payload cap. No TCP_NODELAY or clock/limit changes. Delayed-ACK/Nagle causality remains inference; one TCP packet is not asserted.",
+      "stages": {
+        "generic-write-type-red": {
+          "exit": 101,
+          "log_sha256": "b5bf1cdb8bd972258daf25256e3ab36c8ce91252edb111e5f65e4fe5a9bfc8bc",
+          "seconds": 0.727
+        },
+        "healthy-contiguous-frame-red": {
+          "exit": 101,
+          "log_sha256": "c3a74e085709277faf387a0e696daa97e817ac94c86d707b07210033e31f2fed",
+          "seconds": 0.61
+        },
+        "provider-default-green": {
+          "exit": 0,
+          "log_sha256": "df1caf9c5fd7e2b6ffc935053ea7bed23050aa57fdd2a753d884762005a2a592",
+          "seconds": 26.333
+        },
+        "provider-iq-green": {
+          "exit": 0,
+          "log_sha256": "67e9ce9078bc20aacca3be61aeff774cc2f61ca07b0dc8da076e81ba8b53c33a",
+          "seconds": 37.736
+        },
+        "unchanged-two-write-characterization-green": {
+          "exit": 0,
+          "log_sha256": "2f6d87c3896b40e18ceee8ec8203272c1e4be25654d3fd725ad124ee49d968c0",
+          "seconds": 0.977
+        }
+      },
+      "status": "actual generic type RED, unchanged-body characterization GREEN, contiguous-write contract RED, six wire controls GREEN"
+    }
+  ]
+}

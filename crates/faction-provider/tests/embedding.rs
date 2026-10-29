@@ -1361,3 +1361,406 @@ mod iq_contract {
         });
     }
 }
+
+#[test]
+fn configured_binary_service_is_a_home_not_an_account_selector() {
+    use faction_provider::BinaryService;
+    assert!(BinaryService::new("home.test").is_ok());
+    for home in [
+        "",
+        "HOME.test",
+        "alice@home.test",
+        "https://home.test",
+        "home.test/path",
+    ] {
+        assert!(BinaryService::new(home).is_err());
+    }
+    let f = Fixture::new();
+    let c = Certs::new();
+    let runtime = c.runtime();
+    let mut store = f.store();
+    let objects = committed_route_objects(&c, &runtime, &mut store);
+    let home = BinaryService::new("home.test").unwrap();
+    let foreign = BinaryService::new("other.test").unwrap();
+    with_session(&c, &runtime, &c.alice, |mut session| {
+        for (request, expected) in committed_reads(&objects[0]) {
+            assert_eq!(
+                session
+                    .dispatch_service(&mut store, &home, request)
+                    .unwrap(),
+                expected
+            );
+        }
+        // Authorized reads can advance the durable high-water clock. The
+        // denial baseline begins after these positive controls.
+        for (request, _) in committed_reads(&objects[1]) {
+            let before = f.bytes();
+            assert!(
+                session
+                    .dispatch_service(&mut store, &home, request)
+                    .is_err()
+            );
+            assert_eq!(f.bytes(), before);
+        }
+        let before = f.bytes();
+        assert!(
+            session
+                .dispatch_service(&mut store, &foreign, Request::Status { id: objects[0].id })
+                .is_err()
+        );
+        assert_eq!(f.bytes(), before);
+    });
+}
+
+#[test]
+fn bounded_preloaded_pem_helpers_reject_invalid_or_mismatched_credentials() {
+    use faction_provider::tls::{ClientAdmission, ClientCredentials};
+    let _f = Fixture::new();
+    let c = Certs::new();
+    let ca = c.ca.0.to_pem().unwrap();
+    let cert = c.alice.0.to_pem().unwrap();
+    let key = c.alice.1.private_key_to_pem_pkcs8().unwrap();
+    let wrong = c.bob.1.private_key_to_pem_pkcs8().unwrap();
+    assert!(ClientCredentials::from_pem(&ca, &cert, &key).is_ok());
+    for (ca, cert, key) in [
+        (b"".as_slice(), cert.as_slice(), key.as_slice()),
+        (ca.as_slice(), b"".as_slice(), key.as_slice()),
+        (ca.as_slice(), cert.as_slice(), b"".as_slice()),
+        (ca.as_slice(), cert.as_slice(), wrong.as_slice()),
+        (b"invalid".as_slice(), cert.as_slice(), key.as_slice()),
+        (ca.as_slice(), b"invalid".as_slice(), key.as_slice()),
+        (ca.as_slice(), cert.as_slice(), b"invalid".as_slice()),
+    ] {
+        assert!(ClientCredentials::from_pem(ca, cert, key).is_err());
+        assert!(Server::from_pem(cert, key, ca).is_err());
+    }
+    let huge = vec![b'x'; 65_537];
+    for (a, b, d) in [
+        (&huge, &cert, &key),
+        (&ca, &huge, &key),
+        (&ca, &cert, &huge),
+    ] {
+        assert!(ClientCredentials::from_pem(a, b, d).is_err());
+        assert!(Server::from_pem(b, d, a).is_err());
+    }
+    assert!(
+        Server::from_pem(
+            &c.server.0.to_pem().unwrap(),
+            &c.server.1.private_key_to_pem_pkcs8().unwrap(),
+            &ca
+        )
+        .is_ok()
+    );
+    let credentials = ClientCredentials::from_pem(&ca, &cert, &key).unwrap();
+    let cancel = Arc::new(AtomicBool::new(false));
+    assert!(
+        ClientAdmission::new(
+            "provider.test",
+            sha256(&c.server.0.to_der().unwrap()),
+            credentials,
+            cancel
+        )
+        .is_ok()
+    );
+}
+
+#[test]
+fn opaque_connected_admission_never_restarts_the_original_five_seconds() {
+    use faction_provider::tls::{ClientAdmission, ClientCredentials};
+    let _f = Fixture::new();
+    let c = Certs::new();
+    let credentials = ClientCredentials::from_pem(
+        &c.ca.0.to_pem().unwrap(),
+        &c.alice.0.to_pem().unwrap(),
+        &c.alice.1.private_key_to_pem_pkcs8().unwrap(),
+    )
+    .unwrap();
+    let token = ClientAdmission::new(
+        "provider.test",
+        sha256(&c.server.0.to_der().unwrap()),
+        credentials,
+        Arc::new(AtomicBool::new(false)),
+    )
+    .unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let socket = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+    let (peer, _) = listener.accept().unwrap();
+    thread::sleep(HANDSHAKE_LIMIT + Duration::from_millis(20));
+    let start = Instant::now();
+    assert!(matches!(token.connect(socket), Err(Stage::Deadline)));
+    assert!(start.elapsed() < Duration::from_secs(1));
+    drop(peer);
+    drop(listener);
+}
+
+#[test]
+fn local_binary_service_denies_foreign_bindings_with_existing_routed_read_controls() {
+    use faction_provider::BinaryService;
+    let f = Fixture::new();
+    let c = Certs::new();
+    let mut entries = c.entries();
+    entries[1].principal.account = "bob@foreign.test".into();
+    let runtime = Runtime::new(Some(
+        Registry::new(
+            1,
+            0,
+            vec!["home.test".into(), "foreign.test".into()],
+            entries,
+        )
+        .unwrap(),
+    ));
+    let service = BinaryService::new("home.test").unwrap();
+    let mut store = f.store();
+    for foreign_sender in [false, true] {
+        let mut b = binding();
+        let mut foreign = principal(2);
+        foreign.account = "bob@foreign.test".into();
+        if foreign_sender {
+            b.sender = foreign;
+            b.recipient = principal(1);
+        } else {
+            b.recipient = foreign;
+        }
+        b.id = sha256(&[if foreign_sender { 5 } else { 6 }; 32]);
+        let sender = if foreign_sender { &c.bob } else { &c.alice };
+        let recipient = if foreign_sender { &c.alice } else { &c.bob };
+        with_session(&c, &runtime, sender, |mut session| {
+            for request in [
+                Request::Begin(b.clone()),
+                Request::PutChunk {
+                    id: b.id,
+                    offset: 0,
+                    bytes: vec![if foreign_sender { 5 } else { 6 }; 32],
+                },
+                Request::Commit { id: b.id },
+            ] {
+                assert!(
+                    session
+                        .dispatch(&mut store, &b.sender.account, request)
+                        .is_ok()
+                );
+            }
+        });
+        with_session(&c, &runtime, recipient, |mut session| {
+            assert!(matches!(
+                session.dispatch(
+                    &mut store,
+                    &b.recipient.account,
+                    Request::GetChunk {
+                        id: b.id,
+                        offset: 0
+                    }
+                ),
+                Ok(Response::Chunk { total: 32, .. })
+            ));
+        });
+        with_session(&c, &runtime, &c.alice, |mut session| {
+            for request in [
+                Request::Status { id: b.id },
+                Request::GetChunk {
+                    id: b.id,
+                    offset: 0,
+                },
+                Request::Begin(b.clone()),
+            ] {
+                let before = f.bytes();
+                assert!(
+                    session
+                        .dispatch_service(&mut store, &service, request)
+                        .is_err(),
+                    "local service accepted an explicitly foreign binding"
+                );
+                assert_eq!(f.bytes(), before);
+            }
+        });
+    }
+}
+
+#[test]
+fn connected_client_admission_preserves_actual_ca_name_pin_and_binding_policy() {
+    use faction_provider::{
+        BinaryService,
+        tls::{ClientAdmission, ClientCredentials},
+    };
+    let f = Fixture::new();
+    let c = Certs::new();
+    let other = Certs::new();
+    let runtime = c.runtime();
+    let mut store = f.store();
+    let time = wall_now() as i64;
+    let unknown = cert(
+        Some((&c.ca.0, &c.ca.1)),
+        "unknown-device",
+        91,
+        time - 60,
+        time + 3600,
+    );
+    let expired = cert(
+        Some((&c.ca.0, &c.ca.1)),
+        "expired-device",
+        92,
+        time - 3600,
+        time - 1,
+    );
+    for case in 0..7 {
+        let before = f.bytes();
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let ca = if case == 3 { &other.ca.0 } else { &c.ca.0 };
+        let identity = match case {
+            4 => &other.alice,
+            5 => &unknown,
+            6 => &expired,
+            _ => &c.alice,
+        };
+        let credentials = ClientCredentials::from_pem(
+            &ca.to_pem().unwrap(),
+            &identity.0.to_pem().unwrap(),
+            &identity.1.private_key_to_pem_pkcs8().unwrap(),
+        )
+        .unwrap();
+        let name = if case == 1 {
+            "wrong.test"
+        } else {
+            "provider.test"
+        };
+        let pin = if case == 2 {
+            [7; 32]
+        } else {
+            sha256(&c.server.0.to_der().unwrap())
+        };
+        let token =
+            ClientAdmission::new(name, pin, credentials, Arc::new(AtomicBool::new(false))).unwrap();
+        let (client_ok, served) = thread::scope(|scope| {
+            let server = scope.spawn(|| {
+                let service = BinaryService::new("home.test").unwrap();
+                match c
+                    .server()
+                    .accept(&listener, &runtime, Arc::new(AtomicBool::new(false)))
+                {
+                    Ok(mut session) => {
+                        matches!(session.serve_service_next(&mut store, &service), Ok(true))
+                    }
+                    Err(_) => false,
+                }
+            });
+            let client = token.connect(TcpStream::connect(address).unwrap());
+            let result = match client {
+                Ok(mut client) => client.request(&Request::Begin(binding())).is_ok(),
+                Err(_) => false,
+            };
+            (result, server.join().unwrap())
+        });
+        assert_eq!(client_ok, case == 0, "case {case}");
+        assert_eq!(served, case == 0, "case {case}");
+        if case != 0 {
+            assert_eq!(f.bytes(), before);
+        }
+    }
+}
+
+#[test]
+fn configured_service_rechecks_current_full_identity_peer_policy_and_live_lifecycle() {
+    use faction_provider::BinaryService;
+    let f = Fixture::new();
+    let c = Certs::new();
+    let runtime = c.runtime();
+    let mut store = f.store();
+    let b = binding();
+    let service = BinaryService::new("home.test").unwrap();
+    with_session(&c, &runtime, &c.alice, |mut session| {
+        for request in [
+            Request::Begin(b.clone()),
+            Request::PutChunk {
+                id: b.id,
+                offset: 0,
+                bytes: vec![9; 32],
+            },
+            Request::Commit { id: b.id },
+        ] {
+            assert!(
+                session
+                    .dispatch_service(&mut store, &service, request)
+                    .is_ok()
+            );
+        }
+    });
+    with_session(&c, &runtime, &c.bob, |mut session| {
+        assert!(matches!(
+            session.dispatch_service(
+                &mut store,
+                &service,
+                Request::GetChunk {
+                    id: b.id,
+                    offset: 0
+                }
+            ),
+            Ok(Response::Chunk { total: 32, .. })
+        ));
+    });
+    for case in 0..6 {
+        let mut entries = c.entries();
+        match case {
+            0 => entries[0].principal.identity[31] ^= 1,
+            1 => entries[0].device_enabled = false,
+            2 => entries[0].account_enabled = false,
+            3 => entries[0].approved = false,
+            4 => entries[1].principal.identity[31] ^= 1,
+            _ => {
+                entries.remove(0);
+            }
+        };
+        let changed = Runtime::new(Some(
+            Registry::new(1, 0, vec!["home.test".into()], entries).unwrap(),
+        ));
+        with_session(&c, &changed, &c.bob, |mut session| {
+            let before = f.bytes();
+            assert!(
+                session
+                    .dispatch_service(
+                        &mut store,
+                        &service,
+                        Request::GetChunk {
+                            id: b.id,
+                            offset: 0
+                        }
+                    )
+                    .is_err()
+            );
+            assert_eq!(f.bytes(), before);
+        });
+    }
+    for case in 0..4 {
+        let current = c.runtime();
+        let control = current.control();
+        with_session(&c, &current, &c.bob, |mut session| {
+            assert!(
+                session
+                    .dispatch_service(&mut store, &service, Request::Status { id: b.id })
+                    .is_ok()
+            );
+            let before = f.bytes();
+            match case {
+                0 => control.unavailable().unwrap(),
+                1 => control.reset(1).unwrap(),
+                2 => control.stop().unwrap(),
+                _ => control
+                    .replace_registry(current_registry(&c, 2, |_| {}))
+                    .unwrap(),
+            };
+            assert!(
+                session
+                    .dispatch_service(
+                        &mut store,
+                        &service,
+                        Request::GetChunk {
+                            id: b.id,
+                            offset: 0
+                        }
+                    )
+                    .is_err()
+            );
+            assert_eq!(f.bytes(), before);
+        });
+    }
+}

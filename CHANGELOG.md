@@ -4,6 +4,14 @@ This file records meaningful project changes. Product releases will use versione
 
 ## Unreleased
 
+- Add explicit local device-provider selection for native attachment transfers,
+  using the service-bound binary mTLS carrier and separate encrypted-mail release.
+  Same-home loopback scope and ordinary mail, BBS and file independence remain.
+  Host and fresh NetBSD production-console checks pass in classic and Unicode
+  modes with 1 MiB files, outage/retry and private no-overwrite save. A bounded
+  TLS frame write fixes the observed NetBSD transfer-budget failure without
+  changing wire bytes or limits; earlier failed observations remain recorded.
+
 - Add an explicitly compiled authenticated attachment-provider embedding library
   with opaque real-mTLS sessions, current typed policy/lifecycle control and an
   optional shared native blob-IQ adapter. Host and fresh NetBSD software checks

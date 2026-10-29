@@ -1,0 +1,413 @@
+{
+  "host": {
+    "actual_final_executables": {
+      "examples/checkpoint_ui_fixture": {
+        "bytes": 2927832,
+        "sha256": "b1c5d9f30dba2af642faf9671cd0525672a521501b99d615d4ab388722198c81"
+      },
+      "examples/device_provider_console_fixture": {
+        "bytes": 3907808,
+        "sha256": "64945c628d4eb8286cfd61581efb253dd42edcb162607aed3a42a658e3ff35d6"
+      },
+      "examples/home_mail_fixture": {
+        "bytes": 11501104,
+        "sha256": "85c378273fb4978cef50fb831fd80829304c4927b83d8c1bf4753edc19773748"
+      },
+      "faction-client": {
+        "bytes": 14555184,
+        "sha256": "b385e7018920a7c2b9df204babd52eaa436999e307bcca5546d5e34d4a32cfbf"
+      }
+    },
+    "dynamic_libraries": {
+      "dependency_set_same_for_all_four": true,
+      "other_apple_system_dependencies": "Security, CoreFoundation, and iconv observed via read-only otool inspection.",
+      "otool_l_dependencies_on_all_four_final_executables": [
+        "OpenSSL 3 TLS library",
+        "OpenSSL 3 cryptography library",
+        "Apple Security framework",
+        "Apple CoreFoundation framework",
+        "Apple iconv library",
+        "Apple system runtime via dyld shared cache"
+      ],
+      "system_runtime_note": "Apple libSystem is supplied by the dyld shared cache; no standalone regular file was available for a genuine digest, so no digest is asserted.",
+      "verified_regular_openssl3_files": [
+        {
+          "bytes": 867008,
+          "regular_file_hash_verified": true,
+          "semantic_id": "OpenSSL 3 TLS library",
+          "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc",
+          "version": "OpenSSL 3.6.3"
+        },
+        {
+          "bytes": 4828048,
+          "regular_file_hash_verified": true,
+          "semantic_id": "OpenSSL 3 cryptography library",
+          "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d",
+          "version": "OpenSSL 3.6.3"
+        }
+      ]
+    },
+    "earlier_executables": [
+      {
+        "artifact_id": "client-production-final",
+        "artifact_kind": "Mach-O executable",
+        "build_capture_sha256": "2afe841ca9808e9c406a8d57a7e4e2ffa673741a1f49817c2092435bde85d298",
+        "build_source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "bytes": 14537616,
+        "digest_verified_against_saved_executable": true,
+        "sha256": "5775e219980231ca62c66b1c1c2b15262a32cdffe40ff2b24ccd8443a0c679fb"
+      },
+      {
+        "artifact_id": "device-provider-console-fixture",
+        "artifact_kind": "Mach-O executable",
+        "build_capture_sha256": "2afe841ca9808e9c406a8d57a7e4e2ffa673741a1f49817c2092435bde85d298",
+        "build_source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "bytes": 3906768,
+        "digest_verified_against_saved_executable": true,
+        "sha256": "f224d50c08ddf4531ea7ee034c99c7b3e695650f47284362cb35fd5b38c51cd6"
+      },
+      {
+        "artifact_id": "checkpoint-ui-fixture",
+        "artifact_kind": "Mach-O executable",
+        "build_capture_sha256": "2afe841ca9808e9c406a8d57a7e4e2ffa673741a1f49817c2092435bde85d298",
+        "build_source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "bytes": 2927832,
+        "digest_verified_against_saved_executable": true,
+        "sha256": "93fc7fc6b061861f15b24dcde9d06ec8751d7bb9caba624bd4f96f0733a58dea"
+      },
+      {
+        "artifact_id": "home-mail-fixture",
+        "artifact_kind": "Mach-O executable",
+        "build_capture_sha256": "2afe841ca9808e9c406a8d57a7e4e2ffa673741a1f49817c2092435bde85d298",
+        "build_source_commit": "deeaf975ea9bd97752ff3b44f1fe90b777d8acfe",
+        "bytes": 11501104,
+        "digest_verified_against_saved_executable": true,
+        "sha256": "470d102b61a746b4ceac6997d8ecf27e1b2ee8d0e1ed90ed5e4e0c7a3df1f9c1"
+      }
+    ],
+    "final_build_record_sha256": "a9ab982e322337b601329546847a26df36e2c03b3bcfd822f544e3e14ee5a424",
+    "platform": "macOS 27.2 arm64",
+    "production_execution_sha256": "311b9c28efc80c04e45aa860936aa458d66d085cbd89991934c75ced31469271",
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+    "toolchain": {
+      "available_native_compiler_usage_caveat": "Clang identity is observed, but saved host execution does not record that Clang was used for a build.",
+      "recorded_target": "aarch64-apple-darwin",
+      "rust_llvm_version": "22.1.2",
+      "tools": [
+        {
+          "bytes": 412504,
+          "identity_verified_from_rustup_which": true,
+          "semantic_id": "Rust compiler",
+          "sha256": "c5922366bfe3d6d028a65d626f4e629b3adad066995cf0b60c8a4b617bba5ffe",
+          "version": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+        },
+        {
+          "bytes": 31817288,
+          "identity_verified_from_rustup_which": true,
+          "semantic_id": "Cargo",
+          "sha256": "fec239e6b74df873f54ef52912bfcfcc8d8414bc14a7ae1e0be80460bae72841",
+          "version": "cargo 1.96.0 (30a34c682 2026-05-25)"
+        },
+        {
+          "bytes": 875392,
+          "semantic_id": "OpenSSL 3 command-line tool",
+          "sha256": "62d345e5c323fe6a0c3dcc154e5177e35b607f0d8c7aae7696821997f6a584a0",
+          "version": "OpenSSL 3.6.3 (9 Jun 2026)",
+          "version_checked_with_read_only_version_command": true
+        },
+        {
+          "bytes": 34640,
+          "identity_hashed_from_existing_file": true,
+          "semantic_id": "Python executable",
+          "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634",
+          "version": "Python 3.14.7"
+        },
+        {
+          "bytes": 205312,
+          "identity_hashed_from_existing_file": true,
+          "semantic_id": "Python SSL extension",
+          "sha256": "d98ddf4fac5d7b6dd96bcfe179743762d31ca06e589ffe06c0ab4d8b628346d1",
+          "version": "OpenSSL 3.6.3 9 Jun 2026"
+        },
+        {
+          "runtime_metadata_build_compiler": "clang",
+          "semantic_id": "Apple Clang native compiler",
+          "target": "arm64-apple-darwin27.2.0",
+          "used_by_recorded_host_build": "not established by saved execution metadata",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.20.102)"
+        }
+      ]
+    }
+  },
+  "native": {
+    "artifacts": {
+      "device-faction_client": {
+        "bytes": 4462224,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "e326318d533d3861969c01c2f7501213b3a2ec4c3e2ee4dfccc28c3fb01aa02f"
+      },
+      "device-mail_blob_transfer": {
+        "bytes": 1250768,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "175e902d47ae689e07dec412d9d1112811dc25e6789ea05d8634876605537628"
+      },
+      "device-mail_blob_wire": {
+        "bytes": 988592,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "d6841af1fb7aee0a25a4d78b519b91f6f3ab0b392ab377f2481f349ee68be425"
+      },
+      "device-mail_device_provider": {
+        "bytes": 3872352,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "8ddfec54f43e4219b6fcdf8e39546b2be6049a4b1518bc7ec64cf5ed6cc0cb88"
+      },
+      "production-checkpoint_ui_fixture": {
+        "bytes": 792000,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "50dc07c35d5b6108cb2cc6e79313aa00047e83a31ab92ded7b97194af2365920"
+      },
+      "production-device_provider_console_fixture": {
+        "bytes": 923128,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "1b25187b4d432fadc3eaa3705182284ef2e5a3ca9c6afa63f6613d44c6d7b598"
+      },
+      "production-faction-client": {
+        "bytes": 3610304,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509",
+          "libutil.so.7.25": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f"
+        },
+        "sha256": "d71117193447182d18fc26b8c69877e089f48639089d5c7d9fa59519500cc0bc"
+      },
+      "production-home_mail_fixture": {
+        "bytes": 2954880,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libm.so.0.14": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "0d671ca5e9df7d007437d2cf088c77afea5f3101ce42cbbf455878686163a287"
+      },
+      "provider-default-embedding": {
+        "bytes": 1797216,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "450395ab695bdb51bd1cd064e5029ae77e3545fccab0e2cdc36dd113cad42b2b"
+      },
+      "provider-default-faction_provider": {
+        "bytes": 1359840,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "581143046c7017f567dc0bcd12e1f3e64121a3cc8dbee9485d02110afde5ae79"
+      },
+      "provider-iq-embedding": {
+        "bytes": 2254328,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "60dae8c11904c083318babba95fde88134208607c8faf8dec92d9e3185d15dd7"
+      },
+      "provider-iq-faction_provider": {
+        "bytes": 1359832,
+        "libraries": {
+          "libc.so.12.224": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095",
+          "libcrypt.so.1.0": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76",
+          "libcrypto.so.16.0": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e",
+          "libgcc_s.so.1.0": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614",
+          "libpthread.so.1.6": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5",
+          "libssl.so.16.0": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+        },
+        "sha256": "42e43bb27f93e7687196744534d479b2ca01b37f949a5c7666e73bb22adeea69"
+      }
+    },
+    "existing_packages": [
+      "rust-bin-1.96.0     Safe, concurrent, practical language (pre-built distribution)",
+      "expat-2.8.3         XML parser library written in C",
+      "libffi-3.5.2        Foreign function interface",
+      "libuuid-2.40.2      Generate unique identifiers for objects",
+      "mpdecimal-4.0.1     C/C++ arbitrary precision decimal floating point libraries",
+      "readline-8.3nb1     GNU library that can recall and edit previous input",
+      "sqlite3-3.53.2      SQL Database Engine in a C Library",
+      "python313-3.13.14   Interpreted, interactive, object-oriented programming language"
+    ],
+    "loader": {
+      "bytes": 228016,
+      "name": "ld.elf_so",
+      "sha256": "0620b2dd6ab034293bda220a88eb1801ae7eaf01c7e272721e924cc5c3556a07"
+    },
+    "package_changes_performed": false,
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+    "system_libraries": {
+      "libc.so.12.224": {
+        "bytes": 2644584,
+        "sha256": "09ff46833d9532ec9b0d90850bfd1de486875dcacaae1113c8247d65a9f71095"
+      },
+      "libcrypt.so.1.0": {
+        "bytes": 80048,
+        "sha256": "ece5f195cac7d4e982a7906104093eba50e142205baafce6963994347f5f9f76"
+      },
+      "libcrypto.so.16.0": {
+        "bytes": 6244640,
+        "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+      },
+      "libgcc_s.so.1.0": {
+        "bytes": 149040,
+        "sha256": "c6c1373ae7dee8f2056a7a4e38e93c65c0f5754f5d855e85ca87d4c641871614"
+      },
+      "libm.so.0.14": {
+        "bytes": 420120,
+        "sha256": "6c13570fd9fb3aafa718176306707ad6656d6fdb2db5bfbc4ebc16289ce38ac0"
+      },
+      "libpthread.so.1.6": {
+        "bytes": 166600,
+        "sha256": "38f18a649bdd459d6e41f2f886f69bb00d9b5729444361643f0c7b630ad706f5"
+      },
+      "libssl.so.16.0": {
+        "bytes": 1262704,
+        "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+      },
+      "libutil.so.7.25": {
+        "bytes": 165496,
+        "sha256": "725f750e5fc3a82cf8385e2ff65a8642faf1517058411ba2f71ca5c868c7318f"
+      }
+    },
+    "tools": {
+      "cargo": {
+        "bytes": 43795088,
+        "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+      },
+      "cargo-clippy": {
+        "bytes": 1832248,
+        "sha256": "1437f57ffe3ac2caf98e0af5b5e2392b98951b539242c5cbcfaf333c2afa75bd"
+      },
+      "cc": {
+        "bytes": 1419696,
+        "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+      },
+      "clippy-driver": {
+        "bytes": 19069160,
+        "sha256": "f6351652f3c3c1e4e7c3fb423a4343643e023ff8e8b52d06dd95b776974363d5"
+      },
+      "ld.elf_so": {
+        "bytes": 228016,
+        "sha256": "0620b2dd6ab034293bda220a88eb1801ae7eaf01c7e272721e924cc5c3556a07"
+      },
+      "openssl": {
+        "bytes": 7572992,
+        "sha256": "29a8c4bd9def254d973ca9946fced30a89f95e914a46f1e42333a25b5e303627"
+      },
+      "python3.13": {
+        "bytes": 68584,
+        "sha256": "07f1f1fc61dbb8823d9219a9a35dd0ce81f9c5526d74f5a5dde5fe9509266ec7"
+      },
+      "rustc": {
+        "bytes": 14128,
+        "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+      },
+      "rustdoc": {
+        "bytes": 15263856,
+        "sha256": "4e983018d1d6d8cca46bea6299dab326963aec256bca781b0afeffdbc3034c70"
+      },
+      "sftp": {
+        "bytes": 155808,
+        "sha256": "23142b2d8b8765baaa7a651faefeaa7e5f587eef84052d97afd581e13b0d1470"
+      },
+      "sh": {
+        "bytes": 311720,
+        "sha256": "b3c56b78b729ae481f9ee90083757d5e60aaf692419bbb32b99a42bd8290bac2"
+      },
+      "ssh": {
+        "bytes": 467232,
+        "sha256": "e3c362a200affcb3bcf4a34f31405ff9d7f1e57b9dd33d528669949f14cbf85d"
+      },
+      "sshd": {
+        "bytes": 163192,
+        "sha256": "4bf5348d6c51881309f4f357ff0ba8de2a3213554a89d14497ab8aae4bcb2907"
+      }
+    },
+    "versions": {
+      "cargo": "1.96.0",
+      "cc": "12.5.0",
+      "host_qemu": "11.1.1",
+      "openssl": "3.5.7",
+      "os": "NetBSD 11.0 evbarm/aarch64",
+      "python": "3.13.14",
+      "rust": "1.96.0"
+    }
+  },
+  "schema": 1
+}

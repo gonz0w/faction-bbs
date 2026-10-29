@@ -2,9 +2,11 @@
 //! TLS credentials authorize approved routing; they do not attest OMEMO key possession.
 //! Runtime ownership is authoritative: controls and sessions cannot retain it after drop.
 pub mod authority;
+mod service;
 pub mod tls;
 use authority::{Authority, Registry};
 use faction_files::private_blobs;
+pub use service::BinaryService;
 use std::{
     net::{Shutdown, TcpStream},
     sync::{

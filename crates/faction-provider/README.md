@@ -66,6 +66,20 @@ remain independent; no account-login-to-device upgrade is added. Provider
 activation, XMPP server/SASL, own-home delegation and independent client
 interoperability remain outside this library's claims.
 
+## Service-bound binary integration
+
+`BinaryService::new(home)` fixes the trusted local service. Use
+`Session::dispatch_service` or `Session::serve_service_next` to derive the actor
+from the current verified session without a caller-selected routing account. Both
+sender and recipient bindings must be local to that service, including reads of
+existing objects. The older routed APIs keep their separate invited-home policy.
+The explicitly selected native `device-provider` feature uses this loopback binary
+carrier for same-home attachments and the ordinary encrypted-mail path separately
+for release. No store reply means no release authorization; retry the exact durable
+operation after an uncertain outcome. Default, `native-mail` and `network-mail`
+client builds exclude this provider. See the [integration contract](../../dev-docs/provider-integration.md).
+
+
 ## Optional typed IQ integration
 
 Select `--features blob-iq` explicitly. `IqService::new("home.test")` validates a

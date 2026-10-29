@@ -2,7 +2,8 @@
 
 `crates/faction-provider` is an explicitly compiled, standalone Rust workspace;
 it is not a root workspace member or a dependency of ordinary board or native
-client builds. It exposes the [experimental authority boundary](provider-authority.md)
+client builds; only the explicit `device-provider` client feature adds the local
+optional dependency. It exposes the [experimental authority boundary](provider-authority.md)
 for an embedding application. It starts no listener, daemon, enrollment or file
 loader. A caller supplies a validated registry, preloaded TLS credentials and a
 listener; production enrollment and durable anti-rollback remain separate work.
@@ -44,6 +45,30 @@ operations are cooperative and cannot be forcibly preempted; the embedding owner
 must drain and clean up within its own bounds. The existing store's object, byte,
 chunk and retention limits remain in the [storage contract](private-attachment-storage.md).
 
+## Service-bound native binary route
+
+`BinaryService::new(home)` binds the trusted configured local home. An opaque
+verified `Session` can use `dispatch_service` or `serve_service_next` without a
+caller-selected account: current certificate authority supplies the actor. Both
+sender and recipient bindings must belong to that home, including reads of
+existing objects. The existing routed APIs retain their separate current-registry
+and invited-home rules. The native `device-provider` feature selects this binary
+carrier explicitly; it is not an IQ wire protocol.
+
+The native client checks the configured expected account, device and full identity
+against its unlocked vault before connection. Its private profile and transport
+credentials are local inputs, not endpoint authority from a locator or remote board.
+Cancellation closes and joins the bounded worker; it receives no vault or OMEMO
+keys. A complete authenticated store reply permits the existing separate encrypted
+XMPP mail release. Failure or a lost reply permits no fallback or release; exact
+retry resolves uncertain durable progress. Ordinary mail and board access remain
+independent. The [native-client integration evidence](evidence/native-provider-client/README.md)
+records host and fresh NetBSD maximum-size production-console transfers and
+cancellation/recovery controls, separately from the historical standalone IQ
+evidence below. Length and payload now share one bounded TLS frame write; wire
+bytes and existing limits are unchanged.
+
+
 ## In-process IQ adapter
 
 The optional `blob-iq` feature adds `IqService` and `Session::dispatch_iq` using
@@ -65,8 +90,7 @@ safe remote errors for valid requests. Malformed input can instead fail locally.
 
 This is an in-process embedding interface, not an XMPP stream, server or SASL
 implementation. An ordinary native client PLAIN session does not establish the
-verified device session needed here. It adds no framed IQ protocol, native route,
-checkpoint or menu. Own-home delegation, production provider activation and
+verified device session needed here. It adds no framed IQ protocol or native route by itself. Own-home delegation, production provider activation and
 independent modern-client interoperability remain open in [#88](https://github.com/gonz0w/faction-bbs/issues/88).
 
 The provider sees public routing and ciphertext metadata, not device mail or

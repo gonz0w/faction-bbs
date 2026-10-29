@@ -1,0 +1,47 @@
+{
+  "configured_roles": [
+    {
+      "effort": "medium",
+      "model": "gpt-6-luna",
+      "role": "temper_workflow"
+    },
+    {
+      "effort": "high",
+      "model": "gpt-6.1-sol",
+      "role": "temper_implementer"
+    },
+    {
+      "effort": "high",
+      "model": "gpt-6-astra",
+      "role": "temper_analyst"
+    },
+    {
+      "effort": "high",
+      "model": "gpt-6.1-sol",
+      "role": "temper_reviewer"
+    },
+    {
+      "effort": "medium",
+      "model": "gpt-6.1-terra",
+      "role": "temper_product"
+    }
+  ],
+  "continuity": "Lead reported the same configured roles resumed after capacity interruption; independent backend metadata was unavailable.",
+  "limits": "Configuration/requested mapping does not attest runtime role/model/effort, measured quality or cost. Separate agent review is not independent human assurance.",
+  "native_requested_role": {
+    "requested_effort": "high",
+    "requested_model": "gpt-6.1-sol",
+    "requested_role": "temper_implementer",
+    "routing_verified": false,
+    "runtime_backend_metadata": "unavailable"
+  },
+  "runtime_observation": {
+    "model_observed": false,
+    "reason": "This workflow observer had no independent runtime metadata surface for confirming subagent role/model/effort; configuration is not proof of execution.",
+    "reasoning_effort_observed": false,
+    "role_observed": false,
+    "status": "unverified"
+  },
+  "schema": 1,
+  "selected_policy": "PROJECT.md and .codex/agents/ role files"
+}

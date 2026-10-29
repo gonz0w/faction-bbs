@@ -5,7 +5,7 @@
 //! OMEMO private identity possession. Blocking filesystem dispatch is cooperative:
 //! deadlines are checked before and after it, but cannot preempt a filesystem call.
 use crate::{
-    Error, Runtime, State,
+    BinaryService, Error, Runtime, State,
     authority::{Connection, Handle},
 };
 use faction_files::private_blobs::{
@@ -90,6 +90,8 @@ struct DeadlineIo {
     deadline: Instant,
     cancel: Arc<AtomicBool>,
     stop: Option<Arc<AtomicBool>>,
+    #[cfg(test)]
+    write_observation: Option<Arc<socket_bio_tests::WriteRetryObservation>>,
 }
 impl DeadlineIo {
     fn new(socket: TcpStream, deadline: Instant, cancel: Arc<AtomicBool>) -> Self {
@@ -98,7 +100,13 @@ impl DeadlineIo {
             deadline,
             cancel,
             stop: None,
+            #[cfg(test)]
+            write_observation: None,
         }
+    }
+    #[cfg(test)]
+    fn observe_write_retries(&mut self, observed: Arc<socket_bio_tests::WriteRetryObservation>) {
+        self.write_observation = Some(observed);
     }
     fn timeout(&self) -> io::Result<Duration> {
         if self.stop.as_ref().is_some_and(|s| s.load(Ordering::SeqCst)) {
@@ -148,6 +156,26 @@ impl Write for DeadlineIo {
                             | io::ErrorKind::TimedOut
                     ) =>
                 {
+                    #[cfg(test)]
+                    if let Some(observed) = &self.write_observation {
+                        match e.kind() {
+                            io::ErrorKind::WouldBlock => {
+                                observed.would_block.fetch_add(1, Ordering::SeqCst);
+                            }
+                            io::ErrorKind::TimedOut => {
+                                observed.timed_out.fetch_add(1, Ordering::SeqCst);
+                            }
+                            _ => (),
+                        }
+                        if matches!(
+                            e.kind(),
+                            io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut
+                        ) {
+                            observed
+                                .retry_call
+                                .store(observed.in_flight.load(Ordering::SeqCst), Ordering::SeqCst);
+                        }
+                    }
                     continue;
                 }
                 result => return result,
@@ -182,14 +210,14 @@ fn read_frame(stream: &mut SslStream<DeadlineIo>) -> Result<Option<Vec<u8>>, Sta
     stream.read_exact(&mut bytes).map_err(|_| Stage::Frame)?;
     Ok(Some(bytes))
 }
-fn write_frame(stream: &mut SslStream<DeadlineIo>, bytes: &[u8]) -> Result<(), Stage> {
+fn write_frame<W: Write>(stream: &mut W, bytes: &[u8]) -> Result<(), Stage> {
     if bytes.is_empty() || bytes.len() > MAX_WIRE {
         return Err(Stage::Frame);
     }
-    stream
-        .write_all(&(bytes.len() as u32).to_be_bytes())
-        .map_err(|_| Stage::Frame)?;
-    stream.write_all(bytes).map_err(|_| Stage::Frame)?;
+    let mut frame = Vec::with_capacity(4 + bytes.len());
+    frame.extend_from_slice(&(bytes.len() as u32).to_be_bytes());
+    frame.extend_from_slice(bytes);
+    stream.write_all(&frame).map_err(|_| Stage::Frame)?;
     stream.flush().map_err(|_| Stage::Frame)
 }
 
@@ -213,6 +241,11 @@ impl Drop for AdmissionGuard {
     }
 }
 impl Server {
+    /// Bounded preloaded PEM only. Does not open files or start a listener.
+    pub fn from_pem(certificate: &[u8], key: &[u8], client_ca: &[u8]) -> Result<Self, Stage> {
+        let credentials = ClientCredentials::from_pem(client_ca, certificate, key)?;
+        Self::new(&credentials.certificate, &credentials.key, &credentials.ca)
+    }
     pub fn new(certificate: &X509, key: &PKey<Private>, ca: &X509) -> Result<Self, Stage> {
         let mut b = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls_server())
             .map_err(|_| Stage::Configuration)?;
@@ -361,6 +394,10 @@ pub struct Session {
     attempted: usize,
     closed: bool,
 }
+enum DispatchRoute<'a> {
+    Account(&'a str),
+    Local(&'a BinaryService),
+}
 impl Session {
     pub(crate) fn attempt(&mut self) -> Result<Arc<State>, Error> {
         if self.attempted >= MAX_OPERATIONS {
@@ -391,6 +428,15 @@ impl Session {
         route: &str,
         request: Request,
     ) -> Result<Response, Error> {
+        self.dispatch_authorized(state, store, DispatchRoute::Account(route), request)
+    }
+    fn dispatch_authorized(
+        &mut self,
+        state: &State,
+        store: &mut Store,
+        route: DispatchRoute<'_>,
+        request: Request,
+    ) -> Result<Response, Error> {
         check(self.deadline, &self.cancel).map_err(Error::Transport)?;
         let authority = state
             .authority
@@ -403,16 +449,26 @@ impl Session {
             self.closed = true;
             return Err(Error::Transport(Stage::Denied));
         }
-        let result = authority
-            .dispatch_routed(
+        let times = (wall_now(), self.start.elapsed().as_millis() as u64);
+        let result = match route {
+            DispatchRoute::Account(account) => authority.dispatch_routed(
                 &self.connection,
                 &self.handle,
-                route,
+                account,
                 store,
                 request,
-                (wall_now(), self.start.elapsed().as_millis() as u64),
-            )
-            .map_err(Error::Store);
+                times,
+            ),
+            DispatchRoute::Local(service) => authority.dispatch_local(
+                &self.connection,
+                &self.handle,
+                &service.home,
+                store,
+                request,
+                times,
+            ),
+        }
+        .map_err(Error::Store);
         check(self.deadline, &self.cancel).map_err(Error::Transport)?;
         result
     }
@@ -420,13 +476,25 @@ impl Session {
     /// dispatch once and write its bounded response. EOF returns false. Every
     /// call charges before I/O/decode; any failure closes this application stream.
     pub fn serve_next(&mut self, store: &mut Store, route_account: &str) -> Result<bool, Error> {
+        self.serve_with(store, DispatchRoute::Account(route_account))
+    }
+    /// Serve the existing binary carrier with the actor resolved internally from
+    /// current certificate authority, restricted to the trusted configured home.
+    pub fn serve_service_next(
+        &mut self,
+        store: &mut Store,
+        service: &BinaryService,
+    ) -> Result<bool, Error> {
+        self.serve_with(store, DispatchRoute::Local(service))
+    }
+    fn serve_with(&mut self, store: &mut Store, route: DispatchRoute<'_>) -> Result<bool, Error> {
         let result = (|| {
             let state = self.attempt()?;
             let bytes = read_frame(&mut self.stream)
                 .map_err(|stage| Error::Transport(classify(self.deadline, &self.cancel, stage)))?;
             let Some(bytes) = bytes else { return Ok(false) };
             let request = decode_request(&bytes).map_err(Error::Store)?;
-            let response = self.dispatch_charged(&state, store, route_account, request)?;
+            let response = self.dispatch_authorized(&state, store, route, request)?;
             let bytes = encode_response(&response).map_err(Error::Store)?;
             write_frame(&mut self.stream, &bytes)
                 .map_err(|stage| Error::Transport(classify(self.deadline, &self.cancel, stage)))?;
@@ -448,6 +516,18 @@ impl Session {
         let state = self.attempt()?;
         encode_request(&request).map_err(Error::Store)?;
         self.dispatch_charged(&state, store, route_account, request)
+    }
+    /// No account parameter exists: only current opaque session authority owns
+    /// the actor. Request principals remain assertions checked by current policy.
+    pub fn dispatch_service(
+        &mut self,
+        store: &mut Store,
+        service: &BinaryService,
+        request: Request,
+    ) -> Result<Response, Error> {
+        let state = self.attempt()?;
+        encode_request(&request).map_err(Error::Store)?;
+        self.dispatch_authorized(&state, store, DispatchRoute::Local(service), request)
     }
     pub fn dispatch_bytes(
         &mut self,
@@ -569,3 +649,279 @@ impl Client {
         decode_response(&bytes).map_err(|_| Stage::Frame)
     }
 }
+
+/// Independently preloaded transport credentials. They contain no mail/vault keys.
+/// Each PEM input is bounded to 64 KiB. No file loader or enrollment is provided.
+#[derive(Clone)]
+pub struct ClientCredentials {
+    ca: X509,
+    certificate: X509,
+    key: PKey<Private>,
+}
+impl ClientCredentials {
+    pub fn from_pem(ca: &[u8], certificate: &[u8], key: &[u8]) -> Result<Self, Stage> {
+        if [ca, certificate, key]
+            .iter()
+            .any(|bytes| bytes.is_empty() || bytes.len() > 65_536)
+        {
+            return Err(Stage::Configuration);
+        }
+        let ca = X509::from_pem(ca).map_err(|_| Stage::Configuration)?;
+        let certificate = X509::from_pem(certificate).map_err(|_| Stage::Configuration)?;
+        // Encrypted inputs cannot start an interactive password prompt.
+        let key =
+            PKey::private_key_from_pem_callback(key, |_| Err(openssl::error::ErrorStack::get()))
+                .map_err(|_| Stage::Configuration)?;
+        if !certificate
+            .public_key()
+            .map_err(|_| Stage::Configuration)?
+            .public_eq(&key)
+        {
+            return Err(Stage::Configuration);
+        }
+        Ok(Self {
+            ca,
+            certificate,
+            key,
+        })
+    }
+}
+/// Single-use opaque admission clock, minted before asynchronous TCP connection.
+/// The caller cannot forge a start time, clone it or extend either deadline.
+/// ```compile_fail
+/// use faction_provider::tls::ClientAdmission;
+/// let forged = ClientAdmission {};
+/// ```
+/// ```compile_fail
+/// use faction_provider::tls::ClientAdmission;
+/// fn extend(token: ClientAdmission) { let start = token.start; }
+/// ```
+pub struct ClientAdmission {
+    start: Instant,
+    expected_name: String,
+    leaf_pin: [u8; 32],
+    credentials: ClientCredentials,
+    cancel: Arc<AtomicBool>,
+}
+impl ClientAdmission {
+    pub fn new(
+        expected_name: &str,
+        leaf_pin: [u8; 32],
+        credentials: ClientCredentials,
+        cancel: Arc<AtomicBool>,
+    ) -> Result<Self, Stage> {
+        let start = Instant::now();
+        check(start + HANDSHAKE_LIMIT, &cancel)?;
+        faction_files::private_blobs::Principal {
+            account: format!("policy@{expected_name}"),
+            device: 1,
+            identity: [1; 32],
+        }
+        .validate()
+        .map_err(|_| Stage::Configuration)?;
+        if leaf_pin == [0; 32] {
+            return Err(Stage::Configuration);
+        }
+        Ok(Self {
+            start,
+            expected_name: expected_name.into(),
+            leaf_pin,
+            credentials,
+            cancel,
+        })
+    }
+    /// Consume only an already connected loopback socket. TLS still authenticates
+    /// its peer; a socket or configuration text supplies no device authority.
+    pub fn connect(self, socket: TcpStream) -> Result<Client, Stage> {
+        let handshake = self.start + HANDSHAKE_LIMIT;
+        let deadline = self.start + CYCLE_LIMIT;
+        check(handshake, &self.cancel)?;
+        if !socket.peer_addr().is_ok_and(|a| a.ip().is_loopback())
+            || !socket.local_addr().is_ok_and(|a| a.ip().is_loopback())
+        {
+            return Err(Stage::Configuration);
+        }
+        // Tokio into_std preserves O_NONBLOCK. DeadlineIo requires bounded
+        // blocking syscalls, otherwise WouldBlock could spin until its deadline.
+        socket
+            .set_nonblocking(false)
+            .map_err(|_| Stage::Admission)?;
+        let mut b =
+            SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
+        b.set_min_proto_version(Some(SslVersion::TLS1_3))
+            .map_err(|_| Stage::Configuration)?;
+        b.set_max_proto_version(Some(SslVersion::TLS1_3))
+            .map_err(|_| Stage::Configuration)?;
+        let mut store =
+            openssl::x509::store::X509StoreBuilder::new().map_err(|_| Stage::Configuration)?;
+        store
+            .add_cert(self.credentials.ca)
+            .map_err(|_| Stage::Configuration)?;
+        b.set_cert_store(store.build());
+        b.set_verify(SslVerifyMode::PEER);
+        b.set_session_cache_mode(SslSessionCacheMode::OFF);
+        b.set_options(SslOptions::NO_TICKET);
+        b.set_max_early_data(0).map_err(|_| Stage::Configuration)?;
+        b.set_certificate(&self.credentials.certificate)
+            .map_err(|_| Stage::Configuration)?;
+        b.set_private_key(&self.credentials.key)
+            .map_err(|_| Stage::Configuration)?;
+        b.check_private_key().map_err(|_| Stage::Configuration)?;
+        let connector = b.build();
+        let mut configuration = connector.configure().map_err(|_| Stage::Configuration)?;
+        configuration.set_verify_hostname(true);
+        check(handshake, &self.cancel)?;
+        let io = DeadlineIo::new(socket, handshake, self.cancel.clone());
+        let mut stream = configuration
+            .connect(&self.expected_name, io)
+            .map_err(|_| classify(handshake, &self.cancel, Stage::Handshake))?;
+        check(handshake, &self.cancel)?;
+        if stream.ssl().verify_result() != X509VerifyResult::OK || stream.ssl().session_reused() {
+            return Err(Stage::Handshake);
+        }
+        let leaf = stream.ssl().peer_certificate().ok_or(Stage::Handshake)?;
+        if sha256(&leaf.to_der().map_err(|_| Stage::Handshake)?) != self.leaf_pin {
+            return Err(Stage::Pin);
+        }
+        check(handshake, &self.cancel)?;
+        stream.get_mut().deadline = deadline;
+        check(deadline, &self.cancel)?;
+        Ok(Client {
+            stream,
+            deadline,
+            cancel: self.cancel,
+            attempted: 0,
+        })
+    }
+}
+
+#[cfg(test)]
+mod socket_bio_tests {
+    use super::*;
+    use std::sync::atomic::AtomicUsize;
+
+    // This is only a finite socket-BIO fixture byte budget. Its numeric equality
+    // to the store's reserved-byte ceiling grants no RPC or storage authority.
+    const FIXTURE_MAX_BYTES: usize = 8_388_736;
+
+    #[derive(Default)]
+    pub(super) struct WriteRetryObservation {
+        pub(super) started_calls: AtomicUsize,
+        pub(super) in_flight: AtomicUsize,
+        pub(super) retry_call: AtomicUsize,
+        pub(super) completed_bytes: AtomicUsize,
+        pub(super) completed_writes: AtomicUsize,
+        pub(super) would_block: AtomicUsize,
+        pub(super) timed_out: AtomicUsize,
+    }
+
+    #[test]
+    fn socket_bio_pending_write_observes_retry_and_cancels_before_deadline() {
+        let start = Instant::now();
+        let fixture_deadline = start + Duration::from_secs(10);
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let socket =
+            TcpStream::connect_timeout(&listener.local_addr().unwrap(), HANDSHAKE_LIMIT).unwrap();
+        let (peer, _) = listener.accept().unwrap();
+        // The one owned peer stays open and never reads. There is no TLS,
+        // provider Session, request frame, Store, Worker or mail release here.
+        let cancel = Arc::new(AtomicBool::new(false));
+        let observed = Arc::new(WriteRetryObservation::default());
+        let mut io = DeadlineIo::new(socket, fixture_deadline, cancel.clone());
+        io.observe_write_retries(observed.clone());
+        let (pending_call, outcome, drain) = thread_scope(&observed, &cancel, start, io);
+        drop(peer);
+        drop(listener);
+        let completed = observed.completed_bytes.load(Ordering::SeqCst);
+        let positive_writes = observed.completed_writes.load(Ordering::SeqCst);
+        let would_block = observed.would_block.load(Ordering::SeqCst);
+        let timed_out = observed.timed_out.load(Ordering::SeqCst);
+        eprintln!(
+            "socket-BIO-only bytes={completed} positive_writes={positive_writes} would_block={would_block} timed_out={timed_out} pending_call={pending_call:?} drain_ms={} total_ms={} outcome={outcome:?}",
+            drain.as_millis(),
+            start.elapsed().as_millis()
+        );
+        assert!(start.elapsed() < Duration::from_secs(10));
+        assert!(drain < Duration::from_secs(5));
+        assert!(completed <= FIXTURE_MAX_BYTES);
+        assert!(
+            completed > 0 && positive_writes > 0,
+            "no positive socket-write control"
+        );
+        assert!(
+            would_block + timed_out > 0,
+            "no actual socket WouldBlock/TimedOut observed"
+        );
+        assert!(
+            pending_call.is_some(),
+            "no same socket write remained unfinished before cancellation"
+        );
+        assert_eq!(outcome.unwrap_err().to_string(), "TLS Cancelled");
+    }
+
+    fn thread_scope(
+        observed: &Arc<WriteRetryObservation>,
+        cancel: &Arc<AtomicBool>,
+        start: Instant,
+        mut io: DeadlineIo,
+    ) -> (Option<usize>, io::Result<usize>, Duration) {
+        std::thread::scope(|scope| {
+            let writer_observation = observed.clone();
+            let writer = scope.spawn(move || {
+                let scratch = [0x5a; 8192];
+                let mut total = 0;
+                while total < FIXTURE_MAX_BYTES {
+                    let call = writer_observation
+                        .started_calls
+                        .fetch_add(1, Ordering::SeqCst)
+                        + 1;
+                    writer_observation.in_flight.store(call, Ordering::SeqCst);
+                    // The last write cannot exceed the fixed fixture ceiling.
+                    let remaining = (FIXTURE_MAX_BYTES - total).min(scratch.len());
+                    let result = io.write(&scratch[..remaining]);
+                    writer_observation.in_flight.store(0, Ordering::SeqCst);
+                    match result {
+                        Ok(0) => return Err(io::ErrorKind::WriteZero.into()),
+                        Ok(bytes) => {
+                            total += bytes;
+                            writer_observation
+                                .completed_bytes
+                                .store(total, Ordering::SeqCst);
+                            writer_observation
+                                .completed_writes
+                                .fetch_add(1, Ordering::SeqCst);
+                        }
+                        Err(error) => return Err(error),
+                    }
+                }
+                Ok(total)
+            });
+            let mut pending = None;
+            // Reserve the other half of the absolute ten seconds for cancellation
+            // and the unchanged five-second drain. No retry changes this clock.
+            while Instant::now() < start + Duration::from_secs(5) {
+                let retried = observed.retry_call.load(Ordering::SeqCst);
+                if retried != 0
+                    && observed.in_flight.load(Ordering::SeqCst) == retried
+                    && observed.completed_writes.load(Ordering::SeqCst) > 0
+                    && !writer.is_finished()
+                {
+                    pending = Some(retried);
+                    break;
+                }
+                if writer.is_finished() {
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            cancel.store(true, Ordering::SeqCst);
+            let drain = Instant::now();
+            let outcome = writer.join().unwrap();
+            (pending, outcome, drain.elapsed())
+        })
+    }
+}
+
+#[cfg(test)]
+#[path = "tls_frame_tests.rs"]
+mod frame_tests;

@@ -7,6 +7,57 @@ independently verifying your peer's full identity and device. Ordinary SSH does
 not decrypt this mail. Attachment-capable storage must be available at the homes;
 this preview does not deploy a provider or establish device attestation.
 
+## Optional device-provider transport
+
+The explicit `device-provider` client feature adds an optional local profile for
+attachment transfer. Select it with `--device-provider PRIVATE_PROFILE` alongside
+`--mail-online` or `--boards`; without selection the existing IQ route remains.
+Default, `native-mail` and `network-mail` builds exclude the provider. Both peers
+must belong to the configured local home; the provider connection is loopback only.
+The profile is local trust configuration, never supplied by a board, message or
+attachment locator. Its expected account, device and full identity must match the
+current unlocked vault. Transport certificates and keys are independent of the
+mail identity and BBS login. TLS possession is not OMEMO identity attestation.
+
+Keep the selected private root and its credential directories owned by you with
+mode `0700`. Configuration, CA, certificate and key must be bounded, owned regular
+files with mode `0600` and one hard link; path traversal follows no symlinks.
+The profile is a TOML file of at most 8192 bytes. Each nonempty PEM file is at
+most 65536 bytes and must be beneath the profile’s parent directory. For example,
+replace every illustrative value below with independently verified local values:
+
+```toml
+version = 1
+home = "home.example"
+endpoint = "127.0.0.1:12345"
+name = "home.example"
+pin = "0000000000000000000000000000000000000000000000000000000000000000"
+account = "alice@home.example"
+device = 101
+identity = "0000000000000000000000000000000000000000000000000000000000000000"
+ca = "/home/alice/.faction-provider/ca.pem"
+certificate = "/home/alice/.faction-provider/device.pem"
+key = "/home/alice/.faction-provider/device-key.pem"
+```
+
+The endpoint is a numeric loopback address with a nonzero port; `name` is the
+verified TLS server name and `pin` is the lowercase SHA-256 hex digest of its
+complete DER leaf certificate. `identity` is the complete vault public Ed25519
+identity in lowercase hex, and `device` is its integer device ID. The zero values
+are placeholders, not trusted credentials. Unknown fields, including passwords,
+are refused. Build explicitly with `--features device-provider`, then start either
+`--mail-online STORE CONFIG --device-provider PRIVATE_PROFILE` or
+`--boards CATALOG --device-provider PRIVATE_PROFILE`; `--unicode` is optional.
+
+The profile is checked at attachment actions, before spool or connection, rather
+than during ordinary mail. A selected provider failure stops the attachment action
+without falling back to the IQ route. Ordinary mail, BBS and files remain independent.
+Device fetch needs no home password. Upload asks for the home password only for
+the later ordinary encrypted-mail release after authenticated storage confirmation.
+If a response is lost, storage may already have changed: reopen and retry the exact
+persisted operation; a lost reply is neither rollback nor permission to release mail.
+
+
 ## Enable and retain
 
 Choose the desk's explicit attachment opt-in. It upgrades the encrypted checkpoint
@@ -48,7 +99,8 @@ cannot be fetched through this desk. Listing and inspecting metadata make no net
 connection and do not open the spool.
 
 Fetch requires the current healthy verified peer and identity to be eligible for
-network transfer. When the authenticated sender belongs to a foreign home, give
+network transfer. The selected device-provider route rejects a foreign-home sender.
+For the existing IQ route, when the authenticated sender belongs to a foreign home, give
 fresh explicit consent to that home. Its identity comes from the authenticated
 sender, never from an attachment locator. All traffic and the hidden password use
 your own configured pinned home; the sender can be offline. Refusal connects to
@@ -71,9 +123,11 @@ older manual ciphertext APIs have broader historical consumption rules; see the
 ## Foreground transfers and limits
 
 One explicitly requested transfer may make up to 65 SDK calls over a cooperative
-60-second total budget, using one hidden password for your own home only until the
-action returns. Each SDK call retains its own ten-second bound and at most four
-4096-byte chunks and eight storage IQ requests, along with its session limits.
+60-second total budget. The existing IQ route uses one hidden password for your
+own home until the action returns. Each SDK call retains its ten-second bound and
+at most four 4096-byte chunks. The provider allows eight attempted requests per
+session, five seconds for admission including TCP/TLS, a ten-second accepted cycle
+and five seconds for drain. Upload includes the later mail release in its call bound.
 The action continues only on successful forward progress and stops at the first
 error. It reports actual partial or completed bytes; there is no background retry
 or automatic reconnect. Ctrl-C or Ctrl-D cancels and locks. Retry deliberately
@@ -83,5 +137,9 @@ The desk is a software preview. A [NetBSD 11 ARM64 software qualification](../de
 exercised the production console and a 1 MiB transfer with both test homes, the
 client and handler on loopback inside one guest. This does not establish deployed
 provider behavior, device attestation, independent client interoperability,
-same-SSH tracing, physical hardware, a security audit or capacity. Text mail
+same-SSH tracing, physical hardware, a security audit or capacity. The separate
+[device-provider integration proof](../dev-docs/evidence/native-provider-client/README.md)
+exercises actual same-home mTLS transfers, ordinary encrypted-mail receipt and
+private save in classic and Unicode modes on host and fresh NetBSD. It retains
+the original failure observations and unchanged transfer limits. Text mail
 and classic board access remain separate and available.

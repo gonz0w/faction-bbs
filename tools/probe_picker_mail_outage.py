@@ -95,6 +95,15 @@ print(json.dumps(result))
 '''
 
 
+def client_arguments(args, catalog):
+    """Keep provider selection local and exercise the same production picker."""
+    command = [args.client, '--boards', catalog]
+    selected = getattr(args, 'device_provider', None)
+    if selected is not None:
+        command.extend(['--device-provider', selected])
+    return command
+
+
 def probe(a):
     root_info=a.private_root.lstat()
     assert stat.S_ISDIR(root_info.st_mode) and root_info.st_uid==os.getuid() and not root_info.st_mode & 0o077
@@ -159,7 +168,7 @@ def probe(a):
             output=files_command(sysop,'create '+handle+' members 1048576 Public synthetic transfer payload')
             area=int(re.findall(rb'Created file area (\d+)',output)[-1])
             checks.extend(CHECKS[:3])
-            c=LauncherConsole([a.client,'--boards',catalog]);children.append(c);picker_pid=c.pid;c.expect(PICK);unlock(c)
+            c=LauncherConsole(client_arguments(a,catalog));children.append(c);picker_pid=c.pid;c.expect(PICK);unlock(c)
             for action,message in [(b'n','Home cycle stopped; pending ciphertext retained.'),(b'a','Catch-up stopped; earlier accepted entries may already be saved.')]:
                 c.raw(action);c.password(home_password,HOME);c.expect(message);pause_mail(c)
             c.raw(b'h');c.expect('Authenticated history: 3/64')
@@ -202,6 +211,7 @@ def probe(a):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['client','checkpoint-fixture','mail-fixture','public-ca','settings','private-root','output']:p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--device-provider', type=Path, help='optional local selection passed unchanged to the production picker')
     a=p.parse_args()
     for name in ['client','checkpoint_fixture','mail_fixture','public_ca','settings','private_root','output']:setattr(a,name,getattr(a,name).resolve())
     result=probe(a);a.output.write_text(json.dumps(result,indent=2)+'\n');print('Combined picker outage journey passed:',result['count'])

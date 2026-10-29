@@ -1,0 +1,103 @@
+{
+  "host": {
+    "evidence_and_build_cache_root_removed": false,
+    "final_production_children_reaped": true,
+    "lead_final_journey_directory_count": 0,
+    "lead_final_owned_runtime_process_count": 0,
+    "method": "Lead checked owned-root/executable process membership and final journey directories; raw process output remains private.",
+    "private_runtime_fixture_removed": true,
+    "retention": "Archive bytes, membership and every included regular file matched original files before fixture removal. Evidence/build scratch remains until final publication retention; it is not claimed removed.",
+    "retention_archives": [
+      {
+        "bytes": 3145877901,
+        "members": 4795,
+        "regular_files_individually_compared": 3340,
+        "scope": "Development originals; target build cache excluded",
+        "seconds": 71.566,
+        "sha256": "06142441c9b704011a1ba573402b8428dd2a0d36277dc34097c479250ab42b2e"
+      },
+      {
+        "bytes": 369183727,
+        "members": 331,
+        "regular_files_individually_compared": 290,
+        "scope": "Qualified source handoffs, host execution, product proofs and indexes",
+        "seconds": 5.787,
+        "sha256": "9763d0ef0887c4a13d6dd8cb2f9184bf736c859f39949b88899445ec450200a4"
+      },
+      {
+        "bytes": 303,
+        "regular_files_individually_compared": 1,
+        "scope": "Short owned host fixture marker retained before removal",
+        "sha256": "35031626c705114cf01bd97b52ccc1c3c82a00487535e7787e71e83270ef6da8"
+      }
+    ],
+    "short_fixture_root_removed": true
+  },
+  "native": {
+    "actual_owned_guest_roots_removed": 4,
+    "earlier_retention": {
+      "initial_native_originals": {
+        "bytes": 81855127,
+        "sha256": "0e0e3f024bc0ec6952eaa1ca4b8cc2fd82179b53386ed059c442959dd0bab6bd"
+      },
+      "original_host_orchestration": {
+        "bytes": 10283823,
+        "sha256": "dd18247a7f9d8c7b17267b2ba904aaa58885ed4f8cffa7f379de21ed6cf1c1d0"
+      },
+      "original_observer_performance_red": {
+        "bytes": 1621377,
+        "sha256": "17943f9e2fa211b1a4964558b6422fccdfd5418836951a0a5e997df6beb8b478"
+      }
+    },
+    "forced_host_kills": false,
+    "former_loopback_forwards_verified_closed": 3,
+    "guest_markers_owners_no_follow_verified": true,
+    "host_orchestration_retention": {
+      "bytes": 135545,
+      "files": 144,
+      "sha256": "efe3ef1ef13e8318943597e60aa9e2dcd3c10a8cacdcf9cec9a281c18909fb89"
+    },
+    "owned_active_pointer_removed": true,
+    "owned_controller_stopped": true,
+    "owned_processes_disappeared_and_reaped_by_host": true,
+    "owned_run_and_clone_removed": true,
+    "owned_vm_stopped": true,
+    "owner_host_configuration_changed": false,
+    "owner_key_contents_copied": false,
+    "package_changes_performed": false,
+    "preexisting_native_prep_recipes_and_cache_preserved": true,
+    "private_capture_verified_before_guest_and_clone_removal": true,
+    "retention": {
+      "actual_current_binaries_verified": 12,
+      "actual_current_libraries_verified": 8,
+      "actual_current_source_inputs_verified": 448,
+      "actual_loader_verified": true,
+      "archive_bytes": 16333485,
+      "archive_sha256": "a23f8aed45e99574bab3c9e90b085cc9e4e5d77870bfd025132e99a228aacbe2",
+      "canonical_current_batch": true,
+      "files": 530,
+      "historical_root_record_executed_for_this_batch": false,
+      "historical_root_record_not_refreshed": true,
+      "members": 655,
+      "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380",
+      "source_map_sha256": "22794ae3d4332ca992edec3e2b6bdd3f7a1e74196bb2a63f0a4aabd8ce36ea90",
+      "whole_vm_cache_inherited_owner_backups_excluded": true
+    },
+    "retention_record_preceded_actual_teardown": true,
+    "saved_owner_assets_verified_exact": 86,
+    "saved_owner_images_verified_closed": 6,
+    "saved_owner_playground_started": false,
+    "shutdown_was_normal": true,
+    "source_commit": "65952eac8a3b11a4aab2d0bd1ac0e922f64c3380"
+  },
+  "publication": "Whitelist factual JSON and source bytes only. No raw logs, private paths/argv/endpoints/member values, generated key bytes, vaults or plaintext runtime captures are published. Executable digests are public; executable bytes remain private.",
+  "publication_privacy_scan": {
+    "all_runtime_values_covered": false,
+    "available_actual_private_values": 551,
+    "files_scanned": 509,
+    "known_committed_public_constants_excluded": 17,
+    "matches": 0,
+    "scope": "Exact available retained values against curated record and frozen source bytes; unavailable deleted or in-memory runtime secrets are not covered."
+  },
+  "schema": 1
+}

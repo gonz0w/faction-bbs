@@ -3,6 +3,8 @@
 #[cfg(feature = "native-mail")]
 mod checkpoint_ui;
 mod connection;
+#[cfg(feature = "device-provider")]
+mod device_provider_profile;
 mod launcher;
 mod mail_ui;
 use faction_client::{mail_data, mail_vault};
@@ -583,8 +585,16 @@ fn private_mail_console(
     }
     t.print("\x1b[2J\x1b[H")?;
     termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
-    let result =
-        checkpoint_ui::run_online_with_status(&home.paths.store, &home.paths.config, home.unicode);
+    let result = if home.provider_profile.is_some() {
+        checkpoint_ui::run_online_with_status_and_provider(
+            &home.paths.store,
+            &home.paths.config,
+            home.unicode,
+            home.provider_profile,
+        )
+    } else {
+        checkpoint_ui::run_online_with_status(&home.paths.store, &home.paths.config, home.unicode)
+    };
     // The console has dropped its vault, secrets and terminal guard before
     // clearing or reading the board again. Scrollback is not erased.
     t.print("\x1b[2J\x1b[H")?;
@@ -677,8 +687,56 @@ fn main_menu_mail(
     termios::tcflush(&t.input, termios::QueueSelector::IFlush)?;
     r.mail_exchange(&Request::Back(nonce))
 }
+// Only the local command line selects this path. Parsing never reads credentials.
+fn provider_option(args: &[String]) -> io::Result<(Vec<String>, Option<PathBuf>)> {
+    let mut kept = Vec::new();
+    #[cfg(feature = "device-provider")]
+    let mut selected = None;
+    #[cfg(not(feature = "device-provider"))]
+    let selected = None;
+    let mut i = 0;
+    while i < args.len() {
+        if args[i] == "--device-provider" {
+            #[cfg(not(feature = "device-provider"))]
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "device-provider requires an explicit device-provider build",
+            ));
+            #[cfg(feature = "device-provider")]
+            {
+                if selected.is_some()
+                    || !args
+                        .first()
+                        .is_some_and(|a| matches!(a.as_str(), "--mail-online" | "--boards"))
+                {
+                    return Err(invalid());
+                }
+                i += 1;
+                let path = PathBuf::from(args.get(i).ok_or_else(invalid)?);
+                if !path.is_absolute()
+                    || path.components().any(|p| {
+                        matches!(
+                            p,
+                            std::path::Component::ParentDir | std::path::Component::CurDir
+                        )
+                    })
+                {
+                    return Err(invalid());
+                }
+                selected = Some(path);
+            }
+        } else {
+            kept.push(args[i].clone());
+        }
+        i += 1;
+    }
+    Ok((kept, selected))
+}
 fn run() -> io::Result<()> {
-    let args = std::env::args().skip(1).collect::<Vec<_>>();
+    let original = std::env::args().skip(1).collect::<Vec<_>>();
+    let (args, provider_profile) = provider_option(&original)?;
+    #[cfg(not(feature = "network-mail"))]
+    let _ = provider_profile;
     if args.first().is_some_and(|s| s == "--passport-store") {
         return passport::cli(&args);
     }
@@ -698,11 +756,16 @@ fn run() -> io::Result<()> {
         if !(args.len() == 3 || (args.len() == 4 && args[3] == "--unicode")) {
             return Err(invalid());
         }
-        return checkpoint_ui::run_online(
-            Path::new(&args[1]),
-            Path::new(&args[2]),
-            args.len() == 4,
-        );
+        return if provider_profile.is_some() {
+            checkpoint_ui::run_online_with_provider(
+                Path::new(&args[1]),
+                Path::new(&args[2]),
+                args.len() == 4,
+                provider_profile.as_deref(),
+            )
+        } else {
+            checkpoint_ui::run_online(Path::new(&args[1]), Path::new(&args[2]), args.len() == 4)
+        };
     }
     #[cfg(feature = "native-mail")]
     if args.first().is_some_and(|s| s == "--mail-checkpoints") {
@@ -780,6 +843,7 @@ fn run() -> io::Result<()> {
     let home = catalog.home_mail.as_ref().map(|paths| visit_mail::Home {
         paths,
         unicode: mail_unicode,
+        provider_profile: provider_profile.as_deref(),
     });
     let mut last = 0;
     loop {
@@ -823,7 +887,12 @@ fn run() -> io::Result<()> {
                     last = selected;
                     // Trusted local picker only, between visits: no Remote/SSH child.
                     let home = catalog.home_mail.as_ref().ok_or_else(invalid)?;
-                    let result = checkpoint_ui::run_online(&home.store, &home.config, mail_unicode);
+                    let result = checkpoint_ui::run_online_with_provider(
+                        &home.store,
+                        &home.config,
+                        mail_unicode,
+                        provider_profile.as_deref(),
+                    );
                     // run_online drops the vault and terminal guard before returning.
                     // Clear the local viewport; terminal scrollback is not erased.
                     t.print("\x1b[2J\x1b[H")?;
@@ -1092,6 +1161,58 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn provider_option_absence_preserves_arguments() {
+        let args = vec!["--mail-online".into(), "/store".into(), "/mail".into()];
+        let (kept, selected) = provider_option(&args).unwrap();
+        assert_eq!(kept, args);
+        assert_eq!(selected, None);
+    }
+    #[cfg(feature = "device-provider")]
+    #[test]
+    fn provider_option_is_deliberate_local_and_unique() {
+        let args: Vec<String> = [
+            "--mail-online",
+            "/store",
+            "/mail",
+            "--device-provider",
+            "/private/profile",
+            "--unicode",
+        ]
+        .iter()
+        .map(|s| (*s).into())
+        .collect();
+        let (kept, selected) = provider_option(&args).unwrap();
+        assert_eq!(selected.as_deref(), Some(Path::new("/private/profile")));
+        assert_eq!(kept, ["--mail-online", "/store", "/mail", "--unicode"]);
+        for args in [
+            vec!["--mail-online", "/s", "/m", "--device-provider"],
+            vec!["--mail-online", "/s", "/m", "--device-provider", "relative"],
+            vec!["--profile", "/bbs", "--device-provider", "/profile"],
+            vec![
+                "--boards",
+                "/catalog",
+                "--device-provider",
+                "/one",
+                "--device-provider",
+                "/two",
+            ],
+        ] {
+            assert!(
+                provider_option(&args.into_iter().map(str::to_owned).collect::<Vec<_>>()).is_err()
+            );
+        }
+    }
+    #[cfg(not(feature = "device-provider"))]
+    #[test]
+    fn provider_option_requires_explicit_compiled_feature() {
+        let args =
+            ["--mail-online", "/s", "/m", "--device-provider", "/profile"].map(str::to_owned);
+        assert_eq!(
+            provider_option(&args).unwrap_err().kind(),
+            io::ErrorKind::Unsupported
+        );
+    }
     #[test]
     fn main_menu_mail_offers_exact_fixed_local_choices() {
         assert_eq!(

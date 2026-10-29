@@ -39,17 +39,39 @@ def validate_profile(manifest, workspace):
 
 
 def validate_product_edges(manifests):
-    for manifest in manifests.values():
+    client = 'crates/faction-client/Cargo.toml'
+    features = {'default': [],
+                'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
+                'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
+                'device-provider': ['network-mail', 'dep:faction-provider', 'tokio/sync']}
+    edge = {'path': '../faction-provider', 'optional': True, 'default-features': False}
+    for name, manifest in manifests.items():
+        require(not any(key in manifest for key in ['patch', 'replace']), 'unreviewed dependency replacement')
+        if name == client:
+            require(manifest.get('features') == features, 'client provider feature profile changed')
+            require(manifest.get('dependencies', {}).get('faction-provider') == edge,
+                    'client provider must remain the exact default-off local dependency')
         for section in ['dependencies', 'build-dependencies', 'dev-dependencies']:
-            tables = [manifest.get(section, {})]
-            tables += [target.get(section, {}) for target in manifest.get('target', {}).values()]
-            for dependencies in tables:
+            tables = [(section, manifest.get(section, {}))]
+            tables += [('target', target.get(section, {})) for target in manifest.get('target', {}).values()]
+            tables += [('workspace', manifest.get('workspace', {}).get(section, {}))]
+            for location, dependencies in tables:
                 for alias, dependency in dependencies.items():
-                    require(alias != 'faction-provider', 'provider cannot be an ordinary product dependency')
-                    if isinstance(dependency, dict):
-                        require(dependency.get('package') != 'faction-provider'
-                                and Path(dependency.get('path', '')).name != 'faction-provider',
+                    provider = alias == 'faction-provider' or (isinstance(dependency, dict) and
+                        (dependency.get('package') == 'faction-provider'
+                         or Path(dependency.get('path', '')).name == 'faction-provider'))
+                    if provider:
+                        require(name == client and location == 'dependencies'
+                                and alias == 'faction-provider' and dependency == edge,
                                 'provider cannot be an ordinary product dependency')
+
+
+def validate_graph(metadata, enabled):
+    selected = [(package, features) for package, features in selected_packages(metadata)
+                if package['name'] == 'faction-provider']
+    require(bool(selected) == enabled, 'provider leaked into an ordinary graph or is absent from the selected graph')
+    if enabled:
+        require(len(selected) == 1 and not selected[0][1], 'client provider must not activate provider features')
 
 
 def check_inventory(path, current):
@@ -104,6 +126,23 @@ def validate_ci(text):
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features blob-iq -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
+    native = _step(provider, 'Validate the native authenticated attachment client')
+    for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+        require(native.splitlines().count('          ' + setting) == 1, 'native provider CI resource/toolchain environment changed')
+    commands = ['cargo metadata --locked --format-version 1 --filter-platform ' + target
+                + ' --features faction-client/device-provider > /dev/null' for target in TARGETS]
+    commands += ['python3 tools/check_provider_dependencies.py',
+                 'cargo clippy -p faction-client --features device-provider --all-targets --release --locked -- -D warnings',
+                 'cargo test -p faction-client --features device-provider --all-targets --release --locked -- --test-threads=1']
+    commands += [
+        'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
+        'umask 077',
+        'mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"',
+        "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
+        'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
+    ]
+    require(_lines(native, {'cargo', 'python3', 'umask', 'mkdir', 'printf'}) == commands,
+            'native provider CI must qualify selected sources before all-target locked validation')
     documentation = _job(text, 'documentation')
     require('    needs: [native_mail, provider]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
@@ -120,22 +159,38 @@ def inventory():
     workspace = tomllib.loads((ROOT / 'Cargo.toml').read_text())
     validate_profile(tomllib.loads(MANIFEST.read_text()), workspace)
     validate_ci((ROOT / '.github/workflows/documentation.yml').read_text())
-    product = {'workspace': workspace.get('workspace', {})}
+    product = {'Cargo.toml': workspace}
     for member in workspace['workspace'].get('members', []):
         for path in ROOT.glob(member.rstrip('/') + '/Cargo.toml'):
             product[path.relative_to(ROOT).as_posix()] = tomllib.loads(path.read_text())
     validate_product_edges(product)
     lock = MANIFEST.parent / 'Cargo.lock'
     checks = existing_checks(tomllib.loads((ROOT / 'Cargo.lock').read_text()), tomllib.loads(lock.read_text()))
+    # An optional manifest edge is not a selected runtime edge. Check all three
+    # ordinary product selections on every adopted platform before source review.
+    for features in [[], ['faction-client/native-mail'], ['faction-client/network-mail']]:
+        for target in TARGETS:
+            command = ['cargo', 'metadata', '--locked', '--offline', '--manifest-path', str(ROOT / 'Cargo.toml'),
+                       '--format-version', '1', '--filter-platform', target]
+            if features:
+                command += ['--features', ','.join(features)]
+            validate_graph(json.loads(subprocess.check_output(command, text=True)), False)
+    root_checks = existing_checks(tomllib.loads((ROOT / 'Cargo.lock').read_text()),
+                                  tomllib.loads((ROOT / 'Cargo.lock').read_text()))
     profiles = {}; verified = {}
-    for profile, features in [('default', []), ('blob-iq', ['blob-iq'])]:
+    for profile, features in [('default', []), ('blob-iq', ['blob-iq']),
+                              ('device-provider', ['faction-client/device-provider'])]:
         graphs = {}
         for target in TARGETS:
-            command = ['cargo', 'metadata', '--locked', '--offline', '--manifest-path', str(MANIFEST),
+            selected_manifest = ROOT / 'Cargo.toml' if profile == 'device-provider' else MANIFEST
+            command = ['cargo', 'metadata', '--locked', '--offline', '--manifest-path', str(selected_manifest),
                        '--format-version', '1', '--filter-platform', target]
             if features:
                 command += ['--features', ','.join(features)]
             metadata = json.loads(subprocess.check_output(command, text=True))
+            if profile == 'device-provider':
+                validate_graph(metadata, True)
+            selected_checks = root_checks if profile == 'device-provider' else checks
             rows = []; local = []
             for package, selected_features in selected_packages(metadata):
                 path = Path(package['manifest_path'])
@@ -143,18 +198,18 @@ def inventory():
                     local.append(scan_local(package, selected_features, ROOT))
                     continue
                 key = (package['name'], package['version'], package['source'])
-                require(key in checks, 'selected source missing from provider lock')
+                require(key in selected_checks, 'selected source missing from qualified lock')
                 require('vendored' not in selected_features, 'provider cannot silently vendor OpenSSL')
-                row = scan_package(package, selected_features, checks[key])
+                row = scan_package(package, selected_features, selected_checks[key])
                 if key not in verified:
                     source = path.parent
                     archive = source.parents[2] / 'cache' / source.parent.name / (package['name'] + '-' + package['version'] + '.crate')
-                    verified[key] = verify_archive_source(source, archive, checks[key])
+                    verified[key] = verify_archive_source(source, archive, selected_checks[key])
                 row.update(verified[key]); rows.append(row)
             graphs[target] = dict(registry=sorted(rows, key=lambda package: (package['name'], package['version'])),
                                   local=sorted(local, key=lambda package: package['name']))
         profiles[profile] = dict(selected_features=features, graphs=graphs)
-    return json.dumps(dict(schema=2, scope='explicit-provider-embedding',
+    return json.dumps(dict(schema=3, scope='explicit-provider-embedding',
         root_lock_sha256=digest(ROOT / 'Cargo.lock'), provider_lock_sha256=digest(lock),
         manifest_sha256=digest(MANIFEST), profiles=profiles, upstream_ci_executed=False), indent=2, sort_keys=True) + '\n'
 

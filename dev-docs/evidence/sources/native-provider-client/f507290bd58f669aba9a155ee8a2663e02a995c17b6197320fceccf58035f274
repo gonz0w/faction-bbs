@@ -1,0 +1,898 @@
+//! Deliberate bounded encrypted attachment cycles. No background task or UI.
+use crate::{
+    mail_checkpoint::{CheckpointVault, Direction, Record, Wire},
+    mail_network::{self, Settings},
+};
+use faction_files::private_blobs::{
+    self as blobs, Access, Action, Binding, Principal, Request, Response,
+};
+use faction_omemo::{
+    attachment::Descriptor,
+    blob::{self, VerifiedBlob},
+};
+use sha2::{Digest, Sha256};
+use std::{path::Path, time::Instant};
+use zeroize::Zeroizing;
+const PREFIX: &str = "urn:faction:blob:1:";
+pub const CHUNKS_PER_CYCLE: usize = 4;
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Error {
+    State,
+    Intent,
+    Selection,
+    Route,
+    Protocol,
+    Blob,
+    Storage(blobs::Error),
+    Transport(faction_xmpp::Error),
+    Mail(mail_network::Error),
+    #[cfg(feature = "device-provider")]
+    Device(crate::mail_device_provider::Error),
+    Save(crate::attachment_save::SaveError),
+}
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("private attachment operation unavailable")
+    }
+}
+impl std::error::Error for Error {}
+fn state<T>(r: std::io::Result<T>) -> Result<T, Error> {
+    r.map_err(|_| Error::State)
+}
+fn store<T>(r: Result<T, blobs::Error>) -> Result<T, Error> {
+    r.map_err(Error::Storage)
+}
+fn digest(bytes: &[u8]) -> [u8; 32] {
+    Sha256::digest(bytes).into()
+}
+fn id(d: &Descriptor) -> Result<[u8; 32], Error> {
+    crate::mail_data::unhex(d.locator.strip_prefix(PREFIX).ok_or(Error::Selection)?)
+        .map_err(|_| Error::Selection)
+}
+fn principal(v: &CheckpointVault) -> Result<Principal, Error> {
+    let s = state(v.inspection())?;
+    Ok(Principal {
+        account: state(v.legacy())?.home.clone(),
+        device: s.local_device,
+        identity: *s.identity,
+    })
+}
+fn health(v: &CheckpointVault, now: u64) -> Result<Principal, Error> {
+    state(v.publication(now))?;
+    let s = state(v.inspection())?;
+    if !s.attachments_enabled || s.peer.is_none() {
+        return Err(Error::State);
+    }
+    principal(v)
+}
+fn peer_matches(v: &CheckpointVault, r: &Record) -> Result<(), Error> {
+    let s = state(v.inspection())?;
+    let p = s.peer.ok_or(Error::State)?;
+    if p.revoked || p.address != r.address || p.device != r.device || *p.identity != r.identity {
+        return Err(Error::State);
+    }
+    Ok(())
+}
+fn binding(own: Principal, r: &Record) -> Result<Binding, Error> {
+    let other = Principal {
+        account: r.address.clone(),
+        device: r.device,
+        identity: r.identity,
+    };
+    let d = r.attachment().ok_or(Error::Selection)?;
+    let (sender, recipient) = if r.direction == Direction::Sent {
+        (own, other)
+    } else {
+        (other, own)
+    };
+    let b = Binding {
+        sender,
+        recipient,
+        id: id(d)?,
+        size: d.size.checked_add(16).ok_or(Error::Selection)?,
+        created: r.sent_at,
+        expires: r
+            .sent_at
+            .checked_add(blobs::MAX_RETENTION)
+            .ok_or(Error::Selection)?,
+    };
+    store(b.validate())?;
+    Ok(b)
+}
+fn local_binding(own: &Principal, b: &Binding) -> Binding {
+    Binding {
+        sender: own.clone(),
+        recipient: own.clone(),
+        ..b.clone()
+    }
+}
+struct Local<'a>(&'a Principal);
+impl Access for Local<'_> {
+    fn require(&self, a: &Principal, b: &Binding, _: Action, _: u64) -> Result<(), blobs::Error> {
+        if a == self.0 && b.sender == *self.0 && b.recipient == *self.0 {
+            Ok(())
+        } else {
+            Err(blobs::Error::Denied)
+        }
+    }
+}
+/// A separate member-local ciphertext directory; eight objects, seven days max.
+/// Uses the storage implementation's private no-follow paths, lock and recovery.
+pub struct Spool {
+    store: blobs::Store,
+}
+impl Spool {
+    pub fn open(path: &Path) -> Result<Self, Error> {
+        use rustix::fs::{self, Mode, OFlags};
+        use std::{fs::File, path::Component};
+        if !path.is_absolute() {
+            return Err(Error::Selection);
+        }
+        let mut dir = File::from(
+            fs::open(
+                "/",
+                OFlags::RDONLY | OFlags::DIRECTORY | OFlags::CLOEXEC,
+                Mode::empty(),
+            )
+            .map_err(|_| Error::State)?,
+        );
+        let parts: Vec<_> = path.components().collect();
+        for (i, p) in parts.iter().enumerate() {
+            match p {
+                Component::RootDir => (),
+                Component::Normal(n) => {
+                    if i + 1 == parts.len() {
+                        match fs::mkdirat(&dir, *n, Mode::from_raw_mode(0o700)) {
+                            Ok(()) => state(dir.sync_all())?,
+                            Err(e) if e == rustix::io::Errno::EXIST => (),
+                            Err(_) => return Err(Error::State),
+                        }
+                    }
+                    dir = File::from(
+                        fs::openat(
+                            &dir,
+                            *n,
+                            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                            Mode::empty(),
+                        )
+                        .map_err(|_| Error::State)?,
+                    );
+                }
+                _ => return Err(Error::Selection),
+            }
+        }
+        Ok(Self {
+            store: store(blobs::Store::open(path))?,
+        })
+    }
+    fn call(&mut self, own: &Principal, request: Request, now: u64) -> Result<Response, Error> {
+        store(self.store.dispatch(own, &Local(own), request, now))
+    }
+    fn begin(&mut self, own: &Principal, b: &Binding, now: u64) -> Result<(u64, bool), Error> {
+        progress(
+            self.call(own, Request::Begin(local_binding(own, b)), now)?,
+            &local_binding(own, b),
+        )
+    }
+    fn bytes(&mut self, own: &Principal, b: &Binding, now: u64) -> Result<Vec<u8>, Error> {
+        let local = local_binding(own, b);
+        let (offset, committed) =
+            progress(self.call(own, Request::Status { id: b.id }, now)?, &local)?;
+        if !committed || offset != b.size {
+            return Err(Error::State);
+        }
+        let mut bytes = Vec::with_capacity(b.size as usize);
+        while bytes.len() < (b.size as usize) {
+            match self.call(
+                own,
+                Request::GetChunk {
+                    id: b.id,
+                    offset: bytes.len() as u64,
+                },
+                now,
+            )? {
+                Response::Chunk {
+                    offset,
+                    bytes: chunk,
+                    total,
+                } if offset == bytes.len() as u64
+                    && total == b.size
+                    && !chunk.is_empty()
+                    && chunk.len() <= blobs::CHUNK
+                    && bytes.len() + chunk.len() <= b.size as usize =>
+                {
+                    bytes.extend(chunk)
+                }
+                _ => return Err(Error::Protocol),
+            }
+        }
+        if digest(&bytes) != b.id {
+            return Err(Error::Blob);
+        }
+        Ok(bytes)
+    }
+    /// Explicit retirement also works after expiry. Downloaded copies elsewhere remain.
+    pub fn delete(&mut self, vault: &CheckpointVault, id: [u8; 32], now: u64) -> Result<(), Error> {
+        let own = principal(vault)?;
+        match self.call(&own, Request::Delete { id }, now)? {
+            Response::Deleted => Ok(()),
+            _ => Err(Error::Protocol),
+        }
+    }
+}
+/// Trusted local bytes and intent. The API never derives a source path from mail.
+pub struct Selection<'a> {
+    pub name: &'a str,
+    pub media_type: &'a str,
+    pub bytes: &'a [u8],
+    pub subject: &'a str,
+    pub body: &'a str,
+    pub sent_at: u64,
+}
+/// Encrypt once, publish ciphertext durably, then queue the descriptor atomically.
+/// A crash before queue may leave an opaque orphan; quotas bound it. No key sidecar.
+pub fn prepare(
+    vault: &mut CheckpointVault,
+    spool: &mut Spool,
+    operation: [u8; 16],
+    selected: Selection<'_>,
+    now: u64,
+) -> Result<Wire, Error> {
+    let own = health(vault, now)?;
+    if operation == [0; 16] || selected.bytes.len() > blob::MAX_BLOB_BYTES {
+        return Err(Error::Intent);
+    }
+    if let Some(r) = state(vault.history())?
+        .iter()
+        .find(|r| r.direction == Direction::Sent && r.operation() == operation)
+    {
+        peer_matches(vault, r)?;
+        let d = r.attachment().ok_or(Error::Intent)?;
+        if d.name.as_str() != selected.name
+            || d.media_type.as_str() != selected.media_type
+            || r.subject.as_str() != selected.subject
+            || r.body.as_str() != selected.body
+            || r.sent_at != selected.sent_at
+        {
+            return Err(Error::Intent);
+        }
+        let b = binding(own, r)?;
+        let bytes = spool.bytes(&b.sender, &b, now)?;
+        let verified = blob::verify(&bytes, d).map_err(|_| Error::Blob)?;
+        if verified.as_bytes() != selected.bytes {
+            return Err(Error::Intent);
+        }
+        let descriptor = d_copy(d);
+        return state(vault.queue_attachment(
+            operation,
+            selected.subject,
+            selected.body,
+            &descriptor,
+            selected.sent_at,
+            now,
+        ));
+    }
+    let encrypted = blob::encrypt(selected.bytes).map_err(|_| Error::Blob)?;
+    let cipher_id = digest(&encrypted.ciphertext);
+    let d = Descriptor {
+        name: Zeroizing::new(selected.name.into()),
+        media_type: Zeroizing::new(selected.media_type.into()),
+        size: encrypted.size,
+        hash: encrypted.hash,
+        key: encrypted.key,
+        iv: encrypted.iv,
+        locator: Zeroizing::new(format!("{PREFIX}{}", crate::mail_data::hex(&cipher_id))),
+    };
+    d.validate().map_err(|_| Error::Intent)?;
+    let s = state(vault.inspection())?;
+    let p = s.peer.ok_or(Error::State)?;
+    let b = Binding {
+        sender: own.clone(),
+        recipient: Principal {
+            account: p.address.into(),
+            device: p.device,
+            identity: *p.identity,
+        },
+        id: cipher_id,
+        size: encrypted.ciphertext.len() as u64,
+        created: selected.sent_at,
+        expires: selected
+            .sent_at
+            .checked_add(blobs::MAX_RETENTION)
+            .ok_or(Error::Intent)?,
+    };
+    store(b.validate())?;
+    spool.begin(&own, &b, now)?;
+    for (offset, chunk) in encrypted.ciphertext.chunks(blobs::CHUNK).enumerate() {
+        spool.call(
+            &own,
+            Request::PutChunk {
+                id: cipher_id,
+                offset: (offset * blobs::CHUNK) as u64,
+                bytes: chunk.to_vec(),
+            },
+            now,
+        )?;
+    }
+    progress(
+        spool.call(&own, Request::Commit { id: cipher_id }, now)?,
+        &local_binding(&own, &b),
+    )?;
+    state(vault.queue_attachment(
+        operation,
+        selected.subject,
+        selected.body,
+        &d,
+        selected.sent_at,
+        now,
+    ))
+}
+fn d_copy(d: &Descriptor) -> Descriptor {
+    Descriptor {
+        name: Zeroizing::new(d.name.to_string()),
+        media_type: Zeroizing::new(d.media_type.to_string()),
+        size: d.size,
+        hash: Zeroizing::new(*d.hash),
+        key: Zeroizing::new(*d.key),
+        iv: Zeroizing::new(*d.iv),
+        locator: Zeroizing::new(d.locator.to_string()),
+    }
+}
+fn progress(r: Response, expected: &Binding) -> Result<(u64, bool), Error> {
+    match r {
+        Response::Progress {
+            binding,
+            offset,
+            committed,
+        } if binding == *expected
+            && offset <= binding.size
+            && (!committed || offset == binding.size) =>
+        {
+            Ok((offset, committed))
+        }
+        _ => Err(Error::Protocol),
+    }
+}
+/// Explicit invited sender homes. A locator cannot supply a network destination.
+pub struct InvitedHomes {
+    homes: Vec<String>,
+}
+impl InvitedHomes {
+    pub fn new(homes: &[&str]) -> Result<Self, Error> {
+        if homes.len() > 32 {
+            return Err(Error::Route);
+        }
+        let mut out = Vec::new();
+        for h in homes {
+            if !crate::mail_data::address(&format!("service@{h}"))
+                || !h.contains('.')
+                || out.iter().any(|x| x == h)
+            {
+                return Err(Error::Route);
+            }
+            out.push(h.to_string());
+        }
+        Ok(Self { homes: out })
+    }
+}
+fn home(account: &str) -> Result<&str, Error> {
+    account.split_once('@').map(|x| x.1).ok_or(Error::Route)
+}
+struct Clock {
+    epoch: u64,
+    start: Instant,
+}
+impl Clock {
+    fn new(epoch: u64) -> Self {
+        Self {
+            epoch,
+            start: Instant::now(),
+        }
+    }
+    fn now(&self) -> u64 {
+        self.epoch.saturating_add(self.start.elapsed().as_secs())
+    }
+}
+fn network(v: &CheckpointVault, settings: &Settings, now: u64) -> Result<Principal, Error> {
+    let own = health(v, now)?;
+    if own.account != settings.account {
+        return Err(Error::State);
+    }
+    Ok(own)
+}
+#[derive(Clone, Copy)]
+enum TransferRoute<'a> {
+    Iq(&'a Settings),
+    #[cfg(feature = "device-provider")]
+    Device(
+        &'a Settings,
+        &'a crate::mail_device_provider::DeviceProvider,
+    ),
+}
+enum Carrier {
+    Iq(Box<faction_xmpp::Session>),
+    #[cfg(feature = "device-provider")]
+    Device(crate::mail_device_provider::Worker),
+}
+impl TransferRoute<'_> {
+    fn settings(&self) -> &Settings {
+        match self {
+            Self::Iq(settings) => settings,
+            #[cfg(feature = "device-provider")]
+            Self::Device(settings, _) => settings,
+        }
+    }
+    fn check(&self, vault: &CheckpointVault, now: u64) -> Result<Principal, Error> {
+        let own = network(vault, self.settings(), now)?;
+        #[cfg(feature = "device-provider")]
+        if let Self::Device(_, provider) = self {
+            provider.validate(vault).map_err(Error::Device)?;
+        }
+        Ok(own)
+    }
+    fn binding(&self, binding: &Binding) -> Result<(), Error> {
+        #[cfg(feature = "device-provider")]
+        if let Self::Device(_, provider) = self
+            && (!provider.permits_home(&binding.sender.account)
+                || !provider.permits_home(&binding.recipient.account))
+        {
+            return Err(Error::Route);
+        }
+        #[cfg(not(feature = "device-provider"))]
+        let _ = binding;
+        Ok(())
+    }
+    async fn connect(&self, device: u32, password: &str) -> Result<Carrier, Error> {
+        match self {
+            Self::Iq(settings) => {
+                let transport = settings.transport(device).map_err(Error::Transport)?;
+                faction_xmpp::connect(&transport, password)
+                    .await
+                    .map(Box::new)
+                    .map(Carrier::Iq)
+                    .map_err(Error::Transport)
+            }
+            #[cfg(feature = "device-provider")]
+            Self::Device(_, provider) => provider
+                .open()
+                .await
+                .map(Carrier::Device)
+                .map_err(Error::Device),
+        }
+    }
+}
+async fn request(
+    session: &mut Carrier,
+    v: &CheckpointVault,
+    route: TransferRoute<'_>,
+    service: &str,
+    request: Request,
+    count: &mut usize,
+    clock: &Clock,
+) -> Result<Response, Error> {
+    route.check(v, clock.now())?;
+    if *count == 8 {
+        return Err(Error::Protocol);
+    }
+    *count += 1;
+    let response = match session {
+        Carrier::Iq(session) => {
+            let id = format!("blob-{}", *count);
+            let settings = route.settings();
+            let xml = crate::mail_blob_wire::request(&id, &settings.account, service, &request)
+                .map_err(|_| Error::Protocol)?;
+            session.send(&xml).await.map_err(Error::Transport)?;
+            let response = session.next().await.map_err(Error::Transport)?;
+            route.check(v, clock.now())?;
+            crate::mail_blob_wire::decode_response(&response, &id, &settings.account, service)
+                .map_err(|error| match error {
+                    crate::mail_blob_wire::Error::Remote(error) => Error::Storage(error),
+                    _ => Error::Protocol,
+                })?
+        }
+        #[cfg(feature = "device-provider")]
+        Carrier::Device(worker) => worker.request(request).await.map_err(Error::Device)?,
+    };
+    route.check(v, clock.now())?;
+    Ok(response)
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct Report {
+    pub offset: u64,
+    pub complete: bool,
+    pub requests: usize,
+    pub sent: usize,
+}
+/// Internal capability minted only after a pinned authenticated storage reply.
+pub(crate) struct Release {
+    binding: Binding,
+    operation: [u8; 16],
+    wire: Wire,
+}
+impl Release {
+    pub(crate) fn permits(&self, v: &CheckpointVault, op: [u8; 16], wire: &Wire, now: u64) -> bool {
+        if op != self.operation
+            || wire != &self.wire
+            || now < self.binding.created
+            || now >= self.binding.expires
+        {
+            return false;
+        }
+        let Ok(own) = health(v, now) else {
+            return false;
+        };
+        let Ok(rows) = v.history() else { return false };
+        rows.iter()
+            .find(|r| r.direction == Direction::Sent && r.operation() == op)
+            .is_some_and(|r| {
+                peer_matches(v, r).is_ok() && binding(own, r).is_ok_and(|b| b == self.binding)
+            })
+    }
+}
+pub async fn upload_cycle(
+    vault: &mut CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    password: &str,
+    operation: [u8; 16],
+    now: u64,
+) -> Result<Report, Error> {
+    within_cycle(
+        std::time::Duration::from_secs(10),
+        upload_inner(
+            vault,
+            spool,
+            TransferRoute::Iq(settings),
+            password,
+            operation,
+            now,
+        ),
+    )
+    .await
+}
+/// Explicit authenticated device transport. Any failure stays on this route;
+/// ordinary XMPP is used only for the existing separate encrypted-mail release.
+#[cfg(feature = "device-provider")]
+pub async fn upload_device_cycle(
+    vault: &mut CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    password: &str,
+    provider: &crate::mail_device_provider::DeviceProvider,
+    operation: [u8; 16],
+    now: u64,
+) -> Result<Report, Error> {
+    within_cycle(
+        std::time::Duration::from_secs(10),
+        upload_inner(
+            vault,
+            spool,
+            TransferRoute::Device(settings, provider),
+            password,
+            operation,
+            now,
+        ),
+    )
+    .await
+}
+/// Same-home received ciphertext only; no account password or delegated foreign
+/// sender authority exists on the binary device transport.
+#[cfg(feature = "device-provider")]
+pub async fn fetch_device_cycle(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    provider: &crate::mail_device_provider::DeviceProvider,
+    selected: ReceivedSelection,
+    now: u64,
+) -> Result<Report, Error> {
+    let invited = InvitedHomes { homes: Vec::new() };
+    within_cycle(
+        std::time::Duration::from_secs(10),
+        fetch_inner(
+            vault,
+            spool,
+            TransferRoute::Device(settings, provider),
+            "",
+            &invited,
+            selected,
+            now,
+        ),
+    )
+    .await
+}
+async fn within_cycle<T>(
+    duration: std::time::Duration,
+    future: impl std::future::Future<Output = Result<T, Error>>,
+) -> Result<T, Error> {
+    tokio::time::timeout(duration, future)
+        .await
+        .map_err(|_| Error::Transport(faction_xmpp::Error::Timeout))?
+}
+async fn upload_inner(
+    vault: &mut CheckpointVault,
+    spool: &mut Spool,
+    route: TransferRoute<'_>,
+    password: &str,
+    operation: [u8; 16],
+    now: u64,
+) -> Result<Report, Error> {
+    let clock = Clock::new(now);
+    let own = route.check(vault, clock.now())?;
+    let r = state(vault.history())?
+        .iter()
+        .find(|r| r.direction == Direction::Sent && r.operation() == operation)
+        .ok_or(Error::Selection)?;
+    peer_matches(vault, r)?;
+    let b = binding(own.clone(), r)?;
+    route.binding(&b)?;
+    let wire = state(vault.pending_deliveries(clock.now()))?
+        .into_iter()
+        .find(|p| p.operation == operation)
+        .ok_or(Error::Selection)?
+        .wire;
+    let bytes = spool.bytes(&own, &b, clock.now())?;
+    let mut session = route.connect(own.device, password).await?;
+    let service = home(&own.account)?;
+    let mut requests = 0;
+    // Begin is an exact immutable idempotent status/create operation. Remote
+    // errors deliberately conceal whether an object exists or why it refused.
+    let response = request(
+        &mut session,
+        vault,
+        route,
+        service,
+        Request::Begin(b.clone()),
+        &mut requests,
+        &clock,
+    )
+    .await?;
+    let (mut offset, mut committed) = progress(response, &b)?;
+    for _ in 0..CHUNKS_PER_CYCLE {
+        if committed || offset == b.size {
+            break;
+        }
+        let end = (offset as usize + blobs::CHUNK).min(bytes.len());
+        let expected = end as u64;
+        let response = request(
+            &mut session,
+            vault,
+            route,
+            service,
+            Request::PutChunk {
+                id: b.id,
+                offset,
+                bytes: bytes[offset as usize..end].to_vec(),
+            },
+            &mut requests,
+            &clock,
+        )
+        .await?;
+        let (next, ready) = progress(response, &b)?;
+        if next != expected || ready {
+            return Err(Error::Protocol);
+        }
+        offset = next;
+    }
+    if !committed && offset == b.size {
+        let response = request(
+            &mut session,
+            vault,
+            route,
+            service,
+            Request::Commit { id: b.id },
+            &mut requests,
+            &clock,
+        )
+        .await?;
+        let (next, ready) = progress(response, &b)?;
+        offset = next;
+        committed = ready;
+        if !committed {
+            return Err(Error::Protocol);
+        }
+    }
+    drop(session);
+    let sent = if committed {
+        let release = Release {
+            binding: b,
+            operation,
+            wire,
+        };
+        mail_network::release_attachment(vault, route.settings(), password, &release, clock.now())
+            .await
+            .map_err(Error::Mail)?
+            .sent
+    } else {
+        0
+    };
+    Ok(Report {
+        offset,
+        complete: committed,
+        requests,
+        sent,
+    })
+}
+fn received(v: &CheckpointVault, index: usize, frame: [u8; 32]) -> Result<&Record, Error> {
+    let r = state(v.history())?.get(index).ok_or(Error::Selection)?;
+    if r.direction != Direction::Received
+        || r.received_id() != Some(frame)
+        || r.attachment().is_none()
+    {
+        return Err(Error::Selection);
+    }
+    Ok(r)
+}
+/// Exact authenticated local received-history selection; never a remote claim.
+#[derive(Clone, Copy)]
+pub struct ReceivedSelection {
+    pub index: usize,
+    pub frame: [u8; 32],
+}
+pub async fn fetch_cycle(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    password: &str,
+    invited: &InvitedHomes,
+    selected: ReceivedSelection,
+    now: u64,
+) -> Result<Report, Error> {
+    within_cycle(
+        std::time::Duration::from_secs(10),
+        fetch_inner(
+            vault,
+            spool,
+            TransferRoute::Iq(settings),
+            password,
+            invited,
+            selected,
+            now,
+        ),
+    )
+    .await
+}
+async fn fetch_inner(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    route: TransferRoute<'_>,
+    password: &str,
+    invited: &InvitedHomes,
+    selected: ReceivedSelection,
+    now: u64,
+) -> Result<Report, Error> {
+    let clock = Clock::new(now);
+    let own = route.check(vault, clock.now())?;
+    let ReceivedSelection { index, frame } = selected;
+    let r = received(vault, index, frame)?;
+    peer_matches(vault, r)?;
+    let b = binding(own.clone(), r)?;
+    route.binding(&b)?;
+    let service = home(&b.sender.account)?;
+    if service != home(&own.account)? && !invited.homes.iter().any(|h| h == service) {
+        return Err(Error::Route);
+    }
+    let mut session = route.connect(own.device, password).await?;
+    let mut requests = 0;
+    let (offset, committed) = progress(
+        request(
+            &mut session,
+            vault,
+            route,
+            service,
+            Request::Status { id: b.id },
+            &mut requests,
+            &clock,
+        )
+        .await?,
+        &b,
+    )?;
+    if !committed || offset != b.size {
+        return Err(Error::Protocol);
+    }
+    let (mut offset, mut complete) = spool.begin(&own, &b, clock.now())?;
+    for _ in 0..CHUNKS_PER_CYCLE {
+        if complete || offset == b.size {
+            break;
+        }
+        let response = request(
+            &mut session,
+            vault,
+            route,
+            service,
+            Request::GetChunk { id: b.id, offset },
+            &mut requests,
+            &clock,
+        )
+        .await?;
+        let chunk = match response {
+            Response::Chunk {
+                offset: got,
+                bytes,
+                total,
+            } if got == offset
+                && total == b.size
+                && !bytes.is_empty()
+                && bytes.len() <= blobs::CHUNK
+                && offset + bytes.len() as u64 <= b.size =>
+            {
+                bytes
+            }
+            _ => return Err(Error::Protocol),
+        };
+        let expected = offset + chunk.len() as u64;
+        let (next, ready) = progress(
+            spool.call(
+                &own,
+                Request::PutChunk {
+                    id: b.id,
+                    offset,
+                    bytes: chunk,
+                },
+                clock.now(),
+            )?,
+            &local_binding(&own, &b),
+        )?;
+        if next != expected || ready {
+            return Err(Error::Protocol);
+        }
+        offset = next;
+    }
+    if !complete && offset == b.size {
+        let (next, ready) = progress(
+            spool.call(&own, Request::Commit { id: b.id }, clock.now())?,
+            &local_binding(&own, &b),
+        )?;
+        offset = next;
+        complete = ready;
+    }
+    if complete {
+        verify_fetched(vault, spool, index, frame, clock.now())?;
+    }
+    Ok(Report {
+        offset,
+        complete,
+        requests,
+        sent: 0,
+    })
+}
+/// Local consumption only. Existing caller-supplied-byte history APIs are unchanged.
+pub fn verify_fetched(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    index: usize,
+    frame: [u8; 32],
+    now: u64,
+) -> Result<VerifiedBlob, Error> {
+    let own = principal(vault)?;
+    let r = received(vault, index, frame)?;
+    let b = binding(own.clone(), r)?;
+    let bytes = spool.bytes(&own, &b, now)?;
+    crate::mail_attachments::verify_received(vault, index, frame, &bytes).map_err(|_| Error::Blob)
+}
+/// Cancellation means no call. Never derives a path from private metadata.
+pub fn save_fetched(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    index: usize,
+    frame: [u8; 32],
+    now: u64,
+    destination: &Path,
+) -> Result<(), Error> {
+    let verified = verify_fetched(vault, spool, index, frame, now)?;
+    crate::attachment_save::save_verified(&verified, destination).map_err(Error::Save)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[tokio::test(flavor = "current_thread")]
+    async fn one_cycle_deadline_cancels_the_entire_composed_future() {
+        let result = within_cycle(
+            std::time::Duration::from_millis(20),
+            std::future::pending::<Result<(), Error>>(),
+        )
+        .await;
+        assert_eq!(result, Err(Error::Transport(faction_xmpp::Error::Timeout)));
+    }
+}

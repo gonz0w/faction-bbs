@@ -12,7 +12,10 @@ native-mail = ["dep:faction-omemo", "faction-omemo/native"]
 
 network-mail = ["native-mail", "dep:faction-xmpp", "dep:tokio", "dep:roxmltree"]
 
+device-provider = ["network-mail", "dep:faction-provider", "tokio/sync"]
+
 [dependencies]
+faction-provider = { path = "../faction-provider", optional = true, default-features = false }
 faction-xmpp = { path = "../faction-xmpp", optional = true }
 tokio = { version = "=1.54.1", default-features = false, features = ["rt", "time", "net", "io-util", "macros"], optional = true }
 roxmltree = { workspace = true, optional = true }
@@ -36,3 +39,7 @@ required-features = ["native-mail"]
 [[example]]
 name = "home_mail_fixture"
 required-features = ["network-mail"]
+
+[[example]]
+name = "device_provider_console_fixture"
+required-features = ["device-provider"]

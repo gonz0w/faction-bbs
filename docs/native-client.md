@@ -159,6 +159,11 @@ The optional [manual encrypted home-mail guide](online-mail.md) covers the separ
 [picker E entry](picker-home-mail.md) opens that same console between visits; M
 retains its v1 vault. Files and the offline checkpoint console remain separate.
 
+The optional `device-provider` build and explicit local profile select a
+separate same-home attachment transport for `--mail-online` or `--boards`.
+See [private attachments](private-attachments.md) for trust and recovery limits.
+Ordinary mail, board and file access do not require that provider.
+
 Opt-in [archive mode](archive-mail.md) adds an explicit local schema upgrade and
 one-page retained-mail catch-up. N sends pending ciphertext; A reads a bounded
 archive page. It does not add background activity or a remote BBS unlock path.

@@ -3,6 +3,7 @@
 pub(super) struct Home<'a> {
     pub paths: &'a crate::launcher::HomeMail,
     pub unicode: bool,
+    pub provider_profile: Option<&'a std::path::Path>,
 }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) struct Counts {

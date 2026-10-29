@@ -1,0 +1,5 @@
+//! Owned synthetic #280 fixture interface awaiting test-first implementation.
+fn main() {
+    eprintln!("Authenticated-provider console fixture is not implemented");
+    std::process::exit(1);
+}
