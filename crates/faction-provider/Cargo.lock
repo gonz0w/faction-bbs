@@ -248,8 +248,11 @@ name = "faction-provider"
 version = "0.1.0-alpha.1"
 dependencies = [
  "faction-files",
+ "faction-unix",
  "faction-xmpp",
  "openssl",
+ "rustix",
+ "toml",
 ]
 
 [[package]]

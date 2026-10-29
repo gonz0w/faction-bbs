@@ -1,5 +1,7 @@
 # Optional provider embedding
 
+The optional [durable policy](provider-policy.md) and [private operator](../docs/provider-operator.md) add restart-safe policy and a foreground same-home loopback entry point. Their qualification remains software preview.
+
 `crates/faction-provider` is an explicitly compiled, standalone Rust workspace;
 it is not a root workspace member or a dependency of ordinary board or native
 client builds; only the explicit `device-provider` client feature adds the local

@@ -1,5 +1,7 @@
 # Experimental attachment provider authority
 
+The optional [durable policy](provider-policy.md) retains authority history across ordinary restart, and the [private operator](../docs/provider-operator.md) uses preapproved policy for a loopback service. These do not add enrollment or key recovery.
+
 The isolated [provider-auth experiment](../experiments/270-provider-auth/README.md)
 examines how a verified TLS peer can supply authority to the existing ciphertext
 store. It is outside the product workspace and is not enabled by ordinary SSH or

@@ -60,11 +60,9 @@ selected-source/license/no-JS preflight. Compiler and runtime costs are separate
 
 These APIs establish TLS key possession and approved routing, not OMEMO private-key
 possession, hardware attestation, production enrollment/recovery or durable
-anti-rollback. In-memory history is lost with the runtime. Device mail/attachment
+anti-rollback. In-memory history is lost with the runtime; the explicitly selected `durable-policy` feature retains it across ordinary restart as described in the [durable policy contract](../../dev-docs/provider-policy.md). Device mail/attachment
 keys and decryption stay on member devices. Ordinary classic/SSH and native mail
-remain independent; no account-login-to-device upgrade is added. Provider
-activation, XMPP server/SASL, own-home delegation and independent client
-interoperability remain outside this library's claims.
+remain independent; no account-login-to-device upgrade is added. The optional [private operator](../../docs/provider-operator.md) runs the same-home loopback service with preapproved policy and independently supplied TLS material. Production activation, XMPP server/SASL, own-home delegation and independent client interoperability remain outside its claims.
 
 ## Service-bound binary integration
 

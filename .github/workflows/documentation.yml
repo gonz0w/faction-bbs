@@ -125,6 +125,12 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings
@@ -148,9 +154,66 @@ jobs:
           mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"
           printf '%s\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction280-console-OWNED/OWNED"
           python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"
+  provider_operator:
+    name: Optional durable provider operator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Validate durable provider policy and operator
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider-operator
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          python3 tools/check_provider_dependencies.py
+          cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features durable-policy -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features operator -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator -- --test-threads=1
+          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked
+          cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction284-console-OWNED"
+          printf '%s\n' 'Owned maintained-provider operator proof' > "$RUNNER_TEMP/faction284-console-OWNED/OWNED"
+          python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json"
   documentation:
     name: Documentation and policy
-    needs: [native_mail, provider]
+    needs: [native_mail, provider, provider_operator]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -159,9 +222,11 @@ jobs:
         env:
           NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}
           PROVIDER_RESULT: ${{ needs.provider.result }}
+          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}
         run: |
           test "$NATIVE_MAIL_RESULT" = success
           test "$PROVIDER_RESULT" = success
+          test "$PROVIDER_OPERATOR_RESULT" = success
       - name: Fetch the public repository revision
         env:
           REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git

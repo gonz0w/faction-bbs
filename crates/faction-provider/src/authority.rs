@@ -2,7 +2,8 @@
 //!
 //! A certificate digest is routing policy, not proof of key possession. Only the
 //! trusted crate TLS adapter may pass a verified observation to `authenticate`.
-//! All policy is in memory; constructing another Authority discards its history.
+//! The default runtime keeps policy in memory. Explicit durable runtimes restore
+//! validated public policy and digest history, while always minting fresh handles.
 use faction_files::private_blobs::{
     Access, Action, Binding, Error, Principal, Request, Response, Store,
 };
@@ -80,6 +81,19 @@ impl Registry {
             homes,
             bindings,
         })
+    }
+    /// Validated public policy metadata; these values confer no runtime authority.
+    pub fn generation(&self) -> u64 {
+        self.generation
+    }
+    pub fn reset_epoch(&self) -> u64 {
+        self.reset_epoch
+    }
+    pub fn homes(&self) -> &[String] {
+        &self.homes
+    }
+    pub fn bindings(&self) -> &[CredentialBinding] {
+        &self.bindings
     }
     fn current(&self, principal: &Principal, now: u64) -> Result<&CredentialBinding, Error> {
         let entry = self
@@ -215,6 +229,30 @@ impl Authority {
             history,
             slots: Vec::new(),
         }
+    }
+    #[cfg(feature = "durable-policy")]
+    pub(crate) fn snapshot(&self) -> crate::durable::Snapshot {
+        crate::durable::Snapshot {
+            generation: self.generation,
+            reset_epoch: self.reset_epoch,
+            registry: self.registry.clone(),
+            history: self.history.clone(),
+        }
+    }
+    #[cfg(feature = "durable-policy")]
+    pub(crate) fn restore(snapshot: crate::durable::Snapshot) -> Result<Self, Error> {
+        snapshot.validate()?;
+        let mut authority = Self::new(None);
+        authority.install(snapshot);
+        Ok(authority)
+    }
+    #[cfg(feature = "durable-policy")]
+    pub(crate) fn install(&mut self, snapshot: crate::durable::Snapshot) {
+        self.generation = snapshot.generation;
+        self.reset_epoch = snapshot.reset_epoch;
+        self.registry = snapshot.registry;
+        self.history = snapshot.history;
+        self.slots.clear();
     }
     pub fn open_connection(&self) -> Connection {
         Connection {

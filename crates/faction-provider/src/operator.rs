@@ -1,0 +1,162 @@
+//! Private foreground operator adapter. Inputs are trusted preapproved public
+//! policy plus independently provisioned TLS material, never enrollment or keys
+//! derived from a member password. All diagnostics are fixed bounded strings.
+mod input;
+use crate::operator::input::Config;
+use faction_files::private_blobs::Store;
+use faction_provider::{BinaryService, Runtime, tls::Server};
+use openssl::{
+    stack::Stack,
+    x509::{
+        X509, X509PurposeId, X509StoreContext, store::X509StoreBuilder, verify::X509VerifyParam,
+    },
+};
+use std::{
+    io::{self, Write},
+    net::TcpListener,
+    path::Path,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    thread,
+    time::Duration,
+};
+type Result<T> = std::result::Result<T, ()>;
+fn mapped<T, E>(r: std::result::Result<T, E>) -> Result<T> {
+    r.map_err(|_| ())
+}
+/// Verify one explicitly selected local CA and the server leaf's current chain,
+/// server purpose and home name using OpenSSL. No system CA discovery or issuer.
+fn server(config: &Config) -> Result<Server> {
+    let ca = input::private_file(&config.ca, &config.root, 65_536)?;
+    let cert = input::private_file(&config.certificate, &config.root, 65_536)?;
+    let key = input::private_file(&config.key, &config.root, 65_536)?;
+    // Reject concatenated certificate inputs rather than selecting a first leaf.
+    let ca_chain = mapped(X509::stack_from_pem(&ca))?;
+    let cert_chain = mapped(X509::stack_from_pem(&cert))?;
+    if ca_chain.len() != 1 || cert_chain.len() != 1 {
+        return Err(());
+    }
+    let mut store = mapped(X509StoreBuilder::new())?;
+    mapped(store.add_cert(ca_chain[0].clone()))?;
+    let mut params = mapped(X509VerifyParam::new())?;
+    mapped(params.set_host(&config.home))?;
+    mapped(params.set_purpose(X509PurposeId::SSL_SERVER))?;
+    mapped(store.set_param(&params))?;
+    let store = store.build();
+    let chain = mapped(Stack::new())?;
+    let mut context = mapped(X509StoreContext::new())?;
+    if !mapped(context.init(&store, &cert_chain[0], &chain, |ctx| ctx.verify_cert()))? {
+        return Err(());
+    }
+    mapped(Server::from_pem(&cert, &key, &ca))
+}
+fn same_home(registry: &faction_provider::authority::Registry, home: &str) -> bool {
+    registry.homes() == [home]
+        && registry
+            .bindings()
+            .iter()
+            .all(|b| b.principal.account.split_once('@').map(|(_, h)| h) == Some(home))
+}
+fn serving(config: Config) -> Result<()> {
+    let runtime = mapped(Runtime::reopen_durable(&config.policy))?;
+    if !mapped(runtime.policy_matches_home(&config.home))? {
+        return Err(());
+    }
+    let service = mapped(BinaryService::new(&config.home))?;
+    let server = server(&config)?;
+    let mut store = mapped(Store::open(&config.blobs))?;
+    mapped(faction_unix::install_shutdown())?;
+    let listener = mapped(TcpListener::bind(config.endpoint))?;
+    let port = mapped(listener.local_addr())?.port();
+    let cancel = Arc::new(AtomicBool::new(false));
+    // One owned worker only observes the established process signal flag. It
+    // has no filesystem watcher, admin endpoint or policy mutation channel.
+    // Runtime stop shuts down the active socket; every TLS BIO checks cancel.
+    thread::scope(|scope| {
+        let stopped = &cancel;
+        let runtime_ref = &runtime;
+        let observer = scope.spawn(move || {
+            while !stopped.load(Ordering::SeqCst) {
+                if faction_unix::shutdown_requested() {
+                    stopped.store(true, Ordering::SeqCst);
+                    runtime_ref.stop();
+                    break;
+                }
+                thread::sleep(Duration::from_millis(10));
+            }
+        });
+        let result = (|| {
+            mapped(writeln!(io::stdout(), "ready {port}"))?;
+            mapped(io::stdout().flush())?;
+            while !cancel.load(Ordering::SeqCst) {
+                if let Ok(mut session) = server.accept(&listener, &runtime, cancel.clone()) {
+                    while !cancel.load(Ordering::SeqCst)
+                        && matches!(session.serve_service_next(&mut store, &service), Ok(true))
+                    {
+                    }
+                }
+            }
+            Ok(())
+        })();
+        cancel.store(true, Ordering::SeqCst);
+        runtime.stop();
+        drop(listener);
+        mapped(observer.join())?;
+        result
+    })?;
+    mapped(writeln!(io::stdout(), "stopped"))?;
+    mapped(io::stdout().flush())
+}
+pub(super) fn run(args: impl IntoIterator<Item = std::ffi::OsString>) -> Result<()> {
+    let args = args.into_iter().collect::<Vec<_>>();
+    if args.len() < 2 || args.len() > 3 {
+        return Err(());
+    }
+    let action = args[0].to_str().ok_or(())?;
+    if !matches!(action, "init" | "apply" | "reset" | "inspect" | "serve")
+        || (matches!(action, "init" | "apply" | "reset") != (args.len() == 3))
+    {
+        return Err(());
+    }
+    let config = Config::load(Path::new(&args[1]))?;
+    match action {
+        "init" | "apply" => {
+            let registry = input::proposal(Path::new(&args[2]), &config.root)?;
+            if !same_home(&registry, &config.home) {
+                return Err(());
+            }
+            if action == "init" {
+                let _runtime = mapped(Runtime::initialize_durable(&config.policy, registry))?;
+                mapped(writeln!(io::stdout(), "initialized"))?;
+            } else {
+                let runtime = mapped(Runtime::reopen_durable(&config.policy))?;
+                mapped(runtime.control().replace_registry(registry))?;
+                mapped(writeln!(io::stdout(), "applied"))?;
+            }
+        }
+        "reset" => {
+            let epoch = args[2].to_str().ok_or(())?.parse::<u64>().map_err(|_| ())?;
+            let runtime = mapped(Runtime::reopen_durable(&config.policy))?;
+            mapped(runtime.control().reset(epoch))?;
+            mapped(writeln!(io::stdout(), "reset"))?;
+        }
+        "inspect" => {
+            let runtime = mapped(Runtime::reopen_durable(&config.policy))?;
+            let s = mapped(runtime.policy_summary())?;
+            mapped(writeln!(
+                io::stdout(),
+                "policy generation={} reset={} available={} bindings={} history={}",
+                s.generation,
+                s.reset_epoch,
+                u8::from(s.available),
+                s.binding_count,
+                s.history_count
+            ))?;
+        }
+        "serve" => return serving(config),
+        _ => return Err(()),
+    }
+    mapped(io::stdout().flush())
+}
