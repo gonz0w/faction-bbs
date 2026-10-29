@@ -1,0 +1,18 @@
+[package]
+name = "faction-provider"
+version = "0.1.0-alpha.1"
+edition = "2024"
+rust-version = "1.96"
+license = "BSD-3-Clause"
+publish = false
+
+[workspace]
+
+[features]
+default = []
+blob-iq = ["dep:faction-xmpp"]
+
+[dependencies]
+faction-files = { path = "../faction-files" }
+openssl = "=0.10.81"
+faction-xmpp = { path = "../faction-xmpp", optional = true }

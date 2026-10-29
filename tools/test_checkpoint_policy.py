@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class NativePolicy(unittest.TestCase):
  def test_native_ci_is_a_dependency_of_required_documentation_gate(self):
   text=(ROOT/'.github/workflows/documentation.yml').read_text()
-  self.assertIn('needs: native_mail',text)
+  self.assertIn('needs: [native_mail, provider]',text)
   self.assertIn('cargo test -p faction-client -p faction-omemo --features faction-client/native-mail',text)
   self.assertIn('python3 tools/check_omemo_dependencies.py',text)
  def test_native_failure_cancel_or_skip_cannot_skip_a_required_gate(self):
@@ -15,10 +15,16 @@ class NativePolicy(unittest.TestCase):
   guard=re.search(r'(?ms)^      - name: Require optional native tests\n(.*?)(?=^      - name:)',doc)
   self.assertIsNotNone(guard)
   self.assertIn('NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}',guard.group(1))
-  command=re.search(r'(?m)^        run: (.+)$',guard.group(1)).group(1)
-  for result in ['success','failure','cancelled','skipped','']:
-   code=subprocess.run(['/bin/sh','-c',command],env={'NATIVE_MAIL_RESULT':result},capture_output=True).returncode
-   self.assertEqual(code==0,result=='success',result)
+  run=re.search(r'(?m)^        run: (.+)$',guard.group(1)).group(1)
+  if run=='|':
+   command='\n'.join(line[10:] for line in guard.group(1).splitlines() if line.startswith('          '))
+   command='\n'.join(line for line in command.splitlines() if not line.startswith(('NATIVE_MAIL_RESULT:', 'PROVIDER_RESULT:')))
+  else: command=run
+  for native in ['success','failure','cancelled','skipped','']:
+   for provider in ['success','failure','cancelled','skipped','']:
+    code=subprocess.run(['/bin/sh','-e','-c',command],env={'NATIVE_MAIL_RESULT':native,'PROVIDER_RESULT':provider},capture_output=True).returncode
+    self.assertEqual(code==0,native==provider=='success',(native,provider))
+  self.assertIn('PROVIDER_RESULT: ${{ needs.provider.result }}',guard.group(1))
  def test_source_and_license_refuse_javascript_and_missing_terms(self):
   with tempfile.TemporaryDirectory(prefix='faction203-policy-') as tmp:
    path=Path(tmp);(path/'Cargo.toml').write_text('')

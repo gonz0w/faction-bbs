@@ -524,6 +524,8 @@ dependencies = [
 name = "faction-xmpp"
 version = "0.1.0-alpha.1"
 dependencies = [
+ "base64 0.23.1",
+ "faction-files",
  "futures-util",
  "log",
  "native-tls",

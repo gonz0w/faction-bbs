@@ -52,5 +52,5 @@ class PickerMailEvidence(unittest.TestCase):
         self.assertEqual(native.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
         self.assertEqual(docs.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
         self.assertIn('python3 tools/check_picker_mail_evidence.py',docs)
-        self.assertIn('needs: native_mail',docs)
-        self.assertEqual(text.count('timeout-minutes: 15'),2)
+        self.assertIn('needs: [native_mail, provider]',docs)
+        self.assertEqual(text.count('timeout-minutes: 15'),3)

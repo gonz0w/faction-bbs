@@ -76,8 +76,8 @@ class ArchiveEvidence(unittest.TestCase):
         native,documentation=workflow.split('  documentation:',1)
         self.assertIn('python3 tools/probe_home_archive_ui.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture"',native)
         self.assertIn('python3 tools/check_archive_mail_evidence.py',documentation)
-        self.assertIn('needs: native_mail',documentation)
-        self.assertEqual(workflow.count('timeout-minutes: 15'),2)
+        self.assertIn('needs: [native_mail, provider]',documentation)
+        self.assertEqual(workflow.count('timeout-minutes: 15'),3)
         self.assertIn("test_*.py",documentation)
 
     def test_raw_record_pin_precedes_parsing_and_rejects_reformatting(self):

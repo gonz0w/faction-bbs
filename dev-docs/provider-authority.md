@@ -56,7 +56,9 @@ can advance its durable high-water clock. A lost response after dispatch or
 resolve the outcome. The existing [storage contract](private-attachment-storage.md)
 retains its object, byte, chunk and retention limits.
 
-This experiment does not implement a provider, own-home delegated transport,
-independent client interoperability or hardware attestation. The native NetBSD
+The optional [provider embedding](provider-integration.md) exposes this boundary
+to a caller through verified TLS and an in-process IQ adapter. It does not deploy
+a provider or implement own-home delegated transport, independent client
+interoperability or hardware attestation. The native NetBSD
 serial and default-parallel runs are bounded software evidence, not provider or production
 support. Mail and attachment private keys and decryption remain on the member device. The ordinary classic, SSH and UI paths retain their existing limits.
