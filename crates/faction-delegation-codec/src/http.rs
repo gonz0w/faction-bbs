@@ -94,6 +94,7 @@ fn framing(headers: &[httparse::Header<'_>], media: &str, request: bool) -> Resu
 pub enum UnverifiedEndpoint {
     Token,
     Introspection,
+    PublicationCurrent,
 }
 pub struct UnverifiedRequestHead {
     pub host: String,
@@ -116,9 +117,15 @@ pub fn decode_http_request_head(bytes: &[u8]) -> Result<UnverifiedRequestHead, E
     let endpoint = match request.path {
         Some("/oauth/token") => UnverifiedEndpoint::Token,
         Some("/oauth/introspect") => UnverifiedEndpoint::Introspection,
+        Some("/faction/publication-current") => UnverifiedEndpoint::PublicationCurrent,
         _ => return Err(Error),
     };
-    let content_length = framing(request.headers, FORM, true)?;
+    let media = if endpoint == UnverifiedEndpoint::PublicationCurrent {
+        JSON
+    } else {
+        FORM
+    };
+    let content_length = framing(request.headers, media, true)?;
     let host = request
         .headers
         .iter()
@@ -139,6 +146,7 @@ fn request_body<'a>(bytes: &'a [u8], route: &str) -> Result<&'a [u8], Error> {
     let expected = match head.endpoint {
         UnverifiedEndpoint::Token => "/oauth/token",
         UnverifiedEndpoint::Introspection => "/oauth/introspect",
+        UnverifiedEndpoint::PublicationCurrent => "/faction/publication-current",
     };
     if expected != route || bytes.len() - end != head.content_length {
         return Err(Error);
@@ -221,4 +229,47 @@ pub fn encode_refusal_http(refusal: UnverifiedRefusal) -> Vec<u8> {
             b"{\"error\":\"temporarily_unavailable\"}",
         ),
     }
+}
+
+/// Strict bounded unverified successful response framing for an incremental client.
+pub fn decode_http_response_head(bytes: &[u8]) -> Result<usize, Error> {
+    let end = boundary(bytes)?;
+    if end != bytes.len() {
+        return Err(Error);
+    }
+    let mut storage = [httparse::EMPTY_HEADER; MAX_HEADERS];
+    let mut response = httparse::Response::new(&mut storage);
+    if response.parse(bytes).map_err(|_| Error)? != httparse::Status::Complete(end)
+        || response.version != Some(1)
+        || response.code != Some(200)
+    {
+        return Err(Error);
+    }
+    framing(response.headers, JSON, false)
+}
+pub fn encode_publication_query_http(
+    hostname: &str,
+    input: &UnverifiedPublicationQuery,
+) -> Result<Vec<u8>, Error> {
+    host(hostname)?;
+    let body = encode_publication_query_json(input)?;
+    let mut bytes=format!("POST /faction/publication-current HTTP/1.1\r\nConnection: close\r\nHost: {hostname}\r\nContent-Type: {JSON}\r\nContent-Length: {}\r\n\r\n",body.len()).into_bytes();
+    bytes.extend(body);
+    Ok(bytes)
+}
+pub fn decode_publication_query_http(bytes: &[u8]) -> Result<UnverifiedPublicationQuery, Error> {
+    decode_publication_query_json(request_body(bytes, "/faction/publication-current")?)
+}
+pub fn encode_publication_response_http(
+    input: &UnverifiedPublicationObservation,
+) -> Result<Vec<u8>, Error> {
+    Ok(response(
+        "200 OK",
+        &encode_publication_response_json(input)?,
+    ))
+}
+pub fn decode_publication_response_http(
+    bytes: &[u8],
+) -> Result<UnverifiedPublicationObservation, Error> {
+    decode_publication_response_json(response_body(bytes)?)
 }

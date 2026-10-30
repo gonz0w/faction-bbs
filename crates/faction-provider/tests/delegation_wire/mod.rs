@@ -322,3 +322,70 @@ fn fragmented_actual_tls_request_succeeds_without_eof_and_truncation_never_issue
         });
     }
 }
+#[test]
+fn actual_outbound_fresh_introspection_uses_existing_endpoint_and_returns_only_unverified_metadata()
+{
+    use faction_provider::tls::{ClientCredentials, HttpEndpoint};
+    let c = Certs::new();
+    let t = wall_now() as i64;
+    let inspector = cert(Some((&c.ca.0, &c.ca.1)), "inspector", 92, t - 60, t + 3600);
+    let r = configured(&c, &inspector.0);
+    let b = object();
+    let record = with_session(&c, &r, &c.bob, |mut s| {
+        s.retrieval_intent(b.clone(), RetrievalAction::GetChunk { offset: b.size })
+            .unwrap()
+    });
+    let reference = r.control().provision_retrieval(&record).unwrap();
+    let (result, bytes) = exchange(&c, &r, &c.alice, &token_request(&reference));
+    assert!(result.is_ok());
+    let token = codec::decode_token_response_http(&bytes).unwrap().token;
+    let a_c = Certs::new();
+    let a = a_c.runtime();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let credentials = ClientCredentials::from_pem(
+        &c.ca.0.to_pem().unwrap(),
+        &inspector.0.to_pem().unwrap(),
+        &inspector.1.private_key_to_pem_pkcs8().unwrap(),
+    )
+    .unwrap();
+    let ep = HttpEndpoint::new(
+        listener.local_addr().unwrap(),
+        "issuer.test".into(),
+        "provider.test".into(),
+        sha256(&c.server.0.to_der().unwrap()),
+        credentials,
+    )
+    .unwrap();
+    thread::scope(|s| {
+        let caller = s.spawn(|| {
+            a.control().query_introspection(
+                &ep,
+                &codec::UnverifiedIntrospectionRequest {
+                    client_id: "inspector".into(),
+                    token,
+                },
+                Instant::now() + CYCLE_LIMIT,
+                Arc::new(AtomicBool::new(false)),
+            )
+        });
+        c.server()
+            .accept_service(&listener, &r, Arc::new(AtomicBool::new(false)))
+            .unwrap()
+            .serve_http_once()
+            .unwrap();
+        match caller.join().unwrap().unwrap() {
+            codec::UnverifiedIntrospection::Retrieval { claims, action } => {
+                assert_eq!(claims.binding.recipient.account, b.recipient.account);
+                assert_eq!(
+                    action,
+                    codec::UnverifiedRetrievalAction::GetChunk { offset: b.size }
+                );
+                assert_eq!(
+                    *claims.certificate_thumbprint.expose_bytes(),
+                    sha256(&c.alice.0.to_der().unwrap())
+                );
+            }
+            _ => panic!("missing retrieval metadata"),
+        };
+    });
+}

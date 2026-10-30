@@ -218,6 +218,7 @@ impl RecipientCurrentObservation {
         self.checked_at
     }
 }
+#[derive(Clone)]
 pub(crate) struct ServiceCredential {
     pub(crate) identity: ServiceIdentity,
     pub(crate) context: Arc<()>,
@@ -463,5 +464,99 @@ fn issuer_client_id(id: &str) -> Result<(), BlobError> {
         Err(BlobError::Invalid)
     } else {
         Ok(())
+    }
+}
+
+/// Explicit transport restriction on installed Observation permissions.
+/// It adds no registration, role, device actor or Store authorization.
+#[cfg(feature = "delegation-wire")]
+#[derive(Clone)]
+pub struct PublicationWireProfile {
+    home: String,
+    clients: Vec<String>,
+}
+#[cfg(feature = "delegation-wire")]
+impl PublicationWireProfile {
+    pub fn new(home: String, clients: Vec<String>) -> Result<Self, BlobError> {
+        validate_home(&home)?;
+        if clients.is_empty() || clients.len() > MAX_BINDINGS {
+            return Err(BlobError::Invalid);
+        }
+        for (i, id) in clients.iter().enumerate() {
+            issuer_client_id(id)?;
+            if clients[..i].contains(id) {
+                return Err(BlobError::Invalid);
+            }
+        }
+        // Apply the exact standalone wire host syntax without changing legacy IDs.
+        faction_delegation_codec::encode_introspection_http(
+            &home,
+            &faction_delegation_codec::UnverifiedIntrospectionRequest {
+                client_id: "validation".into(),
+                token: faction_delegation_codec::UnverifiedToken::from_bytes([1; 32]),
+            },
+        )
+        .map_err(|_| BlobError::Invalid)?;
+        Ok(Self { home, clients })
+    }
+    pub(crate) fn current(
+        &self,
+        a: &Authority,
+        c: &ServiceCredential,
+        leaf: &X509,
+        now: u64,
+    ) -> Result<(), BlobError> {
+        if !c.live
+            || now < c.wall_highwater
+            || !Arc::ptr_eq(&c.context, &a.service_context)
+            || c.generation != a.generation
+            || c.reset_epoch != a.reset_epoch
+            || !self.clients.contains(&c.identity.client_id)
+        {
+            return Err(BlobError::Denied);
+        }
+        let p = a.service_policy.as_ref().ok_or(BlobError::Denied)?;
+        if p.local_home != self.home || p.service_use(&c.identity) != Some(ServiceUse::Observation)
+        {
+            return Err(BlobError::Denied);
+        }
+        p.current(
+            &c.identity,
+            c.digest,
+            leaf,
+            now,
+            a.registry.as_ref().ok_or(BlobError::Denied)?,
+        )
+    }
+    pub(crate) fn host(&self) -> &str {
+        &self.home
+    }
+}
+#[cfg(feature = "delegation-wire")]
+impl Control {
+    pub(crate) fn outbound_http_probe(&self) -> Result<Arc<dyn Fn() -> bool + Send + Sync>, Error> {
+        let state = self.state()?;
+        let context = {
+            let a = state
+                .authority
+                .lock()
+                .map_err(|_| Error::Transport(tls::Stage::Denied))?;
+            if a.registry.is_none() {
+                return Err(Error::Transport(tls::Stage::Denied));
+            }
+            a.service_context.clone()
+        };
+        let weak = Arc::downgrade(&state);
+        Ok(Arc::new(move || {
+            let Some(s) = weak.upgrade() else {
+                return false;
+            };
+            if s.stopped.load(std::sync::atomic::Ordering::SeqCst) {
+                return false;
+            }
+            s.authority
+                .lock()
+                .is_ok_and(|a| a.registry.is_some() && Arc::ptr_eq(&context, &a.service_context))
+        }))
     }
 }
