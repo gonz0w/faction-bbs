@@ -1,0 +1,90 @@
+{
+  "host": {
+    "raw_result_sha256": "4ff378d46ba2d6ca948e270f7a02fa108568c7bf4912df5aaba5c75764c7572f",
+    "result": {
+      "approved_member": true,
+      "archive_token_unchanged": true,
+      "canonical_unchanged": true,
+      "capacity_claim": false,
+      "checks": [
+        "independent_board_registration_pending_and_explicit_approval",
+        "real_encrypted_nonempty_cursor_history_and_pending_seed",
+        "actual_closed_home_tcp_connection_failure",
+        "same_picker_send_and_archive_outage_preserve_exact_state",
+        "locked_picker_releases_store_and_requires_hidden_unlock",
+        "same_picker_approved_board_restricted_sftp_upload_review_download",
+        "same_picker_board_return_and_terminal_restoration",
+        "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+      ],
+      "count": 8,
+      "history_unchanged": true,
+      "home_transport_error": "Connect",
+      "nonempty_cursor": true,
+      "payload_bytes": 131328,
+      "payload_sha256": "91f86bc16210e6eab1715b5e77465cc1a906243e758bcecb884060dbe9a26fe3",
+      "pending_ids_unchanged": true,
+      "physical_hardware": false,
+      "platform": "Darwin",
+      "privacy_scan": {
+        "board_files": 4,
+        "log_files": 2,
+        "matches": 0,
+        "store_files": 4,
+        "symlinks": 0
+      },
+      "private_fixture_retained_for_lead": true,
+      "restricted_sftp": true,
+      "result": "pass",
+      "same_picker_pid": true,
+      "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+    },
+    "run": {
+      "elapsed_seconds": 19.060573207971174,
+      "returncode": 0
+    }
+  },
+  "native": {
+    "raw_result_sha256": "27629c86f54079629a53e30b67c186c5c778a75783ed88b8033b90a6bc64843c",
+    "result": {
+      "approved_member": true,
+      "archive_token_unchanged": true,
+      "canonical_unchanged": true,
+      "capacity_claim": false,
+      "checks": [
+        "independent_board_registration_pending_and_explicit_approval",
+        "real_encrypted_nonempty_cursor_history_and_pending_seed",
+        "actual_closed_home_tcp_connection_failure",
+        "same_picker_send_and_archive_outage_preserve_exact_state",
+        "locked_picker_releases_store_and_requires_hidden_unlock",
+        "same_picker_approved_board_restricted_sftp_upload_review_download",
+        "same_picker_board_return_and_terminal_restoration",
+        "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+      ],
+      "count": 8,
+      "history_unchanged": true,
+      "home_transport_error": "Connect",
+      "nonempty_cursor": true,
+      "payload_bytes": 131328,
+      "payload_sha256": "91f86bc16210e6eab1715b5e77465cc1a906243e758bcecb884060dbe9a26fe3",
+      "pending_ids_unchanged": true,
+      "physical_hardware": false,
+      "platform": "NetBSD",
+      "privacy_scan": {
+        "board_files": 4,
+        "log_files": 2,
+        "matches": 0,
+        "store_files": 3,
+        "symlinks": 0
+      },
+      "private_fixture_retained_for_lead": true,
+      "restricted_sftp": true,
+      "result": "pass",
+      "same_picker_pid": true,
+      "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+    },
+    "run": {
+      "elapsed_seconds": 6.879279125016183,
+      "returncode": 0
+    }
+  }
+}

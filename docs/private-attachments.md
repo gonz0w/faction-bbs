@@ -8,7 +8,7 @@ not decrypt this mail. Attachment-capable storage must be available at the homes
 this preview does not deploy a provider or establish device attestation.
 
 The [delivery research](../dev-docs/research/0061-private-attachment-delivery-contract.md)
-rejects the unchanged modern-client candidate. Remote provider delivery and
+rejects the unchanged modern-client candidate. Real provider deployment and
 independent client interoperability remain unqualified.
 
 The optional [private provider operator](provider-operator.md) can serve preapproved same-home policy on loopback. It is a software preview and requires independently supplied credentials; it does not enroll devices or recover keys.
@@ -17,7 +17,9 @@ The optional [private provider operator](provider-operator.md) can serve preappr
 
 Use [offline preparation](provider-preparation.md) to create the existing private
 profile from an unlocked device and separately export a public card for a trusted
-operator. These actions do not establish approval or remote readiness.
+operator. These actions do not establish approval or remote readiness. The
+[manual enrollment guide](provider-enrollment.md) describes the separate approval
+and dedicated SSH-forward workflow.
 
 The explicit `device-provider` client feature adds an optional local profile for
 attachment transfer. Select it with `--device-provider PRIVATE_PROFILE` alongside

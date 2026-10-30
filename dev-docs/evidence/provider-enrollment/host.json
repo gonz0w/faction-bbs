@@ -1,0 +1,113 @@
+{
+  "capacity_claim": false,
+  "children_reaped": true,
+  "count": 40,
+  "independent_interoperability": false,
+  "modes": [
+    {
+      "checks": [
+        "member_generated_signed_csrs_verified_by_offline_ca_without_member_private_key_transfer",
+        "independent_account_authentication_and_full_public_device_inspection_precede_deliberate_policy_approval",
+        "maintained_prepare_checks_complete_proposal_before_separate_explicit_init",
+        "dedicated_real_ssh_local_forward_setup_is_separate_from_provider_tls_readiness",
+        "actual_ordinary_role_forwarding_wrong_dedicated_destination_shell_and_subsystem_channels_are_administratively_denied",
+        "production_console_encrypts_maximum_file_locally_and_persists_exact_retry_after_source_removal",
+        "known_good_approved_original_key_authorizes_real_progress_under_current_policy_before_bad_credential_controls",
+        "wrong_account_device_full_identity_and_copied_public_card_without_private_key_refuse_locally_before_network_or_mutation",
+        "wrong_home_leaf_pin_and_actual_different_device_key_deny_before_store_or_mail_mutation",
+        "valid_ca_signed_but_unapproved_member_generated_transport_key_cannot_create_provider_authority",
+        "current_credential_policy_expiry_refuses_the_previously_approved_key_without_mutation",
+        "deliberate_same_identity_transport_rotation_rechecks_new_csr_card_leaf_and_complete_proposal_retires_old_key_preserving_history",
+        "real_ssh_interruption_after_confirmed_progress_retains_pending_ciphertext_without_mail_release",
+        "restarted_maintained_provider_and_new_ssh_forward_resolve_exact_persisted_retry_before_encrypted_mail_release",
+        "separate_actual_encrypted_xmpp_receipt_authenticated_forwarded_fetch_verify_and_explicit_private_no_overwrite_save",
+        "stop_apply_restart_revocation_denies_old_device_without_attachment_or_mail_mutation",
+        "explicit_provider_reset_retains_history_and_requires_fresh_approval_for_old_transport_key",
+        "independent_home_account_password_reset_authenticates_mail_but_neither_approves_a_new_transport_key_nor_unlocks_member_keys",
+        "provider_outage_with_live_ssh_setup_preserves_independent_ordinary_mail_without_attachment_fallback",
+        "recorded_provider_file_scan_and_device_descriptor_audit_exclude_selected_plaintext_names_passwords_attachment_and_transport_keys"
+      ],
+      "metadata_visible": [
+        "public account/device/full identity",
+        "leaf digest",
+        "ciphertext hash/size",
+        "policy generations",
+        "timing"
+      ],
+      "mode": "classic",
+      "plaintext_bytes": 1048576,
+      "provider_scan_count": 54,
+      "transfer_observations": {
+        "fetch": {
+          "calls": 65,
+          "offset": 1048592,
+          "reason": "complete",
+          "seconds": 2.561415
+        },
+        "upload": {
+          "calls": 63,
+          "offset": 1048592,
+          "reason": "complete",
+          "seconds": 2.648219
+        }
+      }
+    },
+    {
+      "checks": [
+        "member_generated_signed_csrs_verified_by_offline_ca_without_member_private_key_transfer",
+        "independent_account_authentication_and_full_public_device_inspection_precede_deliberate_policy_approval",
+        "maintained_prepare_checks_complete_proposal_before_separate_explicit_init",
+        "dedicated_real_ssh_local_forward_setup_is_separate_from_provider_tls_readiness",
+        "actual_ordinary_role_forwarding_wrong_dedicated_destination_shell_and_subsystem_channels_are_administratively_denied",
+        "production_console_encrypts_maximum_file_locally_and_persists_exact_retry_after_source_removal",
+        "known_good_approved_original_key_authorizes_real_progress_under_current_policy_before_bad_credential_controls",
+        "wrong_account_device_full_identity_and_copied_public_card_without_private_key_refuse_locally_before_network_or_mutation",
+        "wrong_home_leaf_pin_and_actual_different_device_key_deny_before_store_or_mail_mutation",
+        "valid_ca_signed_but_unapproved_member_generated_transport_key_cannot_create_provider_authority",
+        "current_credential_policy_expiry_refuses_the_previously_approved_key_without_mutation",
+        "deliberate_same_identity_transport_rotation_rechecks_new_csr_card_leaf_and_complete_proposal_retires_old_key_preserving_history",
+        "real_ssh_interruption_after_confirmed_progress_retains_pending_ciphertext_without_mail_release",
+        "restarted_maintained_provider_and_new_ssh_forward_resolve_exact_persisted_retry_before_encrypted_mail_release",
+        "separate_actual_encrypted_xmpp_receipt_authenticated_forwarded_fetch_verify_and_explicit_private_no_overwrite_save",
+        "stop_apply_restart_revocation_denies_old_device_without_attachment_or_mail_mutation",
+        "explicit_provider_reset_retains_history_and_requires_fresh_approval_for_old_transport_key",
+        "independent_home_account_password_reset_authenticates_mail_but_neither_approves_a_new_transport_key_nor_unlocks_member_keys",
+        "provider_outage_with_live_ssh_setup_preserves_independent_ordinary_mail_without_attachment_fallback",
+        "recorded_provider_file_scan_and_device_descriptor_audit_exclude_selected_plaintext_names_passwords_attachment_and_transport_keys"
+      ],
+      "metadata_visible": [
+        "public account/device/full identity",
+        "leaf digest",
+        "ciphertext hash/size",
+        "policy generations",
+        "timing"
+      ],
+      "mode": "unicode",
+      "plaintext_bytes": 1048576,
+      "provider_scan_count": 54,
+      "transfer_observations": {
+        "fetch": {
+          "calls": 65,
+          "offset": 1048592,
+          "reason": "complete",
+          "seconds": 2.55901
+        },
+        "upload": {
+          "calls": 63,
+          "offset": 1048592,
+          "reason": "complete",
+          "seconds": 2.76222
+        }
+      }
+    }
+  ],
+  "physical_hardware": false,
+  "private_fixture_removed": true,
+  "provider_deployment": false,
+  "raw_result_sha256": "fa338e97ef84680a0a7906c190faf8b2d9c0cff546ee261b93ef3cffe356024d",
+  "run": {
+    "elapsed_seconds": 34.08147429098608,
+    "returncode": 0
+  },
+  "scope": "same-os-loopback-dedicated-ssh-software-proof"
+}

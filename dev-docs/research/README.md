@@ -103,3 +103,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0060: Provider and device boundary](0060-provider-device-boundary.md) — source comparison and bounded software prototype specification; no provider adoption.
 
 - [0061: Private attachment delivery contract](0061-private-attachment-delivery-contract.md) — source-backed no-go for the unchanged candidate and limits of the proposed same-home continuation; no runtime adoption.
+
+- [0062: Headless reference qualification](0062-headless-reference-qualification.md) — selected normal QtBase build profile fails the no-JS source preflight; no runtime or interoperability claim.

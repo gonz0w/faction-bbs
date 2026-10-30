@@ -495,3 +495,7 @@ runtime envelopes, software observations and deployment limits stay separate.
 CI Busy outcome, controlled test-only RED/GREEN correction and exact retained
 source/executable identities. Production storage bounds are unchanged; fresh host
 observations and later Linux CI remain distinct from unperformed native execution.
+
+[Deliberate provider enrollment](provider-enrollment/README.md) records fresh host/NetBSD
+SSH/mTLS and encrypted attachment journeys with approved BBS/SFTP outage controls;
+no deployed provider, independent interoperability or new capacity claim.
