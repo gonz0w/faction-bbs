@@ -15,6 +15,7 @@ roadmap, local TODO journal or agent status log replaces GitHub.
 | [Decisions](decisions/README.md) | Accepted/superseded technical decisions and their rationale. |
 | [Research](research/README.md) | Dated investigations and experimental observations. |
 | [Dependencies](dependencies/README.md) | Reviewed source/license/version graphs and checks. |
+| [Delegation wire codecs](delegation-codecs.md) | Unverified wire profile, boundaries and source qualification. |
 | [Extension contracts](extension-contracts.md) | Current file/identity/mail/door boundaries. |
 | [Validation](validation/README.md) | Named software product observations. |
 | [Executed evidence](evidence/README.md) | Immutable measured bytes/results and their verification. |
