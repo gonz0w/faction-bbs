@@ -13,6 +13,16 @@ independent client interoperability remain unqualified.
 
 The optional [private provider operator](provider-operator.md) can serve preapproved same-home policy on loopback. It is a software preview and requires independently supplied credentials; it does not enroll devices or recover keys.
 
+For a future cross-home attachment fetch, the recipient would use their own home,
+which can vouch for their approved device to the invited sender home. This keeps
+each home's approvals independent while the recipient's device retains the keys
+and decrypts the attachment. A compromised trusted home could impersonate its
+device claims and obtain ciphertext, but would not receive the attachment keys or
+plaintext. Vouching does not enroll encryption devices or replace the sender's
+verified identities. The [trust contract](../dev-docs/provider-integration.md#invited-home-attachment-trust)
+records the limits. Cross-home vouching is not yet implemented; the current
+device-provider route works only when both peers belong to the same home.
+
 ## Optional device-provider transport
 
 Use [offline preparation](provider-preparation.md) to create the existing private
