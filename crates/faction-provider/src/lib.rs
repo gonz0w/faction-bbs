@@ -2,6 +2,8 @@
 //! TLS credentials authorize approved routing; they do not attest OMEMO key possession.
 //! Runtime ownership is authoritative: controls and sessions cannot retain it after drop.
 pub mod authority;
+#[cfg(feature = "delegation-records")]
+pub use authority::retrieval;
 #[cfg(feature = "durable-policy")]
 pub mod durable;
 #[cfg(feature = "preparation")]

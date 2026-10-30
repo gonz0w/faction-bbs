@@ -29,7 +29,7 @@ def validate_profile(manifest, workspace):
     expected = {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
                 'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
                 'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                    'durable-policy': ['dep:rustix'],
+                    'durable-policy': ['dep:rustix'], 'delegation-records': [],
                     'preparation': ['dep:toml', 'toml/display'],
                     'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
                 'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
@@ -127,7 +127,7 @@ def root_warm_commands():
 def provider_warm_commands():
     return ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features ' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator'] for target in TARGETS]
+            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy'] for target in TARGETS]
 
 
 def validate_warm_order(job):
@@ -169,7 +169,7 @@ def validate_ci(text):
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' > /dev/null' for target in TARGETS]
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features blob-iq > /dev/null' for target in TARGETS]
-    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator'] for target in TARGETS]
+    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy'] for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked -- -D warnings',
@@ -178,6 +178,9 @@ def validate_ci(text):
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
     commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features preparation -- --test-threads=1']
+    for feature in ['delegation-records', 'delegation-records,durable-policy']:
+        commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
+                     'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
     native = _step(provider, 'Validate the native authenticated attachment client')
     for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
@@ -253,6 +256,8 @@ def inventory():
     for profile, features in [('default', []), ('blob-iq', ['blob-iq']),
                               ('durable-policy', ['durable-policy']), ('preparation', ['preparation']),
                               ('operator', ['operator']),
+                              ('delegation-records', ['delegation-records']),
+                              ('delegation-records,durable-policy', ['delegation-records', 'durable-policy']),
                               ('device-provider', ['faction-client/device-provider'])]:
         graphs = {}
         for target in TARGETS:

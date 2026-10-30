@@ -499,3 +499,7 @@ observations and later Linux CI remain distinct from unperformed native executio
 [Deliberate provider enrollment](provider-enrollment/README.md) records fresh host/NetBSD
 SSH/mTLS and encrypted attachment journeys with approved BBS/SFTP outage controls;
 no deployed provider, independent interoperability or new capacity claim.
+
+[Session-derived retrieval intents](retrieval-intents/README.md) records default-off
+local intent controls and ordinary host/NetBSD regressions, with original deadlines,
+private retention and separate compilation/runtime envelopes; no remote grant.

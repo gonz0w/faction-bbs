@@ -12,6 +12,10 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU64, Ordering},
 };
 
+#[cfg(feature = "delegation-records")]
+#[path = "retrieval.rs"]
+pub mod retrieval;
+
 pub const MAX_BINDINGS: usize = 32;
 pub const MAX_HOMES: usize = 32;
 pub const MAX_HANDLES: usize = 8;
@@ -210,6 +214,8 @@ pub(crate) struct Authority {
     reset_epoch: u64,
     history: Vec<([u8; 32], Principal)>,
     slots: Vec<Slot>,
+    #[cfg(feature = "delegation-records")]
+    records: retrieval::Records,
 }
 impl Authority {
     pub fn new(registry: Option<Registry>) -> Self {
@@ -228,6 +234,8 @@ impl Authority {
             reset_epoch,
             history,
             slots: Vec::new(),
+            #[cfg(feature = "delegation-records")]
+            records: retrieval::Records::default(),
         }
     }
     #[cfg(feature = "durable-policy")]
@@ -253,6 +261,8 @@ impl Authority {
         self.registry = snapshot.registry;
         self.history = snapshot.history;
         self.slots.clear();
+        #[cfg(feature = "delegation-records")]
+        self.records.invalidate();
     }
     pub fn open_connection(&self) -> Connection {
         Connection {
@@ -294,12 +304,16 @@ impl Authority {
         self.history = history;
         self.registry = Some(registry);
         self.slots.clear();
+        #[cfg(feature = "delegation-records")]
+        self.records.invalidate();
         Ok(())
     }
     /// A missing/corrupt source is explicitly unavailable, never a fallback.
     pub fn unavailable(&mut self) {
         self.registry = None;
         self.slots.clear();
+        #[cfg(feature = "delegation-records")]
+        self.records.invalidate();
     }
     /// Password/account reset grants no device binding or key recovery.
     pub fn reset(&mut self, reset_epoch: u64) -> Result<(), Error> {
@@ -315,6 +329,8 @@ impl Authority {
         self.generation = generation;
         self.reset_epoch = reset_epoch;
         self.slots.clear();
+        #[cfg(feature = "delegation-records")]
+        self.records.invalidate();
         Ok(())
     }
     /// Trusted adapter only: caller must verify the actual TLS connection and

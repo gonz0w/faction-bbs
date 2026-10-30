@@ -54,7 +54,7 @@ pub struct Report {
     pub stage: Stage,
     pub dispatched: usize,
 }
-fn wall_now() -> u64 {
+pub(crate) fn wall_now() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |t| t.as_secs())
@@ -71,7 +71,7 @@ fn check(deadline: Instant, cancel: &AtomicBool) -> Result<(), Stage> {
 fn classify(deadline: Instant, cancel: &AtomicBool, fallback: Stage) -> Stage {
     check(deadline, cancel).err().unwrap_or(fallback)
 }
-fn leaf_current(leaf: &X509, now: u64) -> bool {
+pub(crate) fn leaf_current(leaf: &X509, now: u64) -> bool {
     let Ok(now) = i64::try_from(now)
         .ok()
         .and_then(|n| Asn1Time::from_unix(n).ok())
@@ -399,6 +399,39 @@ enum DispatchRoute<'a> {
     Local(&'a BinaryService),
 }
 impl Session {
+    /// Create bounded recipient intent from this current verified session. This
+    /// charges the existing attempt budget before validating caller-selected data.
+    #[cfg(feature = "delegation-records")]
+    pub fn retrieval_intent(
+        &mut self,
+        binding: faction_files::private_blobs::Binding,
+        action: crate::retrieval::RetrievalAction,
+    ) -> Result<crate::retrieval::RetrievalRecord, Error> {
+        let state = self.attempt()?;
+        let mut authority = state
+            .authority
+            .lock()
+            .map_err(|_| Error::Transport(Stage::Denied))?;
+        check(self.deadline, &self.cancel).map_err(Error::Transport)?;
+        if state.stopped.load(Ordering::SeqCst) {
+            return Err(Error::Transport(Stage::Denied));
+        }
+        let token = authority
+            .create_retrieval(
+                crate::retrieval::Source {
+                    connection: &self.connection,
+                    handle: &self.handle,
+                    leaf: &self.leaf,
+                    deadline: self.deadline,
+                    elapsed_ms: self.start.elapsed().as_millis() as u64,
+                },
+                binding,
+                action,
+                crate::retrieval::Moment::now(),
+            )
+            .map_err(Error::Store)?;
+        Ok(crate::retrieval::RetrievalRecord::new(&state, token))
+    }
     pub(crate) fn attempt(&mut self) -> Result<Arc<State>, Error> {
         if self.attempted >= MAX_OPERATIONS {
             return Err(Error::Transport(Stage::Limit));

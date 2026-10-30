@@ -17,7 +17,7 @@ def manifest():
     return {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
             'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
             'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                'durable-policy': ['dep:rustix'],
+                'durable-policy': ['dep:rustix'], 'delegation-records': [],
                 'preparation': ['dep:toml', 'toml/display'],
                 'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
             'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
@@ -80,9 +80,9 @@ class ProviderDependencies(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator'})
-        self.assertEqual(execute.call_count, 27)
-        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy'})
+        self.assertEqual(execute.call_count, 33)
+        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
         actual = set()
         for call in execute.call_args_list:
             command = call.args[0]
@@ -260,6 +260,12 @@ def ci_fixture():
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records,durable-policy > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings
@@ -268,6 +274,10 @@ def ci_fixture():
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features blob-iq -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features preparation -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records,durable-policy -- --test-threads=1
       - name: Validate the native authenticated attachment client
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -337,6 +347,12 @@ def ci_fixture():
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records,durable-policy > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features durable-policy -- -D warnings
@@ -517,7 +533,7 @@ class DurableProviderProfiles(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator'})
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy'})
         for profile in ['durable-policy', 'operator']:
             self.assertEqual(set(result['profiles'][profile]['graphs']), set(policy.TARGETS))
 
@@ -565,7 +581,7 @@ class DurableProviderRefusals(unittest.TestCase):
             first = job.index('          python3 tools/check_provider_dependencies.py\n')
             prefix = job[:first]
             metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
-            self.assertEqual(len(metadata), 27)
+            self.assertEqual(len(metadata), 33)
             for line in metadata:
                 for replacement in ['', line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
                     changed = job.replace(line + '\n', replacement + '\n', 1)
@@ -638,7 +654,7 @@ class PreparationProfiles(unittest.TestCase):
             result = json.loads(policy.inventory())
         self.assertIn('preparation', result['profiles'])
         self.assertEqual(set(result['profiles']['preparation']['graphs']), set(policy.TARGETS))
-        self.assertEqual(execute.call_count, 27)
+        self.assertEqual(execute.call_count, 33)
 
     def test_current_ci_warms_preparation_before_each_first_guard_and_tests_it(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
@@ -714,3 +730,35 @@ class PreparedOperatorCI(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class RetrievalRecordsProfiles(unittest.TestCase):
+    def test_empty_default_off_feature_and_exact_selected_graphs(self):
+        policy.validate_profile(manifest(), {'workspace': {'members': []}})
+        metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
+        with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
+            result = json.loads(policy.inventory())
+        for profile in ['delegation-records', 'delegation-records,durable-policy']:
+            self.assertEqual(result['profiles'][profile]['selected_features'], profile.split(','))
+            self.assertEqual(set(result['profiles'][profile]['graphs']), set(policy.TARGETS))
+        changed = manifest(); changed['features']['delegation-records'] = ['blob-iq']
+        with self.assertRaises(ValueError): policy.validate_profile(changed, {'workspace': {'members': []}})
+        changed = manifest(); changed['features']['default'] = ['delegation-records']
+        with self.assertRaises(ValueError): policy.validate_profile(changed, {'workspace': {'members': []}})
+
+    def test_current_ci_qualifies_both_record_profiles_before_compilation(self):
+        text = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        policy.validate_ci(text)
+        for job_name in ['provider', 'provider_operator']:
+            job = policy._job(text, job_name)
+            first_guard = job.index('          python3 tools/check_provider_dependencies.py\n')
+            for profile in ['delegation-records', 'delegation-records,durable-policy']:
+                for target in policy.TARGETS:
+                    command = 'cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + profile + ' > /dev/null'
+                    self.assertIn('          ' + command + '\n', job[:first_guard])
+                    with self.assertRaises(ValueError): policy.validate_ci(text.replace('          ' + command + '\n', '', 1))
+        provider = policy._job(text, 'provider')
+        for profile in ['delegation-records', 'delegation-records,durable-policy']:
+            for operation in ['clippy', 'test']:
+                command = 'cargo ' + operation + ' --manifest-path crates/faction-provider/Cargo.toml' + (' --all-targets' if operation == 'clippy' else '') + ' --release --locked --features ' + profile + (' -- -D warnings' if operation == 'clippy' else ' -- --test-threads=1')
+                self.assertIn(command, provider)
+                with self.assertRaises(ValueError): policy.validate_ci(text.replace('          ' + command + '\n', '', 1))
