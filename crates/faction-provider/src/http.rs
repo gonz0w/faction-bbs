@@ -224,17 +224,65 @@ fn publication_input(
     };
     Ok((binding, action))
 }
+/// One precise observation history for the whole publication carrier. No
+/// timestamp is invented before the first actual check; failed time stays failed.
+#[derive(Default)]
+struct PublicationClock {
+    lifetime: Option<WireLifetime>,
+    invalid: bool,
+}
+impl PublicationClock {
+    fn observe(&mut self, now: Option<Duration>) -> bool {
+        if self.invalid {
+            return false;
+        }
+        let Some(now) = now else {
+            self.invalid = true;
+            return false;
+        };
+        let lifetime = self.lifetime.get_or_insert(WireLifetime {
+            expires: Duration::MAX,
+            highwater: now,
+            invalid: false,
+        });
+        if lifetime.check(now).is_err() {
+            self.invalid = true;
+            return false;
+        }
+        true
+    }
+}
 impl ServiceSession {
     fn publication_probe(
         &self,
         profile: &crate::services::PublicationWireProfile,
         query: Option<codec::UnverifiedPublicationQuery>,
+        clock_state: Arc<std::sync::Mutex<PublicationClock>>,
+    ) -> Arc<dyn Fn() -> bool + Send + Sync> {
+        self.publication_probe_clock(
+            profile,
+            query,
+            Arc::new(|| SystemTime::now().duration_since(UNIX_EPOCH).ok()),
+            clock_state,
+        )
+    }
+    fn publication_probe_clock(
+        &self,
+        profile: &crate::services::PublicationWireProfile,
+        query: Option<codec::UnverifiedPublicationQuery>,
+        clock: Arc<dyn Fn() -> Option<Duration> + Send + Sync>,
+        clock_state: Arc<std::sync::Mutex<PublicationClock>>,
     ) -> Arc<dyn Fn() -> bool + Send + Sync> {
         let state = self.state.clone();
         let profile = profile.clone();
         let credential = self.credential.clone();
         let leaf = self.leaf.clone();
         Arc::new(move || {
+            let wall = clock();
+            // Drop the private clock lock before acquiring authority.
+            if !clock_state.lock().is_ok_and(|mut c| c.observe(wall)) {
+                return false;
+            }
             let Some(state) = state.upgrade() else {
                 return false;
             };
@@ -244,7 +292,10 @@ impl ServiceSession {
             let Ok(a) = state.authority.lock() else {
                 return false;
             };
-            let now = wall_now();
+            let Some(wall) = wall else {
+                return false;
+            };
+            let now = wall.as_secs();
             if profile.current(&a, &credential, &leaf, now).is_err() {
                 return false;
             }
@@ -269,7 +320,8 @@ impl ServiceSession {
         profile: &crate::services::PublicationWireProfile,
     ) -> Result<(), Error> {
         let state = self.issuer_attempt()?;
-        let probe = self.publication_probe(profile, None);
+        let clock_state = Arc::new(std::sync::Mutex::new(PublicationClock::default()));
+        let probe = self.publication_probe(profile, None, clock_state.clone());
         if !probe() {
             return Err(Error::Transport(Stage::Denied));
         }
@@ -306,7 +358,7 @@ impl ServiceSession {
         let observation = if let (Some(q), Some(o)) = (query.as_ref(), result.as_ref()) {
             let hex = |v: [u8; 32]| v.iter().map(|b| format!("{b:02x}")).collect();
             self.stream.get_mut().policy_probe =
-                Some(self.publication_probe(profile, Some(q.clone())));
+                Some(self.publication_probe(profile, Some(q.clone()), clock_state));
             codec::UnverifiedPublicationObservation::Current {
                 query: Box::new(q.clone()),
                 home: profile.host().into(),

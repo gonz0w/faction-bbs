@@ -613,3 +613,154 @@ fn publication_actual_partial_tls_request_observes_retry_then_policy_cancel_stop
         });
     }
 }
+fn publication_probe_rollback(response: bool) {
+    use crate::services::PublicationWireProfile;
+    use std::sync::atomic::AtomicU64;
+    let (real, observer, query) = publication_fixture();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(addr, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        let time = session.credential.wall_highwater;
+        let clock = Arc::new(AtomicU64::new(time));
+        let clock_view = clock.clone();
+        let profile =
+            PublicationWireProfile::new("home.test".into(), vec!["observer".into()]).unwrap();
+        let probe = session.publication_probe_clock(
+            &profile,
+            if response { Some(query) } else { None },
+            Arc::new(move || Some(Duration::from_secs(clock_view.load(Ordering::SeqCst)))),
+            Arc::new(Mutex::new(PublicationClock::default())),
+        );
+        assert!(probe());
+        clock.store(time + 2, Ordering::SeqCst);
+        assert!(probe());
+        clock.store(time + 1, Ordering::SeqCst);
+        assert!(
+            !probe(),
+            "observed forward wall sample followed by rollback must deny the actual publication probe"
+        );
+        clock.store(time + 3, Ordering::SeqCst);
+        assert!(
+            !probe(),
+            "clock refusal must remain sticky after the clock recovers"
+        );
+        assert!(Instant::now() < session.deadline);
+    });
+}
+#[test]
+fn publication_request_probe_retains_forward_sample_and_sticky_rollback() {
+    publication_probe_rollback(false)
+}
+#[test]
+fn publication_response_probe_retains_forward_sample_and_sticky_rollback() {
+    publication_probe_rollback(true)
+}
+
+#[test]
+fn publication_probe_fractional_forward_sample_and_rollback_are_not_discarded() {
+    use crate::services::PublicationWireProfile;
+    use std::sync::atomic::AtomicU64;
+    let (real, observer, query) = publication_fixture();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(addr, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        let base = session.credential.wall_highwater * 1000;
+        let clock = Arc::new(AtomicU64::new(base + 900));
+        let c = clock.clone();
+        let profile =
+            PublicationWireProfile::new("home.test".into(), vec!["observer".into()]).unwrap();
+        let probe = session.publication_probe_clock(
+            &profile,
+            Some(query),
+            Arc::new(move || Some(Duration::from_millis(c.load(Ordering::SeqCst)))),
+            Arc::new(Mutex::new(PublicationClock::default())),
+        );
+        assert!(probe());
+        clock.store(base + 1100, Ordering::SeqCst);
+        assert!(probe());
+        clock.store(base + 1000, Ordering::SeqCst);
+        assert!(
+            !probe(),
+            "fractional rollback between actual precise samples must deny"
+        );
+    });
+}
+#[test]
+fn publication_read_and_response_probes_share_precise_highwater_and_missing_clock_is_sticky() {
+    use std::sync::atomic::AtomicU64;
+    let (real, observer, query) = publication_fixture();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(addr, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        let base = session.credential.wall_highwater * 1000;
+        let clock = Arc::new(AtomicU64::new(base + 900));
+        let read_clock = clock.clone();
+        let response_clock = clock.clone();
+        let history = Arc::new(Mutex::new(PublicationClock::default()));
+        let profile = crate::services::PublicationWireProfile::new(
+            "home.test".into(),
+            vec!["observer".into()],
+        )
+        .unwrap();
+        assert!(history.lock().unwrap().lifetime.is_none());
+        let read = session.publication_probe_clock(
+            &profile,
+            None,
+            Arc::new(move || Some(Duration::from_millis(read_clock.load(Ordering::SeqCst)))),
+            history.clone(),
+        );
+        let response = session.publication_probe_clock(
+            &profile,
+            Some(query),
+            Arc::new(move || Some(Duration::from_millis(response_clock.load(Ordering::SeqCst)))),
+            history.clone(),
+        );
+        assert!(read());
+        assert_eq!(
+            history.lock().unwrap().lifetime.as_ref().unwrap().highwater,
+            Duration::from_millis(base + 900)
+        );
+        clock.store(base + 1100, Ordering::SeqCst);
+        assert!(read());
+        clock.store(base + 1000, Ordering::SeqCst);
+        assert!(!response());
+        clock.store(base + 1200, Ordering::SeqCst);
+        assert!(!read());
+        assert!(!response());
+        let missing_history = Arc::new(Mutex::new(PublicationClock::default()));
+        let missing = session.publication_probe_clock(
+            &profile,
+            None,
+            Arc::new(|| None),
+            missing_history.clone(),
+        );
+        assert!(!missing());
+        assert!(missing_history.lock().unwrap().invalid);
+        let recovered = session.publication_probe_clock(
+            &profile,
+            None,
+            Arc::new(move || Some(Duration::from_millis(base + 1300))),
+            missing_history,
+        );
+        assert!(!recovered());
+        assert!(Instant::now() < session.deadline);
+    });
+}
