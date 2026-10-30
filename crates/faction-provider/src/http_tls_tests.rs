@@ -764,3 +764,138 @@ fn publication_read_and_response_probes_share_precise_highwater_and_missing_cloc
         assert!(Instant::now() < session.deadline);
     });
 }
+
+fn queued_authority_publication_expiry(response: bool) {
+    let (real, observer, mut query) = publication_fixture();
+    let expires = wall_now() + 3;
+    if !response {
+        let entries = vec![ServiceRegistration {
+            home: "foreign.test".into(),
+            client_id: "observer".into(),
+            dns_san: "provider.test".into(),
+            certificate_sha256: sha256(&observer.0.to_der().unwrap()),
+            enabled: true,
+            valid_from: wall_now() - 60,
+            valid_until: expires,
+        }];
+        real.runtime
+            .control()
+            .replace_delegation_policy(
+                real.registry(3),
+                ServicePolicy::new("home.test".into(), entries).unwrap(),
+            )
+            .unwrap();
+    }
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(address, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        query.binding.expires = expires;
+        let history = Arc::new(Mutex::new(PublicationClock::default()));
+        let profile = crate::services::PublicationWireProfile::new(
+            "home.test".into(),
+            vec!["observer".into()],
+        )
+        .unwrap();
+        let probe = session.publication_probe(
+            &profile,
+            if response { Some(query) } else { None },
+            history.clone(),
+        );
+        let authority = real.runtime.state.authority.lock().unwrap();
+        let operation = scope.spawn(move || probe());
+        let witness_end = Instant::now() + Duration::from_secs(1);
+        let sampled = loop {
+            let sample = history
+                .lock()
+                .unwrap()
+                .lifetime
+                .as_ref()
+                .map(|c| c.highwater);
+            if let Some(sample) = sample {
+                break sample;
+            }
+            assert!(
+                Instant::now() < witness_end,
+                "probe must sample before the Authority wait"
+            );
+            std::thread::sleep(Duration::from_millis(1));
+        };
+        assert!(sampled.as_secs() < expires);
+        assert!(!operation.is_finished());
+        while wall_now() < expires {
+            assert!(Instant::now() < session.deadline);
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert!(Instant::now() < session.deadline);
+        drop(authority);
+        assert!(
+            !operation.join().unwrap(),
+            "object expiry during Authority wait must refuse the response probe"
+        );
+    });
+}
+
+#[test]
+fn queued_authority_publication_expiry_refuses_the_actual_tls_response_probe() {
+    queued_authority_publication_expiry(true)
+}
+#[test]
+fn queued_authority_service_expiry_refuses_the_actual_tls_request_probe() {
+    queued_authority_publication_expiry(false)
+}
+
+#[test]
+fn queued_authority_stop_refuses_actual_publication_read_and_response_probes() {
+    for response in [false, true] {
+        let (real, observer, query) = publication_fixture();
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        std::thread::scope(|scope| {
+            let peer = scope.spawn(|| real.client(address, &observer));
+            let session = real
+                .server()
+                .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let _peer = peer.join().unwrap();
+            let history = Arc::new(Mutex::new(PublicationClock::default()));
+            let profile = crate::services::PublicationWireProfile::new(
+                "home.test".into(),
+                vec!["observer".into()],
+            )
+            .unwrap();
+            let probe = session.publication_probe(
+                &profile,
+                if response { Some(query) } else { None },
+                history.clone(),
+            );
+            let authority = real.runtime.state.authority.lock().unwrap();
+            let operation = scope.spawn(move || probe());
+            let witness_end = Instant::now() + Duration::from_secs(1);
+            while history.lock().unwrap().lifetime.is_none() {
+                assert!(Instant::now() < witness_end);
+                std::thread::sleep(Duration::from_millis(1));
+            }
+            assert!(!operation.is_finished());
+            let stopping = scope.spawn(|| real.runtime.control().stop());
+            while !real.runtime.state.stopped.load(Ordering::SeqCst) {
+                assert!(Instant::now() < witness_end);
+                std::thread::sleep(Duration::from_millis(1));
+            }
+            assert!(!operation.is_finished());
+            assert!(
+                !stopping.is_finished(),
+                "actual stop waits to invalidate Authority"
+            );
+            drop(authority);
+            assert!(!operation.join().unwrap());
+            stopping.join().unwrap().unwrap();
+            assert!(Instant::now() < session.deadline);
+        });
+    }
+}

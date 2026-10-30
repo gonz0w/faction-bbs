@@ -58,7 +58,8 @@ impl Context {
             .map_err(Error::Store)
     }
     fn current(&self) -> Result<Arc<State>, Error> {
-        let now = self.moment()?;
+        // Fast refusal before waiting; this sample cannot qualify later I/O.
+        self.moment()?;
         let state = self
             .state
             .upgrade()
@@ -71,6 +72,10 @@ impl Context {
                 .authority
                 .lock()
                 .map_err(|_| Error::Store(BlobError::Denied))?;
+            if state.stopped.load(Ordering::SeqCst) {
+                return Err(Error::Store(BlobError::Denied));
+            }
+            let now = self.moment()?;
             a.resource_current(self, now.as_secs())
                 .map_err(Error::Store)?;
         }

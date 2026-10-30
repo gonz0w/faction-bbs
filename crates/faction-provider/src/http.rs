@@ -292,6 +292,15 @@ impl ServiceSession {
             let Ok(a) = state.authority.lock() else {
                 return false;
             };
+            if state.stopped.load(Ordering::SeqCst) {
+                return false;
+            }
+            // Authority may have been contended past an expiry. Preserve both
+            // precise samples in the same sticky history, then use fresh time.
+            let wall = clock();
+            if !clock_state.lock().is_ok_and(|mut c| c.observe(wall)) {
+                return false;
+            }
             let Some(wall) = wall else {
                 return false;
             };

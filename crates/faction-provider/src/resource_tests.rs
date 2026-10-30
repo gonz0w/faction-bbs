@@ -732,3 +732,87 @@ fn prepare_does_not_return_a_continuation_until_exact_original_tracked_tls_clean
         assert_eq!(state.authority.lock().unwrap().records.charged_len(), 0);
     });
 }
+
+#[test]
+fn queued_authority_sender_expiry_refuses_the_actual_prepared_context() {
+    let f = Fixture::new();
+    let expires = tls::wall_now() + 3;
+    let mut entries = f.registry(3).bindings().to_vec();
+    entries[0].valid_until = expires;
+    f.runtime()
+        .control()
+        .replace_delegation_policy(
+            Registry::new(
+                3,
+                0,
+                vec!["local.test".into(), "remote.test".into()],
+                entries,
+            )
+            .unwrap(),
+            f.policy(),
+        )
+        .unwrap();
+    let pending = f.prepare(0).unwrap();
+    let context = &pending.context;
+    let before = context.clock.lock().unwrap().highwater;
+    let authority = f.runtime().state.authority.lock().unwrap();
+    thread::scope(|scope| {
+        let probe = scope.spawn(|| context.current());
+        let witness_end = Instant::now() + Duration::from_secs(1);
+        let sampled = loop {
+            let sample = context.clock.lock().unwrap().highwater;
+            if sample > before {
+                break sample;
+            }
+            assert!(
+                Instant::now() < witness_end,
+                "probe must sample before the Authority wait"
+            );
+            thread::sleep(Duration::from_millis(1));
+        };
+        assert!(sampled.as_secs() < expires);
+        assert!(!probe.is_finished());
+        while tls::wall_now() < expires {
+            assert!(Instant::now() < context.deadline);
+            thread::sleep(Duration::from_millis(5));
+        }
+        assert!(Instant::now() < context.deadline);
+        drop(authority);
+        assert!(
+            probe.join().unwrap().is_err(),
+            "sender expiry during Authority wait must refuse before callback I/O"
+        );
+    });
+}
+
+#[test]
+fn queued_authority_stop_refuses_the_actual_prepared_context() {
+    let f = Fixture::new();
+    let pending = f.prepare(0).unwrap();
+    let context = &pending.context;
+    let before = context.clock.lock().unwrap().highwater;
+    let authority = f.runtime().state.authority.lock().unwrap();
+    thread::scope(|scope| {
+        let probe = scope.spawn(|| context.current());
+        let witness_end = Instant::now() + Duration::from_secs(1);
+        while context.clock.lock().unwrap().highwater <= before {
+            assert!(Instant::now() < witness_end);
+            thread::sleep(Duration::from_millis(1));
+        }
+        assert!(!probe.is_finished());
+        let stopping = scope.spawn(|| f.runtime().control().stop());
+        while !f.runtime().state.stopped.load(Ordering::SeqCst) {
+            assert!(Instant::now() < witness_end);
+            thread::sleep(Duration::from_millis(1));
+        }
+        assert!(!probe.is_finished());
+        assert!(
+            !stopping.is_finished(),
+            "actual stop waits to invalidate Authority"
+        );
+        drop(authority);
+        assert!(probe.join().unwrap().is_err());
+        stopping.join().unwrap().unwrap();
+        assert!(Instant::now() < context.deadline);
+    });
+}
