@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-10-28 · no supported release yet.**
+**Working hobby preview · updated 2026-10-30 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -64,6 +64,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   [Current host and NetBSD software checks](dev-docs/evidence/offline-provider-preparation/README.md)
   exercise the generated files through encrypted attachment delivery and private saves.
   An optional [private provider operator](docs/provider-operator.md) adds durable policy and a foreground loopback service using preapproved policy and independent TLS credentials. [Historical host and NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) for the earlier #285 revision cover restart/retry, encrypted transfers and ordinary-access independence. It remains a software preview; it does not enroll devices or deploy a provider. Classic defaults remain.
+  Cross-home attachment authorization is under development. The default-off
+  [local retrieval-intent API](dev-docs/retrieval-intents.md) has host and NetBSD
+  software qualification; remote authorization and full cross-home delivery remain incomplete.
 
 ## What you can do
 

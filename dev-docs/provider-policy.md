@@ -45,3 +45,12 @@ The provider's one active connection, eight attempts, five-second TCP/TLS admiss
 ten-second cycle, 8192-byte binary payload, 16384-byte IQ payload, 32-entry policy
 and eight handles remain unchanged. Filesystem calls are cooperative; the existing
 five-second drain is not a guarantee that a stalled filesystem can be preempted.
+
+The separate default-off `delegation-records` feature uses transient local
+retrieval policy and records. Its sender-home to audience mappings and records
+are not persisted or restored on reopen. Existing registry homes retain their
+current durable behavior. Installing durable policy invalidates prior records;
+it does not create a remote read grant. Persistence of delegation service-client
+registrations, certificates and invitation epochs remains future work under
+[issue #300](https://github.com/gonz0w/faction-bbs/issues/300). See the
+[retrieval intent contract](retrieval-intents.md).

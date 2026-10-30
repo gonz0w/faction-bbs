@@ -93,10 +93,13 @@ identity or pins, or choose encryption recipients; member-side verification and
 encryption checks remain independent. BBS accounts, local approval and roles,
 circles and private-mail keys do not federate. See the [scope clarification](https://github.com/gonz0w/faction-bbs/issues/294#issuecomment-6513142126).
 
-This trust choice does not deliver a cross-home mechanism or service. The maintained
-native binary service above remains same-home only. [Issue #299](https://github.com/gonz0w/faction-bbs/issues/299)
-researches the concrete mechanism and current-revocation mapping; implementation
-and independently hosted cross-home operation remain future work.
+The default-off `delegation-records` feature supplies a local, session-derived
+[retrieval intent](retrieval-intents.md) for trusted embedders. It is not a remote
+read grant and does not establish sender policy or committed object state. The
+maintained native binary service above remains same-home only. Sender-side
+authority and independently hosted cross-home operation remain future work under
+[issue #300](https://github.com/gonz0w/faction-bbs/issues/300) and
+[issue #301](https://github.com/gonz0w/faction-bbs/issues/301).
 
 
 ## In-process IQ adapter

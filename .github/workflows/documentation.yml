@@ -134,6 +134,12 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records,durable-policy > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings
@@ -142,6 +148,10 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features blob-iq -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features preparation -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records,durable-policy -- --test-threads=1
       - name: Validate the native authenticated attachment client
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -211,6 +221,12 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records,durable-policy > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features durable-policy -- -D warnings

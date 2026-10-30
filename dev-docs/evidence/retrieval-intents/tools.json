@@ -1,0 +1,49 @@
+{
+  "host": {
+    "cargo": {
+      "bytes": 31817288,
+      "sha256": "fec239e6b74df873f54ef52912bfcfcc8d8414bc14a7ae1e0be80460bae72841",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)"
+    },
+    "libcrypto.3.dylib": {
+      "bytes": 4828048,
+      "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d"
+    },
+    "libssl.3.dylib": {
+      "bytes": 867008,
+      "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc"
+    },
+    "rustc": {
+      "bytes": 412504,
+      "sha256": "c5922366bfe3d6d028a65d626f4e629b3adad066995cf0b60c8a4b617bba5ffe",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    }
+  },
+  "identity_capture": "final observations; no per-process executable attestation",
+  "netbsd": {
+    "/usr/bin/cc": {
+      "bytes": 1419696,
+      "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+    },
+    "/usr/bin/ld": {
+      "bytes": 992920,
+      "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161"
+    },
+    "/usr/lib/libcrypto.so.16": {
+      "bytes": 6244640,
+      "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+    },
+    "/usr/lib/libssl.so.16": {
+      "bytes": 1262704,
+      "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+    },
+    "/usr/pkg/bin/cargo": {
+      "bytes": 43795088,
+      "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+    },
+    "/usr/pkg/bin/rustc": {
+      "bytes": 14128,
+      "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+    }
+  }
+}

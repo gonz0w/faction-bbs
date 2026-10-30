@@ -1,0 +1,301 @@
+{
+  "claims_not_made": [
+    "token issuer/introspection",
+    "sender current authority or committed-object proof",
+    "remote access grant/relay",
+    "durable delegation registration or invitation epochs",
+    "fresh production-client attachment journey",
+    "physical SBC/250-user capacity",
+    "hardening audit or deployment"
+  ],
+  "execution_date": "2026-10-30",
+  "host_tooling": {
+    "codec_contract_tests": 11,
+    "log_sha256": "6753f227543c3c0850500c6d9e7288cd469c3aa26514a133b301484e8fb2f0a4",
+    "new_profile_clippy": "pass both",
+    "provider_contract_tests": 41,
+    "python_tests": 625,
+    "returncode": 0,
+    "three_target_source_gates": "pass before selected compilation; locked archives/extracted trees/features/licenses/no-JS"
+  },
+  "issue": 306,
+  "lead_checks": [
+    {
+      "command": [
+        "python3",
+        "tools/check_provider_dependencies.py"
+      ],
+      "elapsed_seconds": 4.3441393339890055,
+      "log": "0.log",
+      "log_sha256": "59a8e386f9680085d342b3bc7f3243d334634b829b8696fc2185495d54a5ca05",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_delegation_codec_dependencies.py"
+      ],
+      "elapsed_seconds": 1.4115478330058977,
+      "log": "1.log",
+      "log_sha256": "a1cd6a57f5de1e32730ac0d5beb04e9ea28f72e19074d0e882c235ac821ffb26",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_repository.py"
+      ],
+      "elapsed_seconds": 3.415768750011921,
+      "log": "2.log",
+      "log_sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_evidence_sources.py"
+      ],
+      "elapsed_seconds": 15.139605582982767,
+      "log": "3.log",
+      "log_sha256": "d1f058c908a6af4ddcab84e8fa15b505fd8fe153c20a6b694d9ce78bdca09fb3",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "tools/check_recorded_files.py",
+        "dev-docs/evidence/offline-provider-preparation/manifest.json",
+        "d3b14eeec31d1eff5bac8da9217eb02ef94799988c5adacb787fcfb784aae3a5"
+      ],
+      "elapsed_seconds": 0.09589604195207357,
+      "log": "4.log",
+      "log_sha256": "bdfb051d3e5b2e4a6e54b9c4f3067cb6f6c9fbd7178a8ce17fe4d591cb288c4c",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "elapsed_seconds": 0.03640520799672231,
+      "log": "5.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "returncode": 0
+    }
+  ],
+  "netbsd": {
+    "native_executed_source_files": 371,
+    "new_feature_compilation_memory_mib": 1024,
+    "new_feature_compiler_jobs": 2,
+    "openssl": "base3.5.7",
+    "ordinary_compiler_jobs": 2,
+    "ordinary_iq_operator_compilation_memory_mib": 2048,
+    "ordinary_runtime_existing_artifacts_exact": true,
+    "os": "NetBSD11 evbarm/aarch64",
+    "post_build_registry_archives_exact": 139,
+    "runtime_cpus": 2,
+    "runtime_physmem_bytes": 1054990336,
+    "rust": "1.96.0"
+  },
+  "profiles": [
+    {
+      "host": {
+        "check_groups": [
+          19,
+          0,
+          23,
+          0,
+          0,
+          6
+        ],
+        "elapsed_seconds": 25.83242702484131,
+        "log_sha256": "e16b95f5d3159485f78a5f10608bc58c35426371e7572c4cd06d58e78a297772",
+        "total": 48
+      },
+      "netbsd": {
+        "check_groups": [
+          19,
+          0,
+          23,
+          0,
+          0,
+          6
+        ],
+        "elapsed_seconds": 42.77978779099999,
+        "log_sha256": "f5c2e3992760873583f018ead208daeac265f733109f7f742c4b7f9d16216479",
+        "returncode": 0,
+        "source_before_after_exact": true,
+        "total": 48
+      },
+      "profile": "default"
+    },
+    {
+      "host": {
+        "check_groups": [
+          26,
+          0,
+          29,
+          0,
+          0,
+          10
+        ],
+        "elapsed_seconds": 29.0822970867157,
+        "log_sha256": "d4deb073bbfbce04782d295a251b5c493f246f532cb83fd2813a3754bb1dd735",
+        "total": 65
+      },
+      "netbsd": {
+        "check_groups": [
+          26,
+          0,
+          29,
+          0,
+          0,
+          10
+        ],
+        "elapsed_seconds": 34.26826575000007,
+        "log_sha256": "f02266f89fa6cb473e5c4f8edc6d0a5a011e1df37beba0f137939e04a6060d00",
+        "returncode": 0,
+        "source_before_after_exact": true,
+        "total": 65
+      },
+      "profile": "delegation-records"
+    },
+    {
+      "host": {
+        "check_groups": [
+          38,
+          6,
+          30,
+          0,
+          0,
+          10
+        ],
+        "elapsed_seconds": 26.33498191833496,
+        "log_sha256": "42a19790cd3c3bb8a7dbb0732f49590395a9a91cf34577b157c72b4f0575badd",
+        "total": 84
+      },
+      "netbsd": {
+        "check_groups": [
+          38,
+          6,
+          30,
+          0,
+          0,
+          10
+        ],
+        "elapsed_seconds": 35.12164074999998,
+        "log_sha256": "033755b8f1d633f9c2485beeb352d43040890e0d394067736cb484ff8040c8a3",
+        "returncode": 0,
+        "source_before_after_exact": true,
+        "total": 84
+      },
+      "profile": "delegation-records,durable-policy"
+    },
+    {
+      "host": {
+        "check_groups": [
+          19,
+          0,
+          32,
+          0,
+          0,
+          6
+        ],
+        "elapsed_seconds": 128.10938096046448,
+        "log_sha256": "4a08b48eedf743341072445aeb34528c3f10b235a4582a1eb71c9d90cd2f0c36",
+        "total": 57
+      },
+      "netbsd": {
+        "check_groups": [
+          19,
+          0,
+          32,
+          0,
+          0,
+          6
+        ],
+        "elapsed_seconds": 41.051688958999996,
+        "log_sha256": "3ca710086bbbc667e785e24a8ca651b47c9aadc5426ffea3700d78f9276cfa0a",
+        "returncode": 0,
+        "source_before_after_exact": true,
+        "total": 57
+      },
+      "profile": "blob-iq"
+    },
+    {
+      "host": {
+        "check_groups": [
+          30,
+          1,
+          6,
+          23,
+          12,
+          4,
+          6
+        ],
+        "elapsed_seconds": 34.27476692199707,
+        "log_sha256": "527965e9638a31319cbe6664323ec5db35c8617805d6bb679e4667200425f813",
+        "total": 82
+      },
+      "netbsd": {
+        "check_groups": [
+          30,
+          1,
+          6,
+          23,
+          12,
+          4,
+          6
+        ],
+        "elapsed_seconds": 33.458553959,
+        "log_sha256": "cd7894cf59abb296c5d2e54f7407897bde67bd86736ce2944d1958a11ede2ccb",
+        "returncode": 0,
+        "source_before_after_exact": true,
+        "total": 82
+      },
+      "profile": "operator"
+    }
+  ],
+  "retention_limits": [
+    "One intermediate first-GREEN visibility-error raw log was overwritten; the retained tool diagnostic is explicitly a transcript copy, and recovered source is labeled derived rather than an independently captured snapshot. Primary sourceguard/API RED and final GREEN logs remain raw.",
+    "Native helper bootstrap initially lacked two unchanged Python imports, and the first 1GiB runtime wrapper had an indentation error. Both setup failures precede their intended execution; original scripts/logs and corrected variants are retained.",
+    "Existing blob-IQ xmpp-parsers compilation was killed at 1GiB with two and one jobs; native UVM logs report out of swap. The unchanged broader test binaries were compiled separately at 2GiB with two jobs, then ran at 1GiB without recompilation and with exact test-artifact checks.",
+    "Some host socket tests were initially denied by the inherited sandbox; the failed logs remain separate from passing authorized loopback runs.",
+    "The initial workflow accidentally added six warmup metadata commands to the independent codec step. Actual full-tooling and focused codec tests failed; only those six lines were removed, with pre-correction workflow preserved. Native Rust inputs were unchanged.",
+    "Operator executable identity was captured post-run separately from the test/library artifact map; no per-process executable attestation is claimed."
+  ],
+  "scope": "default-off local recipient retrieval intent, not remote resource authority",
+  "tdd": {
+    "api_red": {
+      "cause": "missing retrieval module and factory/check methods",
+      "exit": 101,
+      "log_sha256": "00d11e164b5c4d8db85d0dd3f0929c86ba6fc1a48785f6b8b7a6cfb32616081f"
+    },
+    "codec_step_regression": {
+      "exit": 1,
+      "log_sha256": "5b7266d4e86e5fa1a4e575e14e6c4e52a47016e58c9fdd83d3b6c564acb62621"
+    },
+    "green": "unchanged substantive assertions; final suites and existing literal codec contract pass",
+    "sourceguard_red": {
+      "errors": 4,
+      "exit": 1,
+      "failures": 2,
+      "log_sha256": "9d341a46f47568d311fac9f6cf0ac9f023e3a3e93ad5685c0632c8b3f953a04d",
+      "tests": 41
+    }
+  },
+  "teardown": {
+    "controller_stopped": true,
+    "loopback_forwards_closed": 1,
+    "native_archive_bytes": 170700800,
+    "native_archive_sha256": "0b66d14973812cfffdae7192ae327d3aa65b23134fdfd95ab068738222e5763d",
+    "only_owned_processes_signalled": true,
+    "owned_image_and_kernel_copies_removed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_stopped": true
+  }
+}

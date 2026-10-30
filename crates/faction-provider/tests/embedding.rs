@@ -1764,3 +1764,408 @@ fn configured_service_rechecks_current_full_identity_peer_policy_and_live_lifecy
         });
     }
 }
+
+#[cfg(feature = "delegation-records")]
+mod retrieval_records {
+    use super::*;
+    use faction_provider::retrieval::{RetrievalAction, RetrievalPolicy};
+    const AUDIENCE: &str = "https://sender.test/attachments";
+    fn policy() -> RetrievalPolicy {
+        RetrievalPolicy::new(
+            "home.test".into(),
+            vec![("sender.test".into(), AUDIENCE.into())],
+        )
+        .unwrap()
+    }
+    fn foreign() -> Binding {
+        let mut b = binding();
+        b.sender.account = "foreign@sender.test".into();
+        b
+    }
+    fn configured(c: &Certs) -> Runtime {
+        let runtime = Runtime::new(Some(
+            Registry::new(
+                1,
+                0,
+                vec!["home.test".into(), "sender.test".into()],
+                c.entries(),
+            )
+            .unwrap(),
+        ));
+        runtime
+            .control()
+            .replace_retrieval_policy(policy())
+            .unwrap();
+        runtime
+    }
+    #[test]
+    fn real_tls_record_survives_normal_close_and_same_runtime_readmission() {
+        let c = Certs::new();
+        let runtime = configured(&c);
+        let control = runtime.control();
+        let b = foreign();
+        let record = with_session(&c, &runtime, &c.bob, |mut s| {
+            s.retrieval_intent(b.clone(), RetrievalAction::GetChunk { offset: 0 })
+                .unwrap()
+        });
+        // New real mTLS admission proves the former session released its sole lane.
+        with_session(&c, &runtime, &c.bob, |mut s| {
+            for _ in 0..8 {
+                let intent = control
+                    .check_retrieval(
+                        &record,
+                        &b,
+                        RetrievalAction::GetChunk { offset: 0 },
+                        AUDIENCE,
+                    )
+                    .unwrap();
+                assert_eq!(intent.binding(), &b);
+                assert_eq!(intent.audience(), AUDIENCE);
+                assert_eq!(intent.action(), RetrievalAction::GetChunk { offset: 0 });
+            }
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::GetChunk { offset: b.size })
+                    .is_ok()
+            );
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .is_ok()
+            );
+        });
+        let mut changed = b.clone();
+        changed.sender.identity[31] ^= 1;
+        assert!(
+            control
+                .check_retrieval(
+                    &record,
+                    &changed,
+                    RetrievalAction::GetChunk { offset: 0 },
+                    AUDIENCE
+                )
+                .is_err()
+        );
+        assert!(
+            control
+                .check_retrieval(
+                    &record,
+                    &b,
+                    RetrievalAction::GetChunk { offset: 1 },
+                    AUDIENCE
+                )
+                .is_err()
+        );
+        assert!(
+            control
+                .check_retrieval(&record, &b, RetrievalAction::Status, AUDIENCE)
+                .is_err()
+        );
+        assert!(
+            control
+                .check_retrieval(
+                    &record,
+                    &b,
+                    RetrievalAction::GetChunk { offset: 0 },
+                    "https://other.test/attachments"
+                )
+                .is_err()
+        );
+        let other = configured(&c);
+        assert!(
+            other
+                .control()
+                .check_retrieval(
+                    &record,
+                    &b,
+                    RetrievalAction::GetChunk { offset: 0 },
+                    AUDIENCE
+                )
+                .is_err()
+        );
+        assert!(
+            control
+                .check_retrieval(
+                    &record,
+                    &b,
+                    RetrievalAction::GetChunk { offset: 0 },
+                    AUDIENCE
+                )
+                .is_ok()
+        );
+    }
+    #[test]
+    fn aggregate_eight_records_across_real_sessions_ninth_busy() {
+        let c = Certs::new();
+        let runtime = configured(&c);
+        let b = foreign();
+        let control = runtime.control();
+        let mut records = Vec::new();
+        for _ in 0..8 {
+            records.push(with_session(&c, &runtime, &c.bob, |mut s| {
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .unwrap()
+            }));
+        }
+        with_session(&c, &runtime, &c.bob, |mut s| {
+            assert!(matches!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status),
+                Err(Error::Store(faction_files::private_blobs::Error::Busy))
+            ))
+        });
+        for record in &records {
+            assert!(
+                control
+                    .check_retrieval(record, &b, RetrievalAction::Status, AUDIENCE)
+                    .is_ok()
+            );
+        }
+    }
+    #[test]
+    fn exact_recipient_homes_binding_selector_and_attempt_budget() {
+        let c = Certs::new();
+        let runtime = configured(&c);
+        let b = foreign();
+        with_session(&c, &runtime, &c.alice, |mut s| {
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .is_err()
+            )
+        });
+        with_session(&c, &runtime, &c.bob, |mut s| {
+            let mut bad = b.clone();
+            bad.recipient.identity[31] ^= 1;
+            assert!(s.retrieval_intent(bad, RetrievalAction::Status).is_err());
+            let mut bad = b.clone();
+            bad.sender.account = "unknown@uninvited.test".into();
+            assert!(s.retrieval_intent(bad, RetrievalAction::Status).is_err());
+            let mut bad = b.clone();
+            bad.recipient.account = "bob@sender.test".into();
+            assert!(s.retrieval_intent(bad, RetrievalAction::Status).is_err());
+            let mut bad = b.clone();
+            bad.size = 0;
+            assert!(s.retrieval_intent(bad, RetrievalAction::Status).is_err());
+            let mut bad = b.clone();
+            bad.created = wall_now() + 50;
+            bad.expires = bad.created + 100;
+            assert!(s.retrieval_intent(bad, RetrievalAction::Status).is_err());
+            let mut bad = b.clone();
+            bad.created = wall_now() - 100;
+            bad.expires = wall_now();
+            assert!(s.retrieval_intent(bad, RetrievalAction::Status).is_err());
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::GetChunk { offset: b.size + 1 })
+                    .is_err()
+            );
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::GetChunk { offset: u64::MAX })
+                    .is_err()
+            );
+            assert!(matches!(
+                s.retrieval_intent(b, RetrievalAction::Status),
+                Err(Error::Transport(Stage::Limit))
+            ));
+        });
+    }
+    #[test]
+    fn policy_registry_reset_stop_drop_and_unavailable_invalidate() {
+        for mutation in 0..6 {
+            let c = Certs::new();
+            let runtime = configured(&c);
+            let control = runtime.control();
+            let b = foreign();
+            let record = with_session(&c, &runtime, &c.bob, |mut s| {
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .unwrap()
+            });
+            match mutation {
+                0 => control.replace_retrieval_policy(policy()).unwrap(),
+                1 => control
+                    .replace_registry(current_registry(&c, 2, |_| {}))
+                    .unwrap(),
+                2 => control.reset(1).unwrap(),
+                3 => control.unavailable().unwrap(),
+                4 => runtime.stop(),
+                _ => drop(runtime),
+            }
+            assert!(
+                control
+                    .check_retrieval(&record, &b, RetrievalAction::Status, AUDIENCE)
+                    .is_err()
+            );
+        }
+    }
+    #[test]
+    fn invalid_policy_is_refused_without_disturbing_valid_records() {
+        let c = Certs::new();
+        let runtime = configured(&c);
+        let control = runtime.control();
+        let b = foreign();
+        let record = with_session(&c, &runtime, &c.bob, |mut s| {
+            s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                .unwrap()
+        });
+        for (home, mappings) in [
+            ("bad", vec![]),
+            ("home.test", vec![("bad".into(), AUDIENCE.into())]),
+            ("home.test", vec![("sender.test".into(), "".into())]),
+            ("home.test", vec![("sender.test".into(), "*".into())]),
+            (
+                "home.test",
+                vec![("sender.test".into(), AUDIENCE.into()); 2],
+            ),
+            (
+                "home.test",
+                (0..33)
+                    .map(|n| (format!("sender{n}.test"), format!("audience:{n}")))
+                    .collect(),
+            ),
+        ] {
+            assert!(RetrievalPolicy::new(home.into(), mappings).is_err());
+        }
+        assert!(
+            control
+                .check_retrieval(&record, &b, RetrievalAction::Status, AUDIENCE)
+                .is_ok()
+        );
+    }
+    #[cfg(feature = "durable-policy")]
+    #[test]
+    fn durable_install_reopen_excludes_transient_policy_and_record_bytes() {
+        let fixture = Fixture::new();
+        let c = Certs::new();
+        let root = fixture.root.join("policy");
+        fs::DirBuilder::new().mode(0o700).create(&root).unwrap();
+        let registry = Registry::new(
+            1,
+            0,
+            vec!["home.test".into(), "sender.test".into()],
+            c.entries(),
+        )
+        .unwrap();
+        let runtime = Runtime::initialize_durable(&root, registry).unwrap();
+        let control = runtime.control();
+        let before = fs::read(root.join("provider-policy.snapshot")).unwrap();
+        control.replace_retrieval_policy(policy()).unwrap();
+        let b = foreign();
+        let record = with_session(&c, &runtime, &c.bob, |mut s| {
+            s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                .unwrap()
+        });
+        assert!(
+            control
+                .check_retrieval(&record, &b, RetrievalAction::Status, AUDIENCE)
+                .is_ok()
+        );
+        assert_eq!(
+            fs::read(root.join("provider-policy.snapshot")).unwrap(),
+            before
+        );
+        assert!(RetrievalPolicy::new("bad".into(), vec![]).is_err());
+        assert!(
+            control
+                .check_retrieval(&record, &b, RetrievalAction::Status, AUDIENCE)
+                .is_ok()
+        );
+        let registry = Registry::new(
+            2,
+            0,
+            vec!["home.test".into(), "sender.test".into()],
+            c.entries()
+                .into_iter()
+                .map(|mut e| {
+                    e.generation = 2;
+                    e
+                })
+                .collect(),
+        )
+        .unwrap();
+        control.replace_registry(registry).unwrap();
+        assert!(
+            control
+                .check_retrieval(&record, &b, RetrievalAction::Status, AUDIENCE)
+                .is_err()
+        );
+        let fresh = with_session(&c, &runtime, &c.bob, |mut s| {
+            s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                .unwrap()
+        });
+        assert!(
+            control
+                .check_retrieval(&fresh, &b, RetrievalAction::Status, AUDIENCE)
+                .is_ok()
+        );
+        drop(runtime);
+        let runtime = Runtime::reopen_durable(&root).unwrap();
+        assert!(
+            runtime
+                .control()
+                .check_retrieval(&fresh, &b, RetrievalAction::Status, AUDIENCE)
+                .is_err()
+        );
+        with_session(&c, &runtime, &c.bob, |mut s| {
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .is_err()
+            )
+        });
+        runtime
+            .control()
+            .replace_retrieval_policy(policy())
+            .unwrap();
+        with_session(&c, &runtime, &c.bob, |mut s| {
+            assert!(s.retrieval_intent(b, RetrievalAction::Status).is_ok())
+        });
+        drop(runtime);
+    }
+    #[test]
+    fn mapped_sender_still_requires_registry_invitation_and_exact_local_home() {
+        let c = Certs::new();
+        let b = foreign();
+        // Both independent policy and registry invitation are present in this control.
+        let good = configured(&c);
+        with_session(&c, &good, &c.bob, |mut s| {
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .is_ok()
+            )
+        });
+        // The audience mapping alone cannot invite a sender home.
+        let uninvited = Runtime::new(Some(
+            Registry::new(1, 0, vec!["home.test".into()], c.entries()).unwrap(),
+        ));
+        uninvited
+            .control()
+            .replace_retrieval_policy(policy())
+            .unwrap();
+        with_session(&c, &uninvited, &c.bob, |mut s| {
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .is_err()
+            )
+        });
+        // A valid current local recipient cannot substitute a different configured home.
+        let wrong_home = configured(&c);
+        wrong_home
+            .control()
+            .replace_retrieval_policy(
+                RetrievalPolicy::new(
+                    "other.test".into(),
+                    vec![("sender.test".into(), AUDIENCE.into())],
+                )
+                .unwrap(),
+            )
+            .unwrap();
+        with_session(&c, &wrong_home, &c.bob, |mut s| {
+            assert!(
+                s.retrieval_intent(b.clone(), RetrievalAction::Status)
+                    .is_err()
+            )
+        });
+        wrong_home
+            .control()
+            .replace_retrieval_policy(policy())
+            .unwrap();
+        with_session(&c, &wrong_home, &c.bob, |mut s| {
+            assert!(s.retrieval_intent(b, RetrievalAction::Status).is_ok())
+        });
+    }
+}

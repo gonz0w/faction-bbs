@@ -1,0 +1,17 @@
+{
+  "bytes": 361023558,
+  "contains": [
+    "actual pre-edit source copies/Git blob maps",
+    "raw primary RED/GREEN and failed setup/resource/sandbox logs",
+    "host/native selected source qualification and current maps",
+    "actual host test binaries; native source/cache/build archive and test binaries",
+    "native build/runtime phase identities, original/corrected runners and teardown",
+    "product documentation source/link/check captures"
+  ],
+  "limits": "See results.json retention_limits and README: one intermediate raw compile-error log missing; copied diagnostic/derived source explicitly labeled. Operator main identity post-run only. No claim that every inline orchestration command was saved as a standalone file.",
+  "nonregular_sockets_and_fifos_excluded": 1,
+  "private_archive": "local/evidence/retrieval-intents-306/proof-20261030.private.tar.gz",
+  "private_file_index_sha256": "1f3aa41d5e58784a47ffc99a3ea07628bff9eefb08a3539e57c9e7e0f4dc6269",
+  "retained_regular_files": 2081,
+  "sha256": "7e4e8d1658b6bfa0c11bc81db3546907c3eebb49ef0b862c21ef4daa8002f162"
+}
