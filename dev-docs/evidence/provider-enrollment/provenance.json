@@ -1,0 +1,288 @@
+{
+  "baseline_commit": "abf332d975a25fd1a2aebf5f2da0a4dd06b6edac",
+  "current_inputs": {
+    "tools/probe_attachment_transfer.py": "2064de1cad1276cd7f4a0420a1bdfd5f2ac59c2e6909622565efea12d60fedc3",
+    "tools/probe_device_provider_console.py": "c217800385faa9e08328ee454f1add4027a1a6de71aedbcdba32ab5f9a94e4c3",
+    "tools/probe_enrolled_provider.py": "5dec0a4a92cd208ed43012fd6032ea72b48897db4328e38adaaf9d3a0fb5c871",
+    "tools/probe_picker_mail_outage.py": "410a9768553d34f37aab35187b48d75486d94cb913aa1f77600386221de914e9",
+    "tools/probe_provider_operator.py": "d285dbaffedbf08a6e53d81901a1dab1add0bed6f2f35bdfa77914665029c5ed",
+    "tools/probe_xmpp_transport.py": "79c730d3c2e82354589c456947684f93bd284df46ed2b9516675286b3a6f57ff",
+    "tools/smoke_board_launcher.py": "b5d557391f3efac604463fb0888f9125269a36646890593c7473be97dd16404b",
+    "tools/test_probe_enrolled_provider.py": "3062d21b4d24a1755e14d5f18254ba3e135c9c0c0ad280f9fe60f202613065cd"
+  },
+  "execution_date": "2026-10-30",
+  "host_binaries": {
+    "release/examples/device_provider_console_fixture": {
+      "bytes": 884448,
+      "sha256": "6e8a0d926415a0ca4ed5e0d2647ec8a748f9b54a5da866afc33ec5dcde712abf"
+    },
+    "release/faction-client": {
+      "bytes": 3851168,
+      "sha256": "52f9302568d976de91a93ceb8f7887c80a8fc744a1d520e501c78dc5910e9054"
+    },
+    "release/faction-provider": {
+      "bytes": 1081824,
+      "sha256": "90e5417deea9c77dfe7fc49131c9a3b3f3400e690a865016806e19f44d7c32fd"
+    }
+  },
+  "host_runtime_controls": [
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "embedding",
+        "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 2.2711610794067383,
+      "target": "embedding",
+      "test": "current_public_policy_controls_affect_live_sessions_and_invalid_input_preserves_snapshot"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "embedding",
+        "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 0.11176395416259766,
+      "target": "embedding",
+      "test": "unavailable_reset_stop_drop_and_other_instances_cannot_reuse_live_authority"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "embedding",
+        "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 0.10236716270446777,
+      "target": "embedding",
+      "test": "live_invited_peer_revocation_reset_and_full_identity_changes_deny_next_operation"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "embedding",
+        "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 3.1015219688415527,
+      "target": "embedding",
+      "test": "actual_leaf_expiry_denies_next_dispatch_and_unknown_client_ca_never_authenticates"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "embedding",
+        "configured_service_rechecks_current_full_identity_peer_policy_and_live_lifecycle",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 0.20615196228027344,
+      "target": "embedding",
+      "test": "configured_service_rechecks_current_full_identity_peer_policy_and_live_lifecycle"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "embedding",
+        "server_name_pin_ca_and_missing_client_key_fail_without_session_authority",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 0.10045313835144043,
+      "target": "embedding",
+      "test": "server_name_pin_ca_and_missing_client_key_fail_without_session_authority"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--features",
+        "operator",
+        "--test",
+        "durable_policy",
+        "removal_history_reset_and_exact_reapproval_survive_reopen",
+        "--",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exact_one_pass": true,
+      "exit": 0,
+      "seconds": 0.4783799648284912,
+      "target": "durable_policy",
+      "test": "removal_history_reset_and_exact_reapproval_survive_reopen"
+    }
+  ],
+  "host_seed_binaries": {
+    "checkpoint_ui_fixture": {
+      "archive_member": "native-preflight-OWNED/run-OWNED-3snak20b/host-materialized/checkpoint_ui_fixture",
+      "bytes": 2990760,
+      "sha256": "b69ffa67dc35206a6b1c30fef432708cb50be4a7885a2bce175825ebb07c825e"
+    },
+    "home_mail_fixture": {
+      "archive_member": "native-preflight-OWNED/run-OWNED-3snak20b/host-materialized/home_mail_fixture",
+      "bytes": 11560704,
+      "sha256": "cdc61cb75807b09364d412a35906d13616bf25c520d954e60b45d0dbe04335bc"
+    }
+  },
+  "host_tools": {
+    "/opt/homebrew/opt/openssl@3/bin/openssl": {
+      "bytes": 875392,
+      "sha256": "62d345e5c323fe6a0c3dcc154e5177e35b607f0d8c7aae7696821997f6a584a0"
+    },
+    "/usr/bin/ssh": {
+      "bytes": 1748944,
+      "sha256": "2e9c9f8f01f7f1fb77e0b79598fa29fe10e443ef474ff2d338bb86e417b2f1c9"
+    },
+    "/usr/sbin/sshd": {
+      "bytes": 958480,
+      "sha256": "57f8f02295c585e1f9db25f2c3d658ec1ea3bbd0896f78c6a57edfee23ba6147"
+    }
+  },
+  "native_binaries": {
+    "bin/checkpoint_ui_fixture": {
+      "bytes": 792000,
+      "sha256": "6d1731ca8ba9d65662371d56983b6185e194ffaa244d008a641cb6e39284c060"
+    },
+    "bin/device_provider_console_fixture": {
+      "bytes": 923128,
+      "sha256": "6bd856f952bbf1d778273bde7837540ce68d5e986c87b8e40358422a13643474"
+    },
+    "bin/faction-client": {
+      "bytes": 3675840,
+      "sha256": "dceb8a31357d00837877739ff4bc0e5a6b8394ba5a0194b59d6f7e727d13aece"
+    },
+    "bin/faction-provider": {
+      "bytes": 1221000,
+      "sha256": "dabe3934f173711137093d414df754cbe1ff64120188b7b6830d9d6445d8e597"
+    },
+    "bin/home_mail_fixture": {
+      "bytes": 2954880,
+      "sha256": "74fd8b5266bc759634d595f20095fe67e32850704363ef8eb83916f4f54c0d0e"
+    }
+  },
+  "native_compilation_performed": false,
+  "native_cpus": 2,
+  "native_memory_bytes": 1054990336,
+  "native_reused_build_commit": "4973578362c2429ef28f81e5af5eb97888717889",
+  "native_tools": {
+    "/usr/bin/openssl": {
+      "bytes": 7572992,
+      "sha256": "29a8c4bd9def254d973ca9946fced30a89f95e914a46f1e42333a25b5e303627"
+    },
+    "/usr/bin/ssh": {
+      "bytes": 467232,
+      "sha256": "e3c362a200affcb3bcf4a34f31405ff9d7f1e57b9dd33d528669949f14cbf85d"
+    },
+    "/usr/pkg/bin/python3.13": {
+      "bytes": 68584,
+      "sha256": "07f1f1fc61dbb8823d9219a9a35dd0ce81f9c5526d74f5a5dde5fe9509266ec7"
+    },
+    "/usr/sbin/sshd": {
+      "bytes": 163192,
+      "sha256": "4bf5348d6c51881309f4f357ff0ba8de2a3213554a89d14497ab8aae4bcb2907"
+    }
+  },
+  "native_unit_log_sha256": "bbd0339ec43f06c3d1b5020e781b6b778a74bf52fbc2657f8242866488c9c0a1",
+  "non_test_input_matches": 734,
+  "prior_source_map_sha256": "914289b72eac4cdac1b66ac2a9b83d3138a99153b08a3ac198c8d88a636b6792",
+  "selected_input_count": 810,
+  "selected_input_differences": [
+    "crates/faction-core/tests/chat.rs",
+    "crates/faction-provider/tests/operator_cli.rs"
+  ],
+  "selected_input_matches": 808,
+  "unit_maps": {
+    "csr_correction": "8c05c672051507f3c202e30d41995805f1f3646d01f401db739c8f2af6cbad27",
+    "initial": "0a0773d98393d41e86f98398b620616eb8784f3bb6ac7aee884740e920d2de4b"
+  }
+}

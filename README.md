@@ -55,11 +55,12 @@ by the sysop; experiments and future protocols are separate from normal operatio
   covers 1 MiB transfers in classic and Unicode modes, including outage and retry.
   See the [attachment guide](docs/private-attachments.md).
   The [delivery research](dev-docs/research/0061-private-attachment-delivery-contract.md)
-  rejects the unchanged modern-client candidate; remote provider delivery and
+  rejects the unchanged modern-client candidate; real provider deployment and
   independent interoperability remain unqualified.
   [Offline preparation](docs/provider-preparation.md) creates a private profile and
   separate self-asserted card; the operator checks a complete independently approved
-  proposal before a separate policy action.
+  proposal before a separate policy action. The [manual enrollment guide](docs/provider-enrollment.md)
+  describes independent approval and the dedicated SSH-forward workflow.
   [Current host and NetBSD software checks](dev-docs/evidence/offline-provider-preparation/README.md)
   exercise the generated files through encrypted attachment delivery and private saves.
   An optional [private provider operator](docs/provider-operator.md) adds durable policy and a foreground loopback service using preapproved policy and independent TLS credentials. [Historical host and NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) for the earlier #285 revision cover restart/retry, encrypted transfers and ordinary-access independence. It remains a software preview; it does not enroll devices or deploy a provider. Classic defaults remain.

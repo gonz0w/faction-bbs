@@ -1,0 +1,46 @@
+{
+  "guest_stopped": {
+    "doors_already_stopped": true,
+    "owned_fixture_ports_closed": [
+      32432,
+      32433,
+      32434,
+      2222,
+      2223
+    ],
+    "owned_member_provider_children_absent": true
+  },
+  "host_stopped": {
+    "fixture_ports_closed": [
+      52432,
+      52433,
+      52434
+    ],
+    "sshd_stopped": true
+  },
+  "initial_native_failure_log_sha256": "7d8fa9650fe245edcddb593cbda893d955d85a53c225d4fdc5cf60b98e0a5c97",
+  "initial_native_failure_retained": true,
+  "initial_producer": "7c1a8ad16ebfb2d8f398ddad4d769a8188552fbc30f714eee4e07eba00083725",
+  "privacy_scan_exactly_replayable": false,
+  "private_archive": {
+    "bytes": 37726702,
+    "name": "proof-20261030.private.tar.gz",
+    "sha256": "ca3afdbfb78a40695864b5386ba49bb200629565fb963def565c3026e6ed05ce"
+  },
+  "successful_mode_provider_stores_retained": false,
+  "teardown": {
+    "controller_stopped": true,
+    "loopback_forward_count_closed": 3,
+    "owned_image_copies_removed": [
+      "disk.qcow2",
+      "kernel.img",
+      "first-boot-without-userconf/disk.qcow2"
+    ],
+    "owner_asset_count_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "physical_hardware": false,
+    "result": "pass",
+    "vm_stopped": true
+  }
+}
