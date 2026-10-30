@@ -39,6 +39,12 @@ pub(crate) struct Snapshot {
     pub(crate) reset_epoch: u64,
     pub(crate) registry: Option<Registry>,
     pub(crate) history: Vec<([u8; 32], Principal)>,
+    #[cfg(feature = "delegation-services")]
+    pub(crate) service_policy: Option<crate::services::ServicePolicy>,
+    #[cfg(feature = "delegation-services")]
+    pub(crate) service_history: Vec<([u8; 32], crate::services::ServiceIdentity)>,
+    #[cfg(feature = "delegation-services")]
+    pub(crate) service_format_v2: bool,
 }
 impl Snapshot {
     pub(crate) fn validate(&self) -> Result<(), Error> {
@@ -70,7 +76,61 @@ impl Snapshot {
                 return Err(Error::Invalid);
             }
         }
+        #[cfg(feature = "delegation-services")]
+        {
+            if self.history.len() + self.service_history.len() > crate::authority::MAX_BINDINGS
+                || (!self.service_format_v2
+                    && (self.service_policy.is_some() || !self.service_history.is_empty()))
+            {
+                return Err(Error::Invalid);
+            }
+            for (i, (digest, identity)) in self.service_history.iter().enumerate() {
+                crate::services::validate_home(&identity.home)?;
+                crate::services::validate_client_id(&identity.client_id)?;
+                if *digest == [0; 32]
+                    || self.history.iter().any(|(d, _)| d == digest)
+                    || self.service_history[..i].iter().any(|(d, _)| d == digest)
+                {
+                    return Err(Error::Invalid);
+                }
+            }
+            if let Some(policy) = &self.service_policy {
+                policy.validate_registry(self.registry.as_ref().ok_or(Error::Invalid)?)?;
+                for e in policy.registrations() {
+                    e.validate()?;
+                    if !self
+                        .service_history
+                        .iter()
+                        .any(|(d, p)| d == &e.certificate_sha256 && p == &e.identity())
+                    {
+                        return Err(Error::Invalid);
+                    }
+                }
+            }
+        }
         Ok(())
+    }
+    fn service_binding_count(&self) -> usize {
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_policy
+                .as_ref()
+                .map_or(0, |p| p.registrations().len())
+        }
+        #[cfg(not(feature = "delegation-services"))]
+        {
+            0
+        }
+    }
+    fn service_history_count(&self) -> usize {
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_history.len()
+        }
+        #[cfg(not(feature = "delegation-services"))]
+        {
+            0
+        }
     }
     fn summary(&self) -> PolicySummary {
         PolicySummary {
@@ -81,8 +141,9 @@ impl Snapshot {
                 .registry
                 .as_ref()
                 .map_or_else(Vec::new, |r| r.homes().to_vec()),
-            binding_count: self.registry.as_ref().map_or(0, |r| r.bindings().len()),
-            history_count: self.history.len(),
+            binding_count: self.registry.as_ref().map_or(0, |r| r.bindings().len())
+                + self.service_binding_count(),
+            history_count: self.history.len() + self.service_history_count(),
         }
     }
 }

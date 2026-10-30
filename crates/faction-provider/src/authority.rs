@@ -16,6 +16,10 @@ use std::sync::{
 #[path = "retrieval.rs"]
 pub mod retrieval;
 
+#[cfg(feature = "delegation-services")]
+#[path = "services.rs"]
+pub mod services;
+
 pub const MAX_BINDINGS: usize = 32;
 pub const MAX_HOMES: usize = 32;
 pub const MAX_HANDLES: usize = 8;
@@ -214,6 +218,14 @@ pub(crate) struct Authority {
     reset_epoch: u64,
     history: Vec<([u8; 32], Principal)>,
     slots: Vec<Slot>,
+    #[cfg(feature = "delegation-services")]
+    service_policy: Option<crate::services::ServicePolicy>,
+    #[cfg(feature = "delegation-services")]
+    service_context: Arc<()>,
+    #[cfg(feature = "delegation-services")]
+    service_format_v2: bool,
+    #[cfg(feature = "delegation-services")]
+    service_history: Vec<([u8; 32], crate::services::ServiceIdentity)>,
     #[cfg(feature = "delegation-records")]
     records: retrieval::Records,
 }
@@ -234,6 +246,14 @@ impl Authority {
             reset_epoch,
             history,
             slots: Vec::new(),
+            #[cfg(feature = "delegation-services")]
+            service_policy: None,
+            #[cfg(feature = "delegation-services")]
+            service_context: Arc::new(()),
+            #[cfg(feature = "delegation-services")]
+            service_format_v2: false,
+            #[cfg(feature = "delegation-services")]
+            service_history: Vec::new(),
             #[cfg(feature = "delegation-records")]
             records: retrieval::Records::default(),
         }
@@ -245,6 +265,12 @@ impl Authority {
             reset_epoch: self.reset_epoch,
             registry: self.registry.clone(),
             history: self.history.clone(),
+            #[cfg(feature = "delegation-services")]
+            service_policy: self.service_policy.clone(),
+            #[cfg(feature = "delegation-services")]
+            service_history: self.service_history.clone(),
+            #[cfg(feature = "delegation-services")]
+            service_format_v2: self.service_format_v2,
         }
     }
     #[cfg(feature = "durable-policy")]
@@ -260,7 +286,17 @@ impl Authority {
         self.reset_epoch = snapshot.reset_epoch;
         self.registry = snapshot.registry;
         self.history = snapshot.history;
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_policy = snapshot.service_policy;
+            self.service_history = snapshot.service_history;
+            self.service_format_v2 = snapshot.service_format_v2;
+        }
         self.slots.clear();
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_context = Arc::new(());
+        }
         #[cfg(feature = "delegation-records")]
         self.records.invalidate();
     }
@@ -279,8 +315,19 @@ impl Authority {
     }
     /// Install explicit validated policy. Any error leaves the prior policy and
     /// handles unchanged; the caller must mark unavailable policy with `unavailable`.
-    pub fn replace_registry(&mut self, registry: Registry) -> Result<(), Error> {
+    pub(crate) fn proposed_history(
+        &self,
+        registry: &Registry,
+    ) -> Result<Vec<([u8; 32], Principal)>, Error> {
         if registry.generation <= self.generation || registry.reset_epoch < self.reset_epoch {
+            return Err(Error::Invalid);
+        }
+        #[cfg(feature = "delegation-services")]
+        if registry.bindings.iter().any(|e| {
+            self.service_history
+                .iter()
+                .any(|(d, _)| d == &e.certificate_sha256)
+        }) {
             return Err(Error::Invalid);
         }
         let mut history = self.history.clone();
@@ -299,19 +346,45 @@ impl Authority {
                 history.push((entry.certificate_sha256, entry.principal.clone()));
             }
         }
+        #[cfg(feature = "delegation-services")]
+        if history.len() + self.service_history.len() > MAX_BINDINGS {
+            return Err(Error::Quota);
+        }
+        Ok(history)
+    }
+    pub fn replace_registry(&mut self, registry: Registry) -> Result<(), Error> {
+        let history = self.proposed_history(&registry)?;
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_policy = None;
+            self.service_format_v2 = true;
+        }
         self.generation = registry.generation;
         self.reset_epoch = registry.reset_epoch;
         self.history = history;
         self.registry = Some(registry);
         self.slots.clear();
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_context = Arc::new(());
+        }
         #[cfg(feature = "delegation-records")]
         self.records.invalidate();
         Ok(())
     }
     /// A missing/corrupt source is explicitly unavailable, never a fallback.
     pub fn unavailable(&mut self) {
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_policy = None;
+            self.service_format_v2 = true;
+        }
         self.registry = None;
         self.slots.clear();
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_context = Arc::new(());
+        }
         #[cfg(feature = "delegation-records")]
         self.records.invalidate();
     }
@@ -326,9 +399,18 @@ impl Authority {
             registry.generation = generation;
             registry.reset_epoch = reset_epoch;
         }
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_policy = None;
+            self.service_format_v2 = true;
+        }
         self.generation = generation;
         self.reset_epoch = reset_epoch;
         self.slots.clear();
+        #[cfg(feature = "delegation-services")]
+        {
+            self.service_context = Arc::new(());
+        }
         #[cfg(feature = "delegation-records")]
         self.records.invalidate();
         Ok(())

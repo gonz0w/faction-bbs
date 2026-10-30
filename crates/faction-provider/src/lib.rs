@@ -4,6 +4,10 @@
 pub mod authority;
 #[cfg(feature = "delegation-records")]
 pub use authority::retrieval;
+#[cfg(feature = "delegation-services")]
+pub use authority::services;
+#[cfg(feature = "delegation-services")]
+pub use tls::ServiceSession;
 #[cfg(feature = "durable-policy")]
 pub mod durable;
 #[cfg(feature = "preparation")]

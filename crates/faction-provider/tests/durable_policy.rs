@@ -230,3 +230,68 @@ fn initialization_requires_an_empty_root_and_reopen_requires_original_lock() {
     assert!(Runtime::reopen_durable(&f.policy()).is_err());
     assert!(!f.policy().join("provider-policy.lock").exists());
 }
+#[test]
+fn service_bearing_v2_is_preserved_or_refused_by_the_actual_feature_build() {
+    let f = Fixture::new();
+    let r = Runtime::initialize_durable(
+        &f.policy(),
+        Registry::new(
+            1,
+            0,
+            vec!["home.test".into(), "foreign.test".into()],
+            vec![entry(1, 1)],
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    drop(r);
+    let current = f.policy().join("provider-policy.snapshot");
+    let v1 = fs::read(&current).unwrap();
+    assert_eq!(&v1[..8], b"FPPY0001");
+    let mut bytes = b"FPPY0002".to_vec();
+    bytes.extend((v1.len() as u32).to_be_bytes());
+    bytes.extend(v1);
+    fn string(b: &mut Vec<u8>, s: &str) {
+        b.extend((s.len() as u16).to_be_bytes());
+        b.extend(s.as_bytes());
+    }
+    bytes.push(1);
+    bytes.extend([44; 32]);
+    string(&mut bytes, "foreign.test");
+    string(&mut bytes, "client");
+    let policy_offset = bytes.len();
+    bytes.push(1);
+    string(&mut bytes, "home.test");
+    bytes.push(1);
+    string(&mut bytes, "foreign.test");
+    string(&mut bytes, "client");
+    string(&mut bytes, "service.test");
+    bytes.extend([44; 32]);
+    bytes.push(1);
+    bytes.extend(1u64.to_be_bytes());
+    bytes.extend(10000u64.to_be_bytes());
+    fs::write(&current, &bytes).unwrap();
+    #[cfg(feature = "delegation-services")]
+    {
+        let r = Runtime::reopen_durable(&f.policy()).unwrap();
+        assert_eq!(r.policy_summary().unwrap().binding_count, 2);
+        assert_eq!(r.policy_summary().unwrap().history_count, 2);
+    }
+    #[cfg(not(feature = "delegation-services"))]
+    assert!(Runtime::reopen_durable(&f.policy()).is_err());
+    assert_eq!(fs::read(&current).unwrap(), bytes);
+    // A device-only update/reset may leave only typed service tombstones. An
+    // unsupported build must not reopen that v2 and silently lose their history.
+    bytes.truncate(policy_offset);
+    bytes.push(0);
+    fs::write(&current, &bytes).unwrap();
+    #[cfg(feature = "delegation-services")]
+    {
+        let r = Runtime::reopen_durable(&f.policy()).unwrap();
+        assert_eq!(r.policy_summary().unwrap().binding_count, 1);
+        assert_eq!(r.policy_summary().unwrap().history_count, 2);
+    }
+    #[cfg(not(feature = "delegation-services"))]
+    assert!(Runtime::reopen_durable(&f.policy()).is_err());
+    assert_eq!(fs::read(&current).unwrap(), bytes);
+}
