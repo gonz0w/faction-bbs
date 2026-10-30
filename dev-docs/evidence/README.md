@@ -513,3 +513,11 @@ The service-observation public record manifest SHA-256 is
 resolve the tested implementation.
 
 [Service-observation CI correction](service-observations-ci.md) preserves the first hosted cancellation and source-bound scheduling/test-first evidence without changing runtime or historical records.
+
+[Retrieval issuer and bounded HTTP evidence](delegation-issuer/README.md) records
+the default-off role-aware issuer, v3 policy and one-operation mTLS carrier on
+host and NetBSD. It retains actual test-first failures and source revisions,
+separate compilation/runtime envelopes, private archives and owned cleanup.
+No remote Store grant, complete relay or deployment is supplied. The manifest
+`dev-docs/evidence/delegation-issuer/manifest.json` SHA-256 is
+`feb3ae36d1d84ddd2773b37c9ae424c1c71c20ead044bab8857e0afdbc514f3a`; it pins saved record bytes rather than claiming fresh execution.

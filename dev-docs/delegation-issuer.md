@@ -31,7 +31,9 @@ in [retrieval intents](retrieval-intents.md). The exact original session's stron
 owners must have disappeared before `Control::provision_retrieval(&record)` can
 return a sensitive `issuer::OperationReference`; beginning session cleanup alone
 is insufficient. Public intent metadata cannot provision one. The record, route,
-issuer and current relay and introspection policy are rechecked.
+issuer and current relay and introspection policy are rechecked. The recipient
+home on the device-derived record must equal the issuer policy's local home;
+individually valid policies for different homes cannot be combined to issue it.
 
 A verified relay `ServiceSession` calls `issue_retrieval(&reference, client_id)`.
 The resulting `IssuedToken` exposes its `token()`, `expires_in()` and
@@ -113,3 +115,6 @@ backpressure on a small TLS response. A separate existing plaintext socket-BIO
 fixture observes actual write retry or timeout under kernel pressure. Precise clock
 expiry and rollback controls use a synthetic clock, not a change to the host clock.
 These controls do not establish deployment or hardware capacity.
+
+The source-bound [host and NetBSD evidence](evidence/delegation-issuer/README.md)
+records these software checks, their failures, private retention and owned cleanup.

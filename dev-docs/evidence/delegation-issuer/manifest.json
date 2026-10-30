@@ -1,0 +1,14 @@
+{
+  "files": {
+    "dev-docs/evidence/delegation-issuer/README.md": "f6814b6dd5edcbb1ef87a7d197b0eedf080510942ce754b313be57c7fbe822e7",
+    "dev-docs/evidence/delegation-issuer/REPRODUCE.md": "2e069dcbf77a9d5232cfcc9ac09744fe8ca0420d8215dd2bfc449cf3fa10c9bb",
+    "dev-docs/evidence/delegation-issuer/binaries.json": "005991c1a88dfe294e471b55456849c780b644ad37a5542534527896d0a77d68",
+    "dev-docs/evidence/delegation-issuer/cleanup.json": "873ca952c6a2de4ad116b6e51ef89837100274baeaa95b7c678e8b5f3e290cab",
+    "dev-docs/evidence/delegation-issuer/inputs.json": "a561da979e49350968584314412e3efa7206d983850fdd1a11dabe10d632950a",
+    "dev-docs/evidence/delegation-issuer/results.json": "7494ce99cb251fa4df5189b6198c02d3111559c552f07cf2faef60280a93df0e",
+    "dev-docs/evidence/delegation-issuer/retention.json": "1ba6f7934d28e242dd608eef1997ca42570c454dab91d3ed5890442fd44e3fa3",
+    "dev-docs/evidence/delegation-issuer/tdd.json": "dad4aee0ff4ea7475727cc74a010db5bc977ab0d82e4af5cd5ad965924837a90",
+    "dev-docs/evidence/delegation-issuer/tools.json": "45ce9edd627a5068a17be666423ab98da15e6af510f02bcd81cff54d83b88294"
+  },
+  "schema": 1
+}

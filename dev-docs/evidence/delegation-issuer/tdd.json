@@ -1,0 +1,2110 @@
+{
+  "captures": {
+    "1": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "01-issuer-feature-red",
+      "log": {
+        "bytes": 961,
+        "sha256": "1f7b6164d9128507b262ec309fa6158717b48672bc49fca8c6fea57f5b71b814"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "43edb7f08faf010c949b2372fe68ccc8da49c5fac49228987d982fa6378226d0"
+        },
+        "before.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "43edb7f08faf010c949b2372fe68ccc8da49c5fac49228987d982fa6378226d0"
+        },
+        "binaries-after.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "binaries-before.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      }
+    },
+    "10": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "10-lifecycle-current-controls",
+      "log": {
+        "bytes": 516,
+        "sha256": "920fda7d0ae1cad6d0b77b320039152f4d1ef47d06aa9d0df06f9e525fcaf91b"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9112,
+          "entries": 59,
+          "sha256": "e94954296984f558dd58f43a805e139448b9ce2cb2dedbc17cc9127ee3cbdcd6"
+        },
+        "before.json": {
+          "bytes": 9112,
+          "entries": 59,
+          "sha256": "e94954296984f558dd58f43a805e139448b9ce2cb2dedbc17cc9127ee3cbdcd6"
+        },
+        "binaries-after.json": {
+          "bytes": 3849,
+          "entries": 22,
+          "sha256": "4493879cfe8e42dc94d6a8df11bd96a3ca2cf51047317e5c974569f7c186f39b"
+        },
+        "binaries-before.json": {
+          "bytes": 3849,
+          "entries": 22,
+          "sha256": "4493879cfe8e42dc94d6a8df11bd96a3ca2cf51047317e5c974569f7c186f39b"
+        }
+      }
+    },
+    "100": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/embedding-0121c792138ae357",
+          "sha256": "1feaa12353c9fb5dd90ac001c1f0a5f821932530d5f37c1e36e1531d94450543",
+          "size": 1999072
+        }
+      ],
+      "exit": 101,
+      "label": "100-home-association-public-tls-RED",
+      "log": {
+        "bytes": 1577,
+        "sha256": "79284416b5638b98fc23df2cc184a88932f992ffd237d8002e92decdbc5f1600"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "9be09af17cec4a58bdfd9665d6530b3a3059075409d34caf4bec076a66e3f460"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "9be09af17cec4a58bdfd9665d6530b3a3059075409d34caf4bec076a66e3f460"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "d8b7214f6e86201fe425fc146142c125f78e402fa9c076d108bc73a0134abf1e"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "c26786343710feee622c9823649a5cd384293c0d3b5518adba9a6b842d366f6d"
+        }
+      }
+    },
+    "101": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-17c68b703e44bdfa",
+          "sha256": "ae1560f412891e0f885637e356ee5a3a73f8324e5d2829f170a04dafa00b5e5b",
+          "size": 1559280
+        }
+      ],
+      "exit": 101,
+      "label": "101-home-association-atomic-RED",
+      "log": {
+        "bytes": 1571,
+        "sha256": "355093decf737774fb3455b930fc759006c05f566fc2d9dc52c18c1e77d91723"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "d5dfaa671ad6c3d79bfc56e877c2d158b30738b8c6892185f98833cd99bd6ace"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "d5dfaa671ad6c3d79bfc56e877c2d158b30738b8c6892185f98833cd99bd6ace"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "35061d53f7001182506c39781de954b52cc01a7145712bb38aa011c8d7350af0"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "d8b7214f6e86201fe425fc146142c125f78e402fa9c076d108bc73a0134abf1e"
+        }
+      }
+    },
+    "102": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-17c68b703e44bdfa",
+          "sha256": "394fbfa210bf10fac27b1c8f1a721ac49c1fc1ba29d85b5a632ea1240cc95184",
+          "size": 1559264
+        }
+      ],
+      "exit": 101,
+      "label": "102-home-association-atomic-RED",
+      "log": {
+        "bytes": 1570,
+        "sha256": "ab02b19c198fe3ac68ad108e68254a6251bb3c913b957ac7b2a611384f42d7de"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "45808b9051f3b2b14eddff31169b56b475965697fff9a68479694c44040e89d0"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "45808b9051f3b2b14eddff31169b56b475965697fff9a68479694c44040e89d0"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "47fce8bb89c4c25dcbb837d0aa8acdf40aad75a850cb9664649dba14c3d69819"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "35061d53f7001182506c39781de954b52cc01a7145712bb38aa011c8d7350af0"
+        }
+      }
+    },
+    "103": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "103-home-association-format",
+      "log": {
+        "bytes": 948,
+        "sha256": "baa5663ad741fa78edb7e845a669c3e298d5e44960fd7431fc90e856571295d3"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "b9c0e09736d9c71079ba7dbbe3a67420ff7809b66db24990ac92c56e11f3f829"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "b9c0e09736d9c71079ba7dbbe3a67420ff7809b66db24990ac92c56e11f3f829"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "47fce8bb89c4c25dcbb837d0aa8acdf40aad75a850cb9664649dba14c3d69819"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "47fce8bb89c4c25dcbb837d0aa8acdf40aad75a850cb9664649dba14c3d69819"
+        }
+      }
+    },
+    "104": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/embedding-0121c792138ae357",
+          "sha256": "5df426efb450d123682dd75b3201195386d8736ef110d2c15b1867453d64a1d2",
+          "size": 2015712
+        }
+      ],
+      "exit": 0,
+      "label": "104-home-association-public-GREEN",
+      "log": {
+        "bytes": 953,
+        "sha256": "acc7af5a9310ba6f672e9117eda1c7d67bdffcf38d9a36364e0106b27bbb8c84"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "b9c0e09736d9c71079ba7dbbe3a67420ff7809b66db24990ac92c56e11f3f829"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "b9c0e09736d9c71079ba7dbbe3a67420ff7809b66db24990ac92c56e11f3f829"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "5808f7d30c84d87d599fd176838a92f916435898685964e56fe41292225a988d"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "47fce8bb89c4c25dcbb837d0aa8acdf40aad75a850cb9664649dba14c3d69819"
+        }
+      }
+    },
+    "106": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-17c68b703e44bdfa",
+          "sha256": "41c9cb2b3c119c6b720cc0fb8e2f92d94cbb4c249f60097fa3b48f12b67f40d9",
+          "size": 1575920
+        }
+      ],
+      "exit": 0,
+      "label": "106-home-association-atomic-GREEN",
+      "log": {
+        "bytes": 970,
+        "sha256": "f7c412d18cc31056b01063e7f9fb1f24c59ee290f0b4b8197d489bc362986b9b"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "f09c2e3503a753109700d1fd18add8093084b26bcb59af6dff966f98825ed50b"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "5808f7d30c84d87d599fd176838a92f916435898685964e56fe41292225a988d"
+        }
+      }
+    },
+    "11": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-4cd866794878df71",
+          "sha256": "48a7d8d208304c3050f5354af4e3142a5f86c51534996822a414dc1fe6c3a4f4",
+          "size": 1799088
+        }
+      ],
+      "exit": 0,
+      "label": "11-lifecycle-current-green",
+      "log": {
+        "bytes": 1934,
+        "sha256": "b05f02e016e6f4e71d96a11168376cea77c3268e2ce4ca7225e0e7da581f0012"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9112,
+          "entries": 59,
+          "sha256": "d37874048b3c1d7c46de55a4f488cf8af5abf9a591bed5d0251d4f08811fec91"
+        },
+        "before.json": {
+          "bytes": 9112,
+          "entries": 59,
+          "sha256": "d37874048b3c1d7c46de55a4f488cf8af5abf9a591bed5d0251d4f08811fec91"
+        },
+        "binaries-after.json": {
+          "bytes": 3849,
+          "entries": 22,
+          "sha256": "b418212ee4dc948f100ac67453a88c72a0ce9d4c40aee1866cad5181c87bacf1"
+        },
+        "binaries-before.json": {
+          "bytes": 3849,
+          "entries": 22,
+          "sha256": "4493879cfe8e42dc94d6a8df11bd96a3ca2cf51047317e5c974569f7c186f39b"
+        }
+      }
+    },
+    "110": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-17c68b703e44bdfa",
+          "sha256": "41c9cb2b3c119c6b720cc0fb8e2f92d94cbb4c249f60097fa3b48f12b67f40d9",
+          "size": 1575920
+        },
+        {
+          "path": "release/deps/durable_policy-e7b6ea4e5a55e12d",
+          "sha256": "4a51a9f34ce81ba323769fdc54a6a98b1c3144de61129e8cd69ab05b3042265c",
+          "size": 923840
+        },
+        {
+          "path": "release/deps/embedding-0121c792138ae357",
+          "sha256": "ba03408943dbfaa41516fac1acfa285b021de84a23f15fa658d0476d4dd901de",
+          "size": 2015712
+        },
+        {
+          "path": "release/deps/operator_cli-a7db446e4e110152",
+          "sha256": "404deb36785c764d6a11bd081075b9b8bfd88f698332d60cc507773cfdc39164",
+          "size": 923840
+        },
+        {
+          "path": "release/deps/preparation-e9d2145197f42ff3",
+          "sha256": "d786af9472e3c16dd0c46cc2b46c68d93bc31a8685510770b763eefcea039865",
+          "size": 923840
+        }
+      ],
+      "exit": 0,
+      "label": "110-home-delegation-issuer-test",
+      "log": {
+        "bytes": 12613,
+        "sha256": "58b87975ef62ff55f459db10de3db32fc36b3fa9c4178d37d19619e10f1671e2"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "fc3ce2af2fc9b62e5bc9a57c020ecdbd9790c5f987b6f89c69fe74e206e19658"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "f09c2e3503a753109700d1fd18add8093084b26bcb59af6dff966f98825ed50b"
+        }
+      }
+    },
+    "111": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "111-home-delegation-issuer+durable-policy-clippy",
+      "log": {
+        "bytes": 569,
+        "sha256": "09b62171f87d5fdf7632056932183f20581168330dde648ab4b9854e26effd41"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "fc3ce2af2fc9b62e5bc9a57c020ecdbd9790c5f987b6f89c69fe74e206e19658"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "fc3ce2af2fc9b62e5bc9a57c020ecdbd9790c5f987b6f89c69fe74e206e19658"
+        }
+      }
+    },
+    "112": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-95da1590e7b32ac6",
+          "sha256": "812d9188157308b342ae7ca0ca36499a3985a7fe45c231f0d31cdc3cbe9afd0c",
+          "size": 1878624
+        },
+        {
+          "path": "release/deps/durable_policy-1859a56e935aa541",
+          "sha256": "26cd7205b0dcba58b0bb22604445b3940c1a160a40ddb57e87f24d6f2ca28235",
+          "size": 923840
+        },
+        {
+          "path": "release/deps/embedding-7cadfcfb8bf9e455",
+          "sha256": "b1ee436a76a266d0769020b33723fef5d3d907a2995bfe1ef89effed4f6b7887",
+          "size": 2319248
+        },
+        {
+          "path": "release/deps/operator_cli-fd4f16360ab653c0",
+          "sha256": "4a8d70513ba39bd0c0d7bc354adbb855b78e60b092cbd69177dfb0cbd85f93d9",
+          "size": 923840
+        },
+        {
+          "path": "release/deps/preparation-81dd07eb6dc72ac9",
+          "sha256": "e6db7f2be8ab4f62c459336f3a71fdf8d78425c35955dc77448452533b19f8e9",
+          "size": 923840
+        }
+      ],
+      "exit": 0,
+      "label": "112-home-delegation-wire-test",
+      "log": {
+        "bytes": 14475,
+        "sha256": "16121ed1bb718cd5bf55639d81b57fce42e872a1faa87b06aaf84a5dc4049480"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "2a5648fa4f881bbae2a67767c7075bf54ced14d2932d8a4182dcb555b495262d"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "4e9f49f0777d6923a82cadd10c25369550451dc5e9832c088a6f8a0706460407"
+        }
+      }
+    },
+    "113": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-a62ae2a48b8b41d5",
+          "sha256": "c2c0465cc00be1b295e872455e968d8e5dec78a71160be1934d7d9833d3c4bb3",
+          "size": 2103408
+        },
+        {
+          "path": "release/deps/durable_policy-e80a546b0f3c88b4",
+          "sha256": "701f62ff4a54ce51e6fb6bdee2d2428417b1ce2f874d9d8ba0fa6d5cded047fc",
+          "size": 1121584
+        },
+        {
+          "path": "release/deps/embedding-d4a9a48a51ec6a06",
+          "sha256": "cea6b219ed7eb9333e8dad9c382570e817b021292a9bab697fee15560bd6f281",
+          "size": 2485776
+        },
+        {
+          "path": "release/deps/operator_cli-fd0ac6f8a2fb7cb5",
+          "sha256": "7afaf8e533661fd358ac810efe4a3fe602114653c314e0c64bcb082c5a1f7213",
+          "size": 923840
+        },
+        {
+          "path": "release/deps/preparation-d92f6390d2d0cc10",
+          "sha256": "10bc815cbc1c15de06ba895dbf9991824ab2a99ff63bd1027ea52d4b8b866bdb",
+          "size": 923840
+        }
+      ],
+      "exit": 0,
+      "label": "113-home-delegation-wire+durable-policy-test",
+      "log": {
+        "bytes": 18008,
+        "sha256": "1d65944e284277c3b2dbd4cb8640e3515721aa59f2fc83c7ae4951661a4af92e"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "2a5648fa4f881bbae2a67767c7075bf54ced14d2932d8a4182dcb555b495262d"
+        }
+      }
+    },
+    "114": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "114-home-provider-guards",
+      "log": {
+        "bytes": 260,
+        "sha256": "1e4c77773db04d3cec3ede4879f07b0d93949f8edceea8b1c590365b053cd3e2"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        }
+      }
+    },
+    "115": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "115-home-codec-guards",
+      "log": {
+        "bytes": 226,
+        "sha256": "c2ce4703504a0fff6adb16d3b12e225522e9be322de55adf38019098dce0f834"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        }
+      }
+    },
+    "116": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "116-home-format",
+      "log": {
+        "bytes": 101,
+        "sha256": "354ec2e1bbdcde80e4e48d75efa5bd4749bce5ec2f256258ce1dbed897c7c52a"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        }
+      }
+    },
+    "117": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "117-home-diff",
+      "log": {
+        "bytes": 37,
+        "sha256": "e3077aa1c00d2bf19128fa91798ab5be77e6504aa1ef981a32ee1f6f920a0baf"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        }
+      }
+    },
+    "118": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "118-home-sourcefreeze",
+      "log": {
+        "bytes": 864,
+        "sha256": "0579e778d45cb258b0892accfe6092cc227713f4bd3f3ca38178e145188d915b"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "fc75bd220bebdce0d27b559b8e15e78ffbbc8ad5c9bcbcbfa1cf07bdf80d6dd9"
+        },
+        "binaries-after.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        },
+        "binaries-before.json": {
+          "bytes": 22497,
+          "entries": 135,
+          "sha256": "94f7e578de208bc7554a6d7a3c28842287a629857942f60108cafddbaed2b3fa"
+        }
+      }
+    },
+    "2": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "02-issuer-feature-green",
+      "log": {
+        "bytes": 803,
+        "sha256": "916c9f2341c7beb6805cf86f81acf9084290077970472478aeb002b365f8ffe8"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "a24fae97af868cbf7170ae9fadd07e2e9d954e60cdab339bf93634fe6c5db9e2"
+        },
+        "before.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "a24fae97af868cbf7170ae9fadd07e2e9d954e60cdab339bf93634fe6c5db9e2"
+        },
+        "binaries-after.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "binaries-before.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      }
+    },
+    "3": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "03-issuer-qualification",
+      "log": {
+        "bytes": 67,
+        "sha256": "7876a3fed8b9a6a06b7c3e6ce838af5edc4e5bcb9ac06714760056c82def75db"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "24bc5a37e2e0b95d3355ec1fac5a8072288ec1b45a0c44c1236a1b758541a5b2"
+        },
+        "before.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "9381e57a88d3798e9eec76ebad55d184e53da3efd198422c0caeefc30f90d898"
+        },
+        "binaries-after.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "binaries-before.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      }
+    },
+    "30": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "30-wire-edge-red",
+      "log": {
+        "bytes": 1781,
+        "sha256": "5b0777d2d3a9b5469ea505992def7384e559c1e870c235a8b64fca602c5dee2f"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "32522347cf04316477764abc4b320b54013b11099a2296d73f3a211974ad9bd6"
+        },
+        "before.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "32522347cf04316477764abc4b320b54013b11099a2296d73f3a211974ad9bd6"
+        },
+        "binaries-after.json": {
+          "bytes": 7772,
+          "entries": 47,
+          "sha256": "ac2557a2be9500dbff53c3b15669a95a26d649d5ef4ac4d2b5be278d1b8b211d"
+        },
+        "binaries-before.json": {
+          "bytes": 7772,
+          "entries": 47,
+          "sha256": "ac2557a2be9500dbff53c3b15669a95a26d649d5ef4ac4d2b5be278d1b8b211d"
+        }
+      }
+    },
+    "31": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "31-wire-feature-red",
+      "log": {
+        "bytes": 1075,
+        "sha256": "b50b9d66ff8c7e35dc77e927235dcb4293f4ef2bdb52fef01672d025fbe428b6"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "32522347cf04316477764abc4b320b54013b11099a2296d73f3a211974ad9bd6"
+        },
+        "before.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "32522347cf04316477764abc4b320b54013b11099a2296d73f3a211974ad9bd6"
+        },
+        "binaries-after.json": {
+          "bytes": 7772,
+          "entries": 47,
+          "sha256": "ac2557a2be9500dbff53c3b15669a95a26d649d5ef4ac4d2b5be278d1b8b211d"
+        },
+        "binaries-before.json": {
+          "bytes": 7772,
+          "entries": 47,
+          "sha256": "ac2557a2be9500dbff53c3b15669a95a26d649d5ef4ac4d2b5be278d1b8b211d"
+        }
+      }
+    },
+    "32": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/wire-ff5211822877d4fe",
+          "sha256": "52836ea9de7db102f725e131fd359b01f44c1e6f331df1de4d28211b0e63750d",
+          "size": 1259968
+        }
+      ],
+      "exit": 101,
+      "label": "32-codec-eof-close-red",
+      "log": {
+        "bytes": 3656,
+        "sha256": "1c6c76ae4698408e4613fae8739e34d78cefb67f1a861952af34d84cd108b513"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "8f09938288eca13d7b5298564ac7760a8bfa4a561cda4695167928050001977e"
+        },
+        "before.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "8f09938288eca13d7b5298564ac7760a8bfa4a561cda4695167928050001977e"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 7772,
+          "entries": 47,
+          "sha256": "ac2557a2be9500dbff53c3b15669a95a26d649d5ef4ac4d2b5be278d1b8b211d"
+        }
+      }
+    },
+    "33": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "33-wire-ordinary-composition-guard-red",
+      "log": {
+        "bytes": 1082,
+        "sha256": "c5b2f499fd7fa9a2a8c5f1c11fa3bfa5a6a415d6d25564452ae4a231685464e8"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "c59e00d7b1549249084b5673db0583620b5ce4be7ca5c8ce8412c6a46986ce92"
+        },
+        "before.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "c59e00d7b1549249084b5673db0583620b5ce4be7ca5c8ce8412c6a46986ce92"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "34": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "34-codec-byte-helper-red",
+      "log": {
+        "bytes": 3066,
+        "sha256": "76ca9f4b1243f2298047c9b339e4c2ace28895fd25e65983493bd87f85ee3206"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "c59e00d7b1549249084b5673db0583620b5ce4be7ca5c8ce8412c6a46986ce92"
+        },
+        "before.json": {
+          "bytes": 9113,
+          "entries": 59,
+          "sha256": "c59e00d7b1549249084b5673db0583620b5ce4be7ca5c8ce8412c6a46986ce92"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "35": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "35-wire-source-contract-green",
+      "log": {
+        "bytes": 259,
+        "sha256": "e75793851fc4b5244f40162388dc167d5f0c4ae6f880589be883d9c9d7984c3e"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "bf8d8a036a81c61a768ba8e2d892ae2fce55b7c77a2805ee0cc6c98efea7c254"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "bf8d8a036a81c61a768ba8e2d892ae2fce55b7c77a2805ee0cc6c98efea7c254"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "36": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "36-wire-edge-contract-green",
+      "log": {
+        "bytes": 225,
+        "sha256": "8bd37db5a66d844e661b3d3e267c656ec796443059b89d79589a749304da5c47"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "bf8d8a036a81c61a768ba8e2d892ae2fce55b7c77a2805ee0cc6c98efea7c254"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "bf8d8a036a81c61a768ba8e2d892ae2fce55b7c77a2805ee0cc6c98efea7c254"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "37": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "37-wire-ordinary-registry-negative-red",
+      "log": {
+        "bytes": 2775,
+        "sha256": "54538978795c2cebe13b64822cdafbaad349f4e00f52f523a464b89d55f3301a"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "798fa2bd7f55342569e06ec705e2f01457d8f1794df513e7e0e59f2b8eba84a3"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "798fa2bd7f55342569e06ec705e2f01457d8f1794df513e7e0e59f2b8eba84a3"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "38": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "38-codec-ordinary-registry-negative-red",
+      "log": {
+        "bytes": 2670,
+        "sha256": "aa86c5a243d088c1b1a765a08e5609737d26e833235bec1429ee2904eb3863f2"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "798fa2bd7f55342569e06ec705e2f01457d8f1794df513e7e0e59f2b8eba84a3"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "798fa2bd7f55342569e06ec705e2f01457d8f1794df513e7e0e59f2b8eba84a3"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "39": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "39-wire-metadata-resolution",
+      "log": {
+        "bytes": 696,
+        "sha256": "744da86f441e7caca83859c078703bb45e94fb4d42049babc5edfabc24988a34"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "97db49999e5aaa4ce99191cbbd177578b1ec74d5dd758497fd3a1b64f630dc62"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "22436e9a3fdd82834b064638803851f10497c9dff8176351faf4d0cee36bb226"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "4": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "04-issuer-guard-green",
+      "log": {
+        "bytes": 124,
+        "sha256": "59a8e386f9680085d342b3bc7f3243d334634b829b8696fc2185495d54a5ca05"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "24bc5a37e2e0b95d3355ec1fac5a8072288ec1b45a0c44c1236a1b758541a5b2"
+        },
+        "before.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "24bc5a37e2e0b95d3355ec1fac5a8072288ec1b45a0c44c1236a1b758541a5b2"
+        },
+        "binaries-after.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "binaries-before.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      }
+    },
+    "40": {
+      "executed_test_binaries": [],
+      "exit": 1,
+      "label": "40-wire-provider-qualification",
+      "log": {
+        "bytes": 134,
+        "sha256": "62d3f223d275614903d4b71923b7ec40b7f2c24bea9cdda6c8cb3bca1b58187f"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "97db49999e5aaa4ce99191cbbd177578b1ec74d5dd758497fd3a1b64f630dc62"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "97db49999e5aaa4ce99191cbbd177578b1ec74d5dd758497fd3a1b64f630dc62"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "41": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "41-wire-codec-qualification",
+      "log": {
+        "bytes": 132,
+        "sha256": "c473c681a85ce9e565045d0b9961aa31ab2d2e14ae14b2b848a1d8e8ddd4f321"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "755c9dc54ab4857d894232701d258d244e4dca04088ca4086a1229cbe047e85d"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "97db49999e5aaa4ce99191cbbd177578b1ec74d5dd758497fd3a1b64f630dc62"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "42": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "42-wire-metadata-verified",
+      "log": {
+        "bytes": 451,
+        "sha256": "1978bf0032663111ce905711eff14a05b0726e02de14fe48c8d3fd1a073e0436"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "4d478d85e830a08e56069a78ce7ca793099b4b731a4580ca4ea72b1c9071a0db"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "4d478d85e830a08e56069a78ce7ca793099b4b731a4580ca4ea72b1c9071a0db"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "43": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "43-wire-provider-qualified",
+      "log": {
+        "bytes": 140,
+        "sha256": "da27a2b14fed0ed4baa50df03439ec368c6460c000766101c907a658699079db"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "a55e19cc3c5cf7ffaf2a526d7f604738231ceb7f6a432fa056ac21517fa582c4"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "4d478d85e830a08e56069a78ce7ca793099b4b731a4580ca4ea72b1c9071a0db"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "44": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "44-wire-provider-contracts",
+      "log": {
+        "bytes": 260,
+        "sha256": "d7dc82c40455b0dd0cdf0e1edce67eb2f0c405e65a803321abc073f32a52d716"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "a55e19cc3c5cf7ffaf2a526d7f604738231ceb7f6a432fa056ac21517fa582c4"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "a55e19cc3c5cf7ffaf2a526d7f604738231ceb7f6a432fa056ac21517fa582c4"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "45": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "45-wire-codec-contracts",
+      "log": {
+        "bytes": 226,
+        "sha256": "c2ce4703504a0fff6adb16d3b12e225522e9be322de55adf38019098dce0f834"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "a55e19cc3c5cf7ffaf2a526d7f604738231ceb7f6a432fa056ac21517fa582c4"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "a55e19cc3c5cf7ffaf2a526d7f604738231ceb7f6a432fa056ac21517fa582c4"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "46": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "46-codec-head-api-red",
+      "log": {
+        "bytes": 4830,
+        "sha256": "6a7b316c8cd67a12fc717a098a0e02b2667f1e6a1ba765b0fff61b057661ea7a"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "7d9e3383cec9998699c6b806b622c5cdb1f82349b02eb757b3b73e1445a324c3"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "7d9e3383cec9998699c6b806b622c5cdb1f82349b02eb757b3b73e1445a324c3"
+        },
+        "binaries-after.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "48": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_delegation_codec-a0f7b280662d9a72",
+          "sha256": "6bfffd5081d4c90a78f9271fe89fe9339b3b73c235facd718223972d7422dc4f",
+          "size": 923856
+        },
+        {
+          "path": "release/deps/wire-ff5211822877d4fe",
+          "sha256": "43de594ecaf2dd22d59975c02647d416b3833350a4940a01ec57fe9175a8bab6",
+          "size": 1278096
+        }
+      ],
+      "exit": 0,
+      "label": "48-codec-eof-close-head-bytes-green",
+      "log": {
+        "bytes": 2643,
+        "sha256": "3b2c2ffd60eff071f9e1a9991dc071a13b33d952a81c2e120fb7cc9d009c1258"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "15bd25f904d766cee27351dbb6be361b2f87fa7923a049fdb818c72d10b3a122"
+        },
+        "before.json": {
+          "bytes": 9114,
+          "entries": 59,
+          "sha256": "15bd25f904d766cee27351dbb6be361b2f87fa7923a049fdb818c72d10b3a122"
+        },
+        "binaries-after.json": {
+          "bytes": 9888,
+          "entries": 59,
+          "sha256": "fc903e2e56fd83d21520e8a0155334b5678750f8a12ea1817bf4a57d9eaafa1f"
+        },
+        "binaries-before.json": {
+          "bytes": 9720,
+          "entries": 58,
+          "sha256": "3316b5416d8242b16d1c6b21d7fba9b3cfd4779711b553789c45da5a7dde681a"
+        }
+      }
+    },
+    "49": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "49-wire-real-mtls-api-red",
+      "log": {
+        "bytes": 1657,
+        "sha256": "3f61683c5ad00494af3eda32175b13af9ce612b367d091595ff06966ae55ea8b"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9278,
+          "entries": 60,
+          "sha256": "7d4d31b49431706f7bc780e90a51c04404441e4e92406be21c2c1ad0c5ab572d"
+        },
+        "before.json": {
+          "bytes": 9278,
+          "entries": 60,
+          "sha256": "7d4d31b49431706f7bc780e90a51c04404441e4e92406be21c2c1ad0c5ab572d"
+        },
+        "binaries-after.json": {
+          "bytes": 10253,
+          "entries": 61,
+          "sha256": "f4008f8812545f368536184a33199712a442c16074f018c5309590149773e7b2"
+        },
+        "binaries-before.json": {
+          "bytes": 9888,
+          "entries": 59,
+          "sha256": "fc903e2e56fd83d21520e8a0155334b5678750f8a12ea1817bf4a57d9eaafa1f"
+        }
+      }
+    },
+    "5": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "05-issuer-source-tests-green",
+      "log": {
+        "bytes": 151,
+        "sha256": "f60a085f3ec34cf7405dc2e3844054b3fa284748a1166f6efb5f65877f16f34b"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "24bc5a37e2e0b95d3355ec1fac5a8072288ec1b45a0c44c1236a1b758541a5b2"
+        },
+        "before.json": {
+          "bytes": 7812,
+          "entries": 51,
+          "sha256": "24bc5a37e2e0b95d3355ec1fac5a8072288ec1b45a0c44c1236a1b758541a5b2"
+        },
+        "binaries-after.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        },
+        "binaries-before.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      }
+    },
+    "51": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/embedding-d4a9a48a51ec6a06",
+          "sha256": "df1e529c39cc722f37bb3983e2fbd707b4c591428fe6f63e929407a47573dfc3",
+          "size": 2430304
+        }
+      ],
+      "exit": 0,
+      "label": "51-wire-first-real-green",
+      "log": {
+        "bytes": 1145,
+        "sha256": "7a5fbb34a80a54332a849a841ce06c02a48194470cc29277cfaee36d91bd8e53"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9579,
+          "entries": 62,
+          "sha256": "bb78b14a3fa84e58cb23e0a6bb94de12af72e841f513eeaf056dcc9c73e7d0a1"
+        },
+        "before.json": {
+          "bytes": 9579,
+          "entries": 62,
+          "sha256": "bb78b14a3fa84e58cb23e0a6bb94de12af72e841f513eeaf056dcc9c73e7d0a1"
+        },
+        "binaries-after.json": {
+          "bytes": 10407,
+          "entries": 62,
+          "sha256": "a54d5f1b4541afdbe4c256621bbb7f636615a2aa978169cbdffdf466684e910e"
+        },
+        "binaries-before.json": {
+          "bytes": 10253,
+          "entries": 61,
+          "sha256": "f4008f8812545f368536184a33199712a442c16074f018c5309590149773e7b2"
+        }
+      }
+    },
+    "52": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "52-response-bio-gate-api-red",
+      "log": {
+        "bytes": 2562,
+        "sha256": "7ee57332994787c0ff0e9a4993b3907c969f2fb8fda6635641d873d9a38fb5da"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9736,
+          "entries": 63,
+          "sha256": "ae951f0d53115320fd60fbb95941d435b24bc07684f0a18cff2c9267350f3d99"
+        },
+        "before.json": {
+          "bytes": 9736,
+          "entries": 63,
+          "sha256": "ae951f0d53115320fd60fbb95941d435b24bc07684f0a18cff2c9267350f3d99"
+        },
+        "binaries-after.json": {
+          "bytes": 10407,
+          "entries": 62,
+          "sha256": "a54d5f1b4541afdbe4c256621bbb7f636615a2aa978169cbdffdf466684e910e"
+        },
+        "binaries-before.json": {
+          "bytes": 10407,
+          "entries": 62,
+          "sha256": "a54d5f1b4541afdbe4c256621bbb7f636615a2aa978169cbdffdf466684e910e"
+        }
+      }
+    },
+    "54": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-a62ae2a48b8b41d5",
+          "sha256": "3ad0e5ca18d3e586db746554d8fda3ada32158704d8bf3bbbeb0684deab406fc",
+          "size": 2082944
+        }
+      ],
+      "exit": 101,
+      "label": "54-response-bio-oracles",
+      "log": {
+        "bytes": 2373,
+        "sha256": "cdc164c254581040e53925fbfdfd4e502005bda363f3c5d4d072aec8ba230db5"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "aea4bb4e90cc13a44e7d1fd4ecfb4d9b471cb41b2bc595453774186089d5ccac"
+        },
+        "before.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "aea4bb4e90cc13a44e7d1fd4ecfb4d9b471cb41b2bc595453774186089d5ccac"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        },
+        "binaries-before.json": {
+          "bytes": 10407,
+          "entries": 62,
+          "sha256": "a54d5f1b4541afdbe4c256621bbb7f636615a2aa978169cbdffdf466684e910e"
+        }
+      }
+    },
+    "55": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "55-http-read-retry-api-red",
+      "log": {
+        "bytes": 1267,
+        "sha256": "db477fda3f43261135d8ad714e16d95488490bc77c99cdbc92b2a20065a1a08c"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "dffd902d4982d359694d80e62a7994b5c9f4c8d9eb1e51ca2da76b77b461e8ad"
+        },
+        "before.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "dffd902d4982d359694d80e62a7994b5c9f4c8d9eb1e51ca2da76b77b461e8ad"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        }
+      }
+    },
+    "56": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "56-wire-bio-clock-interface-red",
+      "log": {
+        "bytes": 1649,
+        "sha256": "5a1ef01a4dc069b68fe83993a0447067488aab3c1d20f7d2d1cea7ff2e2f2bd5"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "dcbd412cd416d8c04cc57fb1d15aca6a1f7fb06fa8bd3119fdf4c2125b17f435"
+        },
+        "before.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "dcbd412cd416d8c04cc57fb1d15aca6a1f7fb06fa8bd3119fdf4c2125b17f435"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        }
+      }
+    },
+    "58": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "58-wire-bio-read-lifetime-controls",
+      "log": {
+        "bytes": 1847,
+        "sha256": "0584c7e7c3d361b27650b95e9a8208da37c440adc67306f01b0abfa6156a82ab"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "588d796572391925c146c7bf06598b2e70b2d2254d79a9bb2ff32980b1c16b7b"
+        },
+        "before.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "588d796572391925c146c7bf06598b2e70b2d2254d79a9bb2ff32980b1c16b7b"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        }
+      }
+    },
+    "59": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-a62ae2a48b8b41d5",
+          "sha256": "4cac45e2bf4ddcd60e473a77c19c72172f63984186a86b65762211524fad66d4",
+          "size": 2102800
+        }
+      ],
+      "exit": 0,
+      "label": "59-wire-bio-read-lifetime-green",
+      "log": {
+        "bytes": 2095,
+        "sha256": "d535579d7e0f05903f06bbd7fd5c5957fe90fb9aad1d17b2bd8addc0878f444e"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "4d25c54536a2078408046ed51077ec9b1486f9e62862f36454e7a476ba249cd6"
+        },
+        "before.json": {
+          "bytes": 9737,
+          "entries": 63,
+          "sha256": "4d25c54536a2078408046ed51077ec9b1486f9e62862f36454e7a476ba249cd6"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "944b7cfbf65e61a9b8d2a362987163ec897d220446013ab57c2d038e67b0e7ed"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b733503134839ae7d90ecf537ebfefec06dd433d5463f2f24758c924c7c04966"
+        }
+      }
+    },
+    "6": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "06-core-interface-red",
+      "log": {
+        "bytes": 8310,
+        "sha256": "d64efe89273442a62734c9389006687def3ed085940a3fb5e4a0a479f46bbf64"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 7978,
+          "entries": 52,
+          "sha256": "91fc6673ce77dc1b358de266486c4d89d6973511d404bb8248ac94aa3014ed8d"
+        },
+        "before.json": {
+          "bytes": 7978,
+          "entries": 52,
+          "sha256": "91fc6673ce77dc1b358de266486c4d89d6973511d404bb8248ac94aa3014ed8d"
+        },
+        "binaries-after.json": {
+          "bytes": 3064,
+          "entries": 17,
+          "sha256": "885a450465c365acf4ac198d5297fa391e74796ea97c488c041a6448eedfcd66"
+        },
+        "binaries-before.json": {
+          "bytes": 2,
+          "entries": 0,
+          "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+        }
+      }
+    },
+    "62": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "62-wire-strict-clippy",
+      "log": {
+        "bytes": 2944,
+        "sha256": "e62a259f227799d9097c68b3c6dd6f72d2e9b95ece2e6a9440bc7bb467fff9ae"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "2e7abea0d034d0d08d803837c9ab38fa7bdb8608064bf1150d09cf8c70303bb4"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "2e7abea0d034d0d08d803837c9ab38fa7bdb8608064bf1150d09cf8c70303bb4"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        }
+      }
+    },
+    "63": {
+      "executed_test_binaries": [],
+      "exit": 101,
+      "label": "63-wire-durable-strict-clippy",
+      "log": {
+        "bytes": 2334,
+        "sha256": "65225883620e4ed1a53fb3a2dec3b9018244ade5b7af66ee43f482543dc0af8c"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "2e7abea0d034d0d08d803837c9ab38fa7bdb8608064bf1150d09cf8c70303bb4"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "2e7abea0d034d0d08d803837c9ab38fa7bdb8608064bf1150d09cf8c70303bb4"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        }
+      }
+    },
+    "66": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "66-freeze-wire-clippy",
+      "log": {
+        "bytes": 732,
+        "sha256": "ac1b89cabe7f5e2ee7cb6f23f4743d7d0a7300f29d3d7c43b2f28d3c83706341"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        }
+      }
+    },
+    "67": {
+      "executed_test_binaries": [],
+      "exit": 0,
+      "label": "67-freeze-wire-durable-clippy",
+      "log": {
+        "bytes": 747,
+        "sha256": "dba96af0a1e91223f06639c9021e9f311e32e4051cd89503dc8a05e9432d8556"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        }
+      }
+    },
+    "69": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/faction_provider-a62ae2a48b8b41d5",
+          "sha256": "94565e0c4106cc597297ee46c6258e3a7941e16fae4ad4b915e0cdcb36e94192",
+          "size": 2102800
+        }
+      ],
+      "exit": 0,
+      "label": "69-freeze-bio-read-guards",
+      "log": {
+        "bytes": 2095,
+        "sha256": "a6ec04ce3eecacbc5238680f8a059f753a76096af6102779433cd39cef1776eb"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b116cb254e77f5879f267069b152fb9fdb133d3b2e7a697f35a23c1a35bf50fe"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "28abe045152bcbf2b6faa774b89d8897f22747985d76a09d5be792cca0386cac"
+        }
+      }
+    },
+    "7": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/embedding-a4d69064a3016e7b",
+          "sha256": "9a3f214c79a2620a3d8a7e472c38ecf95522cf05ad817449cde363a2fbe29fd4",
+          "size": 2109168
+        }
+      ],
+      "exit": 0,
+      "label": "07-core-first-green-attempt",
+      "log": {
+        "bytes": 1055,
+        "sha256": "174db026b93e4aaf35dd8b0c50a8c6230ab12a4f888a7182d1c0a776eef89699"
+      },
+      "runner_file_retained": false,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 8291,
+          "entries": 54,
+          "sha256": "f1576573ec73d88e94682d0d282e0d39df5f82cd3b34420b4c92efb7a143cfe7"
+        },
+        "before.json": {
+          "bytes": 8291,
+          "entries": 54,
+          "sha256": "f1576573ec73d88e94682d0d282e0d39df5f82cd3b34420b4c92efb7a143cfe7"
+        },
+        "binaries-after.json": {
+          "bytes": 3218,
+          "entries": 18,
+          "sha256": "c67539421980a97b860cb118ca01964914b8b360d2e4729b83ea955b1a7714d6"
+        },
+        "binaries-before.json": {
+          "bytes": 3064,
+          "entries": 17,
+          "sha256": "885a450465c365acf4ac198d5297fa391e74796ea97c488c041a6448eedfcd66"
+        }
+      }
+    },
+    "70": {
+      "executed_test_binaries": [
+        {
+          "path": "release/deps/embedding-d4a9a48a51ec6a06",
+          "sha256": "aec8c5a3494bec90de949265043c193fdd3b7c64c0263c37c72dcbc51dff9340",
+          "size": 2468224
+        }
+      ],
+      "exit": 0,
+      "label": "70-freeze-wire-integration",
+      "log": {
+        "bytes": 1493,
+        "sha256": "ce616401ac369a4ab10f1b4bddd334981b891a2cf20f34cf903a236d6635a3b6"
+      },
+      "runner_file_retained": true,
+      "source_and_executable_maps": {
+        "after.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "before.json": {
+          "bytes": 9738,
+          "entries": 63,
+          "sha256": "5d89a2482e690cc1541e3531d28915248043905369ff44c021de504ba3092a82"
+        },
+        "binaries-after.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b116cb254e77f5879f267069b152fb9fdb133d3b2e7a697f35a23c1a35bf50fe"
+        },
+        "binaries-before.json": {
+          "bytes": 10568,
+          "entries": 63,
+          "sha256": "b116cb254e77f5879f267069b152fb9fdb133d3b2e7a697f35a23c1a35bf50fe"
+        }
+      }
+    }
+  },
+  "catalog_sha256": "940d5c3a09adbc8b8e8a9ed9fa82490f30a2db0f96c0d8bb20f4a402a1476281",
+  "codec_fixture_staging": {
+    "correction": "Use existing /usr/sbin/chown; retain identical native program and inventory",
+    "followup_diagnostic": "command -v chown produced no path; uploaded files exist with archive owner501",
+    "initial_controller_exit": 1,
+    "initial_subprocess_stdout_stderr_not_retained": true,
+    "not_product_red": true,
+    "original_helper_sha256": "1b1573c353592bd7f8d146aee2811f1a1c9722de72cc5e51d821a76606677a19",
+    "result": "fixture-staging-failure-before-any-cargo"
+  },
+  "limits": [
+    "Every source map references exact copied source bytes by sha256; content-addressed object presence and bytes were verified during export.",
+    "Compile-time interface failures did not execute a test binary; executed_test_binaries is empty for them.",
+    "Initial orchestration runner before its automatic source-gate change is preserved only in the creation tool transcript. No original independent file/hash is claimed; any reconstruction must be labeled DERIVED. All product/guard/manifest/Rust source, argv/env, raw logs and tested executable objects were retained as captured.",
+    "Actual TLS response BIO scheduling gate is post-handshake and proves lock/cancel/original-deadline paths, not kernel TLS-buffer saturation. Separate plaintext DeadlineIo fixture proves kernel pending-write retry/cancel only.",
+    "Precise issuer wall highwater begins with FIRST precise issuer check, including failed attempts reaching that check. Prior factory clock samples are whole seconds; no continuous fractional rollback claim.",
+    "Native results and independent review are lead-owned and are not asserted by this host catalog."
+  ],
+  "native_archive_verifier_fixture_failure": {
+    "correction": "Resolve each in-prefix hardlink and verify exact target identity, byte length and actual content digest; require all10912 indexed paths",
+    "not_product_red": true,
+    "original_archive_retained": true,
+    "original_helper_sha256": "fa506b79a4ddd3dfc48723628e00742d286733ba25c188cac38dfa574abb53f3",
+    "reason": "Verifier skipped hardlink headers although index correctly includes regular source paths;24missing directheaders are all hardlinks",
+    "result": "verification-helper-failure"
+  },
+  "pairs": [
+    {
+      "classification": "manifest/source-contract assertion",
+      "green": "5",
+      "red": "1",
+      "subject": "issuer_feature"
+    },
+    {
+      "classification": "compile-time missing public interfaces; no runtime RED claim",
+      "green": "7",
+      "red": "6",
+      "subject": "core_public_interfaces"
+    },
+    {
+      "classification": "fixture private-field compile failure; not behavioral RED",
+      "green": "11",
+      "red": "10",
+      "subject": "origin_lifecycle"
+    },
+    {
+      "classification": "existing all-product edge refusal before accepted optional edge support",
+      "green": "36",
+      "red": "30",
+      "subject": "qualified_optional_codec_edge"
+    },
+    {
+      "classification": "manifest/source-contract assertion",
+      "green": "35",
+      "red": "31",
+      "subject": "wire_feature"
+    },
+    {
+      "classification": "actual behavioral RED:15 pass/4 fail",
+      "green": "48",
+      "red": "32",
+      "subject": "codec_exact_EOF_and_Connection_close"
+    },
+    {
+      "classification": "missing guard API; no behavioral RED claim",
+      "green": "35",
+      "red": "33",
+      "subject": "provider_codec_composition_interface"
+    },
+    {
+      "classification": "compile-time missing APIs",
+      "green": "48",
+      "red": "34",
+      "subject": "codec_private_bytes_helpers"
+    },
+    {
+      "classification": "actual negative-guard RED:3 missing refusals",
+      "green": "44",
+      "red": "37",
+      "subject": "provider_ordinary_registry_leak"
+    },
+    {
+      "classification": "actual negative-guard RED:3 missing refusals",
+      "green": "45",
+      "red": "38",
+      "subject": "codec_ordinary_registry_leak"
+    },
+    {
+      "classification": "actual source gate refusal before exact codec source union support",
+      "green": "43",
+      "red": "40",
+      "subject": "provider_selected_source_qualification"
+    },
+    {
+      "classification": "compile-time missing APIs",
+      "green": "48",
+      "red": "46",
+      "subject": "codec_http_head_interface"
+    },
+    {
+      "classification": "compile-time missing consuming public HTTP interface then actual mTLS GREEN",
+      "green": "51",
+      "red": "49",
+      "subject": "real_same_Runtime_HTTP"
+    },
+    {
+      "classification": "compile-time missing private test gate; subsequent actual TLS controls",
+      "green": "59",
+      "red": "52",
+      "subject": "actual_TLS_response_BIO_gate"
+    },
+    {
+      "classification": "compile-time missing private retry observer",
+      "green": "59",
+      "red": "55",
+      "subject": "observed_stalled_HTTP_read"
+    },
+    {
+      "classification": "compile-time missing private guard; synthetic clock inputs distinguished from real monotonic deadline",
+      "green": "59",
+      "red": "56",
+      "subject": "wire_precise_lifetime_guard"
+    },
+    {
+      "classification": "actual behavioral RED after independently valid public policies and actual Session normal close",
+      "green": "104",
+      "red": "100",
+      "subject": "public_home_association"
+    },
+    {
+      "classification": "actual behavioral RED:RNG called1 vs0; GREEN also no reference insertion",
+      "green": "106",
+      "red": "102",
+      "subject": "private_home_association_atomicity"
+    }
+  ],
+  "schema": 1,
+  "separate_nonbehavioral_failures": {
+    "101": "Private regression setup attempted forbidden existing relay certificate remap to other home; constructor/install Invalid before assertion. Fresh Authority fixture102 is meaningful RED.",
+    "103": "Rustfmt required multiline vectors in newly added tests; formatting failure, not product RED.",
+    "2": "Guard-test metadata-count fixture expected42 versus actual48; not a product feature RED despite directory name green.",
+    "39": "Private metadata helper wrongly assumed root lock additions; actual root unchanged. Corrected actual graph before compile; not product RED.",
+    "54": "Malformed unresolved request fixture wrongly expected record deadline; correct oracle is original service deadline until exact ref/token resolves. Product unchanged; not behavioral product RED.",
+    "58": "Implementation initializer compilation failure:duplicate and missing HttpReply fields; not behavioral RED.",
+    "62": "Strict Clippy collapsible_if failure; style correction, no relaxed lint.",
+    "63": "Strict Clippy collapsible_if failure; style correction, no relaxed lint."
+  }
+}

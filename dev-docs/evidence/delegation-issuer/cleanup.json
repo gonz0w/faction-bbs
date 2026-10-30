@@ -1,0 +1,32 @@
+{
+  "all_regular_capture_bytes_verified_before_removal": true,
+  "capture_scratch_removed": true,
+  "host_client": {
+    "children_reaped": true,
+    "owned_tmp_empty": true,
+    "private_fixture_removed": true
+  },
+  "host_provider": {
+    "owned_fixtures_remaining": 0,
+    "owned_test_processes_remaining": 0
+  },
+  "marked_capture_roots_removed": 4,
+  "native": {
+    "native_archive_bytes": 298352640,
+    "native_archive_sha256": "31494e058e5b6ea4f016641a6434771a2bd8ce06d33d5beab5c8e61ed588058e",
+    "owned_clone_kernel_removed": true,
+    "owned_forward_closed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_controller_stopped": true
+  },
+  "native_archive_verification": {
+    "index_sha256": "6b104c1677c971774412bd3d43cfc650913adb59c12a801df5a33a7ba35ac267",
+    "result": "pass",
+    "verified_files": 10912,
+    "verified_hardlink_headers": 24
+  },
+  "schema": 1
+}

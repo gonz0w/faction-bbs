@@ -1,0 +1,70 @@
+{
+  "host": {
+    "cargo": "1.96.0",
+    "openssl": "3.6.3; explicitly selected already-installed libssl.3/libcrypto.3",
+    "rust": "1.96.0",
+    "target": "aarch64-apple-darwin",
+    "tool_capture_sha256": "566b60cc7b4e12c1312dea856681961a92b319d6c1bbd4e18d5212022e492419"
+  },
+  "netbsd": {
+    "cargo": "1.96.0",
+    "compile_jobs": 2,
+    "cpus": 2,
+    "openssl": "base3.5.7",
+    "os": "NetBSD11evbarm/aarch64",
+    "rust": "1.96.0",
+    "tools": {
+      "/usr/bin/cc": {
+        "bytes": 1419696,
+        "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+      },
+      "/usr/bin/ld": {
+        "bytes": 992920,
+        "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161"
+      },
+      "/usr/lib/libcrypto.so.16": {
+        "bytes": 6244640,
+        "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+      },
+      "/usr/lib/libssl.so.16": {
+        "bytes": 1262704,
+        "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+      },
+      "/usr/pkg/bin/cargo": {
+        "bytes": 43795088,
+        "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+      },
+      "/usr/pkg/bin/rustc": {
+        "bytes": 14128,
+        "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+      }
+    }
+  },
+  "roles": {
+    "mapping": "PROJECT-authorized fresh-context explicit model/effort equivalents",
+    "native_role_loader": "unavailable",
+    "observed_backend_model_settings": "unverified; no telemetry",
+    "requested": {
+      "analyst": "gpt-6-astra/high",
+      "implementer": "gpt-6.1-sol/high",
+      "product": "gpt-6.1-terra/medium",
+      "reviewer": "gpt-6.1-sol/high",
+      "workflow": "gpt-6-luna/medium"
+    }
+  },
+  "schema": 1,
+  "selected_source_gate": {
+    "historical_checks_unchanged": true,
+    "root_lock_unchanged": true,
+    "targets": [
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-netbsd",
+      "aarch64-apple-darwin"
+    ],
+    "wire_only_approved_additions": [
+      "form_urlencoded",
+      "httparse",
+      "percent-encoding"
+    ]
+  }
+}
