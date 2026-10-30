@@ -159,7 +159,9 @@ def ci_fixture():
                                ('Cargo.toml', ' --features faction-client/device-provider'),
                                ('crates/faction-provider/Cargo.toml', ' --features operator'),
                                ('crates/faction-provider/Cargo.toml', ' --features delegation-wire'),
-                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy')]:
+                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy'),
+                               ('crates/faction-provider/Cargo.toml', ' --features delegation-verifier'),
+                               ('crates/faction-provider/Cargo.toml', ' --features delegation-verifier,durable-policy')]:
         for target in ['x86_64-unknown-linux-gnu', 'aarch64-unknown-netbsd', 'aarch64-apple-darwin']:
             lines.append('          cargo metadata --locked --manifest-path '+manifest+' --format-version 1 --filter-platform '+target+feature+' > /dev/null')
     lines += ['          python3 tools/check_delegation_codec_dependencies.py',
