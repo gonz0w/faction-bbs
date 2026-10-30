@@ -11,6 +11,7 @@ publish = false
 [features]
 default = []
 delegation-records = []
+delegation-services = []
 blob-iq = ["dep:faction-xmpp"]
 durable-policy = ["dep:rustix"]
 preparation = ["dep:toml", "toml/display"]

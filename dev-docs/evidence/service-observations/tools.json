@@ -1,0 +1,83 @@
+{
+  "host": {
+    "cargo": {
+      "bytes": 31817288,
+      "sha256": "fec239e6b74df873f54ef52912bfcfcc8d8414bc14a7ae1e0be80460bae72841",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)"
+    },
+    "openssl3": {
+      "files": {
+        "bin/openssl": {
+          "bytes": 875392,
+          "sha256": "62d345e5c323fe6a0c3dcc154e5177e35b607f0d8c7aae7696821997f6a584a0"
+        },
+        "include/openssl/opensslv.h": {
+          "bytes": 3447,
+          "sha256": "167504e0f44d44119f977e0a255a78f98bbb911ffc7c3b1b5a963e45ecc767c6"
+        },
+        "lib/libcrypto.3.dylib": {
+          "bytes": 4828048,
+          "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d"
+        },
+        "lib/libssl.3.dylib": {
+          "bytes": 867008,
+          "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc"
+        }
+      },
+      "version": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+    },
+    "openssl4": {
+      "files": {
+        "bin/openssl": {
+          "bytes": 920352,
+          "sha256": "da101a01999a93ea6eddfe1392752bce2b5a91a41e4b00e1d9656fc682a1dc85"
+        },
+        "include/openssl/opensslv.h": {
+          "bytes": 3449,
+          "sha256": "a7c8dcc8d17f93e6b1b0d70fbe8bcfe65f7a5fcaa88c44932680bea59dd7ed96"
+        },
+        "lib/libcrypto.4.dylib": {
+          "bytes": 4939376,
+          "sha256": "efb00fbd817f6f81d59427129d191cc5cfd408671b59c715569e5ebafc81454e"
+        },
+        "lib/libssl.4.dylib": {
+          "bytes": 996160,
+          "sha256": "79e9d2bd1c442951180071a326061a4efd8db8cd11ed90cfc25886a5a492a10b"
+        }
+      },
+      "version": "OpenSSL 4.1.0 23 Oct 2026 (Library: OpenSSL 4.1.0 23 Oct 2026)"
+    },
+    "rustc": {
+      "bytes": 412504,
+      "sha256": "c5922366bfe3d6d028a65d626f4e629b3adad066995cf0b60c8a4b617bba5ffe",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    }
+  },
+  "identity_observation": "Actual retained tool/library files; no claim of kernel per-process executable attestation",
+  "native": {
+    "/usr/bin/cc": {
+      "bytes": 1419696,
+      "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+    },
+    "/usr/bin/ld": {
+      "bytes": 992920,
+      "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161"
+    },
+    "/usr/lib/libcrypto.so.16": {
+      "bytes": 6244640,
+      "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+    },
+    "/usr/lib/libssl.so.16": {
+      "bytes": 1262704,
+      "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+    },
+    "/usr/pkg/bin/cargo": {
+      "bytes": 43795088,
+      "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+    },
+    "/usr/pkg/bin/rustc": {
+      "bytes": 14128,
+      "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+    }
+  }
+}

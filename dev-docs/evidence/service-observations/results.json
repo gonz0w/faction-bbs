@@ -1,0 +1,617 @@
+{
+  "claims_not_made": [
+    "OAuth/HTTP/introspection endpoint",
+    "RFC7662TLS1.2 qualification",
+    "device key-possession or sender-current/object-committed proof",
+    "remote store grant or relay/callback executor",
+    "automatic enrollment/service activation",
+    "whole trusted-root rollback protection",
+    "physical SBC/250-user capacity",
+    "hardening audit/production release"
+  ],
+  "execution_date": "2026-10-30",
+  "host_client": {
+    "children_reaped": true,
+    "classic_unicode_console_controls": 20,
+    "client_sha256": "52f9302568d976de91a93ceb8f7887c80a8fc744a1d520e501c78dc5910e9054",
+    "console_result": "pass",
+    "fixture_removed": true,
+    "ignored_owned_subprocess_helpers": 8,
+    "openssl": "3.6.3 explicitly selected existing installation",
+    "passed": 259,
+    "returncode": 0,
+    "runtime_stdout_sha256": "1b998852497494b81b2f17b9b866efbde7eb7e754d73d848e0e8dbf667027484",
+    "test_groups": [
+      {
+        "ignored": 5,
+        "passed": 127
+      },
+      {
+        "ignored": 3,
+        "passed": 87
+      },
+      {
+        "ignored": 0,
+        "passed": 1
+      },
+      {
+        "ignored": 0,
+        "passed": 4
+      },
+      {
+        "ignored": 0,
+        "passed": 6
+      },
+      {
+        "ignored": 0,
+        "passed": 1
+      },
+      {
+        "ignored": 0,
+        "passed": 4
+      },
+      {
+        "ignored": 0,
+        "passed": 6
+      },
+      {
+        "ignored": 0,
+        "passed": 4
+      },
+      {
+        "ignored": 0,
+        "passed": 2
+      },
+      {
+        "ignored": 0,
+        "passed": 9
+      },
+      {
+        "ignored": 0,
+        "passed": 7
+      },
+      {
+        "ignored": 0,
+        "passed": 0
+      },
+      {
+        "ignored": 0,
+        "passed": 0
+      },
+      {
+        "ignored": 0,
+        "passed": 1
+      },
+      {
+        "ignored": 0,
+        "passed": 0
+      },
+      {
+        "ignored": 0,
+        "passed": 0
+      }
+    ]
+  },
+  "host_provider_openssl": "4.1.0 from original workstation pkg-config; additional provider-only observation, not native-mail adoption",
+  "issues": [
+    308,
+    309
+  ],
+  "native_teardown": {
+    "native_archive_bytes": 179322880,
+    "native_archive_sha256": "19697244bfece862128e719beb1f915c0019f8afcbd4051b4d4f07d0491027bf",
+    "owned_clone_kernel_removed": true,
+    "owned_forward_closed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_controller_stopped": true
+  },
+  "netbsd": {
+    "main_and_test_artifacts_captured_before_and_after_runtime": true,
+    "native_source_files": 376,
+    "new_profile_compilation_memory_mib": 1024,
+    "new_profile_compiler_jobs": 2,
+    "openssl": "base 3.5.7",
+    "ordinary_compilation_memory_mib": 2048,
+    "ordinary_compiler_jobs": 2,
+    "os": "NetBSD 11 evbarm/aarch64",
+    "runtime_cpus": 2,
+    "runtime_physmem_bytes": 1054990336,
+    "rust": "1.96.0"
+  },
+  "profiles": [
+    {
+      "host": {
+        "capture": "20261030-104956-1793378996794249000",
+        "groups": [
+          25,
+          0,
+          36,
+          0,
+          0,
+          12
+        ],
+        "log_sha256": "0848f9bd33424c109e18ab0152b1163cd1f8bdb8d78414044962c24f22b30278",
+        "passed": 73,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 46.12443420799991,
+        "groups": [
+          25,
+          0,
+          36,
+          0,
+          0,
+          12
+        ],
+        "log_sha256": "f9e8aaa1b6a267d2fdb97ebb9f36e44d0a1464af0f692bfc29c2c713cfd9e283",
+        "no_product_recompilation": true,
+        "passed": 73,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "delegation-services"
+    },
+    {
+      "host": {
+        "capture": "20261030-105046-1793379046454742000",
+        "groups": [
+          43,
+          7,
+          38,
+          0,
+          0,
+          12
+        ],
+        "log_sha256": "403cf0e7023592d58272093ae7b73e540061493a2455857ad7871e7fb7d724b3",
+        "passed": 100,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 46.30298300000004,
+        "groups": [
+          43,
+          7,
+          38,
+          0,
+          0,
+          12
+        ],
+        "log_sha256": "445bf61b7ed98abb7a66723267ab697afb8c9b2d68d84a081df1d37706c01423",
+        "no_product_recompilation": true,
+        "passed": 100,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "delegation-services,durable-policy"
+    },
+    {
+      "host": {
+        "capture": "20261030-104118-1793378478685981000",
+        "groups": [
+          51,
+          7,
+          45,
+          0,
+          0,
+          16
+        ],
+        "log_sha256": "39c7d9a7b9245d30686b8b09772cc638aa3ee37c7b1e9819b757e4bcafcf8f2f",
+        "passed": 119,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 47.54940212500014,
+        "groups": [
+          51,
+          7,
+          45,
+          0,
+          0,
+          16
+        ],
+        "log_sha256": "043a3129d407c7e60834e72ba3527d8c9ac45bda0e5a03bbd6ae5a8cf7623069",
+        "no_product_recompilation": true,
+        "passed": 119,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "delegation-services,delegation-records,durable-policy"
+    },
+    {
+      "host": {
+        "capture": "20261030-104303-1793378583833701000",
+        "groups": [
+          31,
+          7,
+          23,
+          0,
+          0,
+          6
+        ],
+        "log_sha256": "8cf6f621e73cb7bdc7c9f76c8bfb217ee0a60f8652cf505a5fc2bfc4f26d781c",
+        "passed": 67,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": null,
+      "profile": "durable-policy"
+    },
+    {
+      "host": {
+        "capture": "20261030-104449-1793378689604043000",
+        "groups": [
+          20,
+          0,
+          23,
+          0,
+          0,
+          6
+        ],
+        "log_sha256": "d613f71fcfc69f3a11172f1f1fd5a66a5fb39c0f99ba72bd4c98994a1452ba18",
+        "passed": 49,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 28.54276558299989,
+        "groups": [
+          20,
+          0,
+          23,
+          0,
+          0,
+          6
+        ],
+        "log_sha256": "4fe7cf13057650bf2071c4f4b270bc99453e0df5a2ca2888c547e5304b8327f4",
+        "no_product_recompilation": true,
+        "passed": 49,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "default"
+    },
+    {
+      "host": {
+        "capture": "20261030-104537-1793378737292517000",
+        "groups": [
+          20,
+          0,
+          32,
+          0,
+          0,
+          6
+        ],
+        "log_sha256": "1ab2a03c8f745d651057618d9c45236e70b46a1aebecf5e37f7244584590e6a7",
+        "passed": 58,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 40.015624875,
+        "groups": [
+          20,
+          0,
+          32,
+          0,
+          0,
+          6
+        ],
+        "log_sha256": "9618891d2dde233c4244db4a2ea6d086ed84d3651ce9fb48eb3bbd421aee4b96",
+        "no_product_recompilation": true,
+        "passed": 58,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "blob-iq"
+    },
+    {
+      "host": {
+        "capture": "20261030-104739-1793378859061092000",
+        "groups": [
+          20,
+          0,
+          23,
+          0,
+          4,
+          6
+        ],
+        "log_sha256": "40f94d7196e92397dd819071fdce47e3a32e406b5efdded1b8cbbf4367795c79",
+        "passed": 53,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": null,
+      "profile": "preparation"
+    },
+    {
+      "host": {
+        "capture": "20261030-104813-1793378893399136000",
+        "groups": [
+          31,
+          1,
+          7,
+          23,
+          12,
+          4,
+          6
+        ],
+        "log_sha256": "94ff09c4295b08e8d9294c8b991a6ab916ce68950eae277fff311aaed8c15a40",
+        "passed": 84,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 32.73827825,
+        "groups": [
+          31,
+          1,
+          7,
+          23,
+          12,
+          4,
+          6
+        ],
+        "log_sha256": "481f47799daaa7c6fafcb58918613e09aa80c7191d3f0094ebf36d35385ad90e",
+        "no_product_recompilation": true,
+        "passed": 84,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "operator"
+    },
+    {
+      "host": {
+        "capture": "20261030-104849-1793378929378308000",
+        "groups": [
+          27,
+          0,
+          29,
+          0,
+          0,
+          10
+        ],
+        "log_sha256": "f181f507f81294e5c052ae14929e19f9bf24aab7847fa8aef097f2bff2645bde",
+        "passed": 66,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 29.394199500000013,
+        "groups": [
+          27,
+          0,
+          29,
+          0,
+          0,
+          10
+        ],
+        "log_sha256": "9e50bd99144e6ef73bef26de6d857928eb412e7471b9ce8aad528830fbb0b777",
+        "no_product_recompilation": true,
+        "passed": 66,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "delegation-records"
+    },
+    {
+      "host": {
+        "capture": "20261030-104922-1793378962050563000",
+        "groups": [
+          39,
+          7,
+          30,
+          0,
+          0,
+          10
+        ],
+        "log_sha256": "6197df70dcc46c4f2886d185767b851bc0035a88bf5bc6a1febc6268d5a21246",
+        "passed": 86,
+        "returncode": 0,
+        "source_map_sha256": "ffc2e8681caab35628c515ab82c4ac71604d99578c84b057d0f4105e6f41fd75"
+      },
+      "netbsd": {
+        "artifacts_before_after_exact": true,
+        "elapsed_seconds": 29.62237991699999,
+        "groups": [
+          39,
+          7,
+          30,
+          0,
+          0,
+          10
+        ],
+        "log_sha256": "77ab2b45d24388bb2469cfcff367472cc92724822855f0f5f68766af0aa46bf3",
+        "no_product_recompilation": true,
+        "passed": 86,
+        "returncode": 0,
+        "source_exact": true
+      },
+      "profile": "delegation-records,durable-policy"
+    }
+  ],
+  "retention_limits": [
+    "The first interim nine-test services GREEN executable was not independently hashed/copied before subsequent compilation; its exact source/argv/log/exit are preserved. All final qualification executables and later variants are retained. No source capture gap is claimed.",
+    "Host native-mail integration first refused the workstation default pkg-config OpenSSL 4 as required by its existing major-3 guard. Unchanged tests passed using already installed OpenSSL 3.6.3 through explicit environment; no guard change or package installation.",
+    "The first OpenSSL3 client runtime used an overlong owned TMPDIR and an existing UNIX-socket fixture hit macOS SUN_LEN before its refusal assertion. Same source/binaries/assertions passed with a shorter owned 0700 temporary root.",
+    "One preservation inspection used the wrong CI job name and failed; its original tool result is retained and the subsequent exact independent-codec-step comparison passes. No codec gate changed.",
+    "Runtime no_product_recompilation means unchanged product artifacts and no Cargo product compilation lines. Compile-fail doctests intentionally invoke rustdoc/rustc on negative snippets.",
+    "Broader existing XMPP/IQ/operator dependencies used a planned two-core 2 GiB compile-only envelope based on prior qualification, then actual runtime tests returned to 1 GiB; this batch does not claim a fresh 1 GiB build of those dependencies.",
+    "Host/client console integration is fresh; no fresh production native-client journey on NetBSD, full callback executor, remote grant or independently operated deployment is claimed."
+  ],
+  "scope": "default-off local registered-service recipient observations and public durable policy; no store grant",
+  "source_commit": "afffbf60f0acc491e50972d80c3685293ff33f2e",
+  "tdd_red": {
+    "admission_cleanup": {
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--features",
+        "delegation-services",
+        "--lib",
+        "blocked_cleanup",
+        "--",
+        "--test-threads=1"
+      ],
+      "capture": "20261030-103100-1793377860080690000",
+      "exit": 101,
+      "log_sha256": "2d29ab25d0e37197cdad27747b524823ecc5f6ef997b31fc17bb1013ce912c4d",
+      "source_map_sha256": "7aae739daec72a81503221329eac651c4f89bafb05fb17dfaf923dc7cc9fb53f"
+    },
+    "api": {
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--features",
+        "delegation-services",
+        "--test",
+        "embedding",
+        "delegation_services",
+        "--",
+        "--test-threads=1"
+      ],
+      "capture": "20261030-102625-1793377585061403000",
+      "exit": 101,
+      "log_sha256": "3b461e7deb6e7ff8f86378363d1cec0bce7a44916c5dae9787c22e9c3b851fd9",
+      "source_map_sha256": "dcec878e21209ca28171db07ad94d82e580ee330304aa4feb5cfe1d7ff6b3102"
+    },
+    "durable_reopen": {
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-provider/Cargo.toml",
+        "--release",
+        "--locked",
+        "--features",
+        "delegation-services,durable-policy",
+        "--test",
+        "embedding",
+        "durable_services_survive",
+        "--",
+        "--test-threads=1"
+      ],
+      "capture": "20261030-103304-1793377984821033000",
+      "exit": 101,
+      "log_sha256": "3fd2cd30e34642427a8e5dda58914ac2882f40463b8434185aa69d25ac12b383",
+      "source_map_sha256": "2558b095b2e4014ecf26fa69a35787823f5402fa026c7eeaf4890069dade0d5d"
+    },
+    "guard": {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_provider_dependencies.py"
+      ],
+      "capture": "20261030-102447-1793377487951063000",
+      "exit": 1,
+      "log_sha256": "4d93ca090d12c9f7ad9fdaa5836b901f7a7d69c370fd8464b5a21636a679330c",
+      "source_map_sha256": "2a4bd503c0ad640a5ed8c4cb2c3874fb924dd808d33de9beed14f085f6d486da"
+    }
+  },
+  "tooling": {
+    "clippy": "all ten provider profiles pass",
+    "provider_contract_tests": 44,
+    "python_tests": 628,
+    "results": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_*.py"
+        ],
+        "elapsed_seconds": 80.73756516596768,
+        "log_sha256": "3bfad3790118d9af77103ef602e56c9b994a9f02446032a5cfc3bf71ba293ebe",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "tools/check_repository.py"
+        ],
+        "elapsed_seconds": 5.067946333030704,
+        "log_sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "tools/check_evidence_sources.py"
+        ],
+        "elapsed_seconds": 16.901147582975682,
+        "log_sha256": "d1f058c908a6af4ddcab84e8fa15b505fd8fe153c20a6b694d9ce78bdca09fb3",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "tools/check_provider_dependencies.py"
+        ],
+        "elapsed_seconds": 6.473125916963909,
+        "log_sha256": "59a8e386f9680085d342b3bc7f3243d334634b829b8696fc2185495d54a5ca05",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "tools/check_delegation_codec_dependencies.py"
+        ],
+        "elapsed_seconds": 1.4950308330007829,
+        "log_sha256": "a1cd6a57f5de1e32730ac0d5beb04e9ea28f72e19074d0e882c235ac821ffb26",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "tools/check_recorded_files.py",
+          "dev-docs/evidence/offline-provider-preparation/manifest.json",
+          "d3b14eeec31d1eff5bac8da9217eb02ef94799988c5adacb787fcfb784aae3a5"
+        ],
+        "elapsed_seconds": 0.1715715829632245,
+        "log_sha256": "bdfb051d3e5b2e4a6e54b9c4f3067cb6f6c9fbd7178a8ce17fe4d591cb288c4c",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "elapsed_seconds": 0.051570125040598214,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "returncode": 0
+      }
+    ],
+    "source_gates": "all explicit Linux/NetBSD/macOS profiles before selected compilation"
+  }
+}

@@ -27,17 +27,20 @@ owners, including offline updates while serving. Private directories are owned
 `0700`; files are owned regular `0600`, single-link and opened without following
 symlinks. Missing, corrupt, unexpected or unsafe established state is refused,
 without bootstrap fallback. The snapshot contains public policy, availability,
-generation and reset floors and up to 32 lifetime certificate-to-exact-principal
-mappings. It contains no local TLS or OMEMO private keys or session handles.
+generation and reset floors and typed lifetime certificate mappings for devices
+and services. The aggregate limit is 32 active credentials and 32 history entries
+across both kinds, with at most 32 homes. It contains no local TLS or OMEMO
+private keys, sessions, observations, records or tokens.
 
 Revocation, reset and certificate history survive ordinary restart. Reset advances
-the epoch and generation and clears all active bindings, leaving every device
-unauthorized; retained certificate tombstones and history remain. Reset neither
+the epoch and generation and clears active device and service bindings, leaving
+both unauthorized; retained certificate tombstones and history remain. Reset neither
 issues nor recovers keys. To restore selected rightful devices, inspect the retained
 floors and apply an explicitly preapproved proposal with a higher generation and a
-reset epoch at least the retained floor. A retired certificate cannot be rebound to
-a different principal; same-principal reapproval follows existing policy validation. This protects monotonic proposals against the
-retained state, not replacement of the whole trusted root with an older valid copy.
+reset epoch at least the retained floor. A retired certificate cannot be rebound
+to a different typed identity; device identity is the exact principal and service
+identity is the exact home and client ID. Reapproval of the same identity follows
+existing policy validation. This protects monotonic proposals against the retained state, not replacement of the whole trusted root with an older valid copy.
 There is no external rollback anchor, device enrollment, key recovery or implicit
 membership. Retain and inspect uncertain state; do not delete or initialize over it.
 
@@ -50,7 +53,17 @@ The separate default-off `delegation-records` feature uses transient local
 retrieval policy and records. Its sender-home to audience mappings and records
 are not persisted or restored on reopen. Existing registry homes retain their
 current durable behavior. Installing durable policy invalidates prior records;
-it does not create a remote read grant. Persistence of delegation service-client
-registrations, certificates and invitation epochs remains future work under
-[issue #300](https://github.com/gonz0w/faction-bbs/issues/300). See the
-[retrieval intent contract](retrieval-intents.md).
+it does not create a remote read grant. See the [retrieval intent contract](retrieval-intents.md).
+
+With `delegation-services` explicitly enabled, a combined registry and service
+policy update uses the same increasing generation and reset floors. A device-only
+registry replacement disables service policy and retains typed certificate history.
+Initialization writes version 1 device-only snapshots, and reopen reads them
+without rewriting. An explicit successful update in a service-capable build writes
+version 2, wrapping the version 1 device state and retaining local home, service
+registrations, invitations, typed history and floors. The version 2 marker remains
+after device-only replacement or reset. Builds without `delegation-services`
+refuse every version 2 snapshot, including tombstone-only state, without rewrite
+or fallback. Observations and sessions never
+survive reopen: a service must establish a fresh verified TLS connection. See the
+[service observation contract](service-observations.md).

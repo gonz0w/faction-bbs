@@ -29,7 +29,7 @@ def validate_profile(manifest, workspace):
     expected = {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
                 'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
                 'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                    'durable-policy': ['dep:rustix'], 'delegation-records': [],
+                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [],
                     'preparation': ['dep:toml', 'toml/display'],
                     'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
                 'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
@@ -127,7 +127,7 @@ def root_warm_commands():
 def provider_warm_commands():
     return ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features ' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy'] for target in TARGETS]
+            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy'] for target in TARGETS]
 
 
 def validate_warm_order(job):
@@ -144,7 +144,8 @@ def operator_commands():
     commands = [TOOLCHAIN] + root_warm_commands() + provider_warm_commands()
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check']
-    for feature in ['durable-policy', 'operator']:
+    for feature in ['durable-policy', 'operator', 'delegation-services',
+                    'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     commands += ['cargo build --manifest-path ' + REL + '/Cargo.toml --bin faction-provider --features operator --release --locked',
@@ -169,7 +170,7 @@ def validate_ci(text):
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' > /dev/null' for target in TARGETS]
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features blob-iq > /dev/null' for target in TARGETS]
-    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy'] for target in TARGETS]
+    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy'] for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked -- -D warnings',
@@ -218,6 +219,12 @@ def validate_ci(text):
     require(_lines(selected, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'}) == operator_commands(),
             'operator CI must qualify all selected sources before locked API, CLI and native proof')
     validate_warm_order(operator)
+    # The six moved service validations belong only to the required operator
+    # consumer; reject extra copies outside that step as well.
+    for command in operator_commands():
+        if command.startswith(('cargo clippy ', 'cargo test ')) and ' --features delegation-services' in command:
+            require(sum(line.strip() == command for line in text.splitlines()) == 1,
+                    'service CI validation must run exactly once in the operator job')
     documentation = _job(text, 'documentation')
     require('    needs: [native_mail, provider, provider_operator]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
@@ -258,6 +265,9 @@ def inventory():
                               ('operator', ['operator']),
                               ('delegation-records', ['delegation-records']),
                               ('delegation-records,durable-policy', ['delegation-records', 'durable-policy']),
+                              ('delegation-services', ['delegation-services']),
+                              ('delegation-services,durable-policy', ['delegation-services', 'durable-policy']),
+                              ('delegation-services,delegation-records,durable-policy', ['delegation-services', 'delegation-records', 'durable-policy']),
                               ('device-provider', ['faction-client/device-provider'])]:
         graphs = {}
         for target in TARGETS:

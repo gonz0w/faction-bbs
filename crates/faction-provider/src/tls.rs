@@ -233,10 +233,10 @@ struct AdmissionGuard {
 impl Drop for AdmissionGuard {
     fn drop(&mut self) {
         if !self.transferred {
-            self.state.active.store(false, Ordering::SeqCst);
             if let Ok(mut s) = self.state.socket.lock() {
                 s.take();
             }
+            self.state.active.store(false, Ordering::SeqCst);
         }
     }
 }
@@ -355,6 +355,94 @@ impl Server {
             leaf,
             connection,
             handle,
+            state: Arc::downgrade(&state),
+            start,
+            deadline,
+            cancel,
+            attempted: 0,
+            closed: false,
+        })
+    }
+    /// Authenticate one registered service through the same admission lane and
+    /// original deadlines as device admission; never create a device handle.
+    #[cfg(feature = "delegation-services")]
+    pub fn accept_service(
+        &self,
+        listener: &TcpListener,
+        runtime: &Runtime,
+        cancel: Arc<AtomicBool>,
+    ) -> Result<ServiceSession, Stage> {
+        let admission = Instant::now() + HANDSHAKE_LIMIT;
+        let state = runtime.state.clone();
+        if state.stopped.load(Ordering::SeqCst) || state.active.swap(true, Ordering::SeqCst) {
+            return Err(Stage::Denied);
+        }
+        let mut guard = AdmissionGuard {
+            state: state.clone(),
+            transferred: false,
+        };
+        if !listener.local_addr().is_ok_and(|a| a.ip().is_loopback())
+            || listener.set_nonblocking(true).is_err()
+        {
+            return Err(Stage::Configuration);
+        }
+        let socket = loop {
+            check(admission, &cancel)?;
+            if state.stopped.load(Ordering::SeqCst) {
+                return Err(Stage::Denied);
+            }
+            match listener.accept() {
+                Ok((socket, peer)) => {
+                    if !peer.ip().is_loopback() {
+                        return Err(Stage::Admission);
+                    }
+                    break socket;
+                }
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                    std::thread::sleep(Duration::from_millis(5))
+                }
+                Err(_) => return Err(Stage::Admission),
+            }
+        };
+        let start = Instant::now();
+        let deadline = start + CYCLE_LIMIT;
+        let handshake = admission.min(deadline);
+        *state.socket.lock().map_err(|_| Stage::Denied)? =
+            Some(socket.try_clone().map_err(|_| Stage::Admission)?);
+        let mut io = DeadlineIo::new(socket, handshake, cancel.clone());
+        io.stop = Some(state.stopped.clone());
+        let mut stream = self
+            .acceptor
+            .accept(io)
+            .map_err(|_| classify(handshake, &cancel, Stage::Handshake))?;
+        check(handshake, &cancel)?;
+        if state.stopped.load(Ordering::SeqCst) {
+            return Err(Stage::Denied);
+        }
+        let leaf = stream.ssl().peer_certificate().ok_or(Stage::Handshake)?;
+        if stream.ssl().verify_result() != X509VerifyResult::OK || stream.ssl().session_reused() {
+            return Err(Stage::Handshake);
+        }
+        let now = wall_now();
+        if !leaf_current(&leaf, now) {
+            return Err(Stage::Denied);
+        }
+        let credential = {
+            let authority = state.authority.lock().map_err(|_| Stage::Denied)?;
+            if state.stopped.load(Ordering::SeqCst) {
+                return Err(Stage::Denied);
+            }
+            authority
+                .authenticate_service(&leaf, now)
+                .map_err(|_| Stage::Denied)?
+        };
+        check(handshake, &cancel)?;
+        stream.get_mut().deadline = deadline;
+        guard.transferred = true;
+        Ok(ServiceSession {
+            stream,
+            leaf,
+            credential,
             state: Arc::downgrade(&state),
             start,
             deadline,
@@ -583,6 +671,98 @@ impl Drop for Session {
             if let Ok(mut authority) = state.authority.lock() {
                 authority.close_connection(&self.connection);
             }
+            if let Ok(mut socket) = state.socket.lock() {
+                socket.take();
+            }
+            state.active.store(false, Ordering::SeqCst);
+        }
+    }
+}
+
+/// Opaque verified home service. Its only application operation observes policy.
+/// ```compile_fail
+/// use faction_provider::ServiceSession;
+/// let forged = ServiceSession {};
+/// ```
+/// ```compile_fail
+/// use faction_provider::ServiceSession;
+/// fn escape(s: ServiceSession) { let stream = s.stream; }
+/// ```
+/// ```compile_fail
+/// use faction_provider::ServiceSession;
+/// fn escape(s: ServiceSession) { let handle = s.handle; }
+/// ```
+/// ```compile_fail
+/// use faction_provider::{ServiceSession, retrieval::RetrievalAction};
+/// fn mint(s: &mut ServiceSession, b: faction_files::private_blobs::Binding) {
+///     s.retrieval_intent(b, RetrievalAction::Status);
+/// }
+/// ```
+#[cfg(feature = "delegation-services")]
+pub struct ServiceSession {
+    stream: SslStream<DeadlineIo>,
+    leaf: X509,
+    credential: crate::services::ServiceCredential,
+    state: Weak<State>,
+    start: Instant,
+    deadline: Instant,
+    cancel: Arc<AtomicBool>,
+    attempted: usize,
+    closed: bool,
+}
+#[cfg(feature = "delegation-services")]
+impl ServiceSession {
+    /// Charge first, then recheck the exact registration and recipient. No I/O,
+    /// callback, device authority, or store dispatch is performed under this lock.
+    pub fn observe_recipient(
+        &mut self,
+        binding: faction_files::private_blobs::Binding,
+        action: crate::services::PublicationAction,
+    ) -> Result<crate::services::RecipientCurrentObservation, Error> {
+        if self.attempted >= MAX_OPERATIONS {
+            return Err(Error::Transport(Stage::Limit));
+        }
+        self.attempted += 1;
+        if self.closed {
+            return Err(Error::Transport(Stage::Denied));
+        }
+        if let Err(stage) = check(self.deadline, &self.cancel) {
+            self.closed = true;
+            return Err(Error::Transport(stage));
+        }
+        let state = self
+            .state
+            .upgrade()
+            .ok_or(Error::Transport(Stage::Denied))?;
+        let authority = state
+            .authority
+            .lock()
+            .map_err(|_| Error::Transport(Stage::Denied))?;
+        if state.stopped.load(Ordering::SeqCst) {
+            return Err(Error::Transport(Stage::Denied));
+        }
+        let result = authority
+            .observe_recipient(
+                &mut self.credential,
+                &self.leaf,
+                binding,
+                action,
+                wall_now(),
+            )
+            .map_err(|_| Error::Transport(Stage::Denied));
+        if self.start.elapsed() >= CYCLE_LIMIT {
+            self.closed = true;
+            return Err(Error::Transport(Stage::Deadline));
+        }
+        check(self.deadline, &self.cancel).map_err(Error::Transport)?;
+        result
+    }
+}
+#[cfg(feature = "delegation-services")]
+impl Drop for ServiceSession {
+    fn drop(&mut self) {
+        let _ = self.stream.get_mut().socket.shutdown(Shutdown::Both);
+        if let Some(state) = self.state.upgrade() {
             if let Ok(mut socket) = state.socket.lock() {
                 socket.take();
             }
@@ -958,3 +1138,36 @@ mod socket_bio_tests {
 #[cfg(test)]
 #[path = "tls_frame_tests.rs"]
 mod frame_tests;
+#[cfg(test)]
+mod admission_cleanup_tests {
+    use super::*;
+    #[test]
+    fn blocked_cleanup_keeps_lane_owned_until_tracked_socket_is_cleared() {
+        let r = Runtime::new(None);
+        let state = r.state.clone();
+        state.active.store(true, Ordering::SeqCst);
+        let socket_lock = state.socket.lock().unwrap();
+        let (started, ready) = std::sync::mpsc::channel();
+        std::thread::scope(|scope| {
+            let state2 = state.clone();
+            let cleanup = scope.spawn(move || {
+                started.send(()).unwrap();
+                drop(AdmissionGuard {
+                    state: state2,
+                    transferred: false,
+                });
+            });
+            ready.recv().unwrap();
+            // Wait for the cleanup thread to contend on the held tracking lock.
+            std::thread::sleep(Duration::from_millis(30));
+            let occupied = state.active.swap(true, Ordering::SeqCst);
+            drop(socket_lock);
+            cleanup.join().unwrap();
+            assert!(
+                occupied,
+                "cleanup released its lane while still blocked on socket tracking"
+            );
+            assert!(!state.active.load(Ordering::SeqCst));
+        });
+    }
+}

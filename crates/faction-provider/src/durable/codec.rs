@@ -2,6 +2,9 @@
 use super::{Error, MAX_SNAPSHOT, Snapshot};
 use crate::authority::{CredentialBinding, MAX_BINDINGS, MAX_HOMES, Registry};
 use faction_files::private_blobs::Principal;
+#[cfg(feature = "delegation-services")]
+#[path = "service_codec.rs"]
+mod services;
 const MAGIC: &[u8; 8] = b"FPPY0001";
 struct Writer(Vec<u8>);
 impl Writer {
@@ -72,6 +75,10 @@ impl<'a> Reader<'a> {
 }
 pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     s.validate()?;
+    #[cfg(feature = "delegation-services")]
+    if s.service_format_v2 {
+        return services::encode(s);
+    }
     let mut w = Writer(MAGIC.to_vec());
     w.u64(s.generation);
     w.u64(s.reset_epoch);
@@ -106,7 +113,14 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     Ok(w.0)
 }
 pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
-    if raw.len() > MAX_SNAPSHOT || raw.get(..8) != Some(MAGIC) {
+    if raw.len() > MAX_SNAPSHOT {
+        return Err(Error::Invalid);
+    }
+    #[cfg(feature = "delegation-services")]
+    if raw.get(..8) == Some(b"FPPY0002") {
+        return services::decode(raw);
+    }
+    if raw.get(..8) != Some(MAGIC) {
         return Err(Error::Invalid);
     }
     let mut r = Reader { raw, offset: 8 };
@@ -150,6 +164,12 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
         reset_epoch,
         registry,
         history,
+        #[cfg(feature = "delegation-services")]
+        service_policy: None,
+        #[cfg(feature = "delegation-services")]
+        service_history: Vec::new(),
+        #[cfg(feature = "delegation-services")]
+        service_format_v2: false,
     };
     s.validate()?;
     Ok(s)

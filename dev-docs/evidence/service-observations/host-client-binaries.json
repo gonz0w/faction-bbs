@@ -1,0 +1,1873 @@
+{
+  "artifacts": {
+    "target/release/build/faction-client-pty-2edd594d04def4c5/build-script-build": {
+      "bytes": 1214720,
+      "executable": false,
+      "sha256": "d2b3d8b20044e32eccf6086aaa6da09f0dd0eae34885b5370a9ff15eb3e8d70b"
+    },
+    "target/release/build/faction-omemo-edccc166408e18ef/build-script-build": {
+      "bytes": 427968,
+      "executable": false,
+      "sha256": "18bc024fb0d4d13f6223514f1ff0c6a9eea8fde227e687e51f3f3aa40d397a93"
+    },
+    "target/release/build/faction-unix-e281c36bf7168ca5/build-script-build": {
+      "bytes": 1214720,
+      "executable": false,
+      "sha256": "a7c6987076a0b07ef6c6d22ed274ec28a7e9e3c3f97db3273418cffd2c839fda"
+    },
+    "target/release/build/generic-array-7a6edfb170224f6a/build-script-build": {
+      "bytes": 442944,
+      "executable": false,
+      "sha256": "8056aea8ecba81cb1fb948d39e2e9b09429277c4a01c0b45d2499b09911711db"
+    },
+    "target/release/build/getrandom-7ef1e71601af77ae/build-script-build": {
+      "bytes": 358128,
+      "executable": false,
+      "sha256": "a99ba99f8073d3ddcb8da62d9a3a50fca59e27f8d4d8d69010d82971e2cf3aa6"
+    },
+    "target/release/build/icu_normalizer_data-63959f3f10247842/build-script-build": {
+      "bytes": 341536,
+      "executable": false,
+      "sha256": "5cc4656ef479dc86f9ddb9b755d993dbfd6795c3538fd222f45aa9d0028354bd"
+    },
+    "target/release/build/icu_properties_data-06d37fc990af5a82/build-script-build": {
+      "bytes": 341536,
+      "executable": false,
+      "sha256": "6a7def4726d94bc094210e83e0ce7c0c51a7d23794da63a1e49995b5f50f906b"
+    },
+    "target/release/build/libc-9d377b5792fa7eb0/build-script-build": {
+      "bytes": 461040,
+      "executable": false,
+      "sha256": "0b93a903b58fd3b84fd3d78482e0932d909ac72621a6d83c1ed6bb722338e711"
+    },
+    "target/release/build/native-tls-8b694fefa6b2abb5/build-script-build": {
+      "bytes": 341600,
+      "executable": false,
+      "sha256": "52ba70199ea6cbbff05400d77fb152dcb0eea35e733dd9e7b2303d2a68d9d459"
+    },
+    "target/release/build/num-traits-e1cb2a9026c844ff/build-script-build": {
+      "bytes": 526384,
+      "executable": false,
+      "sha256": "49868821d53522ab1ea83e312efb73362601bf82f82bb84e22e48832b506d535"
+    },
+    "target/release/build/openssl-09979167edebae92/build-script-build": {
+      "bytes": 358352,
+      "executable": false,
+      "sha256": "d7dd6ceda111cc567e447b38b449410a8c883429cf0a2522f525d8139c8e1f89"
+    },
+    "target/release/build/openssl-sys-c6c26d11358ff62f/build-script-main": {
+      "bytes": 1839440,
+      "executable": false,
+      "sha256": "09e64d47cd86a8c2ef55012d17872489ad75b1e7988c5b591d2731258b071a01"
+    },
+    "target/release/build/proc-macro2-6eb51ee86ed7c076/build-script-build": {
+      "bytes": 428752,
+      "executable": false,
+      "sha256": "b5519e8440facf1cf2a396b84505fc0ba8caa3c8a52da10bfbf2dc023fe359af"
+    },
+    "target/release/build/quote-5d7fb25062eee4ab/build-script-build": {
+      "bytes": 394064,
+      "executable": false,
+      "sha256": "74010de9dc2244cb5ccc3c7e363ef78e155203b73f65320b56fba773a1d6aec0"
+    },
+    "target/release/build/rustix-353c72c76c7c7e3d/build-script-build": {
+      "bytes": 428064,
+      "executable": false,
+      "sha256": "791a9551cd66cf2d5323eb1b191ce841b59562205ad15b63548bab9c91feef77"
+    },
+    "target/release/build/rustversion-8b6a57c543ec7eec/build-script-build": {
+      "bytes": 428304,
+      "executable": false,
+      "sha256": "61d82c2ce17c2e9877ebbb3546100b372c00f47eb1cff158767c0450015c1b6e"
+    },
+    "target/release/build/serde_core-d42e901f59e99a09/build-script-build": {
+      "bytes": 411216,
+      "executable": false,
+      "sha256": "06a82cfc79f728db54237f10c7c0e8d4c461f6d4969b6c6db3b606385201d8b9"
+    },
+    "target/release/build/serde_json-702ae2c8c5523228/build-script-build": {
+      "bytes": 341552,
+      "executable": false,
+      "sha256": "3a85ea0fb0a371f9f7f82a9874103606b8bb57291618403ba76ea73f06e8bf24"
+    },
+    "target/release/build/thiserror-9a1f379d84da681b/build-script-build": {
+      "bytes": 445408,
+      "executable": false,
+      "sha256": "7427d60b25a536ac7d5099f3ea74aadc72ae319672f43c3b9846b14bcfb881bc"
+    },
+    "target/release/build/zmij-0ca9e07303192b5a/build-script-build": {
+      "bytes": 394464,
+      "executable": false,
+      "sha256": "87292d2055a02d45bd2f5253ca207b7c8a2ef6313a165fa1a9e2fd931b70a726"
+    },
+    "target/release/deps/attachment_checkpoint_schema-28a83b21e8c7466f": {
+      "bytes": 924112,
+      "executable": true,
+      "sha256": "8fbc707e1aad6cf8764e7caf711fbc96a3e35609dd396243895f3734d37d3d37"
+    },
+    "target/release/deps/attachment_checkpoint_transactions-5ef500305f429bcf": {
+      "bytes": 1145024,
+      "executable": true,
+      "sha256": "db3cfefd6b6ec958ddce9b06584e1314bc37d65be166c329915c63a8afa48d29"
+    },
+    "target/release/deps/attachment_mail_delivery-e9c1e42c0b766ebf": {
+      "bytes": 1231712,
+      "executable": true,
+      "sha256": "52c87e08930093a87f50c128a36f6bd15b117dda180b636043d588f82b503e19"
+    },
+    "target/release/deps/attachment_rejection-9e134489564b5d7a": {
+      "bytes": 1110368,
+      "executable": true,
+      "sha256": "508ccee5c0ae6aae9148d337413deba07c77bb34b78578f4bf6889d213efe1dc"
+    },
+    "target/release/deps/attachment_save-5dc4407a21a5eae8": {
+      "bytes": 1027072,
+      "executable": true,
+      "sha256": "f349d59131e8d68a946bf0754f2ccb33ebcb70f2926e3e998b47d502460b8c43"
+    },
+    "target/release/deps/device_provider_preparation-cddc658c46b84ced": {
+      "bytes": 1199280,
+      "executable": true,
+      "sha256": "4800df3c1eecc8753d50cfa516afaf9785264bcd610b290311d675da48921eb1"
+    },
+    "target/release/deps/faction_client-30ab8ab4153d4c2a": {
+      "bytes": 4481984,
+      "executable": true,
+      "sha256": "c70d1f78415c52a8c3521c87383b6784ab87731719a356024024d4f4204b5c6f"
+    },
+    "target/release/deps/faction_client-e553338b14ed7220": {
+      "bytes": 4454656,
+      "executable": true,
+      "sha256": "48514db8b7b619f474562f4ada1c77fe1bd94a3be4053a89de77e55f3375fd49"
+    },
+    "target/release/deps/libaead-42c43fde0ac46f5b.rlib": {
+      "bytes": 72880,
+      "executable": false,
+      "sha256": "65c19c6a47474bc3873c3f7d3615fcb7f56ae1228cf3ff216ed01be2c132067a"
+    },
+    "target/release/deps/libaead-42c43fde0ac46f5b.rmeta": {
+      "bytes": 69660,
+      "executable": false,
+      "sha256": "5d83157f7b7fb1f5ac55667136e66ab61bb6207f25df1a05060a954c828e3b42"
+    },
+    "target/release/deps/libargon2-184924c37f08f697.rlib": {
+      "bytes": 321248,
+      "executable": false,
+      "sha256": "9976cd38a656eaca6f284acf3010c9052b1cef179a5ce05f7a770a2723819bdf"
+    },
+    "target/release/deps/libargon2-184924c37f08f697.rmeta": {
+      "bytes": 240920,
+      "executable": false,
+      "sha256": "7e7225c97f5de23cc3a92a00b4f7ee9c08aa5a5007874ae3ae1deace37da8420"
+    },
+    "target/release/deps/libautocfg-90f25fcc07a31143.rlib": {
+      "bytes": 456152,
+      "executable": false,
+      "sha256": "8f29a6d6cdb6059f5a8a30e8feda169bba3f9433ffb54554e3c94a3d8e87f3ee"
+    },
+    "target/release/deps/libautocfg-90f25fcc07a31143.rmeta": {
+      "bytes": 81375,
+      "executable": false,
+      "sha256": "d8dd1316e90da21e05c8a950f8fd7f702523435a4311819cb139a725daeda305"
+    },
+    "target/release/deps/libbase64-262202dbb1596344.rlib": {
+      "bytes": 628936,
+      "executable": false,
+      "sha256": "cee5c8bdd83c79375452960f401f6548028f0bfdd49adf1525fb8132cc74e223"
+    },
+    "target/release/deps/libbase64-262202dbb1596344.rmeta": {
+      "bytes": 587261,
+      "executable": false,
+      "sha256": "bdc20fc0d651212c781fe7cda269fc499176cc96bbde4f92d85ac6bf49aa10c8"
+    },
+    "target/release/deps/libbase64-7691de0e694960a1.rlib": {
+      "bytes": 360248,
+      "executable": false,
+      "sha256": "8dfa3d7f2038813b382180d4cea67bbd6bfff5dbfaf52b0b735699e069bce40a"
+    },
+    "target/release/deps/libbase64-7691de0e694960a1.rmeta": {
+      "bytes": 337609,
+      "executable": false,
+      "sha256": "c482771cd762f339e0554b7cb7e5539270f1ae9364ccb0d5a23e330b0c6b660e"
+    },
+    "target/release/deps/libbase64ct-7c1ea1119d39a4f8.rlib": {
+      "bytes": 378712,
+      "executable": false,
+      "sha256": "b42c6942f39b982b3d33b0f321eaf056bad7c9d6519328a84fe8213a6cdf5019"
+    },
+    "target/release/deps/libbase64ct-7c1ea1119d39a4f8.rmeta": {
+      "bytes": 371483,
+      "executable": false,
+      "sha256": "b901298dcf69725a9a336ec369339f38b859908eef3214f716510ed3624e0524"
+    },
+    "target/release/deps/libbitflags-fa077bd328e77506.rlib": {
+      "bytes": 259824,
+      "executable": false,
+      "sha256": "9141db4711a172473f62afe304175f0e79c40d3ad1dfa7d9e8f57c157eb9264e"
+    },
+    "target/release/deps/libbitflags-fa077bd328e77506.rmeta": {
+      "bytes": 247009,
+      "executable": false,
+      "sha256": "ff4ec60495bd15506a77439d3e9db665b86fce5622bde0a2258ce70fd5a71246"
+    },
+    "target/release/deps/libblake2-3a1dc46534fb89bb.rlib": {
+      "bytes": 248192,
+      "executable": false,
+      "sha256": "6a5a93ddf109fbbc2da1306dcae5325d1e88e9752254492396f201613a25f91b"
+    },
+    "target/release/deps/libblake2-3a1dc46534fb89bb.rmeta": {
+      "bytes": 230399,
+      "executable": false,
+      "sha256": "dd1360585a31bac0a3aa8de6bb0b17e4318a9b96553f4ef3fb80d9e2c79aa907"
+    },
+    "target/release/deps/libblake2-9e4dcb33d6e389f7.rlib": {
+      "bytes": 219784,
+      "executable": false,
+      "sha256": "e72b09c297a3fe2413be8f429f729fbba54557bbc9a9d0ee07f00b9be4069737"
+    },
+    "target/release/deps/libblake2-9e4dcb33d6e389f7.rmeta": {
+      "bytes": 202008,
+      "executable": false,
+      "sha256": "e64b56226da86b2bd6b0b0090ea9d30c50bc390fc2ece3b0102393409037feae"
+    },
+    "target/release/deps/libblock_buffer-577190002c3f9114.rlib": {
+      "bytes": 65160,
+      "executable": false,
+      "sha256": "1c21f740e5604b21ebe2d7bcadf63c3df1763bda35fd9cee25f68eae44c98c44"
+    },
+    "target/release/deps/libblock_buffer-577190002c3f9114.rmeta": {
+      "bytes": 63525,
+      "executable": false,
+      "sha256": "e738b6c15f9256fcc304e5b70c4f5a5be05226ca309c474cd33a9047dd609c33"
+    },
+    "target/release/deps/libblock_buffer-b9d33ee6026eed85.rlib": {
+      "bytes": 121840,
+      "executable": false,
+      "sha256": "a72e853d0b6a15a9de2f08a6c658119e080a52330f97937aa90873456e8ecd45"
+    },
+    "target/release/deps/libblock_buffer-b9d33ee6026eed85.rmeta": {
+      "bytes": 120204,
+      "executable": false,
+      "sha256": "dbc16db4f6ca24675722eec0ee796d283f83c33db14b23ded9bee8c05db82ea8"
+    },
+    "target/release/deps/libbytes-cd31ba85d4f944d4.rlib": {
+      "bytes": 1133264,
+      "executable": false,
+      "sha256": "7220a0b975c0ef987847bad3960a4e440f4b8f18c3d97e1ce8dea0c327744a0d"
+    },
+    "target/release/deps/libbytes-cd31ba85d4f944d4.rmeta": {
+      "bytes": 1064466,
+      "executable": false,
+      "sha256": "047d126ca389b9dd78c24d0780cde45656bf1c3abed234049324bdf5707cacac"
+    },
+    "target/release/deps/libcastaway-3dcdabf52b061f9d.rlib": {
+      "bytes": 77552,
+      "executable": false,
+      "sha256": "5b6f093a7926b5de7ada32bf8f7763699b7246ea4530947dcfdf4be71d06bad5"
+    },
+    "target/release/deps/libcastaway-3dcdabf52b061f9d.rmeta": {
+      "bytes": 76594,
+      "executable": false,
+      "sha256": "7198601d826ed561c63f4c4ed5306496604c1b5e75bd8fd68706b01d217a4003"
+    },
+    "target/release/deps/libcastaway-852bc4684bd53a7f.rlib": {
+      "bytes": 66160,
+      "executable": false,
+      "sha256": "97627534b41c4a9689ff853eec314ff3992e2ceed5a0294f588cc4a34fac8c76"
+    },
+    "target/release/deps/libcastaway-852bc4684bd53a7f.rmeta": {
+      "bytes": 65203,
+      "executable": false,
+      "sha256": "5fe8f09680254f26c3f4d23e2b677e9870975bb70b6f9cfaac207e991a4053ba"
+    },
+    "target/release/deps/libcc-26bdd4089cbdb31b.rlib": {
+      "bytes": 2695312,
+      "executable": false,
+      "sha256": "84e227a6c85ec067be7c243281ba59fe761bf82e61382948799eeb25e7ac2b58"
+    },
+    "target/release/deps/libcc-26bdd4089cbdb31b.rmeta": {
+      "bytes": 691930,
+      "executable": false,
+      "sha256": "15053798b29d66e72866dd73f8b6d9eb275b1bb2d58bca31e1290ea171aac0a6"
+    },
+    "target/release/deps/libcfg_if-3a9ca19fd085b12d.rlib": {
+      "bytes": 6784,
+      "executable": false,
+      "sha256": "f80e1c6199b6cd059fcfc4ae85f2e5ed4dcc5ae46f45d94ae1d52b000a7ed5a9"
+    },
+    "target/release/deps/libcfg_if-3a9ca19fd085b12d.rmeta": {
+      "bytes": 5835,
+      "executable": false,
+      "sha256": "4591c2660a053ca7c5bc5609f4f950f12d9e78badf67261ad065737365dfc589"
+    },
+    "target/release/deps/libcfg_if-5409a25029a7c7f8.rlib": {
+      "bytes": 6784,
+      "executable": false,
+      "sha256": "8435f86fd4b73d731bfc4b24bf0523eab6e6b92bcbf7c6042221274ad90c9a93"
+    },
+    "target/release/deps/libcfg_if-5409a25029a7c7f8.rmeta": {
+      "bytes": 5835,
+      "executable": false,
+      "sha256": "5f3486560554f838c89ba8c42eb79cb950ea76984920072be686b1448d907cce"
+    },
+    "target/release/deps/libchacha20-6db86beaa33793ab.rlib": {
+      "bytes": 464696,
+      "executable": false,
+      "sha256": "202bdfa660e4ddba8c71f37ffd51f41bc2670d5f5f67ad6226cf3a3225df7629"
+    },
+    "target/release/deps/libchacha20-6db86beaa33793ab.rmeta": {
+      "bytes": 461332,
+      "executable": false,
+      "sha256": "81e3beffc99ef338c760264fd1891b70d1fae01b4d6c995a56d3579f174b2c3c"
+    },
+    "target/release/deps/libchacha20poly1305-48da48228160deb9.rlib": {
+      "bytes": 50616,
+      "executable": false,
+      "sha256": "abc6112afd5876b6ddb2a9b2a49fb98170ab3ce59fa8a522449831a2e4fb8e02"
+    },
+    "target/release/deps/libchacha20poly1305-48da48228160deb9.rmeta": {
+      "bytes": 49645,
+      "executable": false,
+      "sha256": "40833bd36e39d05789740ef140382b8f9bc8954f199a1c8803f9256ca95b1670"
+    },
+    "target/release/deps/libchrono-67d2352b0a815976.rlib": {
+      "bytes": 2264704,
+      "executable": false,
+      "sha256": "cb3e65391d9b28f63a3c18038ec576b50d5265235f1249eefca616a1b0a525f9"
+    },
+    "target/release/deps/libchrono-67d2352b0a815976.rmeta": {
+      "bytes": 2053599,
+      "executable": false,
+      "sha256": "f27e03c44c13b9ecb6ca76a8ecbcda8becd29d14b78d781c6e5ca83157f5e803"
+    },
+    "target/release/deps/libcipher-184aca293e365c8c.rlib": {
+      "bytes": 353112,
+      "executable": false,
+      "sha256": "b101c1bfd2d53587fabfd6b3d475ef7c1040096910dae8f6ab7d9be8a237f255"
+    },
+    "target/release/deps/libcipher-184aca293e365c8c.rmeta": {
+      "bytes": 351066,
+      "executable": false,
+      "sha256": "b05ff01b70d41eab5a7fb614b665f611d9495ef6c457d0afaa18098f8aa94fa0"
+    },
+    "target/release/deps/libcmov-94e3f19ad80918aa.rlib": {
+      "bytes": 354128,
+      "executable": false,
+      "sha256": "23953a329ab9d58f5de70623e713881f04c25e5886cd6967adfbf45d5cd90474"
+    },
+    "target/release/deps/libcmov-94e3f19ad80918aa.rmeta": {
+      "bytes": 353181,
+      "executable": false,
+      "sha256": "805cd6798f893a3e922ed99a4add8f79171bd7dc9b218d7981c8ae040c074c7b"
+    },
+    "target/release/deps/libcompact_str-5a8d1a7ef417b639.rlib": {
+      "bytes": 901384,
+      "executable": false,
+      "sha256": "c572a76b39274e8b0f77519efbfd64ee3835e3d245b108ac6521c3f3d7077426"
+    },
+    "target/release/deps/libcompact_str-5a8d1a7ef417b639.rmeta": {
+      "bytes": 655781,
+      "executable": false,
+      "sha256": "134824f32469501f8e38fc7a7b8a4ea90b9ec11b077298a17a1c2afa7dd84954"
+    },
+    "target/release/deps/libcompact_str-dc06c14fa66e1799.rlib": {
+      "bytes": 833992,
+      "executable": false,
+      "sha256": "665bbdeafffca955446e6846978818cc25e1e2385467a76388993de8042c0427"
+    },
+    "target/release/deps/libcompact_str-dc06c14fa66e1799.rmeta": {
+      "bytes": 750116,
+      "executable": false,
+      "sha256": "51e293bc044812ea9db817d0a8a95219570e9604ae74ab6636fe7ee2aabd1e2b"
+    },
+    "target/release/deps/libconst_oid-764bd164eb50a7cd.rlib": {
+      "bytes": 202504,
+      "executable": false,
+      "sha256": "705f4ecdd9517471a92d4fea121429c899a3b7d752e8bd74212d8e8cc2a09419"
+    },
+    "target/release/deps/libconst_oid-764bd164eb50a7cd.rmeta": {
+      "bytes": 184627,
+      "executable": false,
+      "sha256": "eceaf620e7d5628bb85c1137856174be72f230136d45c74291f001ddf13e5e85"
+    },
+    "target/release/deps/libcore_foundation-c1f6dc5211981f20.rlib": {
+      "bytes": 761240,
+      "executable": false,
+      "sha256": "f3ebfa33c6db70f35976736c2f87943575c01b10b8b6d2bae69ad5508bd525fb"
+    },
+    "target/release/deps/libcore_foundation-c1f6dc5211981f20.rmeta": {
+      "bytes": 703508,
+      "executable": false,
+      "sha256": "48631dbbfee630c383cb92df3ce118ef33ebda4a901e308009d628f5bbf4bb6c"
+    },
+    "target/release/deps/libcore_foundation_sys-c977a4dd02899cd6.rlib": {
+      "bytes": 718272,
+      "executable": false,
+      "sha256": "ea74c41fbcbb5dad6339bed13dbdfb7e4d308b418bfe2ed599c15af91331f5cc"
+    },
+    "target/release/deps/libcore_foundation_sys-c977a4dd02899cd6.rmeta": {
+      "bytes": 711709,
+      "executable": false,
+      "sha256": "561b9165385412cce33d2a22368da8634f12a7298fad0e1b45f4e9f761c14bb2"
+    },
+    "target/release/deps/libcpufeatures-5e33445cf7dcd108.rlib": {
+      "bytes": 19144,
+      "executable": false,
+      "sha256": "665191718ceba8802a6fb8ad392e6b65de721578ad6211889da4759ced7f8d5e"
+    },
+    "target/release/deps/libcpufeatures-5e33445cf7dcd108.rmeta": {
+      "bytes": 12557,
+      "executable": false,
+      "sha256": "b19ac9ca654b25680c99c6c6d1983d6a2fbffe463c7bfe4f00e6423a1fb090ac"
+    },
+    "target/release/deps/libcpufeatures-9d05b5ae15da6bb5.rlib": {
+      "bytes": 21912,
+      "executable": false,
+      "sha256": "7c831fa0eebc9de407572cb56dc049ac16a6dae3d42f054aaa523370d4610384"
+    },
+    "target/release/deps/libcpufeatures-9d05b5ae15da6bb5.rmeta": {
+      "bytes": 15322,
+      "executable": false,
+      "sha256": "eb3a2cd016ca65608bf67470e61157947531d794ce1a755f68966cb7ef6b1fe8"
+    },
+    "target/release/deps/libcrypto_common-10a3b99a1b3943ee.rlib": {
+      "bytes": 32480,
+      "executable": false,
+      "sha256": "7999c45a35f8b53c608da7202b5ae87a9e83223ad9d41a8ac6e6fae138c17a51"
+    },
+    "target/release/deps/libcrypto_common-10a3b99a1b3943ee.rmeta": {
+      "bytes": 30829,
+      "executable": false,
+      "sha256": "d563dd76d24c8679bd159a3b19e262b601f2b268681a7e4448fa164b2afbb83c"
+    },
+    "target/release/deps/libcrypto_common-2d3e62da8480e8c3.rlib": {
+      "bytes": 490744,
+      "executable": false,
+      "sha256": "f0ea8e4784dd906e49d031621ab787c3bf308a3da1d6fd75c2e703e88a14de3a"
+    },
+    "target/release/deps/libcrypto_common-2d3e62da8480e8c3.rmeta": {
+      "bytes": 392847,
+      "executable": false,
+      "sha256": "b658fcd4005bbe427caf33b725c5a80c8ec5ec74dd2cebccdf18cf72d459209b"
+    },
+    "target/release/deps/libctutils-7b7cdd330c2dbb16.rlib": {
+      "bytes": 431032,
+      "executable": false,
+      "sha256": "012346d5f40f22ad82e32c3bf659e18298f8aeb1031d829b371b9b0ff53a5edd"
+    },
+    "target/release/deps/libctutils-7b7cdd330c2dbb16.rmeta": {
+      "bytes": 430074,
+      "executable": false,
+      "sha256": "9e24055164a5c0f9797630d16b8f1ab765632f718e0b52666118de6a84bd3ab0"
+    },
+    "target/release/deps/libdigest-46b945842116b8d5.rlib": {
+      "bytes": 282280,
+      "executable": false,
+      "sha256": "c903fcfe59c0e3f856f9b3e86aad070f9580719ccda597f21ada07abb5e20f4e"
+    },
+    "target/release/deps/libdigest-46b945842116b8d5.rmeta": {
+      "bytes": 279414,
+      "executable": false,
+      "sha256": "e27b2181cf40e72cc5eb50bedb008928d55536028a4e1577b7c9a5d7646e9450"
+    },
+    "target/release/deps/libdigest-ce6b5487670d3194.rlib": {
+      "bytes": 238632,
+      "executable": false,
+      "sha256": "77619ffd938d139e819b4e7630c2bc84671ece1058500b37ae098c1f8a39febe"
+    },
+    "target/release/deps/libdigest-ce6b5487670d3194.rmeta": {
+      "bytes": 235765,
+      "executable": false,
+      "sha256": "b57c2540a57ce81b17e5f78bcdb9a2772ca0e7b36ea33dfdb1e813d249a99ef1"
+    },
+    "target/release/deps/libdisplaydoc-74655fdd1bc13388.dylib": {
+      "bytes": 1929888,
+      "executable": false,
+      "sha256": "ac20bfa547787ce2d9fe5fc266075b390283b6a8fb5a750e4d30fbef5e629723"
+    },
+    "target/release/deps/liberrno-67528cf25c617e92.rlib": {
+      "bytes": 25400,
+      "executable": false,
+      "sha256": "a9b34ee63e131a12b11b762ff8c54cd5ddb49f8929545349c02f380f080dfd32"
+    },
+    "target/release/deps/liberrno-67528cf25c617e92.rmeta": {
+      "bytes": 18289,
+      "executable": false,
+      "sha256": "5b792a5bffd02dc978089e20e5f4c52f2c0f9ba20ee426f9a0644d4add4924f3"
+    },
+    "target/release/deps/libfaction_client-29ef5e5ebd3b26d7.rlib": {
+      "bytes": 1598472,
+      "executable": false,
+      "sha256": "8a12379948944a3c49fbd12cfb72188f784a2ab2889a50bd1683a83c433b8fbe"
+    },
+    "target/release/deps/libfaction_client-29ef5e5ebd3b26d7.rmeta": {
+      "bytes": 879509,
+      "executable": false,
+      "sha256": "626ee4079acbb8a954baadefb46ac14be9e38edcfd660fdad1d021841dd941f0"
+    },
+    "target/release/deps/libfaction_client_pty-d9839aa5efb814b3.rlib": {
+      "bytes": 7008,
+      "executable": false,
+      "sha256": "181d996bd3e47de71f1bf602021581eff06c3ddf051d37a77b6a40046d910880"
+    },
+    "target/release/deps/libfaction_client_pty-d9839aa5efb814b3.rmeta": {
+      "bytes": 3104,
+      "executable": false,
+      "sha256": "30f74f3c942b864130a5169695d8473eb2a3e5a53fb956413f0eecd6d525e371"
+    },
+    "target/release/deps/libfaction_files-6b44641f1e5c86d6.rlib": {
+      "bytes": 275312,
+      "executable": false,
+      "sha256": "7b0fbf6b9f17023c3f4a4059670b16708c83c7dd226bd3b7a86499fa93bff798"
+    },
+    "target/release/deps/libfaction_files-6b44641f1e5c86d6.rmeta": {
+      "bytes": 177943,
+      "executable": false,
+      "sha256": "b715d0843f5668d1036d2bf3ced4506ffbb6e3d337475210846921d7a97df629"
+    },
+    "target/release/deps/libfaction_omemo-720857a472a26521.rlib": {
+      "bytes": 362784,
+      "executable": false,
+      "sha256": "b110001e0e0a6fe8a1f6b6a3bbd712a711b2ba1d8ff61eda369e6b9cf64fd500"
+    },
+    "target/release/deps/libfaction_omemo-720857a472a26521.rmeta": {
+      "bytes": 73596,
+      "executable": false,
+      "sha256": "6f16a0105159370ca8a238b025b18db03ee07c9d38ef3b89ddcebd88c7a80c02"
+    },
+    "target/release/deps/libfaction_provider-ce0b504e8a5d6162.rlib": {
+      "bytes": 453464,
+      "executable": false,
+      "sha256": "56086abe734000c81e2c95341b5684bda6de7ab286a74cb70c45f162562c5d58"
+    },
+    "target/release/deps/libfaction_provider-ce0b504e8a5d6162.rmeta": {
+      "bytes": 161857,
+      "executable": false,
+      "sha256": "5fa9c927314050d30868f54565e3bd700cfe34b9b3cd15ed4de3772ddf21e8c2"
+    },
+    "target/release/deps/libfaction_terminal-b26387fa2cf55799.rlib": {
+      "bytes": 1009288,
+      "executable": false,
+      "sha256": "5949a49047013358325526f3988f26f20666acd2ac096933743ddec1d0b8c3b2"
+    },
+    "target/release/deps/libfaction_terminal-b26387fa2cf55799.rmeta": {
+      "bytes": 413957,
+      "executable": false,
+      "sha256": "353d181a164f16d7f6f20c1e95627ad44855b2533760bb63d35504a0d2e3ba97"
+    },
+    "target/release/deps/libfaction_unix-f9f445babec021cd.rlib": {
+      "bytes": 37544,
+      "executable": false,
+      "sha256": "a0b0865a5d0a504626e8d516c997b512493e0011fb88f8e0deed20b06aa69b61"
+    },
+    "target/release/deps/libfaction_unix-f9f445babec021cd.rmeta": {
+      "bytes": 20476,
+      "executable": false,
+      "sha256": "34ed695b4851e05f3cffb26151ccc93c553aea241b008c2b1eee8717356e3c3f"
+    },
+    "target/release/deps/libfaction_xmpp-33406451ce07020d.rlib": {
+      "bytes": 415608,
+      "executable": false,
+      "sha256": "bcc44e192ffbe4f7adcb2f9826a6f251bd1b81110b5b07a3374f7183d7a8a8e4"
+    },
+    "target/release/deps/libfaction_xmpp-33406451ce07020d.rmeta": {
+      "bytes": 203658,
+      "executable": false,
+      "sha256": "ebeef9cd501194c008870c1fa9a2ad213067e1b2df7d11d8ef3f2e3d53834e82"
+    },
+    "target/release/deps/libfastrand-18b970bb084478c3.rlib": {
+      "bytes": 202944,
+      "executable": false,
+      "sha256": "286454223aa4a25237aae91fe214e3cf383f6171dfbfaf0c30cb6c7eb2e5c8c7"
+    },
+    "target/release/deps/libfastrand-18b970bb084478c3.rmeta": {
+      "bytes": 197698,
+      "executable": false,
+      "sha256": "d4744ac902853e84a50fef330645c928479cffa71fa601aea8f96d5c8ddfa0c1"
+    },
+    "target/release/deps/libfind_msvc_tools-38613ad3ce7166eb.rlib": {
+      "bytes": 205184,
+      "executable": false,
+      "sha256": "5da4fa464f2b880e4eece9f97b58198574dcbc6a644e5a8c708ac710e0c968e9"
+    },
+    "target/release/deps/libfind_msvc_tools-38613ad3ce7166eb.rmeta": {
+      "bytes": 51007,
+      "executable": false,
+      "sha256": "4f5afebe6f44a2d8dc50da8dbbe742a662feace9e594885302d093262364704b"
+    },
+    "target/release/deps/libforeign_types-00545966e68bfb58.rlib": {
+      "bytes": 13912,
+      "executable": false,
+      "sha256": "d49d5ee2225df0e5e245f4ccc0aff54cad983a84090b8ab8bc383e16229a14e6"
+    },
+    "target/release/deps/libforeign_types-00545966e68bfb58.rmeta": {
+      "bytes": 12950,
+      "executable": false,
+      "sha256": "c6e38f7e65dd5378778971ac3e23d54f61729f82c30a2b5b6b6254ce8878700e"
+    },
+    "target/release/deps/libforeign_types_shared-a0acd2b8e63e00b8.rlib": {
+      "bytes": 6472,
+      "executable": false,
+      "sha256": "1c0edd706959e128c475d370a9d96f821444eb90b600a0d45b4c05b46441133e"
+    },
+    "target/release/deps/libforeign_types_shared-a0acd2b8e63e00b8.rmeta": {
+      "bytes": 5491,
+      "executable": false,
+      "sha256": "10816818d8316544f66cbb05cd25389feffc252759029b60c9175725de968413"
+    },
+    "target/release/deps/libfutures-0adf623ceec4b1e1.rlib": {
+      "bytes": 18448,
+      "executable": false,
+      "sha256": "985e96ad47c90888727f3443b5f79658439ea123ea3ea680cbe2e5f79addc22e"
+    },
+    "target/release/deps/libfutures-0adf623ceec4b1e1.rmeta": {
+      "bytes": 17494,
+      "executable": false,
+      "sha256": "7357e12cc8397f237d3257537a5bc1ceda4b10ac8f40dc1f7a349733b85feda2"
+    },
+    "target/release/deps/libfutures_channel-d6dc68a236411689.rlib": {
+      "bytes": 318640,
+      "executable": false,
+      "sha256": "16af1cb86f6d6571618bcd590740cccfddfd45cbfba9c29cd16171a3edec6344"
+    },
+    "target/release/deps/libfutures_channel-d6dc68a236411689.rmeta": {
+      "bytes": 315205,
+      "executable": false,
+      "sha256": "df04412c96c48f0f109ed5ec6701be2ba757a3c7a516fcb602b1a5bf30fa5386"
+    },
+    "target/release/deps/libfutures_core-1f54649875a35650.rlib": {
+      "bytes": 68288,
+      "executable": false,
+      "sha256": "86055a1985d6d0d4d2563c147a41357070d893d281bce35bb7feb18a7cbb4e63"
+    },
+    "target/release/deps/libfutures_core-1f54649875a35650.rmeta": {
+      "bytes": 64821,
+      "executable": false,
+      "sha256": "18770e21df75bb55b2c15a35a409a989f6c1a101dac9dd794396664a588fbf9c"
+    },
+    "target/release/deps/libfutures_executor-424a11bb667f03da.rlib": {
+      "bytes": 116496,
+      "executable": false,
+      "sha256": "983c177eabf89e0cea60876ce5ca4a2ae81693fe5188d5adb67d026dab5d82bd"
+    },
+    "target/release/deps/libfutures_executor-424a11bb667f03da.rmeta": {
+      "bytes": 55820,
+      "executable": false,
+      "sha256": "e5319e7a5e40dffe12bd1ea5f78257bb85a8fa9792f0bf9de292fe7ca7f026d1"
+    },
+    "target/release/deps/libfutures_io-33ab1ca89413304f.rlib": {
+      "bytes": 81512,
+      "executable": false,
+      "sha256": "77b926f2909eefc956c2acc9330d515a64c9eb8c46e4997a417dd4390265a71c"
+    },
+    "target/release/deps/libfutures_io-33ab1ca89413304f.rmeta": {
+      "bytes": 76100,
+      "executable": false,
+      "sha256": "31c88432697c8d3c845c79550e1b87867fb8b71a1554d3592074d7e019d6b36d"
+    },
+    "target/release/deps/libfutures_macro-ed06ad51a6720eaa.dylib": {
+      "bytes": 1713840,
+      "executable": false,
+      "sha256": "3f78aeedd0e8dc9b8433534a2f2b4d9033488ce7a74fad2a4257b4a4c52d3c45"
+    },
+    "target/release/deps/libfutures_sink-17d97fd8b053c9d4.rlib": {
+      "bytes": 33448,
+      "executable": false,
+      "sha256": "1bc8a0d7e16797c6c01767e88978e098fe400d10ae0bd056acd1c3814e07bc34"
+    },
+    "target/release/deps/libfutures_sink-17d97fd8b053c9d4.rmeta": {
+      "bytes": 32482,
+      "executable": false,
+      "sha256": "b9295be502d29e27615b9b2b6b1d9059843ceadb8efcf54fb7ac911d25c6c517"
+    },
+    "target/release/deps/libfutures_task-fbcd573147d4cdd1.rlib": {
+      "bytes": 110080,
+      "executable": false,
+      "sha256": "f3dcaabc8da0af6e96368392d77c0f5cf0f6b93cb05b55df6d78c7f85108a585"
+    },
+    "target/release/deps/libfutures_task-fbcd573147d4cdd1.rmeta": {
+      "bytes": 106292,
+      "executable": false,
+      "sha256": "87bc382eea22574353c73d8eabe53e9a82625333a1136ae652e5fe79dd7d29a5"
+    },
+    "target/release/deps/libfutures_util-51ab7c895f964149.rlib": {
+      "bytes": 6474536,
+      "executable": false,
+      "sha256": "d2907ce9ec9da95d7b1dcbf4f940516ef62d322b45e397f192d442d3f30d7f0d"
+    },
+    "target/release/deps/libfutures_util-51ab7c895f964149.rmeta": {
+      "bytes": 6435202,
+      "executable": false,
+      "sha256": "f7c85ee6f69216be2f71cf81af6085243245f698f8fc0cadd6d2e34bb4275c3c"
+    },
+    "target/release/deps/libgeneric_array-ef627b3cffeef951.rlib": {
+      "bytes": 1004520,
+      "executable": false,
+      "sha256": "fa56e94cbea0e95ce66ee6f7d8b3f642ce6d64df6753bc5ae7a28e5c924a380c"
+    },
+    "target/release/deps/libgeneric_array-ef627b3cffeef951.rmeta": {
+      "bytes": 1001817,
+      "executable": false,
+      "sha256": "ab56654a451b3c6ec8217651310676c5d5af8ca7c40c979b4a37c07f4466dc54"
+    },
+    "target/release/deps/libgetrandom-888af3b622aadcb6.rlib": {
+      "bytes": 85360,
+      "executable": false,
+      "sha256": "2a9a382de4a58fd8cd11b55071fa18baffff94fb7d7d2963df3c2e0c5df86c5b"
+    },
+    "target/release/deps/libgetrandom-888af3b622aadcb6.rmeta": {
+      "bytes": 75866,
+      "executable": false,
+      "sha256": "54c8bc0f0a4d78456ae9057ab2b3e5b8716bf2dd060db492a9f3cec77f351971"
+    },
+    "target/release/deps/libgetrandom-8bf19adf5ae4e0c8.rlib": {
+      "bytes": 63272,
+      "executable": false,
+      "sha256": "58953e6ff25823af7779b843624e1dcc326f0993aad58b54f3d74344b1b768dd"
+    },
+    "target/release/deps/libgetrandom-8bf19adf5ae4e0c8.rmeta": {
+      "bytes": 54295,
+      "executable": false,
+      "sha256": "ebb34050805980178bf6ed491d3055ad74592b28f6e30760b8fe0c19213a8109"
+    },
+    "target/release/deps/libhmac-ed870d1961112c23.rlib": {
+      "bytes": 56424,
+      "executable": false,
+      "sha256": "7f83b311b4ea78ff3684cca1a64335edaeaa4fb1ef94bd8a2378425c6e1f04d5"
+    },
+    "target/release/deps/libhmac-ed870d1961112c23.rmeta": {
+      "bytes": 55478,
+      "executable": false,
+      "sha256": "0c3a6ce14181744618be63071a6eeb32695d52179b7182ae94da3b9d0cdc2f17"
+    },
+    "target/release/deps/libhybrid_array-de62bb029dd9516c.rlib": {
+      "bytes": 1263528,
+      "executable": false,
+      "sha256": "84eeeb72a281d8dc1acef410e4443e5991ac9d94999066626dbdd346e6eb091d"
+    },
+    "target/release/deps/libhybrid_array-de62bb029dd9516c.rmeta": {
+      "bytes": 1261807,
+      "executable": false,
+      "sha256": "b11ec1f029f2a554a32118f06989562a30d1e06e249148bfe11d79ff8611ca9d"
+    },
+    "target/release/deps/libicu_collections-bc9183fdbf0b6054.rlib": {
+      "bytes": 566384,
+      "executable": false,
+      "sha256": "253aee5d0b652d85f9b386f35577ea9725095df34946325fdb77ccbd543379d9"
+    },
+    "target/release/deps/libicu_collections-bc9183fdbf0b6054.rmeta": {
+      "bytes": 510437,
+      "executable": false,
+      "sha256": "3ba74fc881ebc916ae9c8a7bf353f4b937f4030aca85096657fcd9bb79a63622"
+    },
+    "target/release/deps/libicu_locale_core-5e2ab5a05f2f5089.rlib": {
+      "bytes": 2061728,
+      "executable": false,
+      "sha256": "8b48c8fb37a9e354c5173ea8afe67c41add53490540c163cf143665001d03e49"
+    },
+    "target/release/deps/libicu_locale_core-5e2ab5a05f2f5089.rmeta": {
+      "bytes": 1836124,
+      "executable": false,
+      "sha256": "307947ef226ad65247a78bb5392ddc4b52f58829a2e2a6b1ec6a3b23a8054d2d"
+    },
+    "target/release/deps/libicu_normalizer-5429ebabb36be2b7.rlib": {
+      "bytes": 939896,
+      "executable": false,
+      "sha256": "91856c90afe3fe78f5b12899777bc368d839b2afbe0d8259c3381aa619c9bdfa"
+    },
+    "target/release/deps/libicu_normalizer-5429ebabb36be2b7.rmeta": {
+      "bytes": 700781,
+      "executable": false,
+      "sha256": "61614883959c297bbeffadd113fdf5de8c87710685b691efdcb4786b14899466"
+    },
+    "target/release/deps/libicu_normalizer_data-d5ca800575a9bb11.rlib": {
+      "bytes": 442736,
+      "executable": false,
+      "sha256": "598f2c4b1cf5002d1d3c0ab1f15eb8276462e8cf5048b6b0b9b43927d3ddcf78"
+    },
+    "target/release/deps/libicu_normalizer_data-d5ca800575a9bb11.rmeta": {
+      "bytes": 441758,
+      "executable": false,
+      "sha256": "826d7ba0f660d642ee146f00e6be7efabbf822714b575b3e8aacd1541a537ff2"
+    },
+    "target/release/deps/libicu_properties-8b71bdee0c44f1d3.rlib": {
+      "bytes": 3757368,
+      "executable": false,
+      "sha256": "137c934a2961f3728e0c844ff1752aa9ee5eb491c1f9cd957d989eab6801368b"
+    },
+    "target/release/deps/libicu_properties-8b71bdee0c44f1d3.rmeta": {
+      "bytes": 3143786,
+      "executable": false,
+      "sha256": "e42b2781e9f2d97c910e5d7bb2776847f3e8d4453fc65629d393e26eb59c95c6"
+    },
+    "target/release/deps/libicu_properties_data-19fb0dcb1dbacc01.rlib": {
+      "bytes": 1993576,
+      "executable": false,
+      "sha256": "1f706fac702712ee710ccd210bb47f54c44dcff82f23fd0e76d8dd88b8bd050b"
+    },
+    "target/release/deps/libicu_properties_data-19fb0dcb1dbacc01.rmeta": {
+      "bytes": 1992594,
+      "executable": false,
+      "sha256": "dab469031dc5115a1d92451f8c81a888dd0141c0715d6fc943d087a3cf2d45f3"
+    },
+    "target/release/deps/libicu_provider-f563d49579df9abe.rlib": {
+      "bytes": 504288,
+      "executable": false,
+      "sha256": "4702dc3ab8eb6304dd5314ac4c8c8232c92cbae0ba28bd3e84ed3699e859d948"
+    },
+    "target/release/deps/libicu_provider-f563d49579df9abe.rmeta": {
+      "bytes": 459111,
+      "executable": false,
+      "sha256": "b08ba360ceae2e52d66b0cf8b48ba2c9ff940d9f2188ffe9f64fe2cd9bc47f17"
+    },
+    "target/release/deps/libidna-dba33b64a9613347.rlib": {
+      "bytes": 652552,
+      "executable": false,
+      "sha256": "01e436563de70c7578e6316a5f4e0e632f801db9441bd880bc1d19ef41aa514c"
+    },
+    "target/release/deps/libidna-dba33b64a9613347.rmeta": {
+      "bytes": 291408,
+      "executable": false,
+      "sha256": "cf77deb6cba247f292996465d1368d084788d1cbc3c3c27e82e514b3fc9ed76f"
+    },
+    "target/release/deps/libidna_adapter-940a0745d6074955.rlib": {
+      "bytes": 36920,
+      "executable": false,
+      "sha256": "87cdb8e2e1d5c1a54786c83c153a04f655a801eecd7355d27d727588471f2ad4"
+    },
+    "target/release/deps/libidna_adapter-940a0745d6074955.rmeta": {
+      "bytes": 35958,
+      "executable": false,
+      "sha256": "534393fe1ce63a0f5fb3624009b5cb52ff39d8061375672811c666a429d6e4ec"
+    },
+    "target/release/deps/libinout-1750a4abae3bd7cd.rlib": {
+      "bytes": 83304,
+      "executable": false,
+      "sha256": "a35cd85740c0dff51776cb0bb51df916aaad391d4da8a00035ef2e23dc98c0bd"
+    },
+    "target/release/deps/libinout-1750a4abae3bd7cd.rmeta": {
+      "bytes": 80827,
+      "executable": false,
+      "sha256": "f82c510e7211599cd7e39f630de3597dfa0b518ef6a9a569c7951c4095308957"
+    },
+    "target/release/deps/libitoa-7414344e5f7382ed.rlib": {
+      "bytes": 90144,
+      "executable": false,
+      "sha256": "931b52c26d9ffb7d3044c7ffb07ee7dbd55e56046e3d8a80295fb58aaee74c90"
+    },
+    "target/release/deps/libitoa-7414344e5f7382ed.rmeta": {
+      "bytes": 59063,
+      "executable": false,
+      "sha256": "b7c367460c390f05b92b454e9228d3e03899bb7b619bcc122c2f3e2e22e040f9"
+    },
+    "target/release/deps/libitoa-7eb67a1a42782264.rlib": {
+      "bytes": 83296,
+      "executable": false,
+      "sha256": "24d20f527235f6df627e8d31a4db10df148696a4013bf29d84fcc79b223143b6"
+    },
+    "target/release/deps/libitoa-7eb67a1a42782264.rmeta": {
+      "bytes": 77395,
+      "executable": false,
+      "sha256": "d1975ad35a166b6f4ee934b34a0b7b547f869ca92eb386015f80f380306400ce"
+    },
+    "target/release/deps/libjid-20124fdcdc8cb38c.rlib": {
+      "bytes": 358392,
+      "executable": false,
+      "sha256": "71063b9423258796c1178131fee5cbfc260a85b438bc61ee5a49d153fb09e4f7"
+    },
+    "target/release/deps/libjid-20124fdcdc8cb38c.rmeta": {
+      "bytes": 195364,
+      "executable": false,
+      "sha256": "8ccf03cad51973ae106b662732518d132b41b42fcf463fb7a3366cb861aa6ce1"
+    },
+    "target/release/deps/libkeccak-930413e35a33b2c2.rlib": {
+      "bytes": 245200,
+      "executable": false,
+      "sha256": "75b0ddda0bc9f827df0ec47929f3b331a36ba11932d0758ba7c2af6383182ad9"
+    },
+    "target/release/deps/libkeccak-930413e35a33b2c2.rmeta": {
+      "bytes": 241791,
+      "executable": false,
+      "sha256": "1cd913c6d1fe238e8862f98b4b2aff562e63ea3aea08be0048c297bc6be004af"
+    },
+    "target/release/deps/liblibc-f966cc09938fcf98.rlib": {
+      "bytes": 2879760,
+      "executable": false,
+      "sha256": "aefcac4c9138f3fe0bfed334c8a51e3522eccb58fc38ed1ccc57c854748f1cde"
+    },
+    "target/release/deps/liblibc-f966cc09938fcf98.rmeta": {
+      "bytes": 2861024,
+      "executable": false,
+      "sha256": "2f3253ad787cb144380fc6af95610391727551836fb8ed77a029611d4a85e560"
+    },
+    "target/release/deps/liblitemap-9ae61ab1dd54dd92.rlib": {
+      "bytes": 293328,
+      "executable": false,
+      "sha256": "0ed046f7fe0b4ecc4fcddeb1d80c7a0ba2a1982c4d6c5ce1656551549672edae"
+    },
+    "target/release/deps/liblitemap-9ae61ab1dd54dd92.rmeta": {
+      "bytes": 292373,
+      "executable": false,
+      "sha256": "cb5dcaa231518637b03b8ad917930faf12c8765b53e15218c8ecb12a0d4df830"
+    },
+    "target/release/deps/liblog-6d00a93c79c5e374.rlib": {
+      "bytes": 216712,
+      "executable": false,
+      "sha256": "9b96b33220c0d46311fe83e17638f966aac625deaef931a42e5c83fb56be2255"
+    },
+    "target/release/deps/liblog-6d00a93c79c5e374.rmeta": {
+      "bytes": 206584,
+      "executable": false,
+      "sha256": "7489b229960df0be66d9727beeac2332ac2b54c3b65c0e572a8cd2faff8cdeb5"
+    },
+    "target/release/deps/libmemchr-c7cbda8eb9f46ff7.rlib": {
+      "bytes": 995720,
+      "executable": false,
+      "sha256": "989fed1c9dcf28829d0093dd8d1ed4500e3f0b31a4a3d8791ce26f21f7bc5877"
+    },
+    "target/release/deps/libmemchr-c7cbda8eb9f46ff7.rmeta": {
+      "bytes": 971913,
+      "executable": false,
+      "sha256": "1b1f61e2c39f9144cca196ee553284d1f1d4cef6fb1623ccb319253fa56c8e0b"
+    },
+    "target/release/deps/libminidom-e8007340bd3e72bf.rlib": {
+      "bytes": 506216,
+      "executable": false,
+      "sha256": "72d671d90fa22ddc1c27eec5bbfe52a862b330d6f0bfa9b75c1a47ece746edf6"
+    },
+    "target/release/deps/libminidom-e8007340bd3e72bf.rmeta": {
+      "bytes": 234568,
+      "executable": false,
+      "sha256": "fb27acd4652bb487a625d5421d6f2d900b3589ee67cb66d3bbb7487405b102ee"
+    },
+    "target/release/deps/libmio-8fa26965cebdd019.rlib": {
+      "bytes": 580464,
+      "executable": false,
+      "sha256": "4b7cd868a8385b94181b165a4f668d0385e9df1c4e056aadd85f847cce453540"
+    },
+    "target/release/deps/libmio-8fa26965cebdd019.rmeta": {
+      "bytes": 464804,
+      "executable": false,
+      "sha256": "a482d122f48007635de8b33b3edf7e869c7c89a28fa625380c433dd226f0c8e5"
+    },
+    "target/release/deps/libnative_tls-ece3d10146e67622.rlib": {
+      "bytes": 275720,
+      "executable": false,
+      "sha256": "a4e86abd201341b8e2b66bb3124d088faeb6447c03d880b4a82b2fad5a65afaf"
+    },
+    "target/release/deps/libnative_tls-ece3d10146e67622.rmeta": {
+      "bytes": 192917,
+      "executable": false,
+      "sha256": "eea73344458d433006d77f159c61bfd710be20b3a67e9dfbc135d56cb6a6b476"
+    },
+    "target/release/deps/libnum_traits-ca103e6c4f120353.rlib": {
+      "bytes": 1744472,
+      "executable": false,
+      "sha256": "eb545d62427b218b7fd277bb1a098d413ed74b0cd5bd07d9c82da03deec69fc8"
+    },
+    "target/release/deps/libnum_traits-ca103e6c4f120353.rmeta": {
+      "bytes": 1734980,
+      "executable": false,
+      "sha256": "bb748a848fe192258f59500db9ac25734862ac2041323be8cdff120cf7c52de2"
+    },
+    "target/release/deps/libonce_cell-82eda5570c95346d.rlib": {
+      "bytes": 239920,
+      "executable": false,
+      "sha256": "a302dd79a4c45c93f9e25220455e1e1644eeeec776b1fce1520238e15fa0603c"
+    },
+    "target/release/deps/libonce_cell-82eda5570c95346d.rmeta": {
+      "bytes": 235482,
+      "executable": false,
+      "sha256": "7bbcdefa4fccd8b1bf0b0dab9956c02c3d6be99b58d4dc09aa3888e21b2cb7e1"
+    },
+    "target/release/deps/libopenssl-549afc5f8b74024d.rlib": {
+      "bytes": 6613408,
+      "executable": false,
+      "sha256": "8e58d7f4ad3f7d351c38d784da78028d0b13324a7fff6fc72ce51e4f6ea4d773"
+    },
+    "target/release/deps/libopenssl-549afc5f8b74024d.rmeta": {
+      "bytes": 5755389,
+      "executable": false,
+      "sha256": "18f4a8e678d56d827e146d93b69b3ebf986ba69f5108a6d29f0c522281e3cca2"
+    },
+    "target/release/deps/libopenssl_macros-ef987ce89988f8ed.dylib": {
+      "bytes": 1564480,
+      "executable": false,
+      "sha256": "6cd07f99f806dd120df89d3a0406db6a71c6d3f2dcf98d31f4850fbd1dd75d8e"
+    },
+    "target/release/deps/libopenssl_sys-4364c33769d05713.rlib": {
+      "bytes": 5608808,
+      "executable": false,
+      "sha256": "6af1b42599e167b0d4203880d2f01c7eb27d69b025a79f4be7c51f6153f3f7da"
+    },
+    "target/release/deps/libopenssl_sys-4364c33769d05713.rmeta": {
+      "bytes": 5581219,
+      "executable": false,
+      "sha256": "ebeb0f3f39ab788ead7061746af549df6979b31ede81a7c9a42256ffa684e5af"
+    },
+    "target/release/deps/libpassword_hash-557f2b40e035506d.rlib": {
+      "bytes": 43544,
+      "executable": false,
+      "sha256": "4b9881423dc95af7abc073a111fcd7cd98d5adb6225e9c0804ff9bc86b383524"
+    },
+    "target/release/deps/libpassword_hash-557f2b40e035506d.rmeta": {
+      "bytes": 37917,
+      "executable": false,
+      "sha256": "b38c032bd58524a6ba5b480402471819b6f89d71c6668c34e0548cce3b375e06"
+    },
+    "target/release/deps/libpbkdf2-11ff2e87e70e68e7.rlib": {
+      "bytes": 24672,
+      "executable": false,
+      "sha256": "5fdda48ef7041ea9e8268b44a257bcb82d2ae3e8532ee6132b8c67ead2afc453"
+    },
+    "target/release/deps/libpbkdf2-11ff2e87e70e68e7.rmeta": {
+      "bytes": 23722,
+      "executable": false,
+      "sha256": "992202e00601e0ed62eb4f64b1d3b7b9876c98969208cdd009e9d643b18c34c3"
+    },
+    "target/release/deps/libphc-400bbd24259d99e9.rlib": {
+      "bytes": 348384,
+      "executable": false,
+      "sha256": "d0a16e061d1e818081596945038ea12c343ed6d24162a74676b6b0fa33ba429c"
+    },
+    "target/release/deps/libphc-400bbd24259d99e9.rmeta": {
+      "bytes": 254102,
+      "executable": false,
+      "sha256": "6f8344e13538b4998bf41535bf42ac00b67561a976b3ab08580fd9fb7eed6d09"
+    },
+    "target/release/deps/libpin_project_lite-e15e7d8e98e68eb6.rlib": {
+      "bytes": 95264,
+      "executable": false,
+      "sha256": "252c2474901591c275b5cb43c520422d2fcd45358796380e988c85f9f2f4e8af"
+    },
+    "target/release/deps/libpin_project_lite-e15e7d8e98e68eb6.rmeta": {
+      "bytes": 94292,
+      "executable": false,
+      "sha256": "1a848aba7bcb1a60c0233a4258bf25acbd303852f26ae71aec8ce5f51b218264"
+    },
+    "target/release/deps/libpkg_config-70b18043d906a0e5.rlib": {
+      "bytes": 622728,
+      "executable": false,
+      "sha256": "858e1a83ecb49b96c7729c66b7a174c4a428459a558bb413e85b865fe4d231a6"
+    },
+    "target/release/deps/libpkg_config-70b18043d906a0e5.rmeta": {
+      "bytes": 70425,
+      "executable": false,
+      "sha256": "090e517a67074eda3b2630841ae54f10f15d23284227c340384be9b17ee8e697"
+    },
+    "target/release/deps/libpoly1305-627d5fdbbdb73a02.rlib": {
+      "bytes": 28496,
+      "executable": false,
+      "sha256": "60d95d2e9e647c23c6ce008bcba1493f4cc34f080ddea8cf0e59de9866b28fc5"
+    },
+    "target/release/deps/libpoly1305-627d5fdbbdb73a02.rmeta": {
+      "bytes": 24295,
+      "executable": false,
+      "sha256": "7daf04c402d364ebe735b9b8c893cfac2edefd12fffecfa44c076f661fb6ae6b"
+    },
+    "target/release/deps/libpotential_utf-af545af95732d2f9.rlib": {
+      "bytes": 63400,
+      "executable": false,
+      "sha256": "2fa446f34479f76cab8707718390921806357cb87109550cf9e247b9947adb4c"
+    },
+    "target/release/deps/libpotential_utf-af545af95732d2f9.rmeta": {
+      "bytes": 58557,
+      "executable": false,
+      "sha256": "961c9fe517ac6e1faeecbfbc1202b16c83b17c4413ca67090862c323dd327054"
+    },
+    "target/release/deps/libproc_macro2-1b3b08ec03e8e1bc.rlib": {
+      "bytes": 897472,
+      "executable": false,
+      "sha256": "9341b6b74842f416ace0d2215d5676b46ddd720ac8e51948ea6f96f0fdd9e0e3"
+    },
+    "target/release/deps/libproc_macro2-1b3b08ec03e8e1bc.rmeta": {
+      "bytes": 341855,
+      "executable": false,
+      "sha256": "6d23aa26ae62b15d3ace1416c77c5ee4ebb3cb73b6e9e5b4ccc0de5582fa97c3"
+    },
+    "target/release/deps/libquote-4aa58f375569e7d9.rlib": {
+      "bytes": 414920,
+      "executable": false,
+      "sha256": "ff556871ffe7321f34cd524d1167151d39da774a2ac3eb5f368fd28738acd290"
+    },
+    "target/release/deps/libquote-4aa58f375569e7d9.rmeta": {
+      "bytes": 269514,
+      "executable": false,
+      "sha256": "4f7954b3da4759dff56d767a7032a57d8b600e62e4918bf5d453c3577e9ed753"
+    },
+    "target/release/deps/librand-61e2c655c7ae729c.rlib": {
+      "bytes": 1252320,
+      "executable": false,
+      "sha256": "67f8b9d669a76355f5f8b98c51cc4313335dd6cbfd3221a410bf84743e0756f4"
+    },
+    "target/release/deps/librand-61e2c655c7ae729c.rmeta": {
+      "bytes": 1229523,
+      "executable": false,
+      "sha256": "2fd2c8018dd32630f0b71f02999f965fe337ad253e4a42d7705580853489b2b4"
+    },
+    "target/release/deps/librand_core-974fe84d96ce2ed8.rlib": {
+      "bytes": 138392,
+      "executable": false,
+      "sha256": "df676d1729bdf7346ef0daac9febe037fe055e3438efe39f22b3c6150034b842"
+    },
+    "target/release/deps/librand_core-974fe84d96ce2ed8.rmeta": {
+      "bytes": 137436,
+      "executable": false,
+      "sha256": "c7005e68cbceb7fdb375333304da055bab091651aadbc2217fdf5bf1f17d28c2"
+    },
+    "target/release/deps/libroxmltree-03f5cd006e435f3a.rlib": {
+      "bytes": 677320,
+      "executable": false,
+      "sha256": "a38cb741e78f1ab12a496f0e14337c2dec390aaa38b09e276da6abe54209e10b"
+    },
+    "target/release/deps/libroxmltree-03f5cd006e435f3a.rmeta": {
+      "bytes": 504258,
+      "executable": false,
+      "sha256": "c74480b8f87e3f18b4693b3eccb26b9bb44a1111353bf7c002d0dc07ea940990"
+    },
+    "target/release/deps/librustix-9f44dcedf6c6ccdb.rlib": {
+      "bytes": 6284320,
+      "executable": false,
+      "sha256": "0e03af19cff8c7847422b772de8857e02408d780fef7dbb213d456f60e12be13"
+    },
+    "target/release/deps/librustix-9f44dcedf6c6ccdb.rmeta": {
+      "bytes": 5794410,
+      "executable": false,
+      "sha256": "973f117de5e773f05663be442a5559642a8000552461295be95dcb5ab0329b38"
+    },
+    "target/release/deps/librustversion-40eb9dbcae7ea028.dylib": {
+      "bytes": 501712,
+      "executable": false,
+      "sha256": "28cd1d37a293319de797589c6657c3ce323a26563a528e3510c73c777e12e0ff"
+    },
+    "target/release/deps/librxml-656c7e9800abb79e.rlib": {
+      "bytes": 1249672,
+      "executable": false,
+      "sha256": "16e4a2b462987e1b6f13b2bbd42de64a7b0e1c86da7c68bdd15f3518b4daad24"
+    },
+    "target/release/deps/librxml-656c7e9800abb79e.rmeta": {
+      "bytes": 949808,
+      "executable": false,
+      "sha256": "035216ab94d78f68ea5ce85d0af56ab6da6c71a03c9711a9113fa9dd7fae9ae4"
+    },
+    "target/release/deps/librxml_proc-3251d52868248c73.dylib": {
+      "bytes": 1564528,
+      "executable": false,
+      "sha256": "798ac633fec596835deaf718398f619cfdad27557e8dac6733e8f1e8f3682795"
+    },
+    "target/release/deps/librxml_validation-8e23807d623ad041.rlib": {
+      "bytes": 363192,
+      "executable": false,
+      "sha256": "ace3c75940347b90ecf3ee6d56129af7964a525db316a9240a9c79bef4173489"
+    },
+    "target/release/deps/librxml_validation-8e23807d623ad041.rmeta": {
+      "bytes": 287292,
+      "executable": false,
+      "sha256": "48d65a3970e2676767b65ad3521bdcd13d6de2bdbadecdcfd1934996805d8cab"
+    },
+    "target/release/deps/librxml_validation-b284ce05e04b50be.rlib": {
+      "bytes": 186536,
+      "executable": false,
+      "sha256": "493ef857965d61e0370e3cd770e66ef3be1fad1bf5b539200fdb5d7a1e8313c1"
+    },
+    "target/release/deps/librxml_validation-b284ce05e04b50be.rmeta": {
+      "bytes": 104031,
+      "executable": false,
+      "sha256": "c02cd40b5c0cc6464bccbf6fccbcc84ab39abb9f85f8fd6afa3fb12ea99e0ff6"
+    },
+    "target/release/deps/librxml_validation-b5d80c5bc2eadb9a.rlib": {
+      "bytes": 447312,
+      "executable": false,
+      "sha256": "a91522ecfa12c8e902e574997967d90415badb4625068e4bac176628b4872b05"
+    },
+    "target/release/deps/librxml_validation-b5d80c5bc2eadb9a.rmeta": {
+      "bytes": 257809,
+      "executable": false,
+      "sha256": "5b325005d2287e3471ad845838f862c6cc75f3eca6bc5c88d7e6773267694e16"
+    },
+    "target/release/deps/libryu-473fc28378bc1e52.rlib": {
+      "bytes": 76704,
+      "executable": false,
+      "sha256": "a0f6a8b5b948b53bbceeb4d67d56196f68beff5844d219df707902a3c521d594"
+    },
+    "target/release/deps/libryu-473fc28378bc1e52.rmeta": {
+      "bytes": 57551,
+      "executable": false,
+      "sha256": "3fb212aadee1f0e918021470dd57bb16e068f56d414d277fc8b453188feef41b"
+    },
+    "target/release/deps/libryu-4faa1d69d5e72dce.rlib": {
+      "bytes": 95440,
+      "executable": false,
+      "sha256": "6bdb3bcb064b761af3bd360dbf6b05bba25736541959a293b4928c88069b7220"
+    },
+    "target/release/deps/libryu-4faa1d69d5e72dce.rmeta": {
+      "bytes": 54683,
+      "executable": false,
+      "sha256": "93468163260fc90f3a6b5a3aa6f2078db6204d92f53e322b2e21e781329d9486"
+    },
+    "target/release/deps/libsasl-08a229514e3b5ee4.rlib": {
+      "bytes": 492232,
+      "executable": false,
+      "sha256": "c2a5e634312b4af73914d2c02e17eb2fdca4aad452b94d2c2b0d3ab0dcb11043"
+    },
+    "target/release/deps/libsasl-08a229514e3b5ee4.rmeta": {
+      "bytes": 420115,
+      "executable": false,
+      "sha256": "f0b6f9b1d2660689681244382dff6ea48f42b6fac2df9860006c16f60c0591b2"
+    },
+    "target/release/deps/libsecurity_framework-6730bfc1a1116bac.rlib": {
+      "bytes": 2553752,
+      "executable": false,
+      "sha256": "fae16503fe5c6bf325b6e24c00aba0c7d94e36ada64aed7a3aec31779ffc6878"
+    },
+    "target/release/deps/libsecurity_framework-6730bfc1a1116bac.rmeta": {
+      "bytes": 2091378,
+      "executable": false,
+      "sha256": "174d6274dedd7262a4ede2a48890968cdfa09323bda214946346ef6dcbf50f58"
+    },
+    "target/release/deps/libsecurity_framework_sys-64671c1dd725e185.rlib": {
+      "bytes": 446336,
+      "executable": false,
+      "sha256": "62c205e86f90677d371fd14efe2161eb5043be16ce3cf4543b5d54e484654fa0"
+    },
+    "target/release/deps/libsecurity_framework_sys-64671c1dd725e185.rmeta": {
+      "bytes": 438141,
+      "executable": false,
+      "sha256": "ea5f24ba3cbeb79314ade6c0d56a95dc3208cde0d46711159f23ee62d60d7b9f"
+    },
+    "target/release/deps/libserde_core-bd8c73a11f92c6d3.rlib": {
+      "bytes": 5341064,
+      "executable": false,
+      "sha256": "9b68898789668687ab9333dd4946aa410be7f3882bf691e9332534908291cef6"
+    },
+    "target/release/deps/libserde_core-bd8c73a11f92c6d3.rmeta": {
+      "bytes": 5279688,
+      "executable": false,
+      "sha256": "8016289b032eea91eb00630c66826ffef2d3fd924367dd2f00cce22521e30ffb"
+    },
+    "target/release/deps/libserde_json-b822aa0504af4fff.rlib": {
+      "bytes": 1843488,
+      "executable": false,
+      "sha256": "9a833ec704d5dc05c7e22c403846329fdb97270a7c8ae6fb43a1fcef4d0f3ed4"
+    },
+    "target/release/deps/libserde_json-b822aa0504af4fff.rmeta": {
+      "bytes": 1634916,
+      "executable": false,
+      "sha256": "03335c6415d6b60ef5b5d8a16c56c33b8e2865f5e4a20bb15d8da111b41196f5"
+    },
+    "target/release/deps/libserde_spanned-0db1e2d7716403a8.rlib": {
+      "bytes": 55520,
+      "executable": false,
+      "sha256": "3f4f8c68513e9a90e9ed01a9d0c05fc1be175d5c700a082f57f4ced01ec1cfcf"
+    },
+    "target/release/deps/libserde_spanned-0db1e2d7716403a8.rmeta": {
+      "bytes": 53730,
+      "executable": false,
+      "sha256": "5af9380a5cebf9cbf1a9b37cbe249d4b336a9f01feb6165e204868624567531d"
+    },
+    "target/release/deps/libsha1-c2492db8497abc98.rlib": {
+      "bytes": 74808,
+      "executable": false,
+      "sha256": "7cbd1cd24fcb83177b83dcebe0a616a6c2d69522a8e54c5441c46432ca983cbb"
+    },
+    "target/release/deps/libsha1-c2492db8497abc98.rmeta": {
+      "bytes": 71335,
+      "executable": false,
+      "sha256": "0713c8b8817687dd3c0494b8348dc78973c04a0b1c28683b1bd817d9a0f02cde"
+    },
+    "target/release/deps/libsha1-fa312042de28cf11.rlib": {
+      "bytes": 44400,
+      "executable": false,
+      "sha256": "4fe5d9943a5f39bce83e1e8d3eb82e6f2c3f380cfccbb2a03293e0fa180b9475"
+    },
+    "target/release/deps/libsha1-fa312042de28cf11.rmeta": {
+      "bytes": 37798,
+      "executable": false,
+      "sha256": "d3f2be8b9c727b71f411b13cb192096a5fd301b63b554d68e3a6fdf3ed3f7c60"
+    },
+    "target/release/deps/libsha2-3e1b60abc3dd0636.rlib": {
+      "bytes": 162136,
+      "executable": false,
+      "sha256": "c38b5d71254ad194c60d2f8e3c6153d1f3e92e9ffc02e965bcd3fe7e3c93261f"
+    },
+    "target/release/deps/libsha2-3e1b60abc3dd0636.rmeta": {
+      "bytes": 142210,
+      "executable": false,
+      "sha256": "61f0a2fab11d0894fb389046fc0337ac4c94515ef4539b7fecef73ec183f80da"
+    },
+    "target/release/deps/libsha2-cd5a9018d489c211.rlib": {
+      "bytes": 510584,
+      "executable": false,
+      "sha256": "b7efb7153379bf27b4a83946053c38d58b16b7d190510a40c62598c56cf65a01"
+    },
+    "target/release/deps/libsha2-cd5a9018d489c211.rmeta": {
+      "bytes": 496336,
+      "executable": false,
+      "sha256": "ef5c1744fd14afe863f53ffd944c45a521f35e0dcef125c0118d3def040b07e6"
+    },
+    "target/release/deps/libsha3-8822c21c7bc06fce.rlib": {
+      "bytes": 136224,
+      "executable": false,
+      "sha256": "865ae3fa5f86012c8b602525ee0afa42086603f8c253e354163817d1a9376252"
+    },
+    "target/release/deps/libsha3-8822c21c7bc06fce.rmeta": {
+      "bytes": 120924,
+      "executable": false,
+      "sha256": "96344433241c6e34ccc1f41f017cce431f27d1eb88ae6fb6746c37b4802a2928"
+    },
+    "target/release/deps/libshlex-991f2cef4550fb0c.rlib": {
+      "bytes": 96024,
+      "executable": false,
+      "sha256": "2543b8da9ca9cc124b140fe9386b6ca3162af57723a31411ecc21cddbb82992d"
+    },
+    "target/release/deps/libshlex-991f2cef4550fb0c.rmeta": {
+      "bytes": 48599,
+      "executable": false,
+      "sha256": "fcbdf26e58c7c13f56752c49e8d51e2b3b08ceb69b6fb634009bb7b4d6981155"
+    },
+    "target/release/deps/libslab-72c01d9ba82f92e0.rlib": {
+      "bytes": 181944,
+      "executable": false,
+      "sha256": "dd0f6e2b847cf742ab7988ccbb5ad58db7ed90a9c4c0da6c0fb2c2d13bba9e65"
+    },
+    "target/release/deps/libslab-72c01d9ba82f92e0.rmeta": {
+      "bytes": 179690,
+      "executable": false,
+      "sha256": "74871c1effc0c850907f65f4a9f4891e6e116e8a8893e70f0f5dd78d382855c2"
+    },
+    "target/release/deps/libsmallvec-c56ad89efcf96e19.rlib": {
+      "bytes": 274040,
+      "executable": false,
+      "sha256": "fcf2aaf98ac421eb3290b4c0fd46faf3f09cf058ed8de8d500f69c4950f4dfec"
+    },
+    "target/release/deps/libsmallvec-c56ad89efcf96e19.rmeta": {
+      "bytes": 269232,
+      "executable": false,
+      "sha256": "da153bf6f4f89a55df89ac6a2493bce5d2a0d92fcb98a78a3e4da0b7481421f1"
+    },
+    "target/release/deps/libsocket2-34d3c458d0415b5d.rlib": {
+      "bytes": 467808,
+      "executable": false,
+      "sha256": "cf0ada483fdaf8c1103f98e621f66f54d0a2afb84b58324a638d45c0bd444369"
+    },
+    "target/release/deps/libsocket2-34d3c458d0415b5d.rmeta": {
+      "bytes": 361377,
+      "executable": false,
+      "sha256": "f7ed0360126407b5a7b8b17a0177df0b1de7c75429245e29899c54f1e430cecc"
+    },
+    "target/release/deps/libsponge_cursor-ad10521f44e179d9.rlib": {
+      "bytes": 66576,
+      "executable": false,
+      "sha256": "dbffb9ea87873e9031769ad50862e428e3c521a1724b9454cd268683725314f8"
+    },
+    "target/release/deps/libsponge_cursor-ad10521f44e179d9.rmeta": {
+      "bytes": 65610,
+      "executable": false,
+      "sha256": "202935d93bf2dc8ebd7ceecc2b7db9928ffb8e3b66b838becc219fe4564bcb48"
+    },
+    "target/release/deps/libstable_deref_trait-f8bd9a84d8ef3ab9.rlib": {
+      "bytes": 11232,
+      "executable": false,
+      "sha256": "b6ab930b9e1659d157401d019eeac2010a117e3c770000065af20841f2ee09a8"
+    },
+    "target/release/deps/libstable_deref_trait-f8bd9a84d8ef3ab9.rmeta": {
+      "bytes": 10261,
+      "executable": false,
+      "sha256": "d7dd309f713d0ef03b2a7ba9a7833b880dafa90a9b85da2c42d3592f9f5d5951"
+    },
+    "target/release/deps/libstatic_assertions-64b786341ddc4412.rlib": {
+      "bytes": 53360,
+      "executable": false,
+      "sha256": "0dc1cc2d7e19343d0970a4e8604d397ca2b5f1bc9b5b10f555461891c947a284"
+    },
+    "target/release/deps/libstatic_assertions-64b786341ddc4412.rmeta": {
+      "bytes": 52392,
+      "executable": false,
+      "sha256": "74806a8a398fe984a8ad5f506f6962ec744702e9007ec6c071db31e842403067"
+    },
+    "target/release/deps/libstatic_assertions-9ffe1c13d31fb952.rlib": {
+      "bytes": 53360,
+      "executable": false,
+      "sha256": "2827cc5865a22a2eee934eb4e062547d69928724daecbfd4c3fdd95a68eb690c"
+    },
+    "target/release/deps/libstatic_assertions-9ffe1c13d31fb952.rmeta": {
+      "bytes": 52392,
+      "executable": false,
+      "sha256": "41e840e07b80b67db48f7bfb021cbbde3f924cccc509a73871f90ad3f38b028d"
+    },
+    "target/release/deps/libstringprep-e2caaa3b818d27c5.rlib": {
+      "bytes": 452984,
+      "executable": false,
+      "sha256": "2942e48b651a155daf2be2ebe2c920906bb37f20c0090c2a6e11c73b98f6984d"
+    },
+    "target/release/deps/libstringprep-e2caaa3b818d27c5.rmeta": {
+      "bytes": 167254,
+      "executable": false,
+      "sha256": "e7a68a4943ed871ba78ad3a7d40c278713e838a11a326d0cc3d550dc5fc6a6ce"
+    },
+    "target/release/deps/libsubtle-850593b2f623d11c.rlib": {
+      "bytes": 128064,
+      "executable": false,
+      "sha256": "b282a21480e61ecb475e25f7bd989770700f1ab5e80ea593b6c2fe14b57d68bd"
+    },
+    "target/release/deps/libsubtle-850593b2f623d11c.rmeta": {
+      "bytes": 127118,
+      "executable": false,
+      "sha256": "1be0a726aa571354e49237b0793d7100db2ccd9b75132de2fb5be785ed747858"
+    },
+    "target/release/deps/libsyn-2f3cb85da0a60414.rlib": {
+      "bytes": 9511088,
+      "executable": false,
+      "sha256": "c8777ffb3a0703be4a950c9d7c24ee9f415d359cedce12777e1f61c89fca3cc7"
+    },
+    "target/release/deps/libsyn-2f3cb85da0a60414.rmeta": {
+      "bytes": 4642761,
+      "executable": false,
+      "sha256": "7ab442b1872591d366258a0f270a005f3711fc51300623b5462deccdc1423ff5"
+    },
+    "target/release/deps/libsyn-347158987498a84a.rlib": {
+      "bytes": 8597168,
+      "executable": false,
+      "sha256": "12120edba7f22c0dfba2652470300a18722ea02140eb07bdf901658defeafe2b"
+    },
+    "target/release/deps/libsyn-347158987498a84a.rmeta": {
+      "bytes": 3739145,
+      "executable": false,
+      "sha256": "06a85c13ccd831e3b306b99cf0a4734c867974e1a6771a2bacc036e0b041a07d"
+    },
+    "target/release/deps/libsynstructure-5759be49409b57b7.rlib": {
+      "bytes": 934576,
+      "executable": false,
+      "sha256": "6abd4fc59794fcbcba4966ef4f715e86206973364c2665d0c02c5db45aa23e19"
+    },
+    "target/release/deps/libsynstructure-5759be49409b57b7.rmeta": {
+      "bytes": 235170,
+      "executable": false,
+      "sha256": "36cf0055f218c909a5d57de3852f6904c67ca59a4129a21ea4fe33dab5a73dd2"
+    },
+    "target/release/deps/libtempfile-334148b4a1361ef4.rlib": {
+      "bytes": 375872,
+      "executable": false,
+      "sha256": "84d57e1bd227504d13b746b8f1935b7bc4da9abe655435124bc965240d32737c"
+    },
+    "target/release/deps/libtempfile-334148b4a1361ef4.rmeta": {
+      "bytes": 273027,
+      "executable": false,
+      "sha256": "405235fa467fd1e4989dc94f4118692ab3e6c9abaf33ef90772c899bb1284377"
+    },
+    "target/release/deps/libthiserror-7989158d0b88d8c1.rlib": {
+      "bytes": 33088,
+      "executable": false,
+      "sha256": "9c3054972b00df227e88295c8e0ecfe2e30ea18bd7260e2300a6ae26ef2a5174"
+    },
+    "target/release/deps/libthiserror-7989158d0b88d8c1.rmeta": {
+      "bytes": 32134,
+      "executable": false,
+      "sha256": "d5865a90a71dbaef3ad679b4e577d5140daba612e467c83a04147f16fca37381"
+    },
+    "target/release/deps/libthiserror_impl-1b6ff760ce83d904.dylib": {
+      "bytes": 2162256,
+      "executable": false,
+      "sha256": "9f55f911cbc819207717be7cf2aed2f6875a98ae37e0f50cc5d109159c5780c5"
+    },
+    "target/release/deps/libtinystr-2beafd1d0ce7f494.rlib": {
+      "bytes": 349512,
+      "executable": false,
+      "sha256": "05ccf938e169d95f9e5e43a5e40303eb5b3e951e65c82e33b5e53ae0fd8aec60"
+    },
+    "target/release/deps/libtinystr-2beafd1d0ce7f494.rmeta": {
+      "bytes": 346860,
+      "executable": false,
+      "sha256": "1287b8ad851a79016fcac10853788bc37412988d09652a12b9350908b4a1575a"
+    },
+    "target/release/deps/libtinyvec-249002c00de0d10e.rlib": {
+      "bytes": 928976,
+      "executable": false,
+      "sha256": "6b6b14825330454f061b264e353ab77d2930b5983bee3fbd08ba0263216771ab"
+    },
+    "target/release/deps/libtinyvec-249002c00de0d10e.rmeta": {
+      "bytes": 928020,
+      "executable": false,
+      "sha256": "081ecf16894a1cabedc6861802e8d30f45502b3a7b0ee447a7383739d4283c5a"
+    },
+    "target/release/deps/libtokio-ec5d909e65848df7.rlib": {
+      "bytes": 9653792,
+      "executable": false,
+      "sha256": "73cca62ef0e52b7e3aed4bb0afa4b83d80ec6846f15b854c10ada436cfb47360"
+    },
+    "target/release/deps/libtokio-ec5d909e65848df7.rmeta": {
+      "bytes": 8438555,
+      "executable": false,
+      "sha256": "6e356e50f7e769a3b6fd4d6a4f1783208babb322a7fc70619d36425c0856ec31"
+    },
+    "target/release/deps/libtokio_macros-6cbe2e2cde1604ab.dylib": {
+      "bytes": 1896656,
+      "executable": false,
+      "sha256": "6878fb7efbcb8cdf373c4fb60314c90609bdeed5cd8f04eff99c734c22f4fa62"
+    },
+    "target/release/deps/libtokio_native_tls-4bbb6d3ece4ca2ca.rlib": {
+      "bytes": 79808,
+      "executable": false,
+      "sha256": "d723702db354ce24dba3d9173bdac745e4b1a4ffe85d7da010a7d5987e8428e2"
+    },
+    "target/release/deps/libtokio_native_tls-4bbb6d3ece4ca2ca.rmeta": {
+      "bytes": 77355,
+      "executable": false,
+      "sha256": "4a659f9166a489158638331c42a93523a9eb727ece56edb437a2a653054398b0"
+    },
+    "target/release/deps/libtokio_stream-642f2d176888cb67.rlib": {
+      "bytes": 978072,
+      "executable": false,
+      "sha256": "29ef57958b0db90d6e3a1abe040676c7f7865f1ecfbc818967d9dd87aa650a09"
+    },
+    "target/release/deps/libtokio_stream-642f2d176888cb67.rmeta": {
+      "bytes": 972662,
+      "executable": false,
+      "sha256": "77e86af82ef5ea8aa4ac17aa721e32b9f0007799b3d768cf507d93d359702383"
+    },
+    "target/release/deps/libtokio_util-4cf268737b08c73a.rlib": {
+      "bytes": 396728,
+      "executable": false,
+      "sha256": "b9efb139fa49faf2b053313ec80dbf0785c70c375d24fff39e470e0bebb9ff8e"
+    },
+    "target/release/deps/libtokio_util-4cf268737b08c73a.rmeta": {
+      "bytes": 327383,
+      "executable": false,
+      "sha256": "bea1f3e844d67e744648216d6b426ad1a515d08c4d5117022f6c48293dd4b3e8"
+    },
+    "target/release/deps/libtokio_xmpp-927d5e9e726ddbca.rlib": {
+      "bytes": 2902200,
+      "executable": false,
+      "sha256": "e34eed39a6e4569bf264a4fe1f21471a786d354ed7c44ab323b55b037999b354"
+    },
+    "target/release/deps/libtokio_xmpp-927d5e9e726ddbca.rmeta": {
+      "bytes": 1282531,
+      "executable": false,
+      "sha256": "0742ad0979315db23b1fd9c5653cd33febdba27f6aa8a138639997019740452f"
+    },
+    "target/release/deps/libtoml-ef72b086ec7687e6.rlib": {
+      "bytes": 1979000,
+      "executable": false,
+      "sha256": "b61374015164e75f5cb6c8be551a85ab207da0fe0a97ef35e61f3d6649a0a00e"
+    },
+    "target/release/deps/libtoml-ef72b086ec7687e6.rmeta": {
+      "bytes": 1449224,
+      "executable": false,
+      "sha256": "27e7c890947ace2355fadcf91093f80ea739a4d8090c6fb31ab05e796cd6501d"
+    },
+    "target/release/deps/libtoml_datetime-f7fb5be3d84bb704.rlib": {
+      "bytes": 206864,
+      "executable": false,
+      "sha256": "ed1cbbc658f86ec8701c72de914c7c9385826576e5707db38376d2d9f3f5f380"
+    },
+    "target/release/deps/libtoml_datetime-f7fb5be3d84bb704.rmeta": {
+      "bytes": 181588,
+      "executable": false,
+      "sha256": "e7e74ddec11f6236df511ab9b6cf3d4afe62fe2b1dccf2bb597c40bb87110063"
+    },
+    "target/release/deps/libtoml_parser-e0824b0ccbcc24f6.rlib": {
+      "bytes": 445800,
+      "executable": false,
+      "sha256": "a5d638e9144c616eab74e15bd51987224d71f5a925ca194b202b91f4b6c46dd2"
+    },
+    "target/release/deps/libtoml_parser-e0824b0ccbcc24f6.rmeta": {
+      "bytes": 326513,
+      "executable": false,
+      "sha256": "7802d6888190bc267d75c1eeabc1de5e4ed79b2e017d4834023dfa7f4e120808"
+    },
+    "target/release/deps/libtoml_writer-389f1b66d8342e0e.rlib": {
+      "bytes": 241936,
+      "executable": false,
+      "sha256": "30de295cf2caa6f3e5dd1da7de9cbde2b789519088436b1833e32d4d393ff2c9"
+    },
+    "target/release/deps/libtoml_writer-389f1b66d8342e0e.rmeta": {
+      "bytes": 239275,
+      "executable": false,
+      "sha256": "e9347e732494ffe00d9c014bb39cc22ab477c84ccbe06b0b46213c317216f19c"
+    },
+    "target/release/deps/libtypenum-20543b1a7da00bb3.rlib": {
+      "bytes": 3670528,
+      "executable": false,
+      "sha256": "a02c7d3d6783f3de19fbea130b1f76d6cb51beb418af3abe76e715c93d706955"
+    },
+    "target/release/deps/libtypenum-20543b1a7da00bb3.rmeta": {
+      "bytes": 3668073,
+      "executable": false,
+      "sha256": "45da92095ea94ef674ca42e5adb0fe18791cf95f1cc1699e8bf8e3bd3dc73535"
+    },
+    "target/release/deps/libunicode_bidi-50a04d64ad719b77.rlib": {
+      "bytes": 728144,
+      "executable": false,
+      "sha256": "9b87ff4eeaa21a05a3418b885eb2e15c9518e82a30e6e96cfda8a9d640b348f4"
+    },
+    "target/release/deps/libunicode_bidi-50a04d64ad719b77.rmeta": {
+      "bytes": 620656,
+      "executable": false,
+      "sha256": "67dfa64513d8d7c46f26b4f0b75b5abb7a315e95034187836b53b5245301a2d0"
+    },
+    "target/release/deps/libunicode_ident-220bfcb1c08601b7.rlib": {
+      "bytes": 50360,
+      "executable": false,
+      "sha256": "52e0798cc0914e040051f9c6cea17f4b00e9e251502a83e15fd57c781062159c"
+    },
+    "target/release/deps/libunicode_ident-220bfcb1c08601b7.rmeta": {
+      "bytes": 34550,
+      "executable": false,
+      "sha256": "abdfbf0c6a05c3fe7d33a4509fe444433fb21a7c24876f22e04a96cc36926ac7"
+    },
+    "target/release/deps/libunicode_normalization-12c4c7ed8af0ca40.rlib": {
+      "bytes": 1932872,
+      "executable": false,
+      "sha256": "e15bc168f61b02b27d04ffaed41c23d5a6670c7e8be806f3bfda8a7b793fb668"
+    },
+    "target/release/deps/libunicode_normalization-12c4c7ed8af0ca40.rmeta": {
+      "bytes": 1768990,
+      "executable": false,
+      "sha256": "2ea1ff24d9608ceb727ab8c898f131768e86c74bc5e6522ed9cae3b0857fbc4c"
+    },
+    "target/release/deps/libunicode_properties-18eb84ad4aad3f40.rlib": {
+      "bytes": 557176,
+      "executable": false,
+      "sha256": "33e3ceeadf4f9ac19bd77a4a474059f29714ef23eb193535b92e187d9605b32c"
+    },
+    "target/release/deps/libunicode_properties-18eb84ad4aad3f40.rmeta": {
+      "bytes": 505111,
+      "executable": false,
+      "sha256": "d7a9748916880b877f1ce15d9913cc3ebc0d0d40623a8c363e996a879a01d6db"
+    },
+    "target/release/deps/libunicode_width-3d4b28cc37faa6e3.rlib": {
+      "bytes": 852048,
+      "executable": false,
+      "sha256": "1a2f8ebf6d949eaba27cbb162aecae562c3a52de21a8fb63297c2cf707a4760b"
+    },
+    "target/release/deps/libunicode_width-3d4b28cc37faa6e3.rmeta": {
+      "bytes": 837684,
+      "executable": false,
+      "sha256": "ead483620528639c475ef1fc9e40c27b72ca749560b9ae537823e6bc9146961d"
+    },
+    "target/release/deps/libuniversal_hash-9b8f3e05d0068fa0.rlib": {
+      "bytes": 35624,
+      "executable": false,
+      "sha256": "4a4bee446031936cd21ba3fd8a68703c52eb823b04f8fe49af7cc7a87179dbf1"
+    },
+    "target/release/deps/libuniversal_hash-9b8f3e05d0068fa0.rmeta": {
+      "bytes": 34662,
+      "executable": false,
+      "sha256": "4fb11fff2841fb8a27bc2e9eda1d9813cf8a0299ff91dd849cf58fee6ecb903d"
+    },
+    "target/release/deps/libutf8_iter-d54cdc31cdbc2f6f.rlib": {
+      "bytes": 63232,
+      "executable": false,
+      "sha256": "06d5a4a98f000635f5538cdd8a84616f3f325c129695942879313ad586d0728e"
+    },
+    "target/release/deps/libutf8_iter-d54cdc31cdbc2f6f.rmeta": {
+      "bytes": 59964,
+      "executable": false,
+      "sha256": "def2963c71fd431ef7b3303f8186fe30b5393173945372b6be71215fc0bd4285"
+    },
+    "target/release/deps/libuuid-db7bc33d90f9984b.rlib": {
+      "bytes": 563424,
+      "executable": false,
+      "sha256": "e9675bb2da06130e053057acad3f3da376f1c61a6291b7159c75ee97864dd71c"
+    },
+    "target/release/deps/libuuid-db7bc33d90f9984b.rmeta": {
+      "bytes": 520555,
+      "executable": false,
+      "sha256": "8203854593ffcb0bfd0f0b12bc9cf48cd6dc49abe3e7dae3de5a047f96ff1354"
+    },
+    "target/release/deps/libvcpkg-492adfff24ae91ad.rlib": {
+      "bytes": 893776,
+      "executable": false,
+      "sha256": "74b4699d8fb661d4d3b70820a2a1b4c14b90dd1f8a125973a490dcd0b669b77f"
+    },
+    "target/release/deps/libvcpkg-492adfff24ae91ad.rmeta": {
+      "bytes": 92102,
+      "executable": false,
+      "sha256": "e9225bd46d0e35837fea5b4aef8d4f8bb193bf5f8b0af8a6f74c17c6f885fe5d"
+    },
+    "target/release/deps/libversion_check-eec9c61300b264a2.rlib": {
+      "bytes": 315368,
+      "executable": false,
+      "sha256": "945bc165a1fea38ce317c2be5a1711ed03837f616d07a37b940b2083cc37c857"
+    },
+    "target/release/deps/libversion_check-eec9c61300b264a2.rmeta": {
+      "bytes": 74718,
+      "executable": false,
+      "sha256": "53739c5f862c9ee0cb71995b59486fe1b5316d5caf75e6a32734a1e22c43741d"
+    },
+    "target/release/deps/libwinnow-e604f97b202f3202.rlib": {
+      "bytes": 767200,
+      "executable": false,
+      "sha256": "887ec4f815025f1b222582dd8cea816feeaced6a9fc77c8bca92a6b63a57fc4f"
+    },
+    "target/release/deps/libwinnow-e604f97b202f3202.rmeta": {
+      "bytes": 758377,
+      "executable": false,
+      "sha256": "e1d6f01b1e3300c8908c0a58bf7c4d8d553f3469843727204008874541bd0b4a"
+    },
+    "target/release/deps/libwriteable-c177a321208a1d86.rlib": {
+      "bytes": 290664,
+      "executable": false,
+      "sha256": "ab5f561c35e98d87ee7bbdedc26bb859c932ef090e2f2883ca1134b57287b90f"
+    },
+    "target/release/deps/libwriteable-c177a321208a1d86.rmeta": {
+      "bytes": 283460,
+      "executable": false,
+      "sha256": "85989faf6ab4e8eab70e00bec6491dc2defcaeac99319d6fb4ca5282b17f123d"
+    },
+    "target/release/deps/libxmpp_parsers-ebcc7b409ae9d65c.rlib": {
+      "bytes": 23111424,
+      "executable": false,
+      "sha256": "f3bb34edda8b0b6e0dc474d3f01015e5fcc1f2a37c599ffb829e4b4b1a3a1991"
+    },
+    "target/release/deps/libxmpp_parsers-ebcc7b409ae9d65c.rmeta": {
+      "bytes": 13985471,
+      "executable": false,
+      "sha256": "e8aa9cc729ae97eceaeb80b1d4aafdbb226d96bf6769fc3011e64086fbab6c35"
+    },
+    "target/release/deps/libxso-d700e0c602e8aa65.rlib": {
+      "bytes": 1034640,
+      "executable": false,
+      "sha256": "759a52406f9334266b7b37d816241e9ac5a834e3bf1d6c50a34069f5d1545d0e"
+    },
+    "target/release/deps/libxso-d700e0c602e8aa65.rmeta": {
+      "bytes": 757137,
+      "executable": false,
+      "sha256": "8dd93b0ee7a4047c769cbed80949738079a0546cb803220ccbb42f9c9d33957f"
+    },
+    "target/release/deps/libxso_proc-93cfc01b27659e46.dylib": {
+      "bytes": 2559872,
+      "executable": false,
+      "sha256": "06052e6b1ad482e1364e3de7d913a5c52826341b00677fec69885da10fc28aab"
+    },
+    "target/release/deps/libyoke-12f970dcd32d02d5.rlib": {
+      "bytes": 260944,
+      "executable": false,
+      "sha256": "0608853dc27f7fd7f1b922b4c62638543aad6053d8720ba20485f39a793ee07e"
+    },
+    "target/release/deps/libyoke-12f970dcd32d02d5.rmeta": {
+      "bytes": 259557,
+      "executable": false,
+      "sha256": "48fc77ff9ea5e82059cf41d8836b946db06b2bb1bce18fc9ee9ec37c25391b2b"
+    },
+    "target/release/deps/libyoke_derive-432a444463bc65b3.dylib": {
+      "bytes": 2295456,
+      "executable": false,
+      "sha256": "fe7522ec0f81cd9356bcd415cf53718bee17596c2b3a28f35f3799d3bf346173"
+    },
+    "target/release/deps/libzerofrom-d091661118db4304.rlib": {
+      "bytes": 83704,
+      "executable": false,
+      "sha256": "19f1d9015f6ad5ea8743f74b0c6c9a94192c2eda53eaf4b35046e59c42aca9e2"
+    },
+    "target/release/deps/libzerofrom-d091661118db4304.rmeta": {
+      "bytes": 82752,
+      "executable": false,
+      "sha256": "aaa05d369ef95ba20c91638e612d90036a741b454ddc5797913bff9a0122a7bb"
+    },
+    "target/release/deps/libzerofrom_derive-165e1e7a4f83334e.dylib": {
+      "bytes": 2494560,
+      "executable": false,
+      "sha256": "f9e898acba082dcc31ac21c5de47eb7f2f18cc17e099d7f1096306cba913b580"
+    },
+    "target/release/deps/libzeroize-4a83a50a6f124d4c.rlib": {
+      "bytes": 321040,
+      "executable": false,
+      "sha256": "e11529886f9f27221fbffdac9373a1658f4eea62c93a8b0fe44776e636f98905"
+    },
+    "target/release/deps/libzeroize-4a83a50a6f124d4c.rmeta": {
+      "bytes": 319152,
+      "executable": false,
+      "sha256": "eb91b736ed58c60f3fa56bc1fa06541cf4437b0d092ba14691f0ff11638b8214"
+    },
+    "target/release/deps/libzerotrie-312ef005117f07c8.rlib": {
+      "bytes": 490320,
+      "executable": false,
+      "sha256": "4e22c3b058d97c852e6d336777a30f36cbc37748cdd25f16de8ce42fb25737af"
+    },
+    "target/release/deps/libzerotrie-312ef005117f07c8.rmeta": {
+      "bytes": 477724,
+      "executable": false,
+      "sha256": "38b46982921ef8b2bb8519079f4314772ba05f0b33e094691fd7e2841b1c1058"
+    },
+    "target/release/deps/libzerovec-beb15016002952c7.rlib": {
+      "bytes": 1309984,
+      "executable": false,
+      "sha256": "cdfcedab62c2e86a8dd34f43c332d7259e32c9de725f2a581194399912f0dd56"
+    },
+    "target/release/deps/libzerovec-beb15016002952c7.rmeta": {
+      "bytes": 1306290,
+      "executable": false,
+      "sha256": "29ad39d865ca559accaecf549c624b5ea01c5561c64a1aea4da6b4313a8a63a4"
+    },
+    "target/release/deps/libzerovec_derive-ea81214da3efe277.dylib": {
+      "bytes": 2129776,
+      "executable": false,
+      "sha256": "20ffd0f72f0312c961ce3cbfb0db8440bc687b75924687e5900a7b7aa67b9b5f"
+    },
+    "target/release/deps/libzmij-49f4acbc2819c854.rlib": {
+      "bytes": 169464,
+      "executable": false,
+      "sha256": "435bfb84fdc0d6136a20cccdc64b16960a1155df3cc34968851507f8340da1c3"
+    },
+    "target/release/deps/libzmij-49f4acbc2819c854.rmeta": {
+      "bytes": 146863,
+      "executable": false,
+      "sha256": "dd370cbe36dc55d733555d5bf4ad0e1cbd334f6e8c3d9ca9d894014fb63f660c"
+    },
+    "target/release/deps/mail_blob_transfer-2822e35c473d488a": {
+      "bytes": 1246112,
+      "executable": true,
+      "sha256": "5d75c1c57990d8f8d31a8baf063b375d061fe912727c0e6994fb6f99b3fd3f4c"
+    },
+    "target/release/deps/mail_blob_wire-fb339aa34bc0ae2c": {
+      "bytes": 960896,
+      "executable": true,
+      "sha256": "3258d6f2ed6873b8cbc7e710f3c720e4bee28d603e606cda28c592a75ef27455"
+    },
+    "target/release/deps/mail_device_provider-ee6b59dbc1e0b5f8": {
+      "bytes": 4005968,
+      "executable": true,
+      "sha256": "632351852fa6dcb1e19aa02d41172767b0573fd1c7c32200f3518a63e6ce5090"
+    },
+    "target/release/examples/checkpoint_ui_fixture-5492ffce4e4510c3": {
+      "bytes": 836928,
+      "executable": true,
+      "sha256": "335ca30cad16db84dfe7b066f78c63e4f1deef14368c4332f1f57af28ba49b09"
+    },
+    "target/release/examples/device_provider_console_fixture-fd29cd1e1ae711bd": {
+      "bytes": 736848,
+      "executable": true,
+      "sha256": "9633c7fe9c0a9b707120a9245ab1e2dba45ef2fd0960315e15bce896fd9ba86c"
+    },
+    "target/release/examples/home_mail_fixture-720162fcdca485f7": {
+      "bytes": 736832,
+      "executable": true,
+      "sha256": "3d4fe5bb5427c74825cac408b03a6c340d0ba28b36dd73a7856093e977faf7d9"
+    },
+    "target/release/examples/mail_blob_fixture-075c84d0fec5cd91": {
+      "bytes": 736832,
+      "executable": true,
+      "sha256": "fa2a85502e54d2e6d60e91044e261ec72ff13cbeab93a5f8ba50c0db73bf9e9d"
+    },
+    "target/release/examples/mail_correspondents_fixture-94c285f4339d4549": {
+      "bytes": 736832,
+      "executable": true,
+      "sha256": "a053a61c68924e92a60ef20b1575744b6017d2bb64af9540019efc15f7cdbca9"
+    },
+    "target/release/examples/mail_reply_fixture-c5654541f767637d": {
+      "bytes": 736832,
+      "executable": true,
+      "sha256": "d57d3dfa85e771f54a8506b639550127f763852f49081b0de724be0336fa59bc"
+    },
+    "target/release/faction-client": {
+      "bytes": 3851168,
+      "executable": true,
+      "sha256": "52f9302568d976de91a93ceb8f7887c80a8fc744a1d520e501c78dc5910e9054"
+    }
+  },
+  "client": {
+    "bytes": 3851168,
+    "sha256": "52f9302568d976de91a93ceb8f7887c80a8fc744a1d520e501c78dc5910e9054"
+  }
+}

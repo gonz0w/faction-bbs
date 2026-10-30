@@ -1,0 +1,11 @@
+{
+  "bytes": 786484094,
+  "excluded_nonregular": 1,
+  "index_sha256": "28c5f3fda19cd2bada0551b2f72ab3ad468bb0b018fb3087b1ca21c1db3f4f7d",
+  "limit": "The first interim nine-test GREEN executable was not independently retained before later compilation; exact source, log and exit remain. Every final qualification executable is retained. Source captures are preserved throughout; no claim of retaining every intermediate executable.",
+  "private_archive": "local/evidence/service-observations-308-309/proof-20261030.private.tar.gz",
+  "retained_regular_files": 83096,
+  "roots": 5,
+  "scope": "actual source/commands/logs/exits, final host/native/client binaries and qualified registry caches, original RED/candidate/environment failures, native phases/teardown and docs captures",
+  "sha256": "5a7bbdb77f77a1673a6f4735bf23f37d5b4c2b79dca438c488c335cc04d0e132"
+}
