@@ -225,6 +225,64 @@ fn exact_original_strong_owners_must_end_even_after_closed_true_and_unrelated_ad
     assert!(f.a.provision_at(&token, now, &mut secure_random).is_ok());
 }
 #[test]
+fn mismatched_recipient_home_refuses_before_rng_or_reference_insertion() {
+    let mut f = Fixture::new();
+    let mut entries = f.a.registry.as_ref().unwrap().bindings().to_vec();
+    for entry in &mut entries {
+        entry.generation = 2;
+    }
+    let registry = Registry::new(
+        2,
+        0,
+        vec![
+            "local.test".into(),
+            "other.test".into(),
+            "foreign.test".into(),
+        ],
+        entries,
+    )
+    .unwrap();
+    let policy = ServicePolicy::new_issuer(
+        "other.test".into(),
+        "issuer.test".into(),
+        vec![
+            (reg(&f.relay, "other.test", "relay"), ServiceUse::Relay),
+            (
+                reg(&f.inspector, "foreign.test", "inspector"),
+                ServiceUse::Introspection,
+            ),
+        ],
+        vec![IssuerRoute {
+            sender_home: "foreign.test".into(),
+            audience: "foreign.test/attachments".into(),
+            relay_client_id: "relay".into(),
+            introspection_client_id: "inspector".into(),
+        }],
+    )
+    .unwrap();
+    f.a = Authority::new(None);
+    f.a.replace_delegation_policy(registry, policy).unwrap();
+    f.a.records.policy = Some(
+        RetrievalPolicy::new(
+            "local.test".into(),
+            vec![("foreign.test".into(), "foreign.test/attachments".into())],
+        )
+        .unwrap(),
+    );
+    let token = f.closed_record();
+    let now = f.now(0);
+    let mut calls = 0;
+    let result = f.a.provision_at(&token, now, &mut |bytes| {
+        calls += 1;
+        bytes.fill(42);
+        Ok(())
+    });
+    assert_eq!(calls, 0);
+    assert!(result.is_err());
+    assert_eq!(f.a.records.slots.len(), 1);
+    assert!(f.a.records.slots[0].issuer.is_none());
+}
+#[test]
 fn rng_failure_and_four_collisions_are_atomic_and_retries_never_call_rng() {
     let mut f = Fixture::new();
     let token = f.closed_record();

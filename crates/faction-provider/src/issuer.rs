@@ -249,6 +249,10 @@ impl Authority {
             .find(|s| Arc::ptr_eq(&s.token, token))
             .ok_or(BlobError::Denied)?;
         let (b, a, aud) = (s.binding.clone(), s.action, s.audience.clone());
+        let policy = self.service_policy.as_ref().ok_or(BlobError::Denied)?;
+        if home(&b.recipient)? != policy.local_home() {
+            return Err(BlobError::Denied);
+        }
         self.check_retrieval_at(
             token,
             &b,

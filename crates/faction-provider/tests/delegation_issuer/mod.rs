@@ -172,6 +172,81 @@ fn actual_device_close_relay_issue_close_then_introspection_share_one_runtime() 
         );
     });
 }
+#[test]
+fn actual_device_record_requires_issuer_and_recipient_home_alignment() {
+    let c = Certs::new();
+    let t = wall_now() as i64;
+    let inspector = cert(
+        Some((&c.ca.0, &c.ca.1)),
+        "home-alignment-introspector",
+        72,
+        t - 60,
+        t + 3600,
+    );
+    for issuer_home in ["home.test", "other.test"] {
+        // Both homes are invited, and each public policy is independently valid.
+        // The approved recipient and retrieval policy still belong to home.test.
+        let mut entries = c.entries();
+        entries.remove(0);
+        let registry = Registry::new(
+            1,
+            0,
+            vec![
+                "home.test".into(),
+                "other.test".into(),
+                "foreign.test".into(),
+            ],
+            entries,
+        )
+        .unwrap();
+        let issuer_policy = ServicePolicy::new_issuer(
+            issuer_home.into(),
+            "issuer.test".into(),
+            vec![
+                (
+                    registration(&c.alice.0, issuer_home, "relay"),
+                    ServiceUse::Relay,
+                ),
+                (
+                    registration(&inspector.0, "foreign.test", "inspector"),
+                    ServiceUse::Introspection,
+                ),
+            ],
+            vec![IssuerRoute {
+                sender_home: "foreign.test".into(),
+                audience: "foreign.test/attachments".into(),
+                relay_client_id: "relay".into(),
+                introspection_client_id: "inspector".into(),
+            }],
+        )
+        .unwrap();
+        let r = Runtime::new(None);
+        r.control()
+            .replace_delegation_policy(registry, issuer_policy)
+            .unwrap();
+        r.control()
+            .replace_retrieval_policy(
+                RetrievalPolicy::new(
+                    "home.test".into(),
+                    vec![("foreign.test".into(), "foreign.test/attachments".into())],
+                )
+                .unwrap(),
+            )
+            .unwrap();
+        let record = with_session(&c, &r, &c.bob, |mut session| {
+            session
+                .retrieval_intent(object(), RetrievalAction::GetChunk { offset: 32 })
+                .unwrap()
+        });
+        // with_session has completed normal device-session cleanup before provisioning.
+        let provisioned = r.control().provision_retrieval(&record).is_ok();
+        assert_eq!(
+            provisioned,
+            issuer_home == "home.test",
+            "recipient home.test with issuer local home {issuer_home}"
+        );
+    }
+}
 #[cfg(feature = "durable-policy")]
 #[test]
 fn actual_v3_publication_drop_reopen_retains_roles_but_not_records_or_tokens() {
