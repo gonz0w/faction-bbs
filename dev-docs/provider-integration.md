@@ -75,6 +75,29 @@ cancellation/recovery controls, separately from the historical standalone IQ
 evidence below. Length and payload now share one bounded TLS frame write; wire
 bytes and existing limits are unchanged.
 
+## Invited-home attachment trust
+
+The settled [owner decision](https://github.com/gonz0w/faction-bbs/issues/294#issuecomment-6513127326)
+allows an independently operated, explicitly invited recipient home to vouch for
+its currently approved exact account, device and full identity for bounded
+ciphertext retrieval. The sender home must authenticate the exact issuer and
+validate the exact sender-home/service audience, committed ciphertext and
+fetch/status action, bounded expiry and current issuer, device, peer and reset
+policy on each operation. An exact retry requires fresh authorization. A home
+certificate or unverified forwarded principal alone cannot establish the device.
+
+A compromised trusted home can impersonate its device-approval claims and obtain
+ciphertext, but receives no end-to-end encryption keys or plaintext. The vouch
+cannot automatically enroll an encryption device, replace sender-verified peer
+identity or pins, or choose encryption recipients; member-side verification and
+encryption checks remain independent. BBS accounts, local approval and roles,
+circles and private-mail keys do not federate. See the [scope clarification](https://github.com/gonz0w/faction-bbs/issues/294#issuecomment-6513142126).
+
+This trust choice does not deliver a cross-home mechanism or service. The maintained
+native binary service above remains same-home only. [Issue #299](https://github.com/gonz0w/faction-bbs/issues/299)
+researches the concrete mechanism and current-revocation mapping; implementation
+and independently hosted cross-home operation remain future work.
+
 
 ## In-process IQ adapter
 
