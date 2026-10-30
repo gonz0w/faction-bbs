@@ -28,8 +28,9 @@ moves exactly six unchanged commands to the existing operator job after source
 qualification and before explicit builds. Both jobs keep complete source warmups.
 The same three optional jobs, 15-minute budgets, two compiler jobs, toolchain,
 serial tests, native/client/console controls and mandatory aggregator remain.
-The independent codec step is byte-identical. No runtime, dependency, lockfile,
-assertion or ordinary feature selection changed.
+The independent codec step is byte-identical. No runtime assertion was changed
+or weakened; dependency, lockfile and ordinary feature selections remain
+unchanged. The CI placement assertions were deliberately updated and extended.
 
 The checker enforces exact placement and one execution of each service command,
 including refusal of duplicates in extra steps or jobs. Actual test-first traces:
