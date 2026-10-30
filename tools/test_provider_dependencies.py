@@ -300,12 +300,6 @@ def ci_fixture():
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records,durable-policy -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records,durable-policy -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,durable-policy -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,durable-policy -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,delegation-records,durable-policy -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,delegation-records,durable-policy -- --test-threads=1
       - name: Validate the native authenticated attachment client
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -396,6 +390,12 @@ def ci_fixture():
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features durable-policy -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features operator -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,durable-policy -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,delegation-records,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,delegation-records,durable-policy -- --test-threads=1
           cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked
           cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked
           umask 077
@@ -824,5 +824,106 @@ class ServicesProfiles(unittest.TestCase):
                     with self.assertRaises(ValueError):policy.validate_ci(text.replace('          '+command+'\n','',1))
             for operation in ['clippy','test']:
                 command='cargo '+operation+' --manifest-path crates/faction-provider/Cargo.toml'+(' --all-targets' if operation=='clippy' else '')+' --release --locked --features '+profile+(' -- -D warnings' if operation=='clippy' else ' -- --test-threads=1')
-                self.assertIn(command,policy._job(text,'provider'))
+                self.assertIn(command,policy._job(text,'provider_operator'))
                 with self.assertRaises(ValueError):policy.validate_ci(text.replace('          '+command+'\n','',1))
+
+
+class ServiceProfileSchedulingCI(unittest.TestCase):
+    @staticmethod
+    def service_commands():
+        commands = []
+        for profile in ['delegation-services', 'delegation-services,durable-policy',
+                        'delegation-services,delegation-records,durable-policy']:
+            commands += [
+                'cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features ' + profile + ' -- -D warnings',
+                'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features ' + profile + ' -- --test-threads=1',
+            ]
+        return commands
+
+    @classmethod
+    def scheduled_fixture(cls):
+        text = ci_fixture()
+        for command in cls.service_commands():
+            text = text.replace('          ' + command + '\n', '')
+        build = '          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked\n'
+        return text.replace(build, ''.join('          ' + command + '\n'
+                                          for command in cls.service_commands()) + build)
+
+    def test_actual_service_pairs_run_once_in_operator_after_qualification_before_build(self):
+        text = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        provider = policy._job(text, 'provider')
+        operator = policy._job(text, 'provider_operator')
+        previous = operator.index('          python3 tools/check_provider_dependencies.py\n')
+        build = operator.index('          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider ')
+        for command in self.service_commands():
+            with self.subTest(command=command):
+                self.assertEqual(text.splitlines().count('          ' + command), 1)
+                self.assertNotIn('          ' + command + '\n', provider)
+                position = operator.index('          ' + command + '\n')
+                self.assertLess(previous, position)
+                self.assertLess(position, build)
+                previous = position
+
+    def test_guard_accepts_complete_scheduled_fixture(self):
+        policy.validate_ci(self.scheduled_fixture())
+
+    def test_service_pairs_cannot_be_omitted_duplicated_or_moved_to_provider(self):
+        good = self.scheduled_fixture()
+        provider_anchor = '      - name: Validate the native authenticated attachment client\n'
+        for command in self.service_commands():
+            line = '          ' + command + '\n'
+            for candidate in [good.replace(line, ''), good.replace(line, line + line),
+                              good.replace(line, '').replace(provider_anchor, line + provider_anchor)]:
+                with self.subTest(command=command), self.assertRaises(ValueError):
+                    policy.validate_ci(candidate)
+
+    def test_service_pairs_cannot_be_changed_unlocked_parallelized_or_skipped(self):
+        good = self.scheduled_fixture()
+        for command in self.service_commands():
+            variants = ['# ' + command, 'echo ' + command, command + ' || true',
+                        command + ' &', command.replace(' --locked', ''),
+                        command.replace(' --release', ''), 'if false; then ' + command + '; fi']
+            if command.startswith('cargo test '):
+                variants.append(command.replace(' --test-threads=1', ' --test-threads=2'))
+            else:
+                variants.append(command.replace(' -- -D warnings', ''))
+            for changed in variants:
+                with self.subTest(command=command, changed=changed), self.assertRaises(ValueError):
+                    policy.validate_ci(good.replace('          ' + command + '\n',
+                                                    '          ' + changed + '\n'))
+
+    def test_service_consumer_cannot_be_conditional_or_continue_on_error(self):
+        good = self.scheduled_fixture()
+        for prefix in ['    ', '        ']:
+            anchor = ('    name: Optional durable provider operator\n' if prefix == '    '
+                      else '      - name: Validate durable provider policy and operator\n')
+            for setting in ['if: false', 'continue-on-error: true']:
+                with self.subTest(prefix=prefix, setting=setting), self.assertRaises(ValueError):
+                    policy.validate_ci(good.replace(anchor, anchor + prefix + setting + '\n'))
+
+    def test_both_jobs_require_every_online_locked_warmup_before_compilation(self):
+        good = self.scheduled_fixture()
+        for name in ['provider', 'provider_operator']:
+            job = policy._job(good, name)
+            for command in policy.root_warm_commands() + policy.provider_warm_commands():
+                line = '          ' + command + '\n'
+                for replacement in ['', line.replace(' --locked', ''),
+                                    line.replace(' --locked', ' --locked --offline')]:
+                    with self.subTest(job=name, command=command, replacement=replacement), self.assertRaises(ValueError):
+                        policy.validate_ci(good.replace(job, job.replace(line, replacement, 1)))
+            command = '          ' + self.service_commands()[0] + '\n'
+            early = job.replace(command, '').replace('          python3 tools/check_provider_dependencies.py\n',
+                                                    command + '          python3 tools/check_provider_dependencies.py\n', 1)
+            with self.subTest(job=name), self.assertRaises(ValueError):
+                policy.validate_ci(good.replace(job, early))
+
+
+    def test_service_pairs_cannot_be_repeated_in_an_extra_step_or_job(self):
+        good = self.scheduled_fixture()
+        for command in self.service_commands():
+            step = '      - name: Duplicate service check\n        run: |\n          ' + command + '\n'
+            extra_job = '  duplicate_service:\n    runs-on: ubuntu-24.04\n    steps:\n' + step
+            for extra in [step, extra_job]:
+                candidate = good.replace('  documentation:\n', extra + '  documentation:\n')
+                with self.subTest(command=command, extra=extra), self.assertRaises(ValueError):
+                    policy.validate_ci(candidate)

@@ -144,7 +144,8 @@ def operator_commands():
     commands = [TOOLCHAIN] + root_warm_commands() + provider_warm_commands()
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check']
-    for feature in ['durable-policy', 'operator']:
+    for feature in ['durable-policy', 'operator', 'delegation-services',
+                    'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     commands += ['cargo build --manifest-path ' + REL + '/Cargo.toml --bin faction-provider --features operator --release --locked',
@@ -178,7 +179,7 @@ def validate_ci(text):
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
     commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features preparation -- --test-threads=1']
-    for feature in ['delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy']:
+    for feature in ['delegation-records', 'delegation-records,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
@@ -218,6 +219,12 @@ def validate_ci(text):
     require(_lines(selected, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'}) == operator_commands(),
             'operator CI must qualify all selected sources before locked API, CLI and native proof')
     validate_warm_order(operator)
+    # The six moved service validations belong only to the required operator
+    # consumer; reject extra copies outside that step as well.
+    for command in operator_commands():
+        if command.startswith(('cargo clippy ', 'cargo test ')) and ' --features delegation-services' in command:
+            require(sum(line.strip() == command for line in text.splitlines()) == 1,
+                    'service CI validation must run exactly once in the operator job')
     documentation = _job(text, 'documentation')
     require('    needs: [native_mail, provider, provider_operator]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()

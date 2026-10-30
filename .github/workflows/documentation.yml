@@ -161,12 +161,6 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records,durable-policy -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records,durable-policy -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,durable-policy -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,durable-policy -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,delegation-records,durable-policy -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,delegation-records,durable-policy -- --test-threads=1
       - name: Validate the native authenticated attachment client
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -257,6 +251,12 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features durable-policy -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features operator -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,durable-policy -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,delegation-records,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,delegation-records,durable-policy -- --test-threads=1
           cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked
           cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked
           umask 077
