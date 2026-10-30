@@ -18,6 +18,7 @@ from pathlib import Path
 from check_network_mail_dependencies import (REGISTRY, TARGETS, digest, require,
     scan_tree, scan_package, scan_local, selected_packages, verify_archive_source)
 from check_provider_auth_dependencies import existing_checks
+import check_delegation_codec_dependencies as delegation_codec
 
 ROOT = Path(__file__).resolve().parents[1]
 REL = 'crates/faction-provider'
@@ -29,10 +30,10 @@ def validate_profile(manifest, workspace):
     expected = {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
                 'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
                 'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [],
+                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [], 'delegation-issuer': ['delegation-records', 'delegation-services'], 'delegation-wire': ['delegation-issuer', 'dep:faction-delegation-codec'],
                     'preparation': ['dep:toml', 'toml/display'],
                     'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
-                'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
+                'dependencies': {'faction-delegation-codec': {'path': '../faction-delegation-codec', 'optional': True, 'default-features': False}, 'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
                                  'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
                     'rustix': {'version': '=1.1.5', 'default-features': False,
                                'features': ['std', 'fs', 'process'], 'optional': True},
@@ -76,12 +77,42 @@ def validate_product_edges(manifests):
 
 
 def validate_graph(metadata, enabled):
+    for package, features in selected_packages(metadata):
+        validate_codec_composition('device-provider' if enabled else 'ordinary-root', package, features)
     selected = [(package, features) for package, features in selected_packages(metadata)
                 if package['name'] == 'faction-provider']
     require(bool(selected) == enabled, 'provider leaked into an ordinary graph or is absent from the selected graph')
     if enabled:
         require(len(selected) == 1 and selected[0][1] == ['preparation'],
                 'client provider must select only preparation; operator and durability stay separate')
+
+
+
+# These exact selected identities were absent from all previously qualified root
+# graphs. Lockfile resolution alone never admits them to an ordinary/core graph.
+CODEC_ONLY = {('httparse','1.10.1'), ('form_urlencoded','1.2.2'), ('percent-encoding','2.3.2')}
+
+def validate_codec_composition(profile, package, features):
+    key=(package['name'],package.get('version'))
+    if package['name'] in {name for name, _ in CODEC_ONLY}:
+        require(profile in {'delegation-wire','delegation-wire,durable-policy'}, 'codec-only source leaked into ordinary/core graph')
+        delegation_codec.validate_selected(package,features)
+    if package['name']=='faction-delegation-codec':
+        require(profile in {'delegation-wire','delegation-wire,durable-policy'} and features==[], 'codec local edge leaked into ordinary/core graph')
+
+
+
+def provider_source_checks(root_lock, provider_lock):
+    normal={'package':[p for p in provider_lock['package'] if p['name'] not in {name for name,_ in CODEC_ONLY}]}
+    checks=existing_checks(root_lock,normal)
+    for p in provider_lock['package']:
+        if p['name'] not in {name for name,_ in CODEC_ONLY}: continue
+        key=(p['name'],p['version']); approved=delegation_codec.APPROVED.get(key)
+        full=(p['name'],p['version'],p.get('source'))
+        require(approved is not None and key in CODEC_ONLY and full not in checks
+                and p.get('source')==REGISTRY and p.get('checksum')==approved['checksum'], 'unreviewed optional codec locked source')
+        checks[full]=p['checksum']
+    return checks
 
 
 def check_inventory(path, current):
@@ -127,7 +158,7 @@ def root_warm_commands():
 def provider_warm_commands():
     return ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features ' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy'] for target in TARGETS]
+            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy'] for target in TARGETS]
 
 
 def validate_warm_order(job):
@@ -145,7 +176,7 @@ def operator_commands():
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check']
     for feature in ['durable-policy', 'operator', 'delegation-services',
-                    'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy']:
+                    'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     commands += ['cargo build --manifest-path ' + REL + '/Cargo.toml --bin faction-provider --features operator --release --locked',
@@ -170,7 +201,7 @@ def validate_ci(text):
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' > /dev/null' for target in TARGETS]
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features blob-iq > /dev/null' for target in TARGETS]
-    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy'] for target in TARGETS]
+    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy'] for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked -- -D warnings',
@@ -222,7 +253,7 @@ def validate_ci(text):
     # The six moved service validations belong only to the required operator
     # consumer; reject extra copies outside that step as well.
     for command in operator_commands():
-        if command.startswith(('cargo clippy ', 'cargo test ')) and ' --features delegation-services' in command:
+        if command.startswith(('cargo clippy ', 'cargo test ')) and any(' --features ' + f in command for f in ['delegation-services','delegation-issuer','delegation-wire']):
             require(sum(line.strip() == command for line in text.splitlines()) == 1,
                     'service CI validation must run exactly once in the operator job')
     documentation = _job(text, 'documentation')
@@ -247,7 +278,7 @@ def inventory():
             product[path.relative_to(ROOT).as_posix()] = tomllib.loads(path.read_text())
     validate_product_edges(product)
     lock = MANIFEST.parent / 'Cargo.lock'
-    checks = existing_checks(tomllib.loads((ROOT / 'Cargo.lock').read_text()), tomllib.loads(lock.read_text()))
+    checks = provider_source_checks(tomllib.loads((ROOT / 'Cargo.lock').read_text()), tomllib.loads(lock.read_text()))
     # An optional manifest edge is not a selected runtime edge. Check all three
     # ordinary product selections on every adopted platform before source review.
     for features in [[], ['faction-client/native-mail'], ['faction-client/network-mail']]:
@@ -268,6 +299,10 @@ def inventory():
                               ('delegation-services', ['delegation-services']),
                               ('delegation-services,durable-policy', ['delegation-services', 'durable-policy']),
                               ('delegation-services,delegation-records,durable-policy', ['delegation-services', 'delegation-records', 'durable-policy']),
+                              ('delegation-issuer', ['delegation-issuer']),
+                              ('delegation-issuer,durable-policy', ['delegation-issuer','durable-policy']),
+                              ('delegation-wire', ['delegation-wire']),
+                              ('delegation-wire,durable-policy', ['delegation-wire','durable-policy']),
                               ('device-provider', ['faction-client/device-provider'])]:
         graphs = {}
         for target in TARGETS:
@@ -282,6 +317,7 @@ def inventory():
             selected_checks = root_checks if profile == 'device-provider' else checks
             rows = []; local = []
             for package, selected_features in selected_packages(metadata):
+                validate_codec_composition(profile, package, selected_features)
                 path = Path(package['manifest_path'])
                 if package.get('source') is None:
                     local.append(scan_local(package, selected_features, ROOT))

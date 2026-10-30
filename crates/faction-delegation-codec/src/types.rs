@@ -13,6 +13,14 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 /// ```
 pub struct UnverifiedToken(String);
 impl UnverifiedToken {
+    /// Unverified canonical text only; bytes confer no issuer authority.
+    pub fn from_bytes(bytes: [u8; 32]) -> Self {
+        Self(URL_SAFE_NO_PAD.encode(bytes))
+    }
+    pub fn decode_bytes(&self) -> Result<[u8; 32], Error> {
+        Ok(*UnverifiedReference::parse(self.expose())?.expose_bytes())
+    }
+
     pub fn parse(value: &str) -> Result<Self, Error> {
         let stem = value.trim_end_matches('=');
         if value.is_empty()
@@ -36,6 +44,14 @@ impl UnverifiedToken {
 /// This checks no certificate digest or possession. The record scope is sensitive.
 pub struct UnverifiedReference([u8; 32]);
 impl UnverifiedReference {
+    /// Unverified syntax/data only, not a provisioned server reference.
+    pub fn from_bytes(bytes: [u8; 32]) -> Self {
+        Self(bytes)
+    }
+    pub fn expose_bytes(&self) -> &[u8; 32] {
+        &self.0
+    }
+
     pub fn parse(value: &str) -> Result<Self, Error> {
         if value.len() != 43 {
             return Err(Error);

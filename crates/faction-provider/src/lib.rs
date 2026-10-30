@@ -6,6 +6,8 @@ pub mod authority;
 pub use authority::retrieval;
 #[cfg(feature = "delegation-services")]
 pub use authority::services;
+#[cfg(feature = "delegation-issuer")]
+pub use retrieval::issuer;
 #[cfg(feature = "delegation-services")]
 pub use tls::ServiceSession;
 #[cfg(feature = "durable-policy")]

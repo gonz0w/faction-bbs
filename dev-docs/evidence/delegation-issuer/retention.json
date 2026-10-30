@@ -1,0 +1,47 @@
+{
+  "archives": {
+    "host-client": {
+      "archive_bytes": 40231343,
+      "archive_sha256": "57db672b25b58352891f0c2b57e4e208cdbbf0c57f20d8f74e564ef422eb6464",
+      "index_sha256": "11981ef3b07f885d9d450bd7f0f778a973d4600f0b0353aed8312309db4626e2",
+      "regular_files_verified": 967,
+      "result": "pass",
+      "skipped_nonregular": 0
+    },
+    "host-provider": {
+      "archive_bytes": 91041562,
+      "archive_sha256": "d3ae1a9254cc13984f1e648ab27fc11af8cb2e57065cc985c6c3771a77f8c746",
+      "index_sha256": "dc771da693dc0a0faa5e4bc95d2e5f085500d3bf602c914b2eabff404c9366eb",
+      "regular_files_verified": 1949,
+      "result": "pass",
+      "skipped_nonregular": 0
+    },
+    "native-lead": {
+      "archive_bytes": 417685919,
+      "archive_sha256": "4cc55e7d4eb908a4253f09f62e8346bbec250df270b29d9a232f30225cb9ffdf",
+      "index_sha256": "0f7e4ac533eeb9fb07044109288f9539002616be4b29b4c4275f416f4d255621",
+      "regular_files_verified": 159,
+      "result": "pass",
+      "skipped_nonregular": 1
+    },
+    "product-docs": {
+      "archive_bytes": 98761,
+      "archive_sha256": "33e22a60ba2bcb98a831ea19c5ab6b0dbbd3410a37a75f534ade961964d94452",
+      "index_sha256": "db24523275e2d47baf72cf3f59ea4a1e3fb6abb6f44e5dd643a68b995354ccb7",
+      "regular_files_verified": 46,
+      "result": "pass",
+      "skipped_nonregular": 0
+    }
+  },
+  "cleanup_receipt_sha256": "c80fd86dd8216a4e83018c6967c7f8eb5f9ba305604e82940e80c2e8aeab0a63",
+  "compiler_caches": "Disposable target trees excluded only where content-addressed tested executable objects already retained; native runtime retains its complete indexed tree.",
+  "native_inner_archive": {
+    "index_sha256": "6b104c1677c971774412bd3d43cfc650913adb59c12a801df5a33a7ba35ac267",
+    "result": "pass",
+    "verified_files": 10912,
+    "verified_hardlink_headers": 24
+  },
+  "schema": 1,
+  "scope": "Owner-private ignored evidence, indexed and every regular archive member byte-verified before marked scratch removal. No private fixture data is in Git.",
+  "skipped_entries": "One stopped serial Unix socket; no regular file omitted by this skip."
+}

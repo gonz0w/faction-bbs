@@ -157,7 +157,9 @@ def ci_fixture():
              '          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     for manifest, feature in [('crates/faction-delegation-codec/Cargo.toml', ''),
                                ('Cargo.toml', ' --features faction-client/device-provider'),
-                               ('crates/faction-provider/Cargo.toml', ' --features operator')]:
+                               ('crates/faction-provider/Cargo.toml', ' --features operator'),
+                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire'),
+                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy')]:
         for target in ['x86_64-unknown-linux-gnu', 'aarch64-unknown-netbsd', 'aarch64-apple-darwin']:
             lines.append('          cargo metadata --locked --manifest-path '+manifest+' --format-version 1 --filter-platform '+target+feature+' > /dev/null')
     lines += ['          python3 tools/check_delegation_codec_dependencies.py',
@@ -167,3 +169,22 @@ def ci_fixture():
     return '\n'.join(lines)+'\n'
 
 if __name__ == '__main__': unittest.main()
+
+class QualifiedProviderWireEdge(unittest.TestCase):
+    def test_exact_optional_wire_edge_is_allowed_with_ordinary_feature_refusals(self):
+        edge={'path':'../faction-delegation-codec','optional':True,'default-features':False}
+        candidate={'features':{'default':[],'delegation-issuer':['delegation-records','delegation-services'],
+                   'delegation-wire':['delegation-issuer','dep:faction-delegation-codec']},'dependencies':{'faction-delegation-codec':edge}}
+        policy.validate_product_edges({'crates/faction-provider/Cargo.toml':candidate})
+        for path in ['crates/faction-client/Cargo.toml','crates/other/Cargo.toml']:
+            with self.subTest(path=path),self.assertRaises(ValueError):policy.validate_product_edges({path:candidate})
+        for feature in ['default','operator','delegation-issuer','alias']:
+            changed=copy.deepcopy(candidate);changed['features'][feature]=['delegation-wire']
+            with self.subTest(feature=feature),self.assertRaises(ValueError):policy.validate_product_edges({'crates/faction-provider/Cargo.toml':changed})
+        for key,value in [('optional',False),('default-features',True),('path','../elsewhere')]:
+            changed=copy.deepcopy(candidate);changed['dependencies']['faction-delegation-codec'][key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):policy.validate_product_edges({'crates/faction-provider/Cargo.toml':changed})
+    def test_ordinary_graph_refuses_codec_only_registry_even_without_codec_node(self):
+        for name in ['httparse','form_urlencoded','percent-encoding']:
+            metadata={'packages':[{'id':'injected','name':name,'version':'999'}], 'resolve':{'nodes':[{'id':'injected','features':[]}]}}
+            with self.subTest(name=name),self.assertRaises(ValueError):policy.validate_isolation_graph(metadata)

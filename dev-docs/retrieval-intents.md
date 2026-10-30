@@ -30,9 +30,10 @@ not treat an approximate match or request-supplied value as authority.
 An intent does not prove that a foreign sender is currently approved or that an
 object is committed. The future sender-side authority and store integration must
 independently authenticate the issuer and audience and check both current policy
-and the exact committed object and action. This primitive supplies no issuer,
-HTTP endpoint, token, introspection, relay, callback, durable invitation or
-complete cross-home path. See [the delegation research](research/0063-invited-home-delegation.md)
+and the exact committed object and action. The record alone supplies no HTTP
+endpoint, relay, callback or complete cross-home path. The separate default-off
+[issuer](delegation-issuer.md) can provision a reference from the record after its
+exact originating session ownership ends. See [the delegation research](research/0063-invited-home-delegation.md)
 and [issue #300](https://github.com/gonz0w/faction-bbs/issues/300) and
 [issue #301](https://github.com/gonz0w/faction-bbs/issues/301).
 
@@ -71,7 +72,8 @@ renewal. Capacity exhaustion returns `Error::Store(private_blobs::Error::Busy)`;
 the existing session attempt limit returns `Error::Transport(tls::Stage::Limit)`.
 Each check revalidates current recipient and certificate, invited homes,
 policy identity, generation and reset, runtime state, the absolute monotonic
-deadline and the wall-clock high-water mark. Expiry and clock rollback are sticky:
+deadline and the whole-second wall-clock high-water mark. Expiry and detected
+clock rollback are sticky:
 recovery of the clock cannot revive an invalidated record. Registry, combined
 service policy or retrieval policy replacement, unavailable state, reset, stop, runtime drop and durable installation
 invalidate prior records. An invalid typed policy replacement preserves the

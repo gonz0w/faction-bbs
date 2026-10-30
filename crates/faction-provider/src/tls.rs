@@ -90,6 +90,14 @@ struct DeadlineIo {
     deadline: Instant,
     cancel: Arc<AtomicBool>,
     stop: Option<Arc<AtomicBool>>,
+    #[cfg(feature = "delegation-wire")]
+    wire_lifetime: Option<WireLifetime>,
+    #[cfg(all(test, feature = "delegation-wire"))]
+    read_retries: Option<Arc<std::sync::atomic::AtomicUsize>>,
+    #[cfg(all(test, feature = "delegation-wire"))]
+    response_write_gate: Option<Arc<ResponseWriteGate>>,
+    #[cfg(all(test, feature = "delegation-wire"))]
+    response_phase: bool,
     #[cfg(test)]
     write_observation: Option<Arc<socket_bio_tests::WriteRetryObservation>>,
 }
@@ -100,6 +108,14 @@ impl DeadlineIo {
             deadline,
             cancel,
             stop: None,
+            #[cfg(feature = "delegation-wire")]
+            wire_lifetime: None,
+            #[cfg(all(test, feature = "delegation-wire"))]
+            read_retries: None,
+            #[cfg(all(test, feature = "delegation-wire"))]
+            response_write_gate: None,
+            #[cfg(all(test, feature = "delegation-wire"))]
+            response_phase: false,
             #[cfg(test)]
             write_observation: None,
         }
@@ -108,12 +124,20 @@ impl DeadlineIo {
     fn observe_write_retries(&mut self, observed: Arc<socket_bio_tests::WriteRetryObservation>) {
         self.write_observation = Some(observed);
     }
-    fn timeout(&self) -> io::Result<Duration> {
+    fn timeout(&mut self) -> io::Result<Duration> {
         if self.stop.as_ref().is_some_and(|s| s.load(Ordering::SeqCst)) {
             return Err(io::Error::other("provider stopped"));
         }
         check(self.deadline, &self.cancel)
             .map_err(|stage| io::Error::other(format!("TLS {stage:?}")))?;
+        #[cfg(feature = "delegation-wire")]
+        if let Some(lifetime) = &mut self.wire_lifetime {
+            let wall = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| {
+                lifetime.invalid = true;
+                io::Error::other("wire clock unavailable")
+            })?;
+            lifetime.check(wall)?;
+        }
         Ok(self
             .deadline
             .saturating_duration_since(Instant::now())
@@ -135,6 +159,14 @@ impl Read for DeadlineIo {
                             | io::ErrorKind::TimedOut
                     ) =>
                 {
+                    #[cfg(all(test, feature = "delegation-wire"))]
+                    if matches!(
+                        e.kind(),
+                        io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut
+                    ) && let Some(retries) = &self.read_retries
+                    {
+                        retries.fetch_add(1, Ordering::SeqCst);
+                    }
                     continue;
                 }
                 result => return result,
@@ -144,6 +176,12 @@ impl Read for DeadlineIo {
 }
 impl Write for DeadlineIo {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        #[cfg(all(test, feature = "delegation-wire"))]
+        if self.response_phase
+            && let Some(gate) = self.response_write_gate.take()
+        {
+            gate.enter(self.deadline)?;
+        }
         loop {
             let timeout = self.timeout()?;
             self.socket.set_write_timeout(Some(timeout))?;
@@ -701,17 +739,46 @@ impl Drop for Session {
 #[cfg(feature = "delegation-services")]
 pub struct ServiceSession {
     stream: SslStream<DeadlineIo>,
-    leaf: X509,
-    credential: crate::services::ServiceCredential,
+    pub(crate) leaf: X509,
+    pub(crate) credential: crate::services::ServiceCredential,
     state: Weak<State>,
     start: Instant,
-    deadline: Instant,
-    cancel: Arc<AtomicBool>,
+    pub(crate) deadline: Instant,
+    pub(crate) cancel: Arc<AtomicBool>,
     attempted: usize,
     closed: bool,
 }
 #[cfg(feature = "delegation-services")]
 impl ServiceSession {
+    #[cfg(feature = "delegation-issuer")]
+    pub(crate) fn issuer_attempt(&mut self) -> Result<Arc<State>, Error> {
+        if self.attempted >= MAX_OPERATIONS {
+            return Err(Error::Transport(Stage::Limit));
+        }
+        self.attempted += 1;
+        let state = self
+            .state
+            .upgrade()
+            .ok_or(Error::Transport(Stage::Denied))?;
+        self.issuer_check(&state)?;
+        Ok(state)
+    }
+    #[cfg(feature = "delegation-issuer")]
+    pub(crate) fn issuer_check(&mut self, state: &State) -> Result<(), Error> {
+        if let Err(stage) = check(self.deadline, &self.cancel) {
+            self.closed = true;
+            return Err(Error::Transport(stage));
+        }
+        if self.closed
+            || state.stopped.load(Ordering::SeqCst)
+            || !leaf_current(&self.leaf, wall_now())
+        {
+            self.closed = true;
+            return Err(Error::Transport(Stage::Denied));
+        }
+        Ok(())
+    }
+
     /// Charge first, then recheck the exact registration and recipient. No I/O,
     /// callback, device authority, or store dispatch is performed under this lock.
     pub fn observe_recipient(
@@ -1169,5 +1236,51 @@ mod admission_cleanup_tests {
             );
             assert!(!state.active.load(Ordering::SeqCst));
         });
+    }
+}
+
+#[cfg(feature = "delegation-wire")]
+#[path = "http.rs"]
+mod http;
+#[cfg(all(test, feature = "delegation-issuer"))]
+#[path = "tls_issuer_tests.rs"]
+mod issuer_lifecycle_tests;
+
+// Test-only scheduling inside the actual response BIO write, armed after the
+// handshake and request dispatch. This does not simulate kernel backpressure.
+#[cfg(all(test, feature = "delegation-wire"))]
+struct ResponseWriteGate {
+    entered: std::sync::mpsc::Sender<Instant>,
+    release: std::sync::Mutex<std::sync::mpsc::Receiver<()>>,
+}
+#[cfg(all(test, feature = "delegation-wire"))]
+impl ResponseWriteGate {
+    fn enter(&self, deadline: Instant) -> io::Result<()> {
+        self.entered
+            .send(deadline)
+            .map_err(|_| io::Error::other("test response gate unavailable"))?;
+        self.release
+            .lock()
+            .map_err(|_| io::Error::other("test response gate poisoned"))?
+            .recv_timeout(CYCLE_LIMIT + Duration::from_secs(1))
+            .map_err(|_| io::Error::other("bounded test response gate expired"))
+    }
+}
+
+#[cfg(feature = "delegation-wire")]
+struct WireLifetime {
+    expires: Duration,
+    highwater: Duration,
+    invalid: bool,
+}
+#[cfg(feature = "delegation-wire")]
+impl WireLifetime {
+    fn check(&mut self, now: Duration) -> io::Result<()> {
+        if self.invalid || now < self.highwater || now >= self.expires {
+            self.invalid = true;
+            return Err(io::Error::other("wire lifetime unavailable"));
+        }
+        self.highwater = now;
+        Ok(())
     }
 }

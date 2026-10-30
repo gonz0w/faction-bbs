@@ -45,8 +45,9 @@ fn framing(headers: &[httparse::Header<'_>], media: &str, request: bool) -> Resu
             return Err(Error);
         }
         match name.as_str() {
-            "transfer-encoding" | "content-encoding" | "location" | "connection" | "upgrade"
-            | "expect" => return Err(Error),
+            "transfer-encoding" | "content-encoding" | "location" | "upgrade" | "expect" => {
+                return Err(Error);
+            }
             "content-length" => {
                 if value.is_empty()
                     || !value.bytes().all(|b| b.is_ascii_digit())
@@ -73,6 +74,7 @@ fn framing(headers: &[httparse::Header<'_>], media: &str, request: bool) -> Resu
                 host(value)?;
                 hostname = true;
             }
+            "connection" if value != "close" => return Err(Error),
             "cache-control" => {
                 if value != "no-store" {
                     return Err(Error);
@@ -87,24 +89,63 @@ fn framing(headers: &[httparse::Header<'_>], media: &str, request: bool) -> Resu
     }
     length.ok_or(Error)
 }
-fn request_body<'a>(bytes: &'a [u8], route: &str) -> Result<&'a [u8], Error> {
+/// Bounded unverified framing data for an incremental caller. No TLS/policy check.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum UnverifiedEndpoint {
+    Token,
+    Introspection,
+}
+pub struct UnverifiedRequestHead {
+    pub host: String,
+    pub endpoint: UnverifiedEndpoint,
+    pub content_length: usize,
+}
+pub fn decode_http_request_head(bytes: &[u8]) -> Result<UnverifiedRequestHead, Error> {
     let end = boundary(bytes)?;
+    if end != bytes.len() {
+        return Err(Error);
+    }
     let mut storage = [httparse::EMPTY_HEADER; MAX_HEADERS];
     let mut request = httparse::Request::new(&mut storage);
-    let parsed = request.parse(&bytes[..end]).map_err(|_| Error)?;
-    if parsed != httparse::Status::Complete(end)
+    if request.parse(bytes).map_err(|_| Error)? != httparse::Status::Complete(end)
         || request.method != Some("POST")
-        || request.path != Some(route)
         || request.version != Some(1)
     {
         return Err(Error);
     }
-    let length = framing(request.headers, FORM, true)?;
-    if bytes.len() - end != length {
+    let endpoint = match request.path {
+        Some("/oauth/token") => UnverifiedEndpoint::Token,
+        Some("/oauth/introspect") => UnverifiedEndpoint::Introspection,
+        _ => return Err(Error),
+    };
+    let content_length = framing(request.headers, FORM, true)?;
+    let host = request
+        .headers
+        .iter()
+        .find(|h| h.name.eq_ignore_ascii_case("host"))
+        .ok_or(Error)?;
+    let host = std::str::from_utf8(host.value)
+        .map_err(|_| Error)?
+        .to_owned();
+    Ok(UnverifiedRequestHead {
+        host,
+        endpoint,
+        content_length,
+    })
+}
+fn request_body<'a>(bytes: &'a [u8], route: &str) -> Result<&'a [u8], Error> {
+    let end = boundary(bytes)?;
+    let head = decode_http_request_head(&bytes[..end])?;
+    let expected = match head.endpoint {
+        UnverifiedEndpoint::Token => "/oauth/token",
+        UnverifiedEndpoint::Introspection => "/oauth/introspect",
+    };
+    if expected != route || bytes.len() - end != head.content_length {
         return Err(Error);
     }
     Ok(&bytes[end..])
 }
+
 fn response_body(bytes: &[u8]) -> Result<&[u8], Error> {
     let end = boundary(bytes)?;
     let mut storage = [httparse::EMPTY_HEADER; MAX_HEADERS];
@@ -124,12 +165,12 @@ fn response_body(bytes: &[u8]) -> Result<&[u8], Error> {
 }
 fn request(hostname: &str, route: &str, body: Vec<u8>) -> Result<Vec<u8>, Error> {
     host(hostname)?;
-    let mut bytes=format!("POST {route} HTTP/1.1\r\nHost: {hostname}\r\nContent-Type: {FORM}\r\nContent-Length: {}\r\n\r\n",body.len()).into_bytes();
+    let mut bytes=format!("POST {route} HTTP/1.1\r\nConnection: close\r\nHost: {hostname}\r\nContent-Type: {FORM}\r\nContent-Length: {}\r\n\r\n",body.len()).into_bytes();
     bytes.extend(body);
     Ok(bytes)
 }
 fn response(status: &str, body: &[u8]) -> Vec<u8> {
-    let mut bytes=format!("HTTP/1.1 {status}\r\nContent-Type: {JSON}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nPragma: no-cache\r\n\r\n",body.len()).into_bytes();
+    let mut bytes=format!("HTTP/1.1 {status}\r\nConnection: close\r\nContent-Type: {JSON}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nPragma: no-cache\r\n\r\n",body.len()).into_bytes();
     bytes.extend_from_slice(body);
     bytes
 }

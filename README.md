@@ -67,8 +67,11 @@ by the sysop; experiments and future protocols are separate from normal operatio
   Cross-home attachment authorization is under development. The default-off
   [local retrieval-intent API](dev-docs/retrieval-intents.md) has host and NetBSD
   software qualification. A separate default-off [service observation API](dev-docs/service-observations.md)
-  checks current recipient approval for an authenticated invited service; remote
-  authorization and full cross-home delivery remain incomplete.
+  checks current recipient approval for an authenticated invited service. The
+  default-off library [retrieval issuer](dev-docs/delegation-issuer.md) adds an
+  explicitly permitted certificate-bound token and optional one-operation HTTP
+  carrier, with [host and NetBSD software evidence](dev-docs/evidence/delegation-issuer/README.md).
+  Remote authorization and full cross-home delivery remain incomplete.
 
 ## What you can do
 

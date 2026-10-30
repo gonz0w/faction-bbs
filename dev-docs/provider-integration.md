@@ -98,6 +98,13 @@ The default-off `delegation-services` feature supplies a separate
 an authenticated invited service. It does not create a device actor or grant
 store access.
 
+The default-off `delegation-issuer` feature adds a library-only, certificate-bound
+[retrieval issuer](delegation-issuer.md) for an explicitly permitted relay and
+introspection service. Its optional `delegation-wire` carrier serves one bounded
+HTTP operation per verified service connection. Its metadata is not a Store grant
+or sender verification. The device-derived recipient home must match the issuer
+policy's local home before reference provisioning and later authority checks.
+
 The default-off `delegation-records` feature supplies a local, session-derived
 [retrieval intent](retrieval-intents.md) for trusted embedders. It is not a remote
 read grant and does not establish sender policy or committed object state. The

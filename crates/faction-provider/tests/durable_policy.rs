@@ -295,3 +295,21 @@ fn service_bearing_v2_is_preserved_or_refused_by_the_actual_feature_build() {
     assert!(Runtime::reopen_durable(&f.policy()).is_err());
     assert_eq!(fs::read(&current).unwrap(), bytes);
 }
+#[test]
+fn actual_active_and_tombstone_v3_fixtures_require_issuer_support_without_rewrite() {
+    for bytes in [
+        include_bytes!("fixtures/issuer-active-v3.bin").as_slice(),
+        include_bytes!("fixtures/issuer-tombstone-v3.bin").as_slice(),
+    ] {
+        let f = Fixture::new();
+        let r =
+            Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![entry(1, 1)])).unwrap();
+        drop(r);
+        let snapshot = f.policy().join("provider-policy.snapshot");
+        fs::write(&snapshot, bytes).unwrap();
+        let result = Runtime::reopen_durable(&f.policy());
+        assert_eq!(result.is_ok(), cfg!(feature = "delegation-issuer"));
+        drop(result);
+        assert_eq!(fs::read(snapshot).unwrap(), bytes);
+    }
+}

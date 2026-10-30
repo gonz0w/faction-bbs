@@ -446,6 +446,9 @@ fn changed_live_root_or_missing_established_snapshot_fails_closed_before_publica
         }
     }
 }
+#[cfg(feature = "delegation-issuer")]
+#[path = "issuer_tests.rs"]
+mod issuer_tests;
 #[cfg(feature = "delegation-services")]
 #[path = "service_tests.rs"]
 mod service_tests;

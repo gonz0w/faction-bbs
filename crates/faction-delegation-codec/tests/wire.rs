@@ -208,7 +208,7 @@ fn complete_syntax_and_numeric_invariants_fail_closed() {
         ("\"iat\":100", "\"iat\":1e2"),
         ("\"size\":4112", "\"size\":15"),
         ("\"size\":4112", "\"size\":1048593"),
-        ("\"faction_offset\":4096", "\"faction_offset\":4112"),
+        ("\"faction_offset\":4096", "\"faction_offset\":4113"),
         ("bob@recipient.example", "bob@recipient"),
         ("bob@recipient.example", "Bob@recipient.example"),
         ("\"faction_generation\":1", "\"faction_generation\":0"),
@@ -297,13 +297,13 @@ fn json_bounds_depth_types_and_unicode_are_strict() {
 
 #[test]
 fn fixed_http_requests_and_responses_are_exact() {
-    let expected = http_request("/oauth/token", TOKEN_FORM);
+    let expected = with_connection_close(http_request("/oauth/token", TOKEN_FORM));
     assert_eq!(
         encode_token_http("recipient.example", &request()).unwrap(),
         expected
     );
     assert_eq!(decode_token_http(&expected).unwrap().client_id, "relay-1");
-    let expected = http_request("/oauth/introspect", INTROSPECTION_FORM);
+    let expected = with_connection_close(http_request("/oauth/introspect", INTROSPECTION_FORM));
     assert_eq!(
         encode_introspection_http("recipient.example", &introspection()).unwrap(),
         expected
@@ -315,7 +315,7 @@ fn fixed_http_requests_and_responses_are_exact() {
     let token = decode_token_json(TOKEN_JSON).unwrap();
     assert_eq!(
         encode_token_response_http(&token).unwrap(),
-        http_response(TOKEN_JSON)
+        with_connection_close(http_response(TOKEN_JSON))
     );
     assert_eq!(
         decode_token_response_http(&http_response(TOKEN_JSON))
@@ -326,7 +326,7 @@ fn fixed_http_requests_and_responses_are_exact() {
     let inactive = UnverifiedIntrospection::Inactive;
     assert_eq!(
         encode_introspection_response_http(&inactive).unwrap(),
-        http_response(br#"{"active":false}"#)
+        with_connection_close(http_response(br#"{"active":false}"#))
     );
     assert!(matches!(
         decode_introspection_response_http(&http_response(br#"{"active":false}"#)).unwrap(),
@@ -475,7 +475,7 @@ fn all_purpose_specific_actions_and_encoder_mutations() {
     assert!(encode_introspection_json(&parsed).is_err());
     let mut parsed = decode_introspection_json(ACTIVE.as_bytes()).unwrap();
     if let UnverifiedIntrospection::Retrieval { action, .. } = &mut parsed {
-        *action = UnverifiedRetrievalAction::GetChunk { offset: 4112 };
+        *action = UnverifiedRetrievalAction::GetChunk { offset: 4113 };
     }
     assert!(encode_introspection_json(&parsed).is_err());
     let mut parsed = decode_token_json(TOKEN_JSON).unwrap();
@@ -538,4 +538,113 @@ fn http_rejects_bare_line_feeds_and_leading_empty_lines() {
     ] {
         assert!(decode_token_response_http(&bytes).is_err());
     }
+}
+#[test]
+fn retrieval_eof_offset_is_preserved_by_decoder() {
+    let eof = ACTIVE.replace("\"faction_offset\":4096", "\"faction_offset\":4112");
+    let parsed = decode_introspection_json(eof.as_bytes()).unwrap();
+    assert!(matches!(
+        parsed,
+        UnverifiedIntrospection::Retrieval {
+            action: UnverifiedRetrievalAction::GetChunk { offset: 4112 },
+            ..
+        }
+    ));
+}
+#[test]
+fn retrieval_eof_offset_is_preserved_by_encoder() {
+    let mut parsed = decode_introspection_json(ACTIVE.as_bytes()).unwrap();
+    if let UnverifiedIntrospection::Retrieval { action, .. } = &mut parsed {
+        *action = UnverifiedRetrievalAction::GetChunk { offset: 4112 };
+    } else {
+        panic!();
+    }
+    let encoded = encode_introspection_json(&parsed).unwrap();
+    let parsed = decode_introspection_json(&encoded).unwrap();
+    assert!(matches!(
+        parsed,
+        UnverifiedIntrospection::Retrieval {
+            action: UnverifiedRetrievalAction::GetChunk { offset: 4112 },
+            ..
+        }
+    ));
+}
+#[test]
+fn explicit_connection_close_is_supported_without_other_connection_modes() {
+    let original = String::from_utf8(http_request("/oauth/token", TOKEN_FORM)).unwrap();
+    let close = original.replace("\r\nHost:", "\r\nConnection: close\r\nHost:");
+    assert!(decode_token_http(close.as_bytes()).is_ok());
+    for value in ["keep-alive", "upgrade", "close, keep-alive", "Close", ""] {
+        assert!(
+            decode_token_http(
+                close
+                    .replace("Connection: close", &format!("Connection: {value}"))
+                    .as_bytes()
+            )
+            .is_err()
+        );
+    }
+    assert!(
+        decode_token_http(
+            close
+                .replace(
+                    "Connection: close",
+                    "Connection: close\r\nconnection: close"
+                )
+                .as_bytes()
+        )
+        .is_err()
+    );
+}
+#[test]
+fn encoders_explicitly_close_the_single_operation_carrier() {
+    let request = encode_token_http("recipient.example", &request()).unwrap();
+    assert!(
+        request
+            .windows(b"\r\nConnection: close\r\n".len())
+            .any(|w| w == b"\r\nConnection: close\r\n")
+    );
+    let response = encode_refusal_http(UnverifiedRefusal::InvalidRequest);
+    assert!(
+        response
+            .windows(b"\r\nConnection: close\r\n".len())
+            .any(|w| w == b"\r\nConnection: close\r\n")
+    );
+}
+#[test]
+fn canonical_unverified_bytes_helpers_reuse_the_qualified_base64_codec() {
+    let bytes = [23; 32];
+    let reference = UnverifiedReference::from_bytes(bytes);
+    assert_eq!(reference.expose_bytes(), &bytes);
+    assert_eq!(
+        UnverifiedReference::parse(&reference.encoded())
+            .unwrap()
+            .expose_bytes(),
+        &bytes
+    );
+    let token = UnverifiedToken::from_bytes(bytes);
+    assert_eq!(token.decode_bytes().unwrap(), bytes);
+    assert!(
+        UnverifiedToken::parse("secret+/=")
+            .unwrap()
+            .decode_bytes()
+            .is_err()
+    );
+}
+#[test]
+fn unverified_head_bounds_content_length_and_preserves_exact_host_and_endpoint() {
+    let full = http_request("/oauth/token", TOKEN_FORM);
+    let end = full.windows(4).position(|w| w == b"\r\n\r\n").unwrap() + 4;
+    let head = decode_http_request_head(&full[..end]).unwrap();
+    assert_eq!(head.host, "recipient.example");
+    assert_eq!(head.content_length, TOKEN_FORM.len());
+    assert_eq!(head.endpoint, UnverifiedEndpoint::Token);
+    assert!(decode_http_request_head(&full).is_err());
+    assert!(decode_http_request_head(&full[..end - 1]).is_err());
+}
+
+fn with_connection_close(message: Vec<u8>) -> Vec<u8> {
+    let text = String::from_utf8(message).unwrap();
+    text.replacen("\r\n", "\r\nConnection: close\r\n", 1)
+        .into_bytes()
 }

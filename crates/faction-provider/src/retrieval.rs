@@ -10,6 +10,9 @@ use std::{
 };
 
 pub const MAX_RECORDS: usize = 8;
+#[cfg(feature = "delegation-issuer")]
+#[path = "issuer.rs"]
+pub mod issuer;
 /// Trusted local configuration. Construction validates data, not service identity.
 /// A request cannot select this policy, its local home or its exact audience.
 pub struct RetrievalPolicy {
@@ -166,6 +169,10 @@ struct RecordSlot {
     reset_epoch: u64,
     policy: Arc<()>,
     deadline: Instant,
+    #[cfg(feature = "delegation-issuer")]
+    origin: Weak<std::sync::atomic::AtomicBool>,
+    #[cfg(feature = "delegation-issuer")]
+    issuer: Option<issuer::ReferenceState>,
 }
 #[derive(Default)]
 pub(super) struct Records {
@@ -173,6 +180,8 @@ pub(super) struct Records {
     slots: Vec<RecordSlot>,
     wall_highwater: u64,
     mono_highwater: Option<Instant>,
+    #[cfg(feature = "delegation-issuer")]
+    precise_highwater: Option<std::time::Duration>,
 }
 impl Records {
     pub(super) fn invalidate(&mut self) {
@@ -260,6 +269,10 @@ impl Authority {
             reset_epoch: self.reset_epoch,
             policy: policy.identity.clone(),
             deadline: source.deadline,
+            #[cfg(feature = "delegation-issuer")]
+            origin: Arc::downgrade(&source.connection.closed),
+            #[cfg(feature = "delegation-issuer")]
+            issuer: None,
         });
         Ok(token)
     }
