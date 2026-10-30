@@ -64,6 +64,8 @@ pub struct ServicePolicy {
     uses: Vec<ServiceUse>,
     #[cfg(feature = "delegation-issuer")]
     pub(crate) issuer: Option<IssuerPolicy>,
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) resource: Option<Vec<ResourceAssociation>>,
 }
 impl ServicePolicy {
     pub fn new(
@@ -90,6 +92,8 @@ impl ServicePolicy {
             registrations,
             #[cfg(feature = "delegation-issuer")]
             issuer: None,
+            #[cfg(feature = "delegation-verifier")]
+            resource: None,
         })
     }
     pub fn local_home(&self) -> &str {
@@ -242,6 +246,13 @@ impl Authority {
             .iter()
             .find(|e| e.certificate_sha256 == digest)
             .ok_or(BlobError::Denied)?;
+        #[cfg(feature = "delegation-verifier")]
+        if matches!(
+            p.service_use(&e.identity()),
+            Some(ServiceUse::OutboundIntrospection | ServiceUse::IssuerEndpoint)
+        ) {
+            return Err(BlobError::Denied);
+        }
         p.current(&e.identity(), digest, leaf, now, r)?;
         Ok(ServiceCredential {
             identity: e.identity(),
@@ -314,6 +325,8 @@ impl Authority {
         policy: ServicePolicy,
     ) -> Result<(), BlobError> {
         policy.validate_registry(&registry)?;
+        #[cfg(feature = "delegation-verifier")]
+        let remote_history = self.proposed_remote_history(&registry, &policy)?;
         let mut history = self.service_history.clone();
         for e in &policy.registrations {
             if self.history.iter().any(|(d, _)| d == &e.certificate_sha256)
@@ -339,6 +352,11 @@ impl Authority {
         }
         self.replace_registry(registry)?;
         self.service_history = history;
+        #[cfg(feature = "delegation-verifier")]
+        {
+            self.remote_history = remote_history;
+            self.service_format_v4 |= policy.resource.is_some();
+        }
         #[cfg(feature = "delegation-issuer")]
         {
             self.service_format_v3 |= policy.issuer.is_some();
@@ -365,6 +383,12 @@ mod tests;
 /// A registration has exactly one explicit purpose; authentication adds no other use.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ServiceUse {
+    #[cfg(feature = "delegation-verifier")]
+    ResourceClient,
+    #[cfg(feature = "delegation-verifier")]
+    OutboundIntrospection,
+    #[cfg(feature = "delegation-verifier")]
+    IssuerEndpoint,
     Observation,
     #[cfg(feature = "delegation-issuer")]
     Relay,
@@ -409,6 +433,13 @@ impl ServicePolicy {
         }
         for (i, (entry, purpose)) in entries.iter().enumerate() {
             entry.validate()?;
+            #[cfg(feature = "delegation-verifier")]
+            if !matches!(
+                purpose,
+                ServiceUse::Observation | ServiceUse::Relay | ServiceUse::Introspection
+            ) {
+                return Err(BlobError::Invalid);
+            }
             if (*purpose == ServiceUse::Relay) != (entry.home == local_home)
                 || entries[..i].iter().any(|(old, _)| {
                     old.identity() == entry.identity()
@@ -450,6 +481,8 @@ impl ServicePolicy {
             registrations,
             uses,
             issuer: Some(IssuerPolicy { issuer, routes }),
+            #[cfg(feature = "delegation-verifier")]
+            resource: None,
         })
     }
 }
@@ -560,3 +593,17 @@ impl Control {
         }))
     }
 }
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "resource_policy.rs"]
+mod resource_policy;
+#[cfg(feature = "delegation-verifier")]
+pub(crate) use resource_policy::RemoteFloor;
+#[cfg(feature = "delegation-verifier")]
+pub use resource_policy::ResourceAssociation;
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "resource.rs"]
+mod resource;
+#[cfg(feature = "delegation-verifier")]
+pub use resource::PendingRetrieval;

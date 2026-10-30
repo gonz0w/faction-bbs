@@ -590,3 +590,71 @@ fn no_forged_source_certificate_connection_or_stale_handle_can_mint() {
     );
     assert!(a.records.slots.is_empty());
 }
+#[cfg(feature = "delegation-verifier")]
+#[test]
+fn physical_delegation_reservation_survives_invalidation_reset_and_old_weak_drop_without_an_extra_slot_pool()
+ {
+    let leaf = leaf();
+    let mut a = authority(&leaf);
+    let mono = Instant::now();
+    let now = Moment { wall: 100, mono };
+    let deadline = mono + Duration::from_secs(10);
+    let records: Vec<_> = (0..7)
+        .map(|_| create(&mut a, &leaf, binding(), now, deadline))
+        .collect();
+    let lease = a.records.reserve_delegated(now).unwrap();
+    assert_eq!(a.records.charged_len(), 8);
+    assert!(matches!(
+        a.records.reserve_delegated(now),
+        Err(BlobError::Busy)
+    ));
+    let connection = a.open_connection();
+    let handle = a
+        .authenticate(
+            &connection,
+            openssl::sha::sha256(&leaf.to_der().unwrap()),
+            100,
+            0,
+        )
+        .unwrap();
+    assert!(matches!(
+        a.create_retrieval(
+            Source {
+                connection: &connection,
+                handle: &handle,
+                leaf: &leaf,
+                deadline,
+                elapsed_ms: 0
+            },
+            binding(),
+            RetrievalAction::Status,
+            now
+        ),
+        Err(BlobError::Busy)
+    ));
+    a.close_connection(&connection);
+    drop(handle);
+    drop(connection);
+    a.records.invalidate();
+    assert_eq!(a.records.charged_len(), 1);
+    assert!(matches!(
+        a.records.reserve_delegated(now),
+        Err(BlobError::Busy)
+    ));
+    a.reset(1).unwrap();
+    assert!(matches!(
+        a.records.reserve_delegated(now),
+        Err(BlobError::Busy)
+    ));
+    let old = Arc::downgrade(&lease);
+    drop(lease);
+    let newer = a.records.reserve_delegated(now).unwrap();
+    drop(old);
+    assert!(matches!(
+        a.records.reserve_delegated(now),
+        Err(BlobError::Busy)
+    ));
+    drop(newer);
+    assert!(a.records.reserve_delegated(now).is_ok());
+    drop(records);
+}

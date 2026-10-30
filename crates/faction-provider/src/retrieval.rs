@@ -178,12 +178,34 @@ struct RecordSlot {
 pub(super) struct Records {
     policy: Option<RetrievalPolicy>,
     slots: Vec<RecordSlot>,
+    #[cfg(feature = "delegation-verifier")]
+    physical: Weak<()>,
     wall_highwater: u64,
     mono_highwater: Option<Instant>,
     #[cfg(feature = "delegation-issuer")]
     precise_highwater: Option<std::time::Duration>,
 }
 impl Records {
+    pub(super) fn charged_len(&self) -> usize {
+        #[cfg(feature = "delegation-verifier")]
+        {
+            self.slots.len() + usize::from(self.physical.strong_count() != 0)
+        }
+        #[cfg(not(feature = "delegation-verifier"))]
+        {
+            self.slots.len()
+        }
+    }
+    #[cfg(feature = "delegation-verifier")]
+    pub(super) fn reserve_delegated(&mut self, now: Moment) -> Result<Arc<()>, BlobError> {
+        self.prune(now)?;
+        if self.physical.strong_count() != 0 || self.charged_len() >= MAX_RECORDS {
+            return Err(BlobError::Busy);
+        }
+        let lease = Arc::new(());
+        self.physical = Arc::downgrade(&lease);
+        Ok(lease)
+    }
     pub(super) fn invalidate(&mut self) {
         self.slots.clear();
     }
@@ -253,7 +275,7 @@ impl Authority {
         let policy = self.records.policy.as_ref().ok_or(BlobError::Denied)?;
         let audience = policy.audience(&binding)?.to_owned();
         validate_binding(registry, &binding, now.wall)?;
-        if self.records.slots.len() >= MAX_RECORDS {
+        if self.records.charged_len() >= MAX_RECORDS {
             return Err(BlobError::Busy);
         }
         let token = Arc::new(());

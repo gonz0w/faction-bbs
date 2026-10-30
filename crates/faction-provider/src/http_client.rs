@@ -11,6 +11,8 @@ pub struct HttpEndpoint {
     credentials: ClientCredentials,
     #[cfg(test)]
     read_retries: Option<Arc<std::sync::atomic::AtomicUsize>>,
+    #[cfg(all(test, feature = "delegation-verifier"))]
+    request_gate: Option<Arc<ResponseWriteGate>>,
 }
 impl HttpEndpoint {
     pub fn new(
@@ -41,6 +43,8 @@ impl HttpEndpoint {
             credentials,
             #[cfg(test)]
             read_retries: None,
+            #[cfg(all(test, feature = "delegation-verifier"))]
+            request_gate: None,
         })
     }
     fn exchange(
@@ -113,6 +117,11 @@ impl HttpEndpoint {
             probe() && leaf_current(&client, wall_now()) && leaf_current(&leaf, wall_now())
         }));
         stream.get_mut().deadline = deadline;
+        #[cfg(all(test, feature = "delegation-verifier"))]
+        {
+            stream.get_mut().response_phase = true;
+            stream.get_mut().response_write_gate = self.request_gate.clone();
+        }
         stream
             .write_all(request)
             .and_then(|_| stream.flush())
@@ -241,3 +250,71 @@ mod tests {
 #[cfg(test)]
 #[path = "http_client_tests.rs"]
 mod lifecycle_tests;
+
+#[cfg(feature = "delegation-verifier")]
+impl HttpEndpoint {
+    pub(crate) fn matches_resource(
+        &self,
+        association: &crate::services::ResourceAssociation,
+        outgoing: &crate::services::ServiceRegistration,
+        endpoint: &crate::services::ServiceRegistration,
+    ) -> bool {
+        self.address == association.address
+            && self.host == association.http_host
+            && self.server_name == endpoint.dns_san
+            && self.leaf_pin == endpoint.certificate_sha256
+            && self
+                .credentials
+                .ca
+                .to_der()
+                .is_ok_and(|der| sha256(&der) == association.ca_sha256)
+            && self
+                .credentials
+                .certificate
+                .to_der()
+                .is_ok_and(|der| sha256(&der) == outgoing.certificate_sha256)
+            && self
+                .credentials
+                .certificate
+                .subject_alt_names()
+                .is_some_and(|names| {
+                    names
+                        .iter()
+                        .any(|name| name.dnsname() == Some(outgoing.dns_san.as_str()))
+                })
+            && leaf_current(&self.credentials.certificate, wall_now())
+    }
+    pub(crate) fn introspect_checked(
+        &self,
+        query: &codec::UnverifiedIntrospectionRequest,
+        deadline: Instant,
+        cancel: Arc<AtomicBool>,
+        probe: Arc<dyn Fn() -> bool + Send + Sync>,
+    ) -> Result<codec::UnverifiedIntrospection, Stage> {
+        let bytes =
+            codec::encode_introspection_http(&self.host, query).map_err(|_| Stage::Frame)?;
+        codec::decode_introspection_response_http(&self.exchange(&bytes, deadline, cancel, probe)?)
+            .map_err(|_| Stage::Frame)
+    }
+}
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+impl HttpEndpoint {
+    pub(crate) fn hold_request(
+        &mut self,
+        entered: std::sync::mpsc::Sender<Instant>,
+        release: std::sync::mpsc::Receiver<()>,
+    ) {
+        self.request_gate = Some(Arc::new(ResponseWriteGate {
+            entered,
+            release: std::sync::Mutex::new(release),
+        }));
+    }
+}
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+impl HttpEndpoint {
+    pub(crate) fn observe_resource_reads(&mut self, reads: Arc<std::sync::atomic::AtomicUsize>) {
+        self.read_retries = Some(reads);
+    }
+}

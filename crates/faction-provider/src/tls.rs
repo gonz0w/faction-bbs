@@ -758,6 +758,10 @@ pub struct ServiceSession {
 }
 #[cfg(feature = "delegation-services")]
 impl ServiceSession {
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) fn original_service_attempts(&self) -> usize {
+        self.attempted
+    }
     #[cfg(feature = "delegation-issuer")]
     pub(crate) fn issuer_attempt(&mut self) -> Result<Arc<State>, Error> {
         if self.attempted >= MAX_OPERATIONS {
@@ -1298,3 +1302,6 @@ impl WireLifetime {
 mod http_client;
 #[cfg(feature = "delegation-wire")]
 pub use http_client::HttpEndpoint;
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+pub(crate) use issuer_lifecycle_tests::cert as test_certificate;

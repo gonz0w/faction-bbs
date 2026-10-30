@@ -2177,3 +2177,7 @@ mod delegation_services;
 #[cfg(feature = "delegation-issuer")]
 #[path = "delegation_issuer/mod.rs"]
 mod delegation_issuer;
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "delegation_verifier/mod.rs"]
+mod delegation_verifier;

@@ -21,7 +21,7 @@ fn key() -> PKey<Private> {
     )
     .unwrap()
 }
-pub(super) fn cert(
+pub(crate) fn cert(
     ca: Option<(&X509, &PKey<Private>)>,
     name: &str,
     serial: u32,

@@ -47,9 +47,15 @@ pub(crate) struct Snapshot {
     pub(crate) service_format_v2: bool,
     #[cfg(feature = "delegation-issuer")]
     pub(crate) service_format_v3: bool,
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) service_format_v4: bool,
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) remote_history: Vec<crate::services::RemoteFloor>,
 }
 impl Snapshot {
     pub(crate) fn validate(&self) -> Result<(), Error> {
+        #[cfg(feature = "delegation-verifier")]
+        self.validate_resource_snapshot()?;
         if self.generation == 0 || self.history.len() > crate::authority::MAX_BINDINGS {
             return Err(Error::Invalid);
         }
