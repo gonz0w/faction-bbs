@@ -1,0 +1,299 @@
+{
+  "baseline_commit": "734fe15df15621a39a7d01cc6f24d0abff3ed1fd",
+  "execution_date": "2026-10-30",
+  "execution_stage_map": {
+    "derived_index_not_original_execution_log": true,
+    "limits": [
+      "Some original policy/format/isolation observations lack a separate redirected log.",
+      "Original inline edit/snapshot/control runners were not retained as files.",
+      "Temporary skip-mutated actual-workflow YAML was removed, not reconstructed.",
+      "Original wrappers did not capture every individual command exit.",
+      "Shared scanner sources are unchanged baseline Git inputs, outside private stage snapshots."
+    ],
+    "retained_logs": 25,
+    "sha256": "1ad586f858d3528325370ad36abc3359385ec76d1aed3277706136a2d7ab5ead",
+    "stages": 27
+  },
+  "host": {
+    "compile_fail_doctests": 2,
+    "final_lead_checks": [
+      {
+        "command": [
+          "python3",
+          "tools/check_delegation_codec_dependencies.py"
+        ],
+        "elapsed_seconds": 1.3067819169955328,
+        "log": "0.log",
+        "log_sha256": "a1cd6a57f5de1e32730ac0d5beb04e9ea28f72e19074d0e882c235ac821ffb26",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_delegation_codec_dependencies.py"
+        ],
+        "elapsed_seconds": 0.08474074996775016,
+        "log": "1.log",
+        "log_sha256": "57256a13cfbd13539b3f6c3a9bd6c4cd9c1a8f25a390d6295b563a1d8a31853d",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "cargo",
+          "+1.96.0",
+          "fmt",
+          "--manifest-path",
+          "crates/faction-delegation-codec/Cargo.toml",
+          "--",
+          "--check"
+        ],
+        "elapsed_seconds": 0.06914741598302498,
+        "log": "2.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "cargo",
+          "+1.96.0",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-delegation-codec/Cargo.toml",
+          "--all-targets",
+          "--release",
+          "--locked",
+          "--offline",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "elapsed_seconds": 0.09634733299026266,
+        "log": "3.log",
+        "log_sha256": "92434e198f27984c035c376ec77a7cf9e6ebdde782f8ccb1336ae3329b66ddb7",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "cargo",
+          "+1.96.0",
+          "test",
+          "--manifest-path",
+          "crates/faction-delegation-codec/Cargo.toml",
+          "--release",
+          "--locked",
+          "--offline",
+          "--",
+          "--test-threads=1"
+        ],
+        "elapsed_seconds": 0.2712747079785913,
+        "log": "4.log",
+        "log_sha256": "b4a4019b7d0a2812b949410c06feeeb4417138c361b207450f7f1645a39cf2ef",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "tools/check_repository.py"
+        ],
+        "elapsed_seconds": 3.2289414160186425,
+        "log": "5.log",
+        "log_sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_offline_provider_preparation_evidence.py"
+        ],
+        "elapsed_seconds": 0.16567183303413913,
+        "log": "6.log",
+        "log_sha256": "97ac52ba2fec861b04558fa005506b3fed95380135fbe88f83eed3c42bd0f388",
+        "returncode": 0
+      }
+    ],
+    "final_lead_source_tools": {
+      "commit": "734fe15df15621a39a7d01cc6f24d0abff3ed1fd",
+      "helpers_unchanged_from_commit": {
+        "tools/check_network_mail_dependencies.py": "feacb2f21321a8ecc3aace902c67103161ffdf301b7a387e3d8e46393d42b88a",
+        "tools/check_omemo_dependencies.py": "e9914a57c683455506aacfc05dc4a101bf6dc50b2dab75034f347619b1f8ed13",
+        "tools/check_provider_dependencies.py": "5b055370b4d948e10bd23cc4a1bcfd2a2588240e628f5af62cbd9d430f162954",
+        "tools/check_recorded_files.py": "d7fb797b75c76124d3cdf9f294ed6cd4e6d8ead21c657b473318172b8069d1c9",
+        "tools/check_rust_dependencies.py": "c8b972558b11d494f7177407393be18f389271439611c005404678e46bf729ca"
+      },
+      "inputs": {
+        ".github/workflows/documentation.yml": "638af4521fee26bf72361271fb881d5150bf56a0bf6cec658dcd23cac8b5ed85",
+        "crates/faction-delegation-codec/Cargo.lock": "5c0ae3b676e1e6aba6fa64f4a560de32a88d3bb1b9c0767f77a616ae94aa4a39",
+        "crates/faction-delegation-codec/Cargo.toml": "bf5fe610120b5be84c57fc372c5260b3d2059a69a4daf8ddb64808a7092933e2",
+        "crates/faction-delegation-codec/src/form.rs": "e738b229404a88b7b085b81228751779995659878e33bd581a6da34e65da863f",
+        "crates/faction-delegation-codec/src/http.rs": "b6976362127fb91839fa9bbc3f0f3ee99011932c6c3f5f961707f95850cb811a",
+        "crates/faction-delegation-codec/src/json.rs": "69386af2d656d223a648c1638dc773974d5cab37a7ea8d6f06fc31f1c24ada81",
+        "crates/faction-delegation-codec/src/lib.rs": "d3ed9f23ccc71a907ece3fd515c67b804817d9dbe6a402b838c3ffdf25371db6",
+        "crates/faction-delegation-codec/src/types.rs": "f84c5c3f4b5505fdf4bbd0431997935268c006e31836a8137af2fc44d5e6f323",
+        "crates/faction-delegation-codec/tests/wire.rs": "1c23f028e89f59b6fdaf7d55c883a906c6f280518dc94f78cabeb64c24751c65",
+        "dev-docs/dependencies/delegation-codec.json": "32ed68855d7a5ad080a3ce31e38e5892edfed2432710f6c2cba8af4589b8832e",
+        "tools/check_delegation_codec_dependencies.py": "cebdd516ee8800984125083f8c60640144b2f7fa9c587572f698478919e8da24",
+        "tools/test_delegation_codec_dependencies.py": "1cb1ef27258358a0b2abda2b95127eb2fa1fc1177b345cc0fac46711112a8ca8"
+      },
+      "source_before_after_exact": true,
+      "tools": {
+        "cargo": {
+          "bytes": 31817288,
+          "sha256": "fec239e6b74df873f54ef52912bfcfcc8d8414bc14a7ae1e0be80460bae72841"
+        },
+        "python": {
+          "bytes": 34640,
+          "sha256": "87d4df53fd91304be5bac391fb204643c36b7df2023c04a0953bcbc7d4fdf634"
+        },
+        "rustc": {
+          "bytes": 412504,
+          "sha256": "c5922366bfe3d6d028a65d626f4e629b3adad066995cf0b60c8a4b617bba5ffe"
+        }
+      }
+    },
+    "fmt_pass": true,
+    "logs": {
+      "checker-final-green.log": "395f4ba177429a162b2f04a7e5dd660a39233158ce91c848b5b64fb547fbd0ed",
+      "clippy-reviewed-green.log": "926031e5c2a08050c1d49dd745ade8e6b3015abb0f810021c395940bee5a49a6",
+      "codec-reviewed-green.log": "e85a96592e4a89b3a1380c115eec21247604c6d064734f7a57e7ce79574400ae",
+      "source-gate-final.log": "a1cd6a57f5de1e32730ac0d5beb04e9ea28f72e19074d0e882c235ac821ffb26"
+    },
+    "os": "macOS27.2 arm64",
+    "rust": "1.96.0",
+    "source_ci_contract_tests": 11,
+    "strict_clippy_pass": true,
+    "wire_tests": 15
+  },
+  "limits": {
+    "capacity_claim": false,
+    "decoded_data_unverified": true,
+    "delegation_delivery": false,
+    "device_key_handling": false,
+    "interop_claim": false,
+    "issuer": false,
+    "network_runtime": false,
+    "physical_hardware": false,
+    "product_dependency": false,
+    "tls_validation": false,
+    "token_generation": false
+  },
+  "native": {
+    "actual_native_metadata_and_archive_gate_pass": true,
+    "artifacts": {
+      "target/release/deps/libfaction_delegation_codec-5bfa872e4e1f37fb.rlib": {
+        "bytes": 534562,
+        "sha256": "c271da3bf54335fb84379c8fc6299b86bc50ccdfb35bb746874902025ae694d6"
+      },
+      "target/release/deps/libfaction_delegation_codec-5bfa872e4e1f37fb.rmeta": {
+        "bytes": 92164,
+        "sha256": "9a908fd95cd184b700da2443476a76a995f00ac660349868ce17fa422f3ed0eb"
+      },
+      "target/release/deps/wire-fdf50f4e860e0191": {
+        "bytes": 1447096,
+        "sha256": "ad721d4d0d8969b8729011f9220a4e5a4aebd33a7b5461efa89082739fe8a82a"
+      },
+      "target/release/deps/wire-fdf50f4e860e0191.d": {
+        "bytes": 199,
+        "sha256": "85a393cb27d1fdc2523e1501fed20adb8eab21dac0a33e032087e18aae8a47db"
+      }
+    },
+    "build_jobs": 2,
+    "code_manifest_test_inputs_matching_host": 8,
+    "command": [
+      "cargo",
+      "test",
+      "--manifest-path",
+      "crates/faction-delegation-codec/Cargo.toml",
+      "--release",
+      "--locked",
+      "--offline",
+      "--",
+      "--test-threads=1"
+    ],
+    "compile_fail_doctests": 2,
+    "cpus": 2,
+    "elapsed_seconds": 4.456444125000019,
+    "fresh_compilation": true,
+    "log_sha256": "b160fc91840e9cd96783b53bf0994f175fa77ab029a208f49260b2b6c02d826f",
+    "os": "NetBSD11.0 evbarm aarch64",
+    "physical_memory_bytes": 1054990336,
+    "rust": "1.96.0",
+    "source_before_after_exact": true,
+    "tools": {
+      "/usr/bin/cc": {
+        "bytes": 1419696,
+        "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+      },
+      "/usr/bin/ld": {
+        "bytes": 992920,
+        "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161"
+      },
+      "/usr/pkg/bin/cargo": {
+        "bytes": 43795088,
+        "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+      },
+      "/usr/pkg/bin/rustc": {
+        "bytes": 14128,
+        "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+      }
+    },
+    "wire_tests": 15
+  },
+  "source": {
+    ".github/workflows/documentation.yml": "638af4521fee26bf72361271fb881d5150bf56a0bf6cec658dcd23cac8b5ed85",
+    "crates/faction-delegation-codec/Cargo.lock": "5c0ae3b676e1e6aba6fa64f4a560de32a88d3bb1b9c0767f77a616ae94aa4a39",
+    "crates/faction-delegation-codec/Cargo.toml": "bf5fe610120b5be84c57fc372c5260b3d2059a69a4daf8ddb64808a7092933e2",
+    "crates/faction-delegation-codec/src/form.rs": "e738b229404a88b7b085b81228751779995659878e33bd581a6da34e65da863f",
+    "crates/faction-delegation-codec/src/http.rs": "b6976362127fb91839fa9bbc3f0f3ee99011932c6c3f5f961707f95850cb811a",
+    "crates/faction-delegation-codec/src/json.rs": "69386af2d656d223a648c1638dc773974d5cab37a7ea8d6f06fc31f1c24ada81",
+    "crates/faction-delegation-codec/src/lib.rs": "d3ed9f23ccc71a907ece3fd515c67b804817d9dbe6a402b838c3ffdf25371db6",
+    "crates/faction-delegation-codec/src/types.rs": "f84c5c3f4b5505fdf4bbd0431997935268c006e31836a8137af2fc44d5e6f323",
+    "crates/faction-delegation-codec/tests/wire.rs": "1c23f028e89f59b6fdaf7d55c883a906c6f280518dc94f78cabeb64c24751c65",
+    "dev-docs/dependencies/delegation-codec.json": "32ed68855d7a5ad080a3ce31e38e5892edfed2432710f6c2cba8af4589b8832e",
+    "tools/check_delegation_codec_dependencies.py": "cebdd516ee8800984125083f8c60640144b2f7fa9c587572f698478919e8da24",
+    "tools/test_delegation_codec_dependencies.py": "1cb1ef27258358a0b2abda2b95127eb2fa1fc1177b345cc0fac46711112a8ca8"
+  },
+  "source_gate": {
+    "host_frozen_input_index_sha256": "a14c6f561e7fd160277c53a65fbcd65242035d037df0611c039d4b3cd769e851",
+    "inactive_cache_resolution_only": 5,
+    "inventory_sha256": "32ed68855d7a5ad080a3ce31e38e5892edfed2432710f6c2cba8af4589b8832e",
+    "ordinary_profiles": [
+      "default",
+      "device-provider",
+      "native-mail",
+      "network-mail",
+      "provider",
+      "provider-operator"
+    ],
+    "registry_packages": 10,
+    "selected_build_scripts_reviewed": true,
+    "source_files": 318,
+    "target_graphs_identical": true,
+    "targets": [
+      "aarch64-apple-darwin",
+      "aarch64-unknown-netbsd",
+      "x86_64-unknown-linux-gnu"
+    ]
+  },
+  "teardown": {
+    "controller_stopped": true,
+    "loopback_forwards_closed": 1,
+    "owned_image_and_kernel_copies_removed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_stopped": true
+  }
+}

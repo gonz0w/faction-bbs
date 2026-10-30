@@ -1,0 +1,13 @@
+{
+  "final_lead_individual_exits_recorded": true,
+  "original_individual_exit_codes_complete": false,
+  "original_inline_runners_retained_as_files": false,
+  "private_archive": {
+    "bytes": 25128788,
+    "name": "codec-proof-20261030.private.tar.gz",
+    "sha256": "c8f3e3f27428cb4fa4dcda6134ea0fc34703707132cab0be2b280991cc647d24"
+  },
+  "raw_sources_logs_binaries_retained_private": true,
+  "runtime_stopped": true,
+  "temporary_generated_yaml_retained": false
+}
