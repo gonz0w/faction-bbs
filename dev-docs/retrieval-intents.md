@@ -72,8 +72,8 @@ the existing session attempt limit returns `Error::Transport(tls::Stage::Limit)`
 Each check revalidates current recipient and certificate, invited homes,
 policy identity, generation and reset, runtime state, the absolute monotonic
 deadline and the wall-clock high-water mark. Expiry and clock rollback are sticky:
-recovery of the clock cannot revive an invalidated record. Registry or policy
-replacement, unavailable state, reset, stop, runtime drop and durable installation
+recovery of the clock cannot revive an invalidated record. Registry, combined
+service policy or retrieval policy replacement, unavailable state, reset, stop, runtime drop and durable installation
 invalidate prior records. An invalid typed policy replacement preserves the
 previous valid state. Records and the retrieval policy's sender-home to audience mappings are not
 persisted in durable snapshots and cannot survive reopen or transfer to another

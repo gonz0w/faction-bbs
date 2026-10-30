@@ -93,6 +93,11 @@ identity or pins, or choose encryption recipients; member-side verification and
 encryption checks remain independent. BBS accounts, local approval and roles,
 circles and private-mail keys do not federate. See the [scope clarification](https://github.com/gonz0w/faction-bbs/issues/294#issuecomment-6513142126).
 
+The default-off `delegation-services` feature supplies a separate
+[service observation](service-observations.md) of current recipient approval for
+an authenticated invited service. It does not create a device actor or grant
+store access.
+
 The default-off `delegation-records` feature supplies a local, session-derived
 [retrieval intent](retrieval-intents.md) for trusted embedders. It is not a remote
 read grant and does not establish sender policy or committed object state. The

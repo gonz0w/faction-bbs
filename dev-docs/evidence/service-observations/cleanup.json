@@ -1,0 +1,11 @@
+{
+  "archive_regular_file_hashes_verified": 83096,
+  "owned_clone_kernel_removed": true,
+  "owned_scratch_roots_removed": 5,
+  "owner_assets_exact": 86,
+  "owner_images_closed": 6,
+  "owner_playground_started": false,
+  "private_archive_sha256": "5a7bbdb77f77a1673a6f4735bf23f37d5b4c2b79dca438c488c335cc04d0e132",
+  "result": "pass",
+  "vm_controller_forward_stopped": true
+}

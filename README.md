@@ -66,7 +66,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   An optional [private provider operator](docs/provider-operator.md) adds durable policy and a foreground loopback service using preapproved policy and independent TLS credentials. [Historical host and NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) for the earlier #285 revision cover restart/retry, encrypted transfers and ordinary-access independence. It remains a software preview; it does not enroll devices or deploy a provider. Classic defaults remain.
   Cross-home attachment authorization is under development. The default-off
   [local retrieval-intent API](dev-docs/retrieval-intents.md) has host and NetBSD
-  software qualification; remote authorization and full cross-home delivery remain incomplete.
+  software qualification. A separate default-off [service observation API](dev-docs/service-observations.md)
+  checks current recipient approval for an authenticated invited service; remote
+  authorization and full cross-home delivery remain incomplete.
 
 ## What you can do
 

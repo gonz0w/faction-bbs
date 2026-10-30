@@ -503,3 +503,11 @@ no deployed provider, independent interoperability or new capacity claim.
 [Session-derived retrieval intents](retrieval-intents/README.md) records default-off
 local intent controls and ordinary host/NetBSD regressions, with original deadlines,
 private retention and separate compilation/runtime envelopes; no remote grant.
+
+[Registered-service observations and durable policy](service-observations/README.md)
+records the paired host/NetBSD mTLS, typed history, migration/recovery and client
+regressions with owned cleanup; no device actor, remote grant or relay is supplied.
+
+The service-observation public record manifest SHA-256 is
+`7b15fba86382c64fb5f3f2b8f77af0ad3dacb3c9c1dc662efaf143cfc98a45dc`; it pins saved record bytes, while immutable source Git objects
+resolve the tested implementation.
