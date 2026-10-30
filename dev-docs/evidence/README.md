@@ -511,3 +511,5 @@ regressions with owned cleanup; no device actor, remote grant or relay is suppli
 The service-observation public record manifest SHA-256 is
 `7b15fba86382c64fb5f3f2b8f77af0ad3dacb3c9c1dc662efaf143cfc98a45dc`; it pins saved record bytes, while immutable source Git objects
 resolve the tested implementation.
+
+[Service-observation CI correction](service-observations-ci.md) preserves the first hosted cancellation and source-bound scheduling/test-first evidence without changing runtime or historical records.
