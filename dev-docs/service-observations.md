@@ -73,8 +73,9 @@ history. Invalid proposals leave the previous state intact; uncertain durable
 publication stops the runtime until explicit reopen.
 
 Durable initialization writes version 1 device-only state, and reopen reads it
-without a rewrite. An explicit successful policy update in a service-capable
-build writes version 2, wrapping the version 1 device state with local home,
+without a rewrite. Before adopting v3, an explicit successful observations-only
+policy update in a service-capable build writes version 2, wrapping the version 1
+device state with local home,
 service registrations and typed history. Existing registry homes and floors
 remain durable. The version 2 marker remains after device-only replacement or
 reset. Builds without `delegation-services` refuse every version 2 state, including
@@ -84,8 +85,9 @@ retrieval records, tokens, private keys and transient retrieval audience mapping
 are not persisted. Reopen requires fresh TLS. Monotonic checks protect retained
 state, not rollback of the entire trusted root to an older valid copy.
 
-This local primitive is not an issuer, verifier or relay. Those components and
-cross-home delivery remain future work under [issue #300](https://github.com/gonz0w/faction-bbs/issues/300)
+This observation is not issuer, verifier or relay authority. The separately scoped
+[issuer](delegation-issuer.md) uses explicit service roles; cross-home delivery
+remains outside this primitive under [issue #300](https://github.com/gonz0w/faction-bbs/issues/300)
 and [issue #301](https://github.com/gonz0w/faction-bbs/issues/301). See the
 [provider integration](provider-integration.md), [durable policy](provider-policy.md)
 and [delegation research](research/0063-invited-home-delegation.md) for their

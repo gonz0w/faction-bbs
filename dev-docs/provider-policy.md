@@ -59,11 +59,20 @@ With `delegation-services` explicitly enabled, a combined registry and service
 policy update uses the same increasing generation and reset floors. A device-only
 registry replacement disables service policy and retains typed certificate history.
 Initialization writes version 1 device-only snapshots, and reopen reads them
-without rewriting. An explicit successful update in a service-capable build writes
-version 2, wrapping the version 1 device state and retaining local home, service
+without rewriting. Before adopting v3, an explicit successful observations-only
+update in a service-capable build writes version 2, wrapping the version 1 device
+state and retaining local home, service
 registrations, invitations, typed history and floors. The version 2 marker remains
 after device-only replacement or reset. Builds without `delegation-services`
 refuse every version 2 snapshot, including tombstone-only state, without rewrite
 or fallback. Observations and sessions never
 survive reopen: a service must establish a fresh verified TLS connection. See the
 [service observation contract](service-observations.md).
+
+With `delegation-issuer` enabled, a deliberate complete higher-generation issuer
+policy update publishes role-aware version 3. Version 1 and 2 reopen without
+rewrite; version 2 imports observations only. Unsupported builds refuse active
+and tombstone version 3 without fallback or rewrite. Reset or device-only
+replacement disables issuer authority while retaining its format marker and typed
+history. Live records, references and tokens are never persisted. See the
+[issuer contract](delegation-issuer.md).

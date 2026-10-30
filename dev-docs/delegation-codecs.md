@@ -1,9 +1,10 @@
 # Delegation wire codecs
 
 [`faction-delegation-codec`](../crates/faction-delegation-codec/README.md) is an
-isolated, unpublished codec for a fixed Faction wire profile. Its separate Cargo
-workspace and lockfile add no dependency to the root, provider or client product
-graphs, including classic and feature-off configurations. It provides no listener,
+unpublished codec for a fixed Faction wire profile. Its separate Cargo workspace
+and lockfile remain independent; the provider selects it only through the explicit
+default-off `delegation-wire` feature. Ordinary, classic and feature-off graphs do
+not select that edge. The codec itself provides no listener,
 token issuer or generator, registry, Access or Session conversion, store, network,
 key handling or service deployment. Native end-to-end relay belongs to
 [issue #301](https://github.com/gonz0w/faction-bbs/issues/301); the broader
@@ -17,7 +18,8 @@ registration, invitation, current policy, audience or resource authority. Public
 claim fields remain editable and untrusted; encoders revalidate the schema. There
 is no clock or registry check. `client_id` in a form is an assertion, not an
 authenticated identity, and matching it to a registered TLS client remains a
-separate responsibility.
+separate responsibility. The optional [issuer HTTP carrier](delegation-issuer.md)
+performs that check against its actual service session and current policy.
 
 `UnverifiedToken` and types containing it have no `Debug` or `Display` implementation.
 Its explicit `expose()` borrows sensitive bearer text; the caller must protect it.
@@ -61,15 +63,19 @@ HTTP decoding takes one complete HTTP/1.1 message with CRLF framing, a required
 Content-Length matching the entire body, and the expected content type. Requests
 are POSTs to `/oauth/token` or `/oauth/introspect` with a canonical host; decoded
 responses have status 200. The profile does not support chunking, compression,
-redirects or pipelining. It is not a streaming HTTP implementation.
+redirects or pipelining. It accepts `Connection: close` when present and emits
+that header; other connection modes and duplicate headers are refused. It is not
+a streaming HTTP implementation. The provider carrier consumes one request per
+TLS connection and does not wait for EOF; see its distinct framing contract.
 
 ## Source qualification before build
 
 Use Rust 1.96 and the current [documentation CI workflow](../.github/workflows/documentation.yml)
 as the command authority. Before compiling, warm the locked metadata graphs in its
 “Validate the isolated delegation wire codec” step for all three listed targets:
-the codec, root `faction-client/device-provider`, and provider `operator` graphs.
-Fresh caches need all of these, not only the codec graph. Metadata warming fetches
+the codec, root `faction-client/device-provider`, provider `operator`, and provider
+`delegation-wire` graphs with and without durable policy. Fresh caches need all
+of these, not only the codec graph. Metadata warming fetches
 source; it does not authorize compiling it. Then run the offline source gate:
 
 ```sh
@@ -81,8 +87,8 @@ Only after the gate passes, run that step's `cargo fmt`, offline locked release
 `CARGO_TARGET_DIR` (as in CI). Do not execute upstream tests or CI. The
 [dependency inventory](dependencies/delegation-codec.json) and
 [checker](../tools/check_delegation_codec_dependencies.py) qualify selected source,
-licenses, features and no-JavaScript boundaries, including isolation from product
-graphs. Inactive lockfile packages are distinct from the selected source graph.
+licenses, features and no-JavaScript boundaries, including the explicitly selected provider wire edge and isolation from ordinary
+product graphs. Inactive lockfile packages are distinct from the selected source graph.
 This gate is an integrity check, not a security audit or proof of native execution.
 The [qualification record](evidence/delegation-codecs/README.md) documents the
 separate source, host and native codec checks and their limits.
