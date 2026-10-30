@@ -61,6 +61,9 @@ pub(crate) fn validate_client_id(id: &str) -> Result<(), BlobError> {
 pub struct ServicePolicy {
     local_home: String,
     registrations: Vec<ServiceRegistration>,
+    uses: Vec<ServiceUse>,
+    #[cfg(feature = "delegation-issuer")]
+    pub(crate) issuer: Option<IssuerPolicy>,
 }
 impl ServicePolicy {
     pub fn new(
@@ -83,7 +86,10 @@ impl ServicePolicy {
         }
         Ok(Self {
             local_home,
+            uses: vec![ServiceUse::Observation; registrations.len()],
             registrations,
+            #[cfg(feature = "delegation-issuer")]
+            issuer: None,
         })
     }
     pub fn local_home(&self) -> &str {
@@ -106,7 +112,7 @@ impl ServicePolicy {
         }
         Ok(())
     }
-    fn current(
+    pub(crate) fn current(
         &self,
         identity: &ServiceIdentity,
         digest: [u8; 32],
@@ -213,13 +219,13 @@ impl RecipientCurrentObservation {
     }
 }
 pub(crate) struct ServiceCredential {
-    identity: ServiceIdentity,
-    context: Arc<()>,
-    digest: [u8; 32],
-    generation: u64,
-    reset_epoch: u64,
-    wall_highwater: u64,
-    live: bool,
+    pub(crate) identity: ServiceIdentity,
+    pub(crate) context: Arc<()>,
+    pub(crate) digest: [u8; 32],
+    pub(crate) generation: u64,
+    pub(crate) reset_epoch: u64,
+    pub(crate) wall_highwater: u64,
+    pub(crate) live: bool,
 }
 impl Authority {
     pub(crate) fn authenticate_service(
@@ -269,6 +275,9 @@ impl Authority {
             let r = self.registry.as_ref().ok_or(BlobError::Denied)?;
             let p = self.service_policy.as_ref().ok_or(BlobError::Denied)?;
             p.current(&credential.identity, credential.digest, leaf, now, r)?;
+            if p.service_use(&credential.identity) != Some(ServiceUse::Observation) {
+                return Err(BlobError::Denied);
+            }
             binding.validate()?;
             action.validate(&binding)?;
             if binding.created > now
@@ -329,6 +338,10 @@ impl Authority {
         }
         self.replace_registry(registry)?;
         self.service_history = history;
+        #[cfg(feature = "delegation-issuer")]
+        {
+            self.service_format_v3 |= policy.issuer.is_some();
+        }
         self.service_policy = Some(policy);
         Ok(())
     }
@@ -347,3 +360,108 @@ impl Control {
 #[cfg(test)]
 #[path = "services_tests.rs"]
 mod tests;
+
+/// A registration has exactly one explicit purpose; authentication adds no other use.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ServiceUse {
+    Observation,
+    #[cfg(feature = "delegation-issuer")]
+    Relay,
+    #[cfg(feature = "delegation-issuer")]
+    Introspection,
+}
+#[cfg(feature = "delegation-issuer")]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IssuerRoute {
+    pub sender_home: String,
+    pub audience: String,
+    pub relay_client_id: String,
+    pub introspection_client_id: String,
+}
+#[cfg(feature = "delegation-issuer")]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct IssuerPolicy {
+    pub(crate) issuer: String,
+    pub(crate) routes: Vec<IssuerRoute>,
+}
+impl ServicePolicy {
+    pub(crate) fn service_use(&self, identity: &ServiceIdentity) -> Option<ServiceUse> {
+        self.registrations
+            .iter()
+            .position(|r| r.identity() == *identity)
+            .map(|i| self.uses[i])
+    }
+    #[cfg(feature = "delegation-issuer")]
+    pub fn new_issuer(
+        local_home: String,
+        issuer: String,
+        entries: Vec<(ServiceRegistration, ServiceUse)>,
+        routes: Vec<IssuerRoute>,
+    ) -> Result<Self, BlobError> {
+        validate_home(&local_home)?;
+        validate_home(&issuer)?;
+        if entries.len() > MAX_BINDINGS
+            || routes.is_empty()
+            || routes.len() > crate::authority::MAX_HOMES
+        {
+            return Err(BlobError::Invalid);
+        }
+        for (i, (entry, purpose)) in entries.iter().enumerate() {
+            entry.validate()?;
+            if (*purpose == ServiceUse::Relay) != (entry.home == local_home)
+                || entries[..i].iter().any(|(old, _)| {
+                    old.identity() == entry.identity()
+                        || old.certificate_sha256 == entry.certificate_sha256
+                })
+            {
+                return Err(BlobError::Invalid);
+            }
+            if *purpose != ServiceUse::Observation {
+                issuer_client_id(&entry.client_id)?;
+            }
+        }
+        for (i, route) in routes.iter().enumerate() {
+            validate_home(&route.sender_home)?;
+            issuer_client_id(&route.relay_client_id)?;
+            issuer_client_id(&route.introspection_client_id)?;
+            if route.sender_home == local_home
+                || route.audience != format!("{}/attachments", route.sender_home)
+                || routes[..i]
+                    .iter()
+                    .any(|old| old.sender_home == route.sender_home)
+                || !entries.iter().any(|(e, u)| {
+                    *u == ServiceUse::Relay
+                        && e.home == local_home
+                        && e.client_id == route.relay_client_id
+                })
+                || !entries.iter().any(|(e, u)| {
+                    *u == ServiceUse::Introspection
+                        && e.home == route.sender_home
+                        && e.client_id == route.introspection_client_id
+                })
+            {
+                return Err(BlobError::Invalid);
+            }
+        }
+        let (registrations, uses) = entries.into_iter().unzip();
+        Ok(Self {
+            local_home,
+            registrations,
+            uses,
+            issuer: Some(IssuerPolicy { issuer, routes }),
+        })
+    }
+}
+#[cfg(feature = "delegation-issuer")]
+fn issuer_client_id(id: &str) -> Result<(), BlobError> {
+    if id.is_empty()
+        || id.len() > 64
+        || !id
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b"._-".contains(&b))
+    {
+        Err(BlobError::Invalid)
+    } else {
+        Ok(())
+    }
+}

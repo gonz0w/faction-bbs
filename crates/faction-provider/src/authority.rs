@@ -171,6 +171,12 @@ pub(crate) struct Connection {
     authority: Arc<()>,
     closed: Arc<AtomicBool>,
 }
+#[cfg(all(test, feature = "delegation-issuer"))]
+impl Connection {
+    pub(crate) fn test_lifecycle_witness(&self) -> std::sync::Weak<AtomicBool> {
+        Arc::downgrade(&self.closed)
+    }
+}
 impl Drop for Connection {
     fn drop(&mut self) {
         self.closed.store(true, Ordering::Relaxed);
@@ -224,6 +230,8 @@ pub(crate) struct Authority {
     service_context: Arc<()>,
     #[cfg(feature = "delegation-services")]
     service_format_v2: bool,
+    #[cfg(feature = "delegation-issuer")]
+    service_format_v3: bool,
     #[cfg(feature = "delegation-services")]
     service_history: Vec<([u8; 32], crate::services::ServiceIdentity)>,
     #[cfg(feature = "delegation-records")]
@@ -252,6 +260,8 @@ impl Authority {
             service_context: Arc::new(()),
             #[cfg(feature = "delegation-services")]
             service_format_v2: false,
+            #[cfg(feature = "delegation-issuer")]
+            service_format_v3: false,
             #[cfg(feature = "delegation-services")]
             service_history: Vec::new(),
             #[cfg(feature = "delegation-records")]
@@ -271,6 +281,8 @@ impl Authority {
             service_history: self.service_history.clone(),
             #[cfg(feature = "delegation-services")]
             service_format_v2: self.service_format_v2,
+            #[cfg(feature = "delegation-issuer")]
+            service_format_v3: self.service_format_v3,
         }
     }
     #[cfg(feature = "durable-policy")]
@@ -291,6 +303,10 @@ impl Authority {
             self.service_policy = snapshot.service_policy;
             self.service_history = snapshot.service_history;
             self.service_format_v2 = snapshot.service_format_v2;
+            #[cfg(feature = "delegation-issuer")]
+            {
+                self.service_format_v3 = snapshot.service_format_v3;
+            }
         }
         self.slots.clear();
         #[cfg(feature = "delegation-services")]

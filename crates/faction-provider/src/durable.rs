@@ -45,6 +45,8 @@ pub(crate) struct Snapshot {
     pub(crate) service_history: Vec<([u8; 32], crate::services::ServiceIdentity)>,
     #[cfg(feature = "delegation-services")]
     pub(crate) service_format_v2: bool,
+    #[cfg(feature = "delegation-issuer")]
+    pub(crate) service_format_v3: bool,
 }
 impl Snapshot {
     pub(crate) fn validate(&self) -> Result<(), Error> {
@@ -93,6 +95,15 @@ impl Snapshot {
                 {
                     return Err(Error::Invalid);
                 }
+            }
+            #[cfg(feature = "delegation-issuer")]
+            if self
+                .service_policy
+                .as_ref()
+                .is_some_and(|p| p.issuer.is_some())
+                && !self.service_format_v3
+            {
+                return Err(Error::Invalid);
             }
             if let Some(policy) = &self.service_policy {
                 policy.validate_registry(self.registry.as_ref().ok_or(Error::Invalid)?)?;

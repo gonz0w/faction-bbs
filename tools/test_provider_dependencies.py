@@ -18,10 +18,10 @@ def manifest():
     return {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
             'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
             'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [],
+                'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [], 'delegation-issuer': ['delegation-records', 'delegation-services'], 'delegation-wire': ['delegation-issuer', 'dep:faction-delegation-codec'],
                 'preparation': ['dep:toml', 'toml/display'],
                 'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
-            'dependencies': {'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
+            'dependencies': {'faction-delegation-codec': {'path': '../faction-delegation-codec', 'optional': True, 'default-features': False}, 'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
                              'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
                 'rustix': {'version': '=1.1.5', 'default-features': False, 'features': ['std', 'fs', 'process'], 'optional': True},
                 'toml': {'version': '=1.1.8', 'default-features': False, 'features': ['std', 'parse', 'serde'], 'optional': True},
@@ -30,12 +30,27 @@ def manifest():
 
 
 class ProviderDependencies(unittest.TestCase):
+    def test_issuer_is_exact_default_off_core_composition_and_qualified_before_build(self):
+        actual = tomllib.loads(policy.MANIFEST.read_text())
+        self.assertEqual(actual['features'].get('delegation-issuer'), ['delegation-records', 'delegation-services'])
+        self.assertNotIn('dep:faction-delegation-codec', actual['features']['delegation-issuer'])
+        self.assertNotIn('delegation-wire', actual['features']['delegation-issuer'])
+        for feature in ['delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
+            for target in policy.TARGETS:
+                command = ('cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml '
+                           '--format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null')
+                self.assertIn(command, policy.provider_warm_commands())
+            for command in ['cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
+                            'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']:
+                self.assertIn(command, policy.operator_commands())
+        policy.validate_ci((policy.ROOT / '.github/workflows/documentation.yml').read_text())
+
     def test_actual_services_selection_is_empty_default_off_and_qualified(self):
         actual = tomllib.loads(policy.MANIFEST.read_text())
         self.assertEqual(actual['features'].get('delegation-services'), [])
         policy.validate_profile(actual, {'workspace': {'members': []}})
         for feature in ['delegation-services', 'delegation-services,durable-policy',
-                        'delegation-services,delegation-records,durable-policy']:
+                        'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
             for target in policy.TARGETS:
                 command = ('cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml '
                            '--format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null')
@@ -93,9 +108,9 @@ class ProviderDependencies(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy'})
-        self.assertEqual(execute.call_count, 42)
-        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy'})
+        self.assertEqual(execute.call_count, 54)
+        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
         actual = set()
         for call in execute.call_args_list:
             command = call.args[0]
@@ -288,6 +303,18 @@ def ci_fixture():
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services,delegation-records,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services,delegation-records,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire,durable-policy > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings
@@ -384,6 +411,18 @@ def ci_fixture():
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services,delegation-records,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services,delegation-records,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire,durable-policy > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features durable-policy -- -D warnings
@@ -396,6 +435,14 @@ def ci_fixture():
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,durable-policy -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-services,delegation-records,durable-policy -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-services,delegation-records,durable-policy -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-issuer -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-issuer -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-issuer,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-issuer,durable-policy -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-wire -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-wire -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-wire,durable-policy -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-wire,durable-policy -- --test-threads=1
           cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked
           cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked
           umask 077
@@ -570,7 +617,7 @@ class DurableProviderProfiles(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy'})
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy'})
         for profile in ['durable-policy', 'operator']:
             self.assertEqual(set(result['profiles'][profile]['graphs']), set(policy.TARGETS))
 
@@ -618,7 +665,7 @@ class DurableProviderRefusals(unittest.TestCase):
             first = job.index('          python3 tools/check_provider_dependencies.py\n')
             prefix = job[:first]
             metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
-            self.assertEqual(len(metadata), 42)
+            self.assertEqual(len(metadata), 54)
             for line in metadata:
                 for replacement in ['', line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
                     changed = job.replace(line + '\n', replacement + '\n', 1)
@@ -691,7 +738,7 @@ class PreparationProfiles(unittest.TestCase):
             result = json.loads(policy.inventory())
         self.assertIn('preparation', result['profiles'])
         self.assertEqual(set(result['profiles']['preparation']['graphs']), set(policy.TARGETS))
-        self.assertEqual(execute.call_count, 42)
+        self.assertEqual(execute.call_count, 54)
 
     def test_current_ci_warms_preparation_before_each_first_guard_and_tests_it(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
@@ -806,7 +853,7 @@ class ServicesProfiles(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        for profile in ['delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy']:
+        for profile in ['delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
             self.assertEqual(result['profiles'][profile]['selected_features'], profile.split(','))
             self.assertEqual(set(result['profiles'][profile]['graphs']),set(policy.TARGETS))
         for key,value in [('default',['delegation-services']),('delegation-services',['blob-iq'])]:
@@ -815,7 +862,7 @@ class ServicesProfiles(unittest.TestCase):
 
     def test_omitted_service_graph_or_validation_fails_closed_in_actual_ci(self):
         text=(policy.ROOT/'.github/workflows/documentation.yml').read_text()
-        for profile in ['delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy']:
+        for profile in ['delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
             for job_name in ['provider','provider_operator']:
                 job=policy._job(text,job_name);first=job.index('          python3 tools/check_provider_dependencies.py\n')
                 for target in policy.TARGETS:
@@ -833,7 +880,7 @@ class ServiceProfileSchedulingCI(unittest.TestCase):
     def service_commands():
         commands = []
         for profile in ['delegation-services', 'delegation-services,durable-policy',
-                        'delegation-services,delegation-records,durable-policy']:
+                        'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
             commands += [
                 'cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features ' + profile + ' -- -D warnings',
                 'cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features ' + profile + ' -- --test-threads=1',
@@ -927,3 +974,27 @@ class ServiceProfileSchedulingCI(unittest.TestCase):
                 candidate = good.replace('  documentation:\n', extra + '  documentation:\n')
                 with self.subTest(command=command, extra=extra), self.assertRaises(ValueError):
                     policy.validate_ci(candidate)
+
+class QualifiedIssuerWireFeature(unittest.TestCase):
+    def test_actual_wire_feature_is_exact_default_off_and_qualified(self):
+        actual=tomllib.loads(policy.MANIFEST.read_text())
+        self.assertEqual(actual['features'].get('delegation-wire'),['delegation-issuer','dep:faction-delegation-codec'])
+        self.assertEqual(actual['dependencies'].get('faction-delegation-codec'),{'path':'../faction-delegation-codec','optional':True,'default-features':False})
+        for feature in ['delegation-wire','delegation-wire,durable-policy']:
+            for target in policy.TARGETS:
+                self.assertIn('cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform '+target+' --features '+feature+' > /dev/null',policy.provider_warm_commands())
+        policy.validate_ci((policy.ROOT/'.github/workflows/documentation.yml').read_text())
+    def test_codec_only_registry_sources_are_refused_outside_exact_wire_composition(self):
+        import check_delegation_codec_dependencies as codec
+        for key in [('httparse','1.10.1'),('form_urlencoded','1.2.2'),('percent-encoding','2.3.2')]:
+            approved=codec.APPROVED[key]
+            package={'name':key[0],'version':key[1],'source':policy.REGISTRY,'license':approved['license']}
+            policy.validate_codec_composition('delegation-wire',package,approved['features'])
+            for profile in ['default','operator','device-provider','delegation-issuer','delegation-issuer,durable-policy','delegation-services','delegation-records']:
+                with self.subTest(key=key,profile=profile),self.assertRaises(ValueError):policy.validate_codec_composition(profile,package,approved['features'])
+            with self.assertRaises(ValueError):policy.validate_codec_composition('delegation-wire',package,approved['features']+['unreviewed'])
+    def test_root_graph_refuses_codec_only_registry_even_without_local_codec_node(self):
+        for name in ['httparse','form_urlencoded','percent-encoding']:
+            metadata={'packages':[{'id':'injected','name':name,'version':'999'}], 'resolve':{'nodes':[{'id':'injected','features':[]}]}}
+            for enabled in [False,True]:
+                with self.subTest(name=name,enabled=enabled),self.assertRaises(ValueError):policy.validate_graph(metadata,enabled)

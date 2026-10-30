@@ -12,12 +12,15 @@ publish = false
 default = []
 delegation-records = []
 delegation-services = []
+delegation-issuer = ["delegation-records", "delegation-services"]
+delegation-wire = ["delegation-issuer", "dep:faction-delegation-codec"]
 blob-iq = ["dep:faction-xmpp"]
 durable-policy = ["dep:rustix"]
 preparation = ["dep:toml", "toml/display"]
 operator = ["durable-policy", "preparation", "dep:faction-unix"]
 
 [dependencies]
+faction-delegation-codec = { path = "../faction-delegation-codec", optional = true, default-features = false }
 faction-files = { path = "../faction-files" }
 openssl = "=0.10.81"
 faction-xmpp = { path = "../faction-xmpp", optional = true }

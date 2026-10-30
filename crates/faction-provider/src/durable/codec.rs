@@ -2,6 +2,9 @@
 use super::{Error, MAX_SNAPSHOT, Snapshot};
 use crate::authority::{CredentialBinding, MAX_BINDINGS, MAX_HOMES, Registry};
 use faction_files::private_blobs::Principal;
+#[cfg(feature = "delegation-issuer")]
+#[path = "issuer_codec.rs"]
+mod issuer;
 #[cfg(feature = "delegation-services")]
 #[path = "service_codec.rs"]
 mod services;
@@ -75,6 +78,10 @@ impl<'a> Reader<'a> {
 }
 pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     s.validate()?;
+    #[cfg(feature = "delegation-issuer")]
+    if s.service_format_v3 {
+        return issuer::encode(s);
+    }
     #[cfg(feature = "delegation-services")]
     if s.service_format_v2 {
         return services::encode(s);
@@ -115,6 +122,10 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
 pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
     if raw.len() > MAX_SNAPSHOT {
         return Err(Error::Invalid);
+    }
+    #[cfg(feature = "delegation-issuer")]
+    if raw.get(..8) == Some(b"FPPY0003") {
+        return issuer::decode(raw);
     }
     #[cfg(feature = "delegation-services")]
     if raw.get(..8) == Some(b"FPPY0002") {
@@ -170,6 +181,8 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
         service_history: Vec::new(),
         #[cfg(feature = "delegation-services")]
         service_format_v2: false,
+        #[cfg(feature = "delegation-issuer")]
+        service_format_v3: false,
     };
     s.validate()?;
     Ok(s)

@@ -163,7 +163,7 @@ pub fn decode_introspection_json(body: &[u8]) -> Result<UnverifiedIntrospection,
             let action = match action.as_str() {
                 "get_chunk" => {
                     let offset = integer(&mut fields, "faction_offset")?;
-                    if offset >= claims.binding.size {
+                    if offset > claims.binding.size {
                         return Err(Error);
                     }
                     UnverifiedRetrievalAction::GetChunk { offset }
@@ -207,7 +207,7 @@ pub fn encode_introspection_json(response: &UnverifiedIntrospection) -> Result<V
             }
             let (action, offset) = match action {
                 UnverifiedRetrievalAction::GetChunk { offset } => {
-                    if *offset >= claims.binding.size {
+                    if *offset > claims.binding.size {
                         return Err(Error);
                     }
                     ("get_chunk", Some(*offset))

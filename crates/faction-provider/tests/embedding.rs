@@ -2173,3 +2173,7 @@ mod retrieval_records {
 #[cfg(feature = "delegation-services")]
 #[path = "delegation_services/mod.rs"]
 mod delegation_services;
+
+#[cfg(feature = "delegation-issuer")]
+#[path = "delegation_issuer/mod.rs"]
+mod delegation_issuer;
