@@ -54,6 +54,9 @@ by the sysop; experiments and future protocols are separate from normal operatio
   separate XMPP route. The [host and NetBSD console proof](dev-docs/evidence/native-provider-client/README.md)
   covers 1 MiB transfers in classic and Unicode modes, including outage and retry.
   See the [attachment guide](docs/private-attachments.md).
+  The [delivery research](dev-docs/research/0061-private-attachment-delivery-contract.md)
+  rejects the unchanged modern-client candidate; remote provider delivery and
+  independent interoperability remain unqualified.
   [Offline preparation](docs/provider-preparation.md) creates a private profile and
   separate self-asserted card; the operator checks a complete independently approved
   proposal before a separate policy action.
