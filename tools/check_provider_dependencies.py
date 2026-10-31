@@ -179,12 +179,16 @@ def operator_commands():
                     'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
-    commands += ['cargo build --manifest-path ' + REL + '/Cargo.toml --bin faction-provider --features operator --release --locked',
-                 'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
-                 'umask 077', 'mkdir -m 700 "$RUNNER_TEMP/faction284-console-OWNED"',
-                 'printf \'%s\\n\' \'Owned maintained-provider operator proof\' > "$RUNNER_TEMP/faction284-console-OWNED/OWNED"',
-                 'python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json" --prepared']
     return commands
+
+
+def operator_proof_commands():
+    return ['python3 tools/check_provider_dependencies.py',
+            'cargo build --manifest-path ' + REL + '/Cargo.toml --bin faction-provider --features operator --release --locked',
+            'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked',
+            'umask 077', 'mkdir -m 700 "$RUNNER_TEMP/faction284-console-OWNED"',
+            'printf \'%s\\n\' \'Owned maintained-provider operator proof\' > "$RUNNER_TEMP/faction284-console-OWNED/OWNED"',
+            'python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json" --prepared']
 
 
 def validate_ci(text):
@@ -214,7 +218,31 @@ def validate_ci(text):
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
-    native = _step(provider, 'Validate the native authenticated attachment client')
+    client = _job(text, 'provider_client')
+    require(not re.search(r'^    (?:if|continue-on-error|shell|strategy|needs|permissions):', client, re.M),
+            'conditional or overridden provider client CI job refused')
+    for setting in ['runs-on: ubuntu-24.04', 'timeout-minutes: 15']:
+        require(client.splitlines().count('    ' + setting) == 1, 'provider client CI platform or timeout changed')
+    names = re.findall(r'^      - name: (.*)$', client, re.M)
+    require(names == ['Fetch the public repository revision', 'Warm the selected provider client source graphs',
+                      'Validate the native authenticated attachment client', 'Validate the prepared provider operator console'],
+            'provider client CI must fetch, qualify and validate in its dedicated job')
+    require(text.splitlines().count('      - name: Validate the native authenticated attachment client') == 1,
+            'native client validation must run exactly once in its dedicated job')
+    fetch = _step(client, 'Fetch the public repository revision')
+    for setting in ['REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git', 'CHECKOUT_SHA: ${{ github.sha }}']:
+        require(fetch.splitlines().count('          ' + setting) == 1, 'provider client checkout identity changed')
+    require(_lines(fetch, {'git'}) == ['git init .', 'git remote add origin "$REPOSITORY_URL"',
+                                      'git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"',
+                                      'git checkout --detach FETCH_HEAD'],
+            'provider client CI must fetch the exact public repository revision')
+    client_warm = _step(client, 'Warm the selected provider client source graphs')
+    for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+        require(client_warm.splitlines().count('          ' + setting) == 1, 'provider client warmup environment changed')
+    require(_lines(client_warm, {'rustup', 'cargo'}) == [TOOLCHAIN] + root_warm_commands() + provider_warm_commands(),
+            'provider client CI must warm every checked graph online and locked')
+    validate_warm_order(client)
+    native = _step(client, 'Validate the native authenticated attachment client')
     for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
         require(native.splitlines().count('          ' + setting) == 1, 'native provider CI resource/toolchain environment changed')
     commands = ['cargo metadata --locked --format-version 1 --filter-platform ' + target
@@ -235,6 +263,19 @@ def validate_ci(text):
     ]
     require(_lines(native, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == commands,
             'native provider CI must qualify selected sources before all-target locked validation')
+    proof_name = 'Validate the prepared provider operator console'
+    require(text.splitlines().count('      - name: ' + proof_name) == 1,
+            'prepared operator console proof must run exactly once')
+    proof = _step(client, proof_name)
+    for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+        require(proof.splitlines().count('          ' + setting) == 1, 'prepared operator proof environment changed')
+    require(_lines(proof, {'python3', 'cargo', 'umask', 'mkdir', 'printf'}) == operator_proof_commands(),
+            'prepared operator proof must follow client validation with fresh source qualification')
+    for command in operator_proof_commands()[1:]:
+        if command.startswith('cargo build ') or 'faction284-console-OWNED' in command:
+            expected = 2 if command.startswith('cargo build -p faction-client ') else 1
+            require(text.splitlines().count('          ' + command) == expected,
+                    'prepared operator proof command duplicated or moved outside its guarded step')
     # Every fresh job must materialize every graph read by the offline guard.
     warm = _step(provider, 'Warm the selected native attachment source graphs')
     require(_lines(warm, {'rustup', 'cargo'}) == [TOOLCHAIN] + root_warm_commands(),
@@ -247,8 +288,8 @@ def validate_ci(text):
     selected = _step(operator, 'Validate durable provider policy and operator')
     for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider-operator']:
         require(selected.splitlines().count('          ' + setting) == 1, 'operator CI resource/toolchain environment changed')
-    require(_lines(selected, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'}) == operator_commands(),
-            'operator CI must qualify all selected sources before locked API, CLI and native proof')
+    require(_lines(selected, {'rustup', 'cargo', 'python3'}) == operator_commands(),
+            'operator CI must qualify all selected sources before locked API and CLI validation')
     validate_warm_order(operator)
     # The six moved service validations belong only to the required operator
     # consumer; reject extra copies outside that step as well.
@@ -260,15 +301,15 @@ def validate_ci(text):
         command='cargo '+operation+' --manifest-path '+REL+'/Cargo.toml'+(' --all-targets' if operation=='clippy' else '')+' --release --locked --features delegation-verifier'+(' -- -D warnings' if operation=='clippy' else ' -- --test-threads=1')
         require(sum(line.strip()==command for line in text.splitlines())==1,'verifier CI validation must run exactly once')
     documentation = _job(text, 'documentation')
-    require('    needs: [native_mail, provider, provider_operator]' in documentation.splitlines()
+    require('    needs: [native_mail, provider, provider_operator, provider_client]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
             and not re.search(r'^    (?:continue-on-error|shell):', documentation, re.M),
             'documentation must require all optional job results')
     gate = _step(documentation, 'Require optional native tests')
-    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator')]:
+    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client')]:
         require(('          ' + name + ': ${{ needs.' + job + '.result }}') in gate.splitlines(), 'required CI result environment missing')
-    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success'],
-            'documentation must fail closed on both optional test results')
+    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success'],
+            'documentation must fail closed on all optional test results')
 
 
 def inventory():

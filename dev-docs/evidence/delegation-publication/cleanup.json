@@ -1,0 +1,22 @@
+{
+  "all_owned_temporary_roots_absent": true,
+  "disposable_vm": {
+    "native_archive_bytes": 506019840,
+    "native_archive_sha256": "ab3b5b62816f94dee78317e29240f3cdfc9befe43d31f9ab9ec6017dafadbaf8",
+    "owned_clone_kernel_removed": true,
+    "owned_forward_closed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_controller_stopped": true
+  },
+  "no_open_handles_in_owned_roots_before_remove": true,
+  "owned_archive_families_verified": 8,
+  "owned_temporary_roots_removed": 8,
+  "owner_playground_started": false,
+  "pre_remove_exact_marker_uid_mode_inode_regular_membership_length_and_hash_checks": true,
+  "result": "pass",
+  "retained_raw_evidence_outside_git": true,
+  "stopped_controller_ipc_removed": 1
+}

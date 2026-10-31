@@ -134,3 +134,36 @@ fn publication_chunk_bound_matches_the_existing_4096_byte_store_selector() {
     };
     assert!(encode_publication_query_json(&q).is_err());
 }
+
+#[test]
+fn expired_delete_response_remains_representable_without_expired_publication_permission() {
+    for action in [
+        UnverifiedPublicationAction::Begin,
+        UnverifiedPublicationAction::Commit,
+        UnverifiedPublicationAction::Status,
+        UnverifiedPublicationAction::Delete,
+    ] {
+        let q = query(action.clone());
+        let observation = UnverifiedPublicationObservation::Current {
+            checked_at: q.binding.expires,
+            query: Box::new(q),
+            home: "recipient.test".into(),
+            service_home: "sender.test".into(),
+            service_certificate_sha256: "11".repeat(32),
+            recipient_certificate_sha256: "22".repeat(32),
+            generation: 2,
+            reset: 0,
+        };
+        let result = encode_publication_response_http(&observation);
+        assert_eq!(
+            result.is_ok(),
+            matches!(action, UnverifiedPublicationAction::Delete)
+        );
+        if let Ok(bytes) = result {
+            assert_eq!(
+                decode_publication_response_http(&bytes).unwrap(),
+                observation
+            );
+        }
+    }
+}

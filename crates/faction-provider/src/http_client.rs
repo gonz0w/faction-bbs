@@ -318,3 +318,62 @@ impl HttpEndpoint {
         self.read_retries = Some(reads);
     }
 }
+
+#[cfg(feature = "delegation-verifier")]
+impl HttpEndpoint {
+    pub(crate) fn matches_publication(
+        &self,
+        association: &crate::services::PublicationAssociation,
+        outgoing: &crate::services::ServiceRegistration,
+        endpoint: &crate::services::ServiceRegistration,
+    ) -> bool {
+        self.address == association.address
+            && self.host == association.http_host
+            && self.server_name == endpoint.dns_san
+            && self.leaf_pin == endpoint.certificate_sha256
+            && self
+                .credentials
+                .ca
+                .to_der()
+                .is_ok_and(|der| sha256(&der) == association.ca_sha256)
+            && self
+                .credentials
+                .certificate
+                .to_der()
+                .is_ok_and(|der| sha256(&der) == outgoing.certificate_sha256)
+            && self
+                .credentials
+                .certificate
+                .subject_alt_names()
+                .is_some_and(|names| {
+                    names
+                        .iter()
+                        .any(|name| name.dnsname() == Some(outgoing.dns_san.as_str()))
+                })
+            && leaf_current(&self.credentials.certificate, wall_now())
+    }
+    pub(crate) fn publication_checked(
+        &self,
+        query: &codec::UnverifiedPublicationQuery,
+        deadline: Instant,
+        cancel: Arc<AtomicBool>,
+        probe: Arc<dyn Fn() -> bool + Send + Sync>,
+    ) -> Result<codec::UnverifiedPublicationObservation, Stage> {
+        let bytes =
+            codec::encode_publication_query_http(&self.host, query).map_err(|_| Stage::Frame)?;
+        let result = codec::decode_publication_response_http(
+            &self.exchange(&bytes, deadline, cancel, probe)?,
+        )
+        .map_err(|_| Stage::Frame)?;
+        if let codec::UnverifiedPublicationObservation::Current {
+            query: observed,
+            home,
+            ..
+        } = &result
+            && (observed.as_ref() != query || home != &self.host)
+        {
+            return Err(Stage::Denied);
+        }
+        Ok(result)
+    }
+}

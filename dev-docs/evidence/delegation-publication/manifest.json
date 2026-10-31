@@ -1,0 +1,16 @@
+{
+  "files": {
+    "dev-docs/evidence/delegation-publication/README.md": "7970b49f9ca2b55b8a98447c5e863ae8d372177d7067677287d564f8056ed0b9",
+    "dev-docs/evidence/delegation-publication/REPRODUCE.md": "973be0a50077a81baa96fbe965b14267b4a2671dd2bfe0a98a9f7a277d3f830c",
+    "dev-docs/evidence/delegation-publication/binaries.json": "8bcd1466ac95b95e740345030f2c43f61132a9039403b244cbded59c48f9d1d4",
+    "dev-docs/evidence/delegation-publication/cleanup.json": "1e92fe133cbfa0a7bcac9da2bd616c04e00877e7549d1e5cdb5c900f39aaa39b",
+    "dev-docs/evidence/delegation-publication/inputs.json": "ef02b7b555666c9cbaaff2a73c31f2a1f23ab9951682c4222534d808175bff83",
+    "dev-docs/evidence/delegation-publication/native-verification.json": "416188f6068980a7b3f02edb90755b62e07fc01f0555b3ac238b931e32e0e50a",
+    "dev-docs/evidence/delegation-publication/privacy.json": "27c24eda332cf80f1017f9618968d68483110e1a24da6358cebdc2837ef0db34",
+    "dev-docs/evidence/delegation-publication/results.json": "4aa214c526dd70b307e22a9cd6eecffde4dfabc5311450adfd0c67024e8127e4",
+    "dev-docs/evidence/delegation-publication/retention.json": "bbc8f68dbab61faf627027d285df1dbf8258664be54cbceb6cbac18a5339027e",
+    "dev-docs/evidence/delegation-publication/tdd.json": "b4dbd6aa9c19f85383d814506d995c5058698c7e4bd278913511b76e9e6b35f0",
+    "dev-docs/evidence/delegation-publication/tools.json": "ac909151b7a5b50c4a23d9e89f03fffeafa3052b710e19d562c3baf1c293552c"
+  },
+  "schema": 1
+}

@@ -96,8 +96,13 @@ preserves exact actions and leaves this issuer interface and its Host derivation
 unchanged; it does not collapse observations into generic `Publish`.
 
 The separate [retrieval verifier](delegation-verifier.md) consumes fresh
-introspection for private resource dispatch. Current policy cannot combine its
-resource configuration with this issuer configuration in one policy.
+introspection for private resource dispatch. An explicit `ServicePolicy::new_composed`
+combines issuer routes and resource associations in one canonical policy and
+shared runtime; `new_issuer` retains its original restrictions. An explicit
+publication profile adds a distinct outgoing observation role; endpoint trust is
+shared with resource associations without adding incoming authority. See the
+[publication contract](delegation-verifier.md#prepare-foreign-publication) and
+[component software record](evidence/delegation-publication/README.md).
 
 ## Durable policy
 

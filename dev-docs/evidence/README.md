@@ -531,3 +531,12 @@ and [cleanup](delegation-verifier/cleanup.json) record the scoped checks and tea
 
 `dev-docs/evidence/delegation-verifier/manifest.json` SHA-256 is
 `b30eb39ee96d0771458e12543c0ccda961c614ce97c66bbbe14692eb25d20a72`.
+
+[Composed-policy/publication evidence](delegation-publication/README.md) records
+the explicit shared Runtime roles and actual sender publication through fresh
+recipient-current checks, followed by durable reopen and bidirectional retrieval.
+Matching host/NetBSD provider profiles, fresh native/client classic and Unicode
+controls, original failures and narrow retention limits remain distinct from
+operator/relay deployment and independent interoperability. The selected
+[manifest](delegation-publication/manifest.json) SHA-256 is
+`dc6b9a7acff5aaa7daf9f14ce65222ff010fcaa780930a527dc872057e9e1388`; the existing recorded-file checker verifies its saved bytes.

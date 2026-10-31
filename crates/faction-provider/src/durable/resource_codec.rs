@@ -1,8 +1,8 @@
 //! V4 retains device bytes and canonical service history; only public policy persists.
 use super::{Error, MAX_BINDINGS, MAX_SNAPSHOT, Reader, Snapshot, Writer};
 use crate::services::{
-    IssuerRoute, RemoteFloor, ResourceAssociation, ServiceIdentity, ServicePolicy,
-    ServiceRegistration, ServiceUse,
+    IssuerRoute, PublicationAssociation, RemoteFloor, ResourceAssociation, ServiceIdentity,
+    ServicePolicy, ServiceRegistration, ServiceUse,
 };
 pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     s.validate()?;
@@ -10,11 +10,16 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     device.service_format_v2 = false;
     device.service_format_v3 = false;
     device.service_format_v4 = false;
+    device.service_format_v5 = false;
     device.service_history.clear();
     device.service_policy = None;
     device.remote_history.clear();
     let original = super::encode(&device)?;
-    let mut w = Writer(b"FPPY0004".to_vec());
+    let mut w = Writer(if s.service_format_v5 {
+        b"FPPY0005".to_vec()
+    } else {
+        b"FPPY0004".to_vec()
+    });
     w.0.extend((original.len() as u32).to_be_bytes());
     w.0.extend(original);
     w.0.push(s.service_history.len() as u8);
@@ -36,6 +41,8 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
             w.u64(e.valid_from);
             w.u64(e.valid_until);
             w.0.push(match p.service_use(&e.identity()).ok_or(Error::Invalid)? {
+                ServiceUse::OutboundObservation if s.service_format_v5 => 6,
+                ServiceUse::OutboundObservation => return Err(Error::Invalid),
                 ServiceUse::Observation => 0,
                 ServiceUse::Relay => 1,
                 ServiceUse::Introspection => 2,
@@ -72,6 +79,22 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
                 w.u64(a.remote_reset);
             }
         }
+        if s.service_format_v5 {
+            w.0.push(u8::from(p.publication.is_some()));
+            if let Some(associations) = &p.publication {
+                w.0.push(associations.len() as u8);
+                for a in associations {
+                    w.string(&a.recipient_home);
+                    w.string(&a.outbound_client_id);
+                    w.string(&a.endpoint_id);
+                    w.string(&a.address.to_string());
+                    w.string(&a.http_host);
+                    w.0.extend(a.ca_sha256);
+                    w.u64(a.remote_generation);
+                    w.u64(a.remote_reset);
+                }
+            }
+        }
     }
     w.0.push(s.remote_history.len() as u8);
     for r in &s.remote_history {
@@ -85,7 +108,7 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     Ok(w.0)
 }
 pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
-    if raw.len() > MAX_SNAPSHOT || raw.get(..8) != Some(b"FPPY0004") {
+    if raw.len() > MAX_SNAPSHOT || !matches!(raw.get(..8), Some(b"FPPY0004" | b"FPPY0005")) {
         return Err(Error::Invalid);
     }
     let mut r = Reader { raw, offset: 8 };
@@ -98,6 +121,7 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
     s.service_format_v2 = true;
     s.service_format_v3 = true;
     s.service_format_v4 = true;
+    s.service_format_v5 = raw.get(..8) == Some(b"FPPY0005");
     for _ in 0..r.count(MAX_BINDINGS)? {
         s.service_history.push((
             r.id()?,
@@ -127,6 +151,7 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
                 3 => ServiceUse::ResourceClient,
                 4 => ServiceUse::OutboundIntrospection,
                 5 => ServiceUse::IssuerEndpoint,
+                6 if s.service_format_v5 => ServiceUse::OutboundObservation,
                 _ => return Err(Error::Invalid),
             };
             entries.push((e, purpose));
@@ -167,18 +192,54 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
         } else {
             None
         };
-        s.service_policy = Some(match (issuer, resource) {
-            (None, Some(associations)) => ServicePolicy::new_resource(home, entries, associations)?,
-            (Some((issuer, routes)), None) => {
-                ServicePolicy::new_issuer(home, issuer, entries, routes)?
+        let publication = if s.service_format_v5 && r.boolean()? {
+            let mut associations = Vec::new();
+            for _ in 0..r.count(MAX_BINDINGS)? {
+                associations.push(PublicationAssociation {
+                    recipient_home: r.string(189)?,
+                    outbound_client_id: r.string(64)?,
+                    endpoint_id: r.string(254)?,
+                    address: r.string(128)?.parse().map_err(|_| Error::Invalid)?,
+                    http_host: r.string(253)?,
+                    ca_sha256: r.id()?,
+                    remote_generation: r.u64()?,
+                    remote_reset: r.u64()?,
+                });
             }
-            (None, None) => {
-                if entries.iter().any(|(_, u)| *u != ServiceUse::Observation) {
-                    return Err(Error::Invalid);
+            Some(associations)
+        } else {
+            None
+        };
+        s.service_policy = Some(if let Some(publications) = publication {
+            let (Some((issuer, routes)), Some(associations)) = (issuer, resource) else {
+                return Err(Error::Invalid);
+            };
+            ServicePolicy::new_composed_publication(
+                home,
+                issuer,
+                entries,
+                routes,
+                associations,
+                publications,
+            )?
+        } else {
+            match (issuer, resource) {
+                (None, Some(associations)) => {
+                    ServicePolicy::new_resource(home, entries, associations)?
                 }
-                ServicePolicy::new(home, entries.into_iter().map(|(e, _)| e).collect())?
+                (Some((issuer, routes)), None) => {
+                    ServicePolicy::new_issuer(home, issuer, entries, routes)?
+                }
+                (None, None) => {
+                    if entries.iter().any(|(_, u)| *u != ServiceUse::Observation) {
+                        return Err(Error::Invalid);
+                    }
+                    ServicePolicy::new(home, entries.into_iter().map(|(e, _)| e).collect())?
+                }
+                (Some((issuer, routes)), Some(associations)) => {
+                    ServicePolicy::new_composed(home, issuer, entries, routes, associations)?
+                }
             }
-            (Some(_), Some(_)) => return Err(Error::Invalid),
         });
     }
     for _ in 0..r.count(crate::authority::MAX_HOMES)? {

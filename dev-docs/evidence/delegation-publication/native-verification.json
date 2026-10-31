@@ -1,0 +1,49 @@
+{
+  "actual_production_artifact_bindings": {
+    "bindings": {
+      "device_provider_console_fixture": {
+        "bytes": 923128,
+        "sha256": "d9c6c4e54ae9e0f8a62bab904bced2aa2dc1ab99e91eaf684bce5e4b3bb2165e"
+      },
+      "faction-client": {
+        "bytes": 3675840,
+        "sha256": "b9a48b1f43358f872587c7388cd5a54b565a0da5c99fdf347957405caab8c229"
+      }
+    },
+    "source": "original Cargo-reported production artifacts retained before default-tests overwrote target alias"
+  },
+  "build_memory_mib": 2048,
+  "correction": "Preserved old helpers/argv/bindings and both failures. New phase uses original Cargo-reported device-provider production object in a separate owned directory; no recompilation, product/source/assertion/timeout/resource change. Device260/default50 and console20 pass at1GiB.",
+  "failed_attempts": [
+    {
+      "classification": "124pass/3fail/5helper-ignored at shared OpenSSL req setup before behavior; private config missing and private python3 alias missing. Existing helper does not expose exact OpenSSL stderr; no recovered-error claim.",
+      "device_stderr_sha256": "a9188caf22bda73aa8265f6c06aa10a0fa3e8da9eaa0cc9d0898df43ac6b1e82",
+      "device_stdout_sha256": "07461670e4ae1b8d1ee738a805879f0a1e7b52504a7abc7368210dccaee70bb9",
+      "phase": "initial-runtime",
+      "returncode": 101
+    },
+    {
+      "classification": "Original3 failures resolved. Six maintained setup tests selected wrong default client copied after target alias overwrite; all6 retained80B transcripts contain default-build refusal. Actual device-provider production object was already retained before overwrite.",
+      "device_stdout_sha256": "2d40c9ff0f9eaf6b36bc3729bf607fc19abb96f65c5141439c4a4b4b667a65cd",
+      "phase": "with-test-prerequisites",
+      "returncode": 101
+    }
+  ],
+  "native_client_capture_sha256": "7cd06a025965cb4bead01af76811782446945128995906cf8ad1efa04ba64fa7",
+  "native_executable_inventory_limit": "Actual reported compiled artifacts and retained original objects, not an assertion that all executable-bit files ran.",
+  "observed_physmem_bytes": 1054990336,
+  "product_tests_unprivileged": true,
+  "production_console_excludes_test_environment_overrides": true,
+  "runtime_cpu": 2,
+  "source_commit": "f59fca69718f4e43bda65ec1474ace32d7d973ee",
+  "source_exact_before_after": 811,
+  "source_gates": {
+    "default": "Actual narrower graph uses the same exact qualified sources/licenses/archives/manifests with feature subsets",
+    "device": "Exact selected qualified native source/features/license/archive graph verified before compile"
+  },
+  "test_child_prerequisites": {
+    "openssl_conf_sha256": "a1c45aa35abd0050b556a5b709603b4b9278886b8c8254ac7ef5a5e9d8eb638d",
+    "python_alias_sha256": "d2a8150c06c697cbbab23d1aadfd82d0f4dae772c69fa9a15fe419868228a3af",
+    "scope": "private existing test-child fixture prerequisites; removed from production console environment"
+  }
+}

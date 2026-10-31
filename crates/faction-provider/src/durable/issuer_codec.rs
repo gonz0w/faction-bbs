@@ -39,6 +39,7 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
                 ServiceUse::Introspection => 2,
                 #[cfg(feature = "delegation-verifier")]
                 ServiceUse::ResourceClient
+                | ServiceUse::OutboundObservation
                 | ServiceUse::OutboundIntrospection
                 | ServiceUse::IssuerEndpoint => return Err(Error::Invalid),
             });

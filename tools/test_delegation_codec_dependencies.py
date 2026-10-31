@@ -123,7 +123,7 @@ class CodecDependencies(unittest.TestCase):
         gate = '          python3 tools/check_delegation_codec_dependencies.py\n'
         moved = source.replace(gate,'') + gate
         with self.assertRaises(ValueError): policy.validate_ci(moved)
-        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator]', 'needs: [native_mail]'))
+        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail]'))
 
     def test_ci_post_run_conditionals_and_job_tolerance_refused(self):
         source = ci_fixture()
@@ -149,7 +149,7 @@ class CodecDependencies(unittest.TestCase):
 
 def ci_fixture():
     lines = ['jobs:', '  documentation:', '    name: Documentation and policy',
-             '    needs: [native_mail, provider, provider_operator]', '    if: ${{ always() }}',
+             '    needs: [native_mail, provider, provider_operator, provider_client]', '    if: ${{ always() }}',
              '    runs-on: ubuntu-24.04', '    timeout-minutes: 15', '    steps:',
              '      - name: Validate the isolated delegation wire codec', '        env:',
              '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-delegation-codec',

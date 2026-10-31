@@ -331,13 +331,87 @@ fn actual_active_and_tombstone_v4_fixtures_require_verifier_support_without_rewr
     }
 }
 #[test]
-fn unsupported_combined_resource_and_issuer_policy_is_refused_without_fallback_or_rewrite() {
+fn complete_combined_v4_policy_requires_verifier_support_without_fallback_or_rewrite() {
     let bytes = include_bytes!("fixtures/resource-combined-v4.bin");
     let f = Fixture::new();
     let r = Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![])).unwrap();
     drop(r);
     let path = f.policy().join("provider-policy.snapshot");
     fs::write(&path, bytes).unwrap();
-    assert!(Runtime::reopen_durable(&f.policy()).is_err());
+    let result = Runtime::reopen_durable(&f.policy());
+    assert_eq!(result.is_ok(), cfg!(feature = "delegation-verifier"));
+    drop(result);
     assert_eq!(fs::read(path).unwrap(), bytes);
+}
+
+#[test]
+fn malformed_combined_v4_role_reference_truncation_and_trailing_data_never_rewrite() {
+    let original = include_bytes!("fixtures/resource-combined-v4.bin").to_vec();
+    let mut unknown = original.clone();
+    let at = unknown.windows(32).rposition(|w| w == [21; 32]).unwrap();
+    unknown[at + 32 + 1 + 8 + 8] = 255;
+    let mut reference = original.clone();
+    let at = reference
+        .windows(9)
+        .rposition(|w| w == b"old-relay")
+        .unwrap();
+    reference[at] = b'z';
+    let mut trailing = original.clone();
+    trailing.push(0);
+    for bytes in [
+        unknown,
+        reference,
+        trailing,
+        original[..original.len() - 1].to_vec(),
+    ] {
+        let f = Fixture::new();
+        let runtime = Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![])).unwrap();
+        drop(runtime);
+        let path = f.policy().join("provider-policy.snapshot");
+        fs::write(&path, &bytes).unwrap();
+        assert!(Runtime::reopen_durable(&f.policy()).is_err());
+        assert_eq!(fs::read(path).unwrap(), bytes);
+    }
+}
+
+#[cfg(feature = "durable-policy")]
+#[test]
+fn actual_active_and_tombstone_v5_require_publication_support_without_rewrite() {
+    for bytes in [
+        include_bytes!("fixtures/publication-active-v5.bin").as_slice(),
+        include_bytes!("fixtures/publication-tombstone-v5.bin").as_slice(),
+    ] {
+        let f = Fixture::new();
+        drop(Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![])).unwrap());
+        let path = f.policy().join("provider-policy.snapshot");
+        fs::write(&path, bytes).unwrap();
+        let result = Runtime::reopen_durable(&f.policy());
+        assert_eq!(result.is_ok(), cfg!(feature = "delegation-verifier"));
+        drop(result);
+        assert_eq!(fs::read(path).unwrap(), bytes);
+    }
+}
+#[test]
+fn malformed_v5_never_rewrites_or_falls_back() {
+    let original = include_bytes!("fixtures/publication-active-v5.bin").to_vec();
+    let mut unknown = original.clone();
+    let at = unknown.windows(32).rposition(|w| w == [23; 32]).unwrap();
+    unknown[at + 32 + 1 + 8 + 8] = 255;
+    let mut wrong_role = original.clone();
+    wrong_role[at + 32 + 1 + 8 + 8] = 4;
+    let mut trailing = original.clone();
+    trailing.push(0);
+    for bytes in [
+        unknown,
+        wrong_role,
+        trailing,
+        original[..original.len() - 1].to_vec(),
+    ] {
+        let f = Fixture::new();
+        drop(Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![])).unwrap());
+        let path = f.policy().join("provider-policy.snapshot");
+        fs::write(&path, &bytes).unwrap();
+        assert!(Runtime::reopen_durable(&f.policy()).is_err());
+        assert_eq!(fs::read(path).unwrap(), bytes);
+    }
 }

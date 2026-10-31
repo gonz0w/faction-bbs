@@ -358,7 +358,8 @@ fn validate_publication_observation(input: &UnverifiedPublicationObservation) ->
         crate::types::hex(recipient_certificate_sha256)?;
         if *generation == 0
             || *checked_at < query.binding.created
-            || *checked_at >= query.binding.expires
+            || (*checked_at >= query.binding.expires
+                && query.action != UnverifiedPublicationAction::Delete)
             || query.binding.sender.account.split_once('@').map(|(_, h)| h)
                 != Some(service_home.as_str())
             || query

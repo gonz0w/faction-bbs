@@ -2,8 +2,8 @@
 
 The default-off `delegation-verifier` feature adds a consuming library operation
 for retrieval from already committed ciphertext. It starts no listener and enables
-no client or operator. It does not authorize foreign publication, carry a response
-on the incoming relay connection, or release mail. Device encryption keys and
+no client or operator. It does not carry a response on the incoming relay
+connection or release mail. Device encryption keys and
 plaintext remain on the device.
 
 ## Configure trusted policy
@@ -31,13 +31,48 @@ external and never persisted in policy. Device and service credentials share the
 existing aggregate 32 active and 32 history limits; registry homes and retained
 remote-floor homes share the 32-home limit.
 
-Current policy supports a resource configuration with legacy Observation entries,
-or an issuer configuration with its existing roles. It does not combine issuer
-and resource configurations in one policy. Future integration must compose them
-within the same existing runtime and limits; adding a second runtime is not a
-workaround. See [durable policy](provider-policy.md) for persistence and floors.
+For both directions at one home, explicitly construct
+`ServicePolicy::new_composed(local_home, issuer, entries, routes, associations)`.
+It validates issuer routes and resource associations against the same canonical
+registration collection and certificate history. The directional constructors
+retain their original restrictions; they do not implicitly add roles. One runtime
+per home shares the existing incoming lane and aggregate limits. Remote generation
+and reset values must match the explicitly configured tuple; coordinated complete
+policy proposals are required when either changes. Intermediate mismatches deny
+operations, and responses do not automatically adopt new values. See
+[durable policy](provider-policy.md) for persistence and floors.
 
-## Prepare and execute
+## Prepare foreign publication
+
+An embedder explicitly selects `ServicePolicy::new_composed_publication` with the local home, issuer, complete
+entries and routes, resource associations and a nonempty collection
+of `PublicationAssociation` values. `publication_associations()` returns the
+configured associations read-only. Existing constructors,
+including `new_composed`, retain their original restrictions. Each publication
+association specifies the recipient home, outgoing observation client and endpoint
+identities, fixed address, HTTP host, CA digest and exact remote generation/reset.
+`OutboundObservation` is distinct from `OutboundIntrospection` and grants no
+incoming service permission. The existing `IssuerEndpoint` registration supplies
+server name and leaf pin for both association types; it is not an incoming role.
+Publication HTTP Host equals the recipient home. The configured address, CA and
+client leaf must match the outbound endpoint. For the same remote home, publication
+and resource associations must agree on generation and reset.
+
+An actual authenticated sender device `Session` consumes itself in
+`prepare_publication(self, binding, request)`, returning an opaque
+`PendingPublication` after dropping the carrier and handle. Its consuming
+`execute(&HttpEndpoint, &Mutex<Store>) -> Result<Response, Error>` obtains a fresh
+authenticated recipient
+observation for every operation and retry. After network I/O, it takes Store then
+Authority, rechecks current local authority and privately dispatches only the exact
+request; the trusted embedder receives a bounded Store response. Publication and
+retrieval share the one physical continuation reservation within the aggregate
+eight slots. An expired sender Delete remains possible only with fresh current
+remote recipient, sender and service approval and certificate/deadline checks;
+other expired actions are denied. Whole-second `checked_at` and fresh online
+checks do not make revocation atomic across homes.
+
+## Prepare and execute retrieval
 
 An actual authenticated `ServiceSession` with current `ResourceClient` permission
 calls `prepare_retrieval(self, binding, request, token)` with a `Binding`,
@@ -71,6 +106,9 @@ reset until the outbound operation and socket finish. A second preparation is Bu
 while it remains held; an older release cannot free a newer reservation. Ordinary
 provider admission retains its existing limits.
 
+The newer [composed policy and publication record](evidence/delegation-publication/README.md)
+describes its separate component observations and pending checks.
+
 ## Scope of component validation
 
 The [host and NetBSD software record](evidence/delegation-verifier/README.md)
@@ -81,8 +119,8 @@ device; its ordinary session still denies foreign publication. Actual recipient
 home issuance and fresh introspection then precede private retrieval. Scheduling
 controls for held callbacks are not evidence of TLS kernel saturation. GitHub CI and merge remain separate workflow gates.
 
-This component does not complete foreign-publication authorization, native relay,
-production-console cross-home upload or mail delivery. Those remain under
+This library interface does not complete native relay, production-console
+cross-home upload or mail delivery. Those remain under
 [issue #300](https://github.com/gonz0w/faction-bbs/issues/300) and
 [issue #301](https://github.com/gonz0w/faction-bbs/issues/301). Deployment,
 independent interoperability and physical capacity are not established here.

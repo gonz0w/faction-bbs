@@ -452,3 +452,132 @@ mod issuer_tests;
 #[cfg(feature = "delegation-services")]
 #[path = "service_tests.rs"]
 mod service_tests;
+
+#[cfg(feature = "delegation-verifier")]
+#[test]
+fn composed_v4_publication_faults_preserve_old_state_or_require_explicit_reopen() {
+    let complete = codec::decode(include_bytes!(
+        "../../tests/fixtures/resource-combined-v4.bin"
+    ))
+    .unwrap();
+    let policy = complete.service_policy.unwrap();
+    for point in POINTS {
+        let f = Fixture::new();
+        let registry = |g| {
+            Registry::new(
+                g,
+                0,
+                vec!["local.test".into(), "remote.test".into()],
+                vec![],
+            )
+            .unwrap()
+        };
+        let runtime = Runtime::initialize_durable(&f.policy(), registry(1)).unwrap();
+        let before = fs::read(f.policy().join("provider-policy.snapshot")).unwrap();
+        FAULT.set(Fault::Error(point));
+        assert!(
+            runtime
+                .control()
+                .replace_delegation_policy(registry(2), policy.clone())
+                .is_err()
+        );
+        FAULT.set(Fault::None);
+        assert!(runtime.policy_summary().is_err());
+        assert!(runtime.control().reset(1).is_err());
+        drop(runtime);
+        let published = matches!(point, Point::AfterRename | Point::DirectorySync);
+        let bytes = fs::read(f.policy().join("provider-policy.snapshot")).unwrap();
+        if !published {
+            assert_eq!(bytes, before);
+        }
+        let runtime = Runtime::reopen_durable(&f.policy()).unwrap();
+        let snapshot = runtime.state.authority.lock().unwrap().snapshot();
+        assert_eq!(snapshot.generation, if published { 2 } else { 1 });
+        assert_eq!(
+            snapshot.service_policy,
+            if published {
+                Some(policy.clone())
+            } else {
+                None
+            }
+        );
+    }
+}
+
+#[cfg(feature = "delegation-verifier")]
+#[test]
+fn v5_publication_policy_faults_stop_until_reopen_and_preserve_atomic_complete_state() {
+    let complete = codec::decode(include_bytes!(
+        "../../tests/fixtures/publication-active-v5.bin"
+    ))
+    .unwrap();
+    let policy = complete.service_policy.unwrap();
+    for point in POINTS {
+        let f = Fixture::new();
+        let registry = |g| {
+            Registry::new(
+                g,
+                0,
+                vec!["local.test".into(), "remote.test".into()],
+                vec![],
+            )
+            .unwrap()
+        };
+        let runtime = Runtime::initialize_durable(&f.policy(), registry(1)).unwrap();
+        let before = fs::read(f.policy().join("provider-policy.snapshot")).unwrap();
+        FAULT.set(Fault::Error(point));
+        assert!(
+            runtime
+                .control()
+                .replace_delegation_policy(registry(2), policy.clone())
+                .is_err()
+        );
+        FAULT.set(Fault::None);
+        assert!(runtime.policy_summary().is_err());
+        assert!(runtime.control().reset(1).is_err());
+        drop(runtime);
+        let published = matches!(point, Point::AfterRename | Point::DirectorySync);
+        let bytes = fs::read(f.policy().join("provider-policy.snapshot")).unwrap();
+        if !published {
+            assert_eq!(bytes, before);
+        }
+        let runtime = Runtime::reopen_durable(&f.policy()).unwrap();
+        let snapshot = runtime.state.authority.lock().unwrap().snapshot();
+        assert_eq!(snapshot.generation, if published { 2 } else { 1 });
+        assert_eq!(snapshot.service_format_v5, published);
+        assert_eq!(
+            snapshot.service_policy,
+            if published {
+                Some(policy.clone())
+            } else {
+                None
+            }
+        );
+        assert_eq!(snapshot.remote_history.len(), usize::from(published));
+    }
+}
+#[cfg(feature = "delegation-verifier")]
+#[test]
+fn v5_codec_refuses_every_truncation_trailing_unknown_role_and_mismatched_remote_tuple() {
+    let raw = include_bytes!("../../tests/fixtures/publication-active-v5.bin");
+    assert_eq!(codec::encode(&codec::decode(raw).unwrap()).unwrap(), raw);
+    for end in 0..raw.len() {
+        assert!(codec::decode(&raw[..end]).is_err(), "prefix {end}");
+    }
+    let mut trailing = raw.to_vec();
+    trailing.push(0);
+    assert!(codec::decode(&trailing).is_err());
+    let mut decoded = codec::decode(raw).unwrap();
+    decoded.service_format_v5 = false;
+    assert!(codec::encode(&decoded).is_err());
+    let mut decoded = codec::decode(raw).unwrap();
+    decoded
+        .service_policy
+        .as_mut()
+        .unwrap()
+        .publication
+        .as_mut()
+        .unwrap()[0]
+        .remote_reset += 1;
+    assert!(codec::encode(&decoded).is_err());
+}

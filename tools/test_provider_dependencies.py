@@ -245,7 +245,7 @@ def native_ci_step():
             + ''.join('          ' + command + '\n' for command in commands))
 
 
-def ci_fixture():
+def joined_ci_fixture():
     return """jobs:
   provider:
     name: Optional attachment provider
@@ -498,6 +498,185 @@ def ci_fixture():
 """
 
 
+def client_split_ci_fixture():
+    source = joined_ci_fixture()
+    native = native_ci_step()
+    assert source.count(native) == 1
+    provider = policy._job(source, 'provider')
+    prefix = provider[:provider.index('          python3 tools/check_provider_dependencies.py\n')]
+    metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
+    assert len(metadata) == 60
+    fetch = '      - name: Fetch the public repository revision\n' + policy._step(provider, 'Fetch the public repository revision')
+    client = ('  provider_client:\n'
+              '    name: Optional authenticated provider client\n'
+              '    runs-on: ubuntu-24.04\n'
+              '    timeout-minutes: 15\n'
+              '    steps:\n' + fetch +
+              '      - name: Warm the selected provider client source graphs\n'
+              '        env:\n'
+              '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n'
+              '          CARGO_BUILD_JOBS: 2\n'
+              '          RUSTUP_TOOLCHAIN: 1.96.0\n'
+              '        run: |\n'
+              '          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy\n'
+              + '\n'.join(metadata) + '\n' + native)
+    source = source.replace(native, '').replace('  provider_operator:\n', client + '  provider_operator:\n', 1)
+    source = source.replace('needs: [native_mail, provider, provider_operator]',
+                            'needs: [native_mail, provider, provider_operator, provider_client]')
+    source = source.replace('          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}\n',
+                            '          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}\n'
+                            '          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n')
+    return source.replace('          test "$PROVIDER_OPERATOR_RESULT" = success\n',
+                           '          test "$PROVIDER_OPERATOR_RESULT" = success\n'
+                           '          test "$PROVIDER_CLIENT_RESULT" = success\n')
+
+
+def operator_proof_tail():
+    source = client_split_ci_fixture()
+    operator = policy._job(source, 'provider_operator')
+    step = policy._step(operator, 'Validate durable provider policy and operator')
+    commands = policy._lines(step, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'})
+    build = 'cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked'
+    return commands[commands.index(build):]
+
+
+def ci_fixture():
+    source = client_split_ci_fixture()
+    tail = ''.join('          ' + command + '\n' for command in operator_proof_tail())
+    assert source.count(tail) == 1
+    step = ('      - name: Validate the prepared provider operator console\n'
+            '        env:\n'
+            '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n'
+            '          CARGO_BUILD_JOBS: 2\n'
+            '          RUSTUP_TOOLCHAIN: 1.96.0\n'
+            '        run: |\n'
+            '          python3 tools/check_provider_dependencies.py\n' + tail)
+    return source.replace(tail, '').replace('  provider_operator:\n', step + '  provider_operator:\n', 1)
+
+
+class PreparedOperatorProofCI(unittest.TestCase):
+    def test_complete_client_operator_proof_layout_is_accepted(self):
+        policy.validate_ci(ci_fixture())
+
+    def test_old_operator_job_proof_tail_is_refused(self):
+        with self.assertRaises(ValueError):
+            policy.validate_ci(client_split_ci_fixture())
+
+    def test_actual_prepared_proof_follows_native_client_and_fresh_source_guard(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        client = policy._job(source, 'provider_client')
+        operator = policy._job(source, 'provider_operator')
+        name = 'Validate the prepared provider operator console'
+        proof = policy._step(client, name)
+        self.assertIn(native_ci_step(), client)
+        self.assertLess(client.index(native_ci_step()), client.index('      - name: ' + name))
+        for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0',
+                        'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            self.assertEqual(proof.splitlines().count('          ' + setting), 1)
+        self.assertEqual(policy._lines(proof, {'python3', 'cargo', 'umask', 'mkdir', 'printf'}),
+                         ['python3 tools/check_provider_dependencies.py'] + operator_proof_tail())
+        for command in operator_proof_tail():
+            self.assertNotIn('          ' + command + '\n', operator)
+        policy.validate_ci(source)
+
+    def test_proof_commands_guard_order_resources_prepared_and_uniqueness_are_required(self):
+        source = ci_fixture()
+        client = policy._job(source, 'provider_client')
+        name = 'Validate the prepared provider operator console'
+        proof = policy._step(client, name)
+        block = '      - name: ' + name + '\n' + proof
+        for line in proof.splitlines():
+            if line.strip().startswith(('python3 ', 'cargo ', 'umask ', 'mkdir ', 'printf ')):
+                with self.subTest(missing=line), self.assertRaises(ValueError):
+                    policy.validate_ci(source.replace(block, block.replace(line + '\n', '', 1)))
+        for old, new in [(' --prepared', ''), ('CARGO_BUILD_JOBS: 2', 'CARGO_BUILD_JOBS: 4'),
+                         ('RUSTUP_TOOLCHAIN: 1.96.0', 'RUSTUP_TOOLCHAIN: stable'),
+                         ('/faction-provider\n', '/faction-provider-operator\n'),
+                         ('Owned maintained-provider operator proof', 'Wrong proof marker'),
+                         ('        run: |', '        if: false\n        run: |'),
+                         ('        run: |', '        continue-on-error: true\n        run: |')]:
+            with self.subTest(altered=new), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(block, block.replace(old, new)))
+        early = source.replace(block, '').replace(native_ci_step(), block + native_ci_step(), 1)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(early)
+        unqualified = block.replace('          python3 tools/check_provider_dependencies.py\n', '')
+        late = unqualified + '          python3 tools/check_provider_dependencies.py\n'
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(block, late))
+        for extra in [block, '  duplicate_proof:\n    runs-on: ubuntu-24.04\n    steps:\n' + block]:
+            with self.subTest(duplicate=extra), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace('  documentation:\n', extra + '  documentation:\n', 1))
+
+
+class ProviderClientCI(unittest.TestCase):
+    def test_complete_split_client_layout_is_accepted(self):
+        policy.validate_ci(ci_fixture())
+
+    def test_joined_client_and_provider_layout_is_refused(self):
+        with self.assertRaises(ValueError):
+            policy.validate_ci(joined_ci_fixture())
+
+    def test_repository_runs_client_in_its_own_required_job(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        client = policy._job(source, 'provider_client')
+        self.assertNotIn(native_ci_step(), policy._job(source, 'provider'))
+        self.assertIn(native_ci_step(), client)
+        self.assertEqual(source.count(native_ci_step()), 1)
+        policy.validate_warm_order(client)
+        documentation = policy._job(source, 'documentation')
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client]', documentation.splitlines())
+        self.assertIn('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}', documentation.splitlines())
+        self.assertIn('          test "$PROVIDER_CLIENT_RESULT" = success', documentation.splitlines())
+        policy.validate_ci(source)
+
+    def test_client_warmup_source_guard_and_each_validation_command_are_required(self):
+        source = ci_fixture()
+        client = policy._job(source, 'provider_client')
+        for line in client.splitlines():
+            if line.strip().startswith(('rustup ', 'cargo ', 'python3 ', 'umask ', 'mkdir ', 'printf ', 'cp ', 'sha256sum ', 'env ', 'git ')):
+                with self.subTest(missing=line), self.assertRaises(ValueError):
+                    policy.validate_ci(source.replace(client, client.replace(line + '\n', '', 1)))
+        first = client.index('          python3 tools/check_provider_dependencies.py\n')
+        warm = policy._step(client, 'Warm the selected provider client source graphs')
+        metadata = [line for line in warm.splitlines() if line.strip().startswith('cargo metadata ')]
+        self.assertEqual(len(metadata), 60)
+        self.assertEqual(sum(line.strip().startswith('cargo metadata ') for line in client[:first].splitlines()), 63)
+        for line in metadata:
+            for altered in [line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
+                with self.subTest(altered=altered), self.assertRaises(ValueError):
+                    policy.validate_ci(source.replace(client, client.replace(line, altered, 1)))
+        premature = client.replace('          python3 tools/check_provider_dependencies.py\n',
+                                   '          cargo build --release --locked\n          python3 tools/check_provider_dependencies.py\n', 1)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(client, premature))
+
+    def test_client_job_cannot_skip_change_limits_duplicate_or_escape_required_results(self):
+        source = ci_fixture()
+        client = policy._job(source, 'provider_client')
+        for old, new in [('timeout-minutes: 15', 'timeout-minutes: 30'),
+                         ('runs-on: ubuntu-24.04', 'runs-on: ubuntu-latest'),
+                         ('CARGO_BUILD_JOBS: 2', 'CARGO_BUILD_JOBS: 4'),
+                         ('RUSTUP_TOOLCHAIN: 1.96.0', 'RUSTUP_TOOLCHAIN: stable'),
+                         ('    steps:', '    if: false\n    steps:'),
+                         ('    steps:', '    continue-on-error: true\n    steps:'),
+                         ('        run: |', '        if: false\n        run: |'),
+                         ('        run: |', '        continue-on-error: true\n        run: |')]:
+            with self.subTest(altered=new), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(client, client.replace(old, new)))
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source + '  provider_client:\n' + client)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace('  provider_operator:\n', native_ci_step() + '  provider_operator:\n', 1))
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail, provider, provider_operator]'),
+                         ('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n', ''),
+                         ('PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}', 'PROVIDER_CLIENT_RESULT: success'),
+                         ('          test "$PROVIDER_CLIENT_RESULT" = success\n', ''),
+                         ('test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success || true')]:
+            with self.subTest(altered=new), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(old, new))
+
+
 class ProviderCI(unittest.TestCase):
     def assert_root_graphs_warmed_before_source_guard(self, source):
         provider = policy._job(source, 'provider')
@@ -608,7 +787,7 @@ class ProviderCI(unittest.TestCase):
 
     def test_documentation_fails_closed_on_both_native_and_provider(self):
         good = ci_fixture()
-        for old, new in [('needs: [native_mail, provider, provider_operator]', 'needs: native_mail'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: native_mail'),
                          ('          test "$PROVIDER_RESULT" = success\n', ''),
                          ('          test "$NATIVE_MAIL_RESULT" = success\n', ''),
                          ('test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_RESULT" = success || true'),
@@ -663,7 +842,7 @@ class DurableProviderProfiles(unittest.TestCase):
         for feature in ['durable-policy', 'operator']:
             self.assertIn('--features ' + feature + ' -- -D warnings', job)
             self.assertIn('--features ' + feature + ' -- --test-threads=1', job)
-        self.assertIn('needs: [native_mail, provider, provider_operator]', source)
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client]', source)
 
 
 class DurableProviderRefusals(unittest.TestCase):
@@ -690,12 +869,12 @@ class DurableProviderRefusals(unittest.TestCase):
 
     def test_all_fresh_jobs_warm_each_graph_online_before_first_source_guard(self):
         good = ci_fixture()
-        for jobname in ['provider', 'provider_operator']:
+        for jobname in ['provider', 'provider_operator', 'provider_client']:
             job = policy._job(good, jobname)
             first = job.index('          python3 tools/check_provider_dependencies.py\n')
             prefix = job[:first]
             metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
-            self.assertEqual(len(metadata), 60)
+            self.assertEqual(len(metadata), 63 if jobname == 'provider_client' else 60)
             for line in metadata:
                 for replacement in ['', line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
                     changed = job.replace(line + '\n', replacement + '\n', 1)
@@ -712,7 +891,7 @@ class DurableProviderRefusals(unittest.TestCase):
             if line.strip().startswith(('cargo ', 'python3 ')):
                 with self.subTest(line=line), self.assertRaises(ValueError):
                     policy.validate_ci(good.replace(job, job.replace(line + '\n', '', 1)))
-        for old, new in [('needs: [native_mail, provider, provider_operator]', 'needs: [native_mail, provider]'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail, provider]'),
                          ('test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success || true'),
                          ('PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}', 'PROVIDER_OPERATOR_RESULT: success'),
                          ('  provider_operator:\n', '  provider_operator:\n    if: false\n')]:
@@ -725,8 +904,8 @@ class OperatorCIMarkerIntegration(unittest.TestCase):
         import subprocess
         import probe_provider_operator as probe
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        job = policy._job(source, 'provider_operator')
-        step = policy._step(job, 'Validate durable provider policy and operator')
+        job = policy._job(source, 'provider_client')
+        step = policy._step(job, 'Validate the prepared provider operator console')
         commands = policy._lines(step, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'})
         producers = [shlex.split(command) for command in commands if command.startswith('printf ')]
         self.assertEqual(len(producers), 1)
@@ -772,7 +951,7 @@ class PreparationProfiles(unittest.TestCase):
 
     def test_current_ci_warms_preparation_before_each_first_guard_and_tests_it(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        for jobname in ['provider', 'provider_operator']:
+        for jobname in ['provider', 'provider_operator', 'provider_client']:
             job = policy._job(source, jobname)
             prefix = job[:job.index('          python3 tools/check_provider_dependencies.py\n')]
             for target in policy.TARGETS:
@@ -785,7 +964,7 @@ class PreparationProfiles(unittest.TestCase):
 class PreparationConsoleCI(unittest.TestCase):
     def test_current_client_tests_use_staged_built_binary_and_private_capture_directory(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        step = policy._step(policy._job(source, 'provider'), 'Validate the native authenticated attachment client')
+        step = policy._step(policy._job(source, 'provider_client'), 'Validate the native authenticated attachment client')
         build = 'cargo build -p faction-client --features device-provider --bin faction-client --example device_provider_console_fixture --release --locked'
         stage = 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"'
         digest = 'sha256sum "$RUNNER_TEMP/faction286-setup-OWNED/faction-client"'
@@ -801,7 +980,7 @@ class PreparationConsoleCI(unittest.TestCase):
 
     def test_staged_client_identity_environment_and_private_capture_cannot_be_removed(self):
         good = ci_fixture()
-        step = policy._step(policy._job(good, 'provider'), 'Validate the native authenticated attachment client')
+        step = policy._step(policy._job(good, 'provider_client'), 'Validate the native authenticated attachment client')
         for command in step.splitlines():
             if 'faction286-setup-OWNED' in command:
                 with self.subTest(missing=command), self.assertRaises(ValueError):
@@ -816,17 +995,17 @@ class PreparationConsoleCI(unittest.TestCase):
 
 
 class PreparedOperatorCI(unittest.TestCase):
-    def test_actual_operator_probe_selects_prepared_mode_only_at_the_operator_consumer(self):
+    def test_actual_operator_probe_selects_prepared_mode_only_at_the_prepared_console_step(self):
         import shlex
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        job = policy._job(source, 'provider_operator')
+        job = policy._job(source, 'provider_client')
         lines = [line.strip() for line in job.splitlines()
                  if line.strip().startswith('python3 tools/probe_provider_operator.py ')]
         self.assertEqual(len(lines), 1)
         words = shlex.split(lines[0])
         self.assertEqual(words.count('--prepared'), 1)
         self.assertEqual(words[-1], '--prepared')
-        native = policy._job(source, 'provider')
+        native = policy._job(source, 'provider_client')
         for line in native.splitlines():
             if line.strip().startswith('python3 tools/probe_device_provider_console.py '):
                 self.assertNotIn('--prepared', shlex.split(line))
@@ -862,7 +1041,7 @@ class RetrievalRecordsProfiles(unittest.TestCase):
     def test_current_ci_qualifies_both_record_profiles_before_compilation(self):
         text = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
         policy.validate_ci(text)
-        for job_name in ['provider', 'provider_operator']:
+        for job_name in ['provider', 'provider_operator', 'provider_client']:
             job = policy._job(text, job_name)
             first_guard = job.index('          python3 tools/check_provider_dependencies.py\n')
             for profile in ['delegation-records', 'delegation-records,durable-policy']:
@@ -922,23 +1101,23 @@ class ServiceProfileSchedulingCI(unittest.TestCase):
         text = ci_fixture()
         for command in cls.service_commands():
             text = text.replace('          ' + command + '\n', '')
-        build = '          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked\n'
-        return text.replace(build, ''.join('          ' + command + '\n'
-                                          for command in cls.service_commands()) + build)
+        after_operator = '          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator -- --test-threads=1\n'
+        return text.replace(after_operator, after_operator + ''.join('          ' + command + '\n'
+                                                                   for command in cls.service_commands()), 1)
 
-    def test_actual_service_pairs_run_once_in_operator_after_qualification_before_build(self):
+    def test_actual_service_pairs_run_once_in_operator_after_qualification_before_job_end(self):
         text = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
         provider = policy._job(text, 'provider')
         operator = policy._job(text, 'provider_operator')
         previous = operator.index('          python3 tools/check_provider_dependencies.py\n')
-        build = operator.index('          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider ')
+        end = len(operator)  # The separate console proof follows in the required client job.
         for command in self.service_commands():
             with self.subTest(command=command):
                 self.assertEqual(text.splitlines().count('          ' + command), 1)
                 self.assertNotIn('          ' + command + '\n', provider)
                 position = operator.index('          ' + command + '\n')
                 self.assertLess(previous, position)
-                self.assertLess(position, build)
+                self.assertLess(position, end)
                 previous = position
 
     def test_guard_accepts_complete_scheduled_fixture(self):
@@ -980,7 +1159,7 @@ class ServiceProfileSchedulingCI(unittest.TestCase):
 
     def test_both_jobs_require_every_online_locked_warmup_before_compilation(self):
         good = self.scheduled_fixture()
-        for name in ['provider', 'provider_operator']:
+        for name in ['provider', 'provider_operator', 'provider_client']:
             job = policy._job(good, name)
             for command in policy.root_warm_commands() + policy.provider_warm_commands():
                 line = '          ' + command + '\n'

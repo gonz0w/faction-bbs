@@ -67,7 +67,11 @@ Object and certificate expiry and the original monotonic deadline still apply.
 The request carries the complete binding and exact `PublicationAction`: `Begin`,
 `PutChunk` (offset, length and ciphertext SHA-256), `Commit`, `Status` or `Delete`.
 It does not coerce these to generic `Publish`. The response is decoded as unverified
-metadata, not a `RecipientCurrentObservation`, actor or Store grant. A refusal
+metadata, not a `RecipientCurrentObservation`, actor or Store grant. The separate
+[consuming publication operation](delegation-verifier.md#prepare-foreign-publication)
+uses fresh authenticated observations and current local sender authority for
+private dispatch. Its [component software record](evidence/delegation-publication/README.md)
+describes the separate observations and pending checks. A refusal
 contains no recipient metadata. See the [codec](delegation-codecs.md) and
 [outbound client](provider-integration.md#outbound-service-http-client).
 
@@ -112,7 +116,9 @@ are not persisted. Reopen requires fresh TLS. Monotonic checks protect retained
 state, not rollback of the entire trusted root to an older valid copy.
 
 This observation is not issuer, verifier or relay authority. The separately scoped
-[issuer](delegation-issuer.md) uses explicit service roles; cross-home delivery
+[issuer](delegation-issuer.md) uses explicit service roles; an explicitly composed
+issuer and resource policy shares the registration collection and history described
+in the [verifier contract](delegation-verifier.md). Cross-home delivery
 remains outside this primitive under [issue #300](https://github.com/gonz0w/faction-bbs/issues/300)
 and [issue #301](https://github.com/gonz0w/faction-bbs/issues/301). See the
 [provider integration](provider-integration.md), [durable policy](provider-policy.md)

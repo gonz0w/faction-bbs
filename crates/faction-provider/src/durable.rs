@@ -50,6 +50,8 @@ pub(crate) struct Snapshot {
     #[cfg(feature = "delegation-verifier")]
     pub(crate) service_format_v4: bool,
     #[cfg(feature = "delegation-verifier")]
+    pub(crate) service_format_v5: bool,
+    #[cfg(feature = "delegation-verifier")]
     pub(crate) remote_history: Vec<crate::services::RemoteFloor>,
 }
 impl Snapshot {

@@ -66,6 +66,8 @@ pub struct ServicePolicy {
     pub(crate) issuer: Option<IssuerPolicy>,
     #[cfg(feature = "delegation-verifier")]
     pub(crate) resource: Option<Vec<ResourceAssociation>>,
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) publication: Option<Vec<PublicationAssociation>>,
 }
 impl ServicePolicy {
     pub fn new(
@@ -94,6 +96,8 @@ impl ServicePolicy {
             issuer: None,
             #[cfg(feature = "delegation-verifier")]
             resource: None,
+            #[cfg(feature = "delegation-verifier")]
+            publication: None,
         })
     }
     pub fn local_home(&self) -> &str {
@@ -249,7 +253,11 @@ impl Authority {
         #[cfg(feature = "delegation-verifier")]
         if matches!(
             p.service_use(&e.identity()),
-            Some(ServiceUse::OutboundIntrospection | ServiceUse::IssuerEndpoint)
+            Some(
+                ServiceUse::OutboundIntrospection
+                    | ServiceUse::OutboundObservation
+                    | ServiceUse::IssuerEndpoint
+            )
         ) {
             return Err(BlobError::Denied);
         }
@@ -293,7 +301,7 @@ impl Authority {
             binding.validate()?;
             action.validate(&binding)?;
             if binding.created > now
-                || now >= binding.expires
+                || (now >= binding.expires && action != PublicationAction::Delete)
                 || binding.sender.account.split_once('@').map(|(_, h)| h)
                     != Some(credential.identity.home.as_str())
                 || binding.recipient.account.split_once('@').map(|(_, h)| h)
@@ -356,6 +364,7 @@ impl Authority {
         {
             self.remote_history = remote_history;
             self.service_format_v4 |= policy.resource.is_some();
+            self.service_format_v5 |= policy.publication.is_some();
         }
         #[cfg(feature = "delegation-issuer")]
         {
@@ -385,6 +394,8 @@ mod tests;
 pub enum ServiceUse {
     #[cfg(feature = "delegation-verifier")]
     ResourceClient,
+    #[cfg(feature = "delegation-verifier")]
+    OutboundObservation,
     #[cfg(feature = "delegation-verifier")]
     OutboundIntrospection,
     #[cfg(feature = "delegation-verifier")]
@@ -452,29 +463,7 @@ impl ServicePolicy {
                 issuer_client_id(&entry.client_id)?;
             }
         }
-        for (i, route) in routes.iter().enumerate() {
-            validate_home(&route.sender_home)?;
-            issuer_client_id(&route.relay_client_id)?;
-            issuer_client_id(&route.introspection_client_id)?;
-            if route.sender_home == local_home
-                || route.audience != format!("{}/attachments", route.sender_home)
-                || routes[..i]
-                    .iter()
-                    .any(|old| old.sender_home == route.sender_home)
-                || !entries.iter().any(|(e, u)| {
-                    *u == ServiceUse::Relay
-                        && e.home == local_home
-                        && e.client_id == route.relay_client_id
-                })
-                || !entries.iter().any(|(e, u)| {
-                    *u == ServiceUse::Introspection
-                        && e.home == route.sender_home
-                        && e.client_id == route.introspection_client_id
-                })
-            {
-                return Err(BlobError::Invalid);
-            }
-        }
+        validate_issuer_routes(&local_home, &entries, &routes)?;
         let (registrations, uses) = entries.into_iter().unzip();
         Ok(Self {
             local_home,
@@ -483,9 +472,47 @@ impl ServicePolicy {
             issuer: Some(IssuerPolicy { issuer, routes }),
             #[cfg(feature = "delegation-verifier")]
             resource: None,
+            #[cfg(feature = "delegation-verifier")]
+            publication: None,
         })
     }
 }
+
+#[cfg(feature = "delegation-issuer")]
+fn validate_issuer_routes(
+    local_home: &str,
+    entries: &[(ServiceRegistration, ServiceUse)],
+    routes: &[IssuerRoute],
+) -> Result<(), BlobError> {
+    if routes.is_empty() || routes.len() > crate::authority::MAX_HOMES {
+        return Err(BlobError::Invalid);
+    }
+    for (i, route) in routes.iter().enumerate() {
+        validate_home(&route.sender_home)?;
+        issuer_client_id(&route.relay_client_id)?;
+        issuer_client_id(&route.introspection_client_id)?;
+        if route.sender_home == local_home
+            || route.audience != format!("{}/attachments", route.sender_home)
+            || routes[..i]
+                .iter()
+                .any(|old| old.sender_home == route.sender_home)
+            || !entries.iter().any(|(e, u)| {
+                *u == ServiceUse::Relay
+                    && e.home == local_home
+                    && e.client_id == route.relay_client_id
+            })
+            || !entries.iter().any(|(e, u)| {
+                *u == ServiceUse::Introspection
+                    && e.home == route.sender_home
+                    && e.client_id == route.introspection_client_id
+            })
+        {
+            return Err(BlobError::Invalid);
+        }
+    }
+    Ok(())
+}
+
 #[cfg(feature = "delegation-issuer")]
 fn issuer_client_id(id: &str) -> Result<(), BlobError> {
     if id.is_empty()
@@ -600,10 +627,20 @@ mod resource_policy;
 #[cfg(feature = "delegation-verifier")]
 pub(crate) use resource_policy::RemoteFloor;
 #[cfg(feature = "delegation-verifier")]
-pub use resource_policy::ResourceAssociation;
+pub use resource_policy::{PublicationAssociation, ResourceAssociation};
 
 #[cfg(feature = "delegation-verifier")]
 #[path = "resource.rs"]
 mod resource;
 #[cfg(feature = "delegation-verifier")]
 pub use resource::PendingRetrieval;
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+#[path = "composed_tests.rs"]
+mod composed_tests;
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "publication.rs"]
+pub(crate) mod publication;
+#[cfg(feature = "delegation-verifier")]
+pub use publication::PendingPublication;

@@ -82,7 +82,7 @@ impl<'a> Reader<'a> {
 pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     s.validate()?;
     #[cfg(feature = "delegation-verifier")]
-    if s.service_format_v4 {
+    if s.service_format_v4 || s.service_format_v5 {
         return resource::encode(s);
     }
     #[cfg(feature = "delegation-issuer")]
@@ -131,7 +131,7 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
         return Err(Error::Invalid);
     }
     #[cfg(feature = "delegation-verifier")]
-    if raw.get(..8) == Some(b"FPPY0004") {
+    if matches!(raw.get(..8), Some(b"FPPY0004" | b"FPPY0005")) {
         return resource::decode(raw);
     }
     #[cfg(feature = "delegation-issuer")]
@@ -196,6 +196,8 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
         service_format_v3: false,
         #[cfg(feature = "delegation-verifier")]
         service_format_v4: false,
+        #[cfg(feature = "delegation-verifier")]
+        service_format_v5: false,
         #[cfg(feature = "delegation-verifier")]
         remote_history: Vec::new(),
     };
