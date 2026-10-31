@@ -221,7 +221,7 @@ def validate_ci(source):
     require(job is not None, 'required documentation job missing')
     body = job.group(1)
     for line in ['    name: Documentation and policy',
-                 '    needs: [native_mail, provider, provider_operator]',
+                 '    needs: [native_mail, provider, provider_operator, provider_client]',
                  '    if: ${{ always() }}', '    timeout-minutes: 15']:
         require(body.splitlines().count(line) == 1, 'required CI semantics changed')
     step = ci_step()

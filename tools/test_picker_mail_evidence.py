@@ -52,10 +52,10 @@ class PickerMailEvidence(unittest.TestCase):
         self.assertEqual(native.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
         self.assertEqual(docs.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
         self.assertIn('python3 tools/check_picker_mail_evidence.py',docs)
-        self.assertIn('needs: [native_mail, provider, provider_operator]',docs)
-        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT']:
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client]',docs)
+        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_CLIENT_RESULT']:
             self.assertIn('test "$'+variable+'" = success',docs)
-        self.assertEqual(text.count('timeout-minutes: 15'), 4)
-        for job in ['native_mail','provider','provider_operator','documentation']:
+        self.assertEqual(text.count('timeout-minutes: 15'), 5)
+        for job in ['native_mail','provider','provider_operator','provider_client','documentation']:
             header=text.split('  '+job+':',1)[1].split('    steps:',1)[0]
             self.assertIn('timeout-minutes: 15',header)

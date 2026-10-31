@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class NativePolicy(unittest.TestCase):
  def test_native_ci_is_a_dependency_of_required_documentation_gate(self):
   text=(ROOT/'.github/workflows/documentation.yml').read_text()
-  self.assertIn('needs: [native_mail, provider, provider_operator]',text)
+  self.assertIn('needs: [native_mail, provider, provider_operator, provider_client]',text)
   self.assertIn('cargo test -p faction-client -p faction-omemo --features faction-client/native-mail',text)
   self.assertIn('python3 tools/check_omemo_dependencies.py',text)
  def test_native_failure_cancel_or_skip_cannot_skip_a_required_gate(self):
@@ -15,7 +15,7 @@ class NativePolicy(unittest.TestCase):
   guard=re.search(r'(?ms)^      - name: Require optional native tests\n(.*?)(?=^      - name:)',doc)
   self.assertIsNotNone(guard)
   results={'NATIVE_MAIL_RESULT':'native_mail','PROVIDER_RESULT':'provider',
-           'PROVIDER_OPERATOR_RESULT':'provider_operator'}
+           'PROVIDER_OPERATOR_RESULT':'provider_operator','PROVIDER_CLIENT_RESULT':'provider_client'}
   for variable,job in results.items():
    self.assertIn(variable+': ${{ needs.'+job+'.result }}',guard.group(1))
   # Read only the actual run block, never execute YAML env mapping text.
@@ -26,7 +26,7 @@ class NativePolicy(unittest.TestCase):
    ['test "$'+variable+'" = success' for variable in results])
   # An absent variable and an explicitly empty result must both fail closed.
   statuses=['success','failure','cancelled','skipped','',None]
-  for values in itertools.product(statuses,repeat=3):
+  for values in itertools.product(statuses,repeat=len(results)):
    with self.subTest(results=values):
     env={variable:value for variable,value in zip(results,values) if value is not None}
     code=subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode
