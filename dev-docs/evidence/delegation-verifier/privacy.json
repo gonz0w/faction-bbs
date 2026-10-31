@@ -1,0 +1,102 @@
+{
+  "actual_selected_store_and_mail_audit": {
+    "boundary": "Existing same-home host console proof with unchanged selected compiled input closure at05ce; no new cross-home encrypted-mail release or whole-machine forensic audit claim.",
+    "driver": "tools/probe_device_provider_console.py",
+    "driver_sha256": "c217800385faa9e08328ee454f1add4027a1a6de71aedbcdba32ab5f9a94e4c3",
+    "execution_commit": "3c4caa215cebadc5d47642b15a2a58809b1ef5a5",
+    "meaning": "Each actual member-side audit unlocked the synthetic sender vault and checked every selected server/serverstore file plus captured public mail for raw and standard-base64 attachment name, subject/body, key, IV and plaintext hash. Both local/home passwords were also absent from all client transcripts. The driver checks audit exit before appending the passing fact; successful fixtures were removed only after process/socket cleanup.",
+    "modes": [
+      "classic",
+      "unicode"
+    ],
+    "passed": true,
+    "source": "crates/faction-client/examples/device_provider_console_fixture.rs::audit",
+    "source_sha256": "6df74be18fee31063e18ceaff61d48cc69f91f67e258ff008cd2b1a1ce3cbefd"
+  },
+  "checked_files_or_diff": {
+    "<current-source-diff>": {
+      "bytes": 278107,
+      "sha256": "d5be7115ae3e936d977270fdb90f63d86173afb03653d52a2cfa0140af104901"
+    },
+    "README.md": {
+      "bytes": 14856,
+      "sha256": "a9d1345e72e5af35a510a8620ca78463d26fc184ceaea425b3b94d92118fadbe"
+    },
+    "dev-docs/delegation-codecs.md": {
+      "bytes": 6374,
+      "sha256": "2fa51d33b8e0c40f04f22f48e96389879f3a27d32de2aa1c42e5788bbba33c81"
+    },
+    "dev-docs/delegation-issuer.md": {
+      "bytes": 7903,
+      "sha256": "7f805668866b63e8423ccab4615748fc86aec4465785684d7e35b73dea02c926"
+    },
+    "dev-docs/delegation-verifier.md": {
+      "bytes": 5531,
+      "sha256": "b73b672921dfeb5bf7c7b8e4674209a5a753042e227b7a83236523ee1bfadaad"
+    },
+    "dev-docs/evidence/delegation-verifier/README.md": {
+      "bytes": 5004,
+      "sha256": "92d0dbb71b67f4ed08f014b410831598676adf8f2c22ff1f12fc1d94725ce39d"
+    },
+    "dev-docs/evidence/delegation-verifier/REPRODUCE.md": {
+      "bytes": 1948,
+      "sha256": "2ec00a2fe3d03dab2e371beb86d16dc2fdbb742ab0f5e48d5715781966d66337"
+    },
+    "dev-docs/evidence/delegation-verifier/binaries.json": {
+      "bytes": 537734,
+      "sha256": "d34f56dc4d5217f9bac791f635f8c50855defae38f66b1c3a56c0e5b64a68611"
+    },
+    "dev-docs/evidence/delegation-verifier/cleanup.json": {
+      "bytes": 869,
+      "sha256": "dec6257aa88cb00bbda4d4f72793d5eb24bde5d38f114111dd80cd917a353af2"
+    },
+    "dev-docs/evidence/delegation-verifier/inputs.json": {
+      "bytes": 118775,
+      "sha256": "97d02b5d5a0ae5f78afc59988fbcff864c8d68c0851f3c618e7a5eb1f605a571"
+    },
+    "dev-docs/evidence/delegation-verifier/native-verification.json": {
+      "bytes": 2906,
+      "sha256": "7c0a5de9659fd1c8977670dba43e05dd6f701878f25815cfb9066b5c5c424878"
+    },
+    "dev-docs/evidence/delegation-verifier/results.json": {
+      "bytes": 134918,
+      "sha256": "6c7f9ca151af0889b0c2122dc69bfbc990f25e5bd9297c24e1b970bfbdd3bace"
+    },
+    "dev-docs/evidence/delegation-verifier/retention.json": {
+      "bytes": 4214,
+      "sha256": "f7bdf72239101d447dd82ae8859df0fcd7420c614dc5c52d99cacebfb2be5b62"
+    },
+    "dev-docs/evidence/delegation-verifier/tdd.json": {
+      "bytes": 383944,
+      "sha256": "d93a04cfd0e4109199314f286d6f19db6d013dc805b5276db5884f700a512b00"
+    },
+    "dev-docs/evidence/delegation-verifier/tools.json": {
+      "bytes": 3116,
+      "sha256": "d7b0689e4d90276567f97b6683cf8cfbdb32eefffe5a3c38496ac3acf83ee8a2"
+    },
+    "dev-docs/provider-integration.md": {
+      "bytes": 12082,
+      "sha256": "6dff7c8d277babaffaf1cb2324272e47b53708292f7e97ee359041c1f476d4d5"
+    },
+    "dev-docs/provider-policy.md": {
+      "bytes": 6732,
+      "sha256": "77b78d58083a87b8258248a231991186267a70fce16ecd412cadf4aa2c2496ad"
+    },
+    "dev-docs/service-observations.md": {
+      "bytes": 7884,
+      "sha256": "e232eed2d6832f6f2e029cd266162d17c171b529bfb21d3b2eb4784c160ba742"
+    }
+  },
+  "helper_sha256": "7c57b98349f70c7532c3bd26ea6769b71b2b14399f03ee21a9cd4314d5193598",
+  "private_storage": "All retained outer archive/private metadata files0600 inside0700 ignored directory; raw captures/credentials are not Git artifacts.",
+  "result": "pass",
+  "schema": 1,
+  "scoped_publication_scan": {
+    "distinct_capture_nonces_and_encrypted_XML_text_values_checked": 172,
+    "known_private_root_strings": 0,
+    "matches": 0,
+    "private_capture_files_read": 49,
+    "private_key_PEM_markers": 0,
+    "scope": "Publication candidate records/docs and source diff only; corpus is captured nonce and encrypted XML strings, not a claim of all possible secrets."
+  }
+}

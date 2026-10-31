@@ -1,0 +1,4685 @@
+{
+  "host_client": {
+    "console": {
+      "capacity_claim": false,
+      "children_reaped": true,
+      "count": 20,
+      "independent_interoperability": false,
+      "modes": [
+        {
+          "checks": [
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "mode": "classic",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "provider_operations": 645,
+          "provider_sessions": 132,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "progress": [
+                {
+                  "call": 1,
+                  "offset": 16384,
+                  "seconds": 0.052212,
+                  "writes": 0
+                },
+                {
+                  "call": 2,
+                  "offset": 32768,
+                  "seconds": 0.09224,
+                  "writes": 0
+                },
+                {
+                  "call": 3,
+                  "offset": 49152,
+                  "seconds": 0.128094,
+                  "writes": 0
+                },
+                {
+                  "call": 4,
+                  "offset": 65536,
+                  "seconds": 0.16513,
+                  "writes": 0
+                },
+                {
+                  "call": 5,
+                  "offset": 81920,
+                  "seconds": 0.200169,
+                  "writes": 0
+                },
+                {
+                  "call": 6,
+                  "offset": 98304,
+                  "seconds": 0.243299,
+                  "writes": 0
+                },
+                {
+                  "call": 7,
+                  "offset": 114688,
+                  "seconds": 0.286165,
+                  "writes": 0
+                },
+                {
+                  "call": 8,
+                  "offset": 131072,
+                  "seconds": 0.321191,
+                  "writes": 0
+                },
+                {
+                  "call": 9,
+                  "offset": 147456,
+                  "seconds": 0.358271,
+                  "writes": 0
+                },
+                {
+                  "call": 10,
+                  "offset": 163840,
+                  "seconds": 0.396087,
+                  "writes": 0
+                },
+                {
+                  "call": 11,
+                  "offset": 180224,
+                  "seconds": 0.434096,
+                  "writes": 0
+                },
+                {
+                  "call": 12,
+                  "offset": 196608,
+                  "seconds": 0.470147,
+                  "writes": 0
+                },
+                {
+                  "call": 13,
+                  "offset": 212992,
+                  "seconds": 0.50617,
+                  "writes": 0
+                },
+                {
+                  "call": 14,
+                  "offset": 229376,
+                  "seconds": 0.546343,
+                  "writes": 0
+                },
+                {
+                  "call": 15,
+                  "offset": 245760,
+                  "seconds": 0.583087,
+                  "writes": 0
+                },
+                {
+                  "call": 16,
+                  "offset": 262144,
+                  "seconds": 0.623066,
+                  "writes": 0
+                },
+                {
+                  "call": 17,
+                  "offset": 278528,
+                  "seconds": 0.662078,
+                  "writes": 0
+                },
+                {
+                  "call": 18,
+                  "offset": 294912,
+                  "seconds": 0.703084,
+                  "writes": 0
+                },
+                {
+                  "call": 19,
+                  "offset": 311296,
+                  "seconds": 0.742089,
+                  "writes": 0
+                },
+                {
+                  "call": 20,
+                  "offset": 327680,
+                  "seconds": 0.782099,
+                  "writes": 0
+                },
+                {
+                  "call": 21,
+                  "offset": 344064,
+                  "seconds": 0.821082,
+                  "writes": 0
+                },
+                {
+                  "call": 22,
+                  "offset": 360448,
+                  "seconds": 0.861077,
+                  "writes": 0
+                },
+                {
+                  "call": 23,
+                  "offset": 376832,
+                  "seconds": 0.898059,
+                  "writes": 0
+                },
+                {
+                  "call": 24,
+                  "offset": 393216,
+                  "seconds": 0.937075,
+                  "writes": 0
+                },
+                {
+                  "call": 25,
+                  "offset": 409600,
+                  "seconds": 0.976047,
+                  "writes": 0
+                },
+                {
+                  "call": 26,
+                  "offset": 425984,
+                  "seconds": 1.015033,
+                  "writes": 0
+                },
+                {
+                  "call": 27,
+                  "offset": 442368,
+                  "seconds": 1.054076,
+                  "writes": 0
+                },
+                {
+                  "call": 28,
+                  "offset": 458752,
+                  "seconds": 1.094119,
+                  "writes": 0
+                },
+                {
+                  "call": 29,
+                  "offset": 475136,
+                  "seconds": 1.132187,
+                  "writes": 0
+                },
+                {
+                  "call": 30,
+                  "offset": 491520,
+                  "seconds": 1.170162,
+                  "writes": 0
+                },
+                {
+                  "call": 31,
+                  "offset": 507904,
+                  "seconds": 1.213169,
+                  "writes": 0
+                },
+                {
+                  "call": 32,
+                  "offset": 524288,
+                  "seconds": 1.262183,
+                  "writes": 0
+                },
+                {
+                  "call": 33,
+                  "offset": 540672,
+                  "seconds": 1.308098,
+                  "writes": 0
+                },
+                {
+                  "call": 34,
+                  "offset": 557056,
+                  "seconds": 1.348204,
+                  "writes": 0
+                },
+                {
+                  "call": 35,
+                  "offset": 573440,
+                  "seconds": 1.387267,
+                  "writes": 0
+                },
+                {
+                  "call": 36,
+                  "offset": 589824,
+                  "seconds": 1.42724,
+                  "writes": 0
+                },
+                {
+                  "call": 37,
+                  "offset": 606208,
+                  "seconds": 1.468278,
+                  "writes": 0
+                },
+                {
+                  "call": 38,
+                  "offset": 622592,
+                  "seconds": 1.50514,
+                  "writes": 0
+                },
+                {
+                  "call": 39,
+                  "offset": 638976,
+                  "seconds": 1.54513,
+                  "writes": 0
+                },
+                {
+                  "call": 40,
+                  "offset": 655360,
+                  "seconds": 1.586275,
+                  "writes": 0
+                },
+                {
+                  "call": 41,
+                  "offset": 671744,
+                  "seconds": 1.626195,
+                  "writes": 0
+                },
+                {
+                  "call": 42,
+                  "offset": 688128,
+                  "seconds": 1.667132,
+                  "writes": 0
+                },
+                {
+                  "call": 43,
+                  "offset": 704512,
+                  "seconds": 1.707158,
+                  "writes": 0
+                },
+                {
+                  "call": 44,
+                  "offset": 720896,
+                  "seconds": 1.748174,
+                  "writes": 0
+                },
+                {
+                  "call": 45,
+                  "offset": 737280,
+                  "seconds": 1.789274,
+                  "writes": 0
+                },
+                {
+                  "call": 46,
+                  "offset": 753664,
+                  "seconds": 1.830191,
+                  "writes": 0
+                },
+                {
+                  "call": 47,
+                  "offset": 770048,
+                  "seconds": 1.869165,
+                  "writes": 0
+                },
+                {
+                  "call": 48,
+                  "offset": 786432,
+                  "seconds": 1.913044,
+                  "writes": 0
+                },
+                {
+                  "call": 49,
+                  "offset": 802816,
+                  "seconds": 1.954086,
+                  "writes": 0
+                },
+                {
+                  "call": 50,
+                  "offset": 819200,
+                  "seconds": 1.995191,
+                  "writes": 0
+                },
+                {
+                  "call": 51,
+                  "offset": 835584,
+                  "seconds": 2.03407,
+                  "writes": 0
+                },
+                {
+                  "call": 52,
+                  "offset": 851968,
+                  "seconds": 2.075069,
+                  "writes": 0
+                },
+                {
+                  "call": 53,
+                  "offset": 868352,
+                  "seconds": 2.114062,
+                  "writes": 0
+                },
+                {
+                  "call": 54,
+                  "offset": 884736,
+                  "seconds": 2.15006,
+                  "writes": 0
+                },
+                {
+                  "call": 55,
+                  "offset": 901120,
+                  "seconds": 2.190088,
+                  "writes": 0
+                },
+                {
+                  "call": 56,
+                  "offset": 917504,
+                  "seconds": 2.235047,
+                  "writes": 0
+                },
+                {
+                  "call": 57,
+                  "offset": 933888,
+                  "seconds": 2.280273,
+                  "writes": 0
+                },
+                {
+                  "call": 58,
+                  "offset": 950272,
+                  "seconds": 2.321162,
+                  "writes": 0
+                },
+                {
+                  "call": 59,
+                  "offset": 966656,
+                  "seconds": 2.359136,
+                  "writes": 0
+                },
+                {
+                  "call": 60,
+                  "offset": 983040,
+                  "seconds": 2.398104,
+                  "writes": 0
+                },
+                {
+                  "call": 61,
+                  "offset": 999424,
+                  "seconds": 2.439105,
+                  "writes": 0
+                },
+                {
+                  "call": 62,
+                  "offset": 1015808,
+                  "seconds": 2.475221,
+                  "writes": 0
+                },
+                {
+                  "call": 63,
+                  "offset": 1032192,
+                  "seconds": 2.51318,
+                  "writes": 0
+                },
+                {
+                  "call": 64,
+                  "offset": 1048576,
+                  "seconds": 2.547159,
+                  "writes": 0
+                },
+                {
+                  "call": 65,
+                  "offset": 1048592,
+                  "seconds": 2.576333,
+                  "writes": 0
+                }
+              ],
+              "reason": "complete",
+              "seconds": 2.57635
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "progress": [
+                {
+                  "call": 1,
+                  "offset": 20480,
+                  "seconds": 0.042114,
+                  "writes": 0
+                },
+                {
+                  "call": 2,
+                  "offset": 36864,
+                  "seconds": 0.081093,
+                  "writes": 0
+                },
+                {
+                  "call": 3,
+                  "offset": 53248,
+                  "seconds": 0.129126,
+                  "writes": 0
+                },
+                {
+                  "call": 4,
+                  "offset": 69632,
+                  "seconds": 0.168993,
+                  "writes": 0
+                },
+                {
+                  "call": 5,
+                  "offset": 86016,
+                  "seconds": 0.210067,
+                  "writes": 0
+                },
+                {
+                  "call": 6,
+                  "offset": 102400,
+                  "seconds": 0.252046,
+                  "writes": 0
+                },
+                {
+                  "call": 7,
+                  "offset": 118784,
+                  "seconds": 0.294079,
+                  "writes": 0
+                },
+                {
+                  "call": 8,
+                  "offset": 135168,
+                  "seconds": 0.3331,
+                  "writes": 0
+                },
+                {
+                  "call": 9,
+                  "offset": 151552,
+                  "seconds": 0.372064,
+                  "writes": 0
+                },
+                {
+                  "call": 10,
+                  "offset": 167936,
+                  "seconds": 0.411122,
+                  "writes": 0
+                },
+                {
+                  "call": 11,
+                  "offset": 184320,
+                  "seconds": 0.450138,
+                  "writes": 0
+                },
+                {
+                  "call": 12,
+                  "offset": 200704,
+                  "seconds": 0.489508,
+                  "writes": 0
+                },
+                {
+                  "call": 13,
+                  "offset": 217088,
+                  "seconds": 0.530102,
+                  "writes": 0
+                },
+                {
+                  "call": 14,
+                  "offset": 233472,
+                  "seconds": 0.571115,
+                  "writes": 0
+                },
+                {
+                  "call": 15,
+                  "offset": 249856,
+                  "seconds": 0.612113,
+                  "writes": 0
+                },
+                {
+                  "call": 16,
+                  "offset": 266240,
+                  "seconds": 0.652104,
+                  "writes": 0
+                },
+                {
+                  "call": 17,
+                  "offset": 282624,
+                  "seconds": 0.692081,
+                  "writes": 0
+                },
+                {
+                  "call": 18,
+                  "offset": 299008,
+                  "seconds": 0.732149,
+                  "writes": 0
+                },
+                {
+                  "call": 19,
+                  "offset": 315392,
+                  "seconds": 0.773112,
+                  "writes": 0
+                },
+                {
+                  "call": 20,
+                  "offset": 331776,
+                  "seconds": 0.813027,
+                  "writes": 0
+                },
+                {
+                  "call": 21,
+                  "offset": 348160,
+                  "seconds": 0.853126,
+                  "writes": 0
+                },
+                {
+                  "call": 22,
+                  "offset": 364544,
+                  "seconds": 0.894098,
+                  "writes": 0
+                },
+                {
+                  "call": 23,
+                  "offset": 380928,
+                  "seconds": 0.935111,
+                  "writes": 0
+                },
+                {
+                  "call": 24,
+                  "offset": 397312,
+                  "seconds": 0.975152,
+                  "writes": 0
+                },
+                {
+                  "call": 25,
+                  "offset": 413696,
+                  "seconds": 1.014028,
+                  "writes": 0
+                },
+                {
+                  "call": 26,
+                  "offset": 430080,
+                  "seconds": 1.054216,
+                  "writes": 0
+                },
+                {
+                  "call": 27,
+                  "offset": 446464,
+                  "seconds": 1.102037,
+                  "writes": 0
+                },
+                {
+                  "call": 28,
+                  "offset": 462848,
+                  "seconds": 1.150181,
+                  "writes": 0
+                },
+                {
+                  "call": 29,
+                  "offset": 479232,
+                  "seconds": 1.191089,
+                  "writes": 0
+                },
+                {
+                  "call": 30,
+                  "offset": 495616,
+                  "seconds": 1.23618,
+                  "writes": 0
+                },
+                {
+                  "call": 31,
+                  "offset": 512000,
+                  "seconds": 1.272193,
+                  "writes": 0
+                },
+                {
+                  "call": 32,
+                  "offset": 528384,
+                  "seconds": 1.312218,
+                  "writes": 0
+                },
+                {
+                  "call": 33,
+                  "offset": 544768,
+                  "seconds": 1.351171,
+                  "writes": 0
+                },
+                {
+                  "call": 34,
+                  "offset": 561152,
+                  "seconds": 1.392142,
+                  "writes": 0
+                },
+                {
+                  "call": 35,
+                  "offset": 577536,
+                  "seconds": 1.430996,
+                  "writes": 0
+                },
+                {
+                  "call": 36,
+                  "offset": 593920,
+                  "seconds": 1.472139,
+                  "writes": 0
+                },
+                {
+                  "call": 37,
+                  "offset": 610304,
+                  "seconds": 1.511067,
+                  "writes": 0
+                },
+                {
+                  "call": 38,
+                  "offset": 626688,
+                  "seconds": 1.550094,
+                  "writes": 0
+                },
+                {
+                  "call": 39,
+                  "offset": 643072,
+                  "seconds": 1.589053,
+                  "writes": 0
+                },
+                {
+                  "call": 40,
+                  "offset": 659456,
+                  "seconds": 1.629125,
+                  "writes": 0
+                },
+                {
+                  "call": 41,
+                  "offset": 675840,
+                  "seconds": 1.666079,
+                  "writes": 0
+                },
+                {
+                  "call": 42,
+                  "offset": 692224,
+                  "seconds": 1.706087,
+                  "writes": 0
+                },
+                {
+                  "call": 43,
+                  "offset": 708608,
+                  "seconds": 1.747059,
+                  "writes": 0
+                },
+                {
+                  "call": 44,
+                  "offset": 724992,
+                  "seconds": 1.785033,
+                  "writes": 0
+                },
+                {
+                  "call": 45,
+                  "offset": 741376,
+                  "seconds": 1.823198,
+                  "writes": 0
+                },
+                {
+                  "call": 46,
+                  "offset": 757760,
+                  "seconds": 1.862205,
+                  "writes": 0
+                },
+                {
+                  "call": 47,
+                  "offset": 774144,
+                  "seconds": 1.901124,
+                  "writes": 0
+                },
+                {
+                  "call": 48,
+                  "offset": 790528,
+                  "seconds": 1.941085,
+                  "writes": 0
+                },
+                {
+                  "call": 49,
+                  "offset": 806912,
+                  "seconds": 1.982129,
+                  "writes": 0
+                },
+                {
+                  "call": 50,
+                  "offset": 823296,
+                  "seconds": 2.022083,
+                  "writes": 0
+                },
+                {
+                  "call": 51,
+                  "offset": 839680,
+                  "seconds": 2.063173,
+                  "writes": 0
+                },
+                {
+                  "call": 52,
+                  "offset": 856064,
+                  "seconds": 2.121143,
+                  "writes": 0
+                },
+                {
+                  "call": 53,
+                  "offset": 872448,
+                  "seconds": 2.162263,
+                  "writes": 0
+                },
+                {
+                  "call": 54,
+                  "offset": 888832,
+                  "seconds": 2.204272,
+                  "writes": 0
+                },
+                {
+                  "call": 55,
+                  "offset": 905216,
+                  "seconds": 2.246085,
+                  "writes": 0
+                },
+                {
+                  "call": 56,
+                  "offset": 921600,
+                  "seconds": 2.290159,
+                  "writes": 0
+                },
+                {
+                  "call": 57,
+                  "offset": 937984,
+                  "seconds": 2.332249,
+                  "writes": 0
+                },
+                {
+                  "call": 58,
+                  "offset": 954368,
+                  "seconds": 2.374173,
+                  "writes": 0
+                },
+                {
+                  "call": 59,
+                  "offset": 970752,
+                  "seconds": 2.418276,
+                  "writes": 0
+                },
+                {
+                  "call": 60,
+                  "offset": 987136,
+                  "seconds": 2.461878,
+                  "writes": 0
+                },
+                {
+                  "call": 61,
+                  "offset": 1003520,
+                  "seconds": 2.503156,
+                  "writes": 0
+                },
+                {
+                  "call": 62,
+                  "offset": 1019904,
+                  "seconds": 2.541168,
+                  "writes": 0
+                },
+                {
+                  "call": 63,
+                  "offset": 1036288,
+                  "seconds": 2.577056,
+                  "writes": 0
+                },
+                {
+                  "call": 64,
+                  "offset": 1048592,
+                  "seconds": 2.62924,
+                  "writes": 1
+                }
+              ],
+              "reason": "complete",
+              "seconds": 2.629251
+            }
+          }
+        },
+        {
+          "checks": [
+            "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+            "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+            "maximum_size_prepare_is_device_local_and_source_independent",
+            "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+            "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+            "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+            "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+            "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+            "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+            "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+          ],
+          "mail_received": true,
+          "mode": "unicode",
+          "ordinary_mail_connections": 3,
+          "plaintext_bytes": 1048576,
+          "provider_operations": 645,
+          "provider_sessions": 132,
+          "transfer_observations": {
+            "fetch": {
+              "calls": 65,
+              "offset": 1048592,
+              "progress": [
+                {
+                  "call": 1,
+                  "offset": 16384,
+                  "seconds": 0.055547,
+                  "writes": 0
+                },
+                {
+                  "call": 2,
+                  "offset": 32768,
+                  "seconds": 0.094412,
+                  "writes": 0
+                },
+                {
+                  "call": 3,
+                  "offset": 49152,
+                  "seconds": 0.129453,
+                  "writes": 0
+                },
+                {
+                  "call": 4,
+                  "offset": 65536,
+                  "seconds": 0.166416,
+                  "writes": 0
+                },
+                {
+                  "call": 5,
+                  "offset": 81920,
+                  "seconds": 0.206445,
+                  "writes": 0
+                },
+                {
+                  "call": 6,
+                  "offset": 98304,
+                  "seconds": 0.245493,
+                  "writes": 0
+                },
+                {
+                  "call": 7,
+                  "offset": 114688,
+                  "seconds": 0.285645,
+                  "writes": 0
+                },
+                {
+                  "call": 8,
+                  "offset": 131072,
+                  "seconds": 0.324487,
+                  "writes": 0
+                },
+                {
+                  "call": 9,
+                  "offset": 147456,
+                  "seconds": 0.362458,
+                  "writes": 0
+                },
+                {
+                  "call": 10,
+                  "offset": 163840,
+                  "seconds": 0.401493,
+                  "writes": 0
+                },
+                {
+                  "call": 11,
+                  "offset": 180224,
+                  "seconds": 0.437484,
+                  "writes": 0
+                },
+                {
+                  "call": 12,
+                  "offset": 196608,
+                  "seconds": 0.477412,
+                  "writes": 0
+                },
+                {
+                  "call": 13,
+                  "offset": 212992,
+                  "seconds": 0.517584,
+                  "writes": 0
+                },
+                {
+                  "call": 14,
+                  "offset": 229376,
+                  "seconds": 0.554466,
+                  "writes": 0
+                },
+                {
+                  "call": 15,
+                  "offset": 245760,
+                  "seconds": 0.590556,
+                  "writes": 0
+                },
+                {
+                  "call": 16,
+                  "offset": 262144,
+                  "seconds": 0.627492,
+                  "writes": 0
+                },
+                {
+                  "call": 17,
+                  "offset": 278528,
+                  "seconds": 0.67351,
+                  "writes": 0
+                },
+                {
+                  "call": 18,
+                  "offset": 294912,
+                  "seconds": 0.720501,
+                  "writes": 0
+                },
+                {
+                  "call": 19,
+                  "offset": 311296,
+                  "seconds": 0.760412,
+                  "writes": 0
+                },
+                {
+                  "call": 20,
+                  "offset": 327680,
+                  "seconds": 0.796515,
+                  "writes": 0
+                },
+                {
+                  "call": 21,
+                  "offset": 344064,
+                  "seconds": 0.835405,
+                  "writes": 0
+                },
+                {
+                  "call": 22,
+                  "offset": 360448,
+                  "seconds": 0.87346,
+                  "writes": 0
+                },
+                {
+                  "call": 23,
+                  "offset": 376832,
+                  "seconds": 0.91143,
+                  "writes": 0
+                },
+                {
+                  "call": 24,
+                  "offset": 393216,
+                  "seconds": 0.949401,
+                  "writes": 0
+                },
+                {
+                  "call": 25,
+                  "offset": 409600,
+                  "seconds": 0.987485,
+                  "writes": 0
+                },
+                {
+                  "call": 26,
+                  "offset": 425984,
+                  "seconds": 1.026426,
+                  "writes": 0
+                },
+                {
+                  "call": 27,
+                  "offset": 442368,
+                  "seconds": 1.063444,
+                  "writes": 0
+                },
+                {
+                  "call": 28,
+                  "offset": 458752,
+                  "seconds": 1.101592,
+                  "writes": 0
+                },
+                {
+                  "call": 29,
+                  "offset": 475136,
+                  "seconds": 1.141418,
+                  "writes": 0
+                },
+                {
+                  "call": 30,
+                  "offset": 491520,
+                  "seconds": 1.179556,
+                  "writes": 0
+                },
+                {
+                  "call": 31,
+                  "offset": 507904,
+                  "seconds": 1.218507,
+                  "writes": 0
+                },
+                {
+                  "call": 32,
+                  "offset": 524288,
+                  "seconds": 1.256508,
+                  "writes": 0
+                },
+                {
+                  "call": 33,
+                  "offset": 540672,
+                  "seconds": 1.295558,
+                  "writes": 0
+                },
+                {
+                  "call": 34,
+                  "offset": 557056,
+                  "seconds": 1.332492,
+                  "writes": 0
+                },
+                {
+                  "call": 35,
+                  "offset": 573440,
+                  "seconds": 1.368506,
+                  "writes": 0
+                },
+                {
+                  "call": 36,
+                  "offset": 589824,
+                  "seconds": 1.403526,
+                  "writes": 0
+                },
+                {
+                  "call": 37,
+                  "offset": 606208,
+                  "seconds": 1.442532,
+                  "writes": 0
+                },
+                {
+                  "call": 38,
+                  "offset": 622592,
+                  "seconds": 1.478562,
+                  "writes": 0
+                },
+                {
+                  "call": 39,
+                  "offset": 638976,
+                  "seconds": 1.51548,
+                  "writes": 0
+                },
+                {
+                  "call": 40,
+                  "offset": 655360,
+                  "seconds": 1.552528,
+                  "writes": 0
+                },
+                {
+                  "call": 41,
+                  "offset": 671744,
+                  "seconds": 1.588593,
+                  "writes": 0
+                },
+                {
+                  "call": 42,
+                  "offset": 688128,
+                  "seconds": 1.621546,
+                  "writes": 0
+                },
+                {
+                  "call": 43,
+                  "offset": 704512,
+                  "seconds": 1.658565,
+                  "writes": 0
+                },
+                {
+                  "call": 44,
+                  "offset": 720896,
+                  "seconds": 1.713522,
+                  "writes": 0
+                },
+                {
+                  "call": 45,
+                  "offset": 737280,
+                  "seconds": 1.750684,
+                  "writes": 0
+                },
+                {
+                  "call": 46,
+                  "offset": 753664,
+                  "seconds": 1.789596,
+                  "writes": 0
+                },
+                {
+                  "call": 47,
+                  "offset": 770048,
+                  "seconds": 1.827529,
+                  "writes": 0
+                },
+                {
+                  "call": 48,
+                  "offset": 786432,
+                  "seconds": 1.863484,
+                  "writes": 0
+                },
+                {
+                  "call": 49,
+                  "offset": 802816,
+                  "seconds": 1.899501,
+                  "writes": 0
+                },
+                {
+                  "call": 50,
+                  "offset": 819200,
+                  "seconds": 1.935486,
+                  "writes": 0
+                },
+                {
+                  "call": 51,
+                  "offset": 835584,
+                  "seconds": 1.972512,
+                  "writes": 0
+                },
+                {
+                  "call": 52,
+                  "offset": 851968,
+                  "seconds": 2.008486,
+                  "writes": 0
+                },
+                {
+                  "call": 53,
+                  "offset": 868352,
+                  "seconds": 2.046598,
+                  "writes": 0
+                },
+                {
+                  "call": 54,
+                  "offset": 884736,
+                  "seconds": 2.086535,
+                  "writes": 0
+                },
+                {
+                  "call": 55,
+                  "offset": 901120,
+                  "seconds": 2.125577,
+                  "writes": 0
+                },
+                {
+                  "call": 56,
+                  "offset": 917504,
+                  "seconds": 2.162507,
+                  "writes": 0
+                },
+                {
+                  "call": 57,
+                  "offset": 933888,
+                  "seconds": 2.199514,
+                  "writes": 0
+                },
+                {
+                  "call": 58,
+                  "offset": 950272,
+                  "seconds": 2.238564,
+                  "writes": 0
+                },
+                {
+                  "call": 59,
+                  "offset": 966656,
+                  "seconds": 2.274491,
+                  "writes": 0
+                },
+                {
+                  "call": 60,
+                  "offset": 983040,
+                  "seconds": 2.311578,
+                  "writes": 0
+                },
+                {
+                  "call": 61,
+                  "offset": 999424,
+                  "seconds": 2.352528,
+                  "writes": 0
+                },
+                {
+                  "call": 62,
+                  "offset": 1015808,
+                  "seconds": 2.389605,
+                  "writes": 0
+                },
+                {
+                  "call": 63,
+                  "offset": 1032192,
+                  "seconds": 2.430616,
+                  "writes": 0
+                },
+                {
+                  "call": 64,
+                  "offset": 1048576,
+                  "seconds": 2.466515,
+                  "writes": 0
+                },
+                {
+                  "call": 65,
+                  "offset": 1048592,
+                  "seconds": 2.49399,
+                  "writes": 0
+                }
+              ],
+              "reason": "complete",
+              "seconds": 2.494006
+            },
+            "upload": {
+              "calls": 64,
+              "offset": 1048592,
+              "progress": [
+                {
+                  "call": 1,
+                  "offset": 20480,
+                  "seconds": 0.049997,
+                  "writes": 0
+                },
+                {
+                  "call": 2,
+                  "offset": 36864,
+                  "seconds": 0.092043,
+                  "writes": 0
+                },
+                {
+                  "call": 3,
+                  "offset": 53248,
+                  "seconds": 0.131846,
+                  "writes": 0
+                },
+                {
+                  "call": 4,
+                  "offset": 69632,
+                  "seconds": 0.17085,
+                  "writes": 0
+                },
+                {
+                  "call": 5,
+                  "offset": 86016,
+                  "seconds": 0.217806,
+                  "writes": 0
+                },
+                {
+                  "call": 6,
+                  "offset": 102400,
+                  "seconds": 0.258842,
+                  "writes": 0
+                },
+                {
+                  "call": 7,
+                  "offset": 118784,
+                  "seconds": 0.299828,
+                  "writes": 0
+                },
+                {
+                  "call": 8,
+                  "offset": 135168,
+                  "seconds": 0.339859,
+                  "writes": 0
+                },
+                {
+                  "call": 9,
+                  "offset": 151552,
+                  "seconds": 0.382,
+                  "writes": 0
+                },
+                {
+                  "call": 10,
+                  "offset": 167936,
+                  "seconds": 0.422796,
+                  "writes": 0
+                },
+                {
+                  "call": 11,
+                  "offset": 184320,
+                  "seconds": 0.465001,
+                  "writes": 0
+                },
+                {
+                  "call": 12,
+                  "offset": 200704,
+                  "seconds": 0.505814,
+                  "writes": 0
+                },
+                {
+                  "call": 13,
+                  "offset": 217088,
+                  "seconds": 0.547016,
+                  "writes": 0
+                },
+                {
+                  "call": 14,
+                  "offset": 233472,
+                  "seconds": 0.58887,
+                  "writes": 0
+                },
+                {
+                  "call": 15,
+                  "offset": 249856,
+                  "seconds": 0.629805,
+                  "writes": 0
+                },
+                {
+                  "call": 16,
+                  "offset": 266240,
+                  "seconds": 0.672862,
+                  "writes": 0
+                },
+                {
+                  "call": 17,
+                  "offset": 282624,
+                  "seconds": 0.723851,
+                  "writes": 0
+                },
+                {
+                  "call": 18,
+                  "offset": 299008,
+                  "seconds": 0.772753,
+                  "writes": 0
+                },
+                {
+                  "call": 19,
+                  "offset": 315392,
+                  "seconds": 0.813807,
+                  "writes": 0
+                },
+                {
+                  "call": 20,
+                  "offset": 331776,
+                  "seconds": 0.854912,
+                  "writes": 0
+                },
+                {
+                  "call": 21,
+                  "offset": 348160,
+                  "seconds": 0.894779,
+                  "writes": 0
+                },
+                {
+                  "call": 22,
+                  "offset": 364544,
+                  "seconds": 0.935819,
+                  "writes": 0
+                },
+                {
+                  "call": 23,
+                  "offset": 380928,
+                  "seconds": 0.976932,
+                  "writes": 0
+                },
+                {
+                  "call": 24,
+                  "offset": 397312,
+                  "seconds": 1.017823,
+                  "writes": 0
+                },
+                {
+                  "call": 25,
+                  "offset": 413696,
+                  "seconds": 1.059914,
+                  "writes": 0
+                },
+                {
+                  "call": 26,
+                  "offset": 430080,
+                  "seconds": 1.100941,
+                  "writes": 0
+                },
+                {
+                  "call": 27,
+                  "offset": 446464,
+                  "seconds": 1.141804,
+                  "writes": 0
+                },
+                {
+                  "call": 28,
+                  "offset": 462848,
+                  "seconds": 1.181779,
+                  "writes": 0
+                },
+                {
+                  "call": 29,
+                  "offset": 479232,
+                  "seconds": 1.224033,
+                  "writes": 0
+                },
+                {
+                  "call": 30,
+                  "offset": 495616,
+                  "seconds": 1.265959,
+                  "writes": 0
+                },
+                {
+                  "call": 31,
+                  "offset": 512000,
+                  "seconds": 1.306847,
+                  "writes": 0
+                },
+                {
+                  "call": 32,
+                  "offset": 528384,
+                  "seconds": 1.347909,
+                  "writes": 0
+                },
+                {
+                  "call": 33,
+                  "offset": 544768,
+                  "seconds": 1.39092,
+                  "writes": 0
+                },
+                {
+                  "call": 34,
+                  "offset": 561152,
+                  "seconds": 1.431979,
+                  "writes": 0
+                },
+                {
+                  "call": 35,
+                  "offset": 577536,
+                  "seconds": 1.474954,
+                  "writes": 0
+                },
+                {
+                  "call": 36,
+                  "offset": 593920,
+                  "seconds": 1.515867,
+                  "writes": 0
+                },
+                {
+                  "call": 37,
+                  "offset": 610304,
+                  "seconds": 1.558938,
+                  "writes": 0
+                },
+                {
+                  "call": 38,
+                  "offset": 626688,
+                  "seconds": 1.599933,
+                  "writes": 0
+                },
+                {
+                  "call": 39,
+                  "offset": 643072,
+                  "seconds": 1.64202,
+                  "writes": 0
+                },
+                {
+                  "call": 40,
+                  "offset": 659456,
+                  "seconds": 1.683909,
+                  "writes": 0
+                },
+                {
+                  "call": 41,
+                  "offset": 675840,
+                  "seconds": 1.73488,
+                  "writes": 0
+                },
+                {
+                  "call": 42,
+                  "offset": 692224,
+                  "seconds": 1.775883,
+                  "writes": 0
+                },
+                {
+                  "call": 43,
+                  "offset": 708608,
+                  "seconds": 1.818809,
+                  "writes": 0
+                },
+                {
+                  "call": 44,
+                  "offset": 724992,
+                  "seconds": 1.860886,
+                  "writes": 0
+                },
+                {
+                  "call": 45,
+                  "offset": 741376,
+                  "seconds": 1.901766,
+                  "writes": 0
+                },
+                {
+                  "call": 46,
+                  "offset": 757760,
+                  "seconds": 1.940842,
+                  "writes": 0
+                },
+                {
+                  "call": 47,
+                  "offset": 774144,
+                  "seconds": 1.982987,
+                  "writes": 0
+                },
+                {
+                  "call": 48,
+                  "offset": 790528,
+                  "seconds": 2.024289,
+                  "writes": 0
+                },
+                {
+                  "call": 49,
+                  "offset": 806912,
+                  "seconds": 2.073032,
+                  "writes": 0
+                },
+                {
+                  "call": 50,
+                  "offset": 823296,
+                  "seconds": 2.121266,
+                  "writes": 0
+                },
+                {
+                  "call": 51,
+                  "offset": 839680,
+                  "seconds": 2.17173,
+                  "writes": 0
+                },
+                {
+                  "call": 52,
+                  "offset": 856064,
+                  "seconds": 2.219278,
+                  "writes": 0
+                },
+                {
+                  "call": 53,
+                  "offset": 872448,
+                  "seconds": 2.267726,
+                  "writes": 0
+                },
+                {
+                  "call": 54,
+                  "offset": 888832,
+                  "seconds": 2.316441,
+                  "writes": 0
+                },
+                {
+                  "call": 55,
+                  "offset": 905216,
+                  "seconds": 2.363937,
+                  "writes": 0
+                },
+                {
+                  "call": 56,
+                  "offset": 921600,
+                  "seconds": 2.414399,
+                  "writes": 0
+                },
+                {
+                  "call": 57,
+                  "offset": 937984,
+                  "seconds": 2.479696,
+                  "writes": 0
+                },
+                {
+                  "call": 58,
+                  "offset": 954368,
+                  "seconds": 2.533373,
+                  "writes": 0
+                },
+                {
+                  "call": 59,
+                  "offset": 970752,
+                  "seconds": 2.579149,
+                  "writes": 0
+                },
+                {
+                  "call": 60,
+                  "offset": 987136,
+                  "seconds": 2.621889,
+                  "writes": 0
+                },
+                {
+                  "call": 61,
+                  "offset": 1003520,
+                  "seconds": 2.660891,
+                  "writes": 0
+                },
+                {
+                  "call": 62,
+                  "offset": 1019904,
+                  "seconds": 2.699769,
+                  "writes": 0
+                },
+                {
+                  "call": 63,
+                  "offset": 1036288,
+                  "seconds": 2.742822,
+                  "writes": 0
+                },
+                {
+                  "call": 64,
+                  "offset": 1048592,
+                  "seconds": 2.795525,
+                  "writes": 1
+                }
+              ],
+              "reason": "complete",
+              "seconds": 2.795538
+            }
+          }
+        }
+      ],
+      "physical_hardware": false,
+      "private_fixture_removed": true,
+      "provider_deployment": false,
+      "result": "pass"
+    },
+    "default": 50,
+    "device_provider": 259,
+    "existing_ignored_helpers_invoked_by_parents": 8,
+    "fresh_05ce_client_run_claimed": false,
+    "results": [
+      {
+        "checks": [],
+        "elapsed_seconds": 2.0833940505981445,
+        "exit": 0,
+        "label": "check_network_mail_dependencies",
+        "log_sha256": "74fb42a22c155e451d4402b68c13e624cc9257d1155c67308e3dfb820dd9f973"
+      },
+      {
+        "checks": [],
+        "elapsed_seconds": 0.5896151065826416,
+        "exit": 0,
+        "label": "check_provider_auth_dependencies",
+        "log_sha256": "455db9893d32c8fc273ae8b62497724dd248427d0a4a8fc9d8c481ec1b415b66"
+      },
+      {
+        "checks": [],
+        "elapsed_seconds": 7.791670083999634,
+        "exit": 0,
+        "label": "check_provider_dependencies",
+        "log_sha256": "c45573acfaaec78155ef2882ee25dcdfe9e070b5cf82e9507528886099473bfe"
+      },
+      {
+        "checks": [],
+        "elapsed_seconds": 19.88033103942871,
+        "exit": 0,
+        "label": "client-clippy",
+        "log_sha256": "25e6bf16ecc697836166f993376d8252110500d94e1f4b555ded87831e628ad2"
+      },
+      {
+        "checks": [],
+        "elapsed_seconds": 58.22688007354736,
+        "exit": 0,
+        "label": "client-build",
+        "log_sha256": "b2844a9cc4011d6aeafce41da0d6bdb27f148212abec7d226d31c33f34d0d357"
+      },
+      {
+        "checks": [
+          127,
+          87,
+          1,
+          4,
+          6,
+          1,
+          4,
+          6,
+          4,
+          2,
+          9,
+          7,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "elapsed_seconds": 86.57495498657227,
+        "exit": 0,
+        "label": "client-device-tests",
+        "log_sha256": "f0630aa367dda73e4a022581debfa57385594b4693afac765885237ccdd048c0"
+      },
+      {
+        "checks": [],
+        "elapsed_seconds": 31.03332781791687,
+        "exit": 0,
+        "label": "client-console",
+        "log_sha256": "47e4fdca35f6dad00a1215409cf9ab9a8f6fdc2eeca6af2c357b2a25776a35df"
+      },
+      {
+        "checks": [
+          4,
+          46,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "elapsed_seconds": 12.197212934494019,
+        "exit": 0,
+        "label": "client-default-tests",
+        "log_sha256": "89915f0c6a2d9c68d72f78572fe61f661de7d8b076fd06d425ee628e4e724592"
+      }
+    ],
+    "same_selected_compiled_input_closure_at_05ce": true,
+    "source_commit": "3c4caa215cebadc5d47642b15a2a58809b1ef5a5"
+  },
+  "host_codec": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/faction-delegation-codec/Cargo.toml",
+        "--offline",
+        "--release",
+        "--locked",
+        "--",
+        "--test-threads=1"
+      ],
+      "checks": 26,
+      "component": "codec",
+      "index": 32,
+      "kind": "test",
+      "profile": "default",
+      "run": "<host-capture>/runs/1793403965251892000",
+      "stderr": {
+        "sha256": "2bb8def5ba04cb11f7bd7561312ab840e48a8ac2e255691eac01c039d5e0388a",
+        "size": 402
+      },
+      "stdout": {
+        "sha256": "1281f7f298d308e2c94d8d0711927f7d68d117e467a1b3599cb3180c60f53e09",
+        "size": 2235
+      },
+      "test_summaries": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 0,
+          "seconds": 0.0
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 3,
+          "seconds": 0.0
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 21,
+          "seconds": 0.0
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 2,
+          "seconds": 0.04
+        }
+      ],
+      "verified_all764_inputs_before_after": true
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--manifest-path",
+        "crates/faction-delegation-codec/Cargo.toml",
+        "--offline",
+        "--release",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "checks": 0,
+      "component": "codec",
+      "index": 33,
+      "kind": "clippy",
+      "profile": "default",
+      "run": "<host-capture>/runs/1793403965752473000",
+      "stderr": {
+        "sha256": "90c8a1a69c0155761cff4bfe0e61bbee007961d2b96729d2127c2e0c291489dd",
+        "size": 62
+      },
+      "stdout": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      "test_summaries": [],
+      "verified_all764_inputs_before_after": true
+    }
+  ],
+  "host_native_pass_counts": {
+    "blob-iq": {
+      "host": 58,
+      "netbsd": 58
+    },
+    "default": {
+      "host": 49,
+      "netbsd": 49
+    },
+    "delegation-issuer": {
+      "host": 112,
+      "netbsd": 112
+    },
+    "delegation-issuer,durable-policy": {
+      "host": 149,
+      "netbsd": 149
+    },
+    "delegation-records": {
+      "host": 66,
+      "netbsd": 66
+    },
+    "delegation-records,durable-policy": {
+      "host": 89,
+      "netbsd": 89
+    },
+    "delegation-services": {
+      "host": 73,
+      "netbsd": 73
+    },
+    "delegation-services,delegation-records,durable-policy": {
+      "host": 122,
+      "netbsd": 122
+    },
+    "delegation-services,durable-policy": {
+      "host": 103,
+      "netbsd": 103
+    },
+    "delegation-verifier": {
+      "host": 194,
+      "netbsd": 194
+    },
+    "delegation-verifier,durable-policy": {
+      "host": 236,
+      "netbsd": 236
+    },
+    "delegation-wire": {
+      "host": 151,
+      "netbsd": 151
+    },
+    "delegation-wire,durable-policy": {
+      "host": 188,
+      "netbsd": 188
+    },
+    "durable-policy": {
+      "host": 70,
+      "netbsd": 70
+    },
+    "operator": {
+      "host": 87,
+      "netbsd": 87
+    },
+    "preparation": {
+      "host": 53,
+      "netbsd": 53
+    }
+  },
+  "host_provider": {
+    "blob-iq": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "blob-iq",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 7,
+        "kind": "clippy",
+        "profile": "blob-iq",
+        "run": "<host-capture>/runs/1793403457232079000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "0b5fe2277fd2b29cc111b76604c482f8ec516047dbc0954657203c5614f4e4db",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "blob-iq",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 58,
+        "component": "provider",
+        "exit": 0,
+        "index": 6,
+        "kind": "test",
+        "profile": "blob-iq",
+        "run": "<host-capture>/runs/1793403421091999000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "42855ae07fd4d1085df4ca1ae87cc2458bb5970315be502bf1966474e37bc4cc",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "17d392289a170a0e2d6caeee6c123e21327d023f83237f973e9b9d43587996b4",
+          "size": 5873
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 20,
+            "seconds": 0.81
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 32,
+            "seconds": 34.42
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "seconds": 0.22
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "default": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 5,
+        "kind": "clippy",
+        "profile": "default",
+        "run": "<host-capture>/runs/1793403420661548000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 49,
+        "component": "provider",
+        "exit": 0,
+        "index": 4,
+        "kind": "test",
+        "profile": "default",
+        "run": "<host-capture>/runs/1793403395227944000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "95b05e12f3bcba7346e28a90d6bfae693bf5c2dde6ee8d0bf8531b53d092b41a",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "157f44930a421be39335b4356059e8fcfd1ff3d00ac4c3b109e623daaccc0d0c",
+          "size": 5070
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 20,
+            "seconds": 0.83
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 23,
+            "seconds": 23.98
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "seconds": 0.11
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-issuer": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-issuer",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 25,
+        "kind": "clippy",
+        "profile": "delegation-issuer",
+        "run": "<host-capture>/runs/1793403761246883000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-issuer",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 112,
+        "component": "provider",
+        "exit": 0,
+        "index": 24,
+        "kind": "test",
+        "profile": "delegation-issuer",
+        "run": "<host-capture>/runs/1793403719671108000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "04600c48b6ac14b410e89044ccdeddc2a2d6282b54f35ab9cbc05e8971c2c0b4",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "54ccda85d54a5947a9ad026e94bcc16ab57fd4ff6e2f0ba1bdd30c6102182e18",
+          "size": 11560
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 42,
+            "seconds": 0.76
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 46,
+            "seconds": 39.82
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 24,
+            "seconds": 0.49
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-issuer,durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-issuer,durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 27,
+        "kind": "clippy",
+        "profile": "delegation-issuer,durable-policy",
+        "run": "<host-capture>/runs/1793403805431908000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "1f8e3ee4f3576791becce440a884b9e8510a6106ed738529b449471a001babfa",
+          "size": 160
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-issuer,durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 149,
+        "component": "provider",
+        "exit": 0,
+        "index": 26,
+        "kind": "test",
+        "profile": "delegation-issuer,durable-policy",
+        "run": "<host-capture>/runs/1793403761677978000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "a20b4ba41a5ea7b1a49c558eab3a4431d0d6eb30c1fbab8c7c85497ce251858a",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "77033e72daefe51de13cc2b62290d99c042eb665a7c225d63a27387f54afc1c4",
+          "size": 15272
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 65,
+            "seconds": 1.85
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.38
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 50,
+            "seconds": 40.04
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 24,
+            "seconds": 0.64
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-records": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-records",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 15,
+        "kind": "clippy",
+        "profile": "delegation-records",
+        "run": "<host-capture>/runs/1793403564739158000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-records",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 66,
+        "component": "provider",
+        "exit": 0,
+        "index": 14,
+        "kind": "test",
+        "profile": "delegation-records",
+        "run": "<host-capture>/runs/1793403539021424000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "4613b23cf6b2bb8d16b14003666d893260050111fd39145e8b533e6df8086ce2",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "9ba98f1f1f9bec5284ee99a0ada92e00dd8cdf898a007110da5620d7c28f5eaf",
+          "size": 6760
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 27,
+            "seconds": 0.72
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 29,
+            "seconds": 24.27
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.21
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-records,durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-records,durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 17,
+        "kind": "clippy",
+        "profile": "delegation-records,durable-policy",
+        "run": "<host-capture>/runs/1793403591982422000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-records,durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 89,
+        "component": "provider",
+        "exit": 0,
+        "index": 16,
+        "kind": "test",
+        "profile": "delegation-records,durable-policy",
+        "run": "<host-capture>/runs/1793403565174783000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "2082bae98acb3acf7ba51f93513181ba0883b860999bf8561c97d0093068ce4a",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "6223249378c3a89aab989e88fbce66bdf97f422845fc6803bb23383e29ac35bc",
+          "size": 8805
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 39,
+            "seconds": 1.37
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.38
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 30,
+            "seconds": 24.34
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.2
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-services": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-services",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 19,
+        "kind": "clippy",
+        "profile": "delegation-services",
+        "run": "<host-capture>/runs/1793403633623324000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-services",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 73,
+        "component": "provider",
+        "exit": 0,
+        "index": 18,
+        "kind": "test",
+        "profile": "delegation-services",
+        "run": "<host-capture>/runs/1793403592444586000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "72b5032cc3f046c9b91ce07997546915b09bfcad7cb837840858ab41384a6797",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "b466f8a21e418db5280c0f6d36f4a5dda5e07b24674620bf1e60811f23d7ddf9",
+          "size": 7489
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 25,
+            "seconds": 0.83
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 36,
+            "seconds": 39.57
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 12,
+            "seconds": 0.26
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-services,delegation-records,durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-services,delegation-records,durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 23,
+        "kind": "clippy",
+        "profile": "delegation-services,delegation-records,durable-policy",
+        "run": "<host-capture>/runs/1793403719238884000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-services,delegation-records,durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 122,
+        "component": "provider",
+        "exit": 0,
+        "index": 22,
+        "kind": "test",
+        "profile": "delegation-services,delegation-records,durable-policy",
+        "run": "<host-capture>/runs/1793403676703660000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "fd869c174936bfdffce2b391f6fa26dabcedabedbbb052337a0b92dbac8ebb99",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "b97905e224d7cd075ea84355634a5c88df04ecf6d3536a82bd8615b5b333feb6",
+          "size": 12302
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 51,
+            "seconds": 1.5
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.33
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 45,
+            "seconds": 39.85
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 16,
+            "seconds": 0.34
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-services,durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-services,durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 21,
+        "kind": "clippy",
+        "profile": "delegation-services,durable-policy",
+        "run": "<host-capture>/runs/1793403676259182000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-services,durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 103,
+        "component": "provider",
+        "exit": 0,
+        "index": 20,
+        "kind": "test",
+        "profile": "delegation-services,durable-policy",
+        "run": "<host-capture>/runs/1793403634090303000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "d421a72a2e17b1c85bd769970a7162b3cdc612cb3ddbb5bdfc20c82e166eae7a",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "e9b5edbae7369a5d4e2d48493b6cc0f541d6fc98002a0642d5682f05fba8e07c",
+          "size": 10401
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 43,
+            "seconds": 1.46
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.33
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 38,
+            "seconds": 39.62
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 12,
+            "seconds": 0.25
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-verifier": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 1,
+        "kind": "clippy",
+        "profile": "delegation-verifier",
+        "run": "<host-capture>/runs/1793403273863416000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 194,
+        "component": "provider",
+        "exit": 0,
+        "index": 0,
+        "kind": "test",
+        "profile": "delegation-verifier",
+        "run": "<host-capture>/runs/1793403166350726000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "018ed1e636ce29854fed038c4ce21558221d2986bbb9e304fcb1ed0dc473c913",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "c9cd2330f8694840bb1276177f802dfb5c2b9d9ca1162afb9b333e13a199ea27",
+          "size": 21145
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 86,
+            "seconds": 53.43
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 71,
+            "seconds": 52.95
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 7,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 30,
+            "seconds": 0.66
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-verifier,durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier,durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 3,
+        "kind": "clippy",
+        "profile": "delegation-verifier,durable-policy",
+        "run": "<host-capture>/runs/1793403394730545000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "85c8dbac64ed6a362d668bf3988686e26e947620bb15cfdbe2e999a0ff8261b2",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier,durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 236,
+        "component": "provider",
+        "exit": 0,
+        "index": 2,
+        "kind": "test",
+        "profile": "delegation-verifier,durable-policy",
+        "run": "<host-capture>/runs/1793403274289136000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "42e81d7e2c9596cbfdb8e891b902f2575aff2e778956f6ec924f12dd4c8d3862",
+          "size": 813
+        },
+        "stdout": {
+          "sha256": "5dd05500619bf85ca58c83b174c0aa0f8d04689c1253acdb72c6c87e9e747452",
+          "size": 25386
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 111,
+            "seconds": 54.42
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.4
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 75,
+            "seconds": 53.26
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.16
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 30,
+            "seconds": 0.78
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-wire": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-wire",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 29,
+        "kind": "clippy",
+        "profile": "delegation-wire",
+        "run": "<host-capture>/runs/1793403883737489000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "d781ce07143c0ac236807992557044e5508646119fbd24c34bbb1cde58bb6a10",
+          "size": 160
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-wire",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 151,
+        "component": "provider",
+        "exit": 0,
+        "index": 28,
+        "kind": "test",
+        "profile": "delegation-wire",
+        "run": "<host-capture>/runs/1793403806495153000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "e90ad5c7f5cd9b8911bcb5a916087f2557fe7713679f6a2e5de811f25ee8f8eb",
+          "size": 813
+        },
+        "stdout": {
+          "sha256": "e31a38e654eaf757944bb10c836005e809694f69d3de1897a7fa5208bf9bcaf3",
+          "size": 16049
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 69,
+            "seconds": 28.37
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 57,
+            "seconds": 40.36
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 25,
+            "seconds": 0.53
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "delegation-wire,durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-wire,durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 31,
+        "kind": "clippy",
+        "profile": "delegation-wire,durable-policy",
+        "run": "<host-capture>/runs/1793403964275531000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "d781ce07143c0ac236807992557044e5508646119fbd24c34bbb1cde58bb6a10",
+          "size": 160
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-wire,durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 188,
+        "component": "provider",
+        "exit": 0,
+        "index": 30,
+        "kind": "test",
+        "profile": "delegation-wire,durable-policy",
+        "run": "<host-capture>/runs/1793403884712834000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "7583274585e9dd4f6d1d09d059de1d34bf1c935a3edbfe80402b12d257d80a98",
+          "size": 813
+        },
+        "stdout": {
+          "sha256": "4360ba0f7cc2d2deb7342f8b978327ca57094a875eb995f91999a154d493b76e",
+          "size": 19761
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 92,
+            "seconds": 29.05
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.38
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 61,
+            "seconds": 40.55
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 25,
+            "seconds": 0.54
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "durable-policy": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "durable-policy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 9,
+        "kind": "clippy",
+        "profile": "durable-policy",
+        "run": "<host-capture>/runs/1793403484086444000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "durable-policy",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 70,
+        "component": "provider",
+        "exit": 0,
+        "index": 8,
+        "kind": "test",
+        "profile": "durable-policy",
+        "run": "<host-capture>/runs/1793403457699476000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "770107a7bd6f89adc28fac622ee7747958c4661236d14b5bd90b129384f729da",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "b18d244aba0b9b53c58ed21efef0b26e22c1f3919e1063a893529aacac80e27b",
+          "size": 6902
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 31,
+            "seconds": 1.34
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.37
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 23,
+            "seconds": 24.05
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "seconds": 0.11
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "operator": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 13,
+        "kind": "clippy",
+        "profile": "operator",
+        "run": "<host-capture>/runs/1793403538595196000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 87,
+        "component": "provider",
+        "exit": 0,
+        "index": 12,
+        "kind": "test",
+        "profile": "operator",
+        "run": "<host-capture>/runs/1793403510499437000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "d1085a5106244ce070e224b7749ba0e52039cd0642d873a968e2c6552ae0a008",
+          "size": 822
+        },
+        "stdout": {
+          "sha256": "9c959f040fc3952cf782477057b5b68019191c9aa88402839b8ec8575e0284a4",
+          "size": 8327
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 31,
+            "seconds": 1.23
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 1,
+            "seconds": 0.05
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 10,
+            "seconds": 0.36
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 23,
+            "seconds": 24.01
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 12,
+            "seconds": 1.79
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 4,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "seconds": 0.12
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    },
+    "preparation": {
+      "clippy": {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "preparation",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "checks": 0,
+        "component": "provider",
+        "exit": 0,
+        "index": 11,
+        "kind": "clippy",
+        "profile": "preparation",
+        "run": "<host-capture>/runs/1793403510074153000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+          "size": 62
+        },
+        "stdout": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "test_summaries": [],
+        "verified_all764_inputs_before_after": true
+      },
+      "test": {
+        "argv": [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "preparation",
+          "--",
+          "--test-threads=1"
+        ],
+        "checks": 53,
+        "component": "provider",
+        "exit": 0,
+        "index": 10,
+        "kind": "test",
+        "profile": "preparation",
+        "run": "<host-capture>/runs/1793403484517447000",
+        "source_after_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "source_before_sha256": "fe902598e065b6c64efb743fcd72d47aea6a057354a1d90ad010dcc4f4291a2f",
+        "stderr": {
+          "sha256": "7a3a0a7b678e7fb5fff5b2394214358a995ddd6a234318b8bb80aa2ddc4ed4a6",
+          "size": 715
+        },
+        "stdout": {
+          "sha256": "db75d637a949d7d528e2f88268f950f87c91a0a2620dc34f0c645296d035248c",
+          "size": 5342
+        },
+        "test_summaries": [
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 20,
+            "seconds": 0.84
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 23,
+            "seconds": 24.09
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 4,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 0,
+            "seconds": 0.0
+          },
+          {
+            "failed": 0,
+            "ignored": 0,
+            "passed": 6,
+            "seconds": 0.12
+          }
+        ],
+        "verified_all764_inputs_before_after": true
+      }
+    }
+  },
+  "issues": [
+    314,
+    315
+  ],
+  "limits": [
+    "Counts overlap across profiles and include compile-fail doctests; do not sum as independent tests.",
+    "NetBSD software VM2vCPU/1GiB runtime;14smaller profiles and codec built at1GiB. blob-iq/operator compiled at2GiB then ran existing binaries at1GiB; no fresh1GiB build-failure claim.",
+    "No product recompilation during native provider runtime commands; rustdoc compile-fail snippets still invoke rustc. Codec elapsed includes build and test.",
+    "Actual TLS scheduling BIO gates, actual partial-read stalls, separate plaintext kernel retry and synthetic clock tests have different meanings. Queued-Authority expiry tests use real wall time; no OS clock adjustment.",
+    "Real independent-home component reads use exact test-only sender/setup Access with normal Begin/PutChunk/Commit and Store reopen; never retrieval. No legitimate foreign publication or full native cross-home delivery.",
+    "No fresh NetBSD production-client console, independent interoperability, deployment, physical SBC, supported250-user or hardening claim."
+  ],
+  "native_phases": {
+    "afterwait-small-1g": {
+      "results": [
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.032000584000343224,
+          "kind": "compile-only",
+          "profile": "default",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            20,
+            0,
+            23,
+            0,
+            0,
+            0,
+            6
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 28.557785082999544,
+          "kind": "runtime",
+          "log_sha256": "d6440286fbdc08f302b1ae3b5d77c571ca2073a61a23765db4c40731a392164b",
+          "no_compilation": true,
+          "profile": "default",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-issuer",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.033396374999938416,
+          "kind": "compile-only",
+          "profile": "delegation-issuer",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            42,
+            0,
+            46,
+            0,
+            0,
+            0,
+            24
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-issuer",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 47.75515491599981,
+          "kind": "runtime",
+          "log_sha256": "b9600e044bd79b3baf7524a071432e3f3a20c52a96eb322c4ee9c823dac6e04b",
+          "no_compilation": true,
+          "profile": "delegation-issuer",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-issuer,durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.032624875000692555,
+          "kind": "compile-only",
+          "profile": "delegation-issuer,durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            65,
+            10,
+            50,
+            0,
+            0,
+            0,
+            24
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-issuer,durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 48.214262582999254,
+          "kind": "runtime",
+          "log_sha256": "f5af4e0ef8d82be7dcbc7de7f476554fde9f86f1ccf35fb1d0fce7173963c900",
+          "no_compilation": true,
+          "profile": "delegation-issuer,durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-records",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.034503791999668465,
+          "kind": "compile-only",
+          "profile": "delegation-records",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            27,
+            0,
+            29,
+            0,
+            0,
+            0,
+            10
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-records",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 29.326388874999793,
+          "kind": "runtime",
+          "log_sha256": "b68af80ae0e9bdad09b7bc0b808a491c35c0ababdaf2a828947fc4c98a1deaab",
+          "no_compilation": true,
+          "profile": "delegation-records",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-records,durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.03342045799945481,
+          "kind": "compile-only",
+          "profile": "delegation-records,durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            39,
+            10,
+            30,
+            0,
+            0,
+            0,
+            10
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-records,durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 29.57422150000002,
+          "kind": "runtime",
+          "log_sha256": "6935d7c90bc11306c5e69bbec07310fc6ae7e3373ab4b552a809d61f2232af01",
+          "no_compilation": true,
+          "profile": "delegation-records,durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-services",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.033630750000156695,
+          "kind": "compile-only",
+          "profile": "delegation-services",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            25,
+            0,
+            36,
+            0,
+            0,
+            0,
+            12
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-services",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 46.1152004580008,
+          "kind": "runtime",
+          "log_sha256": "463ed2fe418d68d915503f2c4765ddcf7b689904e30e71f0a6b8b235b6deaf67",
+          "no_compilation": true,
+          "profile": "delegation-services",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-services,delegation-records,durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.03269670800000313,
+          "kind": "compile-only",
+          "profile": "delegation-services,delegation-records,durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            51,
+            10,
+            45,
+            0,
+            0,
+            0,
+            16
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-services,delegation-records,durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 47.70210816599956,
+          "kind": "runtime",
+          "log_sha256": "44972b12bd33038e864cc2db06bff7a0828e372fe0a1df18f73bd0301b041e21",
+          "no_compilation": true,
+          "profile": "delegation-services,delegation-records,durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-services,durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.03298712499963585,
+          "kind": "compile-only",
+          "profile": "delegation-services,durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            43,
+            10,
+            38,
+            0,
+            0,
+            0,
+            12
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-services,durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 47.228490333999616,
+          "kind": "runtime",
+          "log_sha256": "075d2843b0732462c07470d4a8ede51652780003fbf7276570fd858d82c7e64e",
+          "no_compilation": true,
+          "profile": "delegation-services,durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-verifier",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 9.845224374999816,
+          "kind": "compile-only",
+          "profile": "delegation-verifier",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            86,
+            0,
+            71,
+            0,
+            0,
+            7,
+            30
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-verifier",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 131.29126033299963,
+          "kind": "runtime",
+          "log_sha256": "3c85c6fa28913e4455d56cba5e9fc47fec6d56d4307412008f94edffd0cb3a44",
+          "no_compilation": true,
+          "profile": "delegation-verifier",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-verifier,durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 11.813594084000215,
+          "kind": "compile-only",
+          "profile": "delegation-verifier,durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            111,
+            10,
+            75,
+            0,
+            0,
+            10,
+            30
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-verifier,durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 131.05847870800062,
+          "kind": "runtime",
+          "log_sha256": "f8df77b5784ecce1958239a16deac40018e2908eb44eff29f73c2701481a8fd1",
+          "no_compilation": true,
+          "profile": "delegation-verifier,durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-wire",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 7.9147295419998045,
+          "kind": "compile-only",
+          "profile": "delegation-wire",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            69,
+            0,
+            57,
+            0,
+            0,
+            0,
+            25
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-wire",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 89.0220776670003,
+          "kind": "runtime",
+          "log_sha256": "ef7f98ba0b54a778b00403eab3940a7cdacc33ba43a517d4d51852ea008883ae",
+          "no_compilation": true,
+          "profile": "delegation-wire",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-wire,durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 9.406587958000273,
+          "kind": "compile-only",
+          "profile": "delegation-wire,durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            92,
+            10,
+            61,
+            0,
+            0,
+            0,
+            25
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "delegation-wire,durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 88.86281800000052,
+          "kind": "runtime",
+          "log_sha256": "26e245f021eb5b66712b52a633d549424ee7a6ebeef5090c93538cb3b91cc818",
+          "no_compilation": true,
+          "profile": "delegation-wire,durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "durable-policy",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.03280533299948729,
+          "kind": "compile-only",
+          "profile": "durable-policy",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            31,
+            10,
+            23,
+            0,
+            0,
+            0,
+            6
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "durable-policy",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 29.504380624999612,
+          "kind": "runtime",
+          "log_sha256": "06847d61b9d161e72fc8e292fd1f2798459197f9953b0347105a9e30d47618a3",
+          "no_compilation": true,
+          "profile": "durable-policy",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "preparation",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 0.03182408399970882,
+          "kind": "compile-only",
+          "profile": "preparation",
+          "returncode": 0
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            20,
+            0,
+            23,
+            0,
+            4,
+            0,
+            6
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "preparation",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 29.317260540999996,
+          "kind": "runtime",
+          "log_sha256": "46348ab10dd30bfb0bcfb766346fd8365f8ee73e24036781b9ff2a46d72ff849",
+          "no_compilation": true,
+          "profile": "preparation",
+          "returncode": 0,
+          "source_exact": true
+        }
+      ],
+      "results_sha256": "289a186c40dacc855c7db7c33309a3c6bbcb45c4b9f590adda94727ea592d311",
+      "source_after_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_before_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_gates_sha256": "a5827a0643a2eec9f84c2e4f88aa73e8352ce10befdbec793156d7dd33b4b21d"
+    },
+    "final-codec-1g": {
+      "results": [
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            0,
+            3,
+            21,
+            2
+          ],
+          "command": [
+            "cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-delegation-codec/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 3.865293582999584,
+          "kind": "runtime",
+          "log_sha256": "480bc3d7f85c0f70f8198876b6087622ba28183e32347ff2c46eec7586e513ee",
+          "profile": "standalone-codec",
+          "returncode": 0,
+          "source_exact": true
+        }
+      ],
+      "results_sha256": "5727299a8a0067a118b201663c92891d0c6ddbee6ae424bdaa7a43f0efd8701e",
+      "source_after_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_before_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_gates_sha256": "81959cdce2d559664ffcdd9c34e448a389e24276dc93c656dfb2a1894f2876f0"
+    },
+    "final-ordinary-build-2g": {
+      "results": [
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "blob-iq",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 90.402840334,
+          "kind": "compile-only",
+          "profile": "blob-iq",
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "operator",
+            "--no-run",
+            "--message-format=json-render-diagnostics"
+          ],
+          "elapsed_seconds": 6.809234875000016,
+          "kind": "compile-only",
+          "profile": "operator",
+          "returncode": 0
+        }
+      ],
+      "results_sha256": "e385ed8bd60ba5ba2488ead10b8eee1ffdf8134574b43de85ed52df4ef342fab",
+      "source_after_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_before_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_gates_sha256": "f40c8a526ecfff4bbcc298e102a20455bffd427cc08f119c5072429ce31ad4d1"
+    },
+    "final-ordinary-runtime-1g": {
+      "results": [
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            20,
+            0,
+            32,
+            0,
+            0,
+            0,
+            6
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "blob-iq",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 40.90405320799999,
+          "kind": "runtime",
+          "log_sha256": "a9867fe46097b4152ede35bc63ea493e00c241439087b6ccebab12da748931f2",
+          "no_compilation": true,
+          "profile": "blob-iq",
+          "returncode": 0,
+          "source_exact": true
+        },
+        {
+          "artifacts_before_after_exact": true,
+          "check_groups": [
+            31,
+            1,
+            10,
+            23,
+            12,
+            4,
+            0,
+            6
+          ],
+          "command": [
+            "/usr/pkg/bin/cargo",
+            "test",
+            "--manifest-path",
+            "<guest-owned>/source/crates/faction-provider/Cargo.toml",
+            "--release",
+            "--locked",
+            "--offline",
+            "--features",
+            "operator",
+            "--",
+            "--test-threads=1"
+          ],
+          "elapsed_seconds": 33.48056808300001,
+          "kind": "runtime",
+          "log_sha256": "e347ff661113de5664f8b1710f1b79855f73e3b273b67ba3e20b959e3740100e",
+          "no_compilation": true,
+          "profile": "operator",
+          "returncode": 0,
+          "source_exact": true
+        }
+      ],
+      "results_sha256": "96713239ab1aaea067d00a66d42af6673e1b7b229e40b0c160bcf486a7f55026",
+      "source_after_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_before_sha256": "f0045496018c3da56ae20de2e47f8436581e2c3a0f16fa2304939b10c17b15ed",
+      "source_gates_sha256": "f40c8a526ecfff4bbcc298e102a20455bffd427cc08f119c5072429ce31ad4d1"
+    }
+  },
+  "record_created_utc": "2026-10-31T00:06:05.175123+00:00",
+  "schema": 1,
+  "source_commit": "05ce1933712e3ae9ddf138b472005097d3fa0405",
+  "source_gates": "Complete selected Linux/NetBSD/macOS archive/source/license/features/no-JS graphs qualified before compilation;16provider profiles plus root-client composition and standalone codec; no new dependency/lock change.",
+  "tooling": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools",
+        "-p",
+        "test_*.py"
+      ],
+      "bytes": 1053,
+      "elapsed_seconds": 80.7891824580147,
+      "label": "tooling",
+      "returncode": 0,
+      "sha256": "7f5b5c3f19170365aeee98a2e184251b34d7afe00d95792e0cdeab811640ac9e",
+      "test_counts": [
+        642
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/check_repository.py"
+      ],
+      "bytes": 196,
+      "elapsed_seconds": 4.241418833960779,
+      "label": "repository",
+      "returncode": 0,
+      "sha256": "831fbfa31539b8b887602e2cad81d12e7640d638a7f4a766b66881bb606b0063",
+      "test_counts": []
+    },
+    {
+      "argv": [
+        "shasum",
+        "-a",
+        "256",
+        "-c",
+        "SHA256SUMS"
+      ],
+      "bytes": 240,
+      "elapsed_seconds": 0.01103554101428017,
+      "label": "temper-manifest",
+      "returncode": 0,
+      "sha256": "9ddd12c979e628acfd4d180de642dd8a370a9126e200f1ec6030b856915d0886",
+      "test_counts": []
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "bytes": 0,
+      "elapsed_seconds": 0.034185374970547855,
+      "label": "whitespace",
+      "returncode": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_counts": []
+    }
+  ]
+}

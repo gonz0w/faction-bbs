@@ -76,3 +76,22 @@ and tombstone version 3 without fallback or rewrite. Reset or device-only
 replacement disables issuer authority while retaining its format marker and typed
 history. Live records, references and tokens are never persisted. See the
 [issuer contract](delegation-issuer.md).
+
+The optional `PublicationWireProfile` is external runtime configuration, not a
+durable permission. It restricts the current installed Observation role by home
+and client ID and cannot add a registration or authority. Restart requires the
+embedder to supply it again. See the [publication carrier](service-observations.md#optional-publication-http-carrier).
+
+With `delegation-verifier` and durable policy enabled, explicit version 4 stores
+resource associations and remote generation/reset floor history in the same
+atomic public-policy snapshot. Complete higher-local-generation proposals cannot
+lower or forget either retained floor; a wire tuple must equal the configured
+tuple, with no automatic adoption. Removal, reset or device-only replacement
+disables active authority while retaining history, floors and the v4 marker. An
+issuer-only replacement also retains the remote floors.
+Versions 1–3 reopen without resource permission or automatic rewrite. Builds that
+do not support v4 refuse active and tombstone v4 snapshots without fallback or
+rewrite. The 65536-byte bound and whole-trusted-root rollback limitation remain.
+No token, pending operation, key or PEM is persisted. V4 supports an issuer-only
+or resource-only configuration, not both together; see the
+[verifier contract](delegation-verifier.md).

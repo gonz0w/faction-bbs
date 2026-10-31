@@ -108,11 +108,38 @@ policy's local home before reference provisioning and later authority checks.
 The default-off `delegation-records` feature supplies a local, session-derived
 [retrieval intent](retrieval-intents.md) for trusted embedders. It is not a remote
 read grant and does not establish sender policy or committed object state. The
-maintained native binary service above remains same-home only. Sender-side
-authority and independently hosted cross-home operation remain future work under
+maintained native binary service above remains same-home only. The default-off
+[retrieval verifier](delegation-verifier.md) can privately check
+a fresh issuer response for an exact committed-object retrieval. Full foreign
+publication and independently hosted product delivery remain future work under
 [issue #300](https://github.com/gonz0w/faction-bbs/issues/300) and
 [issue #301](https://github.com/gonz0w/faction-bbs/issues/301).
 
+
+## Outbound service HTTP client
+
+With `delegation-wire` explicitly enabled, a trusted embedder constructs
+`tls::HttpEndpoint` from a socket address, fixed HTTP host, expected TLS server
+name, server leaf SHA-256 pin and separate `ClientCredentials` containing its CA,
+service certificate and key. Configuration is trusted input; a request or decoded
+claim cannot select an endpoint. `Control::query_publication` and
+`Control::query_introspection` each perform one bounded request and response,
+using the supplied absolute deadline and cancellation flag. Publication responses
+must match the exact query and configured host. Both results remain unverified;
+the caller must perform its own current authority checks and cannot turn metadata
+into a device actor or Store grant.
+
+The client uses the existing OpenSSL 3 installation and TLS 1.3, authenticates the
+configured CA, name and leaf pin, and presents its service credential. Connect and
+handshake share the remaining original deadline and five-second admission limit.
+The single TCP connect can block for that remaining admission budget; immediately
+after it returns, cancellation, runtime stop and current policy are rechecked.
+Subsequent I/O retains the original deadline and checks those conditions at
+100 ms BIO slices. No Authority or Store lock is held across network waits.
+There is no request-selected URL, discovery, proxy lookup,
+redirect or automatic retry. This private profile is not an RFC 7662 TLS 1.2 or
+generic OAuth conformance claim. It adds no browser JavaScript or automatic service
+activation, and leaves the binary `tls::Client` interface unchanged.
 
 ## In-process IQ adapter
 

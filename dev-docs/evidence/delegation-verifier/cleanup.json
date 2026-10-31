@@ -1,0 +1,24 @@
+{
+  "all_six_owned_roots_absent": true,
+  "checked_utc": "2026-10-31T00:21:03.120688+00:00",
+  "exact_marker_uid_mode_verified_before_removal": true,
+  "native_disposable_teardown": {
+    "native_archive_bytes": 376309760,
+    "native_archive_sha256": "6b6684554ca05dbd5c2c56ec298641a97436a95ada52f5d82cc8668c8fb2325c",
+    "owned_clone_kernel_removed": true,
+    "owned_forward_closed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_controller_stopped": true
+  },
+  "owned_host_capture_build_and_tmp_roots_removed": 6,
+  "owner_playground_assets_byte_exact": 86,
+  "owner_playground_started": false,
+  "remaining_owned_test_children": 0,
+  "result": "pass",
+  "saved_owner_images_closed": 6,
+  "schema": 1,
+  "valuable_private_bytes_archived_and_verified_before_removal": true
+}

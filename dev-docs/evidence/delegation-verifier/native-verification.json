@@ -1,0 +1,80 @@
+{
+  "archive_verification": {
+    "index_sha256": "2b11b4bce59cebbcd6276d9c93ab36bd0a9f261aa1842664b6ec10f50ed5bd57",
+    "result": "pass",
+    "verified_files": 11583,
+    "verified_hardlink_headers": 24
+  },
+  "counts_and_corrected_compilation": {
+    "corrected_wire_verifier_provider_units_rebuilt": [
+      {
+        "index": 8,
+        "rebuilt_provider_targets": 7
+      },
+      {
+        "index": 9,
+        "rebuilt_provider_targets": 7
+      },
+      {
+        "index": 10,
+        "rebuilt_provider_targets": 7
+      },
+      {
+        "index": 11,
+        "rebuilt_provider_targets": 7
+      }
+    ],
+    "host_native_counts_equal": true,
+    "prior_verifier_source_files": 401,
+    "result": "pass",
+    "source_bytes_mtime_event": {
+      "files": {
+        "crates/faction-provider/src/http.rs": {
+          "after_mtime_ns": 1793403466212383494,
+          "before_mtime_ns": 0,
+          "bytes": 15410,
+          "sha256": "99054b82886a1bb6369669beb62236567f5b92c5935e6301f39a44f09199b7ef"
+        },
+        "crates/faction-provider/src/http_tls_tests.rs": {
+          "after_mtime_ns": 1793403466212438995,
+          "before_mtime_ns": 0,
+          "bytes": 34238,
+          "sha256": "5f262290af4c8900b4bc8d635ef1614005cd47932769eff9f9b4ef393efd485b"
+        },
+        "crates/faction-provider/src/resource.rs": {
+          "after_mtime_ns": 1793403466212480661,
+          "before_mtime_ns": 0,
+          "bytes": 14708,
+          "sha256": "afb4e1a9803274bb0abc4e4b7b68bd66f4c8ad5224e97a60c3a595c82e7d1d02"
+        },
+        "crates/faction-provider/src/resource_tests.rs": {
+          "after_mtime_ns": 1793403466212514745,
+          "before_mtime_ns": 0,
+          "bytes": 29168,
+          "sha256": "fbed21ee10982f7588f30e96a2df4caac30e5e01ca8530a420d2f5a52dfa1e3a"
+        }
+      },
+      "purpose": "Force Cargo freshness for the four corrected wire/verifier module files before their feature-profile compilation",
+      "source_bytes_changed": false
+    }
+  },
+  "current_artifact_files_exact": 480,
+  "disposable_VM_teardown": {
+    "native_archive_bytes": 376309760,
+    "native_archive_sha256": "6b6684554ca05dbd5c2c56ec298641a97436a95ada52f5d82cc8668c8fb2325c",
+    "owned_clone_kernel_removed": true,
+    "owned_forward_closed": true,
+    "owner_assets_exact": 86,
+    "owner_images_closed": 6,
+    "owner_playground_started": false,
+    "result": "pass",
+    "vm_controller_stopped": true
+  },
+  "failed_read_only_verification": "Builder identity could not read root-owned0600 historical metadata. Same helper reran as owned guest administrator; no product test ran as root and no permissions weakened.",
+  "owned_product_tests_compilers_and_copied_BBS_stopped": true,
+  "owned_test_tmp_empty": true,
+  "schema": 1,
+  "selected_registry_archives_and_extracted_sources_exact": 143,
+  "source_commit": "05ce1933712e3ae9ddf138b472005097d3fa0405",
+  "source_files": 401
+}
