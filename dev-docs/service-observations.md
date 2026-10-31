@@ -2,7 +2,8 @@
 
 The default-off `delegation-services` feature gives a trusted embedder a local,
 read-only check of recipient approval for an authenticated invited service. It
-adds no client or operator enablement, new wire protocol or store access. The
+adds no client or operator enablement or store access. An optional, separately
+configured HTTP carrier is described below. The
 existing device session and the separate service session have different authority:
 a service does not become a device actor and cannot create a retrieval intent or
 read attachment records.
@@ -41,9 +42,34 @@ reset epoch and check time. Compare the complete returned values to the intended
 operation; the observation is not store or device authority. A successful policy
 installation invalidates earlier sessions, even when the policy data is unchanged.
 
-The provider carrier remains TLS 1.3 only. This interface adds no HTTP, OAuth or
-introspection endpoint and does not qualify the TLS 1.2 support required by
-RFC 7662 for a future introspection backchannel.
+The direct observation interface remains independent of the HTTP carriers. The
+provider uses TLS 1.3 only; this private profile does not qualify the TLS 1.2
+support required by RFC 7662 or generic OAuth interoperability.
+
+## Optional publication HTTP carrier
+
+With `delegation-wire` explicitly enabled, construct a trusted
+`PublicationWireProfile::new(home, clients)` and pass it to the consuming
+`ServiceSession::serve_publication_http_once(&profile)`. It serves at most one
+`/faction/publication-current` request on the already authenticated service
+connection; it starts no listener. The profile is external runtime configuration:
+its wire-compatible home and client allowlist only restrict the installed policy.
+The configured home fixes Host and must match the current policy. Each operation
+joins the allowed client ID with current policy and the actual authenticated
+Observation certificate, including after waits and before response. The profile
+cannot register a client, add a role, create a device actor or grant Store access.
+Legacy direct observations retain their existing identifiers and interface.
+The publication operation tracks precise wall-clock samples from its first actual
+sample across request read and response; a missing clock or detected rollback
+denies the operation. This cannot detect a change before that first sample.
+Object and certificate expiry and the original monotonic deadline still apply.
+
+The request carries the complete binding and exact `PublicationAction`: `Begin`,
+`PutChunk` (offset, length and ciphertext SHA-256), `Commit`, `Status` or `Delete`.
+It does not coerce these to generic `Publish`. The response is decoded as unverified
+metadata, not a `RecipientCurrentObservation`, actor or Store grant. A refusal
+contains no recipient metadata. See the [codec](delegation-codecs.md) and
+[outbound client](provider-integration.md#outbound-service-http-client).
 
 ## What a check means
 

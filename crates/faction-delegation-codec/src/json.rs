@@ -261,3 +261,157 @@ pub fn encode_introspection_json(response: &UnverifiedIntrospection) -> Result<V
             .collect(),
     ))
 }
+
+fn publication_query(fields: &mut Map<String, Value>) -> Result<UnverifiedPublicationQuery, Error> {
+    let client_id = string(fields, "client_id")?;
+    let binding = binding(take(fields, "binding")?)?;
+    let mut selector = object(take(fields, "action")?)?;
+    let action = match string(&mut selector, "name")?.as_str() {
+        "begin" => UnverifiedPublicationAction::Begin,
+        "put_chunk" => UnverifiedPublicationAction::PutChunk {
+            offset: integer(&mut selector, "offset")?,
+            length: integer(&mut selector, "length")?,
+            ciphertext_sha256: string(&mut selector, "ciphertext_sha256")?,
+        },
+        "commit" => UnverifiedPublicationAction::Commit,
+        "status" => UnverifiedPublicationAction::Status,
+        "delete" => UnverifiedPublicationAction::Delete,
+        _ => return Err(Error),
+    };
+    finish(selector)?;
+    let query = UnverifiedPublicationQuery {
+        client_id,
+        binding,
+        action,
+    };
+    query.validate()?;
+    Ok(query)
+}
+fn publication_value(query: &UnverifiedPublicationQuery) -> Result<Value, Error> {
+    query.validate()?;
+    let action = match &query.action {
+        UnverifiedPublicationAction::Begin => serde_json::json!({"name":"begin"}),
+        UnverifiedPublicationAction::PutChunk {
+            offset,
+            length,
+            ciphertext_sha256,
+        } => {
+            serde_json::json!({"name":"put_chunk","offset":offset,"length":length,"ciphertext_sha256":ciphertext_sha256})
+        }
+        UnverifiedPublicationAction::Commit => serde_json::json!({"name":"commit"}),
+        UnverifiedPublicationAction::Status => serde_json::json!({"name":"status"}),
+        UnverifiedPublicationAction::Delete => serde_json::json!({"name":"delete"}),
+    };
+    Ok(
+        serde_json::json!({"client_id":query.client_id,"binding":binding_value(&query.binding),"action":action}),
+    )
+}
+pub fn decode_publication_query_json(body: &[u8]) -> Result<UnverifiedPublicationQuery, Error> {
+    let mut fields = parse(body)?;
+    let q = publication_query(&mut fields)?;
+    finish(fields)?;
+    Ok(q)
+}
+pub fn encode_publication_query_json(query: &UnverifiedPublicationQuery) -> Result<Vec<u8>, Error> {
+    serialize(publication_value(query)?)
+}
+pub fn decode_publication_response_json(
+    body: &[u8],
+) -> Result<UnverifiedPublicationObservation, Error> {
+    let mut fields = parse(body)?;
+    let current = take(&mut fields, "current")?.as_bool().ok_or(Error)?;
+    if !current {
+        finish(fields)?;
+        return Ok(UnverifiedPublicationObservation::Unavailable);
+    }
+    let query = publication_query(&mut fields)?;
+    let result = UnverifiedPublicationObservation::Current {
+        query: Box::new(query),
+        home: string(&mut fields, "home")?,
+        service_home: string(&mut fields, "service_home")?,
+        service_certificate_sha256: string(&mut fields, "service_certificate_sha256")?,
+        recipient_certificate_sha256: string(&mut fields, "recipient_certificate_sha256")?,
+        generation: integer(&mut fields, "generation")?,
+        reset: integer(&mut fields, "reset")?,
+        checked_at: integer(&mut fields, "checked_at")?,
+    };
+    finish(fields)?;
+    validate_publication_observation(&result)?;
+    Ok(result)
+}
+fn validate_publication_observation(input: &UnverifiedPublicationObservation) -> Result<(), Error> {
+    if let UnverifiedPublicationObservation::Current {
+        query,
+        home,
+        service_home,
+        service_certificate_sha256,
+        recipient_certificate_sha256,
+        generation,
+        checked_at,
+        ..
+    } = input
+    {
+        query.validate()?;
+        crate::types::host(home)?;
+        crate::types::host(service_home)?;
+        crate::types::hex(service_certificate_sha256)?;
+        crate::types::hex(recipient_certificate_sha256)?;
+        if *generation == 0
+            || *checked_at < query.binding.created
+            || *checked_at >= query.binding.expires
+            || query.binding.sender.account.split_once('@').map(|(_, h)| h)
+                != Some(service_home.as_str())
+            || query
+                .binding
+                .recipient
+                .account
+                .split_once('@')
+                .map(|(_, h)| h)
+                != Some(home.as_str())
+        {
+            return Err(Error);
+        }
+    }
+    Ok(())
+}
+pub fn encode_publication_response_json(
+    input: &UnverifiedPublicationObservation,
+) -> Result<Vec<u8>, Error> {
+    validate_publication_observation(input)?;
+    let UnverifiedPublicationObservation::Current {
+        query,
+        home,
+        service_home,
+        service_certificate_sha256,
+        recipient_certificate_sha256,
+        generation,
+        reset,
+        checked_at,
+    } = input
+    else {
+        return Ok(b"{\"current\":false}".to_vec());
+    };
+    let mut value = publication_value(query)?
+        .as_object()
+        .cloned()
+        .ok_or(Error)?;
+    for (key, value2) in [
+        ("current", Value::Bool(true)),
+        ("home", Value::String(home.clone())),
+        ("service_home", Value::String(service_home.clone())),
+        (
+            "service_certificate_sha256",
+            Value::String(service_certificate_sha256.clone()),
+        ),
+        (
+            "recipient_certificate_sha256",
+            Value::String(recipient_certificate_sha256.clone()),
+        ),
+        ("generation", Value::from(*generation)),
+        ("reset", Value::from(*reset)),
+        ("checked_at", Value::from(*checked_at)),
+    ] {
+        value.insert(key.into(), value2);
+    }
+    serialize(Value::Object(value))
+}

@@ -1,0 +1,108 @@
+{
+  "backend_model_effort_telemetry": "unverified; spawn request is not backend execution proof",
+  "host_environment": "Rust/Cargo1.96.0,2build jobs, explicit installed OpenSSL3.6.3, release/locked/offline; short private TMPDIR. No toolchain/package operations during four-file correction.",
+  "host_versions": {
+    "cargo": {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "--version"
+      ],
+      "stderr": "",
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n"
+    },
+    "openssl": {
+      "argv": [
+        "/opt/homebrew/opt/openssl@3/bin/openssl",
+        "version"
+      ],
+      "stderr": "",
+      "stdout": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)\n"
+    },
+    "os": {
+      "argv": [
+        "/usr/bin/sw_vers"
+      ],
+      "stderr": "",
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t27.2\nBuildVersion:\t\t26B118\n"
+    },
+    "python": {
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "stderr": "",
+      "stdout": "Python 3.14.7\n"
+    },
+    "rustc": {
+      "argv": [
+        "rustc",
+        "+1.96.0",
+        "--version",
+        "--verbose"
+      ],
+      "stderr": "",
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n"
+    }
+  },
+  "native_role_discovery": "unavailable; explicit fresh-context PROJECT mapping used",
+  "netbsd": {
+    "broader_compile_memory_mib": 2048,
+    "cpu": 2,
+    "fingerprints": {
+      "/usr/bin/cc": {
+        "bytes": 1419696,
+        "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+      },
+      "/usr/bin/ld": {
+        "bytes": 992920,
+        "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161"
+      },
+      "/usr/lib/libcrypto.so.16": {
+        "bytes": 6244640,
+        "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+      },
+      "/usr/lib/libssl.so.16": {
+        "bytes": 1262704,
+        "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+      },
+      "/usr/pkg/bin/cargo": {
+        "bytes": 43795088,
+        "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+      },
+      "/usr/pkg/bin/rustc": {
+        "bytes": 14128,
+        "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+      }
+    },
+    "observed_physmem_1g_bytes": 1054990336,
+    "openssl": "base3.5.7",
+    "os": "NetBSD11ARM64 software VM",
+    "runtime_memory_mib": 1024,
+    "rust_cargo": "1.96.0"
+  },
+  "requested_roles": {
+    "temper_analyst": [
+      "gpt-6-astra",
+      "high"
+    ],
+    "temper_implementer": [
+      "gpt-6.1-sol",
+      "high"
+    ],
+    "temper_product": [
+      "gpt-6.1-terra",
+      "medium"
+    ],
+    "temper_reviewer": [
+      "gpt-6.1-sol",
+      "high"
+    ],
+    "temper_workflow": [
+      "gpt-6-luna",
+      "medium"
+    ]
+  },
+  "review": "Separate nonauthor Temper source review; not independent assurance.",
+  "schema": 1
+}

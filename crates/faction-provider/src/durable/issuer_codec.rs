@@ -37,6 +37,10 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
                 ServiceUse::Observation => 0,
                 ServiceUse::Relay => 1,
                 ServiceUse::Introspection => 2,
+                #[cfg(feature = "delegation-verifier")]
+                ServiceUse::ResourceClient
+                | ServiceUse::OutboundIntrospection
+                | ServiceUse::IssuerEndpoint => return Err(Error::Invalid),
             });
         }
         w.0.push(u8::from(p.issuer.is_some()));

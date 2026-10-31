@@ -1,0 +1,16 @@
+{
+  "files": {
+    "dev-docs/evidence/delegation-verifier/README.md": "92d0dbb71b67f4ed08f014b410831598676adf8f2c22ff1f12fc1d94725ce39d",
+    "dev-docs/evidence/delegation-verifier/REPRODUCE.md": "2ec00a2fe3d03dab2e371beb86d16dc2fdbb742ab0f5e48d5715781966d66337",
+    "dev-docs/evidence/delegation-verifier/binaries.json": "d34f56dc4d5217f9bac791f635f8c50855defae38f66b1c3a56c0e5b64a68611",
+    "dev-docs/evidence/delegation-verifier/cleanup.json": "dec6257aa88cb00bbda4d4f72793d5eb24bde5d38f114111dd80cd917a353af2",
+    "dev-docs/evidence/delegation-verifier/inputs.json": "97d02b5d5a0ae5f78afc59988fbcff864c8d68c0851f3c618e7a5eb1f605a571",
+    "dev-docs/evidence/delegation-verifier/native-verification.json": "7c0a5de9659fd1c8977670dba43e05dd6f701878f25815cfb9066b5c5c424878",
+    "dev-docs/evidence/delegation-verifier/privacy.json": "f0f44b5cb9555c890422618730be423bfaa8ce0f25d7e3dc4e0f79a9afb67956",
+    "dev-docs/evidence/delegation-verifier/results.json": "6c7f9ca151af0889b0c2122dc69bfbc990f25e5bd9297c24e1b970bfbdd3bace",
+    "dev-docs/evidence/delegation-verifier/retention.json": "f7bdf72239101d447dd82ae8859df0fcd7420c614dc5c52d99cacebfb2be5b62",
+    "dev-docs/evidence/delegation-verifier/tdd.json": "d93a04cfd0e4109199314f286d6f19db6d013dc805b5276db5884f700a512b00",
+    "dev-docs/evidence/delegation-verifier/tools.json": "d7b0689e4d90276567f97b6683cf8cfbdb32eefffe5a3c38496ac3acf83ee8a2"
+  },
+  "schema": 1
+}

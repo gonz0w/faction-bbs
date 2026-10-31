@@ -413,3 +413,489 @@ fn wire_bio_precise_wall_expiry_and_rollback_are_sticky_without_host_clock_chang
         assert!(lifetime.check(Duration::from_secs(102)).is_err());
     }
 }
+fn publication_fixture() -> (
+    Real,
+    (X509, PKey<Private>),
+    codec::UnverifiedPublicationQuery,
+) {
+    let real = Real::new();
+    let now = wall_now();
+    let observer = cert(
+        Some((&real.ca.0, &real.ca.1)),
+        "observer",
+        301,
+        now as i64 - 60,
+        now as i64 + 3600,
+    );
+    real.runtime
+        .control()
+        .replace_delegation_policy(
+            real.registry(2),
+            ServicePolicy::new(
+                "home.test".into(),
+                vec![ServiceRegistration {
+                    home: "foreign.test".into(),
+                    client_id: "observer".into(),
+                    dns_san: "provider.test".into(),
+                    certificate_sha256: sha256(&observer.0.to_der().unwrap()),
+                    enabled: true,
+                    valid_from: now - 60,
+                    valid_until: now + 3600,
+                }],
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    let p = |account: &str| codec::UnverifiedPrincipal {
+        account: account.into(),
+        device: 1,
+        identity: "01".repeat(32),
+    };
+    let query = codec::UnverifiedPublicationQuery {
+        client_id: "observer".into(),
+        binding: codec::UnverifiedBinding {
+            sender: p("sender@foreign.test"),
+            recipient: p("recipient@home.test"),
+            id: "22".repeat(32),
+            size: 32,
+            created: now - 1,
+            expires: now + 100,
+        },
+        action: codec::UnverifiedPublicationAction::Begin,
+    };
+    (real, observer, query)
+}
+#[test]
+fn publication_actual_tls_response_bio_gate_rechecks_policy_stop_cancel_and_original_cycle_deadline()
+ {
+    use crate::services::PublicationWireProfile;
+    for case in 0..5 {
+        let (real, observer, query) = publication_fixture();
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = listener.local_addr().unwrap();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let cancel = Arc::new(AtomicBool::new(false));
+        let request = codec::encode_publication_query_http("home.test", &query).unwrap();
+        std::thread::scope(|scope| {
+            let peer = scope.spawn(|| {
+                let mut client = real.client(addr, &observer);
+                client.stream.write_all(&request).unwrap();
+                let mut bytes = Vec::new();
+                let mut scratch = [0; 2048];
+                loop {
+                    match client.stream.read(&mut scratch) {
+                        Ok(0) | Err(_) => break,
+                        Ok(n) => {
+                            assert!(bytes.len() + n <= codec::MAX_HEADER + codec::MAX_JSON);
+                            bytes.extend_from_slice(&scratch[..n]);
+                        }
+                    }
+                }
+                bytes
+            });
+            let mut session = real
+                .server()
+                .accept_service(&listener, &real.runtime, cancel.clone())
+                .unwrap();
+            let original = session.deadline;
+            session.stream.get_mut().response_write_gate = Some(Arc::new(ResponseWriteGate {
+                entered: entered_tx,
+                release: Mutex::new(release_rx),
+            }));
+            let handler = scope.spawn(move || {
+                session.serve_publication_http_once(
+                    &PublicationWireProfile::new("home.test".into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+            });
+            assert_eq!(
+                entered_rx.recv_timeout(Duration::from_secs(2)).unwrap(),
+                original
+            );
+            assert!(!handler.is_finished());
+            let changed = Instant::now();
+            // This lock acquisition is an explicit lock-freedom oracle at the BIO gate.
+            drop(real.runtime.state.authority.lock().unwrap());
+            match case {
+                0 => real
+                    .runtime
+                    .control()
+                    .replace_registry(real.registry(3))
+                    .unwrap(),
+                1 => real.runtime.control().stop().unwrap(),
+                2 => cancel.store(true, Ordering::SeqCst),
+                3 => {
+                    while Instant::now() < original {
+                        std::thread::sleep(Duration::from_millis(10));
+                    }
+                }
+                _ => (),
+            };
+            if case != 3 {
+                assert!(changed.elapsed() < Duration::from_secs(1));
+            }
+            assert!(!handler.is_finished());
+            release_tx.send(()).unwrap();
+            let result = handler.join().unwrap();
+            let bytes = peer.join().unwrap();
+            if case == 4 {
+                assert!(result.is_ok());
+                match codec::decode_publication_response_http(&bytes).unwrap() {
+                    codec::UnverifiedPublicationObservation::Current { query: got, .. } => {
+                        assert_eq!(*got, query)
+                    }
+                    _ => panic!("current metadata missing"),
+                };
+            } else {
+                assert!(result.is_err());
+                assert!(bytes.is_empty());
+                if case == 3 {
+                    assert_eq!(result, Err(Error::Transport(Stage::Deadline)));
+                }
+            }
+            assert!(!real.runtime.state.active.load(Ordering::SeqCst));
+        });
+    }
+}
+#[test]
+fn publication_actual_partial_tls_request_observes_retry_then_policy_cancel_stop_release_admission()
+{
+    use crate::services::PublicationWireProfile;
+    use std::sync::atomic::AtomicUsize;
+    for case in 0..3 {
+        let (real, observer, _) = publication_fixture();
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = listener.local_addr().unwrap();
+        let retries = Arc::new(AtomicUsize::new(0));
+        let cancel = Arc::new(AtomicBool::new(false));
+        std::thread::scope(|scope| {
+            let peer = scope.spawn(|| {
+                let mut client = real.client(addr, &observer);
+                client
+                    .stream
+                    .write_all(b"POST /faction/publication-current HTTP/1.1\r\n")
+                    .unwrap();
+                let mut scratch = [0; 8192];
+                assert!(client.stream.read(&mut scratch).is_err() || scratch == [0; 8192]);
+            });
+            let mut session = real
+                .server()
+                .accept_service(&listener, &real.runtime, cancel.clone())
+                .unwrap();
+            session.stream.get_mut().read_retries = Some(retries.clone());
+            let handler = scope.spawn(move || {
+                session.serve_publication_http_once(
+                    &PublicationWireProfile::new("home.test".into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+            });
+            let end = Instant::now() + Duration::from_secs(2);
+            while retries.load(Ordering::SeqCst) == 0 && Instant::now() < end {
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            assert!(retries.load(Ordering::SeqCst) > 0);
+            assert!(!handler.is_finished());
+            let changed = Instant::now();
+            match case {
+                0 => real
+                    .runtime
+                    .control()
+                    .replace_registry(real.registry(3))
+                    .unwrap(),
+                1 => real.runtime.control().stop().unwrap(),
+                _ => cancel.store(true, Ordering::SeqCst),
+            };
+            assert!(handler.join().unwrap().is_err());
+            assert!(changed.elapsed() < Duration::from_secs(2));
+            assert!(!real.runtime.state.active.load(Ordering::SeqCst));
+            peer.join().unwrap();
+        });
+    }
+}
+fn publication_probe_rollback(response: bool) {
+    use crate::services::PublicationWireProfile;
+    use std::sync::atomic::AtomicU64;
+    let (real, observer, query) = publication_fixture();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(addr, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        let time = session.credential.wall_highwater;
+        let clock = Arc::new(AtomicU64::new(time));
+        let clock_view = clock.clone();
+        let profile =
+            PublicationWireProfile::new("home.test".into(), vec!["observer".into()]).unwrap();
+        let probe = session.publication_probe_clock(
+            &profile,
+            if response { Some(query) } else { None },
+            Arc::new(move || Some(Duration::from_secs(clock_view.load(Ordering::SeqCst)))),
+            Arc::new(Mutex::new(PublicationClock::default())),
+        );
+        assert!(probe());
+        clock.store(time + 2, Ordering::SeqCst);
+        assert!(probe());
+        clock.store(time + 1, Ordering::SeqCst);
+        assert!(
+            !probe(),
+            "observed forward wall sample followed by rollback must deny the actual publication probe"
+        );
+        clock.store(time + 3, Ordering::SeqCst);
+        assert!(
+            !probe(),
+            "clock refusal must remain sticky after the clock recovers"
+        );
+        assert!(Instant::now() < session.deadline);
+    });
+}
+#[test]
+fn publication_request_probe_retains_forward_sample_and_sticky_rollback() {
+    publication_probe_rollback(false)
+}
+#[test]
+fn publication_response_probe_retains_forward_sample_and_sticky_rollback() {
+    publication_probe_rollback(true)
+}
+
+#[test]
+fn publication_probe_fractional_forward_sample_and_rollback_are_not_discarded() {
+    use crate::services::PublicationWireProfile;
+    use std::sync::atomic::AtomicU64;
+    let (real, observer, query) = publication_fixture();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(addr, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        let base = session.credential.wall_highwater * 1000;
+        let clock = Arc::new(AtomicU64::new(base + 900));
+        let c = clock.clone();
+        let profile =
+            PublicationWireProfile::new("home.test".into(), vec!["observer".into()]).unwrap();
+        let probe = session.publication_probe_clock(
+            &profile,
+            Some(query),
+            Arc::new(move || Some(Duration::from_millis(c.load(Ordering::SeqCst)))),
+            Arc::new(Mutex::new(PublicationClock::default())),
+        );
+        assert!(probe());
+        clock.store(base + 1100, Ordering::SeqCst);
+        assert!(probe());
+        clock.store(base + 1000, Ordering::SeqCst);
+        assert!(
+            !probe(),
+            "fractional rollback between actual precise samples must deny"
+        );
+    });
+}
+#[test]
+fn publication_read_and_response_probes_share_precise_highwater_and_missing_clock_is_sticky() {
+    use std::sync::atomic::AtomicU64;
+    let (real, observer, query) = publication_fixture();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(addr, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        let base = session.credential.wall_highwater * 1000;
+        let clock = Arc::new(AtomicU64::new(base + 900));
+        let read_clock = clock.clone();
+        let response_clock = clock.clone();
+        let history = Arc::new(Mutex::new(PublicationClock::default()));
+        let profile = crate::services::PublicationWireProfile::new(
+            "home.test".into(),
+            vec!["observer".into()],
+        )
+        .unwrap();
+        assert!(history.lock().unwrap().lifetime.is_none());
+        let read = session.publication_probe_clock(
+            &profile,
+            None,
+            Arc::new(move || Some(Duration::from_millis(read_clock.load(Ordering::SeqCst)))),
+            history.clone(),
+        );
+        let response = session.publication_probe_clock(
+            &profile,
+            Some(query),
+            Arc::new(move || Some(Duration::from_millis(response_clock.load(Ordering::SeqCst)))),
+            history.clone(),
+        );
+        assert!(read());
+        assert_eq!(
+            history.lock().unwrap().lifetime.as_ref().unwrap().highwater,
+            Duration::from_millis(base + 900)
+        );
+        clock.store(base + 1100, Ordering::SeqCst);
+        assert!(read());
+        clock.store(base + 1000, Ordering::SeqCst);
+        assert!(!response());
+        clock.store(base + 1200, Ordering::SeqCst);
+        assert!(!read());
+        assert!(!response());
+        let missing_history = Arc::new(Mutex::new(PublicationClock::default()));
+        let missing = session.publication_probe_clock(
+            &profile,
+            None,
+            Arc::new(|| None),
+            missing_history.clone(),
+        );
+        assert!(!missing());
+        assert!(missing_history.lock().unwrap().invalid);
+        let recovered = session.publication_probe_clock(
+            &profile,
+            None,
+            Arc::new(move || Some(Duration::from_millis(base + 1300))),
+            missing_history,
+        );
+        assert!(!recovered());
+        assert!(Instant::now() < session.deadline);
+    });
+}
+
+fn queued_authority_publication_expiry(response: bool) {
+    let (real, observer, mut query) = publication_fixture();
+    let expires = wall_now() + 3;
+    if !response {
+        let entries = vec![ServiceRegistration {
+            home: "foreign.test".into(),
+            client_id: "observer".into(),
+            dns_san: "provider.test".into(),
+            certificate_sha256: sha256(&observer.0.to_der().unwrap()),
+            enabled: true,
+            valid_from: wall_now() - 60,
+            valid_until: expires,
+        }];
+        real.runtime
+            .control()
+            .replace_delegation_policy(
+                real.registry(3),
+                ServicePolicy::new("home.test".into(), entries).unwrap(),
+            )
+            .unwrap();
+    }
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    std::thread::scope(|scope| {
+        let peer = scope.spawn(|| real.client(address, &observer));
+        let session = real
+            .server()
+            .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let _peer = peer.join().unwrap();
+        query.binding.expires = expires;
+        let history = Arc::new(Mutex::new(PublicationClock::default()));
+        let profile = crate::services::PublicationWireProfile::new(
+            "home.test".into(),
+            vec!["observer".into()],
+        )
+        .unwrap();
+        let probe = session.publication_probe(
+            &profile,
+            if response { Some(query) } else { None },
+            history.clone(),
+        );
+        let authority = real.runtime.state.authority.lock().unwrap();
+        let operation = scope.spawn(move || probe());
+        let witness_end = Instant::now() + Duration::from_secs(1);
+        let sampled = loop {
+            let sample = history
+                .lock()
+                .unwrap()
+                .lifetime
+                .as_ref()
+                .map(|c| c.highwater);
+            if let Some(sample) = sample {
+                break sample;
+            }
+            assert!(
+                Instant::now() < witness_end,
+                "probe must sample before the Authority wait"
+            );
+            std::thread::sleep(Duration::from_millis(1));
+        };
+        assert!(sampled.as_secs() < expires);
+        assert!(!operation.is_finished());
+        while wall_now() < expires {
+            assert!(Instant::now() < session.deadline);
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert!(Instant::now() < session.deadline);
+        drop(authority);
+        assert!(
+            !operation.join().unwrap(),
+            "object expiry during Authority wait must refuse the response probe"
+        );
+    });
+}
+
+#[test]
+fn queued_authority_publication_expiry_refuses_the_actual_tls_response_probe() {
+    queued_authority_publication_expiry(true)
+}
+#[test]
+fn queued_authority_service_expiry_refuses_the_actual_tls_request_probe() {
+    queued_authority_publication_expiry(false)
+}
+
+#[test]
+fn queued_authority_stop_refuses_actual_publication_read_and_response_probes() {
+    for response in [false, true] {
+        let (real, observer, query) = publication_fixture();
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        std::thread::scope(|scope| {
+            let peer = scope.spawn(|| real.client(address, &observer));
+            let session = real
+                .server()
+                .accept_service(&listener, &real.runtime, Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let _peer = peer.join().unwrap();
+            let history = Arc::new(Mutex::new(PublicationClock::default()));
+            let profile = crate::services::PublicationWireProfile::new(
+                "home.test".into(),
+                vec!["observer".into()],
+            )
+            .unwrap();
+            let probe = session.publication_probe(
+                &profile,
+                if response { Some(query) } else { None },
+                history.clone(),
+            );
+            let authority = real.runtime.state.authority.lock().unwrap();
+            let operation = scope.spawn(move || probe());
+            let witness_end = Instant::now() + Duration::from_secs(1);
+            while history.lock().unwrap().lifetime.is_none() {
+                assert!(Instant::now() < witness_end);
+                std::thread::sleep(Duration::from_millis(1));
+            }
+            assert!(!operation.is_finished());
+            let stopping = scope.spawn(|| real.runtime.control().stop());
+            while !real.runtime.state.stopped.load(Ordering::SeqCst) {
+                assert!(Instant::now() < witness_end);
+                std::thread::sleep(Duration::from_millis(1));
+            }
+            assert!(!operation.is_finished());
+            assert!(
+                !stopping.is_finished(),
+                "actual stop waits to invalidate Authority"
+            );
+            drop(authority);
+            assert!(!operation.join().unwrap());
+            stopping.join().unwrap().unwrap();
+            assert!(Instant::now() < session.deadline);
+        });
+    }
+}

@@ -1,0 +1,94 @@
+{
+  "archive_directory": "local/evidence/delegation-verifier-314-315",
+  "archives": {
+    "host-client.private.tar.gz": {
+      "archive_bytes": 37102292,
+      "archive_sha256": "bbeb1f35fbfef77e2f3a0d9e8d1c012090103afc30630a98e393fa28b6a83cb5",
+      "executed_source_commit": "3c4caa215cebadc5d47642b15a2a58809b1ef5a5",
+      "index_sha256": "334a26064ffa3c4821a280af7e6bbb79e8255e1c3524a79a6985b4350be4ddbc",
+      "result": "pass",
+      "verified_files": 983
+    },
+    "implementer.private.tar.gz": {
+      "archive": "implementer.private.tar.gz",
+      "archive_bytes": 121137544,
+      "archive_sha256": "bfe9b7d6fcb72be878ffec3ddb40a5e2e6fb351de38822ac8f433287036bbf7f",
+      "index_sha256": "8c300a82c1d90ca800fd9531a70d82a688fbcfbc96e28f42651c723c7a8bba2b",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 3428
+    },
+    "native-lead.private.tar.gz": {
+      "archive": "native-lead.private.tar.gz",
+      "archive_bytes": 726154806,
+      "archive_sha256": "232ffe02b4b2be09e6ea242ba61e0d1018abab8653f89611b09c8d5109f01071",
+      "index_sha256": "ccfd5a456eed05bc570c9f4228e6c51d61825ff702168cb231749a8f43aa7c8b",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 231
+    },
+    "product.private.tar.gz": {
+      "archive": "product.private.tar.gz",
+      "archive_bytes": 294437,
+      "archive_sha256": "56c591d5d46fa3b04d5cb80cc83ebf31df8addff7293c08db7ae6b97b4a7a1fe",
+      "index_sha256": "dcd12ff82c4205adcf7bad2ca17c3aad9b724a71c604a7224a9d611f778649f1",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 144
+    }
+  },
+  "git_source_archives_nested_in_lead": [
+    {
+      "all_git_blobs_exact": true,
+      "archive_bytes": 64770033,
+      "archive_sha256": "ab0cfde22864df6dc3f9a1d9f2d697a4ca27f158e1fbb0757c0b1ab41c63e28c",
+      "files": 19474,
+      "index_sha256": "683219427672ca152eae8b37215efa84902b81898c0077542b4734cc4b358a9d",
+      "source_commit": "3c4caa215cebadc5d47642b15a2a58809b1ef5a5"
+    },
+    {
+      "all_git_blobs_exact": true,
+      "archive_bytes": 64770785,
+      "archive_sha256": "90ba418bc4d0006bcca5ec650d1c3aadcd7e54bff70bdabfbbbc72a5068ded34",
+      "files": 19474,
+      "index_sha256": "cbdb5c89957bd09f48ab7107220d6507d8ce7f12b234a24114ad5c20ab642db4",
+      "source_commit": "05ce1933712e3ae9ddf138b472005097d3fa0405"
+    }
+  ],
+  "limits": [
+    "Private captures include synthetic credentials and transcripts and remain0600under0700ignored storage, outside Git.",
+    "Host target caches were removed after actual tested executable bytes and source/log maps were retained in content-addressed objects. Native guest retained all indexed regular files, including actual compiler/test artifacts.",
+    "Lead one-off archive and verification commands also remain in tool history; no independent pre-execution source-file claim is made for inline commands."
+  ],
+  "native_guest_archive_nested_in_lead": {
+    "bytes": 376309760,
+    "file": "native-runtime.private.tar.gz",
+    "index_verification": {
+      "index_sha256": "2b11b4bce59cebbcd6276d9c93ab36bd0a9f261aa1842664b6ec10f50ed5bd57",
+      "result": "pass",
+      "verified_files": 11583,
+      "verified_hardlink_headers": 24
+    },
+    "sha256": "6b6684554ca05dbd5c2c56ec298641a97436a95ada52f5d82cc8668c8fb2325c"
+  },
+  "prior_native_archives_nested_in_lead": {
+    "publication-9cd": {
+      "artifact_index_sha256": "7083101fec78a3d41b03724a7465cc0d04327de7778a2c7c1c457d89e67fce70",
+      "artifacts": 117,
+      "bytes": 46329424,
+      "sha256": "239463c77a1d4caf83794ecacae60942a48e0b0263dfa5081cc48b4560c6219e",
+      "source_commit": "9cd481bf7bbfcfb679f12010a1d11481b712531b",
+      "source_files": 392
+    },
+    "verifier-3c": {
+      "artifact_index_sha256": "7cd6a5925b15e7f07d11516c4af287f047e7a03aa06e6a442e1a0666c6f50326",
+      "artifacts": 232,
+      "bytes": 96212329,
+      "sha256": "15e7fe64746c0c877131200550cd0301ae298bb5256c61b6999829431537ac53",
+      "source_commit": "3c4caa215cebadc5d47642b15a2a58809b1ef5a5",
+      "source_files": 401
+    }
+  },
+  "private_artifacts_ignored_not_published": true,
+  "schema": 1
+}

@@ -521,3 +521,13 @@ separate compilation/runtime envelopes, private archives and owned cleanup.
 No remote Store grant, complete relay or deployment is supplied. The manifest
 `dev-docs/evidence/delegation-issuer/manifest.json` SHA-256 is
 `feb3ae36d1d84ddd2773b37c9ae424c1c71c20ead044bab8857e0afdbc514f3a`; it pins saved record bytes rather than claiming fresh execution.
+
+[Publication transport and consuming retrieval verifier evidence](delegation-verifier/README.md)
+records the paired #314/#315 host/NetBSD software checks, actual test-first
+corrections and historical cache lineage. The component reads preexisting committed
+ciphertext; full foreign publication and native delivery remain separate.
+[Privacy](delegation-verifier/privacy.json), [retention](delegation-verifier/retention.json)
+and [cleanup](delegation-verifier/cleanup.json) record the scoped checks and teardown.
+
+`dev-docs/evidence/delegation-verifier/manifest.json` SHA-256 is
+`b30eb39ee96d0771458e12543c0ccda961c614ce97c66bbbe14692eb25d20a72`.

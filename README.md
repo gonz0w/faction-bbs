@@ -71,7 +71,12 @@ by the sysop; experiments and future protocols are separate from normal operatio
   default-off library [retrieval issuer](dev-docs/delegation-issuer.md) adds an
   explicitly permitted certificate-bound token and optional one-operation HTTP
   carrier, with [host and NetBSD software evidence](dev-docs/evidence/delegation-issuer/README.md).
-  Remote authorization and full cross-home delivery remain incomplete.
+  An explicit publication observation HTTP profile and bounded outbound client
+  expose unverified metadata to trusted embedders; they grant no device or Store
+  authority. A default-off [retrieval verifier](dev-docs/delegation-verifier.md)
+  checks fresh issuer metadata for a private committed-object retrieval, with
+  [host and NetBSD software evidence](dev-docs/evidence/delegation-verifier/README.md). Full
+  cross-home publication and delivery remain incomplete.
 
 ## What you can do
 

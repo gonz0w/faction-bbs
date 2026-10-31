@@ -91,6 +91,8 @@ struct DeadlineIo {
     cancel: Arc<AtomicBool>,
     stop: Option<Arc<AtomicBool>>,
     #[cfg(feature = "delegation-wire")]
+    policy_probe: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
+    #[cfg(feature = "delegation-wire")]
     wire_lifetime: Option<WireLifetime>,
     #[cfg(all(test, feature = "delegation-wire"))]
     read_retries: Option<Arc<std::sync::atomic::AtomicUsize>>,
@@ -109,6 +111,8 @@ impl DeadlineIo {
             cancel,
             stop: None,
             #[cfg(feature = "delegation-wire")]
+            policy_probe: None,
+            #[cfg(feature = "delegation-wire")]
             wire_lifetime: None,
             #[cfg(all(test, feature = "delegation-wire"))]
             read_retries: None,
@@ -125,6 +129,10 @@ impl DeadlineIo {
         self.write_observation = Some(observed);
     }
     fn timeout(&mut self) -> io::Result<Duration> {
+        #[cfg(feature = "delegation-wire")]
+        if self.policy_probe.as_ref().is_some_and(|p| !p()) {
+            return Err(io::Error::other("current HTTP policy unavailable"));
+        }
         if self.stop.as_ref().is_some_and(|s| s.load(Ordering::SeqCst)) {
             return Err(io::Error::other("provider stopped"));
         }
@@ -750,6 +758,10 @@ pub struct ServiceSession {
 }
 #[cfg(feature = "delegation-services")]
 impl ServiceSession {
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) fn original_service_attempts(&self) -> usize {
+        self.attempted
+    }
     #[cfg(feature = "delegation-issuer")]
     pub(crate) fn issuer_attempt(&mut self) -> Result<Arc<State>, Error> {
         if self.attempted >= MAX_OPERATIONS {
@@ -1284,3 +1296,12 @@ impl WireLifetime {
         Ok(())
     }
 }
+
+#[cfg(feature = "delegation-wire")]
+#[path = "http_client.rs"]
+mod http_client;
+#[cfg(feature = "delegation-wire")]
+pub use http_client::HttpEndpoint;
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+pub(crate) use issuer_lifecycle_tests::cert as test_certificate;

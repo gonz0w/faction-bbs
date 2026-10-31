@@ -61,6 +61,7 @@ impl ServiceSession {
                     codec::UnverifiedEndpoint::Introspection => {
                         codec::decode_introspection_http(&bytes).map(HttpInput::Introspection)
                     }
+                    codec::UnverifiedEndpoint::PublicationCurrent => Err(codec::Error),
                 };
                 match input {
                     Ok(input) => self.http_dispatch_charged(&state, &head, input)?,
@@ -167,3 +168,235 @@ mod tests {
 #[cfg(test)]
 #[path = "http_tls_tests.rs"]
 mod tls_tests;
+
+fn array(hex: &str) -> Result<[u8; 32], Stage> {
+    if hex.len() != 64 {
+        return Err(Stage::Frame);
+    }
+    let mut result = [0; 32];
+    for (i, pair) in hex.as_bytes().chunks_exact(2).enumerate() {
+        let text = std::str::from_utf8(pair).map_err(|_| Stage::Frame)?;
+        result[i] = u8::from_str_radix(text, 16).map_err(|_| Stage::Frame)?;
+    }
+    Ok(result)
+}
+fn publication_input(
+    q: &codec::UnverifiedPublicationQuery,
+) -> Result<
+    (
+        faction_files::private_blobs::Binding,
+        crate::services::PublicationAction,
+    ),
+    Stage,
+> {
+    use crate::services::PublicationAction as A;
+    use faction_files::private_blobs::{Binding, Principal};
+    let p = |p: &codec::UnverifiedPrincipal| -> Result<Principal, Stage> {
+        Ok(Principal {
+            account: p.account.clone(),
+            device: p.device,
+            identity: array(&p.identity)?,
+        })
+    };
+    let b = &q.binding;
+    let binding = Binding {
+        sender: p(&b.sender)?,
+        recipient: p(&b.recipient)?,
+        id: array(&b.id)?,
+        size: b.size,
+        created: b.created,
+        expires: b.expires,
+    };
+    let action = match &q.action {
+        codec::UnverifiedPublicationAction::Begin => A::Begin,
+        codec::UnverifiedPublicationAction::PutChunk {
+            offset,
+            length,
+            ciphertext_sha256,
+        } => A::PutChunk {
+            offset: *offset,
+            length: *length,
+            ciphertext_sha256: array(ciphertext_sha256)?,
+        },
+        codec::UnverifiedPublicationAction::Commit => A::Commit,
+        codec::UnverifiedPublicationAction::Status => A::Status,
+        codec::UnverifiedPublicationAction::Delete => A::Delete,
+    };
+    Ok((binding, action))
+}
+/// One precise observation history for the whole publication carrier. No
+/// timestamp is invented before the first actual check; failed time stays failed.
+#[derive(Default)]
+struct PublicationClock {
+    lifetime: Option<WireLifetime>,
+    invalid: bool,
+}
+impl PublicationClock {
+    fn observe(&mut self, now: Option<Duration>) -> bool {
+        if self.invalid {
+            return false;
+        }
+        let Some(now) = now else {
+            self.invalid = true;
+            return false;
+        };
+        let lifetime = self.lifetime.get_or_insert(WireLifetime {
+            expires: Duration::MAX,
+            highwater: now,
+            invalid: false,
+        });
+        if lifetime.check(now).is_err() {
+            self.invalid = true;
+            return false;
+        }
+        true
+    }
+}
+impl ServiceSession {
+    fn publication_probe(
+        &self,
+        profile: &crate::services::PublicationWireProfile,
+        query: Option<codec::UnverifiedPublicationQuery>,
+        clock_state: Arc<std::sync::Mutex<PublicationClock>>,
+    ) -> Arc<dyn Fn() -> bool + Send + Sync> {
+        self.publication_probe_clock(
+            profile,
+            query,
+            Arc::new(|| SystemTime::now().duration_since(UNIX_EPOCH).ok()),
+            clock_state,
+        )
+    }
+    fn publication_probe_clock(
+        &self,
+        profile: &crate::services::PublicationWireProfile,
+        query: Option<codec::UnverifiedPublicationQuery>,
+        clock: Arc<dyn Fn() -> Option<Duration> + Send + Sync>,
+        clock_state: Arc<std::sync::Mutex<PublicationClock>>,
+    ) -> Arc<dyn Fn() -> bool + Send + Sync> {
+        let state = self.state.clone();
+        let profile = profile.clone();
+        let credential = self.credential.clone();
+        let leaf = self.leaf.clone();
+        Arc::new(move || {
+            let wall = clock();
+            // Drop the private clock lock before acquiring authority.
+            if !clock_state.lock().is_ok_and(|mut c| c.observe(wall)) {
+                return false;
+            }
+            let Some(state) = state.upgrade() else {
+                return false;
+            };
+            if state.stopped.load(Ordering::SeqCst) {
+                return false;
+            }
+            let Ok(a) = state.authority.lock() else {
+                return false;
+            };
+            if state.stopped.load(Ordering::SeqCst) {
+                return false;
+            }
+            // Authority may have been contended past an expiry. Preserve both
+            // precise samples in the same sticky history, then use fresh time.
+            let wall = clock();
+            if !clock_state.lock().is_ok_and(|mut c| c.observe(wall)) {
+                return false;
+            }
+            let Some(wall) = wall else {
+                return false;
+            };
+            let now = wall.as_secs();
+            if profile.current(&a, &credential, &leaf, now).is_err() {
+                return false;
+            }
+            if let Some(q) = &query {
+                if q.client_id != credential.identity.client_id {
+                    return false;
+                }
+                let Ok((binding, action)) = publication_input(q) else {
+                    return false;
+                };
+                return a
+                    .observe_recipient(&mut credential.clone(), &leaf, binding, action, now)
+                    .is_ok();
+            }
+            true
+        })
+    }
+    /// One exact publication query; the profile only restricts installed policy.
+    /// The original incoming carrier is consumed on every result.
+    pub fn serve_publication_http_once(
+        mut self,
+        profile: &crate::services::PublicationWireProfile,
+    ) -> Result<(), Error> {
+        let state = self.issuer_attempt()?;
+        let clock_state = Arc::new(std::sync::Mutex::new(PublicationClock::default()));
+        let probe = self.publication_probe(profile, None, clock_state.clone());
+        if !probe() {
+            return Err(Error::Transport(Stage::Denied));
+        }
+        self.stream.get_mut().policy_probe = Some(probe);
+        let decoded = read_http(&mut self.stream);
+        self.issuer_check(&state)?;
+        let query = decoded.ok().and_then(|(head, bytes)| {
+            if head.host != profile.host()
+                || head.endpoint != codec::UnverifiedEndpoint::PublicationCurrent
+                || self.stream.ssl().pending() != 0
+            {
+                return None;
+            }
+            codec::decode_publication_query_http(&bytes).ok()
+        });
+        let result = query.as_ref().and_then(|q| {
+            if q.client_id != self.credential.identity.client_id {
+                return None;
+            }
+            let (binding, action) = publication_input(q).ok()?;
+            let a = state.authority.lock().ok()?;
+            profile
+                .current(&a, &self.credential, &self.leaf, wall_now())
+                .ok()?;
+            a.observe_recipient(
+                &mut self.credential,
+                &self.leaf,
+                binding,
+                action,
+                wall_now(),
+            )
+            .ok()
+        });
+        let observation = if let (Some(q), Some(o)) = (query.as_ref(), result.as_ref()) {
+            let hex = |v: [u8; 32]| v.iter().map(|b| format!("{b:02x}")).collect();
+            self.stream.get_mut().policy_probe =
+                Some(self.publication_probe(profile, Some(q.clone()), clock_state));
+            codec::UnverifiedPublicationObservation::Current {
+                query: Box::new(q.clone()),
+                home: profile.host().into(),
+                service_home: o.service_home().into(),
+                service_certificate_sha256: hex(o.service_certificate_sha256()),
+                recipient_certificate_sha256: hex(o.recipient_certificate_sha256()),
+                generation: o.generation(),
+                reset: o.reset_epoch(),
+                checked_at: o.checked_at(),
+            }
+        } else {
+            codec::UnverifiedPublicationObservation::Unavailable
+        };
+        let bytes = codec::encode_publication_response_http(&observation)
+            .map_err(|_| Error::Transport(Stage::Frame))?;
+        self.issuer_check(&state)?;
+        #[cfg(test)]
+        {
+            self.stream.get_mut().response_phase = true;
+        }
+        self.stream
+            .write_all(&bytes)
+            .and_then(|_| self.stream.flush())
+            .map_err(|_| Error::Transport(classify(self.deadline, &self.cancel, Stage::Denied)))?;
+        self.issuer_check(&state)?;
+        if result.is_some() {
+            Ok(())
+        } else {
+            Err(Error::Transport(Stage::Denied))
+        }
+    }
+}

@@ -241,3 +241,61 @@ pub(crate) fn hex(value: &str) -> Result<(), Error> {
     }
     Ok(())
 }
+
+/// Exact publication selector data; never a token purpose or Store permission.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum UnverifiedPublicationAction {
+    Begin,
+    PutChunk {
+        offset: u64,
+        length: u64,
+        ciphertext_sha256: String,
+    },
+    Commit,
+    Status,
+    Delete,
+}
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct UnverifiedPublicationQuery {
+    pub client_id: String,
+    pub binding: UnverifiedBinding,
+    pub action: UnverifiedPublicationAction,
+}
+impl UnverifiedPublicationQuery {
+    pub(crate) fn validate(&self) -> Result<(), Error> {
+        client_id(&self.client_id)?;
+        self.binding.validate()?;
+        if let UnverifiedPublicationAction::PutChunk {
+            offset,
+            length,
+            ciphertext_sha256,
+        } = &self.action
+        {
+            hex(ciphertext_sha256)?;
+            if *length == 0
+                || *length > 4096
+                || offset
+                    .checked_add(*length)
+                    .is_none_or(|end| end > self.binding.size)
+            {
+                return Err(Error);
+            }
+        }
+        Ok(())
+    }
+}
+/// Editable, unverified policy metadata. It cannot construct provider authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum UnverifiedPublicationObservation {
+    Unavailable,
+    Current {
+        query: Box<UnverifiedPublicationQuery>,
+        home: String,
+        service_home: String,
+        service_certificate_sha256: String,
+        recipient_certificate_sha256: String,
+        generation: u64,
+        reset: u64,
+        checked_at: u64,
+    },
+}

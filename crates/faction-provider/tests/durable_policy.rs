@@ -313,3 +313,31 @@ fn actual_active_and_tombstone_v3_fixtures_require_issuer_support_without_rewrit
         assert_eq!(fs::read(snapshot).unwrap(), bytes);
     }
 }
+#[test]
+fn actual_active_and_tombstone_v4_fixtures_require_verifier_support_without_rewrite() {
+    for bytes in [
+        include_bytes!("fixtures/resource-active-v4.bin").as_slice(),
+        include_bytes!("fixtures/resource-tombstone-v4.bin").as_slice(),
+    ] {
+        let f = Fixture::new();
+        let r = Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![])).unwrap();
+        drop(r);
+        let snapshot = f.policy().join("provider-policy.snapshot");
+        fs::write(&snapshot, bytes).unwrap();
+        let result = Runtime::reopen_durable(&f.policy());
+        assert_eq!(result.is_ok(), cfg!(feature = "delegation-verifier"));
+        drop(result);
+        assert_eq!(fs::read(snapshot).unwrap(), bytes);
+    }
+}
+#[test]
+fn unsupported_combined_resource_and_issuer_policy_is_refused_without_fallback_or_rewrite() {
+    let bytes = include_bytes!("fixtures/resource-combined-v4.bin");
+    let f = Fixture::new();
+    let r = Runtime::initialize_durable(&f.policy(), registry(1, 0, vec![])).unwrap();
+    drop(r);
+    let path = f.policy().join("provider-policy.snapshot");
+    fs::write(&path, bytes).unwrap();
+    assert!(Runtime::reopen_durable(&f.policy()).is_err());
+    assert_eq!(fs::read(path).unwrap(), bytes);
+}

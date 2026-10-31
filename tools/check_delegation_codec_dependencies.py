@@ -91,6 +91,9 @@ def validate_product_edges(manifests):
             features=manifest.get('features',{})
             require(features.get('default')==[] and features.get('delegation-wire')==['delegation-issuer','dep:faction-delegation-codec'], 'codec must be selected only by explicit wire composition')
             for name, values in features.items():
+                if name=='delegation-verifier':
+                    require(values==['delegation-wire'],'verifier requires exact optional wire composition')
+                    continue
                 if name!='delegation-wire':
                     require(all(v not in {'delegation-wire','dep:faction-delegation-codec','faction-delegation-codec'} and not v.startswith('faction-delegation-codec/') for v in values), 'ordinary/core feature activates codec')
             del manifest['dependencies']['faction-delegation-codec']
@@ -166,7 +169,9 @@ def isolation_graphs():
                 ('provider-issuer',ROOT/'crates/faction-provider/Cargo.toml','delegation-issuer'),
                 ('provider-issuer-durable',ROOT/'crates/faction-provider/Cargo.toml','delegation-issuer,durable-policy'),
                 ('provider-wire',ROOT/'crates/faction-provider/Cargo.toml','delegation-wire'),
-                ('provider-wire-durable',ROOT/'crates/faction-provider/Cargo.toml','delegation-wire,durable-policy')]
+                ('provider-wire-durable',ROOT/'crates/faction-provider/Cargo.toml','delegation-wire,durable-policy'),
+                ('provider-wire-verifier',ROOT/'crates/faction-provider/Cargo.toml','delegation-verifier'),
+                ('provider-wire-verifier-durable',ROOT/'crates/faction-provider/Cargo.toml','delegation-verifier,durable-policy')]
     graphs = {}
     for name, manifest, feature in profiles:
         graphs[name] = {}
@@ -190,7 +195,9 @@ def ci_commands():
                               ('Cargo.toml', ' --features faction-client/device-provider'),
                               ('crates/faction-provider/Cargo.toml', ' --features operator'),
                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire'),
-                              ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy')]:
+                              ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy'),
+                              ('crates/faction-provider/Cargo.toml', ' --features delegation-verifier'),
+                              ('crates/faction-provider/Cargo.toml', ' --features delegation-verifier,durable-policy')]:
         for target in TARGETS:
             commands.append('cargo metadata --locked --manifest-path ' + manifest
                 + ' --format-version 1 --filter-platform ' + target + feature + ' > /dev/null')

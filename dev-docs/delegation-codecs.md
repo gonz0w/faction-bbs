@@ -49,6 +49,12 @@ by `/attachments`. Active introspection uses separate variants:
   `Publish`, `Status` and `Delete` policy observations.
 - `Inactive` is the distinct `{"active":false}` response, with no extra fields.
 
+The separate publication query and observation preserve the complete binding and
+exact `Begin`, `PutChunk { offset, length, ciphertext_sha256 }`, `Commit`, `Status`
+or `Delete` action. They do not translate these operations into the generic
+`RecipientCurrent` `Publish` claim. A decoded publication observation is also
+unverified and cannot construct a private observation or Store authority.
+
 Neither active variant grants a capability. The schema also bounds claim lifetimes,
 binding size and lifetime, and chunk offsets; see the [types](../crates/faction-delegation-codec/src/types.rs)
 and [JSON codec](../crates/faction-delegation-codec/src/json.rs) for the precise
@@ -61,8 +67,8 @@ of authority.
 
 HTTP decoding takes one complete HTTP/1.1 message with CRLF framing, a required
 Content-Length matching the entire body, and the expected content type. Requests
-are POSTs to `/oauth/token` or `/oauth/introspect` with a canonical host; decoded
-responses have status 200. The profile does not support chunking, compression,
+are POSTs to `/oauth/token`, `/oauth/introspect`, or `/faction/publication-current`
+with a canonical host; decoded responses have status 200. The profile does not support chunking, compression,
 redirects or pipelining. It accepts `Connection: close` when present and emits
 that header; other connection modes and duplicate headers are refused. It is not
 a streaming HTTP implementation. The provider carrier consumes one request per

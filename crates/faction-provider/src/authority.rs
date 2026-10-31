@@ -232,6 +232,10 @@ pub(crate) struct Authority {
     service_format_v2: bool,
     #[cfg(feature = "delegation-issuer")]
     service_format_v3: bool,
+    #[cfg(feature = "delegation-verifier")]
+    service_format_v4: bool,
+    #[cfg(feature = "delegation-verifier")]
+    remote_history: Vec<crate::services::RemoteFloor>,
     #[cfg(feature = "delegation-services")]
     service_history: Vec<([u8; 32], crate::services::ServiceIdentity)>,
     #[cfg(feature = "delegation-records")]
@@ -262,6 +266,10 @@ impl Authority {
             service_format_v2: false,
             #[cfg(feature = "delegation-issuer")]
             service_format_v3: false,
+            #[cfg(feature = "delegation-verifier")]
+            service_format_v4: false,
+            #[cfg(feature = "delegation-verifier")]
+            remote_history: Vec::new(),
             #[cfg(feature = "delegation-services")]
             service_history: Vec::new(),
             #[cfg(feature = "delegation-records")]
@@ -283,6 +291,10 @@ impl Authority {
             service_format_v2: self.service_format_v2,
             #[cfg(feature = "delegation-issuer")]
             service_format_v3: self.service_format_v3,
+            #[cfg(feature = "delegation-verifier")]
+            service_format_v4: self.service_format_v4,
+            #[cfg(feature = "delegation-verifier")]
+            remote_history: self.remote_history.clone(),
         }
     }
     #[cfg(feature = "durable-policy")]
@@ -294,6 +306,11 @@ impl Authority {
     }
     #[cfg(feature = "durable-policy")]
     pub(crate) fn install(&mut self, snapshot: crate::durable::Snapshot) {
+        #[cfg(feature = "delegation-verifier")]
+        {
+            self.service_format_v4 = snapshot.service_format_v4;
+            self.remote_history = snapshot.remote_history;
+        }
         self.generation = snapshot.generation;
         self.reset_epoch = snapshot.reset_epoch;
         self.registry = snapshot.registry;
@@ -370,6 +387,8 @@ impl Authority {
     }
     pub fn replace_registry(&mut self, registry: Registry) -> Result<(), Error> {
         let history = self.proposed_history(&registry)?;
+        #[cfg(feature = "delegation-verifier")]
+        self.validate_remote_homes(&registry, &self.remote_history)?;
         #[cfg(feature = "delegation-services")]
         {
             self.service_policy = None;

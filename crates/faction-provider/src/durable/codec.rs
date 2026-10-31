@@ -5,6 +5,9 @@ use faction_files::private_blobs::Principal;
 #[cfg(feature = "delegation-issuer")]
 #[path = "issuer_codec.rs"]
 mod issuer;
+#[cfg(feature = "delegation-verifier")]
+#[path = "resource_codec.rs"]
+mod resource;
 #[cfg(feature = "delegation-services")]
 #[path = "service_codec.rs"]
 mod services;
@@ -78,6 +81,10 @@ impl<'a> Reader<'a> {
 }
 pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
     s.validate()?;
+    #[cfg(feature = "delegation-verifier")]
+    if s.service_format_v4 {
+        return resource::encode(s);
+    }
     #[cfg(feature = "delegation-issuer")]
     if s.service_format_v3 {
         return issuer::encode(s);
@@ -122,6 +129,10 @@ pub(super) fn encode(s: &Snapshot) -> Result<Vec<u8>, Error> {
 pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
     if raw.len() > MAX_SNAPSHOT {
         return Err(Error::Invalid);
+    }
+    #[cfg(feature = "delegation-verifier")]
+    if raw.get(..8) == Some(b"FPPY0004") {
+        return resource::decode(raw);
     }
     #[cfg(feature = "delegation-issuer")]
     if raw.get(..8) == Some(b"FPPY0003") {
@@ -183,6 +194,10 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
         service_format_v2: false,
         #[cfg(feature = "delegation-issuer")]
         service_format_v3: false,
+        #[cfg(feature = "delegation-verifier")]
+        service_format_v4: false,
+        #[cfg(feature = "delegation-verifier")]
+        remote_history: Vec::new(),
     };
     s.validate()?;
     Ok(s)

@@ -16753,6 +16753,2183 @@
           "version": "1.0.23"
         }
       ]
+    },
+    "provider-wire-verifier": {
+      "aarch64-apple-darwin": [
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.22.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "simd-unsafe",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.23.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "bitflags",
+          "version": "2.13.2"
+        },
+        {
+          "features": [],
+          "name": "block-buffer",
+          "version": "0.12.1"
+        },
+        {
+          "features": [],
+          "name": "cc",
+          "version": "1.9.0"
+        },
+        {
+          "features": [],
+          "name": "cfg-if",
+          "version": "1.0.5"
+        },
+        {
+          "features": [],
+          "name": "const-oid",
+          "version": "0.10.2"
+        },
+        {
+          "features": [],
+          "name": "cpufeatures",
+          "version": "0.3.1"
+        },
+        {
+          "features": [],
+          "name": "crypto-common",
+          "version": "0.2.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "block-api",
+            "default",
+            "oid"
+          ],
+          "name": "digest",
+          "version": "0.11.3"
+        },
+        {
+          "features": [],
+          "name": "equivalent",
+          "version": "1.0.3"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "errno",
+          "version": "0.3.14"
+        },
+        {
+          "features": [],
+          "name": "faction-delegation-codec",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-files",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [
+            "default",
+            "delegation-issuer",
+            "delegation-records",
+            "delegation-services",
+            "delegation-verifier",
+            "delegation-wire"
+          ],
+          "name": "faction-provider",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-unix",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "find-msvc-tools",
+          "version": "0.1.15"
+        },
+        {
+          "features": [],
+          "name": "foreign-types",
+          "version": "0.3.2"
+        },
+        {
+          "features": [],
+          "name": "foreign-types-shared",
+          "version": "0.1.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "form_urlencoded",
+          "version": "1.2.2"
+        },
+        {
+          "features": [],
+          "name": "hashbrown",
+          "version": "0.17.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "httparse",
+          "version": "1.10.1"
+        },
+        {
+          "features": [],
+          "name": "hybrid-array",
+          "version": "0.4.15"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "indexmap",
+          "version": "2.14.2"
+        },
+        {
+          "features": [],
+          "name": "itoa",
+          "version": "1.0.18"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "libc",
+          "version": "0.2.191"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "memchr",
+          "version": "2.8.3"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "name": "openssl",
+          "version": "0.10.81"
+        },
+        {
+          "features": [],
+          "name": "openssl-macros",
+          "version": "0.1.1"
+        },
+        {
+          "features": [],
+          "name": "openssl-sys",
+          "version": "0.9.117"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "percent-encoding",
+          "version": "2.3.2"
+        },
+        {
+          "features": [],
+          "name": "pkg-config",
+          "version": "0.3.34"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "proc-macro2",
+          "version": "1.0.107"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "quote",
+          "version": "1.0.47"
+        },
+        {
+          "features": [
+            "alloc",
+            "event",
+            "fs",
+            "net",
+            "process",
+            "std",
+            "termios"
+          ],
+          "name": "rustix",
+          "version": "1.1.5"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "alloc",
+            "result",
+            "std"
+          ],
+          "name": "serde_core",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde_json",
+          "version": "1.0.154"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "serde_spanned",
+          "version": "1.1.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "oid"
+          ],
+          "name": "sha2",
+          "version": "0.11.1"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "shlex",
+          "version": "2.0.1"
+        },
+        {
+          "features": [
+            "clone-impls",
+            "default",
+            "derive",
+            "full",
+            "parsing",
+            "printing",
+            "proc-macro"
+          ],
+          "name": "syn",
+          "version": "2.0.119"
+        },
+        {
+          "features": [
+            "parse",
+            "serde",
+            "std"
+          ],
+          "name": "toml",
+          "version": "1.1.8+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "toml_datetime",
+          "version": "1.1.2+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_parser",
+          "version": "1.1.5+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_writer",
+          "version": "1.1.3+spec-1.1.0"
+        },
+        {
+          "features": [
+            "const-generics"
+          ],
+          "name": "typenum",
+          "version": "1.20.1"
+        },
+        {
+          "features": [],
+          "name": "unicode-ident",
+          "version": "1.0.27"
+        },
+        {
+          "features": [],
+          "name": "vcpkg",
+          "version": "0.2.15"
+        },
+        {
+          "features": [],
+          "name": "winnow",
+          "version": "1.0.4"
+        },
+        {
+          "features": [],
+          "name": "zmij",
+          "version": "1.0.23"
+        }
+      ],
+      "aarch64-unknown-netbsd": [
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.22.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "simd-unsafe",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.23.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "bitflags",
+          "version": "2.13.2"
+        },
+        {
+          "features": [],
+          "name": "block-buffer",
+          "version": "0.12.1"
+        },
+        {
+          "features": [],
+          "name": "cc",
+          "version": "1.9.0"
+        },
+        {
+          "features": [],
+          "name": "cfg-if",
+          "version": "1.0.5"
+        },
+        {
+          "features": [],
+          "name": "const-oid",
+          "version": "0.10.2"
+        },
+        {
+          "features": [],
+          "name": "cpufeatures",
+          "version": "0.3.1"
+        },
+        {
+          "features": [],
+          "name": "crypto-common",
+          "version": "0.2.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "block-api",
+            "default",
+            "oid"
+          ],
+          "name": "digest",
+          "version": "0.11.3"
+        },
+        {
+          "features": [],
+          "name": "equivalent",
+          "version": "1.0.3"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "errno",
+          "version": "0.3.14"
+        },
+        {
+          "features": [],
+          "name": "faction-delegation-codec",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-files",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [
+            "default",
+            "delegation-issuer",
+            "delegation-records",
+            "delegation-services",
+            "delegation-verifier",
+            "delegation-wire"
+          ],
+          "name": "faction-provider",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-unix",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "find-msvc-tools",
+          "version": "0.1.15"
+        },
+        {
+          "features": [],
+          "name": "foreign-types",
+          "version": "0.3.2"
+        },
+        {
+          "features": [],
+          "name": "foreign-types-shared",
+          "version": "0.1.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "form_urlencoded",
+          "version": "1.2.2"
+        },
+        {
+          "features": [],
+          "name": "hashbrown",
+          "version": "0.17.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "httparse",
+          "version": "1.10.1"
+        },
+        {
+          "features": [],
+          "name": "hybrid-array",
+          "version": "0.4.15"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "indexmap",
+          "version": "2.14.2"
+        },
+        {
+          "features": [],
+          "name": "itoa",
+          "version": "1.0.18"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "libc",
+          "version": "0.2.191"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "memchr",
+          "version": "2.8.3"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "name": "openssl",
+          "version": "0.10.81"
+        },
+        {
+          "features": [],
+          "name": "openssl-macros",
+          "version": "0.1.1"
+        },
+        {
+          "features": [],
+          "name": "openssl-sys",
+          "version": "0.9.117"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "percent-encoding",
+          "version": "2.3.2"
+        },
+        {
+          "features": [],
+          "name": "pkg-config",
+          "version": "0.3.34"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "proc-macro2",
+          "version": "1.0.107"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "quote",
+          "version": "1.0.47"
+        },
+        {
+          "features": [
+            "alloc",
+            "event",
+            "fs",
+            "net",
+            "process",
+            "std",
+            "termios"
+          ],
+          "name": "rustix",
+          "version": "1.1.5"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "alloc",
+            "result",
+            "std"
+          ],
+          "name": "serde_core",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde_json",
+          "version": "1.0.154"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "serde_spanned",
+          "version": "1.1.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "oid"
+          ],
+          "name": "sha2",
+          "version": "0.11.1"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "shlex",
+          "version": "2.0.1"
+        },
+        {
+          "features": [
+            "clone-impls",
+            "default",
+            "derive",
+            "full",
+            "parsing",
+            "printing",
+            "proc-macro"
+          ],
+          "name": "syn",
+          "version": "2.0.119"
+        },
+        {
+          "features": [
+            "parse",
+            "serde",
+            "std"
+          ],
+          "name": "toml",
+          "version": "1.1.8+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "toml_datetime",
+          "version": "1.1.2+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_parser",
+          "version": "1.1.5+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_writer",
+          "version": "1.1.3+spec-1.1.0"
+        },
+        {
+          "features": [
+            "const-generics"
+          ],
+          "name": "typenum",
+          "version": "1.20.1"
+        },
+        {
+          "features": [],
+          "name": "unicode-ident",
+          "version": "1.0.27"
+        },
+        {
+          "features": [],
+          "name": "vcpkg",
+          "version": "0.2.15"
+        },
+        {
+          "features": [],
+          "name": "winnow",
+          "version": "1.0.4"
+        },
+        {
+          "features": [],
+          "name": "zmij",
+          "version": "1.0.23"
+        }
+      ],
+      "x86_64-unknown-linux-gnu": [
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.22.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "simd-unsafe",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.23.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "bitflags",
+          "version": "2.13.2"
+        },
+        {
+          "features": [],
+          "name": "block-buffer",
+          "version": "0.12.1"
+        },
+        {
+          "features": [],
+          "name": "cc",
+          "version": "1.9.0"
+        },
+        {
+          "features": [],
+          "name": "cfg-if",
+          "version": "1.0.5"
+        },
+        {
+          "features": [],
+          "name": "const-oid",
+          "version": "0.10.2"
+        },
+        {
+          "features": [],
+          "name": "cpufeatures",
+          "version": "0.3.1"
+        },
+        {
+          "features": [],
+          "name": "crypto-common",
+          "version": "0.2.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "block-api",
+            "default",
+            "oid"
+          ],
+          "name": "digest",
+          "version": "0.11.3"
+        },
+        {
+          "features": [],
+          "name": "equivalent",
+          "version": "1.0.3"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "errno",
+          "version": "0.3.14"
+        },
+        {
+          "features": [],
+          "name": "faction-delegation-codec",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-files",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [
+            "default",
+            "delegation-issuer",
+            "delegation-records",
+            "delegation-services",
+            "delegation-verifier",
+            "delegation-wire"
+          ],
+          "name": "faction-provider",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-unix",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "find-msvc-tools",
+          "version": "0.1.15"
+        },
+        {
+          "features": [],
+          "name": "foreign-types",
+          "version": "0.3.2"
+        },
+        {
+          "features": [],
+          "name": "foreign-types-shared",
+          "version": "0.1.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "form_urlencoded",
+          "version": "1.2.2"
+        },
+        {
+          "features": [],
+          "name": "hashbrown",
+          "version": "0.17.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "httparse",
+          "version": "1.10.1"
+        },
+        {
+          "features": [],
+          "name": "hybrid-array",
+          "version": "0.4.15"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "indexmap",
+          "version": "2.14.2"
+        },
+        {
+          "features": [],
+          "name": "itoa",
+          "version": "1.0.18"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "libc",
+          "version": "0.2.191"
+        },
+        {
+          "features": [
+            "auxvec",
+            "elf",
+            "errno",
+            "general",
+            "if_ether",
+            "ioctl",
+            "net",
+            "netlink",
+            "no_std",
+            "prctl",
+            "xdp"
+          ],
+          "name": "linux-raw-sys",
+          "version": "0.12.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "memchr",
+          "version": "2.8.3"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "name": "openssl",
+          "version": "0.10.81"
+        },
+        {
+          "features": [],
+          "name": "openssl-macros",
+          "version": "0.1.1"
+        },
+        {
+          "features": [],
+          "name": "openssl-sys",
+          "version": "0.9.117"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "percent-encoding",
+          "version": "2.3.2"
+        },
+        {
+          "features": [],
+          "name": "pkg-config",
+          "version": "0.3.34"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "proc-macro2",
+          "version": "1.0.107"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "quote",
+          "version": "1.0.47"
+        },
+        {
+          "features": [
+            "alloc",
+            "event",
+            "fs",
+            "net",
+            "process",
+            "std",
+            "termios"
+          ],
+          "name": "rustix",
+          "version": "1.1.5"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "alloc",
+            "result",
+            "std"
+          ],
+          "name": "serde_core",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde_json",
+          "version": "1.0.154"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "serde_spanned",
+          "version": "1.1.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "oid"
+          ],
+          "name": "sha2",
+          "version": "0.11.1"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "shlex",
+          "version": "2.0.1"
+        },
+        {
+          "features": [
+            "clone-impls",
+            "default",
+            "derive",
+            "full",
+            "parsing",
+            "printing",
+            "proc-macro"
+          ],
+          "name": "syn",
+          "version": "2.0.119"
+        },
+        {
+          "features": [
+            "parse",
+            "serde",
+            "std"
+          ],
+          "name": "toml",
+          "version": "1.1.8+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "toml_datetime",
+          "version": "1.1.2+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_parser",
+          "version": "1.1.5+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_writer",
+          "version": "1.1.3+spec-1.1.0"
+        },
+        {
+          "features": [
+            "const-generics"
+          ],
+          "name": "typenum",
+          "version": "1.20.1"
+        },
+        {
+          "features": [],
+          "name": "unicode-ident",
+          "version": "1.0.27"
+        },
+        {
+          "features": [],
+          "name": "vcpkg",
+          "version": "0.2.15"
+        },
+        {
+          "features": [],
+          "name": "winnow",
+          "version": "1.0.4"
+        },
+        {
+          "features": [],
+          "name": "zmij",
+          "version": "1.0.23"
+        }
+      ]
+    },
+    "provider-wire-verifier-durable": {
+      "aarch64-apple-darwin": [
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.22.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "simd-unsafe",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.23.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "bitflags",
+          "version": "2.13.2"
+        },
+        {
+          "features": [],
+          "name": "block-buffer",
+          "version": "0.12.1"
+        },
+        {
+          "features": [],
+          "name": "cc",
+          "version": "1.9.0"
+        },
+        {
+          "features": [],
+          "name": "cfg-if",
+          "version": "1.0.5"
+        },
+        {
+          "features": [],
+          "name": "const-oid",
+          "version": "0.10.2"
+        },
+        {
+          "features": [],
+          "name": "cpufeatures",
+          "version": "0.3.1"
+        },
+        {
+          "features": [],
+          "name": "crypto-common",
+          "version": "0.2.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "block-api",
+            "default",
+            "oid"
+          ],
+          "name": "digest",
+          "version": "0.11.3"
+        },
+        {
+          "features": [],
+          "name": "equivalent",
+          "version": "1.0.3"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "errno",
+          "version": "0.3.14"
+        },
+        {
+          "features": [],
+          "name": "faction-delegation-codec",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-files",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [
+            "default",
+            "delegation-issuer",
+            "delegation-records",
+            "delegation-services",
+            "delegation-verifier",
+            "delegation-wire",
+            "durable-policy"
+          ],
+          "name": "faction-provider",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-unix",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "find-msvc-tools",
+          "version": "0.1.15"
+        },
+        {
+          "features": [],
+          "name": "foreign-types",
+          "version": "0.3.2"
+        },
+        {
+          "features": [],
+          "name": "foreign-types-shared",
+          "version": "0.1.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "form_urlencoded",
+          "version": "1.2.2"
+        },
+        {
+          "features": [],
+          "name": "hashbrown",
+          "version": "0.17.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "httparse",
+          "version": "1.10.1"
+        },
+        {
+          "features": [],
+          "name": "hybrid-array",
+          "version": "0.4.15"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "indexmap",
+          "version": "2.14.2"
+        },
+        {
+          "features": [],
+          "name": "itoa",
+          "version": "1.0.18"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "libc",
+          "version": "0.2.191"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "memchr",
+          "version": "2.8.3"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "name": "openssl",
+          "version": "0.10.81"
+        },
+        {
+          "features": [],
+          "name": "openssl-macros",
+          "version": "0.1.1"
+        },
+        {
+          "features": [],
+          "name": "openssl-sys",
+          "version": "0.9.117"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "percent-encoding",
+          "version": "2.3.2"
+        },
+        {
+          "features": [],
+          "name": "pkg-config",
+          "version": "0.3.34"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "proc-macro2",
+          "version": "1.0.107"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "quote",
+          "version": "1.0.47"
+        },
+        {
+          "features": [
+            "alloc",
+            "event",
+            "fs",
+            "net",
+            "process",
+            "std",
+            "termios"
+          ],
+          "name": "rustix",
+          "version": "1.1.5"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "alloc",
+            "result",
+            "std"
+          ],
+          "name": "serde_core",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde_json",
+          "version": "1.0.154"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "serde_spanned",
+          "version": "1.1.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "oid"
+          ],
+          "name": "sha2",
+          "version": "0.11.1"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "shlex",
+          "version": "2.0.1"
+        },
+        {
+          "features": [
+            "clone-impls",
+            "default",
+            "derive",
+            "full",
+            "parsing",
+            "printing",
+            "proc-macro"
+          ],
+          "name": "syn",
+          "version": "2.0.119"
+        },
+        {
+          "features": [
+            "parse",
+            "serde",
+            "std"
+          ],
+          "name": "toml",
+          "version": "1.1.8+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "toml_datetime",
+          "version": "1.1.2+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_parser",
+          "version": "1.1.5+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_writer",
+          "version": "1.1.3+spec-1.1.0"
+        },
+        {
+          "features": [
+            "const-generics"
+          ],
+          "name": "typenum",
+          "version": "1.20.1"
+        },
+        {
+          "features": [],
+          "name": "unicode-ident",
+          "version": "1.0.27"
+        },
+        {
+          "features": [],
+          "name": "vcpkg",
+          "version": "0.2.15"
+        },
+        {
+          "features": [],
+          "name": "winnow",
+          "version": "1.0.4"
+        },
+        {
+          "features": [],
+          "name": "zmij",
+          "version": "1.0.23"
+        }
+      ],
+      "aarch64-unknown-netbsd": [
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.22.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "simd-unsafe",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.23.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "bitflags",
+          "version": "2.13.2"
+        },
+        {
+          "features": [],
+          "name": "block-buffer",
+          "version": "0.12.1"
+        },
+        {
+          "features": [],
+          "name": "cc",
+          "version": "1.9.0"
+        },
+        {
+          "features": [],
+          "name": "cfg-if",
+          "version": "1.0.5"
+        },
+        {
+          "features": [],
+          "name": "const-oid",
+          "version": "0.10.2"
+        },
+        {
+          "features": [],
+          "name": "cpufeatures",
+          "version": "0.3.1"
+        },
+        {
+          "features": [],
+          "name": "crypto-common",
+          "version": "0.2.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "block-api",
+            "default",
+            "oid"
+          ],
+          "name": "digest",
+          "version": "0.11.3"
+        },
+        {
+          "features": [],
+          "name": "equivalent",
+          "version": "1.0.3"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "errno",
+          "version": "0.3.14"
+        },
+        {
+          "features": [],
+          "name": "faction-delegation-codec",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-files",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [
+            "default",
+            "delegation-issuer",
+            "delegation-records",
+            "delegation-services",
+            "delegation-verifier",
+            "delegation-wire",
+            "durable-policy"
+          ],
+          "name": "faction-provider",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-unix",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "find-msvc-tools",
+          "version": "0.1.15"
+        },
+        {
+          "features": [],
+          "name": "foreign-types",
+          "version": "0.3.2"
+        },
+        {
+          "features": [],
+          "name": "foreign-types-shared",
+          "version": "0.1.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "form_urlencoded",
+          "version": "1.2.2"
+        },
+        {
+          "features": [],
+          "name": "hashbrown",
+          "version": "0.17.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "httparse",
+          "version": "1.10.1"
+        },
+        {
+          "features": [],
+          "name": "hybrid-array",
+          "version": "0.4.15"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "indexmap",
+          "version": "2.14.2"
+        },
+        {
+          "features": [],
+          "name": "itoa",
+          "version": "1.0.18"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "libc",
+          "version": "0.2.191"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "memchr",
+          "version": "2.8.3"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "name": "openssl",
+          "version": "0.10.81"
+        },
+        {
+          "features": [],
+          "name": "openssl-macros",
+          "version": "0.1.1"
+        },
+        {
+          "features": [],
+          "name": "openssl-sys",
+          "version": "0.9.117"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "percent-encoding",
+          "version": "2.3.2"
+        },
+        {
+          "features": [],
+          "name": "pkg-config",
+          "version": "0.3.34"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "proc-macro2",
+          "version": "1.0.107"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "quote",
+          "version": "1.0.47"
+        },
+        {
+          "features": [
+            "alloc",
+            "event",
+            "fs",
+            "net",
+            "process",
+            "std",
+            "termios"
+          ],
+          "name": "rustix",
+          "version": "1.1.5"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "alloc",
+            "result",
+            "std"
+          ],
+          "name": "serde_core",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde_json",
+          "version": "1.0.154"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "serde_spanned",
+          "version": "1.1.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "oid"
+          ],
+          "name": "sha2",
+          "version": "0.11.1"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "shlex",
+          "version": "2.0.1"
+        },
+        {
+          "features": [
+            "clone-impls",
+            "default",
+            "derive",
+            "full",
+            "parsing",
+            "printing",
+            "proc-macro"
+          ],
+          "name": "syn",
+          "version": "2.0.119"
+        },
+        {
+          "features": [
+            "parse",
+            "serde",
+            "std"
+          ],
+          "name": "toml",
+          "version": "1.1.8+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "toml_datetime",
+          "version": "1.1.2+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_parser",
+          "version": "1.1.5+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_writer",
+          "version": "1.1.3+spec-1.1.0"
+        },
+        {
+          "features": [
+            "const-generics"
+          ],
+          "name": "typenum",
+          "version": "1.20.1"
+        },
+        {
+          "features": [],
+          "name": "unicode-ident",
+          "version": "1.0.27"
+        },
+        {
+          "features": [],
+          "name": "vcpkg",
+          "version": "0.2.15"
+        },
+        {
+          "features": [],
+          "name": "winnow",
+          "version": "1.0.4"
+        },
+        {
+          "features": [],
+          "name": "zmij",
+          "version": "1.0.23"
+        }
+      ],
+      "x86_64-unknown-linux-gnu": [
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.22.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "simd-unsafe",
+            "std"
+          ],
+          "name": "base64",
+          "version": "0.23.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "bitflags",
+          "version": "2.13.2"
+        },
+        {
+          "features": [],
+          "name": "block-buffer",
+          "version": "0.12.1"
+        },
+        {
+          "features": [],
+          "name": "cc",
+          "version": "1.9.0"
+        },
+        {
+          "features": [],
+          "name": "cfg-if",
+          "version": "1.0.5"
+        },
+        {
+          "features": [],
+          "name": "const-oid",
+          "version": "0.10.2"
+        },
+        {
+          "features": [],
+          "name": "cpufeatures",
+          "version": "0.3.1"
+        },
+        {
+          "features": [],
+          "name": "crypto-common",
+          "version": "0.2.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "block-api",
+            "default",
+            "oid"
+          ],
+          "name": "digest",
+          "version": "0.11.3"
+        },
+        {
+          "features": [],
+          "name": "equivalent",
+          "version": "1.0.3"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "errno",
+          "version": "0.3.14"
+        },
+        {
+          "features": [],
+          "name": "faction-delegation-codec",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-files",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [
+            "default",
+            "delegation-issuer",
+            "delegation-records",
+            "delegation-services",
+            "delegation-verifier",
+            "delegation-wire",
+            "durable-policy"
+          ],
+          "name": "faction-provider",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "faction-unix",
+          "version": "0.1.0-alpha.1"
+        },
+        {
+          "features": [],
+          "name": "find-msvc-tools",
+          "version": "0.1.15"
+        },
+        {
+          "features": [],
+          "name": "foreign-types",
+          "version": "0.3.2"
+        },
+        {
+          "features": [],
+          "name": "foreign-types-shared",
+          "version": "0.1.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "form_urlencoded",
+          "version": "1.2.2"
+        },
+        {
+          "features": [],
+          "name": "hashbrown",
+          "version": "0.17.1"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "httparse",
+          "version": "1.10.1"
+        },
+        {
+          "features": [],
+          "name": "hybrid-array",
+          "version": "0.4.15"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "indexmap",
+          "version": "2.14.2"
+        },
+        {
+          "features": [],
+          "name": "itoa",
+          "version": "1.0.18"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "libc",
+          "version": "0.2.191"
+        },
+        {
+          "features": [
+            "auxvec",
+            "elf",
+            "errno",
+            "general",
+            "if_ether",
+            "ioctl",
+            "net",
+            "netlink",
+            "no_std",
+            "prctl",
+            "xdp"
+          ],
+          "name": "linux-raw-sys",
+          "version": "0.12.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "memchr",
+          "version": "2.8.3"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "name": "openssl",
+          "version": "0.10.81"
+        },
+        {
+          "features": [],
+          "name": "openssl-macros",
+          "version": "0.1.1"
+        },
+        {
+          "features": [],
+          "name": "openssl-sys",
+          "version": "0.9.117"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "percent-encoding",
+          "version": "2.3.2"
+        },
+        {
+          "features": [],
+          "name": "pkg-config",
+          "version": "0.3.34"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "proc-macro2",
+          "version": "1.0.107"
+        },
+        {
+          "features": [
+            "default",
+            "proc-macro"
+          ],
+          "name": "quote",
+          "version": "1.0.47"
+        },
+        {
+          "features": [
+            "alloc",
+            "event",
+            "fs",
+            "net",
+            "process",
+            "std",
+            "termios"
+          ],
+          "name": "rustix",
+          "version": "1.1.5"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "alloc",
+            "result",
+            "std"
+          ],
+          "name": "serde_core",
+          "version": "1.0.229"
+        },
+        {
+          "features": [
+            "std"
+          ],
+          "name": "serde_json",
+          "version": "1.0.154"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "serde_spanned",
+          "version": "1.1.2"
+        },
+        {
+          "features": [
+            "alloc",
+            "default",
+            "oid"
+          ],
+          "name": "sha2",
+          "version": "0.11.1"
+        },
+        {
+          "features": [
+            "default",
+            "std"
+          ],
+          "name": "shlex",
+          "version": "2.0.1"
+        },
+        {
+          "features": [
+            "clone-impls",
+            "default",
+            "derive",
+            "full",
+            "parsing",
+            "printing",
+            "proc-macro"
+          ],
+          "name": "syn",
+          "version": "2.0.119"
+        },
+        {
+          "features": [
+            "parse",
+            "serde",
+            "std"
+          ],
+          "name": "toml",
+          "version": "1.1.8+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "serde",
+            "std"
+          ],
+          "name": "toml_datetime",
+          "version": "1.1.2+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_parser",
+          "version": "1.1.5+spec-1.1.0"
+        },
+        {
+          "features": [
+            "alloc",
+            "std"
+          ],
+          "name": "toml_writer",
+          "version": "1.1.3+spec-1.1.0"
+        },
+        {
+          "features": [
+            "const-generics"
+          ],
+          "name": "typenum",
+          "version": "1.20.1"
+        },
+        {
+          "features": [],
+          "name": "unicode-ident",
+          "version": "1.0.27"
+        },
+        {
+          "features": [],
+          "name": "vcpkg",
+          "version": "0.2.15"
+        },
+        {
+          "features": [],
+          "name": "winnow",
+          "version": "1.0.4"
+        },
+        {
+          "features": [],
+          "name": "zmij",
+          "version": "1.0.23"
+        }
+      ]
     }
   },
   "lock_sha256": "5c0ae3b676e1e6aba6fa64f4a560de32a88d3bb1b9c0767f77a616ae94aa4a39",

@@ -845,3 +845,7 @@ fn independently_configured_homes_can_reciprocate_without_an_extra_runtime_lane(
         );
     });
 }
+
+#[cfg(feature = "delegation-wire")]
+#[path = "publication.rs"]
+mod publication;

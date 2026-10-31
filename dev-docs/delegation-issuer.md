@@ -90,9 +90,14 @@ before dispatch. A later arrival cannot retroactively invalidate a completed fir
 request, but can never trigger a second operation on that connection. The codec
 accepts only `Connection: close` when that header is present and emits it; absent
 headers do not enable reuse. No generic HTTP or OAuth interoperability is implied.
-Only retrieval is mapped to wire introspection here: exact recipient-current
-`Begin`, `PutChunk` and `Commit` observations are not collapsed into generic
-`Publish`.
+Only retrieval is mapped to wire introspection here. A separate explicit
+[publication carrier](service-observations.md#optional-publication-http-carrier)
+preserves exact actions and leaves this issuer interface and its Host derivation
+unchanged; it does not collapse observations into generic `Publish`.
+
+The separate [retrieval verifier](delegation-verifier.md) consumes fresh
+introspection for private resource dispatch. Current policy cannot combine its
+resource configuration with this issuer configuration in one policy.
 
 ## Durable policy
 
