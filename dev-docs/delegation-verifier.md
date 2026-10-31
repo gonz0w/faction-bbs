@@ -31,11 +31,16 @@ external and never persisted in policy. Device and service credentials share the
 existing aggregate 32 active and 32 history limits; registry homes and retained
 remote-floor homes share the 32-home limit.
 
-Current policy supports a resource configuration with legacy Observation entries,
-or an issuer configuration with its existing roles. It does not combine issuer
-and resource configurations in one policy. Future integration must compose them
-within the same existing runtime and limits; adding a second runtime is not a
-workaround. See [durable policy](provider-policy.md) for persistence and floors.
+For both directions at one home, explicitly construct
+`ServicePolicy::new_composed(local_home, issuer, entries, routes, associations)`.
+It validates issuer routes and resource associations against the same canonical
+registration collection and certificate history. The directional constructors
+retain their original restrictions; they do not implicitly add roles. One runtime
+per home shares the existing incoming lane and aggregate limits. Remote generation
+and reset values must match the explicitly configured tuple; coordinated complete
+policy proposals are required when either changes. Intermediate mismatches deny
+operations, and responses do not automatically adopt new values. See
+[durable policy](provider-policy.md) for persistence and floors.
 
 ## Prepare and execute
 

@@ -178,7 +178,9 @@ pub(super) fn decode(raw: &[u8]) -> Result<Snapshot, Error> {
                 }
                 ServicePolicy::new(home, entries.into_iter().map(|(e, _)| e).collect())?
             }
-            (Some(_), Some(_)) => return Err(Error::Invalid),
+            (Some((issuer, routes)), Some(associations)) => {
+                ServicePolicy::new_composed(home, issuer, entries, routes, associations)?
+            }
         });
     }
     for _ in 0..r.count(crate::authority::MAX_HOMES)? {

@@ -452,3 +452,54 @@ mod issuer_tests;
 #[cfg(feature = "delegation-services")]
 #[path = "service_tests.rs"]
 mod service_tests;
+
+#[cfg(feature = "delegation-verifier")]
+#[test]
+fn composed_v4_publication_faults_preserve_old_state_or_require_explicit_reopen() {
+    let complete = codec::decode(include_bytes!(
+        "../../tests/fixtures/resource-combined-v4.bin"
+    ))
+    .unwrap();
+    let policy = complete.service_policy.unwrap();
+    for point in POINTS {
+        let f = Fixture::new();
+        let registry = |g| {
+            Registry::new(
+                g,
+                0,
+                vec!["local.test".into(), "remote.test".into()],
+                vec![],
+            )
+            .unwrap()
+        };
+        let runtime = Runtime::initialize_durable(&f.policy(), registry(1)).unwrap();
+        let before = fs::read(f.policy().join("provider-policy.snapshot")).unwrap();
+        FAULT.set(Fault::Error(point));
+        assert!(
+            runtime
+                .control()
+                .replace_delegation_policy(registry(2), policy.clone())
+                .is_err()
+        );
+        FAULT.set(Fault::None);
+        assert!(runtime.policy_summary().is_err());
+        assert!(runtime.control().reset(1).is_err());
+        drop(runtime);
+        let published = matches!(point, Point::AfterRename | Point::DirectorySync);
+        let bytes = fs::read(f.policy().join("provider-policy.snapshot")).unwrap();
+        if !published {
+            assert_eq!(bytes, before);
+        }
+        let runtime = Runtime::reopen_durable(&f.policy()).unwrap();
+        let snapshot = runtime.state.authority.lock().unwrap().snapshot();
+        assert_eq!(snapshot.generation, if published { 2 } else { 1 });
+        assert_eq!(
+            snapshot.service_policy,
+            if published {
+                Some(policy.clone())
+            } else {
+                None
+            }
+        );
+    }
+}

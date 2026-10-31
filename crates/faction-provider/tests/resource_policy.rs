@@ -425,3 +425,270 @@ fn retained_v4_floor_survives_an_issuer_only_replacement_and_reopen() {
     );
     drop(r);
 }
+
+fn composed_entries() -> Vec<(ServiceRegistration, ServiceUse)> {
+    let mut all = entries();
+    all.extend([
+        (entry(21, "local.test", "local-relay"), ServiceUse::Relay),
+        (
+            entry(22, "remote.test", "remote-inspector"),
+            ServiceUse::Introspection,
+        ),
+    ]);
+    all
+}
+fn composed_routes() -> Vec<faction_provider::services::IssuerRoute> {
+    vec![faction_provider::services::IssuerRoute {
+        sender_home: "remote.test".into(),
+        audience: "remote.test/attachments".into(),
+        relay_client_id: "local-relay".into(),
+        introspection_client_id: "remote-inspector".into(),
+    }]
+}
+#[test]
+fn complete_composed_policy_joins_both_roles_in_one_canonical_collection() {
+    let p = ServicePolicy::new_composed(
+        "local.test".into(),
+        "local-issuer.test".into(),
+        composed_entries(),
+        composed_routes(),
+        vec![association()],
+    )
+    .unwrap();
+    assert_eq!(p.registrations().len(), 5);
+    assert_eq!(p.resource_associations(), &[association()]);
+    let runtime = Runtime::new(Some(registry(1)));
+    runtime
+        .control()
+        .replace_delegation_policy(registry(2), p)
+        .unwrap();
+}
+
+#[test]
+fn composed_validation_rejects_cross_role_aliases_purpose_confusion_and_missing_references() {
+    for variant in 0..19 {
+        let mut e = composed_entries();
+        let mut routes = composed_routes();
+        let mut a = association();
+        match variant {
+            0 => e[3].0.certificate_sha256 = e[0].0.certificate_sha256,
+            1 => {
+                e[3].0.home = e[1].0.home.clone();
+                e[3].0.client_id = e[1].0.client_id.clone();
+            }
+            2 => e[3].0.home = "remote.test".into(),
+            3 => e[4].0.home = "local.test".into(),
+            4 => e[0].1 = ServiceUse::Introspection,
+            5 => e[1].1 = ServiceUse::Relay,
+            6 => e[2].1 = ServiceUse::Observation,
+            7 => routes[0].relay_client_id = "inspector".into(),
+            8 => routes[0].introspection_client_id = "relay".into(),
+            9 => routes[0].sender_home = "local.test".into(),
+            10 => routes[0].audience = "local.test/attachments".into(),
+            11 => a.relay_client_id = "remote-inspector".into(),
+            12 => a.outbound_client_id = "local-relay".into(),
+            13 => a.endpoint_id = "relay".into(),
+            14 => a.http_host = "elsewhere.test".into(),
+            15 => a.ca_sha256 = [0; 32],
+            16 => routes.clear(),
+            17 => routes.push(routes[0].clone()),
+            _ => e[3].0.client_id = "INVALID+".into(),
+        }
+        assert!(
+            ServicePolicy::new_composed(
+                "local.test".into(),
+                "local-issuer.test".into(),
+                e,
+                routes,
+                vec![a],
+            )
+            .is_err(),
+            "accepted variant {variant}"
+        );
+    }
+    let e = composed_entries();
+    assert!(
+        ServicePolicy::new_resource("local.test".into(), e.clone(), vec![association()]).is_err()
+    );
+    assert!(
+        ServicePolicy::new_issuer(
+            "local.test".into(),
+            "issuer.test".into(),
+            e,
+            composed_routes()
+        )
+        .is_err()
+    );
+    assert!(
+        ServicePolicy::new_composed(
+            "local.test".into(),
+            "issuer.test".into(),
+            composed_entries(),
+            composed_routes(),
+            vec![]
+        )
+        .is_err()
+    );
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn composed_publish_reopen_disable_reset_and_independent_remote_floors_preserve_bytes() {
+    let f = Owned::new();
+    let path = f.0.join("policy");
+    let mut r = Runtime::initialize_durable(&path, registry(1)).unwrap();
+    let policy = |a| {
+        ServicePolicy::new_composed(
+            "local.test".into(),
+            "local-issuer.test".into(),
+            composed_entries(),
+            composed_routes(),
+            vec![a],
+        )
+        .unwrap()
+    };
+    r.control()
+        .replace_delegation_policy(registry(2), policy(association()))
+        .unwrap();
+    let active = std::fs::read(path.join("provider-policy.snapshot")).unwrap();
+    assert_eq!(&active[..8], b"FPPY0004");
+    drop(r);
+    r = Runtime::reopen_durable(&path).unwrap();
+    assert_eq!(
+        std::fs::read(path.join("provider-policy.snapshot")).unwrap(),
+        active
+    );
+    r.control().replace_registry(registry(3)).unwrap();
+    drop(r);
+    r = Runtime::reopen_durable(&path).unwrap();
+    r.control().reset(1).unwrap();
+    drop(r);
+    r = Runtime::reopen_durable(&path).unwrap();
+    let before = std::fs::read(path.join("provider-policy.snapshot")).unwrap();
+    for (g, reset) in [(2, 3), (4, 1)] {
+        let mut a = association();
+        a.remote_generation = g;
+        a.remote_reset = reset;
+        assert!(
+            r.control()
+                .replace_delegation_policy(
+                    Registry::new(
+                        5,
+                        1,
+                        vec!["local.test".into(), "remote.test".into()],
+                        vec![]
+                    )
+                    .unwrap(),
+                    policy(a)
+                )
+                .is_err()
+        );
+        assert_eq!(
+            std::fs::read(path.join("provider-policy.snapshot")).unwrap(),
+            before
+        );
+    }
+    r.control()
+        .replace_delegation_policy(
+            Registry::new(
+                5,
+                1,
+                vec!["local.test".into(), "remote.test".into()],
+                vec![],
+            )
+            .unwrap(),
+            policy(association()),
+        )
+        .unwrap();
+    drop(r);
+    assert!(Runtime::reopen_durable(&path).is_ok());
+}
+
+#[test]
+fn composed_roles_share_all_active_history_and_home_limits() {
+    let mut full = composed_entries();
+    for i in 0..27 {
+        full.push((
+            entry(40 + i, "remote.test", &format!("observer{i}")),
+            ServiceUse::Observation,
+        ));
+    }
+    let policy = |e| {
+        ServicePolicy::new_composed(
+            "local.test".into(),
+            "issuer.test".into(),
+            e,
+            composed_routes(),
+            vec![association()],
+        )
+        .unwrap()
+    };
+    let runtime = Runtime::new(Some(registry(1)));
+    runtime
+        .control()
+        .replace_delegation_policy(registry(2), policy(full.clone()))
+        .unwrap();
+    runtime
+        .control()
+        .replace_delegation_policy(registry(3), policy(composed_entries()))
+        .unwrap();
+    let mut rotated = composed_entries();
+    rotated[3].0.certificate_sha256 = [99; 32];
+    assert!(
+        runtime
+            .control()
+            .replace_delegation_policy(registry(4), policy(rotated))
+            .is_err()
+    );
+    let mut homes = vec!["local.test".into()];
+    homes.extend((0..31).map(|i| format!("home{i}.test")));
+    assert!(
+        runtime
+            .control()
+            .replace_registry(Registry::new(4, 0, homes, vec![]).unwrap())
+            .is_err()
+    );
+    let device = faction_provider::authority::CredentialBinding {
+        certificate_sha256: [100; 32],
+        principal: faction_files::private_blobs::Principal {
+            account: "device@local.test".into(),
+            device: 1,
+            identity: [1; 32],
+        },
+        valid_from: 1,
+        valid_until: u64::MAX,
+        approved: true,
+        account_enabled: true,
+        device_enabled: true,
+        generation: 2,
+    };
+    let occupied = Runtime::new(Some(registry(1)));
+    assert!(
+        occupied
+            .control()
+            .replace_delegation_policy(
+                Registry::new(
+                    2,
+                    0,
+                    vec!["local.test".into(), "remote.test".into()],
+                    vec![device]
+                )
+                .unwrap(),
+                policy(full)
+            )
+            .is_err()
+    );
+    for digest in [10, 21] {
+        let mut aliases = composed_entries();
+        aliases[4].0.certificate_sha256 = [digest; 32];
+        assert!(
+            ServicePolicy::new_composed(
+                "local.test".into(),
+                "issuer.test".into(),
+                aliases,
+                composed_routes(),
+                vec![association()]
+            )
+            .is_err()
+        );
+    }
+}

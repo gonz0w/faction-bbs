@@ -452,29 +452,7 @@ impl ServicePolicy {
                 issuer_client_id(&entry.client_id)?;
             }
         }
-        for (i, route) in routes.iter().enumerate() {
-            validate_home(&route.sender_home)?;
-            issuer_client_id(&route.relay_client_id)?;
-            issuer_client_id(&route.introspection_client_id)?;
-            if route.sender_home == local_home
-                || route.audience != format!("{}/attachments", route.sender_home)
-                || routes[..i]
-                    .iter()
-                    .any(|old| old.sender_home == route.sender_home)
-                || !entries.iter().any(|(e, u)| {
-                    *u == ServiceUse::Relay
-                        && e.home == local_home
-                        && e.client_id == route.relay_client_id
-                })
-                || !entries.iter().any(|(e, u)| {
-                    *u == ServiceUse::Introspection
-                        && e.home == route.sender_home
-                        && e.client_id == route.introspection_client_id
-                })
-            {
-                return Err(BlobError::Invalid);
-            }
-        }
+        validate_issuer_routes(&local_home, &entries, &routes)?;
         let (registrations, uses) = entries.into_iter().unzip();
         Ok(Self {
             local_home,
@@ -486,6 +464,42 @@ impl ServicePolicy {
         })
     }
 }
+
+#[cfg(feature = "delegation-issuer")]
+fn validate_issuer_routes(
+    local_home: &str,
+    entries: &[(ServiceRegistration, ServiceUse)],
+    routes: &[IssuerRoute],
+) -> Result<(), BlobError> {
+    if routes.is_empty() || routes.len() > crate::authority::MAX_HOMES {
+        return Err(BlobError::Invalid);
+    }
+    for (i, route) in routes.iter().enumerate() {
+        validate_home(&route.sender_home)?;
+        issuer_client_id(&route.relay_client_id)?;
+        issuer_client_id(&route.introspection_client_id)?;
+        if route.sender_home == local_home
+            || route.audience != format!("{}/attachments", route.sender_home)
+            || routes[..i]
+                .iter()
+                .any(|old| old.sender_home == route.sender_home)
+            || !entries.iter().any(|(e, u)| {
+                *u == ServiceUse::Relay
+                    && e.home == local_home
+                    && e.client_id == route.relay_client_id
+            })
+            || !entries.iter().any(|(e, u)| {
+                *u == ServiceUse::Introspection
+                    && e.home == route.sender_home
+                    && e.client_id == route.introspection_client_id
+            })
+        {
+            return Err(BlobError::Invalid);
+        }
+    }
+    Ok(())
+}
+
 #[cfg(feature = "delegation-issuer")]
 fn issuer_client_id(id: &str) -> Result<(), BlobError> {
     if id.is_empty()
@@ -607,3 +621,7 @@ pub use resource_policy::ResourceAssociation;
 mod resource;
 #[cfg(feature = "delegation-verifier")]
 pub use resource::PendingRetrieval;
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+#[path = "composed_tests.rs"]
+mod composed_tests;

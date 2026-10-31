@@ -112,7 +112,9 @@ are not persisted. Reopen requires fresh TLS. Monotonic checks protect retained
 state, not rollback of the entire trusted root to an older valid copy.
 
 This observation is not issuer, verifier or relay authority. The separately scoped
-[issuer](delegation-issuer.md) uses explicit service roles; cross-home delivery
+[issuer](delegation-issuer.md) uses explicit service roles; an explicitly composed
+issuer and resource policy shares the registration collection and history described
+in the [verifier contract](delegation-verifier.md). Cross-home delivery
 remains outside this primitive under [issue #300](https://github.com/gonz0w/faction-bbs/issues/300)
 and [issue #301](https://github.com/gonz0w/faction-bbs/issues/301). See the
 [provider integration](provider-integration.md), [durable policy](provider-policy.md)

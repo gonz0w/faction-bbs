@@ -39,6 +39,33 @@ impl ServicePolicy {
         entries: Vec<(ServiceRegistration, ServiceUse)>,
         associations: Vec<ResourceAssociation>,
     ) -> Result<Self, BlobError> {
+        Self::new_resource_profile(local_home, entries, associations, None)
+    }
+    /// Explicit complete issuer and resource profile on one canonical registry.
+    /// Directional constructors retain their original accepted purposes.
+    pub fn new_composed(
+        local_home: String,
+        issuer: String,
+        entries: Vec<(ServiceRegistration, ServiceUse)>,
+        routes: Vec<IssuerRoute>,
+        associations: Vec<ResourceAssociation>,
+    ) -> Result<Self, BlobError> {
+        validate_home(&issuer)?;
+        wire_host(&issuer)?;
+        validate_issuer_routes(&local_home, &entries, &routes)?;
+        Self::new_resource_profile(
+            local_home,
+            entries,
+            associations,
+            Some(IssuerPolicy { issuer, routes }),
+        )
+    }
+    fn new_resource_profile(
+        local_home: String,
+        entries: Vec<(ServiceRegistration, ServiceUse)>,
+        associations: Vec<ResourceAssociation>,
+        issuer: Option<IssuerPolicy>,
+    ) -> Result<Self, BlobError> {
         validate_home(&local_home)?;
         wire_host(&local_home)?;
         if entries.len() > MAX_BINDINGS
@@ -60,11 +87,16 @@ impl ServicePolicy {
                 | ServiceUse::IssuerEndpoint
                     if e.home != local_home => {}
                 ServiceUse::OutboundIntrospection if e.home == local_home => (),
+                ServiceUse::Relay if issuer.is_some() && e.home == local_home => (),
+                ServiceUse::Introspection if issuer.is_some() && e.home != local_home => (),
                 _ => return Err(BlobError::Invalid),
             }
             if matches!(
                 purpose,
-                ServiceUse::ResourceClient | ServiceUse::OutboundIntrospection
+                ServiceUse::ResourceClient
+                    | ServiceUse::OutboundIntrospection
+                    | ServiceUse::Relay
+                    | ServiceUse::Introspection
             ) {
                 issuer_client_id(&e.client_id)?;
             }
@@ -77,7 +109,7 @@ impl ServicePolicy {
             local_home,
             registrations,
             uses,
-            issuer: None,
+            issuer,
             resource: Some(associations),
         };
         for (i, a) in policy.resource_associations().iter().enumerate() {
