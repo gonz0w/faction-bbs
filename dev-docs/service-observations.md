@@ -70,7 +70,8 @@ It does not coerce these to generic `Publish`. The response is decoded as unveri
 metadata, not a `RecipientCurrentObservation`, actor or Store grant. The separate
 [consuming publication operation](delegation-verifier.md#prepare-foreign-publication)
 uses fresh authenticated observations and current local sender authority for
-private dispatch. A refusal
+private dispatch. Its [component software record](evidence/delegation-publication/README.md)
+describes the separate observations and pending checks. A refusal
 contains no recipient metadata. See the [codec](delegation-codecs.md) and
 [outbound client](provider-integration.md#outbound-service-http-client).
 

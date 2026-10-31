@@ -1,0 +1,1147 @@
+{
+  "host_client": {
+    "final59-client-device-test-r2": {
+      "exit": 0,
+      "groups": [
+        [
+          127,
+          0,
+          5,
+          0,
+          0
+        ],
+        [
+          87,
+          0,
+          3,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "log_sha256": "6687ee4e23ee0f92fac48f24319333d2ad953920842d934548d3dc26d4b3208c",
+      "passed": 259
+    },
+    "final61-client-default-test": {
+      "exit": 0,
+      "groups": [
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          46,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "log_sha256": "b286e58d78e03a690fadbfc9433cbc69d0126b4879b8b7d433c1a5060395a14f",
+      "passed": 50
+    }
+  },
+  "host_console": {
+    "capacity_claim": false,
+    "children_reaped": true,
+    "count": 20,
+    "independent_interoperability": false,
+    "modes": [
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "classic",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132
+      },
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "unicode",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132
+      }
+    ],
+    "physical_hardware": false,
+    "private_fixture_removed": true,
+    "provider_deployment": false,
+    "result": "pass"
+  },
+  "host_console_raw_json_sha256": "351c312ea6351102ea0963fc317acf0e4482d7ff9fa8f57e7b113539cc3d6ac0",
+  "host_native_provider_group_vectors_equal": true,
+  "host_provider_and_codec": [
+    {
+      "capture": "final31-default-test",
+      "groups": [
+        20,
+        0,
+        23,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "log_sha256": "03d51c4ef119feebd69be6b1411cf658b09ab9218a5de4361e4f80d6219dbfc5",
+      "passed": 49
+    },
+    {
+      "capture": "final32-blob-iq-test",
+      "groups": [
+        20,
+        0,
+        32,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "log_sha256": "2b6f296d0ad7cbd9bd11b1aefe39ca67ae26eb369789523047232aaaf115eceb",
+      "passed": 58
+    },
+    {
+      "capture": "final33-durable-policy-test",
+      "groups": [
+        31,
+        13,
+        23,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "log_sha256": "4213763d9f429b866faa0803307ff1cc17730a5f2665c9fbcf2b67dc9be8186b",
+      "passed": 73
+    },
+    {
+      "capture": "final34-preparation-test",
+      "groups": [
+        20,
+        0,
+        23,
+        0,
+        4,
+        0,
+        0,
+        6
+      ],
+      "log_sha256": "5262f6eaff33fb067f7fcec9d875502379ce194b0c0055ff3b43c79a5488d2bc",
+      "passed": 53
+    },
+    {
+      "capture": "final35-operator-test",
+      "groups": [
+        31,
+        1,
+        13,
+        23,
+        12,
+        4,
+        0,
+        0,
+        6
+      ],
+      "log_sha256": "d007b75f62c24ce5bb00be7f660ae13885b96919b43f223713304abcbc551ba1",
+      "passed": 90
+    },
+    {
+      "capture": "final36-delegation-records-test",
+      "groups": [
+        27,
+        0,
+        29,
+        0,
+        0,
+        0,
+        0,
+        10
+      ],
+      "log_sha256": "d95a0d0ec811b7edf6065332a28a080d8e7d0ff93bf56e739836ae9392e88ddb",
+      "passed": 66
+    },
+    {
+      "capture": "final37-delegation-records-durable-policy-test",
+      "groups": [
+        39,
+        13,
+        30,
+        0,
+        0,
+        0,
+        0,
+        10
+      ],
+      "log_sha256": "5dcea21f9e80599a3f74559ad2eef394966403cc7c55f0eb255cca4a6b43273b",
+      "passed": 92
+    },
+    {
+      "capture": "final38-delegation-services-test",
+      "groups": [
+        26,
+        0,
+        36,
+        0,
+        0,
+        0,
+        0,
+        12
+      ],
+      "log_sha256": "2878bbf0958ab9e81f4b4c8795ca732e5d2a890bdc7c1ac9fcafbc70ca179300",
+      "passed": 74
+    },
+    {
+      "capture": "final39-delegation-services-durable-policy-test",
+      "groups": [
+        44,
+        13,
+        38,
+        0,
+        0,
+        0,
+        0,
+        12
+      ],
+      "log_sha256": "e661cee5a2844704629f5490be85cf8c9ccc937630103f19543bcb54d5147003",
+      "passed": 107
+    },
+    {
+      "capture": "final40-delegation-services-delegation-records-durable-policy-test",
+      "groups": [
+        52,
+        13,
+        45,
+        0,
+        0,
+        0,
+        0,
+        16
+      ],
+      "log_sha256": "0aad0a26e80fd7e765cfc2d9fdd29f1cc399aa7f7587487773e9f1428dc036c0",
+      "passed": 126
+    },
+    {
+      "capture": "final41-delegation-issuer-test",
+      "groups": [
+        43,
+        0,
+        46,
+        0,
+        0,
+        0,
+        0,
+        24
+      ],
+      "log_sha256": "42c6835dacb2d84a54eb31f4bf47876111ca58e561f23187c5b0c966a1b0cc0a",
+      "passed": 113
+    },
+    {
+      "capture": "final42-delegation-issuer-durable-policy-test",
+      "groups": [
+        66,
+        13,
+        50,
+        0,
+        0,
+        0,
+        0,
+        24
+      ],
+      "log_sha256": "abfe250f9e9819835d392060c297b410f4d9fd88da6009d432ac51e951f89982",
+      "passed": 153
+    },
+    {
+      "capture": "final43-delegation-wire-test",
+      "groups": [
+        70,
+        0,
+        57,
+        0,
+        0,
+        0,
+        0,
+        25
+      ],
+      "log_sha256": "390a6d479f41707e3cd56977a34c96fe0c46b0030479d6193dd73f327a1ed49e",
+      "passed": 152
+    },
+    {
+      "capture": "final44-delegation-wire-durable-policy-test",
+      "groups": [
+        93,
+        13,
+        61,
+        0,
+        0,
+        0,
+        0,
+        25
+      ],
+      "log_sha256": "154f87ef3be38a2fbb7019743afac8edef83a0d106c7a924ccb4a7faf5e7e950",
+      "passed": 192
+    },
+    {
+      "capture": "final45-delegation-verifier-test",
+      "groups": [
+        115,
+        0,
+        71,
+        0,
+        0,
+        1,
+        13,
+        35
+      ],
+      "log_sha256": "05183fd2ce03a0414cac19322c46a07371364ede138a402df7ab00a3685029e7",
+      "passed": 235
+    },
+    {
+      "capture": "final46-codec-test",
+      "groups": [
+        0,
+        4,
+        21,
+        2
+      ],
+      "log_sha256": "8ecf2ccd9432f203692c763d6bff654179d5cdf9a868fa989eb29a11edad3527",
+      "passed": 27
+    },
+    {
+      "capture": "green25-combined-verifier-durable",
+      "groups": [
+        145,
+        13,
+        75,
+        0,
+        0,
+        1,
+        19,
+        35
+      ],
+      "log_sha256": "999603cbb1431b0cd373b56c2dbab98b3ce298ad5155aa8a4ec05510f2dff38b",
+      "passed": 288,
+      "reuse": "same565inputs match exact subset of broadened824 map; actual compiled source unchanged"
+    }
+  ],
+  "host_provider_profiles": 16,
+  "host_tooling": {
+    "log_sha256": "cd11634af644f5bff0875e85c4712fb83850606d2b8830366816246ee17b6a62",
+    "passed": 642,
+    "scope": "Full pre-final-CI-registration Python suite; later registration regression separately RED/GREEN."
+  },
+  "native_client": {
+    "default": {
+      "elapsed_seconds": 7.817165292000027,
+      "no_product_compilation": true,
+      "passed": 50,
+      "passed_groups": [
+        4,
+        46,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "returncode": 0,
+      "stderr_sha256": "9844a4e7597e6c7ada37f4174ec969f74ab9585196e48dd8bf6ba9bf6bb0ac25",
+      "stdout_sha256": "6e32777b9c61888238f71dd06d094cc79baf718e8b662c68b62f2f588b8136da"
+    },
+    "device": {
+      "elapsed_seconds": 79.969188874,
+      "no_product_compilation": true,
+      "passed": 260,
+      "passed_groups": [
+        127,
+        87,
+        1,
+        4,
+        6,
+        1,
+        4,
+        6,
+        4,
+        2,
+        10,
+        7,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "returncode": 0,
+      "stderr_sha256": "7519eeade9bf0dea5a070c3875146ba1dccf6a1baa09025aacef7bf7956e897e",
+      "stdout_sha256": "68c83f3c68fd3cb5775e88121ffbe211edb118d5534eb9248fc563317f5c0d2d"
+    }
+  },
+  "native_client_count_difference": "One additional actual pending-loopback-TCP cancellation test is selected on NetBSD; host259 and native260 are both actual observations, not equal-count claims.",
+  "native_console": {
+    "capacity_claim": false,
+    "children_reaped": true,
+    "count": 20,
+    "independent_interoperability": false,
+    "modes": [
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "classic",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132
+      },
+      {
+        "checks": [
+          "lazy_invalid_profile_refuses_before_prepare_spool_or_connection",
+          "foreign_peer_is_refused_before_prepare_spool_or_provider_connection",
+          "maximum_size_prepare_is_device_local_and_source_independent",
+          "provider_outage_preserves_ordinary_mail_without_attachment_fallback",
+          "wrong_server_pin_and_actual_wrong_device_key_cannot_store_or_release_mail",
+          "cancel_after_possible_durable_progress_locks_and_joins_before_reopen",
+          "reopened_exact_retry_commits_before_actual_encrypted_mail_release",
+          "actual_authenticated_mail_receipt_fetch_without_password_verify_private_save_no_overwrite",
+          "current_provider_revocation_refuses_retry_without_store_or_mail_mutation",
+          "server_ciphertext_and_public_mail_exclude_member_private_metadata_keys_plaintext"
+        ],
+        "mail_received": true,
+        "mode": "unicode",
+        "ordinary_mail_connections": 3,
+        "plaintext_bytes": 1048576,
+        "provider_operations": 645,
+        "provider_sessions": 132
+      }
+    ],
+    "physical_hardware": false,
+    "private_fixture_removed": true,
+    "provider_deployment": false,
+    "result": "pass"
+  },
+  "native_console_json_sha256": "5550e04febf4a398886a415e0ec08ed290b8b9e99be6b6b30d626381cfd1fbd6",
+  "native_phase_records": {
+    "final-broad-build-2g": {
+      "all_profile_runtime_artifacts_unchanged": true,
+      "all_profile_source_exact": true,
+      "all_profiles_exit_zero": true,
+      "configured_cpu": 2,
+      "configured_memory_mib": 2048,
+      "controller_log_sha256": "6556a30d58f27cc38ee13e861ebde1005dab2dd34647506aa7822a3f62b3a0d3",
+      "exit_code": 0,
+      "exit_record_sha256": "9f63d32ddb2092b18ce70060e925dd647ba28ecb79957d482ffb0734b826908e",
+      "profile_count": 0,
+      "profile_log_hashes": {}
+    },
+    "final-broad-runtime-1g": {
+      "all_profile_runtime_artifacts_unchanged": true,
+      "all_profile_source_exact": true,
+      "all_profiles_exit_zero": true,
+      "configured_cpu": 2,
+      "configured_memory_mib": 1024,
+      "controller_log_sha256": "bde04cdbcdd752ea85f50dbd0506376f649ecbe5f5b36270fdf8592aee391af3",
+      "exit_code": 0,
+      "exit_record_sha256": "5afa6e0366f0d489232eae0553a242d39619a5380cf13a9eb377ac44198a9119",
+      "profile_count": 2,
+      "profile_log_hashes": {
+        "blob-iq": "dbad546d3f0971c39f10b75dd9c1727840493bcc1f6439d30b116d7093dbd440",
+        "operator": "f1e297443357a45734456eaa2bd0de0e17106e68558680a0681b6daf8269d27c"
+      }
+    },
+    "final-codec": {
+      "all_profile_runtime_artifacts_unchanged": true,
+      "all_profile_source_exact": true,
+      "all_profiles_exit_zero": true,
+      "controller_log_sha256": "9ed540271cdec851738cb3530e9678f74d9a8a78bce03c95454f7f37a99c500e",
+      "exit_code": 0,
+      "exit_record_sha256": "73eeee384f70298b0e5380bdb0814b5847417275653520a434afef7a250f3a47",
+      "observed_physmem_below_1gib": true,
+      "observed_physmem_bytes": 1054990336,
+      "profile_count": 1,
+      "profile_log_hashes": {
+        "standalone-codec": "06679aec0bb77a9dd0c68adc6a2bf8f2713fac2222a44804c4c8142dbf61ef86"
+      }
+    },
+    "final-small-1g": {
+      "all_profile_runtime_artifacts_unchanged": true,
+      "all_profile_source_exact": true,
+      "all_profiles_exit_zero": true,
+      "configured_cpu": 2,
+      "configured_memory_mib": 1024,
+      "controller_log_sha256": "378afca8da620e3c5c9f59df984fc254f82fecb2a1c04796b2c2d96645c2ebb0",
+      "exit_code": 0,
+      "exit_record_sha256": "28db50178d51f4a4c4767b2906c26cfc00e44623e9943b9f38bb888fadfc332a",
+      "profile_count": 14,
+      "profile_log_hashes": {
+        "default": "e3e54edaf42797e6370f51e30c2ff334e72e4c81f4da5e0137abb5f76dcab0bf",
+        "delegation-issuer": "d385714522656c6440983ed7775c8f6fbe09d8af76a6ecb88ce11cfeabd652c5",
+        "delegation-issuer,durable-policy": "0dfd28d8f00d2c698f1ccf969497e4d4839b5ee4f6b2130e760996a90697518a",
+        "delegation-records": "848890995dae78b6c4d3a8ffee9f893195e63627aad3ad55e000099532429053",
+        "delegation-records,durable-policy": "d048a8d200c7346a3d0539998c2cf87810fb175a2fee2dda80dd077cd7d418b0",
+        "delegation-services": "60ab4629bc2798a4b23c8900671d52f733988ac12dc3f055d3b935e24bbf0b06",
+        "delegation-services,delegation-records,durable-policy": "bffb0d0867b6e270d28c5f7fc506688527d1dd68b318c0eadc5b8785577d9d4b",
+        "delegation-services,durable-policy": "d7bc438acd50c14846888f49d095be30f54e142dd6c69b35ed85cfd1313e4c72",
+        "delegation-verifier": "2a9d93d378f62effca62950b21800755f454dda5bec2ae36d25fcaac4a0719b0",
+        "delegation-verifier,durable-policy": "4cfd22974a0ae2210be7c4aec7e2f3e819a6daf17552b731135bc524be5fbf30",
+        "delegation-wire": "b49b408b21c3d482cef826f3ce444574275e45c9e102a4e1122347b240acf196",
+        "delegation-wire,durable-policy": "8198127d9777d5c0f93eee08c6ec4260323a8f6d27eae199716a648c66463388",
+        "durable-policy": "9b0ec7728b625413a3d311357c94eb382edd10d64e682d9ae5189b9fd6ae267c",
+        "preparation": "419b25edb72784dbc69d39e53e365d6d10897db1a96736ce9bdf03dac3231869"
+      }
+    }
+  },
+  "native_provider_and_codec": {
+    "blob-iq": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        20,
+        0,
+        32,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "2b6f296d0ad7cbd9bd11b1aefe39ca67ae26eb369789523047232aaaf115eceb",
+      "host_profile_capture": "final32-blob-iq-test",
+      "host_total": 58,
+      "kind": "runtime",
+      "log_sha256": "dbad546d3f0971c39f10b75dd9c1727840493bcc1f6439d30b116d7093dbd440",
+      "no_compilation_during_test": true,
+      "passed_total": 58,
+      "phase": "broad_runtime",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "default": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        20,
+        0,
+        23,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "03d51c4ef119feebd69be6b1411cf658b09ab9218a5de4361e4f80d6219dbfc5",
+      "host_profile_capture": "final31-default-test",
+      "host_total": 49,
+      "kind": "runtime",
+      "log_sha256": "e3e54edaf42797e6370f51e30c2ff334e72e4c81f4da5e0137abb5f76dcab0bf",
+      "no_compilation_during_test": true,
+      "passed_total": 49,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-issuer": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        43,
+        0,
+        46,
+        0,
+        0,
+        0,
+        0,
+        24
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "42c6835dacb2d84a54eb31f4bf47876111ca58e561f23187c5b0c966a1b0cc0a",
+      "host_profile_capture": "final41-delegation-issuer-test",
+      "host_total": 113,
+      "kind": "runtime",
+      "log_sha256": "d385714522656c6440983ed7775c8f6fbe09d8af76a6ecb88ce11cfeabd652c5",
+      "no_compilation_during_test": true,
+      "passed_total": 113,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-issuer,durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        66,
+        13,
+        50,
+        0,
+        0,
+        0,
+        0,
+        24
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "abfe250f9e9819835d392060c297b410f4d9fd88da6009d432ac51e951f89982",
+      "host_profile_capture": "final42-delegation-issuer-durable-policy-test",
+      "host_total": 153,
+      "kind": "runtime",
+      "log_sha256": "0dfd28d8f00d2c698f1ccf969497e4d4839b5ee4f6b2130e760996a90697518a",
+      "no_compilation_during_test": true,
+      "passed_total": 153,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-records": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        27,
+        0,
+        29,
+        0,
+        0,
+        0,
+        0,
+        10
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "d95a0d0ec811b7edf6065332a28a080d8e7d0ff93bf56e739836ae9392e88ddb",
+      "host_profile_capture": "final36-delegation-records-test",
+      "host_total": 66,
+      "kind": "runtime",
+      "log_sha256": "848890995dae78b6c4d3a8ffee9f893195e63627aad3ad55e000099532429053",
+      "no_compilation_during_test": true,
+      "passed_total": 66,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-records,durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        39,
+        13,
+        30,
+        0,
+        0,
+        0,
+        0,
+        10
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "5dcea21f9e80599a3f74559ad2eef394966403cc7c55f0eb255cca4a6b43273b",
+      "host_profile_capture": "final37-delegation-records-durable-policy-test",
+      "host_total": 92,
+      "kind": "runtime",
+      "log_sha256": "d048a8d200c7346a3d0539998c2cf87810fb175a2fee2dda80dd077cd7d418b0",
+      "no_compilation_during_test": true,
+      "passed_total": 92,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-services": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        26,
+        0,
+        36,
+        0,
+        0,
+        0,
+        0,
+        12
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "2878bbf0958ab9e81f4b4c8795ca732e5d2a890bdc7c1ac9fcafbc70ca179300",
+      "host_profile_capture": "final38-delegation-services-test",
+      "host_total": 74,
+      "kind": "runtime",
+      "log_sha256": "60ab4629bc2798a4b23c8900671d52f733988ac12dc3f055d3b935e24bbf0b06",
+      "no_compilation_during_test": true,
+      "passed_total": 74,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-services,delegation-records,durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        52,
+        13,
+        45,
+        0,
+        0,
+        0,
+        0,
+        16
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "0aad0a26e80fd7e765cfc2d9fdd29f1cc399aa7f7587487773e9f1428dc036c0",
+      "host_profile_capture": "final40-delegation-services-delegation-records-durable-policy-test",
+      "host_total": 126,
+      "kind": "runtime",
+      "log_sha256": "bffb0d0867b6e270d28c5f7fc506688527d1dd68b318c0eadc5b8785577d9d4b",
+      "no_compilation_during_test": true,
+      "passed_total": 126,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-services,durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        44,
+        13,
+        38,
+        0,
+        0,
+        0,
+        0,
+        12
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "e661cee5a2844704629f5490be85cf8c9ccc937630103f19543bcb54d5147003",
+      "host_profile_capture": "final39-delegation-services-durable-policy-test",
+      "host_total": 107,
+      "kind": "runtime",
+      "log_sha256": "d7bc438acd50c14846888f49d095be30f54e142dd6c69b35ed85cfd1313e4c72",
+      "no_compilation_during_test": true,
+      "passed_total": 107,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-verifier": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        115,
+        0,
+        71,
+        0,
+        0,
+        1,
+        13,
+        35
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "05183fd2ce03a0414cac19322c46a07371364ede138a402df7ab00a3685029e7",
+      "host_profile_capture": "final45-delegation-verifier-test",
+      "host_total": 235,
+      "kind": "runtime",
+      "log_sha256": "2a9d93d378f62effca62950b21800755f454dda5bec2ae36d25fcaac4a0719b0",
+      "no_compilation_during_test": true,
+      "passed_total": 235,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-verifier,durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        145,
+        13,
+        75,
+        0,
+        0,
+        1,
+        19,
+        35
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "999603cbb1431b0cd373b56c2dbab98b3ce298ad5155aa8a4ec05510f2dff38b",
+      "host_profile_capture": "green25-combined-verifier-durable",
+      "host_total": 288,
+      "kind": "runtime",
+      "log_sha256": "4cfd22974a0ae2210be7c4aec7e2f3e819a6daf17552b731135bc524be5fbf30",
+      "no_compilation_during_test": true,
+      "passed_total": 288,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-wire": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        70,
+        0,
+        57,
+        0,
+        0,
+        0,
+        0,
+        25
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "390a6d479f41707e3cd56977a34c96fe0c46b0030479d6193dd73f327a1ed49e",
+      "host_profile_capture": "final43-delegation-wire-test",
+      "host_total": 152,
+      "kind": "runtime",
+      "log_sha256": "b49b408b21c3d482cef826f3ce444574275e45c9e102a4e1122347b240acf196",
+      "no_compilation_during_test": true,
+      "passed_total": 152,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "delegation-wire,durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        93,
+        13,
+        61,
+        0,
+        0,
+        0,
+        0,
+        25
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "154f87ef3be38a2fbb7019743afac8edef83a0d106c7a924ccb4a7faf5e7e950",
+      "host_profile_capture": "final44-delegation-wire-durable-policy-test",
+      "host_total": 192,
+      "kind": "runtime",
+      "log_sha256": "8198127d9777d5c0f93eee08c6ec4260323a8f6d27eae199716a648c66463388",
+      "no_compilation_during_test": true,
+      "passed_total": 192,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "durable-policy": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        31,
+        13,
+        23,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "4213763d9f429b866faa0803307ff1cc17730a5f2665c9fbcf2b67dc9be8186b",
+      "host_profile_capture": "final33-durable-policy-test",
+      "host_total": 73,
+      "kind": "runtime",
+      "log_sha256": "9b0ec7728b625413a3d311357c94eb382edd10d64e682d9ae5189b9fd6ae267c",
+      "no_compilation_during_test": true,
+      "passed_total": 73,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "operator": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        31,
+        1,
+        13,
+        23,
+        12,
+        4,
+        0,
+        0,
+        6
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "d007b75f62c24ce5bb00be7f660ae13885b96919b43f223713304abcbc551ba1",
+      "host_profile_capture": "final35-operator-test",
+      "host_total": 90,
+      "kind": "runtime",
+      "log_sha256": "f1e297443357a45734456eaa2bd0de0e17106e68558680a0681b6daf8269d27c",
+      "no_compilation_during_test": true,
+      "passed_total": 90,
+      "phase": "broad_runtime",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "preparation": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        20,
+        0,
+        23,
+        0,
+        4,
+        0,
+        0,
+        6
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "5262f6eaff33fb067f7fcec9d875502379ce194b0c0055ff3b43c79a5488d2bc",
+      "host_profile_capture": "final34-preparation-test",
+      "host_total": 53,
+      "kind": "runtime",
+      "log_sha256": "419b25edb72784dbc69d39e53e365d6d10897db1a96736ce9bdf03dac3231869",
+      "no_compilation_during_test": true,
+      "passed_total": 53,
+      "phase": "small",
+      "returncode": 0,
+      "source_exact": true
+    },
+    "standalone-codec": {
+      "artifacts_before_after_exact": true,
+      "groups": [
+        0,
+        4,
+        21,
+        2
+      ],
+      "host_groups_match_native": true,
+      "host_log_sha256": "8ecf2ccd9432f203692c763d6bff654179d5cdf9a868fa989eb29a11edad3527",
+      "host_profile_capture": "final46-codec-test",
+      "host_total": 27,
+      "kind": "runtime",
+      "log_sha256": "06679aec0bb77a9dd0c68adc6a2bf8f2713fac2222a44804c4c8142dbf61ef86",
+      "no_compilation_during_test": null,
+      "passed_total": 27,
+      "phase": "codec",
+      "returncode": 0,
+      "source_exact": true
+    }
+  },
+  "scope": {
+    "actual_component_publication_to_reopen_to_bidirectional_retrieval": true,
+    "capacity_claim": false,
+    "cross_home_encrypted_mail_release": false,
+    "cross_home_native_operator_carrier": false,
+    "independent_interoperability": false,
+    "new_cryptographic_qualification": false,
+    "physical_hardware": false,
+    "provider_deployment": false,
+    "test_only_setup_access_creates_positive_objects": false
+  },
+  "source_commit": "f59fca69718f4e43bda65ec1474ace32d7d973ee",
+  "strict_host_clippy": "All16provider profiles and codec plus selected device/default client passed; raw captures independently retained. Verifier-durable candidate24 reused with exact final product bytes."
+}

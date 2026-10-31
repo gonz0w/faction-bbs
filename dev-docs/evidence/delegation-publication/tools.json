@@ -1,0 +1,74 @@
+{
+  "backend_model_effort_telemetry": "unverified; spawn requests are not observed backend settings",
+  "broader_build_memory_mib": 2048,
+  "host_selected": {
+    "libraries": {
+      "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib": {
+        "resolved": "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib",
+        "sha256": "9df9f11d64f403f2afa367057f68f1e878f63f485494bfdbfd086b760412ff0d"
+      },
+      "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib": {
+        "resolved": "/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib",
+        "sha256": "882e463235871fa1f559fd9780dfa8d3fcca1135990753d2ab39ca466a0e73bc"
+      }
+    },
+    "openssl_3": "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)\nbuilt on: Tue Jun  9 11:46:57 2026 UTC\nplatform: darwin64-arm64-cc\noptions:  bn(64,64)\ncompiler: clang -fPIC -arch arm64 -O3 -Wall -DL_ENDIAN -DOPENSSL_PIC -D_REENTRANT -DOPENSSL_BUILDING_OPENSSL -DNDEBUG\nOPENSSLDIR: \"/opt/homebrew/etc/openssl@3\"\nENGINESDIR: \"/opt/homebrew/Cellar/openssl@3/3.6.3/lib/engines-3\"\nMODULESDIR: \"/opt/homebrew/Cellar/openssl@3/3.6.3/lib/ossl-modules\"\nSeeding source: os-specific\nCPUINFO: OPENSSL_armcap=0x87d\n",
+    "openssl_3_disabled": "Disabled algorithms:\nMD2\nRC5\nSCTP\nSSL3\nZLIB\nBROTLI\nZSTD\n",
+    "rustc_196": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: aarch64-apple-darwin\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "rustup_toolchains": "1.96.0-aarch64-apple-darwin\n1.98.0-aarch64-apple-darwin (active, default)\n"
+  },
+  "limits": "Initial317 exploratory host used installed Rust1.98/OpenSSL4; selected/final runs explicitly used installed1.96/OpenSSL3.6.3. Native build and runtime envelopes are distinct. No owner playground activation, system tuning or resource promise.",
+  "native_os": "NetBSD11aarch64; baseOpenSSL3.5.7; Rust/Cargo1.96.0",
+  "native_role_discovery": "unavailable; explicit fresh-context PROJECT mapping used",
+  "native_tool_identities": {
+    "/usr/bin/cc": {
+      "bytes": 1419696,
+      "sha256": "8a60c013fa35a8f3097e2ba68ebea863925e92bcf2459648e69d74a3d6df3242"
+    },
+    "/usr/bin/ld": {
+      "bytes": 992920,
+      "sha256": "33cd660e6f0fd950cc636034d9f787b6ed6e51be2127d3ba2bd9a4772a082161"
+    },
+    "/usr/lib/libcrypto.so.16": {
+      "bytes": 6244640,
+      "sha256": "6a36ec1ea362d9c9138bcdf23e0e4c792a6d659676a72213bb01ca178567e85e"
+    },
+    "/usr/lib/libssl.so.16": {
+      "bytes": 1262704,
+      "sha256": "694db20338a7a0acaeda51f7533b68e3c56be2747f87851b879143e84bd5b509"
+    },
+    "/usr/pkg/bin/cargo": {
+      "bytes": 43795088,
+      "sha256": "8c57a7170ebc69b4ec135d5370650739428c5a203f9192a8d882877b7c5a4d42"
+    },
+    "/usr/pkg/bin/rustc": {
+      "bytes": 14128,
+      "sha256": "8c49386b3e15d3fb2fab0fa0f9454c449357246f6cc87bf41c1be34c1f1083bb"
+    }
+  },
+  "no_package_or_toolchain_installation": true,
+  "requested_roles": {
+    "temper_analyst": [
+      "gpt-6-astra",
+      "high"
+    ],
+    "temper_implementer": [
+      "gpt-6.1-sol",
+      "high"
+    ],
+    "temper_product": [
+      "gpt-6.1-terra",
+      "medium"
+    ],
+    "temper_reviewer": [
+      "gpt-6.1-sol",
+      "high"
+    ],
+    "temper_workflow": [
+      "gpt-6-luna",
+      "medium"
+    ]
+  },
+  "runtime_cpu": 2,
+  "runtime_memory_mib": 1024
+}

@@ -101,7 +101,8 @@ combines issuer routes and resource associations in one canonical policy and
 shared runtime; `new_issuer` retains its original restrictions. An explicit
 publication profile adds a distinct outgoing observation role; endpoint trust is
 shared with resource associations without adding incoming authority. See the
-[publication contract](delegation-verifier.md#prepare-foreign-publication).
+[publication contract](delegation-verifier.md#prepare-foreign-publication) and
+[component software record](evidence/delegation-publication/README.md).
 
 ## Durable policy
 

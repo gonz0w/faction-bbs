@@ -115,7 +115,8 @@ policy permits issuer and resource roles in one home runtime, with shared limits
 and coordinated remote floors; see the [verifier contract](delegation-verifier.md).
 The consuming [publication operation](delegation-verifier.md#prepare-foreign-publication)
 uses the actual sender session and a fresh recipient observation for each exact
-Store operation. Native and operator response carriers, mail release and the
+Store operation; see its [software record](evidence/delegation-publication/README.md).
+Native and operator response carriers, mail release and the
 complete offline console journey remain under
 [issue #300](https://github.com/gonz0w/faction-bbs/issues/300) and
 [issue #301](https://github.com/gonz0w/faction-bbs/issues/301).

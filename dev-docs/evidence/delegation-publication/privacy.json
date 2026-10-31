@@ -1,0 +1,187 @@
+{
+  "actual_runtime_privacy_audit": {
+    "host_console_controls": 20,
+    "modes": [
+      "classic",
+      "unicode"
+    ],
+    "native_console_controls": 20,
+    "passed_before_successful_fixture_removal": true,
+    "plaintext_bytes_per_mode": 1048576,
+    "scope": "Existing same-home maintained fixture audits actual selected server and serverstore files plus captured public encrypted mail for raw/base64 selected attachment metadata/key/IV/plaintext hash; hidden synthetic local/home passwords absent captured client transcripts. Component publication proof uses opaque synthetic ciphertext and binding/action metadata, not descriptor keys or names.",
+    "source": "crates/faction-client/examples/device_provider_console_fixture.rs::audit",
+    "source_commit": "f59fca69718f4e43bda65ec1474ace32d7d973ee",
+    "source_sha256": "6df74be18fee31063e18ceaff61d48cc69f91f67e258ff008cd2b1a1ce3cbefd"
+  },
+  "checked_files": {
+    "README.md": {
+      "bytes": 15188,
+      "sha256": "145c80322735e795516c1c46a69b4d8427c2af5f625829364879f70a1b07661d"
+    },
+    "crates/faction-delegation-codec/src/json.rs": {
+      "bytes": 16041,
+      "sha256": "2283cffde01d75ad0aab1374bcd742ff2935a18336c86be372ea51230ed1333f"
+    },
+    "crates/faction-delegation-codec/tests/publication.rs": {
+      "bytes": 6097,
+      "sha256": "17786673cbeabec1abe88cecc42b1ef665daa486b174c569c794a6c01524a8d0"
+    },
+    "crates/faction-provider/src/authority.rs": {
+      "bytes": 21942,
+      "sha256": "cb09395ee546f5c6bd62c4ccb3fb5812f6fb54402a8e6e693d5f1034aa72b48a"
+    },
+    "crates/faction-provider/src/composed_tests.rs": {
+      "bytes": 28127,
+      "sha256": "4df403568cf281cb93eb42bd6153c69af0dd6322781d8b2fabee2c8695f08400"
+    },
+    "crates/faction-provider/src/durable.rs": {
+      "bytes": 8597,
+      "sha256": "2c1510bf70bdb7715efe381b6afd6339feb26414e5d6e553c9ebc42e6267846f"
+    },
+    "crates/faction-provider/src/durable/codec.rs": {
+      "bytes": 6601,
+      "sha256": "b6f7ae53a6f4879aec3ecfae7875606a9b19f3fadc6aafadbcf7dfb5c57e3d87"
+    },
+    "crates/faction-provider/src/durable/issuer_codec.rs": {
+      "bytes": 4937,
+      "sha256": "559bf133d0cc3ad192b8f2a095a06834d4eec5d82475f38cd3693ca959936bee"
+    },
+    "crates/faction-provider/src/durable/resource_codec.rs": {
+      "bytes": 9855,
+      "sha256": "1c70e8e01ebe67a34308566155a88862b260e76535827dd94d4a99f330c89e66"
+    },
+    "crates/faction-provider/src/durable/tests.rs": {
+      "bytes": 20620,
+      "sha256": "06d52ea0cda1479945ab9a0751aaa81631f213f928e08f3c1f454bdadbc85a47"
+    },
+    "crates/faction-provider/src/http_client.rs": {
+      "bytes": 14150,
+      "sha256": "7e192c3acc720c2baad59dd9fa2144a6e79b0c9750c7e8972c490caf59a60696"
+    },
+    "crates/faction-provider/src/publication.rs": {
+      "bytes": 18033,
+      "sha256": "811ac9a3710c55b2c909eb462e3743703e50b84452a309e28a7f75ce19f9be83"
+    },
+    "crates/faction-provider/src/publication_session.rs": {
+      "bytes": 1837,
+      "sha256": "da158496387886ecb25d95bfe512851cc66e943be89eb07566bdd9f1f631665d"
+    },
+    "crates/faction-provider/src/publication_tests.rs": {
+      "bytes": 62292,
+      "sha256": "a3b59e298ac4f7a21e0e863f879bea84bc3a701c00ab09bb11a8098132c94a87"
+    },
+    "crates/faction-provider/src/resource_policy.rs": {
+      "bytes": 13712,
+      "sha256": "de62ee873fdb853a6fa5069bf791fbf0814840d157287300bb8d1656aa8be685"
+    },
+    "crates/faction-provider/src/services.rs": {
+      "bytes": 21964,
+      "sha256": "43d0b940a09a9261cfd1ca76abb7aa9ac21ef2de4fec30fa031e5ae2145be9bc"
+    },
+    "crates/faction-provider/src/services_tests.rs": {
+      "bytes": 7616,
+      "sha256": "5d7630a4fb9e92b19d63d50896af4cba9382c06c9cb6ef44e90a4ca51e345596"
+    },
+    "crates/faction-provider/src/tls.rs": {
+      "bytes": 49890,
+      "sha256": "d5eb4d77781a18dee25e47a4d3e246a23d34a3cd918888687dc0026db7bf1be2"
+    },
+    "crates/faction-provider/tests/durable_policy.rs": {
+      "bytes": 15568,
+      "sha256": "61ff61a957c637e0ca9c1af6784aa0bc49a4322779816beeb15c7019e0d3dbdd"
+    },
+    "crates/faction-provider/tests/fixtures/publication-active-v5.bin": {
+      "bytes": 1325,
+      "sha256": "2ee083f188087b08ef11cfb8794925fbb907df3ec8ee74204f86304361fb3215"
+    },
+    "crates/faction-provider/tests/fixtures/publication-tombstone-v5.bin": {
+      "bytes": 433,
+      "sha256": "0d96ce36dd0cbd27a6aca0ce152417ed575eecc4e952e4c051db5ff4b8e93b7f"
+    },
+    "crates/faction-provider/tests/publication_interface.rs": {
+      "bytes": 373,
+      "sha256": "d909807ecac0e9f04d1fa7e43b4ec2d48cc9e07ebee2766ff2e6681b25ccdb93"
+    },
+    "crates/faction-provider/tests/resource_policy.rs": {
+      "bytes": 35087,
+      "sha256": "7d9f7810095bbb2d99b8c75353fdd045b16a00413346bde4de5d285d0bc495fd"
+    },
+    "dev-docs/delegation-issuer.md": {
+      "bytes": 8304,
+      "sha256": "a4252d579502fb2b04c58bfd1afb507493e1fad97fa6683de183e57597448187"
+    },
+    "dev-docs/delegation-verifier.md": {
+      "bytes": 7983,
+      "sha256": "6a6e556950aa62923254e532efcca1c74277b955a3b0ab9b982eb97e179a49aa"
+    },
+    "dev-docs/evidence/delegation-publication/README.md": {
+      "bytes": 3531,
+      "sha256": "7970b49f9ca2b55b8a98447c5e863ae8d372177d7067677287d564f8056ed0b9"
+    },
+    "dev-docs/evidence/delegation-publication/REPRODUCE.md": {
+      "bytes": 2477,
+      "sha256": "973be0a50077a81baa96fbe965b14267b4a2671dd2bfe0a98a9f7a277d3f830c"
+    },
+    "dev-docs/evidence/delegation-publication/binaries.json": {
+      "bytes": 29422,
+      "sha256": "8bcd1466ac95b95e740345030f2c43f61132a9039403b244cbded59c48f9d1d4"
+    },
+    "dev-docs/evidence/delegation-publication/cleanup.json": {
+      "bytes": 805,
+      "sha256": "1e92fe133cbfa0a7bcac9da2bd616c04e00877e7549d1e5cdb5c900f39aaa39b"
+    },
+    "dev-docs/evidence/delegation-publication/inputs.json": {
+      "bytes": 223371,
+      "sha256": "ef02b7b555666c9cbaaff2a73c31f2a1f23ab9951682c4222534d808175bff83"
+    },
+    "dev-docs/evidence/delegation-publication/native-verification.json": {
+      "bytes": 2943,
+      "sha256": "416188f6068980a7b3f02edb90755b62e07fc01f0555b3ac238b931e32e0e50a"
+    },
+    "dev-docs/evidence/delegation-publication/results.json": {
+      "bytes": 31006,
+      "sha256": "4aa214c526dd70b307e22a9cd6eecffde4dfabc5311450adfd0c67024e8127e4"
+    },
+    "dev-docs/evidence/delegation-publication/retention.json": {
+      "bytes": 8036,
+      "sha256": "bbc8f68dbab61faf627027d285df1dbf8258664be54cbceb6cbac18a5339027e"
+    },
+    "dev-docs/evidence/delegation-publication/tdd.json": {
+      "bytes": 142456,
+      "sha256": "b4dbd6aa9c19f85383d814506d995c5058698c7e4bd278913511b76e9e6b35f0"
+    },
+    "dev-docs/evidence/delegation-publication/tools.json": {
+      "bytes": 3384,
+      "sha256": "ac909151b7a5b50c4a23d9e89f03fffeafa3052b710e19d562c3baf1c293552c"
+    },
+    "dev-docs/provider-integration.md": {
+      "bytes": 12536,
+      "sha256": "ff47277fb01b5617cfdea32c565477210603ef52cd25bd924da0bb9703b3b793"
+    },
+    "dev-docs/provider-policy.md": {
+      "bytes": 7751,
+      "sha256": "c676ff7150b8b624eb373fef3d4dff34f89799f8e7c2f4505fe72f99b588bdc5"
+    },
+    "dev-docs/service-observations.md": {
+      "bytes": 8368,
+      "sha256": "d8f8c2b05af2ad6730b349ac5d435d9f0a2da07b362b3808af50d4aa65617ad1"
+    },
+    "tools/test_check_recorded_files.py": {
+      "bytes": 7339,
+      "sha256": "255d34682da8382e66011ce8d7913d3ef5ac197b1230d95658e51e208b25702f"
+    }
+  },
+  "limits": [
+    "Publication scan is selected new files/diff inputs, not whole machine or whole Git history; source IDs and actual scope are explicit.",
+    "The evidence manifest/privacy record and CI pin are excluded from this self-referential input hash map. Final pin/record publication checks are separately retained after freezing.",
+    "Audit coverage is actual successful runtime server/mail selection; deleted fixture plaintext/key corpus cannot be reconstructed/replayed from this public record. Runtime exclusion corpus is bounded; it is not an exhaustive private-key inventory.",
+    "No cross-home encrypted-mail release, production deployment, independent interoperability, physical hardware, broad security audit or capacity promise."
+  ],
+  "result": "pass",
+  "runtime_exclusion_corpus": {
+    "capture_files": 104,
+    "private_corpus_sha256": "c1e0fa8dd0813375bb26953f488b7a121d1a0c15e797f61eac9c86901c493139",
+    "scope": "Dynamic runtime capture filename nonces and long syntactically valid base64 values in retained private encrypted-mail XML. This is a bounded publication-exclusion corpus, not a complete private-key inventory or decrypted content audit.",
+    "selected_values": 392
+  }
+}

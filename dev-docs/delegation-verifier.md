@@ -106,6 +106,9 @@ reset until the outbound operation and socket finish. A second preparation is Bu
 while it remains held; an older release cannot free a newer reservation. Ordinary
 provider admission retains its existing limits.
 
+The newer [composed policy and publication record](evidence/delegation-publication/README.md)
+describes its separate component observations and pending checks.
+
 ## Scope of component validation
 
 The [host and NetBSD software record](evidence/delegation-verifier/README.md)

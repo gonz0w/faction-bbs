@@ -1,0 +1,147 @@
+{
+  "archive_directory": "local/evidence/delegation-publication-317-318",
+  "archives": {
+    "ci-red": {
+      "archive": "ci-red.private.tar.gz",
+      "archive_bytes": 26685,
+      "archive_sha256": "33d83fa000a36e158d1fd5b2d7ff4f378ccdb03029b363abef75fe430d6b00ba",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "93199ed1b94b314d82fb199b7f20c37823b152c4f75df2f40b6e000186b0ba91",
+      "marker_sha256": "9a4784a9e59230a90f2d3a58528932552bc2459ac04a3ca7e1089554a53a501d",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 16
+    },
+    "host-short-tmp": {
+      "archive": "host-short-tmp.private.tar.gz",
+      "archive_bytes": 381,
+      "archive_sha256": "d174e8bed61143a228ff93a79fc12f785c6027ca81ccc687f2b8fcc938a7c206",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "a1e41554b4745bfcb9d1f0ef0d470bd48ef6fd63da9a5e39cf9f5f0a3fb9c70f",
+      "marker_sha256": "0676fab52d32a8d019b6d542d26ef6bd0d6c401b33518528331e5359b4116d1e",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 1
+    },
+    "implementer317": {
+      "archive": "implementer317.private.tar.gz",
+      "archive_bytes": 250606930,
+      "archive_sha256": "9743555774471df30930d95a78acb3b72fdc1e41ce634f3e7fd12c64d5e1391b",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "88b67f530c7829fd03be6f3c060d4fb9ff8cfb961933c67d320e6709c7d9a111",
+      "marker_sha256": "923dbe22ceac2798199632d85b0d2ffce450031501784299ea0006dc14477cb0",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 2893
+    },
+    "implementer318": {
+      "archive": "implementer318.private.tar.gz",
+      "archive_bytes": 885674808,
+      "archive_sha256": "b181fd4e31d075041518bf77d9de41ec40a41ac0c72e297eb7342a41f9dbf4d5",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "83ffacdb6172018bb218ea745960424ed74208a90b1b5cd9e9614aa59f1ae41d",
+      "marker_sha256": "da6d7ae53c04f553ba7dd353f861b2cedfa3640bb095a31090b09d6c12cb2810",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 33936
+    },
+    "native-lead": {
+      "archive": "native-lead.private.tar.gz",
+      "archive_bytes": 781559516,
+      "archive_sha256": "72a63af5d507c220af2f14ae19ac1dc8d83e78df9f11a60c8aa3bfd766c0e67f",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "b3294017dfe87c5399bbc11e15593718669292b360524d04e9b87005c0e78224",
+      "marker_sha256": "827c5082e34d80c35509ed324068e99ad59fa725e9155a0f44d9d3ae09f46ce8",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 181
+    },
+    "prose-final": {
+      "archive": "prose-final.private.tar.gz",
+      "archive_bytes": 29130,
+      "archive_sha256": "9da1d971099812982f06c4a6be4b57d33ebae59b055010d07ec2be625fb38a4e",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "42076a5df1d23a0885fbfa5dfd4fe777af6adb8a766b673b1ae2dbf97f4ff5b1",
+      "marker_sha256": "a82bb124da08e51befb8ad2381ac2cd8d45cba2520b8873ea7615271c6ff47e6",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 11
+    },
+    "prose317": {
+      "archive": "prose317.private.tar.gz",
+      "archive_bytes": 25049,
+      "archive_sha256": "b2b27e51011adbc14410c80f9e67a72c10f44748cf3f5158d6d9f39884a6ffee",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "28938e61273a61458287a65fafbb3b16b77bf3956c54fcbfc32ed2b9132bfea7",
+      "marker_sha256": "363a2b2c64c4d6a71531dbf35618ce90d89416e7f8a75a62457b10b05668a0ef",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 8
+    },
+    "prose318": {
+      "archive": "prose318.private.tar.gz",
+      "archive_bytes": 26588,
+      "archive_sha256": "be9db0b333583cfd4ad890fff967ed358be3629c0b4689200da97762a563df81",
+      "entire_root_including_build_caches": true,
+      "index_sha256": "39311dc4673800c6c7ab89f13f8dc9867046f300ec45567aedf9de6b79b1bb16",
+      "marker_sha256": "874e097ad4754253b1d671f648f43a1bb1a62316bf564b996742d5772b26e1bb",
+      "result": "pass",
+      "verified_hardlink_headers": 0,
+      "verified_regular_file_paths": 10
+    }
+  },
+  "git_source_archives_nested_in_lead": [
+    {
+      "all_git_blobs_exact": true,
+      "archive_bytes": 296529920,
+      "archive_sha256": "df00f5d78835ee749669409409019837f1ec8142d4bd8b0fa23aba633e28b5c4",
+      "commit": "04fc41ac963f6bb4da737dbce36e91872b5a4020",
+      "files": 19488,
+      "index_sha256": "1b3fea4910ab44f9fe003fb511d687ca9450b0fc6f90c3520944bf53ac137006",
+      "timing": "Additional retention after318working edits; source04fcwas already immutable/resolvable before those edits."
+    },
+    {
+      "all_git_blobs_exact": true,
+      "archive_bytes": 296652800,
+      "archive_sha256": "899305570ce0816a2625da951c565b854a73e5577fff9316c10de1f0a60703bc",
+      "commit": "f59fca69718f4e43bda65ec1474ace32d7d973ee",
+      "files": 19494,
+      "index_sha256": "1d4351e33811498602a2945281f5e89e783037f1955d24e067f9908ef56fa7bc"
+    }
+  ],
+  "initial317_native_archive_nested_in_lead": {
+    "archive": "native317-runtime.private.tar.gz",
+    "bytes": 84623360,
+    "index_sha256": "0c8538cc55169f425ebc877c46577d96a31d7a3ab857259f739949583aa73a8f",
+    "scope": "Entire marked native317 fixture retained before318source/build mutation; VM still owned/running pending final318qualification",
+    "sha256": "082d1c9e688c2cca21a5f841828a90694026e52ae4a7503568350226b7bfe7cd",
+    "source_commit": "04fc41ac963f6bb4da737dbce36e91872b5a4020",
+    "verified_hardlink_headers": 12,
+    "verified_regular_paths": 8860
+  },
+  "limits": [
+    "All eight marked host roots are retained in full, INCLUDING host build caches, raw source variants/failed objects, commands, logs, actual retained executable objects and synthetic private captures. Every regular file membership/length/SHA verified before removal.",
+    "The final native guest archive retains14167regular paths and60hardlink headers; initial317guest captured before318source/build mutation remains separate.",
+    "Initial317RED02 original executable raw bytes were overwritten before their copy; exact source/input/command/log and executable identity remain. No reconstructed original, complete intermediate executable archive or policy waiver is asserted.",
+    "Successful runtime fixtures were audited before their actual removal; retained raw transcripts/XML and Store snapshots do not reconstruct deleted decrypted runtime fixture data.",
+    "Final CI-registration GREEN and publication scans run after final evidence pins; their additional private outputs remain separately in this ignored0700directory to avoid a manifest/hash dependency cycle. They are not falsely included in earlier archive indexes.",
+    "Private raw material stays0600inside0700ignored storage. No key/transcript/member data is committed.",
+    "Stopped VM controller FIFO has no regular bytes; the archive guard refused it before index creation. Owned/type/closed-handle checks and removal metadata are retained separately."
+  ],
+  "native_guest_archive_nested_in_lead": {
+    "archive": "native-runtime.private.tar.gz",
+    "bytes": 506019840,
+    "index_sha256": "c482ea1e375e5dfa9e0492f011b9ed7699d4ffefe4343e20eca10c03cc43e9d2",
+    "scope": "Entire marked final native fixture after successful final runtime qualification; owner-approved disposable VM pending verified teardown",
+    "sha256": "ab3b5b62816f94dee78317e29240f3cdfc9befe43d31f9ab9ec6017dafadbaf8",
+    "source_commit": "f59fca69718f4e43bda65ec1474ace32d7d973ee",
+    "verified_hardlink_headers": 60,
+    "verified_regular_paths": 14167
+  },
+  "native_guest_independent_verification": {
+    "index_sha256": "c482ea1e375e5dfa9e0492f011b9ed7699d4ffefe4343e20eca10c03cc43e9d2",
+    "result": "pass",
+    "verified_files": 14167,
+    "verified_hardlink_headers": 60
+  }
+}

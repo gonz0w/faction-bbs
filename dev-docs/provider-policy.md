@@ -106,4 +106,5 @@ states after adoption. Versions 1–4 reopen without implicit publication permis
 or rewrite. Builds without v5 support refuse active and tombstone v5 state without
 fallback or rewrite. The generation/reset tuple for the same remote home must agree between
 publication and resource associations; retained remote floors and registry homes
-share the existing 32-home bound. The 65536-byte snapshot bound remains.
+share the existing 32-home bound. The 65536-byte snapshot bound remains. See the
+[composed policy software record](evidence/delegation-publication/README.md).

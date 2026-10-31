@@ -79,7 +79,8 @@ by the sysop; experiments and future protocols are separate from normal operatio
   library publication operation checks fresh recipient approval for the actual
   sender session. The earlier
   verifier has [host and NetBSD software evidence](dev-docs/evidence/delegation-verifier/README.md). Full
-  native cross-home delivery and mail release remain incomplete.
+  native cross-home delivery and mail release remain incomplete. See the
+  [composed policy and publication software record](dev-docs/evidence/delegation-publication/README.md).
 
 ## What you can do
 
