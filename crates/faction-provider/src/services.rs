@@ -66,6 +66,8 @@ pub struct ServicePolicy {
     pub(crate) issuer: Option<IssuerPolicy>,
     #[cfg(feature = "delegation-verifier")]
     pub(crate) resource: Option<Vec<ResourceAssociation>>,
+    #[cfg(feature = "delegation-verifier")]
+    pub(crate) publication: Option<Vec<PublicationAssociation>>,
 }
 impl ServicePolicy {
     pub fn new(
@@ -94,6 +96,8 @@ impl ServicePolicy {
             issuer: None,
             #[cfg(feature = "delegation-verifier")]
             resource: None,
+            #[cfg(feature = "delegation-verifier")]
+            publication: None,
         })
     }
     pub fn local_home(&self) -> &str {
@@ -249,7 +253,11 @@ impl Authority {
         #[cfg(feature = "delegation-verifier")]
         if matches!(
             p.service_use(&e.identity()),
-            Some(ServiceUse::OutboundIntrospection | ServiceUse::IssuerEndpoint)
+            Some(
+                ServiceUse::OutboundIntrospection
+                    | ServiceUse::OutboundObservation
+                    | ServiceUse::IssuerEndpoint
+            )
         ) {
             return Err(BlobError::Denied);
         }
@@ -293,7 +301,7 @@ impl Authority {
             binding.validate()?;
             action.validate(&binding)?;
             if binding.created > now
-                || now >= binding.expires
+                || (now >= binding.expires && action != PublicationAction::Delete)
                 || binding.sender.account.split_once('@').map(|(_, h)| h)
                     != Some(credential.identity.home.as_str())
                 || binding.recipient.account.split_once('@').map(|(_, h)| h)
@@ -356,6 +364,7 @@ impl Authority {
         {
             self.remote_history = remote_history;
             self.service_format_v4 |= policy.resource.is_some();
+            self.service_format_v5 |= policy.publication.is_some();
         }
         #[cfg(feature = "delegation-issuer")]
         {
@@ -385,6 +394,8 @@ mod tests;
 pub enum ServiceUse {
     #[cfg(feature = "delegation-verifier")]
     ResourceClient,
+    #[cfg(feature = "delegation-verifier")]
+    OutboundObservation,
     #[cfg(feature = "delegation-verifier")]
     OutboundIntrospection,
     #[cfg(feature = "delegation-verifier")]
@@ -461,6 +472,8 @@ impl ServicePolicy {
             issuer: Some(IssuerPolicy { issuer, routes }),
             #[cfg(feature = "delegation-verifier")]
             resource: None,
+            #[cfg(feature = "delegation-verifier")]
+            publication: None,
         })
     }
 }
@@ -614,7 +627,7 @@ mod resource_policy;
 #[cfg(feature = "delegation-verifier")]
 pub(crate) use resource_policy::RemoteFloor;
 #[cfg(feature = "delegation-verifier")]
-pub use resource_policy::ResourceAssociation;
+pub use resource_policy::{PublicationAssociation, ResourceAssociation};
 
 #[cfg(feature = "delegation-verifier")]
 #[path = "resource.rs"]
@@ -625,3 +638,9 @@ pub use resource::PendingRetrieval;
 #[cfg(all(test, feature = "delegation-verifier"))]
 #[path = "composed_tests.rs"]
 mod composed_tests;
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "publication.rs"]
+pub(crate) mod publication;
+#[cfg(feature = "delegation-verifier")]
+pub use publication::PendingPublication;

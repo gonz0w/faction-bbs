@@ -235,6 +235,8 @@ pub(crate) struct Authority {
     #[cfg(feature = "delegation-verifier")]
     service_format_v4: bool,
     #[cfg(feature = "delegation-verifier")]
+    service_format_v5: bool,
+    #[cfg(feature = "delegation-verifier")]
     remote_history: Vec<crate::services::RemoteFloor>,
     #[cfg(feature = "delegation-services")]
     service_history: Vec<([u8; 32], crate::services::ServiceIdentity)>,
@@ -269,6 +271,8 @@ impl Authority {
             #[cfg(feature = "delegation-verifier")]
             service_format_v4: false,
             #[cfg(feature = "delegation-verifier")]
+            service_format_v5: false,
+            #[cfg(feature = "delegation-verifier")]
             remote_history: Vec::new(),
             #[cfg(feature = "delegation-services")]
             service_history: Vec::new(),
@@ -294,6 +298,8 @@ impl Authority {
             #[cfg(feature = "delegation-verifier")]
             service_format_v4: self.service_format_v4,
             #[cfg(feature = "delegation-verifier")]
+            service_format_v5: self.service_format_v5,
+            #[cfg(feature = "delegation-verifier")]
             remote_history: self.remote_history.clone(),
         }
     }
@@ -309,6 +315,7 @@ impl Authority {
         #[cfg(feature = "delegation-verifier")]
         {
             self.service_format_v4 = snapshot.service_format_v4;
+            self.service_format_v5 = snapshot.service_format_v5;
             self.remote_history = snapshot.remote_history;
         }
         self.generation = snapshot.generation;

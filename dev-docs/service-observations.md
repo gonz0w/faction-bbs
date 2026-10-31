@@ -67,7 +67,10 @@ Object and certificate expiry and the original monotonic deadline still apply.
 The request carries the complete binding and exact `PublicationAction`: `Begin`,
 `PutChunk` (offset, length and ciphertext SHA-256), `Commit`, `Status` or `Delete`.
 It does not coerce these to generic `Publish`. The response is decoded as unverified
-metadata, not a `RecipientCurrentObservation`, actor or Store grant. A refusal
+metadata, not a `RecipientCurrentObservation`, actor or Store grant. The separate
+[consuming publication operation](delegation-verifier.md#prepare-foreign-publication)
+uses fresh authenticated observations and current local sender authority for
+private dispatch. A refusal
 contains no recipient metadata. See the [codec](delegation-codecs.md) and
 [outbound client](provider-integration.md#outbound-service-http-client).
 

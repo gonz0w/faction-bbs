@@ -98,3 +98,12 @@ and history; directional constructors keep their original restrictions. Reciproc
 remote generation and reset changes require coordinated complete proposals.
 Mismatched intermediate tuples deny operations; remote values are never adopted
 automatically. See the [verifier contract](delegation-verifier.md).
+
+The explicit composed publication profile uses version 5 for the new outgoing
+observation purpose and publication associations. The v5 marker remains after
+reset or device-only replacement; v5 also reads valid directional and disabled
+states after adoption. Versions 1–4 reopen without implicit publication permission
+or rewrite. Builds without v5 support refuse active and tombstone v5 state without
+fallback or rewrite. The generation/reset tuple for the same remote home must agree between
+publication and resource associations; retained remote floors and registry homes
+share the existing 32-home bound. The 65536-byte snapshot bound remains.

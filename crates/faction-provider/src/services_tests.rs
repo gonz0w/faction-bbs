@@ -206,3 +206,21 @@ fn identical_durable_install_invalidates_old_service_without_changing_floors() {
             .is_err()
     );
 }
+
+#[test]
+fn expired_delete_reclaims_only_with_current_service_and_recipient_authority() {
+    let (a, leaf, b) = fixture();
+    let mut c = a.authenticate_service(&leaf, 100).unwrap();
+    assert!(
+        a.observe_recipient(&mut c, &leaf, b.clone(), PublicationAction::Delete, 700)
+            .is_ok()
+    );
+    assert!(
+        a.observe_recipient(&mut c, &leaf, b.clone(), PublicationAction::Begin, 700)
+            .is_err()
+    );
+    assert!(
+        a.observe_recipient(&mut c, &leaf, b.clone(), PublicationAction::Delete, 800)
+            .is_err()
+    );
+}

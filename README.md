@@ -75,9 +75,11 @@ by the sysop; experiments and future protocols are separate from normal operatio
   expose unverified metadata to trusted embedders; they grant no device or Store
   authority. A default-off [retrieval verifier](dev-docs/delegation-verifier.md)
   checks fresh issuer metadata for a private committed-object retrieval; explicit
-  composed policy shares one home runtime for issuer and resource roles. The earlier
+  composed policy shares one home runtime for issuer and resource roles. A consuming
+  library publication operation checks fresh recipient approval for the actual
+  sender session. The earlier
   verifier has [host and NetBSD software evidence](dev-docs/evidence/delegation-verifier/README.md). Full
-  cross-home publication and delivery remain incomplete.
+  native cross-home delivery and mail release remain incomplete.
 
 ## What you can do
 

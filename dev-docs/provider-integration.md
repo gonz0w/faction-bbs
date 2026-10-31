@@ -113,7 +113,10 @@ maintained native binary service above remains same-home only. The default-off
 a fresh issuer response for an exact committed-object retrieval. Explicit composed
 policy permits issuer and resource roles in one home runtime, with shared limits
 and coordinated remote floors; see the [verifier contract](delegation-verifier.md).
-Full foreign publication and independently hosted product delivery remain future work under
+The consuming [publication operation](delegation-verifier.md#prepare-foreign-publication)
+uses the actual sender session and a fresh recipient observation for each exact
+Store operation. Native and operator response carriers, mail release and the
+complete offline console journey remain under
 [issue #300](https://github.com/gonz0w/faction-bbs/issues/300) and
 [issue #301](https://github.com/gonz0w/faction-bbs/issues/301).
 

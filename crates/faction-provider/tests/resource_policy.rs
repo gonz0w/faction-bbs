@@ -692,3 +692,390 @@ fn composed_roles_share_all_active_history_and_home_limits() {
         );
     }
 }
+
+#[test]
+fn explicit_composed_publication_joins_a_distinct_outgoing_permission() {
+    use faction_provider::services::PublicationAssociation;
+    let mut all = composed_entries();
+    all.push((
+        entry(23, "local.test", "observer"),
+        ServiceUse::OutboundObservation,
+    ));
+    let publication = PublicationAssociation {
+        recipient_home: "remote.test".into(),
+        outbound_client_id: "observer".into(),
+        endpoint_id: "endpoint".into(),
+        address: "127.0.0.1:443".parse().unwrap(),
+        http_host: "remote.test".into(),
+        ca_sha256: [13; 32],
+        remote_generation: 3,
+        remote_reset: 2,
+    };
+    assert!(
+        ServicePolicy::new_composed(
+            "local.test".into(),
+            "issuer.test".into(),
+            all.clone(),
+            composed_routes(),
+            vec![association()]
+        )
+        .is_err()
+    );
+    let policy = ServicePolicy::new_composed_publication(
+        "local.test".into(),
+        "issuer.test".into(),
+        all,
+        composed_routes(),
+        vec![association()],
+        vec![publication.clone()],
+    )
+    .unwrap();
+    assert_eq!(policy.publication_associations(), &[publication]);
+    let runtime = Runtime::new(Some(registry(1)));
+    runtime
+        .control()
+        .replace_delegation_policy(registry(2), policy)
+        .unwrap();
+}
+
+#[cfg(feature = "durable-policy")]
+#[test]
+fn publication_policy_publishes_v5_and_reopens_without_transient_sender_authority() {
+    use faction_provider::services::PublicationAssociation;
+    let mut all = composed_entries();
+    all.push((
+        entry(23, "local.test", "observer"),
+        ServiceUse::OutboundObservation,
+    ));
+    let publication = PublicationAssociation {
+        recipient_home: "remote.test".into(),
+        outbound_client_id: "observer".into(),
+        endpoint_id: "endpoint".into(),
+        address: "127.0.0.1:443".parse().unwrap(),
+        http_host: "remote.test".into(),
+        ca_sha256: [13; 32],
+        remote_generation: 3,
+        remote_reset: 2,
+    };
+    let policy = ServicePolicy::new_composed_publication(
+        "local.test".into(),
+        "issuer.test".into(),
+        all,
+        composed_routes(),
+        vec![association()],
+        vec![publication],
+    )
+    .unwrap();
+    let f = Owned::new();
+    let path = f.0.join("policy");
+    let runtime = Runtime::initialize_durable(&path, registry(1)).unwrap();
+    runtime
+        .control()
+        .replace_delegation_policy(registry(2), policy)
+        .unwrap();
+    let active = std::fs::read(path.join("provider-policy.snapshot")).unwrap();
+    assert_eq!(&active[..8], b"FPPY0005");
+    drop(runtime);
+    let runtime = Runtime::reopen_durable(&path).unwrap();
+    assert_eq!(
+        std::fs::read(path.join("provider-policy.snapshot")).unwrap(),
+        active
+    );
+    runtime.control().replace_registry(registry(3)).unwrap();
+    drop(runtime);
+    let tombstone = std::fs::read(path.join("provider-policy.snapshot")).unwrap();
+    assert_eq!(&tombstone[..8], b"FPPY0005");
+    assert!(Runtime::reopen_durable(&path).is_ok());
+    if let Some(destination) = std::env::var_os("FACTION318_CAPTURE_POLICY") {
+        use std::io::Write;
+        use std::os::unix::fs::OpenOptionsExt;
+        for (name, bytes) in [
+            ("publication-active-v5.bin", active),
+            ("publication-tombstone-v5.bin", tombstone),
+        ] {
+            std::fs::OpenOptions::new()
+                .create_new(true)
+                .write(true)
+                .mode(0o600)
+                .open(std::path::Path::new(&destination).join(name))
+                .unwrap()
+                .write_all(&bytes)
+                .unwrap();
+        }
+    }
+}
+
+fn publication_entries() -> Vec<(ServiceRegistration, ServiceUse)> {
+    let mut entries = composed_entries();
+    entries.push((
+        entry(23, "local.test", "observer"),
+        ServiceUse::OutboundObservation,
+    ));
+    entries
+}
+fn publication_association() -> faction_provider::services::PublicationAssociation {
+    faction_provider::services::PublicationAssociation {
+        recipient_home: "remote.test".into(),
+        outbound_client_id: "observer".into(),
+        endpoint_id: "endpoint".into(),
+        address: "127.0.0.1:443".parse().unwrap(),
+        http_host: "remote.test".into(),
+        ca_sha256: [13; 32],
+        remote_generation: 3,
+        remote_reset: 2,
+    }
+}
+fn publication_policy(
+    entries: Vec<(ServiceRegistration, ServiceUse)>,
+    association: faction_provider::services::PublicationAssociation,
+) -> ServicePolicy {
+    ServicePolicy::new_composed_publication(
+        "local.test".into(),
+        "issuer.test".into(),
+        entries,
+        composed_routes(),
+        vec![self::association()],
+        vec![association],
+    )
+    .unwrap()
+}
+#[test]
+fn publication_profile_refuses_purpose_confusion_substitution_and_mismatched_remote_tuples() {
+    for variant in 0..12 {
+        let mut entries = publication_entries();
+        let mut a = publication_association();
+        match variant {
+            0 => entries[5].1 = ServiceUse::OutboundIntrospection,
+            1 => entries[5].0.home = "remote.test".into(),
+            2 => a.outbound_client_id = "inspector".into(),
+            3 => a.endpoint_id = "remote-inspector".into(),
+            4 => a.recipient_home = "local.test".into(),
+            5 => a.http_host = "issuer.test".into(),
+            6 => a.ca_sha256 = [0; 32],
+            7 => a.remote_generation = 4,
+            8 => a.remote_reset = 3,
+            9 => entries[5].0.certificate_sha256 = [21; 32],
+            10 => entries[5].0.client_id = "inspector".into(),
+            _ => a.address = "127.0.0.1:0".parse().unwrap(),
+        };
+        assert!(
+            ServicePolicy::new_composed_publication(
+                "local.test".into(),
+                "issuer.test".into(),
+                entries,
+                composed_routes(),
+                vec![association()],
+                vec![a]
+            )
+            .is_err(),
+            "variant {variant}"
+        );
+    }
+    assert!(
+        ServicePolicy::new_resource(
+            "local.test".into(),
+            publication_entries(),
+            vec![association()]
+        )
+        .is_err()
+    );
+    assert!(
+        ServicePolicy::new_issuer(
+            "local.test".into(),
+            "issuer.test".into(),
+            publication_entries(),
+            composed_routes()
+        )
+        .is_err()
+    );
+    let a = publication_association();
+    assert!(
+        ServicePolicy::new_composed_publication(
+            "local.test".into(),
+            "issuer.test".into(),
+            publication_entries(),
+            composed_routes(),
+            vec![association()],
+            vec![a.clone(), a]
+        )
+        .is_err()
+    );
+}
+#[test]
+fn publication_credentials_use_the_same_active_and_history_capacity_as_all_other_roles() {
+    let mut full = publication_entries();
+    for i in 0..26 {
+        full.push((
+            entry(40 + i, "remote.test", &format!("observer{i}")),
+            ServiceUse::Observation,
+        ));
+    }
+    let runtime = Runtime::new(Some(registry(1)));
+    runtime
+        .control()
+        .replace_delegation_policy(
+            registry(2),
+            publication_policy(full.clone(), publication_association()),
+        )
+        .unwrap();
+    runtime
+        .control()
+        .replace_delegation_policy(
+            registry(3),
+            publication_policy(publication_entries(), publication_association()),
+        )
+        .unwrap();
+    let mut rotated = publication_entries();
+    rotated[5].0.certificate_sha256 = [99; 32];
+    assert!(
+        runtime
+            .control()
+            .replace_delegation_policy(
+                registry(4),
+                publication_policy(rotated, publication_association())
+            )
+            .is_err()
+    );
+    let device = faction_provider::authority::CredentialBinding {
+        certificate_sha256: [100; 32],
+        principal: faction_files::private_blobs::Principal {
+            account: "device@local.test".into(),
+            device: 1,
+            identity: [1; 32],
+        },
+        valid_from: 1,
+        valid_until: u64::MAX,
+        approved: true,
+        account_enabled: true,
+        device_enabled: true,
+        generation: 2,
+    };
+    let runtime = Runtime::new(Some(registry(1)));
+    assert!(
+        runtime
+            .control()
+            .replace_delegation_policy(
+                Registry::new(
+                    2,
+                    0,
+                    vec!["local.test".into(), "remote.test".into()],
+                    vec![device]
+                )
+                .unwrap(),
+                publication_policy(full, publication_association())
+            )
+            .is_err()
+    );
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn v5_directional_and_observation_replacements_reset_and_restore_keep_marker_and_floors() {
+    let f = Owned::new();
+    let path = f.0.join("policy");
+    let mut runtime = Runtime::initialize_durable(&path, registry(1)).unwrap();
+    runtime
+        .control()
+        .replace_delegation_policy(
+            registry(2),
+            publication_policy(publication_entries(), publication_association()),
+        )
+        .unwrap();
+    let issuer_entries = composed_entries()
+        .into_iter()
+        .filter(|(_, u)| matches!(u, ServiceUse::Relay | ServiceUse::Introspection))
+        .collect();
+    for (g, policy) in [
+        (
+            3,
+            ServicePolicy::new_resource("local.test".into(), entries(), vec![association()])
+                .unwrap(),
+        ),
+        (
+            4,
+            ServicePolicy::new_issuer(
+                "local.test".into(),
+                "issuer.test".into(),
+                issuer_entries,
+                composed_routes(),
+            )
+            .unwrap(),
+        ),
+        (
+            5,
+            ServicePolicy::new(
+                "local.test".into(),
+                vec![entry(24, "remote.test", "LEGACY:+/")],
+            )
+            .unwrap(),
+        ),
+    ] {
+        runtime
+            .control()
+            .replace_delegation_policy(registry(g), policy)
+            .unwrap();
+        let before = std::fs::read(path.join("provider-policy.snapshot")).unwrap();
+        assert_eq!(&before[..8], b"FPPY0005");
+        drop(runtime);
+        runtime = Runtime::reopen_durable(&path).unwrap();
+        assert_eq!(
+            std::fs::read(path.join("provider-policy.snapshot")).unwrap(),
+            before
+        );
+    }
+    runtime.control().replace_registry(registry(6)).unwrap();
+    runtime.control().reset(1).unwrap();
+    drop(runtime);
+    runtime = Runtime::reopen_durable(&path).unwrap();
+    let before = std::fs::read(path.join("provider-policy.snapshot")).unwrap();
+    for (generation, reset) in [(2, 3), (4, 1)] {
+        let mut a = publication_association();
+        a.remote_generation = generation;
+        a.remote_reset = reset;
+        let mut resource = association();
+        resource.remote_generation = generation;
+        resource.remote_reset = reset;
+        let policy = ServicePolicy::new_composed_publication(
+            "local.test".into(),
+            "issuer.test".into(),
+            publication_entries(),
+            composed_routes(),
+            vec![resource],
+            vec![a],
+        )
+        .unwrap();
+        assert!(
+            runtime
+                .control()
+                .replace_delegation_policy(
+                    Registry::new(
+                        8,
+                        1,
+                        vec!["local.test".into(), "remote.test".into()],
+                        vec![]
+                    )
+                    .unwrap(),
+                    policy
+                )
+                .is_err()
+        );
+        assert_eq!(
+            std::fs::read(path.join("provider-policy.snapshot")).unwrap(),
+            before
+        );
+    }
+    runtime
+        .control()
+        .replace_delegation_policy(
+            Registry::new(
+                8,
+                1,
+                vec!["local.test".into(), "remote.test".into()],
+                vec![],
+            )
+            .unwrap(),
+            publication_policy(publication_entries(), publication_association()),
+        )
+        .unwrap();
+    drop(runtime);
+    assert!(Runtime::reopen_durable(&path).is_ok());
+}

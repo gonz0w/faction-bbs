@@ -407,6 +407,8 @@ impl Server {
             cancel,
             attempted: 0,
             closed: false,
+            #[cfg(all(test, feature = "delegation-verifier"))]
+            publication_capture: None,
         })
     }
     /// Authenticate one registered service through the same admission lane and
@@ -527,6 +529,8 @@ pub struct Session {
     cancel: Arc<AtomicBool>,
     attempted: usize,
     closed: bool,
+    #[cfg(all(test, feature = "delegation-verifier"))]
+    publication_capture: Option<std::sync::mpsc::Sender<Instant>>,
 }
 enum DispatchRoute<'a> {
     Account(&'a str),
@@ -1305,3 +1309,7 @@ pub use http_client::HttpEndpoint;
 
 #[cfg(all(test, feature = "delegation-verifier"))]
 pub(crate) use issuer_lifecycle_tests::cert as test_certificate;
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "publication_session.rs"]
+mod publication_session;

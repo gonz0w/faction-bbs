@@ -20,23 +20,23 @@ use std::{
     thread,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
-type Certificate = (X509, PKey<Private>);
-struct Home {
-    name: &'static str,
-    ca: Certificate,
-    server: Certificate,
-    device: Certificate,
-    relay: Certificate,
-    outgoing: Certificate,
-    runtime: Option<Runtime>,
-    callback: TcpListener,
-    principal: Principal,
+pub(super) type Certificate = (X509, PKey<Private>);
+pub(super) struct Home {
+    pub(super) name: &'static str,
+    pub(super) ca: Certificate,
+    pub(super) server: Certificate,
+    pub(super) device: Certificate,
+    pub(super) relay: Certificate,
+    pub(super) outgoing: Certificate,
+    pub(super) runtime: Option<Runtime>,
+    pub(super) callback: TcpListener,
+    pub(super) principal: Principal,
 }
 impl Home {
-    fn runtime(&self) -> &Runtime {
+    pub(super) fn runtime(&self) -> &Runtime {
         self.runtime.as_ref().unwrap()
     }
-    fn registry(&self, generation: u64, reset: u64, foreign: &Home) -> Registry {
+    pub(super) fn registry(&self, generation: u64, reset: u64, foreign: &Home) -> Registry {
         Registry::new(
             generation,
             reset,
@@ -54,7 +54,7 @@ impl Home {
         )
         .unwrap()
     }
-    fn policy(&self, foreign: &Home, generation: u64, reset: u64) -> ServicePolicy {
+    pub(super) fn policy(&self, foreign: &Home, generation: u64, reset: u64) -> ServicePolicy {
         let entry = |c: &X509, h: &str, id: &str| ServiceRegistration {
             home: h.into(),
             client_id: id.into(),
@@ -108,7 +108,7 @@ impl Home {
         )
         .unwrap()
     }
-    fn install(
+    pub(super) fn install(
         &self,
         foreign: &Home,
         generation: u64,
@@ -134,10 +134,10 @@ impl Home {
             )
             .unwrap();
     }
-    fn server(&self, client_ca: &X509) -> Server {
+    pub(super) fn server(&self, client_ca: &X509) -> Server {
         Server::new(&self.server.0, &self.server.1, client_ca).unwrap()
     }
-    fn client(&self, address: std::net::SocketAddr, who: &Certificate) -> Client {
+    pub(super) fn client(&self, address: std::net::SocketAddr, who: &Certificate) -> Client {
         Client::connect(
             address,
             "provider.test",
@@ -148,7 +148,7 @@ impl Home {
         )
         .unwrap()
     }
-    fn device_call<T: Send>(&self, f: impl FnOnce(Session) -> T) -> T {
+    pub(super) fn device_call<T: Send>(&self, f: impl FnOnce(Session) -> T) -> T {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let address = listener.local_addr().unwrap();
         thread::scope(|s| {
@@ -161,7 +161,7 @@ impl Home {
             f(session)
         })
     }
-    fn service_call<T: Send>(
+    pub(super) fn service_call<T: Send>(
         &self,
         who: &Certificate,
         ca: &X509,
@@ -179,12 +179,12 @@ impl Home {
             f(session)
         })
     }
-    fn record(&self, binding: &Binding) -> Result<RetrievalRecord, Error> {
+    pub(super) fn record(&self, binding: &Binding) -> Result<RetrievalRecord, Error> {
         self.device_call(|mut s| {
             s.retrieval_intent(binding.clone(), RetrievalAction::GetChunk { offset: 0 })
         })
     }
-    fn issue(&self, record: &RetrievalRecord) -> codec::UnverifiedToken {
+    pub(super) fn issue(&self, record: &RetrievalRecord) -> codec::UnverifiedToken {
         let reference = self
             .runtime()
             .control()
@@ -199,10 +199,10 @@ impl Home {
             )
         })
     }
-    fn token(&self, binding: &Binding) -> codec::UnverifiedToken {
+    pub(super) fn token(&self, binding: &Binding) -> codec::UnverifiedToken {
         self.issue(&self.record(binding).unwrap())
     }
-    fn prepare(
+    pub(super) fn prepare(
         &self,
         foreign: &Home,
         binding: &Binding,
@@ -233,7 +233,7 @@ impl Home {
             pending
         })
     }
-    fn endpoint(&self, foreign: &Home) -> HttpEndpoint {
+    pub(super) fn endpoint(&self, foreign: &Home) -> HttpEndpoint {
         HttpEndpoint::new(
             foreign.callback.local_addr().unwrap(),
             foreign.name.into(),
@@ -248,7 +248,7 @@ impl Home {
         )
         .unwrap()
     }
-    fn complete(
+    pub(super) fn complete(
         &self,
         foreign: &Home,
         pending: PendingRetrieval,
@@ -271,7 +271,7 @@ impl Home {
             result
         })
     }
-    fn charged(&self) -> usize {
+    pub(super) fn charged(&self) -> usize {
         self.runtime()
             .state
             .authority
@@ -280,7 +280,7 @@ impl Home {
             .records
             .charged_len()
     }
-    fn ordinary_progress(&self, store: &Mutex<Store>, binding: &Binding) {
+    pub(super) fn ordinary_progress(&self, store: &Mutex<Store>, binding: &Binding) {
         self.device_call(|mut session| {
             let mut b = binding.clone();
             b.recipient = b.sender.clone();
@@ -310,12 +310,18 @@ impl Home {
         })
     }
 }
-struct Pair {
-    homes: [Home; 2],
-    root: PathBuf,
+pub(super) struct Pair {
+    pub(super) homes: [Home; 2],
+    pub(super) root: PathBuf,
 }
 impl Pair {
-    fn new(durable: bool) -> Self {
+    pub(super) fn new(durable: bool) -> Self {
+        let p = Self::unconfigured(durable);
+        p.homes[0].install(&p.homes[1], 2, 0, 2, 0);
+        p.homes[1].install(&p.homes[0], 2, 0, 2, 0);
+        p
+    }
+    pub(super) fn unconfigured(durable: bool) -> Self {
         let t = tls::wall_now() as i64;
         let ca0 = cert(None, "CA-a", 701, t - 60, t + 3600);
         let ca1 = cert(None, "CA-b", 702, t - 60, t + 3600);
@@ -396,11 +402,9 @@ impl Pair {
             };
             p.homes[i].runtime = Some(runtime);
         }
-        p.homes[0].install(&p.homes[1], 2, 0, 2, 0);
-        p.homes[1].install(&p.homes[0], 2, 0, 2, 0);
         p
     }
-    fn binding(&self, i: usize) -> Binding {
+    pub(super) fn binding(&self, i: usize) -> Binding {
         Binding {
             sender: self.homes[i].principal.clone(),
             recipient: self.homes[1 - i].principal.clone(),
@@ -410,7 +414,7 @@ impl Pair {
             expires: tls::wall_now() + 300,
         }
     }
-    fn preexisting(&self, i: usize, binding: &Binding) -> Mutex<Store> {
+    pub(super) fn preexisting(&self, i: usize, binding: &Binding) -> Mutex<Store> {
         struct Setup<'a>(&'a Binding);
         impl Access for Setup<'_> {
             fn require(
@@ -449,7 +453,7 @@ impl Pair {
         Mutex::new(Store::open(&path).unwrap())
     }
     #[cfg(feature = "durable-policy")]
-    fn reopen(&mut self) {
+    pub(super) fn reopen(&mut self) {
         for i in 0..2 {
             drop(self.homes[i].runtime.take());
             self.homes[i].runtime =
