@@ -57,6 +57,35 @@ Evidence reuse needs the same relevant inputs, environment assumptions, and vali
 scope. Changes to contracts, validation policy, fixtures, or relevant dependencies
 can invalidate it. Required CI policies still apply to the current proposed change.
 
+## Bound attempts and stop
+
+Before an investigation, costly verification campaign or retry sequence, record
+the question or acceptance/risk it addresses, identified inputs, applicable checks,
+permitted executor, effort/resource limit and next-action rule in the work item.
+Reference existing project policy instead of repeating it. A routine focused
+check can be one run followed by inspection of any failure; it needs no separate
+plan or arbitrary universal time allowance. A larger campaign needs a finite
+budget appropriate to the project and its execution authority.
+
+Use these outcomes:
+
+| Outcome | Next action |
+| --- | --- |
+| Acceptance evidence is sufficient, required checks pass and review is resolved | Finish the selected integration under its authority. Extra polish or unrelated hardening becomes proposed work. |
+| A check exposes a current acceptance defect | Repair within the selected scope and limit, then rerun affected checks. |
+| A new relevant risk or changed input invalidates the planned coverage | Explain the gap and amend the checks and effort under recorded authority. Preserve required gates. |
+| The limit is reached, a required executor is unavailable, or failure repeats without new information | Preserve the result, checkpoint and report the blocker or replan. Continue only independent authorized work. |
+
+Budgets do not grant execution permission or waive failed/unavailable checks.
+Do not renew an attempt automatically, retry an uncertain external effect without
+reconciliation, or treat a tool error as evidence of a product defect. Record
+what changed and why another authorized attempt can answer the question.
+
+Source integration, native qualification, release and operational acceptance may
+have different evidence boundaries only when project policy defines them.
+Do not move an unmet condition into later work merely to close an issue. A
+broader gate remains binding where it is required, even when focused checks pass.
+
 ## Record enough evidence
 
 Record the command or procedure, result, relevant source/input identity, environment,
