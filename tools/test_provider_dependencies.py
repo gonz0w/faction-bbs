@@ -498,7 +498,7 @@ def joined_ci_fixture():
 """
 
 
-def ci_fixture():
+def client_split_ci_fixture():
     source = joined_ci_fixture()
     native = native_ci_step()
     assert source.count(native) == 1
@@ -529,6 +529,84 @@ def ci_fixture():
     return source.replace('          test "$PROVIDER_OPERATOR_RESULT" = success\n',
                            '          test "$PROVIDER_OPERATOR_RESULT" = success\n'
                            '          test "$PROVIDER_CLIENT_RESULT" = success\n')
+
+
+def operator_proof_tail():
+    source = client_split_ci_fixture()
+    operator = policy._job(source, 'provider_operator')
+    step = policy._step(operator, 'Validate durable provider policy and operator')
+    commands = policy._lines(step, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'})
+    build = 'cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked'
+    return commands[commands.index(build):]
+
+
+def ci_fixture():
+    source = client_split_ci_fixture()
+    tail = ''.join('          ' + command + '\n' for command in operator_proof_tail())
+    assert source.count(tail) == 1
+    step = ('      - name: Validate the prepared provider operator console\n'
+            '        env:\n'
+            '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n'
+            '          CARGO_BUILD_JOBS: 2\n'
+            '          RUSTUP_TOOLCHAIN: 1.96.0\n'
+            '        run: |\n'
+            '          python3 tools/check_provider_dependencies.py\n' + tail)
+    return source.replace(tail, '').replace('  provider_operator:\n', step + '  provider_operator:\n', 1)
+
+
+class PreparedOperatorProofCI(unittest.TestCase):
+    def test_complete_client_operator_proof_layout_is_accepted(self):
+        policy.validate_ci(ci_fixture())
+
+    def test_old_operator_job_proof_tail_is_refused(self):
+        with self.assertRaises(ValueError):
+            policy.validate_ci(client_split_ci_fixture())
+
+    def test_actual_prepared_proof_follows_native_client_and_fresh_source_guard(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        client = policy._job(source, 'provider_client')
+        operator = policy._job(source, 'provider_operator')
+        name = 'Validate the prepared provider operator console'
+        proof = policy._step(client, name)
+        self.assertIn(native_ci_step(), client)
+        self.assertLess(client.index(native_ci_step()), client.index('      - name: ' + name))
+        for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0',
+                        'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            self.assertEqual(proof.splitlines().count('          ' + setting), 1)
+        self.assertEqual(policy._lines(proof, {'python3', 'cargo', 'umask', 'mkdir', 'printf'}),
+                         ['python3 tools/check_provider_dependencies.py'] + operator_proof_tail())
+        for command in operator_proof_tail():
+            self.assertNotIn('          ' + command + '\n', operator)
+        policy.validate_ci(source)
+
+    def test_proof_commands_guard_order_resources_prepared_and_uniqueness_are_required(self):
+        source = ci_fixture()
+        client = policy._job(source, 'provider_client')
+        name = 'Validate the prepared provider operator console'
+        proof = policy._step(client, name)
+        block = '      - name: ' + name + '\n' + proof
+        for line in proof.splitlines():
+            if line.strip().startswith(('python3 ', 'cargo ', 'umask ', 'mkdir ', 'printf ')):
+                with self.subTest(missing=line), self.assertRaises(ValueError):
+                    policy.validate_ci(source.replace(block, block.replace(line + '\n', '', 1)))
+        for old, new in [(' --prepared', ''), ('CARGO_BUILD_JOBS: 2', 'CARGO_BUILD_JOBS: 4'),
+                         ('RUSTUP_TOOLCHAIN: 1.96.0', 'RUSTUP_TOOLCHAIN: stable'),
+                         ('/faction-provider\n', '/faction-provider-operator\n'),
+                         ('Owned maintained-provider operator proof', 'Wrong proof marker'),
+                         ('        run: |', '        if: false\n        run: |'),
+                         ('        run: |', '        continue-on-error: true\n        run: |')]:
+            with self.subTest(altered=new), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(block, block.replace(old, new)))
+        early = source.replace(block, '').replace(native_ci_step(), block + native_ci_step(), 1)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(early)
+        unqualified = block.replace('          python3 tools/check_provider_dependencies.py\n', '')
+        late = unqualified + '          python3 tools/check_provider_dependencies.py\n'
+        with self.assertRaises(ValueError):
+            policy.validate_ci(source.replace(block, late))
+        for extra in [block, '  duplicate_proof:\n    runs-on: ubuntu-24.04\n    steps:\n' + block]:
+            with self.subTest(duplicate=extra), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace('  documentation:\n', extra + '  documentation:\n', 1))
 
 
 class ProviderClientCI(unittest.TestCase):
@@ -826,8 +904,8 @@ class OperatorCIMarkerIntegration(unittest.TestCase):
         import subprocess
         import probe_provider_operator as probe
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        job = policy._job(source, 'provider_operator')
-        step = policy._step(job, 'Validate durable provider policy and operator')
+        job = policy._job(source, 'provider_client')
+        step = policy._step(job, 'Validate the prepared provider operator console')
         commands = policy._lines(step, {'rustup', 'cargo', 'python3', 'umask', 'mkdir', 'printf'})
         producers = [shlex.split(command) for command in commands if command.startswith('printf ')]
         self.assertEqual(len(producers), 1)
@@ -917,10 +995,10 @@ class PreparationConsoleCI(unittest.TestCase):
 
 
 class PreparedOperatorCI(unittest.TestCase):
-    def test_actual_operator_probe_selects_prepared_mode_only_at_the_operator_consumer(self):
+    def test_actual_operator_probe_selects_prepared_mode_only_at_the_prepared_console_step(self):
         import shlex
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
-        job = policy._job(source, 'provider_operator')
+        job = policy._job(source, 'provider_client')
         lines = [line.strip() for line in job.splitlines()
                  if line.strip().startswith('python3 tools/probe_provider_operator.py ')]
         self.assertEqual(len(lines), 1)
@@ -1023,23 +1101,23 @@ class ServiceProfileSchedulingCI(unittest.TestCase):
         text = ci_fixture()
         for command in cls.service_commands():
             text = text.replace('          ' + command + '\n', '')
-        build = '          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator --release --locked\n'
-        return text.replace(build, ''.join('          ' + command + '\n'
-                                          for command in cls.service_commands()) + build)
+        after_operator = '          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator -- --test-threads=1\n'
+        return text.replace(after_operator, after_operator + ''.join('          ' + command + '\n'
+                                                                   for command in cls.service_commands()), 1)
 
-    def test_actual_service_pairs_run_once_in_operator_after_qualification_before_build(self):
+    def test_actual_service_pairs_run_once_in_operator_after_qualification_before_job_end(self):
         text = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
         provider = policy._job(text, 'provider')
         operator = policy._job(text, 'provider_operator')
         previous = operator.index('          python3 tools/check_provider_dependencies.py\n')
-        build = operator.index('          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider ')
+        end = len(operator)  # The separate console proof follows in the required client job.
         for command in self.service_commands():
             with self.subTest(command=command):
                 self.assertEqual(text.splitlines().count('          ' + command), 1)
                 self.assertNotIn('          ' + command + '\n', provider)
                 position = operator.index('          ' + command + '\n')
                 self.assertLess(previous, position)
-                self.assertLess(position, build)
+                self.assertLess(position, end)
                 previous = position
 
     def test_guard_accepts_complete_scheduled_fixture(self):
