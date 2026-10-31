@@ -415,7 +415,7 @@ impl HttpEndpoint {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "delegation-verifier"))]
 impl HttpEndpoint {
     pub(crate) fn observe_socket_nodelay(&mut self, observed: std::sync::mpsc::Sender<bool>) {
         self.socket_nodelay_observation = Some(observed);
