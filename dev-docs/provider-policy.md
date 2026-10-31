@@ -108,3 +108,13 @@ fallback or rewrite. The generation/reset tuple for the same remote home must ag
 publication and resource associations; retained remote floors and registry homes
 share the existing 32-home bound. The 65536-byte snapshot bound remains. See the
 [composed policy software record](evidence/delegation-publication/README.md).
+
+The explicit composed operator combines the existing `operator` and
+`delegation-verifier` features and uses a private version 2 operator configuration
+and complete proposal. Its fixed loopback routes and independent TLS credentials
+are external configuration; the durable policy remains the authority for registered
+service roles, associations and remote floors. Ordinary version 1 operator commands
+retain their same-home restrictions. The existing aggregate 32 credential/history
+and home limits and eight-slot operation budget are unchanged. See the
+[operator guide](../docs/provider-operator.md#explicit-composed-mode) and
+[carrier contract](delegation-verifier.md#composed-carrier-preview).

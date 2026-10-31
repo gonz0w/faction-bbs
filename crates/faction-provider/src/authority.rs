@@ -614,3 +614,9 @@ impl Authority {
         }
     }
 }
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "delivery_authority.rs"]
+mod delivery_bridge;
+#[cfg(feature = "delegation-verifier")]
+pub(crate) use delivery_bridge::Authenticated;

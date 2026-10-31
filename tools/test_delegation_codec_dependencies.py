@@ -176,7 +176,7 @@ class QualifiedProviderWireEdge(unittest.TestCase):
     def test_exact_optional_wire_edge_is_allowed_with_ordinary_feature_refusals(self):
         edge={'path':'../faction-delegation-codec','optional':True,'default-features':False}
         candidate={'features':{'default':[],'delegation-issuer':['delegation-records','delegation-services'],
-                   'delegation-wire':['delegation-issuer','dep:faction-delegation-codec']},'dependencies':{'faction-delegation-codec':edge}}
+                   'delegation-wire':['delegation-issuer','dep:faction-delegation-codec','dep:rustix']},'dependencies':{'faction-delegation-codec':edge}}
         policy.validate_product_edges({'crates/faction-provider/Cargo.toml':candidate})
         for path in ['crates/faction-client/Cargo.toml','crates/other/Cargo.toml']:
             with self.subTest(path=path),self.assertRaises(ValueError):policy.validate_product_edges({path:candidate})

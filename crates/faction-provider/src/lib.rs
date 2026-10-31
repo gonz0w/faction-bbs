@@ -16,6 +16,8 @@ pub mod durable;
 pub mod preparation;
 mod service;
 pub mod tls;
+#[cfg(feature = "delegation-verifier")]
+pub use tls::delivery;
 use authority::{Authority, Registry};
 use faction_files::private_blobs;
 pub use service::BinaryService;

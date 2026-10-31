@@ -403,3 +403,37 @@ impl Control {
 #[cfg(test)]
 #[path = "retrieval_tests.rs"]
 mod tests;
+
+#[cfg(feature = "delegation-verifier")]
+pub(crate) struct DeliveryRecord {
+    record: RetrievalRecord,
+}
+#[cfg(feature = "delegation-verifier")]
+impl DeliveryRecord {
+    pub(crate) fn new(record: RetrievalRecord) -> Self {
+        Self { record }
+    }
+    pub(crate) fn record(&self) -> &RetrievalRecord {
+        &self.record
+    }
+}
+#[cfg(feature = "delegation-verifier")]
+impl Drop for DeliveryRecord {
+    fn drop(&mut self) {
+        if let Some(state) = self.record.state.upgrade()
+            && let Ok(mut authority) = state.authority.lock()
+        {
+            authority
+                .records
+                .slots
+                .retain(|slot| !Arc::ptr_eq(&slot.token, &self.record.token));
+        }
+    }
+}
+#[cfg(feature = "delegation-verifier")]
+impl Authority {
+    pub(crate) fn install_delivery_retrieval_policy(&mut self, policy: RetrievalPolicy) {
+        self.records.invalidate();
+        self.records.policy = Some(policy);
+    }
+}

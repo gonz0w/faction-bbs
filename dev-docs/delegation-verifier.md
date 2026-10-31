@@ -109,6 +109,31 @@ provider admission retains its existing limits.
 The newer [composed policy and publication record](evidence/delegation-publication/README.md)
 describes its separate component observations and pending checks.
 
+## Composed carrier preview
+
+Explicitly combining `operator` and `delegation-verifier` selects the composed
+carrier; neither feature is enabled by default. A bounded submit, close and collect
+exchange lets the original connection close before federation callbacks. A receipt
+is routing data, not a Store commit or authority. Collection uses fresh TLS and
+checks the exact submitting identity, purpose, request and current authority.
+Unfinished work returns Busy immediately without queuing or holding the incoming
+lane for the callback. A lost result requires a freshly authorized exact retry;
+there is no automatic polling.
+
+For own-home retrieval, the device connection closes before the actual registered
+Relay establishes its own mutual-TLS issuance connection. The configured peer
+resource and introspection routes are used afterward. One physical continuation
+reservation remains held through worker, socket and collection completion; a
+recipient record and that reservation together use two of the existing eight
+aggregate slots. The original eight attempts, ten-second cycle, admission and
+drain limits remain. No result registry, worker pool or additional Runtime is
+introduced. See the [operator guide](../docs/provider-operator.md) for explicit
+configuration.
+
+These interfaces are a software preview under validation. Full carrier behavior,
+native cross-home delivery, mail release and separate review are not yet established
+by the earlier component evidence below.
+
 ## Scope of component validation
 
 The [host and NetBSD software record](evidence/delegation-verifier/README.md)

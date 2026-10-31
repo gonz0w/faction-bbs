@@ -14,7 +14,7 @@ use std::{
     os::unix::fs::MetadataExt,
     path::{Component, Path, PathBuf},
 };
-fn absolute(path: &Path) -> bool {
+pub(super) fn absolute(path: &Path) -> bool {
     path.is_absolute()
         && !path
             .components()
@@ -99,22 +99,22 @@ pub(super) fn private_file(path: &Path, root: &Path, cap: u64) -> Result<Vec<u8>
     }
     Ok(bytes)
 }
-fn table(path: &Path, root: &Path, cap: u64) -> Result<toml::Table> {
+pub(super) fn table(path: &Path, root: &Path, cap: u64) -> Result<toml::Table> {
     let bytes = private_file(path, root, cap)?;
     mapped(mapped(std::str::from_utf8(&bytes))?.parse())
 }
-fn string(t: &mut toml::Table, key: &str) -> Result<String> {
+pub(super) fn string(t: &mut toml::Table, key: &str) -> Result<String> {
     t.remove(key)
         .and_then(|v| v.as_str().map(str::to_owned))
         .ok_or(())
 }
-fn number(t: &mut toml::Table, key: &str) -> Result<u64> {
+pub(super) fn number(t: &mut toml::Table, key: &str) -> Result<u64> {
     t.remove(key)
         .and_then(|v| v.as_integer())
         .and_then(|v| u64::try_from(v).ok())
         .ok_or(())
 }
-fn boolean(t: &mut toml::Table, key: &str) -> Result<bool> {
+pub(super) fn boolean(t: &mut toml::Table, key: &str) -> Result<bool> {
     t.remove(key).and_then(|v| v.as_bool()).ok_or(())
 }
 fn version(t: &mut toml::Table) -> Result<()> {
@@ -124,7 +124,7 @@ fn version(t: &mut toml::Table) -> Result<()> {
         Ok(())
     }
 }
-fn digest(text: &str) -> Result<[u8; 32]> {
+pub(super) fn digest(text: &str) -> Result<[u8; 32]> {
     if text.len() != 64 {
         return Err(());
     }
@@ -152,7 +152,9 @@ pub(super) struct Config {
 impl Config {
     pub(super) fn load(path: &Path) -> Result<Self> {
         let root = path.parent().ok_or(())?.to_path_buf();
-        let mut t = table(path, &root, 8192)?;
+        Self::from_table(root.clone(), table(path, &root, 8192)?)
+    }
+    pub(super) fn from_table(root: PathBuf, mut t: toml::Table) -> Result<Self> {
         version(&mut t)?;
         let home = string(&mut t, "home")?;
         mapped(BinaryService::new(&home))?;

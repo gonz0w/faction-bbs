@@ -10,6 +10,8 @@ pub struct HttpEndpoint {
     leaf_pin: [u8; 32],
     credentials: ClientCredentials,
     #[cfg(test)]
+    socket_nodelay_observation: Option<std::sync::mpsc::Sender<bool>>,
+    #[cfg(test)]
     read_retries: Option<Arc<std::sync::atomic::AtomicUsize>>,
     #[cfg(all(test, feature = "delegation-verifier"))]
     request_gate: Option<Arc<ResponseWriteGate>>,
@@ -41,6 +43,8 @@ impl HttpEndpoint {
             server_name,
             leaf_pin,
             credentials,
+            #[cfg(test)]
+            socket_nodelay_observation: None,
             #[cfg(test)]
             read_retries: None,
             #[cfg(all(test, feature = "delegation-verifier"))]
@@ -87,9 +91,14 @@ impl HttpEndpoint {
         if !probe() {
             return Err(Stage::Denied);
         }
-        // A single bounded connect attempt; no retry or DNS/proxy discovery.
-        let socket = TcpStream::connect_timeout(&self.address, connect_budget(handshake))
-            .map_err(|_| classify(handshake, &cancel, Stage::Admission))?;
+        let socket = super::tcp_connect::connect(&self.address, handshake, &cancel, || probe())?;
+        socket.set_nodelay(true).map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(observed) = &self.socket_nodelay_observation {
+            observed
+                .send(socket.nodelay().map_err(|_| Stage::Configuration)?)
+                .map_err(|_| Stage::Configuration)?;
+        }
         let mut io = DeadlineIo::new(socket, handshake, cancel.clone());
         io.policy_probe = Some(probe.clone());
         #[cfg(test)]
@@ -218,9 +227,8 @@ impl crate::Control {
             .map_err(|_| Error::Transport(Stage::Frame))
     }
 }
-fn connect_budget(handshake: Instant) -> Duration {
-    handshake.saturating_duration_since(Instant::now())
-}
+#[cfg(test)]
+use super::tcp_connect::connect_budget;
 #[cfg(test)]
 mod tests {
     #[test]
@@ -375,5 +383,41 @@ impl HttpEndpoint {
             return Err(Stage::Denied);
         }
         Ok(result)
+    }
+}
+
+#[cfg(feature = "delegation-verifier")]
+impl HttpEndpoint {
+    pub(crate) fn issue_checked(
+        &self,
+        client_id: &str,
+        reference: [u8; 32],
+        deadline: Instant,
+        cancel: Arc<AtomicBool>,
+        probe: Arc<dyn Fn() -> bool + Send + Sync>,
+    ) -> Result<(codec::UnverifiedToken, Instant), Stage> {
+        let started = Instant::now();
+        let request = codec::encode_token_http(
+            &self.host,
+            &codec::UnverifiedTokenRequest {
+                client_id: client_id.into(),
+                scope: codec::UnverifiedReference::from_bytes(reference),
+            },
+        )
+        .map_err(|_| Stage::Frame)?;
+        let bytes = self.exchange(&request, deadline, cancel, probe)?;
+        let response = codec::decode_token_response_http(&bytes).map_err(|_| Stage::Frame)?;
+        let expires = (started + Duration::from_secs(response.expires_in)).min(deadline);
+        if Instant::now() >= expires {
+            return Err(Stage::Deadline);
+        }
+        Ok((response.token, expires))
+    }
+}
+
+#[cfg(test)]
+impl HttpEndpoint {
+    pub(crate) fn observe_socket_nodelay(&mut self, observed: std::sync::mpsc::Sender<bool>) {
+        self.socket_nodelay_observation = Some(observed);
     }
 }

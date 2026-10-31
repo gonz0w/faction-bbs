@@ -1,8 +1,8 @@
 # Private attachment provider operator
 
-This optional standalone executable prepares and serves a same-home attachment
-provider on numeric loopback. It is software preview, not provider deployment or
-production enrollment. It needs a trusted operator's preapproved public policy and
+This optional standalone executable prepares and serves an attachment provider
+on numeric loopback. Its ordinary mode serves a same-home provider. It is a
+software preview, not provider deployment or production enrollment. It needs a trusted operator's preapproved public policy and
 independently provisioned TLS material; it does not issue certificates, enroll
 members, grant BBS membership or recover device keys. Ordinary BBS access, files
 and encrypted mail remain independent. See the [attachment guide](private-attachments.md)
@@ -141,14 +141,198 @@ in the foreground; TERM or INT stops admission and drains owned work within the
 existing five-second budget. There is no daemon installer or automatic reload.
 
 Never delete or reinitialize established state to work around an error. Missing or
-corrupt state refuses reopening. If publication fails or its outcome is uncertain,
-the current runtime stops serving until reopened; do not assume rollback. Stop the
-owner, inspect retained state and deliberately prepare a valid higher-generation
-proposal after determining the actual state. An invalid proposal leaves the current
-validated policy intact. Whole-root restoration to an older trusted copy is not
-detected. See [policy and failure semantics](../dev-docs/provider-policy.md).
+corrupt state refuses reopening. If a policy snapshot atomic write fails or its
+publication outcome is uncertain, the current runtime stops serving until reopened;
+do not assume rollback. Stop the owner, inspect retained policy state and deliberately
+prepare a valid higher-generation proposal after determining the actual state. An
+invalid proposal leaves the current validated policy intact. Whole-root restoration
+to an older trusted copy is not detected. See [policy and failure semantics](../dev-docs/provider-policy.md).
 
 The provider allows one active connection, eight attempted operations, five seconds
 for TCP and TLS admission and a ten-second accepted cycle. Attachment upload and
 mail release retain their separate client limits. This preview does not establish
-independent client interoperability, public listening or own-home delegation.
+independent client interoperability or public listening. The composed mode below
+is under validation; native cross-home delivery and mail release remain incomplete.
+
+## Explicit composed mode
+
+This private software preview is under validation. Each operator independently
+approves a complete policy and supplies certificates and fixed loopback routes.
+There is no automatic enrollment, trust decision or discovery. Device and service
+approval are separate; a card or certificate does not itself grant either. Keep
+content, plaintext, vault and OMEMO keys on the member device. The ordinary version
+1 commands and their same-home refusal remain unchanged.
+
+Select both features explicitly, after the preflight in Build and prepare:
+
+```sh
+RUSTUP_TOOLCHAIN=1.96.0 cargo +1.96.0 build --manifest-path crates/faction-provider/Cargo.toml --locked --offline --features operator,delegation-verifier --bin faction-provider
+```
+
+For each home, create separate private configuration, policy and blob roots as
+above. The following illustrates the configuration for `alpha.test` with one
+invited peer `beta.test`. Replace *all* paths, ports, names and digest placeholders
+with independently verified values. These names and paths are illustrative; they
+are not provisioned by the operator. The peer must separately configure its own
+home and reciprocal policy. Use fixed, nonzero numeric loopback ports: composed
+mode cannot use the version 1 ephemeral-port example.
+
+```toml
+version = 2
+home = "alpha.test"
+endpoint = "127.0.0.1:41001"
+policy_root = "/private/alpha/policy"
+blob_root = "/private/alpha/blobs"
+ca = "/private/alpha/config/alpha-ca.pem"
+certificate = "/private/alpha/config/alpha-server.pem"
+key = "/private/alpha/config/alpha-server-key.pem"
+client_cas = ["/private/alpha/config/alpha-ca.pem", "/private/alpha/config/beta-ca.pem"]
+publication_clients = ["publisher"]
+
+[local_relay]
+address = "127.0.0.1:41001"
+http_host = "alpha.test"
+server_name = "alpha.test"
+leaf_pin = "<alpha server leaf SHA-256 DER digest>"
+ca = "/private/alpha/config/alpha-ca.pem"
+certificate = "/private/alpha/config/alpha-relay.pem"
+key = "/private/alpha/config/alpha-relay-key.pem"
+
+[[peers]]
+home = "beta.test"
+
+[peers.publication]
+address = "127.0.0.1:41002"
+http_host = "beta.test"
+server_name = "beta.test"
+leaf_pin = "<beta server leaf SHA-256 DER digest>"
+ca = "/private/alpha/config/beta-ca.pem"
+certificate = "/private/alpha/config/alpha-publisher.pem"
+key = "/private/alpha/config/alpha-publisher-key.pem"
+
+[peers.introspection]
+address = "127.0.0.1:41002"
+http_host = "beta.test"
+server_name = "beta.test"
+leaf_pin = "<beta server leaf SHA-256 DER digest>"
+ca = "/private/alpha/config/beta-ca.pem"
+certificate = "/private/alpha/config/alpha-inspector.pem"
+key = "/private/alpha/config/alpha-inspector-key.pem"
+
+[peers.resource]
+address = "127.0.0.1:41002"
+http_host = "beta.test"
+server_name = "beta.test"
+leaf_pin = "<beta server leaf SHA-256 DER digest>"
+ca = "/private/alpha/config/beta-ca.pem"
+certificate = "/private/alpha/config/alpha-relay.pem"
+key = "/private/alpha/config/alpha-relay-key.pem"
+```
+
+The configuration parent is the private configuration root; put the file itself
+there, for example `/private/alpha/config/config-v2.toml`. Proposal and PEM paths
+must be absolute paths beneath that root. The ownership, mode, regular-file,
+single-link and no-symlink rules above apply. The config, proposal and each PEM
+are limited to 65536 bytes; the CA and certificate PEM inputs each contain one
+certificate. Config arrays and peer lists are nonempty and at most 32 entries;
+peer homes are distinct and cannot be the local home. Unknown fields are refused.
+Each digest placeholder must be replaced by exactly 64 lowercase hexadecimal
+characters; a leaf pin is the SHA-256 digest of the server leaf in DER form.
+`client_cas` supplies incoming client trust roots. `publication_clients` restricts
+incoming publication client IDs; it does not register or approve them. `local_relay`
+must match the listening socket, and its `http_host` must equal `server_name`; the
+same equality applies to each peer resource carrier. Each endpoint's CA verifies
+the remote server; its certificate and key identify the local outbound service.
+The peer's independently approved incoming policy must recognize that credential.
+
+Prepare a complete version 2 proposal under the configuration root. It is not
+generated by these commands. Include `version`, `generation`, `reset_epoch`,
+`homes`, `local_home`, `issuer`, and the following arrays of tables. `homes`
+includes the local home and invited homes; `local_home` equals config `home`.
+Bindings are local device principals only. Each binding has the same fields as the
+version 1 example above and its generation equals the proposal generation. Times
+are Unix seconds. The 32-credential and history limits are aggregate across device
+and service identities, and the home limit is 32.
+
+| Proposal array | Required fields | Purpose |
+| --- | --- | --- |
+| `[[bindings]]` | `certificate_sha256`, `account`, `device`, `identity`, `valid_from`, `valid_until`, `approved`, `account_enabled`, `device_enabled`, `generation` | Independently approved local device and certificate. |
+| `[[services]]` | `home`, `client_id`, `purpose`, `dns_san`, `certificate_sha256`, `enabled`, `valid_from`, `valid_until` | Independently approved service identity, certificate and role. Digest is the service certificate's SHA-256 DER digest. |
+| `[[issuer_routes]]` | `sender_home`, `audience`, `relay_client_id`, `introspection_client_id` | Approved issuer route for a sender home and its relay/introspection IDs. |
+| `[[resources]]` | `recipient_home`, `issuer`, `audience`, `relay_client_id`, `outbound_client_id`, `endpoint_id`, `address`, `http_host`, `ca_sha256`, `remote_generation`, `remote_reset` | Fixed retrieval and introspection association. |
+| `[[publications]]` | `recipient_home`, `outbound_client_id`, `endpoint_id`, `address`, `http_host`, `ca_sha256`, `remote_generation`, `remote_reset` | Fixed outgoing publication association. |
+
+All five arrays must be present; service, route, resource and publication arrays
+are nonempty and at most 32 entries. For each association, `ca_sha256` is the
+SHA-256 DER digest of the peer CA. Its address, HTTP host, CA and outgoing client
+credential must match the configured endpoint. The `endpoint_id` refers to the
+peer's `issuer-endpoint` service registration, whose DNS SAN and certificate
+digest provide the expected server name and leaf pin; it is not a wire client ID.
+Publication HTTP host equals the recipient home; resource HTTP host equals its
+issuer. The publication and resource tuples for a peer must agree on exact remote
+generation and reset values. Coordinate complete proposals at both homes when
+those values change; intermediate mismatches deny operations and are never adopted
+automatically. Retained remote floors cannot be lowered or forgotten.
+
+For the example, the following registration roles illustrate the reciprocal
+relationship. The IDs are operator-chosen examples, and each row requires all
+`[[services]]` fields above with independently verified certificate digest, DNS
+SAN, validity and enabled flag. The other home needs its own corresponding rows.
+
+| Registration in alpha's proposal | Home and ID | Certificate represented / use |
+| --- | --- | --- |
+| `relay` | alpha.test, `relay` | alpha relay client; used by `local_relay` and `peers.resource`. |
+| `outbound-observation` | alpha.test, `publisher` | alpha publisher client; used by `peers.publication`. |
+| `outbound-introspection` | alpha.test, `inspector` | alpha inspector client; used by `peers.introspection`. |
+| `observation` | beta.test, `publisher` | beta publisher client accepted for incoming publication; its ID is in `publication_clients`. |
+| `introspection` | beta.test, `inspector` | beta inspector client accepted for incoming introspection. |
+| `resource-client` | beta.test, `relay` | beta relay client accepted for incoming resource operations. |
+| `issuer-endpoint` | beta.test, `endpoint` | beta server leaf and DNS name; referenced by both association `endpoint_id` values. |
+
+For this paired example, the issuer route uses `sender_home = "beta.test"`,
+`audience = "beta.test/attachments"`, `relay_client_id = "relay"`, and
+`introspection_client_id = "inspector"`. The resource association uses
+`recipient_home = "beta.test"`, `issuer = "beta.test"`,
+`audience = "alpha.test/attachments"`, `relay_client_id = "relay"`,
+`outbound_client_id = "inspector"`, and `endpoint_id = "endpoint"`. The
+publication association uses `recipient_home = "beta.test"`,
+`outbound_client_id = "publisher"`, and `endpoint_id = "endpoint"`. Both
+associations use beta's fixed socket, host, CA digest and exact approved remote
+policy generation/reset. The exact values must be coordinated and approved; these
+illustrative IDs do not create trust or authorize a service.
+
+```sh
+faction-provider init-composed /private/alpha/config/config-v2.toml /private/alpha/config/proposal-v2.toml
+faction-provider inspect-composed /private/alpha/config/config-v2.toml
+faction-provider serve-composed /private/alpha/config/config-v2.toml
+# After the serving process has stopped:
+faction-provider apply-composed /private/alpha/config/config-v2.toml /private/alpha/config/next-v2.toml
+faction-provider reset-composed /private/alpha/config/config-v2.toml 1
+```
+
+Initialize only a new empty policy root. Inspect prints generation, reset epoch,
+availability, binding count and history count, not the complete policy. Serve
+runs in the foreground and prints `ready PORT`; TERM or INT stops admission and
+drains owned work under the existing five-second budget. Offline commands require
+the policy lock; stop the owner before apply or reset. Apply replaces the complete
+registry and service policy and requires a higher local generation and a
+nondecreasing reset epoch. Reset requires an epoch above the retained floor,
+advances generation and clears active device and service bindings. It preserves
+certificate history and remote floors. To recover, inspect floors, independently
+approve a complete higher-generation proposal with a reset epoch at least the
+retained floor, and apply it; retained certificate identity mappings still apply.
+Never delete or reinitialize established state to bypass refusal. If a policy snapshot atomic write fails or its publication outcome is uncertain,
+the current runtime stops serving until reopened. Stop the owner and inspect retained
+policy state before preparing a valid next proposal; do not assume rollback. This
+inspection reports policy, not Store objects. For an uncertain attachment Store
+result, use a freshly authorized exact retry; do not release mail based on a receipt
+or an uncertain result. Applying policy does not repair an attachment. Whole-root
+rollback to an older trusted copy is not detected. See [policy and failure semantics](../dev-docs/provider-policy.md).
+
+Routes come from approved policy and fixed configuration, never a request URL.
+One Runtime per home shares the existing limits, with at most one continuation;
+the original eight attempts and ten-second accepted cycle remain. A receipt is
+routing data, not a Store commit or mail release. Collection requires a fresh
+authenticated connection. See the [carrier contract](../dev-docs/delegation-verifier.md).
+This preview does not establish native cross-home mail delivery, a deployed provider,
+public listening, independent interoperability, hardware or capacity support.

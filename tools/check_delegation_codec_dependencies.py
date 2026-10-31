@@ -89,7 +89,7 @@ def validate_product_edges(manifests):
         if selected is not None:
             require(path=='crates/faction-provider/Cargo.toml' and selected==edge, 'only exact optional provider codec edge allowed')
             features=manifest.get('features',{})
-            require(features.get('default')==[] and features.get('delegation-wire')==['delegation-issuer','dep:faction-delegation-codec'], 'codec must be selected only by explicit wire composition')
+            require(features.get('default')==[] and features.get('delegation-wire')==['delegation-issuer','dep:faction-delegation-codec','dep:rustix'], 'codec must be selected only by explicit wire composition')
             for name, values in features.items():
                 if name=='delegation-verifier':
                     require(values==['delegation-wire'],'verifier requires exact optional wire composition')

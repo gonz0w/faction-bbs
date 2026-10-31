@@ -30,13 +30,13 @@ def validate_profile(manifest, workspace):
     expected = {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
                 'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
                 'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [], 'delegation-issuer': ['delegation-records', 'delegation-services'], 'delegation-wire': ['delegation-issuer', 'dep:faction-delegation-codec'], 'delegation-verifier': ['delegation-wire'],
+                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [], 'delegation-issuer': ['delegation-records', 'delegation-services'], 'delegation-wire': ['delegation-issuer', 'dep:faction-delegation-codec', 'dep:rustix'], 'delegation-verifier': ['delegation-wire'],
                     'preparation': ['dep:toml', 'toml/display'],
                     'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
                 'dependencies': {'faction-delegation-codec': {'path': '../faction-delegation-codec', 'optional': True, 'default-features': False}, 'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
                                  'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
                     'rustix': {'version': '=1.1.5', 'default-features': False,
-                               'features': ['std', 'fs', 'process'], 'optional': True},
+                               'features': ['std', 'fs', 'process', 'net', 'event'], 'optional': True},
                     'toml': {'version': '=1.1.8', 'default-features': False,
                              'features': ['std', 'parse', 'serde'], 'optional': True},
                     'faction-unix': {'path': '../faction-unix', 'optional': True}},
@@ -95,10 +95,10 @@ CODEC_ONLY = {('httparse','1.10.1'), ('form_urlencoded','1.2.2'), ('percent-enco
 def validate_codec_composition(profile, package, features):
     key=(package['name'],package.get('version'))
     if package['name'] in {name for name, _ in CODEC_ONLY}:
-        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy'}, 'codec-only source leaked into ordinary/core graph')
+        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy','operator,delegation-verifier'}, 'codec-only source leaked into ordinary/core graph')
         delegation_codec.validate_selected(package,features)
     if package['name']=='faction-delegation-codec':
-        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy'} and features==[], 'codec local edge leaked into ordinary/core graph')
+        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy','operator,delegation-verifier'} and features==[], 'codec local edge leaked into ordinary/core graph')
 
 
 
@@ -158,7 +158,7 @@ def root_warm_commands():
 def provider_warm_commands():
     return ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features ' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy'] for target in TARGETS]
+            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'] for target in TARGETS]
 
 
 def validate_warm_order(job):
@@ -205,7 +205,7 @@ def validate_ci(text):
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' > /dev/null' for target in TARGETS]
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features blob-iq > /dev/null' for target in TARGETS]
-    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy'] for target in TARGETS]
+    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'] for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked -- -D warnings',
@@ -214,7 +214,7 @@ def validate_ci(text):
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
     commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features preparation -- --test-threads=1']
-    for feature in ['delegation-records', 'delegation-records,durable-policy','delegation-verifier']:
+    for feature in ['delegation-records', 'delegation-records,durable-policy','delegation-verifier','operator,delegation-verifier']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
@@ -349,6 +349,7 @@ def inventory():
                               ('delegation-wire,durable-policy', ['delegation-wire','durable-policy']),
                               ('delegation-verifier', ['delegation-verifier']),
                               ('delegation-verifier,durable-policy', ['delegation-verifier','durable-policy']),
+                              ('operator,delegation-verifier', ['operator','delegation-verifier']),
                               ('device-provider', ['faction-client/device-provider'])]:
         graphs = {}
         for target in TARGETS:

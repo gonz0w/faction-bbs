@@ -27,10 +27,81 @@ fn retain_synthetic_fixture(name: &str, bytes: &[u8]) {
         .write_all(bytes)
         .unwrap();
 }
+fn capture_carrier_fixture(h: &Homes, prefix: &str, destination: &std::path::Path) {
+    use std::{
+        io::Write,
+        os::unix::fs::{OpenOptionsExt, PermissionsExt},
+    };
+    assert_eq!(
+        fs::metadata(destination).unwrap().permissions().mode() & 0o7777,
+        0o700
+    );
+    let save = |name: &str, bytes: &[u8]| {
+        fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(destination.join(format!("{prefix}-{name}")))
+            .unwrap()
+            .write_all(bytes)
+            .unwrap();
+    };
+    for (i, home) in h.pair.homes.iter().enumerate() {
+        for (name, certificate) in [
+            ("ca", &home.ca),
+            ("server", &home.server),
+            ("device", &home.device),
+            ("relay", &home.relay),
+            ("outgoing", &home.outgoing),
+            ("observer", &h.observers[i]),
+        ] {
+            save(
+                &format!("home{i}-{name}.pem"),
+                &certificate.0.to_pem().unwrap(),
+            );
+            save(
+                &format!("home{i}-{name}.key"),
+                &certificate.1.private_key_to_pem_pkcs8().unwrap(),
+            );
+        }
+        let snapshot = h.pair.root.join(format!("store{i}/private-blobs.snapshot"));
+        if snapshot.is_file() {
+            save(
+                &format!("home{i}-store.snapshot"),
+                &fs::read(snapshot).unwrap(),
+            );
+        }
+    }
+    for (label, certificate) in h.other_credentials.lock().unwrap().iter() {
+        save(
+            &format!("extra-{label}.pem"),
+            &certificate.0.to_pem().unwrap(),
+        );
+        save(
+            &format!("extra-{label}.key"),
+            &certificate.1.private_key_to_pem_pkcs8().unwrap(),
+        );
+    }
+}
+fn capture_carrier_optional(h: &Homes, label: &str) {
+    static NEXT_CAPTURE: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+    if let Some(destination) = std::env::var_os("FACTION321_CAPTURE_DIR") {
+        capture_carrier_fixture(
+            h,
+            &format!(
+                "{label}-{}-{}",
+                std::process::id(),
+                NEXT_CAPTURE.fetch_add(1, Ordering::SeqCst)
+            ),
+            std::path::Path::new(&destination),
+        );
+    }
+}
 struct Homes {
     pair: Pair,
     observers: [Certificate; 2],
     callbacks: [AtomicUsize; 2],
+    other_credentials: Mutex<Vec<(String, Certificate)>>,
 }
 impl Homes {
     fn new(durable: bool) -> Self {
@@ -56,10 +127,12 @@ impl Homes {
             pair,
             observers,
             callbacks: [AtomicUsize::new(0), AtomicUsize::new(0)],
+            other_credentials: Mutex::new(Vec::new()),
         };
         for i in 0..2 {
             h.install(i, 2, 0, 2, 0, |_| ());
         }
+        capture_carrier_optional(&h, "initialized");
         h
     }
     fn policy(
@@ -218,6 +291,49 @@ impl Homes {
             let _ = remote.join().unwrap();
             result
         })
+    }
+    fn issuer_progress_while_callback_is_held(&self, i: usize) {
+        use faction_delegation_codec as codec;
+        let local = &self.pair.homes[i];
+        let foreign = &self.pair.homes[1 - i];
+        let binding = self.pair.binding(1 - i);
+        let record = crate::retrieval::DeliveryRecord::new(local.record(&binding).unwrap());
+        // Actual independent recipient device -> registered local relay mTLS.
+        let token = local.issue(record.record());
+        let endpoint = foreign.endpoint(local);
+        thread::scope(|scope| {
+            let caller = scope.spawn(|| {
+                foreign.runtime().control().query_introspection(
+                    &endpoint,
+                    &codec::UnverifiedIntrospectionRequest {
+                        client_id: "inspector".into(),
+                        token,
+                    },
+                    Instant::now() + tls::CYCLE_LIMIT,
+                    Arc::new(AtomicBool::new(false)),
+                )
+            });
+            local
+                .server(&local.ca.0)
+                .accept_service(
+                    &local.callback,
+                    local.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap()
+                .serve_http_once()
+                .unwrap();
+            let codec::UnverifiedIntrospection::Retrieval { claims, .. } =
+                caller.join().unwrap().unwrap()
+            else {
+                panic!("same-Runtime current introspection did not progress")
+            };
+            assert_eq!(claims.binding.recipient.account, local.principal.account);
+            assert_eq!(claims.binding.sender.account, foreign.principal.account);
+            assert_eq!(claims.generation, 2);
+            assert_eq!(claims.reset, 0);
+        });
+        drop(record);
     }
     fn empty(&self, i: usize) -> Mutex<Store> {
         Mutex::new(Store::open(&self.pair.root.join(format!("store{i}"))).unwrap())
@@ -1610,4 +1726,1774 @@ fn publication_precise_clock_refuses_same_second_fractional_rollback_and_never_r
         return;
     }
     panic!("could not obtain a same-second clock observation window");
+}
+#[test]
+fn versioned_publication_submit_close_busy_progress_callback_collect_both_directions() {
+    use crate::delivery::{CarrierEndpoint, Collection};
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    for i in 0..2 {
+        let local = &h.pair.homes[i];
+        let remote = &h.pair.homes[1 - i];
+        let binding = h.pair.binding(i);
+        let store = h.empty(i);
+        for request in [
+            Request::Begin(binding.clone()),
+            Request::PutChunk {
+                id: binding.id,
+                offset: 0,
+                bytes: vec![9; 32],
+            },
+            Request::Commit { id: binding.id },
+            Request::Status { id: binding.id },
+            Request::Delete { id: binding.id },
+        ] {
+            let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+            let endpoint = CarrierEndpoint::new(
+                listener.local_addr().unwrap(),
+                "provider.test".into(),
+                sha256(&local.server.0.to_der().unwrap()),
+                ClientCredentials::from_pem(
+                    &local.ca.0.to_pem().unwrap(),
+                    &local.device.0.to_pem().unwrap(),
+                    &local.device.1.private_key_to_pem_pkcs8().unwrap(),
+                )
+                .unwrap(),
+            )
+            .unwrap();
+            let before = local.charged();
+            thread::scope(|scope| {
+                let (commands, go) = mpsc::channel();
+                let (result, observed) = mpsc::channel();
+                let client_request = request.clone();
+                let client_binding = binding.clone();
+                let client = scope.spawn(move || {
+                    let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+                    operation
+                        .submit_publication(client_binding, client_request)
+                        .unwrap();
+                    for _ in 0..2 {
+                        go.recv_timeout(Duration::from_secs(5)).unwrap();
+                        result.send(operation.collect()).unwrap();
+                    }
+                });
+                let session = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                let witness = {
+                    let a = local.runtime().state.authority.lock().unwrap();
+                    Arc::downgrade(&a.slots[0].connection)
+                };
+                let (mut delivery, work) = session.submit_publication().unwrap();
+                assert!(
+                    witness.upgrade().is_none(),
+                    "original Connection/Handle survived wire submit"
+                );
+                assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+                assert_eq!(local.charged(), before + 1);
+                let callback = h.endpoint(i);
+                let store_ref = &store;
+                let worker = scope.spawn(move || work.execute(&callback, store_ref));
+                // Actual callback TLS is established and held before processing.
+                let held = remote
+                    .server(&remote.ca.0)
+                    .accept_service(
+                        &remote.callback,
+                        remote.runtime(),
+                        Arc::new(AtomicBool::new(false)),
+                    )
+                    .unwrap();
+                commands.send(()).unwrap();
+                let early = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(!early.collect_delivery(&mut delivery).unwrap());
+                assert!(matches!(
+                    observed
+                        .recv_timeout(Duration::from_secs(5))
+                        .unwrap()
+                        .unwrap(),
+                    Collection::Busy
+                ));
+                assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+                assert!(!delivery.is_finished());
+                local.ordinary_progress(&store, &binding);
+                h.issuer_progress_while_callback_is_held(i);
+                held.serve_publication_http_once(
+                    &PublicationWireProfile::new(remote.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+                .unwrap();
+                worker.join().unwrap().unwrap();
+                assert!(delivery.is_finished());
+                assert_eq!(
+                    local.charged(),
+                    before + 1,
+                    "physical lease freed at callback completion"
+                );
+                commands.send(()).unwrap();
+                let fresh = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(fresh.collect_delivery(&mut delivery).unwrap());
+                let Collection::Complete(response) = observed
+                    .recv_timeout(Duration::from_secs(5))
+                    .unwrap()
+                    .unwrap()
+                else {
+                    panic!("missing actual operation result")
+                };
+                match (&request, response) {
+                    (
+                        Request::Begin(_),
+                        Response::Progress {
+                            offset: 0,
+                            committed: false,
+                            ..
+                        },
+                    ) => (),
+                    (
+                        Request::PutChunk { .. },
+                        Response::Progress {
+                            offset: 32,
+                            committed: false,
+                            ..
+                        },
+                    ) => (),
+                    (
+                        Request::Commit { .. } | Request::Status { .. },
+                        Response::Progress {
+                            binding: actual,
+                            offset: 32,
+                            committed: true,
+                        },
+                    ) => assert_eq!(actual, binding),
+                    (Request::Delete { .. }, Response::Deleted) => (),
+                    other => panic!("wrong independently expected Store result {other:?}"),
+                }
+                assert_eq!(
+                    local.charged(),
+                    before + 1,
+                    "lease ended before delivery owner/socket completion"
+                );
+                client.join().unwrap();
+                drop(delivery);
+                assert_eq!(local.charged(), before);
+                capture_carrier_optional(&h, "publication-completed");
+            });
+        }
+    }
+}
+#[test]
+fn source_bound_malformed_collects_spend_the_original_eight_attempts() {
+    use crate::delivery::CarrierEndpoint;
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = CarrierEndpoint::new(
+        address,
+        "provider.test".into(),
+        sha256(&local.server.0.to_der().unwrap()),
+        ClientCredentials::from_pem(
+            &local.ca.0.to_pem().unwrap(),
+            &local.device.0.to_pem().unwrap(),
+            &local.device.1.private_key_to_pem_pkcs8().unwrap(),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    thread::scope(|scope| {
+        let (go, wait) = mpsc::channel();
+        let client_binding = binding.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(client_binding.clone(), Request::Begin(client_binding))
+                .unwrap();
+            wait.recv_timeout(Duration::from_secs(5)).unwrap();
+            operation.collect()
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (mut delivery, work) = session.submit_publication().unwrap();
+        for _ in 0..7 {
+            let malformed = scope.spawn(|| {
+                let mut peer = local.client(address, &local.device);
+                peer.request(&Request::Status { id: binding.id })
+            });
+            let fresh = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(fresh.collect_delivery(&mut delivery).is_err());
+            assert!(malformed.join().unwrap().is_err());
+        }
+        go.send(()).unwrap();
+        let fresh = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        assert!(
+            matches!(
+                fresh.collect_delivery(&mut delivery),
+                Err(Error::Transport(tls::Stage::Limit))
+            ),
+            "malformed same-source collects renewed the original operation budget"
+        );
+        assert!(client.join().unwrap().is_err());
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+#[test]
+fn fresh_collect_decode_cannot_wait_past_the_captured_original_deadline() {
+    use crate::delivery::Delivery;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let pending = h
+        .prepare(0, &binding, Request::Begin(binding.clone()))
+        .unwrap();
+    let mut source = pending.delivery_source();
+    // Synthetic conservative narrowing, not a host clock change or timeout increase.
+    source.deadline = Instant::now() + Duration::from_millis(100);
+    let mut delivery = Delivery::new(source).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    thread::scope(|scope| {
+        let client = scope.spawn(|| {
+            let _peer = local.client(address, &local.device);
+            thread::sleep(Duration::from_millis(400));
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let start = Instant::now();
+        let outcome = session.collect_delivery(&mut delivery);
+        assert!(
+            matches!(outcome, Err(Error::Transport(tls::Stage::Deadline))),
+            "fresh collect refreshed its decode window: {outcome:?}"
+        );
+        assert!(start.elapsed() < Duration::from_millis(250));
+        client.join().unwrap();
+    });
+    drop(pending);
+    drop(delivery);
+    assert_eq!(local.charged(), 0);
+}
+
+#[test]
+fn carrier_private_fixture_capture_retains_exact_generated_inputs() {
+    use std::os::unix::fs::PermissionsExt;
+    let h = Homes::new(false);
+    let retained = std::env::var_os("FACTION321_CAPTURE_DIR");
+    let destination = retained
+        .clone()
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| {
+            use std::os::unix::fs::DirBuilderExt;
+            let path = std::env::temp_dir().join(format!(
+                "faction321-retention-OWNED-{}-{}",
+                std::process::id(),
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_nanos()
+            ));
+            fs::DirBuilder::new().mode(0o700).create(&path).unwrap();
+            fs::write(path.join("OWNED"), b"Owned private fixture capture control").unwrap();
+            path
+        });
+    h.other_credentials.lock().unwrap().push((
+        "retention-extra".into(),
+        (
+            h.pair.homes[0].device.0.clone(),
+            h.pair.homes[0].device.1.clone(),
+        ),
+    ));
+    capture_carrier_fixture(&h, "retention-control", &destination);
+    assert_eq!(
+        fs::read(destination.join("retention-control-extra-retention-extra.key")).unwrap(),
+        h.pair.homes[0].device.1.private_key_to_pem_pkcs8().unwrap()
+    );
+    let path = destination.join("retention-control-home0-device.pem");
+    assert_eq!(
+        fs::read(&path).unwrap(),
+        h.pair.homes[0].device.0.to_pem().unwrap()
+    );
+    assert_eq!(
+        fs::metadata(&path).unwrap().permissions().mode() & 0o7777,
+        0o600
+    );
+    assert_eq!(
+        fs::read(destination.join("retention-control-home1-relay.key")).unwrap(),
+        h.pair.homes[1].relay.1.private_key_to_pem_pkcs8().unwrap()
+    );
+    if retained.is_none() {
+        fs::remove_dir_all(&destination).unwrap();
+        assert!(!destination.exists());
+    }
+}
+#[test]
+fn source_owned_cleanup_finishes_before_the_same_physical_lease_is_released() {
+    struct CleanupWitness {
+        physical: std::sync::Weak<()>,
+        observed: Arc<AtomicBool>,
+    }
+    impl Drop for CleanupWitness {
+        fn drop(&mut self) {
+            assert!(
+                self.physical.strong_count() > 0,
+                "physical reservation released before source-owned cleanup"
+            );
+            self.observed.store(true, Ordering::SeqCst);
+        }
+    }
+    let h = Homes::new(false);
+    let binding = h.pair.binding(0);
+    let pending = h
+        .prepare(0, &binding, Request::Begin(binding.clone()))
+        .unwrap();
+    let mut source = pending.delivery_source();
+    let observed = Arc::new(AtomicBool::new(false));
+    let witness = CleanupWitness {
+        physical: Arc::downgrade(&source._lease),
+        observed: observed.clone(),
+    };
+    let current = source.current.clone();
+    source.current = Arc::new(move || {
+        let _keep_cleanup = &witness;
+        current()
+    });
+    let delivery = crate::delivery::Delivery::new(source).unwrap();
+    drop(pending);
+    assert_eq!(h.pair.homes[0].charged(), 1);
+    drop(delivery);
+    assert!(observed.load(Ordering::SeqCst));
+    assert_eq!(h.pair.homes[0].charged(), 0);
+}
+fn partial_delivery_output(reset: bool) {
+    use crate::delivery::{CarrierEndpoint, Collection};
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let remote = &h.pair.homes[1];
+    let binding = h.pair.binding(0);
+    let store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = CarrierEndpoint::new(
+        address,
+        "provider.test".into(),
+        sha256(&local.server.0.to_der().unwrap()),
+        ClientCredentials::from_pem(
+            &local.ca.0.to_pem().unwrap(),
+            &local.device.0.to_pem().unwrap(),
+            &local.device.1.private_key_to_pem_pkcs8().unwrap(),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    thread::scope(|scope| {
+        let (go, wait) = mpsc::channel();
+        let client_binding = binding.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(client_binding.clone(), Request::Begin(client_binding))
+                .unwrap();
+            wait.recv_timeout(Duration::from_secs(5)).unwrap();
+            operation.collect()
+        });
+        let original_cancel = Arc::new(AtomicBool::new(false));
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), original_cancel.clone())
+            .unwrap();
+        let (mut delivery, work) = session.submit_publication().unwrap();
+        let callback = h.endpoint(0);
+        let store_ref = &store;
+        let worker = scope.spawn(move || work.execute(&callback, store_ref));
+        remote
+            .server(&remote.ca.0)
+            .accept_service(
+                &remote.callback,
+                remote.runtime(),
+                Arc::new(AtomicBool::new(false)),
+            )
+            .unwrap()
+            .serve_publication_http_once(
+                &PublicationWireProfile::new(remote.name.into(), vec!["observer".into()]).unwrap(),
+            )
+            .unwrap();
+        worker.join().unwrap().unwrap();
+        go.send(()).unwrap();
+        let mut collect = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (written, partial) = mpsc::channel::<Instant>();
+        let (resume, release) = mpsc::channel();
+        let positive = collect.hold_delivery_after_prefix(written, release);
+        let collector = scope.spawn(move || {
+            let outcome = collect.collect_delivery(&mut delivery);
+            (outcome, delivery)
+        });
+        partial.recv_timeout(Duration::from_secs(5)).unwrap();
+        // The original source lease remains owned after a real positive TLS BIO
+        // prefix write and while the rest of this same result is unfinished.
+        assert_eq!(local.charged(), 1);
+        assert!(
+            positive.load(Ordering::SeqCst) > 0,
+            "no actual positive TLS BIO output preceded the gate"
+        );
+        let drain = Instant::now();
+        if reset {
+            local.runtime().control().reset(1).unwrap();
+        } else {
+            original_cancel.store(true, Ordering::SeqCst);
+        }
+        assert_eq!(
+            local.charged(),
+            1,
+            "reset freed physically unfinished response output"
+        );
+        resume.send(()).unwrap();
+        let (outcome, delivery) = collector.join().unwrap();
+        assert!(outcome.is_err());
+        assert!(
+            !matches!(client.join().unwrap(), Ok(Collection::Complete(_))),
+            "reset disclosed result after the held partial write"
+        );
+        assert!(drain.elapsed() < Duration::from_secs(5));
+        assert_eq!(local.charged(), 1);
+        if reset {
+            h.install(0, 4, 1, 2, 0, |_| ());
+        }
+        assert!(
+            matches!(
+                h.prepare(0, &binding, Request::Begin(binding.clone())),
+                Err(Error::Store(BlobError::Busy))
+            ),
+            "invalidation freed a still-owned physical reservation"
+        );
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+        let fresh = h
+            .prepare(0, &binding, Request::Begin(binding.clone()))
+            .unwrap();
+        drop(fresh);
+        assert_eq!(local.charged(), 0);
+    });
+}
+
+#[test]
+fn wire_collect_retains_reservation_across_actual_partial_tls_output_and_reset() {
+    partial_delivery_output(true)
+}
+#[test]
+fn wire_collect_retains_reservation_across_actual_partial_tls_output_and_cancel() {
+    partial_delivery_output(false)
+}
+#[test]
+fn own_home_record_and_same_physical_continuation_share_the_aggregate_eight() {
+    use crate::delivery::{CarrierEndpoint, Event};
+    for existing in [6, 7] {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let foreign = &h.pair.homes[1];
+        let binding = h.pair.binding(1);
+        let store = h.empty(0);
+        let records = (0..existing)
+            .map(|_| local.record(&binding).unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(local.charged(), existing);
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = CarrierEndpoint::new(
+            listener.local_addr().unwrap(),
+            "provider.test".into(),
+            sha256(&local.server.0.to_der().unwrap()),
+            ClientCredentials::from_pem(
+                &local.ca.0.to_pem().unwrap(),
+                &local.device.0.to_pem().unwrap(),
+                &local.device.1.private_key_to_pem_pkcs8().unwrap(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        thread::scope(|scope| {
+            let client_binding = binding.clone();
+            let client = scope.spawn(move || {
+                let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+                operation
+                    .submit_own_home(
+                        client_binding.clone(),
+                        Request::Status {
+                            id: client_binding.id,
+                        },
+                    )
+                    .map(|_| operation)
+            });
+            let server = tls::Server::new_composed(
+                &local.server.0,
+                &local.server.1,
+                &[local.ca.0.clone(), foreign.ca.0.clone()],
+            )
+            .unwrap();
+            let event = server
+                .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap()
+                .serve(
+                    None,
+                    &store,
+                    local.name,
+                    &PublicationWireProfile::new(local.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                );
+            if existing == 6 {
+                let Event::Submitted(delivery, work) = event.unwrap() else {
+                    panic!("actual device record submission missing")
+                };
+                assert!(client.join().unwrap().is_ok());
+                assert_eq!(
+                    local.charged(),
+                    8,
+                    "record and physical reservation were not jointly charged"
+                );
+                drop(work);
+                assert_eq!(
+                    local.charged(),
+                    8,
+                    "dropping unexecuted work freed retained delivery ownership"
+                );
+                drop(delivery);
+                assert_eq!(local.charged(), 6);
+            } else {
+                assert!(
+                    matches!(event, Err(Error::Store(BlobError::Busy))),
+                    "seventh existing record bypassed aggregate ceiling"
+                );
+                assert!(client.join().unwrap().is_err());
+                assert_eq!(
+                    local.charged(),
+                    7,
+                    "failed own-home capture retained a physical lease or extra record"
+                );
+            }
+        });
+        local.runtime().control().reset(1).unwrap();
+        drop(records);
+        assert_eq!(local.charged(), 0);
+    }
+}
+#[test]
+fn old_owned_record_drop_after_reset_cannot_remove_a_new_record() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(1);
+    let old = crate::retrieval::DeliveryRecord::new(local.record(&binding).unwrap());
+    assert_eq!(local.charged(), 1);
+    local.runtime().control().reset(1).unwrap();
+    h.install(0, 4, 1, 2, 0, |_| ());
+    let new = crate::retrieval::DeliveryRecord::new(local.record(&binding).unwrap());
+    assert_eq!(local.charged(), 1);
+    drop(old);
+    assert_eq!(local.charged(), 1);
+    drop(new);
+    assert_eq!(local.charged(), 0);
+}
+fn carrier_endpoint(
+    home: &crate::services::composed_tests::Home,
+    who: &Certificate,
+    address: std::net::SocketAddr,
+) -> crate::delivery::CarrierEndpoint {
+    crate::delivery::CarrierEndpoint::new(
+        address,
+        "provider.test".into(),
+        sha256(&home.server.0.to_der().unwrap()),
+        ClientCredentials::from_pem(
+            &home.ca.0.to_pem().unwrap(),
+            &who.0.to_pem().unwrap(),
+            &who.1.private_key_to_pem_pkcs8().unwrap(),
+        )
+        .unwrap(),
+    )
+    .unwrap()
+}
+fn collect_request_parts(raw: &[u8]) -> (usize, usize, Binding, Request) {
+    let binding_len = u16::from_be_bytes([raw[40], raw[41]]) as usize;
+    let binding_start = 42;
+    let request_length_at = binding_start + binding_len;
+    let request_start = request_length_at + 2;
+    let Request::Begin(binding) =
+        faction_files::private_blobs::decode_request(&raw[binding_start..request_length_at])
+            .unwrap()
+    else {
+        panic!("wrong versioned binding field")
+    };
+    let request = faction_files::private_blobs::decode_request(&raw[request_start..]).unwrap();
+    (request_length_at, request_start, binding, request)
+}
+#[test]
+fn fresh_collect_rejects_stolen_routing_wrong_credentials_and_changed_exact_fields() {
+    use crate::{
+        authority::{CredentialBinding, Registry},
+        delivery::Collection,
+    };
+    #[derive(Clone, Copy, Debug)]
+    enum Refusal {
+        OtherDevice,
+        ServicePurpose,
+        Purpose,
+        Binding,
+        Body,
+        Offset,
+        Correlation,
+        Action,
+    }
+    for refusal in [
+        Refusal::OtherDevice,
+        Refusal::ServicePurpose,
+        Refusal::Purpose,
+        Refusal::Binding,
+        Refusal::Body,
+        Refusal::Offset,
+        Refusal::Correlation,
+        Refusal::Action,
+    ] {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let foreign = &h.pair.homes[1];
+        let t = tls::wall_now() as i64;
+        let other = cert(
+            Some((&local.ca.0, &local.ca.1)),
+            "other-approved-local-device",
+            8801,
+            t - 60,
+            t + 3600,
+        );
+        h.other_credentials
+            .lock()
+            .unwrap()
+            .push(("refusal-other".into(), (other.0.clone(), other.1.clone())));
+        capture_carrier_optional(&h, "extra-enrolled");
+        let mut entries = local.registry(3, 0, foreign).bindings().to_vec();
+        entries.push(CredentialBinding {
+            certificate_sha256: sha256(&other.0.to_der().unwrap()),
+            principal: Principal {
+                account: "other@a.test".into(),
+                device: 9,
+                identity: [3; 32],
+            },
+            valid_from: tls::wall_now() - 60,
+            valid_until: tls::wall_now() + 3600,
+            approved: true,
+            account_enabled: true,
+            device_enabled: true,
+            generation: 3,
+        });
+        local
+            .runtime()
+            .control()
+            .replace_delegation_policy(
+                Registry::new(3, 0, vec![local.name.into(), foreign.name.into()], entries).unwrap(),
+                h.policy(0, 3, 0, |_| ()),
+            )
+            .unwrap();
+        h.install(1, 3, 0, 3, 0, |_| ());
+        let binding = h.pair.binding(0);
+        let store = h.empty(0);
+        h.publish(0, &binding, &store);
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let endpoint = carrier_endpoint(local, &local.device, address);
+        let (mut operation, mut delivery, work) = thread::scope(|scope| {
+            let client_endpoint = endpoint.clone();
+            let client_binding = binding.clone();
+            let client = scope.spawn(move || {
+                let mut operation = client_endpoint.operation(Arc::new(AtomicBool::new(false)));
+                operation
+                    .submit_publication(
+                        client_binding.clone(),
+                        Request::PutChunk {
+                            id: client_binding.id,
+                            offset: 0,
+                            bytes: vec![9; 32],
+                        },
+                    )
+                    .unwrap();
+                operation
+            });
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let (delivery, work) = session.submit_publication().unwrap();
+            (client.join().unwrap(), delivery, work)
+        });
+        thread::scope(|scope| {
+            let callback = scope.spawn(|| h.serve(1));
+            work.execute(&h.endpoint(0), &store).unwrap();
+            callback.join().unwrap().unwrap();
+        });
+        let original = operation.test_collect_frame();
+        let mut changed = original.clone();
+        let (request_length_at, request_start, mut changed_binding, mut changed_request) =
+            collect_request_parts(&changed);
+        match refusal {
+            Refusal::Purpose => changed[7] = 2,
+            Refusal::Binding => {
+                changed_binding.recipient.identity[0] ^= 1;
+                let bytes =
+                    faction_files::private_blobs::encode_request(&Request::Begin(changed_binding))
+                        .unwrap();
+                changed[42..request_length_at].copy_from_slice(&bytes);
+            }
+            Refusal::Body => {
+                if let Request::PutChunk { bytes, .. } = &mut changed_request {
+                    bytes[0] ^= 1;
+                }
+                let bytes = faction_files::private_blobs::encode_request(&changed_request).unwrap();
+                changed[request_start..].copy_from_slice(&bytes);
+            }
+            Refusal::Offset => {
+                if let Request::PutChunk { offset, .. } = &mut changed_request {
+                    *offset = 1;
+                }
+                let bytes = faction_files::private_blobs::encode_request(&changed_request).unwrap();
+                changed[request_start..].copy_from_slice(&bytes);
+            }
+            Refusal::Correlation => changed[8] ^= 1,
+            Refusal::Action => {
+                let bytes = faction_files::private_blobs::encode_request(&Request::Delete {
+                    id: binding.id,
+                })
+                .unwrap();
+                changed.truncate(request_length_at);
+                changed.extend((bytes.len() as u16).to_be_bytes());
+                changed.extend(bytes);
+            }
+            _ => (),
+        }
+        let attacker = match refusal {
+            Refusal::OtherDevice => carrier_endpoint(local, &other, address),
+            Refusal::ServicePurpose => carrier_endpoint(local, &local.relay, address),
+            _ => endpoint.clone(),
+        };
+        let before = h.bytes(0);
+        thread::scope(|scope| {
+            let client = scope.spawn(|| attacker.test_exchange(&changed));
+            if matches!(refusal, Refusal::ServicePurpose) {
+                let session = local
+                    .server(&local.ca.0)
+                    .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(
+                    session.collect_delivery(&mut delivery).is_err(),
+                    "{refusal:?}"
+                );
+            } else {
+                let session = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(
+                    session.collect_delivery(&mut delivery).is_err(),
+                    "{refusal:?}"
+                );
+            }
+            assert!(
+                client.join().unwrap().is_empty(),
+                "refused {refusal:?} disclosed application bytes"
+            );
+        });
+        assert_eq!(
+            h.bytes(0),
+            before,
+            "refused {refusal:?} mutated the committed Store"
+        );
+        assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+        assert_eq!(local.charged(), 1);
+        thread::scope(|scope| {
+            let client = scope.spawn(|| operation.collect());
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(session.collect_delivery(&mut delivery).unwrap());
+            assert!(matches!(
+                client.join().unwrap().unwrap(),
+                Collection::Complete(Response::Progress {
+                    offset: 32,
+                    committed: true,
+                    ..
+                })
+            ));
+        });
+        // Even the original exact device cannot replay a consumed correlation.
+        thread::scope(|scope| {
+            let client = scope.spawn(|| endpoint.test_exchange(&original));
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(session.collect_delivery(&mut delivery).is_err());
+            assert!(client.join().unwrap().is_empty());
+        });
+        capture_carrier_optional(&h, "fresh-collect-refusals");
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+#[test]
+fn ready_collect_rechecks_current_local_revocation_reset_and_binding_expiry() {
+    for case in 0..3 {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let foreign = &h.pair.homes[1];
+        let mut binding = h.pair.binding(0);
+        if case == 2 {
+            binding.expires = tls::wall_now() + 2;
+        }
+        let store = h.empty(0);
+        h.publish(0, &binding, &store);
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let endpoint = carrier_endpoint(local, &local.device, address);
+        let (operation, mut delivery, work) = thread::scope(|scope| {
+            let client_endpoint = endpoint.clone();
+            let b = binding.clone();
+            let client = scope.spawn(move || {
+                let mut operation = client_endpoint.operation(Arc::new(AtomicBool::new(false)));
+                operation
+                    .submit_publication(b.clone(), Request::Status { id: b.id })
+                    .unwrap();
+                operation
+            });
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let (delivery, work) = session.submit_publication().unwrap();
+            (client.join().unwrap(), delivery, work)
+        });
+        thread::scope(|scope| {
+            let callback = scope.spawn(|| h.serve(1));
+            work.execute(&h.endpoint(0), &store).unwrap();
+            callback.join().unwrap().unwrap();
+        });
+        let copied = operation.test_collect_frame();
+        let before = h.bytes(0);
+        match case {
+            0 => {
+                let registry = local.registry(3, 0, foreign);
+                let mut entries = registry.bindings().to_vec();
+                entries[0].approved = false;
+                local
+                    .runtime()
+                    .control()
+                    .replace_registry(
+                        crate::authority::Registry::new(3, 0, registry.homes().to_vec(), entries)
+                            .unwrap(),
+                    )
+                    .unwrap();
+                h.install(0, 4, 0, 2, 0, |_| ());
+            }
+            1 => {
+                local.runtime().control().reset(1).unwrap();
+                h.install(0, 4, 1, 2, 0, |_| ());
+            }
+            _ => {
+                while tls::wall_now() < binding.expires {
+                    thread::sleep(Duration::from_millis(20));
+                }
+            }
+        }
+        thread::scope(|scope| {
+            let client = scope.spawn(|| endpoint.test_exchange(&copied));
+            let session = local
+                .server(&local.ca.0)
+                .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(
+                session.collect_delivery(&mut delivery).is_err(),
+                "stale ready result survived case {case}"
+            );
+            assert!(
+                client.join().unwrap().is_empty(),
+                "stale ready result disclosed application bytes in case {case}"
+            );
+        });
+        assert_eq!(h.bytes(0), before);
+        assert_eq!(local.charged(), 1);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+#[test]
+fn ready_resource_collect_keeps_the_tighter_actual_issued_token_expiry() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let binding = h.pair.binding(0);
+    let store = h.empty(0);
+    h.publish(0, &binding, &store);
+    let registry = foreign.registry(3, 0, local);
+    let mut entries = registry.bindings().to_vec();
+    let expiry = tls::wall_now() + 3;
+    entries[0].valid_until = expiry;
+    foreign
+        .runtime()
+        .control()
+        .replace_delegation_policy(
+            crate::authority::Registry::new(3, 0, registry.homes().to_vec(), entries).unwrap(),
+            h.policy(1, 3, 0, |_| ()),
+        )
+        .unwrap();
+    foreign
+        .runtime()
+        .control()
+        .replace_retrieval_policy(
+            RetrievalPolicy::new(
+                foreign.name.into(),
+                vec![(local.name.into(), format!("{}/attachments", local.name))],
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    h.install(0, 3, 0, 3, 0, |_| ());
+    let record = foreign.record(&binding).unwrap();
+    let token = foreign.issue(&record);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = carrier_endpoint(local, &foreign.relay, address);
+    let (operation, mut delivery, work) = thread::scope(|scope| {
+        let client_endpoint = endpoint.clone();
+        let b = binding.clone();
+        let client = scope.spawn(move || {
+            let mut operation = client_endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_retrieval(
+                    b.clone(),
+                    Request::GetChunk {
+                        id: b.id,
+                        offset: 0,
+                    },
+                    token,
+                )
+                .unwrap();
+            operation
+        });
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (delivery, work) = session.submit_retrieval().unwrap();
+        (client.join().unwrap(), delivery, work)
+    });
+    thread::scope(|scope| {
+        let callback = scope.spawn(|| {
+            foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap()
+                .serve_http_once()
+        });
+        work.execute(&local.endpoint(foreign), &store).unwrap();
+        callback.join().unwrap().unwrap();
+    });
+    assert!(delivery.is_finished());
+    let copied = operation.test_collect_frame();
+    let before = h.bytes(0);
+    while tls::wall_now() < expiry {
+        thread::sleep(Duration::from_millis(20));
+    }
+    // Local sender/service policy remains valid; only the actual remote token
+    // lifetime has ended. A fresh relay TLS session cannot obtain saved bytes.
+    thread::scope(|scope| {
+        let client = scope.spawn(|| endpoint.test_exchange(&copied));
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        assert!(session.collect_delivery(&mut delivery).is_err());
+        assert!(client.join().unwrap().is_empty());
+    });
+    assert_eq!(h.bytes(0), before);
+    capture_carrier_optional(&h, "resource-expiry");
+    drop(delivery);
+    assert_eq!(local.charged(), 0);
+    drop(record);
+}
+
+#[test]
+fn composed_transport_socket_accepted_stream_has_nodelay() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    thread::scope(|scope| {
+        let peer = scope.spawn(|| local.client(address, &local.device));
+        let server = tls::Server::new_composed(
+            &local.server.0,
+            &local.server.1,
+            &[local.ca.0.clone(), foreign.ca.0.clone()],
+        )
+        .unwrap();
+        let incoming = server
+            .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let actual = local
+            .runtime()
+            .state
+            .socket
+            .lock()
+            .unwrap()
+            .as_ref()
+            .unwrap()
+            .nodelay()
+            .unwrap();
+        drop(incoming);
+        drop(peer.join().unwrap());
+        assert!(
+            actual,
+            "actual new composed accepted TCP socket retained Nagle"
+        );
+    });
+}
+#[test]
+fn composed_transport_socket_carrier_outbound_has_nodelay() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, address);
+    thread::scope(|scope| {
+        let peer = scope.spawn(|| endpoint.test_connect_nodelay());
+        let incoming = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let actual = peer.join().unwrap().unwrap();
+        drop(incoming);
+        assert!(
+            actual,
+            "actual CarrierEndpoint outbound TCP socket retained Nagle"
+        );
+    });
+}
+#[test]
+fn composed_transport_socket_shared_http_outbound_has_nodelay() {
+    let h = Homes::new(false);
+    let binding = h.pair.binding(0);
+    let store = h.empty(0);
+    let pending = h
+        .prepare(0, &binding, Request::Begin(binding.clone()))
+        .unwrap();
+    let mut endpoint = h.endpoint(0);
+    let (observed, flags) = std::sync::mpsc::channel();
+    endpoint.observe_socket_nodelay(observed);
+    thread::scope(|scope| {
+        let recipient = scope.spawn(|| h.serve(1));
+        assert!(matches!(
+            pending.execute(&endpoint, &store),
+            Ok(Response::Progress {
+                offset: 0,
+                committed: false,
+                ..
+            })
+        ));
+        recipient.join().unwrap().unwrap();
+    });
+    assert_eq!(
+        flags.try_iter().collect::<Vec<_>>(),
+        vec![true],
+        "actual shared HttpEndpoint callback TCP socket retained Nagle"
+    );
+}
+
+#[test]
+fn maintained_router_keeps_ordinary_device_store_progress_while_callback_is_held() {
+    use crate::{
+        authority::{CredentialBinding, Registry},
+        delivery::{Collection, Event},
+    };
+    for same_certificate in [false, true] {
+        let h = Homes::new(false);
+        let local = &h.pair.homes[0];
+        let foreign = &h.pair.homes[1];
+        let t = tls::wall_now() as i64;
+        let other = cert(
+            Some((&local.ca.0, &local.ca.1)),
+            "router-other-approved-device",
+            8901,
+            t - 60,
+            t + 3600,
+        );
+        let other_principal = Principal {
+            account: "other@a.test".into(),
+            device: 9,
+            identity: [3; 32],
+        };
+        h.other_credentials
+            .lock()
+            .unwrap()
+            .push(("router-other".into(), (other.0.clone(), other.1.clone())));
+        capture_carrier_optional(&h, "router-extra-credential");
+        let mut entries = local.registry(3, 0, foreign).bindings().to_vec();
+        entries.push(CredentialBinding {
+            certificate_sha256: sha256(&other.0.to_der().unwrap()),
+            principal: other_principal.clone(),
+            valid_from: tls::wall_now() - 60,
+            valid_until: tls::wall_now() + 3600,
+            approved: true,
+            account_enabled: true,
+            device_enabled: true,
+            generation: 3,
+        });
+        local
+            .runtime()
+            .control()
+            .replace_delegation_policy(
+                Registry::new(3, 0, vec![local.name.into(), foreign.name.into()], entries).unwrap(),
+                h.policy(0, 3, 0, |_| ()),
+            )
+            .unwrap();
+        h.install(1, 3, 0, 3, 0, |_| ());
+        let binding = h.pair.binding(0);
+        let store = h.empty(0);
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let endpoint = carrier_endpoint(local, &local.device, address);
+        let server = tls::Server::new_composed(
+            &local.server.0,
+            &local.server.1,
+            &[local.ca.0.clone(), foreign.ca.0.clone()],
+        )
+        .unwrap();
+        let profile =
+            PublicationWireProfile::new(local.name.into(), vec!["observer".into()]).unwrap();
+        let (mut operation, mut delivery, work) = thread::scope(|scope| {
+            let b = binding.clone();
+            let client = scope.spawn(move || {
+                let mut op = endpoint.operation(Arc::new(AtomicBool::new(false)));
+                op.submit_publication(b.clone(), Request::Begin(b)).unwrap();
+                op
+            });
+            let incoming = server
+                .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let Event::Submitted(delivery, work) =
+                incoming.serve(None, &store, local.name, &profile).unwrap()
+            else {
+                panic!("no actual router submission")
+            };
+            (client.join().unwrap(), delivery, work)
+        });
+        thread::scope(|scope| {
+            let routes_endpoint = h.endpoint(0);
+            // The generic Work deliberately cannot accept arbitrary responses;
+            // this test obtains its source-bound publication task through the
+            // actual maintained Incoming router and uses configured RelayRoutes.
+            let local_endpoint =
+                carrier_endpoint(local, &local.relay, local.callback.local_addr().unwrap());
+            let peers = vec![crate::delivery::RelayPeer {
+                home: foreign.name.into(),
+                publication: routes_endpoint,
+                introspection: local.endpoint(foreign),
+                resource: carrier_endpoint(
+                    foreign,
+                    &local.relay,
+                    foreign.callback.local_addr().unwrap(),
+                ),
+            }];
+            let routes =
+                crate::delivery::RelayRoutes::new(local.runtime(), local_endpoint, peers).unwrap();
+            let store_ref = &store;
+            let worker = scope.spawn(move || work.execute(&routes, store_ref));
+            let held = foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap();
+            let early = scope.spawn(|| operation.collect());
+            let incoming = server
+                .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(matches!(
+                incoming
+                    .serve(Some(&mut delivery), &store, local.name, &profile)
+                    .unwrap(),
+                Event::Collected(false)
+            ));
+            assert!(matches!(early.join().unwrap().unwrap(), Collection::Busy));
+            let before = delivery.test_original_attempts();
+            assert_eq!(before, 3);
+            let (credential, principal) = if same_certificate {
+                (&local.device, local.principal.clone())
+            } else {
+                (&other, other_principal.clone())
+            };
+            let ordinary = Binding {
+                sender: principal.clone(),
+                recipient: principal,
+                id: sha256(&[7; 32]),
+                size: 32,
+                created: tls::wall_now() - 5,
+                expires: tls::wall_now() + 300,
+            };
+            for request in [
+                Request::Begin(ordinary.clone()),
+                Request::PutChunk {
+                    id: ordinary.id,
+                    offset: 0,
+                    bytes: vec![7; 32],
+                },
+                Request::Commit { id: ordinary.id },
+                Request::GetChunk {
+                    id: ordinary.id,
+                    offset: 0,
+                },
+            ] {
+                let client_request = request.clone();
+                let client = scope.spawn(move || {
+                    let mut c = local.client(address, credential);
+                    c.request(&client_request)
+                });
+                let incoming = server
+                    .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                assert!(matches!(
+                    incoming
+                        .serve(Some(&mut delivery), &store, local.name, &profile)
+                        .unwrap(),
+                    Event::Served
+                ));
+                let response = client.join().unwrap().unwrap();
+                match request {
+                    Request::GetChunk { .. } => assert!(
+                        matches!(response,Response::Chunk{offset:0,bytes,total:32} if bytes==vec![7;32])
+                    ),
+                    _ => assert!(matches!(response, Response::Progress { .. })),
+                }
+                assert_eq!(local.charged(), 1);
+                assert!(!delivery.is_finished());
+            }
+            assert_eq!(
+                delivery.test_original_attempts(),
+                if same_certificate { 7 } else { 3 },
+                "router budget effects differ from the authenticated credential selection"
+            );
+            held.serve_publication_http_once(
+                &PublicationWireProfile::new(foreign.name.into(), vec!["observer".into()]).unwrap(),
+            )
+            .unwrap();
+            worker.join().unwrap().unwrap();
+        });
+        thread::scope(|scope| {
+            let client = scope.spawn(|| operation.collect());
+            let incoming = server
+                .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(matches!(
+                incoming
+                    .serve(Some(&mut delivery), &store, local.name, &profile)
+                    .unwrap(),
+                Event::Collected(true)
+            ));
+            assert!(matches!(
+                client.join().unwrap().unwrap(),
+                Collection::Complete(Response::Progress {
+                    offset: 0,
+                    committed: false,
+                    ..
+                })
+            ));
+        });
+        assert_eq!(
+            delivery.test_original_attempts(),
+            if same_certificate { 8 } else { 4 }
+        );
+        capture_carrier_optional(&h, "router-progress");
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+#[test]
+fn maintained_router_preserves_one_legacy_same_home_client_for_all_eight_requests() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tls::Server::new_composed(
+        &local.server.0,
+        &local.server.1,
+        &[local.ca.0.clone(), foreign.ca.0.clone()],
+    )
+    .unwrap();
+    let profile = PublicationWireProfile::new(local.name.into(), vec!["observer".into()]).unwrap();
+    let binding = Binding {
+        sender: local.principal.clone(),
+        recipient: local.principal.clone(),
+        id: sha256(&[21; 32]),
+        size: 32,
+        created: tls::wall_now() - 5,
+        expires: tls::wall_now() + 300,
+    };
+    thread::scope(|scope| {
+        let client = scope.spawn(|| {
+            let mut client = local.client(address, &local.device);
+            for (number, request) in [Request::Begin(binding.clone()), Request::PutChunk{id:binding.id,offset:0,bytes:vec![21;32]}, Request::Commit{id:binding.id}, Request::Commit{id:binding.id}, Request::Status{id:binding.id}, Request::GetChunk{id:binding.id,offset:0}, Request::GetChunk{id:binding.id,offset:32}, Request::Delete{id:binding.id}].into_iter().enumerate() {
+                let response=client.request(&request).unwrap_or_else(|error| panic!("same retained real TLS client failed request{number}: {error:?}"));
+                match request { Request::GetChunk{offset:0,..}=>assert!(matches!(response,Response::Chunk{offset:0,bytes,total:32} if bytes==vec![21;32])), Request::GetChunk{offset:32,..}=>assert!(matches!(response,Response::Chunk{offset:32,bytes,total:32} if bytes.is_empty())), Request::Delete{..}=>assert!(matches!(response,Response::Deleted)), _=>assert!(matches!(response,Response::Progress{..})) }
+            }
+            assert!(client.request(&Request::Status{id:binding.id}).is_err(),"ninth request must retain the original eight-attempt session limit");
+        });
+        let incoming = server
+            .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let result = incoming.serve(None, &store, local.name, &profile);
+        client.join().unwrap();
+        assert!(
+            matches!(result, Err(crate::Error::Transport(tls::Stage::Limit))),
+            "same original session must reach its original limit"
+        );
+    });
+    capture_carrier_optional(&h, "retained-legacy");
+    assert_eq!(local.charged(), 0);
+}
+
+// macOS has no reliable bounded listener-backlog saturation precondition here.
+// Linux/NetBSD exercise a genuinely pending TCP connect on a never-accepted
+// backlog-one listener, two owned filler sockets and one selected endpoint.
+fn pending_tcp_endpoint_cancel(http: bool) {
+    use rustix::{
+        event::{PollFd, PollFlags, Timespec, poll},
+        net::{self, AddressFamily, SocketFlags, SocketType},
+    };
+    if !cfg!(any(target_os = "linux", target_os = "netbsd")) {
+        eprintln!(
+            "UNAVAILABLE pending TCP backlog precondition on this host; no pending-connect runtime claim"
+        );
+        return;
+    }
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let listener = net::socket_with(
+        AddressFamily::INET,
+        SocketType::STREAM,
+        SocketFlags::empty(),
+        Some(net::ipproto::TCP),
+    )
+    .unwrap();
+    rustix::io::fcntl_setfd(&listener, rustix::io::FdFlags::CLOEXEC).unwrap();
+    net::bind(
+        &listener,
+        &std::net::SocketAddrV4::new(std::net::Ipv4Addr::LOCALHOST, 0),
+    )
+    .unwrap();
+    net::listen(&listener, 1).unwrap();
+    let address = std::net::SocketAddr::try_from(net::getsockname(&listener).unwrap()).unwrap();
+    let mut fillers = Vec::new();
+    let mut completed = 0;
+    for _ in 0..2 {
+        let fd = net::socket_with(
+            AddressFamily::INET,
+            SocketType::STREAM,
+            SocketFlags::empty(),
+            Some(net::ipproto::TCP),
+        )
+        .unwrap();
+        rustix::io::fcntl_setfd(&fd, rustix::io::FdFlags::CLOEXEC).unwrap();
+        let flags = rustix::fs::fcntl_getfl(&fd).unwrap();
+        rustix::fs::fcntl_setfl(&fd, flags | rustix::fs::OFlags::NONBLOCK).unwrap();
+        let result = net::connect(&fd, &address);
+        assert!(
+            result.is_ok() || result == Err(rustix::io::Errno::INPROGRESS),
+            "owned backlog filler connect setup: {result:?}"
+        );
+        let mut fds = [PollFd::new(&fd, PollFlags::OUT)];
+        poll(
+            &mut fds,
+            Some(&Timespec::try_from(Duration::from_millis(100)).unwrap()),
+        )
+        .unwrap();
+        net::sockopt::socket_error(&fd).unwrap().unwrap();
+        completed += usize::from(fds[0].revents().contains(PollFlags::OUT));
+        fillers.push(fd);
+    }
+    assert!(
+        completed >= 1,
+        "backlog control needs at least one established owned filler"
+    );
+    let carrier = carrier_endpoint(local, &local.device, address);
+    let endpoint = HttpEndpoint::new(
+        address,
+        foreign.name.into(),
+        "provider.test".into(),
+        sha256(&foreign.server.0.to_der().unwrap()),
+        ClientCredentials::from_pem(
+            &foreign.ca.0.to_pem().unwrap(),
+            &local.outgoing.0.to_pem().unwrap(),
+            &local.outgoing.1.private_key_to_pem_pkcs8().unwrap(),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let cancel = Arc::new(AtomicBool::new(false));
+    let worker_cancel = cancel.clone();
+    let binding = h.pair.binding(0);
+    let control = local.runtime().control();
+    let (started_tx, started_rx) = std::sync::mpsc::channel();
+    let (done_tx, done_rx) = std::sync::mpsc::channel();
+    thread::scope(|scope| {
+        let worker = scope.spawn(move || {
+            started_tx.send(()).unwrap();
+            let start = Instant::now();
+            let result = if http {
+                control
+                    .query_introspection(
+                        &endpoint,
+                        &faction_delegation_codec::UnverifiedIntrospectionRequest {
+                            client_id: "observer".into(),
+                            token: faction_delegation_codec::UnverifiedToken::from_bytes([41; 32]),
+                        },
+                        start + tls::CYCLE_LIMIT,
+                        worker_cancel,
+                    )
+                    .map(|_| ())
+            } else {
+                let mut operation = carrier.operation(worker_cancel);
+                operation
+                    .submit_publication(binding.clone(), Request::Begin(binding))
+                    .map_err(crate::Error::Transport)
+            };
+            done_tx.send(()).unwrap();
+            (result, start.elapsed())
+        });
+        started_rx.recv_timeout(Duration::from_secs(1)).unwrap();
+        thread::sleep(Duration::from_millis(100));
+        assert!(
+            done_rx.try_recv().is_err(),
+            "backlog must hold the selected actual endpoint before cancellation"
+        );
+        let cancelled_at = Instant::now();
+        cancel.store(true, Ordering::SeqCst);
+        let promptly_done = done_rx.recv_timeout(Duration::from_secs(1)).is_ok();
+        let (result, total) = worker.join().unwrap();
+        let after_cancel = cancelled_at.elapsed();
+        eprintln!(
+            "pending TCP actual endpoint http={http} filler_completed={completed} control_sockets=4 total_ms={} cancel_join_ms={} result={result:?}",
+            total.as_millis(),
+            after_cancel.as_millis()
+        );
+        assert!(
+            promptly_done && after_cancel < Duration::from_secs(1),
+            "pending TCP cancellation must join below1s and existing5s drain, without shortening the original5s admission"
+        );
+        assert!(matches!(
+            result,
+            Err(crate::Error::Transport(tls::Stage::Cancelled))
+        ));
+    });
+    drop(fillers);
+    drop(listener);
+    capture_carrier_optional(&h, "pending-tcp-cancel");
+}
+#[test]
+fn composed_pending_tcp_carrier_connect_cancels_within_existing_drain() {
+    pending_tcp_endpoint_cancel(false);
+}
+#[test]
+fn composed_pending_tcp_shared_http_connect_cancels_within_existing_drain() {
+    pending_tcp_endpoint_cancel(true);
+}
+
+#[test]
+fn bounded_collector_delivers_a_valid_delayed_callback_within_original_attempts() {
+    use crate::delivery::Collection;
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let remote = &h.pair.homes[1];
+    let binding = h.pair.binding(0);
+    let store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, address);
+    let began = Instant::now();
+    thread::scope(|scope| {
+        let b = binding.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_publication(b.clone(), Request::Begin(b))
+                .unwrap();
+            operation
+        });
+        let mut session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (entered, waiting) = mpsc::channel();
+        let (release, resume) = mpsc::channel();
+        let positive = session.hold_delivery_after_prefix(entered, resume);
+        let release_receipt = scope.spawn(move || {
+            waiting.recv_timeout(Duration::from_secs(5)).unwrap();
+            thread::sleep(Duration::from_millis(100));
+            release.send(()).unwrap();
+        });
+        let (mut delivery, work) = session.submit_publication().unwrap();
+        release_receipt.join().unwrap();
+        assert!(
+            positive.load(Ordering::SeqCst) > 0,
+            "receipt RTT includes an actual positive TLS prefix and delayed remainder"
+        );
+        let mut operation = client.join().unwrap();
+        let callback = h.endpoint(0);
+        let store_ref = &store;
+        let worker = scope.spawn(move || work.execute(&callback, store_ref));
+        let response = scope.spawn(|| {
+            let service = remote
+                .server(&remote.ca.0)
+                .accept_service(
+                    &remote.callback,
+                    remote.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap();
+            thread::sleep(Duration::from_millis(700));
+            service
+                .serve_publication_http_once(
+                    &PublicationWireProfile::new(remote.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+                .unwrap();
+        });
+        let mut collected = false;
+        let mut collects = 0;
+        for _ in 0..6 {
+            collects += 1;
+            let (ready, result) = thread::scope(|iteration| {
+                let collector = iteration.spawn(|| operation.collect_paced());
+                let session = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                let ready = session.collect_delivery(&mut delivery).unwrap();
+                (ready, collector.join().unwrap().unwrap())
+            });
+            match result {
+                Collection::Busy => {
+                    assert!(!ready);
+                    thread::sleep(Duration::from_millis(100));
+                }
+                Collection::Complete(value) => {
+                    assert!(ready);
+                    assert!(matches!(
+                        value,
+                        Response::Progress {
+                            offset: 0,
+                            committed: false,
+                            ..
+                        }
+                    ));
+                    collected = true;
+                    break;
+                }
+            }
+        }
+        response.join().unwrap();
+        worker.join().unwrap().unwrap();
+        assert!(
+            began.elapsed() < tls::CYCLE_LIMIT,
+            "the real authenticated callback completed inside the original window"
+        );
+        assert!(delivery.is_finished());
+        assert!(delivery.test_original_attempts() <= 8);
+        assert_eq!(delivery.test_original_attempts(), 2 + collects);
+        assert_eq!(local.charged(), 1);
+        assert!(
+            h.bytes(0)
+                .windows(binding.id.len())
+                .any(|bytes| bytes == binding.id)
+        );
+        capture_carrier_optional(&h, "delayed-collector");
+        assert!(
+            collected,
+            "six greedy fresh collects exhausted shared8 before a valid delayed callback could be collected"
+        );
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+
+fn paced_measured_wait_control(deadline: bool) {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let _store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, address);
+    let cancel = Arc::new(AtomicBool::new(false));
+    thread::scope(|scope| {
+        let b = binding.clone();
+        let original_cancel = cancel.clone();
+        let client = scope.spawn(move || {
+            let mut op = endpoint.operation(original_cancel);
+            op.submit_publication(b.clone(), Request::Begin(b)).unwrap();
+            op
+        });
+        let mut session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (entered, waiting) = std::sync::mpsc::channel();
+        let (release, resume) = std::sync::mpsc::channel();
+        let positive = session.hold_delivery_after_prefix(entered, resume);
+        let release_receipt = scope.spawn(move || {
+            waiting.recv_timeout(Duration::from_secs(5)).unwrap();
+            thread::sleep(Duration::from_millis(100));
+            release.send(()).unwrap();
+        });
+        let (delivery, work) = session.submit_publication().unwrap();
+        release_receipt.join().unwrap();
+        let mut operation = client.join().unwrap();
+        assert!(positive.load(Ordering::SeqCst) > 0);
+        assert_eq!(operation.test_attempts(), 1);
+        assert_eq!(delivery.test_original_attempts(), 1);
+        assert_eq!(local.charged(), 1);
+        if deadline {
+            operation.test_narrow_deadline(Duration::from_millis(20));
+        }
+        let (entered, waiting) = std::sync::mpsc::channel();
+        let (done, finished) = std::sync::mpsc::channel();
+        let began = Instant::now();
+        let collector = scope.spawn(move || {
+            entered.send(()).unwrap();
+            let result = operation.collect_paced();
+            done.send(()).unwrap();
+            (result, operation)
+        });
+        waiting.recv_timeout(Duration::from_secs(1)).unwrap();
+        if !deadline {
+            thread::sleep(Duration::from_millis(25));
+            assert!(
+                finished.try_recv().is_err(),
+                "the real measured local wait must still be in progress"
+            );
+            cancel.store(true, Ordering::SeqCst);
+        }
+        let (result, operation) = collector.join().unwrap();
+        assert!(began.elapsed() < Duration::from_secs(1));
+        assert_eq!(
+            result.err(),
+            Some(if deadline {
+                tls::Stage::Deadline
+            } else {
+                tls::Stage::Cancelled
+            })
+        );
+        assert_eq!(operation.test_attempts(), 1);
+        assert_eq!(delivery.test_original_attempts(), 1);
+        listener.set_nonblocking(true).unwrap();
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock),
+            "a cancelled/expired local pacing wait must not open another TCP connection"
+        );
+        assert_eq!(local.charged(), 1);
+        assert_eq!(h.bytes(0).len(), 17);
+        capture_carrier_optional(&h, "paced-wait-control");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
+}
+#[test]
+fn paced_collect_cancellation_during_measured_wait_spends_no_extra_connection_or_attempt() {
+    paced_measured_wait_control(false);
+}
+#[test]
+fn paced_collect_conservative_deadline_during_measured_wait_does_not_refresh() {
+    paced_measured_wait_control(true);
+}
+#[test]
+fn paced_collect_exhaustion_keeps_raw_busy_immediate_and_never_refreshes_attempts() {
+    use crate::delivery::Collection;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let _store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, address);
+    thread::scope(|scope| {
+        let b = binding.clone();
+        let client = scope.spawn(move || {
+            let mut op = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            op.submit_publication(b.clone(), Request::Begin(b)).unwrap();
+            op
+        });
+        let session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (mut delivery, work) = session.submit_publication().unwrap();
+        let mut operation = client.join().unwrap();
+        for expected in 2..=8 {
+            thread::scope(|iteration| {
+                let client = iteration.spawn(|| operation.collect());
+                let session = local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                let began = Instant::now();
+                assert!(!session.collect_delivery(&mut delivery).unwrap());
+                assert!(began.elapsed() < Duration::from_millis(100));
+                assert!(matches!(client.join().unwrap().unwrap(), Collection::Busy));
+            });
+            assert_eq!(operation.test_attempts(), expected);
+            assert_eq!(delivery.test_original_attempts(), expected);
+        }
+        for _ in 0..3 {
+            let began = Instant::now();
+            assert_eq!(operation.collect_paced().err(), Some(tls::Stage::Limit));
+            assert!(began.elapsed() < Duration::from_millis(100));
+            assert_eq!(operation.test_attempts(), 8);
+            assert_eq!(delivery.test_original_attempts(), 8);
+        }
+        listener.set_nonblocking(true).unwrap();
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        assert_eq!(local.charged(), 1);
+        assert_eq!(h.bytes(0).len(), 17);
+        capture_carrier_optional(&h, "paced-attempt-control");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    });
 }

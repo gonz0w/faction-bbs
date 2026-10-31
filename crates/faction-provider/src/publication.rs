@@ -426,6 +426,21 @@ impl Access for VerifiedAccess<'_> {
     }
 }
 impl PendingPublication {
+    pub(crate) fn delivery_source(&self) -> crate::delivery::Source {
+        let context = self.context.clone();
+        crate::delivery::Source {
+            state: context.state.clone(),
+            purpose: 1,
+            peer: crate::delivery::Peer::Device(context.digest),
+            binding: context.binding.clone(),
+            request: self.request.clone(),
+            deadline: context.deadline,
+            cancel: context.cancel.clone(),
+            attempted: context.attempted,
+            _lease: self._lease.clone(),
+            current: Arc::new(move || context.current().is_ok()),
+        }
+    }
     pub fn execute(
         self,
         endpoint: &tls::HttpEndpoint,
