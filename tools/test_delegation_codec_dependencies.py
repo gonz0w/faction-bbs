@@ -157,6 +157,7 @@ def ci_fixture():
              '          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     for manifest, feature in [('crates/faction-delegation-codec/Cargo.toml', ''),
                                ('Cargo.toml', ' --features faction-client/device-provider'),
+                               ('Cargo.toml', ' --features faction-client/own-home-provider'),
                                ('crates/faction-provider/Cargo.toml', ' --features operator'),
                                ('crates/faction-provider/Cargo.toml', ' --features delegation-wire'),
                                ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy'),

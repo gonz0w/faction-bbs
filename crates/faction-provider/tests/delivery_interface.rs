@@ -30,3 +30,17 @@ fn collect_requires_fresh_owning_tls_sessions() {
     let _: fn(ServiceSession, &mut Delivery) -> Result<bool, Error> =
         ServiceSession::collect_delivery;
 }
+
+#[test]
+fn parent_deadline_constructor_has_no_caller_clock_or_actor_override() {
+    use faction_provider::{
+        delivery::{CarrierEndpoint, Operation},
+        tls::Stage,
+    };
+    use std::{
+        sync::{Arc, atomic::AtomicBool},
+        time::Instant,
+    };
+    let _: fn(&CarrierEndpoint, Instant, Arc<AtomicBool>) -> Result<Operation, Stage> =
+        CarrierEndpoint::operation_until;
+}

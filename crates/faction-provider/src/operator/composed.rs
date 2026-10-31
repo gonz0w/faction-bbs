@@ -1,7 +1,10 @@
 //! Explicit complete composed policy and fixed private relay configuration.
 //! No endpoint, role or credential comes from a device request or locator.
 use super::{Result, input, mapped};
+#[path = "composed_loop.rs"]
+mod composed_loop;
 use faction_files::private_blobs::Store;
+use faction_provider::Error as ProviderError;
 use faction_provider::{
     Runtime,
     authority::Registry,
@@ -429,51 +432,22 @@ fn serve(config: Config) -> Result<()> {
                 thread::sleep(Duration::from_millis(10));
             }
         });
-        let mut worker: Option<
-            thread::ScopedJoinHandle<'_, std::result::Result<(), faction_provider::Error>>,
-        > = None;
-        let mut pending: Option<Delivery> = None;
-        let result = (|| {
-            mapped(writeln!(io::stdout(), "ready {port}"))?;
-            mapped(io::stdout().flush())?;
-            while !cancel.load(Ordering::SeqCst) {
-                if worker.as_ref().is_some_and(|w| w.is_finished()) {
-                    let _ = mapped(worker.take().ok_or(())?.join())?;
-                }
-                if worker.is_none()
-                    && pending
-                        .as_ref()
-                        .is_some_and(|d| d.is_consumed() || d.is_expired())
-                {
-                    pending.take();
-                }
-                if let Ok(incoming) = server.accept_composed(&listener, &runtime, cancel.clone()) {
-                    match incoming.serve(pending.as_mut(), &store, &c.home, &profile) {
-                        Ok(Event::Submitted(delivery, work)) => {
-                            // Incoming already dropped the actual submitted TLS
-                            // carrier. Exactly one continuation may now run.
-                            if pending.is_some() || worker.is_some() {
-                                return Err(());
-                            }
-                            pending = Some(delivery);
-                            let routes = &routes;
-                            let store = &store;
-                            worker = Some(scope.spawn(move || work.execute(routes, store)));
-                        }
-                        Ok(Event::Collected(_)) | Ok(Event::Served) | Err(_) => (),
-                    }
-                }
-            }
-            Ok(())
-        })();
-        cancel.store(true, Ordering::SeqCst);
-        runtime.stop();
-        drop(listener);
-        if let Some(worker) = worker {
-            // Cancellation is an ordinary worker outcome during bounded drain.
-            let _ = mapped(worker.join())?;
-        }
-        drop(pending);
+        let result = composed_loop::run(
+            scope,
+            composed_loop::Inputs {
+                server: &server,
+                listener,
+                runtime: &runtime,
+                cancel: &cancel,
+                routes: &routes,
+                store: &store,
+                home: &c.home,
+                profile: &profile,
+                port,
+            },
+            #[cfg(test)]
+            None,
+        )?;
         mapped(observer.join())?;
         result
     })?;

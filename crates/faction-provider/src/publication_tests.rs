@@ -3497,3 +3497,588 @@ fn paced_collect_exhaustion_keeps_raw_busy_immediate_and_never_refreshes_attempt
         assert_eq!(local.charged(), 0);
     });
 }
+
+#[test]
+fn carrier_parent_deadline_and_cancellation_refuse_before_any_tcp_operation() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    assert!(matches!(
+        endpoint.operation_until(
+            Instant::now() - Duration::from_millis(1),
+            Arc::new(AtomicBool::new(false))
+        ),
+        Err(tls::Stage::Deadline)
+    ));
+    assert!(matches!(
+        endpoint.operation_until(
+            Instant::now() + tls::CYCLE_LIMIT,
+            Arc::new(AtomicBool::new(true))
+        ),
+        Err(tls::Stage::Cancelled)
+    ));
+    let parent = Instant::now() + Duration::from_millis(20);
+    let mut operation = endpoint
+        .operation_until(parent, Arc::new(AtomicBool::new(false)))
+        .unwrap();
+    thread::sleep(Duration::from_millis(40));
+    assert_eq!(
+        operation
+            .submit_publication(binding.clone(), Request::Begin(binding))
+            .err(),
+        Some(tls::Stage::Deadline)
+    );
+    assert!(matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock));
+    assert_eq!(local.charged(), 0);
+    capture_carrier_optional(&h, "parent-deadline-no-io");
+}
+
+#[cfg(feature = "durable-policy")]
+#[test]
+fn admitted_introspection_survives_short_contended_service_purpose_lookup() {
+    service_purpose_contention(false);
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn admitted_introspection_cancelled_during_contended_service_purpose_lookup() {
+    service_purpose_contention(true);
+}
+#[cfg(feature = "durable-policy")]
+fn service_purpose_contention(cancelled: bool) {
+    use faction_delegation_codec as codec;
+    use std::sync::mpsc;
+    let h = Homes::new(true);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let binding = h.pair.binding(1);
+    let record = crate::retrieval::DeliveryRecord::new(local.record(&binding).unwrap());
+    let reference = local
+        .runtime()
+        .control()
+        .provision_retrieval(record.record())
+        .unwrap();
+    let issued = local.service_call(&local.relay, &local.ca.0, |mut session| {
+        session.issue_retrieval(&reference, "relay").unwrap()
+    });
+    let request = codec::UnverifiedIntrospectionRequest {
+        client_id: "inspector".into(),
+        token: codec::UnverifiedToken::from_bytes(*issued.token().expose_bytes()),
+    };
+    let prefix = format!(
+        "service-purpose-contention-{}-cancelled-{cancelled}",
+        std::process::id()
+    );
+    retain_synthetic_fixture(&format!("{prefix}-reference.bin"), reference.expose_bytes());
+    retain_synthetic_fixture(
+        &format!("{prefix}-request.http"),
+        &codec::encode_introspection_http(local.name, &request).unwrap(),
+    );
+    retain_synthetic_fixture(
+        &format!("{prefix}-binding.bin"),
+        &faction_files::private_blobs::encode_request(&Request::Begin(binding.clone())).unwrap(),
+    );
+    for i in 0..2 {
+        retain_synthetic_fixture(
+            &format!("{prefix}-policy{i}.snapshot"),
+            &fs::read(
+                h.pair
+                    .root
+                    .join(format!("policy{i}/provider-policy.snapshot")),
+            )
+            .unwrap(),
+        );
+    }
+    let store = h.empty(0);
+    let before = h.bytes(0);
+    let endpoint = foreign.endpoint(local);
+    let start = Instant::now();
+    let server_cancel = Arc::new(AtomicBool::new(false));
+    let (served, reply, attempted, held, positive, response_started) = thread::scope(|scope| {
+        let caller = scope.spawn(|| {
+            foreign.runtime().control().query_introspection(
+                &endpoint,
+                &request,
+                start + tls::CYCLE_LIMIT,
+                Arc::new(AtomicBool::new(false)),
+            )
+        });
+        // Admission uses the real registered foreign service leaf and finishes
+        // before this synthetic, short Authority critical section begins.
+        let mut incoming = local
+            .server(&local.ca.0)
+            .accept_composed(&local.callback, local.runtime(), server_cancel.clone())
+            .unwrap();
+        let (entered, observed) = mpsc::sync_channel(1);
+        incoming.observe_service_purpose_attempt(entered);
+        let (write_entered, write_observed) = mpsc::channel();
+        let (write_release, write_resume) = mpsc::channel();
+        write_release.send(()).unwrap();
+        let positive = incoming.observe_service_response_prefix(write_entered, write_resume);
+        let held_at = Instant::now();
+        let authority = local.runtime().state.authority.lock().unwrap();
+        assert_eq!(authority.registry.as_ref().unwrap().generation(), 2);
+        let served = scope.spawn(|| {
+            incoming
+                .serve(
+                    None,
+                    &store,
+                    local.name,
+                    &PublicationWireProfile::new(local.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+                .map(|event| matches!(event, tls::delivery::Event::Served))
+        });
+        let attempted = observed.recv_timeout(Duration::from_secs(1));
+        if cancelled {
+            server_cancel.store(true, Ordering::SeqCst);
+        }
+        // Release even on a missing witness, before joins/response assertions.
+        // ServiceSession drop closes the socket; it does not lock Authority.
+        drop(authority);
+        let held = held_at.elapsed();
+        (
+            served.join().unwrap(),
+            caller.join().unwrap(),
+            attempted,
+            held,
+            positive.load(Ordering::SeqCst),
+            write_observed.try_recv().is_ok(),
+        )
+    });
+    capture_carrier_optional(&h, "service-purpose-contention-after");
+    assert_eq!(
+        attempted.unwrap(),
+        0,
+        "the admitted service did not start with its original fresh budget"
+    );
+    assert!(
+        held < Duration::from_secs(1),
+        "the controlled short critical section outlasted its witness bound"
+    );
+    assert!(
+        start.elapsed() < tls::CYCLE_LIMIT,
+        "introspection outlasted the original operation window"
+    );
+    assert_eq!(
+        h.bytes(0),
+        before,
+        "metadata lookup changed actual Store bytes"
+    );
+    eprintln!(
+        "controlled service-purpose contention cancelled={cancelled} attempts_before_http=0 server={served:?} client_error={:?} positive_tls_prefix={positive} response_started={response_started} held_us={} elapsed_ms={}",
+        reply.as_ref().err(),
+        held.as_micros(),
+        start.elapsed().as_millis()
+    );
+    if cancelled {
+        assert_eq!(
+            positive, 0,
+            "cancellation disclosed post-admission TLS response bytes"
+        );
+        assert!(
+            !response_started,
+            "cancelled response reached its socket gate"
+        );
+        assert!(
+            reply.is_err(),
+            "cancelled service returned authenticated metadata"
+        );
+        assert_eq!(
+            served,
+            Err(Error::Transport(tls::Stage::Cancelled)),
+            "contended lookup must recheck the original cancellation after acquiring Authority"
+        );
+        return;
+    }
+    assert!(
+        matches!(served, Ok(true)),
+        "admitted current Introspection connection was discarded: {served:?}"
+    );
+    let codec::UnverifiedIntrospection::Retrieval { claims, action } = reply.unwrap() else {
+        panic!("current token did not return an active authenticated response")
+    };
+    assert_eq!(claims.binding.recipient.account, binding.recipient.account);
+    assert_eq!(claims.binding.sender.account, binding.sender.account);
+    assert_eq!(claims.generation, 2);
+    assert_eq!(claims.reset, 0);
+    assert_eq!(
+        action,
+        codec::UnverifiedRetrievalAction::GetChunk { offset: 0 }
+    );
+    assert!(
+        positive > 0 && response_started,
+        "the healthy authenticated response must exercise the real post-admission TLS write observer"
+    );
+}
+
+#[cfg(feature = "durable-policy")]
+fn metadata_capture_work(
+    h: &Homes,
+    store: &Mutex<Store>,
+    own_home: bool,
+    cancel: Arc<AtomicBool>,
+) -> (
+    TcpListener,
+    crate::delivery::Operation,
+    crate::delivery::Delivery,
+    crate::delivery::Work,
+    Binding,
+) {
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(usize::from(own_home));
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    let (operation, delivery, work) = thread::scope(|scope| {
+        let captured = binding.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            if own_home {
+                operation
+                    .submit_own_home(captured.clone(), Request::Status { id: captured.id })
+                    .unwrap();
+            } else {
+                operation
+                    .submit_publication(captured.clone(), Request::Begin(captured))
+                    .unwrap();
+            }
+            operation
+        });
+        let incoming = local
+            .server(&local.ca.0)
+            .accept_composed(&listener, local.runtime(), cancel)
+            .unwrap();
+        let crate::delivery::Event::Submitted(delivery, work) = incoming
+            .serve(
+                None,
+                store,
+                local.name,
+                &PublicationWireProfile::new(local.name.into(), vec!["observer".into()]).unwrap(),
+            )
+            .unwrap()
+        else {
+            panic!("real device did not submit a source-bound operation")
+        };
+        (client.join().unwrap(), delivery, work)
+    });
+    (listener, operation, delivery, work, binding)
+}
+#[cfg(feature = "durable-policy")]
+fn metadata_collect(
+    h: &Homes,
+    listener: &TcpListener,
+    operation: &mut crate::delivery::Operation,
+    delivery: &mut crate::delivery::Delivery,
+    store: &Mutex<Store>,
+) -> (
+    Result<bool, Error>,
+    Result<crate::delivery::Collection, tls::Stage>,
+) {
+    let local = &h.pair.homes[0];
+    thread::scope(|scope| {
+        let client = scope.spawn(|| operation.collect());
+        let incoming = local
+            .server(&local.ca.0)
+            .accept_composed(listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let served = incoming
+            .serve(
+                Some(delivery),
+                store,
+                local.name,
+                &PublicationWireProfile::new(local.name.into(), vec!["observer".into()]).unwrap(),
+            )
+            .map(|event| match event {
+                crate::delivery::Event::Collected(ready) => ready,
+                _ => panic!("actual collect used a different route"),
+            });
+        (served, client.join().unwrap())
+    })
+}
+#[cfg(feature = "durable-policy")]
+fn metadata_capture_inputs(h: &Homes, operation: &crate::delivery::Operation, label: &str) {
+    let prefix = format!("{label}-{}", std::process::id());
+    retain_synthetic_fixture(
+        &format!("{prefix}-collect-frame.bin"),
+        &operation.test_collect_frame(),
+    );
+    for i in 0..2 {
+        retain_synthetic_fixture(
+            &format!("{prefix}-policy{i}.snapshot"),
+            &fs::read(
+                h.pair
+                    .root
+                    .join(format!("policy{i}/provider-policy.snapshot")),
+            )
+            .unwrap(),
+        );
+    }
+}
+#[cfg(feature = "durable-policy")]
+fn metadata_deadline_contention(cancelled: bool) {
+    use crate::delivery::Collection;
+    let h = Homes::new(true);
+    let local = &h.pair.homes[0];
+    let store = h.empty(0);
+    let before = h.bytes(0);
+    let cancel = Arc::new(AtomicBool::new(false));
+    let start = Instant::now();
+    let (listener, mut operation, mut delivery, work, _) =
+        metadata_capture_work(&h, &store, true, cancel.clone());
+    metadata_capture_inputs(
+        &h,
+        &operation,
+        &format!("deadline-metadata-cancelled-{cancelled}"),
+    );
+    assert!(!delivery.is_finished());
+    assert_eq!(delivery.test_original_attempts(), 1);
+    assert_eq!(
+        local.charged(),
+        2,
+        "real own-home record and physical owner remain charged"
+    );
+    let (entered, observed) = std::sync::mpsc::sync_channel(1);
+    delivery.observe_deadline_metadata_attempt(entered);
+    let (expired, attempted, held) = thread::scope(|scope| {
+        let guard = delivery.hold_deadline_metadata();
+        let original = *guard;
+        let held_at = Instant::now();
+        let contender = scope.spawn(|| delivery.is_expired());
+        let attempted = observed.recv_timeout(Duration::from_secs(1));
+        if cancelled {
+            cancel.store(true, Ordering::SeqCst);
+        }
+        drop(guard);
+        let held = held_at.elapsed();
+        let expired = contender.join().unwrap();
+        assert_eq!(
+            *delivery.hold_deadline_metadata(),
+            original,
+            "metadata witness changed the actual deadline"
+        );
+        (expired, attempted, held)
+    });
+    assert_eq!(
+        attempted.unwrap(),
+        (true, 1),
+        "the actual deadline lookup must observe WouldBlock without a charge"
+    );
+    assert!(held < Duration::from_secs(1));
+    assert_eq!(delivery.test_original_attempts(), 1);
+    assert_eq!(local.charged(), 2);
+    assert!(
+        !delivery.is_finished(),
+        "genuine unfinished Work must remain retained"
+    );
+    let (served, collected) =
+        metadata_collect(&h, &listener, &mut operation, &mut delivery, &store);
+    if cancelled {
+        assert!(
+            served.is_err() && collected.is_err(),
+            "cancelled source disclosed a response"
+        );
+    } else {
+        assert_eq!(served, Ok(false));
+        assert!(
+            matches!(collected, Ok(Collection::Busy)),
+            "healthy unfinished operation must still collect immediate Busy"
+        );
+    }
+    assert_eq!(delivery.test_original_attempts(), 2);
+    assert_eq!(local.charged(), 2);
+    assert_eq!(h.bytes(0), before);
+    assert!(start.elapsed() < tls::CYCLE_LIMIT);
+    capture_carrier_optional(&h, "deadline-metadata-contention");
+    eprintln!(
+        "deadline metadata cancelled={cancelled} expired={expired} metadata_attempts=1 after_collect_attempts=2 physical_and_record=2 held_us={}",
+        held.as_micros()
+    );
+    drop(work);
+    drop(delivery);
+    assert_eq!(local.charged(), 0);
+    assert_eq!(
+        expired, cancelled,
+        "short unchanged deadline metadata contention falsely expired a healthy delivery"
+    );
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn metadata_read_side_deadline_contention_keeps_live_unfinished_delivery() {
+    metadata_deadline_contention(false);
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn metadata_read_side_deadline_contention_preserves_cancellation_refusal() {
+    metadata_deadline_contention(true);
+}
+
+#[cfg(feature = "durable-policy")]
+fn metadata_routes_contention(cancelled: bool) {
+    use crate::delivery::{Collection, RelayPeer, RelayRoutes};
+    let h = Homes::new(true);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let store = h.empty(0);
+    let recipient_store = h.empty(1);
+    let before = h.bytes(0);
+    let recipient_before = h.bytes(1);
+    // Fully validate fixed routes before capturing the actual sender Work.
+    let mut routes = RelayRoutes::new(
+        local.runtime(),
+        carrier_endpoint(local, &local.relay, local.callback.local_addr().unwrap()),
+        vec![RelayPeer {
+            home: foreign.name.into(),
+            publication: h.endpoint(0),
+            introspection: local.endpoint(foreign),
+            resource: carrier_endpoint(
+                foreign,
+                &local.relay,
+                foreign.callback.local_addr().unwrap(),
+            ),
+        }],
+    )
+    .unwrap();
+    let cancel = Arc::new(AtomicBool::new(false));
+    let start = Instant::now();
+    let (listener, mut operation, mut delivery, work, binding) =
+        metadata_capture_work(&h, &store, false, cancel.clone());
+    metadata_capture_inputs(
+        &h,
+        &operation,
+        &format!("routes-metadata-cancelled-{cancelled}"),
+    );
+    assert_eq!(delivery.test_original_attempts(), 1);
+    assert_eq!(local.charged(), 1);
+    let (entered, observed) = std::sync::mpsc::sync_channel(1);
+    routes.observe_authority_metadata_attempt(entered);
+    let callback_cancel = Arc::new(AtomicBool::new(false));
+    let (result, callback, attempted, held) = thread::scope(|scope| {
+        let callback_flag = callback_cancel.clone();
+        let callback = scope.spawn(|| {
+            let incoming = foreign
+                .server(&foreign.ca.0)
+                .accept_composed(&foreign.callback, foreign.runtime(), callback_flag)
+                .map_err(Error::Transport)?;
+            h.callbacks[1].fetch_add(1, Ordering::SeqCst);
+            incoming
+                .serve(
+                    None,
+                    &recipient_store,
+                    foreign.name,
+                    &PublicationWireProfile::new(foreign.name.into(), vec!["observer".into()])
+                        .unwrap(),
+                )
+                .map(|event| matches!(event, crate::delivery::Event::Served))
+        });
+        let authority = local.runtime().state.authority.lock().unwrap();
+        let held_at = Instant::now();
+        assert_eq!(authority.registry.as_ref().unwrap().generation(), 2);
+        let worker = scope.spawn(|| work.execute(&routes, &store));
+        let attempted = observed.recv_timeout(Duration::from_secs(1));
+        if cancelled {
+            cancel.store(true, Ordering::SeqCst);
+        }
+        drop(authority);
+        let held = held_at.elapsed();
+        let result = worker.join().unwrap();
+        if result.is_err() {
+            callback_cancel.store(true, Ordering::SeqCst);
+        }
+        (result, callback.join().unwrap(), attempted, held)
+    });
+    assert!(
+        attempted.unwrap(),
+        "the actual routes policy lookup must observe WouldBlock"
+    );
+    assert!(held < Duration::from_secs(1));
+    assert!(delivery.is_finished());
+    assert_eq!(local.charged(), 1);
+    let before_collect = delivery.test_original_attempts();
+    assert!((1..=2).contains(&before_collect));
+    let (served, collected) =
+        metadata_collect(&h, &listener, &mut operation, &mut delivery, &store);
+    assert_eq!(delivery.test_original_attempts(), before_collect + 1);
+    assert!(
+        delivery.test_original_attempts() < tls::MAX_OPERATIONS,
+        "no response may be accepted after spending the source budget"
+    );
+    assert_eq!(local.charged(), 1);
+    assert_eq!(
+        h.bytes(1),
+        recipient_before,
+        "recipient-current observation must not mutate recipient Store"
+    );
+    assert!(start.elapsed() < tls::CYCLE_LIMIT);
+    let callbacks = h.callbacks[1].load(Ordering::SeqCst);
+    eprintln!(
+        "routes metadata cancelled={cancelled} work={result:?} callback={callback:?} callbacks={callbacks} collect_error={:?} attempts={} held_us={}",
+        collected.as_ref().err(),
+        delivery.test_original_attempts(),
+        held.as_micros()
+    );
+    capture_carrier_optional(&h, "routes-metadata-contention");
+    drop(delivery);
+    assert_eq!(local.charged(), 0);
+    if cancelled {
+        assert!(result.is_err());
+        assert_eq!(callbacks, 0);
+        assert!(
+            collected.is_err() && served.is_err(),
+            "cancelled publication disclosed a result"
+        );
+        assert_eq!(h.bytes(0), before);
+        return;
+    }
+    assert_eq!(
+        result,
+        Ok(()),
+        "short approved-routes metadata contention refused valid publication before callback"
+    );
+    assert_eq!(callback, Ok(true));
+    assert_eq!(callbacks, 1);
+    assert_eq!(served, Ok(true));
+    assert_eq!(before_collect, 2);
+    let Ok(Collection::Complete(response)) = collected else {
+        panic!("valid actual publication did not authenticate its stored result")
+    };
+    assert_eq!(
+        response,
+        Response::Progress {
+            binding: binding.clone(),
+            offset: 0,
+            committed: false
+        }
+    );
+    let stored = h.bytes(0);
+    assert_eq!(&stored[..8], b"FBCS0001");
+    let clock = u64::from_be_bytes(stored[8..16].try_into().unwrap());
+    assert!(clock >= binding.created && clock < binding.expires);
+    let mut expected = b"FBCS0001".to_vec();
+    expected.extend_from_slice(&stored[8..16]);
+    expected.push(1);
+    expected.extend_from_slice(
+        &faction_files::private_blobs::encode_request(&Request::Begin(binding)).unwrap()[9..],
+    );
+    expected.push(0);
+    expected.extend_from_slice(&0u32.to_be_bytes());
+    assert_eq!(
+        stored, expected,
+        "actual Begin Store must contain only the exact authenticated Binding and zero ciphertext"
+    );
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn metadata_read_side_routes_contention_keeps_valid_publication() {
+    metadata_routes_contention(false);
+}
+#[cfg(feature = "durable-policy")]
+#[test]
+fn metadata_read_side_routes_contention_preserves_cancellation_refusal() {
+    metadata_routes_contention(true);
+}
+
+#[cfg(feature = "operator")]
+#[path = "operator/composed_loop_tests.rs"]
+mod composed_loop_tests;

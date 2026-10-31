@@ -1,13 +1,17 @@
 """Contracts for the owned authenticated-provider console proof."""
 import importlib
+import json
 import os
 from pathlib import Path
 import stat
+import shutil
 import subprocess
 from unittest.mock import patch
 import tempfile
 import tomllib
 import unittest
+from types import SimpleNamespace
+from xml.etree import ElementTree as ET
 
 
 class ProviderConsoleProbeTests(unittest.TestCase):
@@ -78,6 +82,140 @@ class ProviderConsoleProbeTests(unittest.TestCase):
                 with self.subTest(label=label), self.assertRaises(ValueError):
                     probe.retain_capture(root, label, data)
             self.assertEqual(len(list(root.iterdir())), 1)
+
+class OwnHomeFixtureContracts(unittest.TestCase):
+    def setUp(self):
+        capture = os.environ.get('FACTION322_CONSOLE_FIXTURES')
+        if capture is not None:
+            parent = Path(capture)
+            info = parent.lstat()
+            self.assertTrue(not parent.is_symlink() and stat.S_ISDIR(info.st_mode))
+            self.assertEqual(info.st_uid, os.getuid())
+            self.assertEqual(stat.S_IMODE(info.st_mode), 0o700)
+        self.root = Path(tempfile.mkdtemp(prefix='console-contract-OWNED-', dir=capture)).resolve()
+        self.root.chmod(0o700)
+        if capture is None:
+            self.addCleanup(shutil.rmtree, self.root)
+        self.probe = importlib.import_module('probe_device_provider_console')
+        self.probe.private(self.root/'OWNED', b'Owned issue322 Python fixture contract inputs\n')
+        for name, data in [('ca.pem', b'legacy synthetic CA'),
+                           ('away-ca.pem', b'independent synthetic CA'),
+                           ('server.pem', b'synthetic server certificate'),
+                           ('device.pem', b'synthetic device certificate'),
+                           ('device.key', b'synthetic device private key')]:
+            self.probe.private(self.root/name, data)
+        self.pair = (self.root/'device.pem', self.root/'device.key')
+
+    def test_legacy_profile_characterization_stays_same_home_v1(self):
+        with patch.object(self.probe, 'fingerprint', return_value=bytes([17])*32):
+            path = self.probe.profile(self.root, 'alice', '01'*32, 12345,
+                                      self.root/'server.pem', self.pair)
+        values = tomllib.loads(path.read_text())
+        self.assertEqual(values, dict(version=1, home='home.test', endpoint='127.0.0.1:12345',
+            name='home.test', pin='11'*32, account='alice@home.test', device=101,
+            identity='01'*32, ca=str(path.parent/'ca.pem'),
+            certificate=str(path.parent/'device.pem'), key=str(path.parent/'device.key')))
+        self.assertEqual((path.parent/'ca.pem').read_bytes(), b'legacy synthetic CA')
+        self.assertEqual(stat.S_IMODE(path.parent.stat().st_mode), 0o700)
+        self.assertTrue(all(stat.S_IMODE(p.stat().st_mode) == 0o600 for p in path.parent.iterdir()))
+
+
+    @staticmethod
+    def archive_query(account):
+        iq = ET.Element('{jabber:client}iq', {'type':'set', 'id':'archive-fixture',
+            'from':account, 'to':account})
+        ET.SubElement(iq, '{urn:xmpp:mam:2}query', {'queryid':'archive-fixture'})
+        return ET.tostring(iq)
+
+    def delivery(self, recipient):
+        wire = ET.Element('{jabber:client}message', {'from':'alice@home.test',
+            'to':recipient, 'id':'opaque-fixture-message'})
+        ET.SubElement(wire, '{urn:xmpp:omemo:2}encrypted').text = 'opaque encrypted fixture bytes'
+        self.probe.private(self.root/'delivery.xml', ET.tostring(wire))
+        return wire
+
+    def test_opaque_archive_is_recipient_only_even_at_same_home(self):
+        self.delivery('bob@home.test')
+        mail = self.probe.PublicMail(self.root)
+        sender = ET.fromstring(b'<root>'+mail.request(0, self.archive_query('alice@home.test'))+b'</root>')
+        self.assertIsNone(sender.find('.//{urn:xmpp:mam:2}result'),
+            'sender archive must not disclose the recipient queue')
+        recipient = ET.fromstring(b'<root>'+mail.request(1, self.archive_query('bob@home.test'))+b'</root>')
+        self.assertIsNotNone(recipient.find('.//{urn:xmpp:mam:2}result'))
+
+    def test_two_home_mail_uses_exact_accounts_domains_and_archive_owner(self):
+        accounts = ('alice@home.test', 'bob@away.test')
+        wire = self.delivery(accounts[1])
+        mail = self.probe.PublicMail(self.root, accounts=accounts, devices=(101,202),
+                                     archive_owner=accounts[1])
+        for actor, account, device in [(0,accounts[0],'101'),(1,accounts[1],'202')]:
+            iq = ET.Element('{jabber:client}iq', {'type':'get', 'id':'public-fixture',
+                'from':account, 'to':accounts[1-actor]})
+            pubsub = ET.SubElement(iq, '{http://jabber.org/protocol/pubsub}pubsub')
+            ET.SubElement(pubsub, '{http://jabber.org/protocol/pubsub}items',
+                {'node':'urn:xmpp:omemo:2:devices'})
+            reply = ET.fromstring(mail.request(actor, ET.tostring(iq)))
+            self.assertEqual(reply.get('from'), accounts[1-actor])
+            self.assertEqual(reply.find('.//{urn:xmpp:omemo:2}device').get('id'),
+                             '202' if actor == 0 else '101')
+            publish = ET.Element('{jabber:client}iq', {'type':'set','id':'publish-fixture'})
+            ET.SubElement(publish, '{http://jabber.org/protocol/pubsub}pubsub')
+            self.assertEqual(ET.fromstring(mail.request(actor, ET.tostring(publish))).get('from'),
+                             account.split('@')[1])
+        sender = ET.fromstring(b'<root>'+mail.request(0,self.archive_query(accounts[0]))+b'</root>')
+        self.assertIsNone(sender.find('.//{urn:xmpp:mam:2}result'))
+        recipient = ET.fromstring(b'<root>'+mail.request(1,self.archive_query(accounts[1]))+b'</root>')
+        archived = recipient.find('.//{urn:xmpp:forward:0}forwarded/{jabber:client}message')
+        self.assertIsNotNone(archived)
+        self.assertEqual(ET.tostring(archived), ET.tostring(wire))
+        self.assertEqual(mail.blob_requests, 0)
+
+    def test_explicit_v2_profile_keeps_only_its_own_endpoint_and_credentials(self):
+        with patch.object(self.probe, 'fingerprint', return_value=bytes([34])*32):
+            path = self.probe.profile(self.root, 'bob', '02'*32, 23456,
+                self.root/'server.pem', self.pair, route='own-home', home='away.test',
+                account='bob@away.test', device=202, ca=self.root/'away-ca.pem')
+        values = tomllib.loads(path.read_text())
+        self.assertEqual(values, dict(version=2, route='own-home', home='away.test',
+            endpoint='127.0.0.1:23456', name='away.test', pin='22'*32,
+            account='bob@away.test', device=202, identity='02'*32,
+            ca=str(path.parent/'ca.pem'), certificate=str(path.parent/'device.pem'),
+            key=str(path.parent/'device.key')))
+        self.assertEqual((path.parent/'ca.pem').read_bytes(), b'independent synthetic CA')
+        self.assertTrue((path.parent/'device.key').read_bytes() == self.pair[1].read_bytes(),
+                        'selected device key bytes changed')
+        self.assertLessEqual(path.stat().st_size, 8192)
+        self.assertTrue(all(stat.S_IMODE(p.stat().st_mode) == 0o600 for p in path.parent.iterdir()))
+
+    def test_mail_settings_select_own_account_domain_ca_and_server_pin(self):
+        peer = SimpleNamespace(account='bob@away.test', domain='away.test', port=34567)
+        with patch.object(self.probe, 'fingerprint', return_value=bytes([51])*32):
+            path = self.probe.mail_settings(self.root, 'bob', peer, self.root/'server.pem',
+                                            self.root/'away-ca.pem')
+        self.assertEqual(tomllib.loads(path.read_text()), dict(version=1,
+            account='bob@away.test', endpoint='127.0.0.1:34567', domain='away.test',
+            ca=str(self.root/'away-ca.pem'), pin='33'*32))
+        self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+
+    def test_probe_cli_has_explicit_new_mode_without_changing_default(self):
+        args = ['--client','/client','--fixture','/fixture','--owned-root','/owned',
+                '--output','/owned/result.json']
+        default = self.probe.make_parser().parse_args(args)
+        self.assertEqual(default.route, 'same-home')
+        self.assertIsNone(default.operator)
+        explicit = self.probe.make_parser().parse_args(args+['--route','own-home','--operator','/operator'])
+        self.assertEqual(explicit.route, 'own-home')
+        self.assertEqual(explicit.operator, Path('/operator'))
+
+    def test_mode_refusal_happens_before_root_access_or_children(self):
+        with patch.object(self.probe, 'require_root', side_effect=AssertionError('root touched')), \
+             patch.object(self.probe.subprocess, 'Popen', side_effect=AssertionError('child started')):
+            for route, operator in [('own-home',None),('same-home',Path('/operator')),
+                                    ('unknown',Path('/operator'))]:
+                with self.subTest(route=route), self.assertRaises(ValueError):
+                    self.probe.probe(Path('/client'),Path('/fixture'),Path('/owned'),'openssl',
+                                     route=route,operator=operator)
+
 
 class TransferFeed:
     def __init__(self, events=(), initial=b''):

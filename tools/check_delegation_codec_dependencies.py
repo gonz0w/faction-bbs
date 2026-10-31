@@ -138,25 +138,56 @@ def validate_isolation_graph(metadata):
 
 
 
-def validate_wire_graph(metadata):
-    packages={p['id']:p for p in metadata['packages']}
-    nodes={n['id']:n for n in metadata['resolve']['nodes']}
-    codecs=[n for n in nodes.values() if packages[n['id']]['name']=='faction-delegation-codec']
-    require(len(codecs)==1 and codecs[0]['features']==[], 'wire graph must select exactly one inert codec')
-    providers=[n for n in nodes.values() if packages[n['id']]['name']=='faction-provider']
-    require(len(providers)==1 and 'delegation-wire' in providers[0]['features'], 'codec requires explicit provider wire feature')
-    pending=[codecs[0]['id']];seen=set()
+def _validate_codec_graph(metadata, own_home=False):
+    packages = {p['id']: p for p in metadata['packages']}
+    nodes = {n['id']: n for n in metadata['resolve']['nodes']}
+    codecs = [n for n in nodes.values() if packages[n['id']]['name'] == 'faction-delegation-codec']
+    require(len(codecs) == 1 and codecs[0]['features'] == [], 'wire graph must select exactly one inert codec')
+    providers = [n for n in nodes.values() if packages[n['id']]['name'] == 'faction-provider']
+    require(len(providers) == 1 and 'delegation-wire' in providers[0]['features'], 'codec requires explicit provider wire feature')
+    if own_home:
+        clients = [n for n in nodes.values() if packages[n['id']]['name'] == 'faction-client']
+        require(len(clients) == 1 and sorted(clients[0]['features']) ==
+                ['default', 'device-provider', 'native-mail', 'network-mail', 'own-home-provider'],
+                'own-home codec requires exact explicit client selection')
+        require(sorted(providers[0]['features']) ==
+                ['delegation-issuer', 'delegation-records', 'delegation-services', 'delegation-verifier', 'delegation-wire', 'preparation'],
+                'own-home provider features changed')
+        require(any(d['pkg'] == providers[0]['id'] for d in clients[0].get('deps', []))
+                and any(d['pkg'] == codecs[0]['id'] for d in providers[0].get('deps', [])),
+                'own-home codec must be connected through the selected client provider')
+    pending = [codecs[0]['id']]
+    seen = set()
+    for_identity = {('serde_core', '1.0.229'): ['alloc', 'result', 'std']}
+    if own_home:
+        for_identity.update({('base64', '0.22.1'): ['alloc', 'default', 'std'],
+                             ('memchr', '2.8.3'): ['alloc', 'default', 'std'],
+                             ('serde_json', '1.0.154'): ['alloc', 'std']})
     while pending:
-        identity=pending.pop()
-        if identity in seen:continue
-        seen.add(identity);node=nodes[identity];package=packages[identity]
-        if identity!=codecs[0]['id']:
-            key=(package['name'],package['version']);require(key in APPROVED,'unreviewed codec composition dependency')
-            approved=APPROVED[key];expected=approved['features']
-            if key==('serde_core','1.0.229'):expected=['alloc','result','std']
-            require(package.get('source')==REGISTRY and package.get('license')==approved['license'] and sorted(node['features'])==expected, 'wire codec identity/license/feature union changed')
-        pending.extend(d['pkg'] for d in node.get('deps',[]))
+        identity = pending.pop()
+        if identity in seen:
+            continue
+        seen.add(identity)
+        node = nodes[identity]
+        package = packages[identity]
+        if identity != codecs[0]['id']:
+            key = (package['name'], package['version'])
+            require(key in APPROVED, 'unreviewed codec composition dependency')
+            approved = APPROVED[key]
+            expected = for_identity.get(key, approved['features'])
+            require(package.get('source') == REGISTRY and package.get('license') == approved['license']
+                    and sorted(node['features']) == expected, 'wire codec identity/license/feature union changed')
+        pending.extend(d['pkg'] for d in node.get('deps', []))
     return seen
+
+
+def validate_wire_graph(metadata):
+    return _validate_codec_graph(metadata)
+
+
+def validate_own_home_graph(metadata):
+    """Only the independently selected native own-home feature admits this parent union."""
+    return _validate_codec_graph(metadata, own_home=True)
 
 
 def isolation_graphs():
@@ -164,6 +195,7 @@ def isolation_graphs():
                 ('native-mail', ROOT / 'Cargo.toml', 'faction-client/native-mail'),
                 ('network-mail', ROOT / 'Cargo.toml', 'faction-client/network-mail'),
                 ('device-provider', ROOT / 'Cargo.toml', 'faction-client/device-provider'),
+                ('own-home-provider', ROOT / 'Cargo.toml', 'faction-client/own-home-provider'),
                 ('provider', ROOT / 'crates/faction-provider/Cargo.toml', None),
                 ('provider-operator', ROOT / 'crates/faction-provider/Cargo.toml', 'operator'),
                 ('provider-issuer',ROOT/'crates/faction-provider/Cargo.toml','delegation-issuer'),
@@ -181,6 +213,7 @@ def isolation_graphs():
             if feature: command += ['--features', feature]
             metadata = json.loads(subprocess.check_output(command, text=True))
             if name.startswith('provider-wire'): validate_wire_graph(metadata)
+            elif name == 'own-home-provider': validate_own_home_graph(metadata)
             else: validate_isolation_graph(metadata)
             packages = {p['id']: p for p in metadata['packages']}
             rows = [dict(name=packages[n['id']]['name'], version=packages[n['id']]['version'],
@@ -193,6 +226,7 @@ def ci_commands():
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     for manifest, feature in [(REL + '/Cargo.toml', ''),
                               ('Cargo.toml', ' --features faction-client/device-provider'),
+                              ('Cargo.toml', ' --features faction-client/own-home-provider'),
                               ('crates/faction-provider/Cargo.toml', ' --features operator'),
                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire'),
                               ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy'),

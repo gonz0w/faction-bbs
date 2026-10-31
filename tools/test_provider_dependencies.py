@@ -185,9 +185,9 @@ class ProviderDependencies(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata) as execute, patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'})
-        self.assertEqual(execute.call_count, 63)
-        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier', 'faction-client/device-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'own-home-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'})
+        self.assertEqual(execute.call_count, 66)
+        expected = {(target, feature) for target in policy.TARGETS for feature in [None, 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier', 'faction-client/device-provider', 'faction-client/own-home-provider', 'faction-client/native-mail', 'faction-client/network-mail']}
         actual = set()
         for call in execute.call_args_list:
             command = call.args[0]
@@ -284,7 +284,8 @@ def client_manifest():
     return {'features': {'default': [],
         'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
         'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
-        'device-provider': ['network-mail', 'dep:faction-provider', 'faction-provider/preparation', 'tokio/sync']},
+        'device-provider': ['network-mail', 'dep:faction-provider', 'faction-provider/preparation', 'tokio/sync'],
+        'own-home-provider': ['device-provider', 'faction-provider/delegation-verifier']},
         'dependencies': {'faction-provider': {'path': '../faction-provider', 'optional': True, 'default-features': False}}}
 
 
@@ -304,6 +305,7 @@ def native_ci_step():
         "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
         'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
     ]
+    commands += ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py', 'python3 tools/check_provider_dependencies.py', 'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings', 'cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
     return ('      - name: Validate the native authenticated attachment client\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n'
             + ''.join('          ' + command + '\n' for command in commands))
 
@@ -343,6 +345,9 @@ def joined_ci_fixture():
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
       - name: Validate the opt-in attachment provider
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -438,6 +443,10 @@ def joined_ci_fixture():
           mkdir -m 700 "$RUNNER_TEMP/faction280-console-OWNED"
           printf '%s\\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction280-console-OWNED/OWNED"
           python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"
+          python3 -m unittest discover -s tools -p test_own_home_dependencies.py
+          python3 tools/check_provider_dependencies.py
+          cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings
+          cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1
   provider_operator:
     name: Optional durable provider operator
     runs-on: ubuntu-24.04
@@ -471,6 +480,9 @@ def joined_ci_fixture():
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
@@ -576,7 +588,7 @@ def client_split_ci_fixture():
     provider = policy._job(source, 'provider')
     prefix = provider[:provider.index('          python3 tools/check_provider_dependencies.py\n')]
     metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
-    assert len(metadata) == 63
+    assert len(metadata) == 66
     fetch = '      - name: Fetch the public repository revision\n' + policy._step(provider, 'Fetch the public repository revision')
     client = ('  provider_client:\n'
               '    name: Optional authenticated provider client\n'
@@ -622,7 +634,21 @@ def ci_fixture():
             '          RUSTUP_TOOLCHAIN: 1.96.0\n'
             '        run: |\n'
             '          python3 tools/check_provider_dependencies.py\n' + tail)
-    return source.replace(tail, '').replace('  provider_operator:\n', step + '  provider_operator:\n', 1)
+    own = """      - name: Validate the own-home encrypted attachment console
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          python3 tools/check_provider_dependencies.py
+          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator,delegation-verifier --release --locked
+          cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"
+          printf '%s\\n' 'Owned two-home encrypted attachment console proof' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"
+          python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"
+"""
+    return source.replace(tail, '').replace('  provider_operator:\n', step + own + '  provider_operator:\n', 1)
 
 
 class PreparedOperatorProofCI(unittest.TestCase):
@@ -711,8 +737,8 @@ class ProviderClientCI(unittest.TestCase):
         first = client.index('          python3 tools/check_provider_dependencies.py\n')
         warm = policy._step(client, 'Warm the selected provider client source graphs')
         metadata = [line for line in warm.splitlines() if line.strip().startswith('cargo metadata ')]
-        self.assertEqual(len(metadata), 63)
-        self.assertEqual(sum(line.strip().startswith('cargo metadata ') for line in client[:first].splitlines()), 66)
+        self.assertEqual(len(metadata), 66)
+        self.assertEqual(sum(line.strip().startswith('cargo metadata ') for line in client[:first].splitlines()), 69)
         for line in metadata:
             for altered in [line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
                 with self.subTest(altered=altered), self.assertRaises(ValueError):
@@ -757,7 +783,7 @@ class ProviderCI(unittest.TestCase):
                         'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
             self.assertEqual(step.splitlines().count('          ' + setting), 1)
         metadata = []
-        for feature in [None, 'native-mail', 'network-mail', 'device-provider']:
+        for feature in [None, 'native-mail', 'network-mail', 'device-provider', 'own-home-provider']:
             for target in policy.TARGETS:
                 command = 'cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform ' + target
                 if feature:
@@ -897,7 +923,7 @@ class DurableProviderProfiles(unittest.TestCase):
         metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
         with patch.object(policy.subprocess, 'check_output', return_value=metadata), patch.object(policy, 'validate_ci'), patch.object(policy, 'validate_product_edges'), patch.object(policy, 'validate_graph'):
             result = json.loads(policy.inventory())
-        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'})
+        self.assertEqual(set(result['profiles']), {'default', 'blob-iq', 'device-provider', 'own-home-provider', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'})
         for profile in ['durable-policy', 'operator']:
             self.assertEqual(set(result['profiles'][profile]['graphs']), set(policy.TARGETS))
 
@@ -945,7 +971,7 @@ class DurableProviderRefusals(unittest.TestCase):
             first = job.index('          python3 tools/check_provider_dependencies.py\n')
             prefix = job[:first]
             metadata = [line for line in prefix.splitlines() if line.strip().startswith('cargo metadata ')]
-            self.assertEqual(len(metadata), 66 if jobname == 'provider_client' else 63)
+            self.assertEqual(len(metadata), 69 if jobname == 'provider_client' else 66)
             for line in metadata:
                 for replacement in ['', line.replace(' --locked', ''), line.replace(' --locked', ' --locked --offline')]:
                     changed = job.replace(line + '\n', replacement + '\n', 1)
@@ -1018,7 +1044,7 @@ class PreparationProfiles(unittest.TestCase):
             result = json.loads(policy.inventory())
         self.assertIn('preparation', result['profiles'])
         self.assertEqual(set(result['profiles']['preparation']['graphs']), set(policy.TARGETS))
-        self.assertEqual(execute.call_count, 63)
+        self.assertEqual(execute.call_count, 66)
 
     def test_current_ci_warms_preparation_before_each_first_guard_and_tests_it(self):
         source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()

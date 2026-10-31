@@ -400,6 +400,11 @@ fn network(v: &CheckpointVault, settings: &Settings, now: u64) -> Result<Princip
     }
     Ok(own)
 }
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum TransferDirection {
+    Upload,
+    Fetch,
+}
 #[derive(Clone, Copy)]
 enum TransferRoute<'a> {
     Iq(&'a Settings),
@@ -412,7 +417,7 @@ enum TransferRoute<'a> {
 enum Carrier {
     Iq(Box<faction_xmpp::Session>),
     #[cfg(feature = "device-provider")]
-    Device(crate::mail_device_provider::Worker),
+    Device(Box<crate::mail_device_provider::Worker>),
 }
 impl TransferRoute<'_> {
     fn settings(&self) -> &Settings {
@@ -430,19 +435,32 @@ impl TransferRoute<'_> {
         }
         Ok(own)
     }
-    fn binding(&self, binding: &Binding) -> Result<(), Error> {
+    fn binding(&self, binding: &Binding, direction: TransferDirection) -> Result<(), Error> {
         #[cfg(feature = "device-provider")]
         if let Self::Device(_, provider) = self
-            && (!provider.permits_home(&binding.sender.account)
-                || !provider.permits_home(&binding.recipient.account))
+            && !provider.permits_binding(binding, direction)
         {
             return Err(Error::Route);
         }
         #[cfg(not(feature = "device-provider"))]
-        let _ = binding;
+        let _ = (binding, direction);
         Ok(())
     }
-    async fn connect(&self, device: u32, password: &str) -> Result<Carrier, Error> {
+    fn own_home(&self) -> bool {
+        match self {
+            Self::Iq(_) => false,
+            #[cfg(feature = "device-provider")]
+            Self::Device(_, provider) => provider.uses_own_home(),
+        }
+    }
+    async fn connect(
+        &self,
+        binding: &Binding,
+        direction: TransferDirection,
+        device: u32,
+        password: &str,
+    ) -> Result<Carrier, Error> {
+        let _ = (binding, direction);
         match self {
             Self::Iq(settings) => {
                 let transport = settings.transport(device).map_err(Error::Transport)?;
@@ -454,23 +472,37 @@ impl TransferRoute<'_> {
             }
             #[cfg(feature = "device-provider")]
             Self::Device(_, provider) => provider
-                .open()
+                .open(binding, direction)
                 .await
+                .map(Box::new)
                 .map(Carrier::Device)
                 .map_err(Error::Device),
         }
     }
 }
+#[derive(Clone, Copy)]
+struct RequestContext<'a> {
+    route: TransferRoute<'a>,
+    service: &'a str,
+    binding: &'a Binding,
+    direction: TransferDirection,
+}
 async fn request(
     session: &mut Carrier,
     v: &CheckpointVault,
-    route: TransferRoute<'_>,
-    service: &str,
+    context: RequestContext<'_>,
     request: Request,
     count: &mut usize,
     clock: &Clock,
 ) -> Result<Response, Error> {
+    let RequestContext {
+        route,
+        service,
+        binding,
+        direction,
+    } = context;
     route.check(v, clock.now())?;
+    let _ = (binding, direction);
     if *count == 8 {
         return Err(Error::Protocol);
     }
@@ -491,7 +523,10 @@ async fn request(
                 })?
         }
         #[cfg(feature = "device-provider")]
-        Carrier::Device(worker) => worker.request(request).await.map_err(Error::Device)?,
+        Carrier::Device(worker) => worker
+            .request_bound(binding, direction, request)
+            .await
+            .map_err(Error::Device)?,
     };
     route.check(v, clock.now())?;
     Ok(response)
@@ -575,8 +610,9 @@ pub async fn upload_device_cycle(
     )
     .await
 }
-/// Same-home received ciphertext only; no account password or delegated foreign
-/// sender authority exists on the binary device transport.
+/// Received ciphertext through the explicitly selected device route, without an
+/// account password. V1 remains same-home; own-home selection requires the home
+/// to authenticate and authorize its configured peer before returning bytes.
 #[cfg(feature = "device-provider")]
 pub async fn fetch_device_cycle(
     vault: &CheckpointVault,
@@ -625,14 +661,16 @@ async fn upload_inner(
         .ok_or(Error::Selection)?;
     peer_matches(vault, r)?;
     let b = binding(own.clone(), r)?;
-    route.binding(&b)?;
+    route.binding(&b, TransferDirection::Upload)?;
     let wire = state(vault.pending_deliveries(clock.now()))?
         .into_iter()
         .find(|p| p.operation == operation)
         .ok_or(Error::Selection)?
         .wire;
     let bytes = spool.bytes(&own, &b, clock.now())?;
-    let mut session = route.connect(own.device, password).await?;
+    let mut session = route
+        .connect(&b, TransferDirection::Upload, own.device, password)
+        .await?;
     let service = home(&own.account)?;
     let mut requests = 0;
     // Begin is an exact immutable idempotent status/create operation. Remote
@@ -640,8 +678,12 @@ async fn upload_inner(
     let response = request(
         &mut session,
         vault,
-        route,
-        service,
+        RequestContext {
+            route,
+            service,
+            binding: &b,
+            direction: TransferDirection::Upload,
+        },
         Request::Begin(b.clone()),
         &mut requests,
         &clock,
@@ -657,8 +699,12 @@ async fn upload_inner(
         let response = request(
             &mut session,
             vault,
-            route,
-            service,
+            RequestContext {
+                route,
+                service,
+                binding: &b,
+                direction: TransferDirection::Upload,
+            },
             Request::PutChunk {
                 id: b.id,
                 offset,
@@ -678,8 +724,12 @@ async fn upload_inner(
         let response = request(
             &mut session,
             vault,
-            route,
-            service,
+            RequestContext {
+                route,
+                service,
+                binding: &b,
+                direction: TransferDirection::Upload,
+            },
             Request::Commit { id: b.id },
             &mut requests,
             &clock,
@@ -767,19 +817,28 @@ async fn fetch_inner(
     let r = received(vault, index, frame)?;
     peer_matches(vault, r)?;
     let b = binding(own.clone(), r)?;
-    route.binding(&b)?;
+    route.binding(&b, TransferDirection::Fetch)?;
     let service = home(&b.sender.account)?;
-    if service != home(&own.account)? && !invited.homes.iter().any(|h| h == service) {
+    if service != home(&own.account)?
+        && !route.own_home()
+        && !invited.homes.iter().any(|h| h == service)
+    {
         return Err(Error::Route);
     }
-    let mut session = route.connect(own.device, password).await?;
+    let mut session = route
+        .connect(&b, TransferDirection::Fetch, own.device, password)
+        .await?;
     let mut requests = 0;
     let (offset, committed) = progress(
         request(
             &mut session,
             vault,
-            route,
-            service,
+            RequestContext {
+                route,
+                service,
+                binding: &b,
+                direction: TransferDirection::Fetch,
+            },
             Request::Status { id: b.id },
             &mut requests,
             &clock,
@@ -798,8 +857,12 @@ async fn fetch_inner(
         let response = request(
             &mut session,
             vault,
-            route,
-            service,
+            RequestContext {
+                route,
+                service,
+                binding: &b,
+                direction: TransferDirection::Fetch,
+            },
             Request::GetChunk { id: b.id, offset },
             &mut requests,
             &clock,

@@ -1589,7 +1589,7 @@
     }
   },
   "manifest_sha256": "aefe1bec4a92cdd050df5a229ef72b972f6a661354f7daaf9ddc9cd548a86b5a",
-  "root_lock_sha256": "6e1dbc59b062a413299c51ce19afe5ae19e0582d48808c6c36924216ca003282",
+  "root_lock_sha256": "20f790feb2bec44415d134a81ad3738fd747c87593901d7a53eb48c4c7d4a4eb",
   "schema": 1,
   "scope": "isolated-provider-auth-experiment",
   "upstream_ci_executed": false

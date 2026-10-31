@@ -37,6 +37,8 @@ struct Shared {
     attempted: AtomicUsize,
     expires: AtomicU64,
     tight_deadline: Mutex<Instant>,
+    #[cfg(all(test, feature = "durable-policy"))]
+    deadline_attempt: Mutex<Option<std::sync::mpsc::SyncSender<(bool, usize)>>>,
     completion: Mutex<Option<Result<Response, Error>>>,
     finished: AtomicBool,
     consumed: AtomicBool,
@@ -46,10 +48,30 @@ struct Shared {
 impl Shared {
     fn current(&self) -> Result<(), Error> {
         check(self.source.deadline, &self.source.cancel).map_err(Error::Transport)?;
-        let tight = *self
-            .tight_deadline
-            .try_lock()
-            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+        let lookup = self.tight_deadline.try_lock();
+        #[cfg(all(test, feature = "durable-policy"))]
+        if let Some(entered) = self.deadline_attempt.lock().unwrap().take() {
+            entered
+                .send((
+                    matches!(&lookup, Err(std::sync::TryLockError::WouldBlock)),
+                    self.attempted.load(Ordering::SeqCst),
+                ))
+                .unwrap();
+        }
+        let tight = {
+            let guard = match lookup {
+                Ok(guard) => guard,
+                Err(std::sync::TryLockError::WouldBlock) => self
+                    .tight_deadline
+                    .lock()
+                    .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?,
+                Err(std::sync::TryLockError::Poisoned(_)) => {
+                    return Err(Error::Store(faction_files::private_blobs::Error::Busy));
+                }
+            };
+            *guard
+        };
+        check(self.source.deadline, &self.source.cancel).map_err(Error::Transport)?;
         check(tight, &self.source.cancel).map_err(Error::Transport)?;
         let expires = self.expires.load(Ordering::SeqCst);
         if expires != 0
@@ -110,6 +132,8 @@ impl Delivery {
                 attempted: AtomicUsize::new(attempted),
                 expires: AtomicU64::new(0),
                 tight_deadline,
+                #[cfg(all(test, feature = "durable-policy"))]
+                deadline_attempt: Mutex::new(None),
                 completion: Mutex::new(None),
                 finished: AtomicBool::new(false),
                 consumed: AtomicBool::new(false),
@@ -121,6 +145,17 @@ impl Delivery {
     #[cfg(test)]
     pub(crate) fn test_original_attempts(&self) -> usize {
         self.shared.attempted.load(Ordering::SeqCst)
+    }
+    #[cfg(all(test, feature = "durable-policy"))]
+    pub(crate) fn observe_deadline_metadata_attempt(
+        &self,
+        entered: std::sync::mpsc::SyncSender<(bool, usize)>,
+    ) {
+        *self.shared.deadline_attempt.lock().unwrap() = Some(entered);
+    }
+    #[cfg(all(test, feature = "durable-policy"))]
+    pub(crate) fn hold_deadline_metadata(&self) -> std::sync::MutexGuard<'_, Instant> {
+        self.shared.tight_deadline.lock().unwrap()
     }
     pub fn is_finished(&self) -> bool {
         self.shared.finished.load(Ordering::SeqCst)
@@ -488,6 +523,18 @@ impl CarrierEndpoint {
             ticket: None,
         }
     }
+    /// Start one logical request inside an existing foreground deadline.
+    /// Construction performs no I/O and cannot renew the parent's window.
+    pub fn operation_until(
+        &self,
+        parent_deadline: Instant,
+        cancel: Arc<AtomicBool>,
+    ) -> Result<Operation, Stage> {
+        let mut operation = self.operation(cancel);
+        operation.deadline = operation.deadline.min(parent_deadline);
+        check(operation.deadline, &operation.cancel)?;
+        Ok(operation)
+    }
     fn connect(
         &self,
         deadline: Instant,
@@ -708,6 +755,8 @@ pub struct RelayRoutes {
     policy: crate::services::ServicePolicy,
     local: CarrierEndpoint,
     peers: Vec<RelayPeer>,
+    #[cfg(all(test, feature = "durable-policy"))]
+    authority_attempt: Option<std::sync::mpsc::SyncSender<bool>>,
 }
 impl RelayRoutes {
     pub fn new(
@@ -816,7 +865,16 @@ impl RelayRoutes {
             policy,
             local,
             peers,
+            #[cfg(all(test, feature = "durable-policy"))]
+            authority_attempt: None,
         })
+    }
+    #[cfg(all(test, feature = "durable-policy"))]
+    pub(crate) fn observe_authority_metadata_attempt(
+        &mut self,
+        entered: std::sync::mpsc::SyncSender<bool>,
+    ) {
+        self.authority_attempt = Some(entered);
     }
     fn current(&self) -> Result<(), Error> {
         let state = self
@@ -826,10 +884,26 @@ impl RelayRoutes {
         if state.stopped.load(Ordering::SeqCst) {
             return Err(Error::Transport(Stage::Denied));
         }
-        let authority = state
-            .authority
-            .try_lock()
-            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+        let lookup = state.authority.try_lock();
+        #[cfg(all(test, feature = "durable-policy"))]
+        if let Some(entered) = &self.authority_attempt {
+            entered
+                .send(matches!(&lookup, Err(std::sync::TryLockError::WouldBlock)))
+                .unwrap();
+        }
+        let authority = match lookup {
+            Ok(authority) => authority,
+            Err(std::sync::TryLockError::WouldBlock) => state
+                .authority
+                .lock()
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?,
+            Err(std::sync::TryLockError::Poisoned(_)) => {
+                return Err(Error::Store(faction_files::private_blobs::Error::Busy));
+            }
+        };
+        if state.stopped.load(Ordering::SeqCst) {
+            return Err(Error::Transport(Stage::Denied));
+        }
         if authority.relay_policy().map_err(Error::Store)? != self.policy {
             return Err(Error::Transport(Stage::Denied));
         }
@@ -1017,17 +1091,51 @@ enum IncomingKind {
 /// Created only by real role-classifying mTLS admission. Its fields stay private.
 pub struct Incoming {
     kind: IncomingKind,
+    #[cfg(all(test, feature = "durable-policy"))]
+    service_purpose_attempt: Option<std::sync::mpsc::SyncSender<usize>>,
 }
 impl Incoming {
     pub(crate) fn device(session: Session) -> Self {
         Self {
             kind: IncomingKind::Device(session),
+            #[cfg(all(test, feature = "durable-policy"))]
+            service_purpose_attempt: None,
         }
     }
     pub(crate) fn service(session: ServiceSession) -> Self {
         Self {
             kind: IncomingKind::Service(session),
+            #[cfg(all(test, feature = "durable-policy"))]
+            service_purpose_attempt: None,
         }
+    }
+    // Observe the original lookup attempt, without changing its result or
+    // holding a test gate through Session drop. No production build has this.
+    #[cfg(all(test, feature = "durable-policy"))]
+    pub(crate) fn observe_service_purpose_attempt(
+        &mut self,
+        entered: std::sync::mpsc::SyncSender<usize>,
+    ) {
+        self.service_purpose_attempt = Some(entered);
+    }
+    #[cfg(all(test, feature = "durable-policy"))]
+    pub(crate) fn observe_service_response_prefix(
+        &mut self,
+        entered: std::sync::mpsc::Sender<Instant>,
+        release: std::sync::mpsc::Receiver<()>,
+    ) -> Arc<AtomicUsize> {
+        let IncomingKind::Service(session) = &mut self.kind else {
+            panic!("test response observation requires an admitted service");
+        };
+        let positive = Arc::new(AtomicUsize::new(0));
+        session.stream.get_mut().delivery_prefix_gate = Some(Arc::new(DeliveryPrefixGate {
+            gate: ResponseWriteGate {
+                entered,
+                release: Mutex::new(release),
+            },
+            positive: positive.clone(),
+        }));
+        positive
     }
     pub fn serve(
         self,
@@ -1044,12 +1152,28 @@ impl Incoming {
                     .upgrade()
                     .ok_or(Error::Transport(Stage::Denied))?;
                 session.issuer_check(&state)?;
-                let purpose = state
-                    .authority
-                    .try_lock()
-                    .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?
-                    .current_service_use(&session.credential, &session.leaf, wall_now())
-                    .map_err(Error::Store)?;
+                let lookup = state.authority.try_lock();
+                #[cfg(all(test, feature = "durable-policy"))]
+                if let Some(entered) = self.service_purpose_attempt {
+                    entered.send(session.original_service_attempts()).unwrap();
+                }
+                let purpose = {
+                    let authority = match lookup {
+                        Ok(authority) => authority,
+                        Err(std::sync::TryLockError::WouldBlock) => state
+                            .authority
+                            .lock()
+                            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?,
+                        Err(std::sync::TryLockError::Poisoned(_)) => {
+                            return Err(Error::Store(faction_files::private_blobs::Error::Busy));
+                        }
+                    };
+                    session.issuer_check(&state)?;
+                    authority
+                        .current_service_use(&session.credential, &session.leaf, wall_now())
+                        .map_err(Error::Store)?
+                };
+                // The short authority guard is gone before any HTTP/network I/O.
                 match purpose {
                     crate::services::ServiceUse::Observation => {
                         session.serve_publication_http_once(publication_profile)?;
