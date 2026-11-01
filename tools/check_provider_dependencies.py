@@ -205,7 +205,7 @@ def own_home_console_commands():
         'cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked',
         'umask 077',
         'mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"',
-        'printf \'%s\\n\' \'Owned two-home encrypted attachment console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"',
+        'printf \'%s\\n\' \'Owned authenticated-provider console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"',
         'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"',
     ]
 

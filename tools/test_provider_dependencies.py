@@ -656,7 +656,7 @@ def ci_fixture():
           cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked
           umask 077
           mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"
-          printf '%s\\n' 'Owned two-home encrypted attachment console proof' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"
+          printf '%s\\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"
           python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"
 """
     source = source.replace(tail, '').replace('  provider_operator:\n', step + own + '  provider_operator:\n', 1)
@@ -879,7 +879,7 @@ def ci_fixture():
         '          cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked\n'
         '          umask 077\n'
         '          mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"\n'
-        '          printf \'%s\\n\' \'Owned two-home encrypted attachment console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"\n'
+        '          printf \'%s\\n\' \'Owned authenticated-provider console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"\n'
         '          python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"\n'
     ) + '  documentation:\n', 1)
     source = source.replace('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]')

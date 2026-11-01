@@ -131,21 +131,64 @@ class OwnHomeConsoleCI(unittest.TestCase):
             'cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked',
             'umask 077',
             'mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"',
-            'printf \'%s\\n\' \'Owned two-home encrypted attachment console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"',
+            'printf \'%s\\n\' \'Owned authenticated-provider console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"',
             'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"',
         ]
         self.assertEqual(provider._lines(proof,{'python3','cargo','umask','mkdir','printf'}), expected)
         self.assertNotIn('continue-on-error',proof)
         self.assertNotIn('timeout-minutes:',proof)
 
+class OwnHomeCIMarkerIntegration(unittest.TestCase):
+    def test_actual_own_home_ci_marker_is_accepted_by_maintained_probe(self):
+        import shlex
+        import subprocess
+        import tempfile
+        import probe_device_provider_console as probe
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        step = provider._step(provider._job(source, 'own_home_client'),
+                              'Validate the own-home encrypted attachment console')
+        commands = provider._lines(step, {'python3', 'cargo', 'umask', 'mkdir', 'printf'})
+        producers = [shlex.split(command) for command in commands if command.startswith('printf ')]
+        self.assertEqual(len(producers), 1)
+        producer = producers[0]
+        self.assertEqual(len(producer), 5)
+        self.assertEqual(producer[:2], ['printf', '%s\\n'])
+        self.assertEqual(producer[3:], ['>', '$RUNNER_TEMP/faction322-console-OWNED/OWNED'])
+        # Exercise actual printf output, not a copied expected marker or shell.
+        result = subprocess.run(['/usr/bin/printf', *producer[1:3]], check=True, capture_output=True)
+        with tempfile.TemporaryDirectory(prefix='own-home-ci-marker-OWNED-') as temporary:
+            root = Path(temporary) / 'faction322-console-OWNED'
+            root.mkdir(mode=0o700)
+            (root / 'OWNED').write_bytes(result.stdout)
+            self.assertEqual(probe.require_root(root), root)
+
+    def test_maintained_marker_rejects_wrong_bytes_and_loose_mode(self):
+        import tempfile
+        import probe_device_provider_console as probe
+        with tempfile.TemporaryDirectory(prefix='own-home-ci-marker-negative-OWNED-') as temporary:
+            root = Path(temporary) / 'root'
+            root.mkdir(mode=0o700)
+            marker = root / 'OWNED'
+            marker.write_bytes(b'Owned authenticated-provider console proof\n')
+            self.assertEqual(probe.require_root(root), root)
+            root.chmod(0o755)
+            with self.assertRaises(ValueError):
+                probe.require_root(root)
+            root.chmod(0o700)
+            marker.write_bytes(b'Wrong owner marker\n')
+            with self.assertRaises(ValueError):
+                probe.require_root(root)
+
 class OwnHomeGuard(unittest.TestCase):
     def test_exact_added_step_and_its_negative_mutations(self):
         source=(ROOT/'.github/workflows/documentation.yml').read_text()
         provider.validate_ci(source)
-        for old,new in [(' --route own-home',''),('--features own-home-provider --bin','--features device-provider --bin'),('--features operator,delegation-verifier --release','--features operator --release'),('Owned two-home encrypted attachment console proof','Wrong owner marker')]:
+        proof = provider._step(provider._job(source, 'own_home_client'),
+                               'Validate the own-home encrypted attachment console')
+        for old,new in [(' --route own-home',''),('--features own-home-provider --bin','--features device-provider --bin'),('--features operator,delegation-verifier --release','--features operator --release'),('Owned authenticated-provider console proof','Wrong owner marker')]:
             with self.subTest(changed=old):
-                self.assertIn(old,source)
-                with self.assertRaises(ValueError):provider.validate_ci(source.replace(old,new,1))
+                self.assertIn(old,proof)
+                with self.assertRaises(ValueError):provider.validate_ci(source.replace(proof, proof.replace(old, new, 1), 1))
 
 class SuccessorSchedulingCI(unittest.TestCase):
     def test_successors_are_serial_replacements_with_fresh_exact_checkout_and_all_graphs(self):
