@@ -92,8 +92,8 @@ An optional caller-owned `OnceLock` retains a by-value final snapshot through th
 existing worker join after timeout or cancellation; initialization failure or a
 join panic is explicitly unavailable. This adds no thread, queue, live polling,
 Runtime, protocol or authority cache. The retained diagnostic state contract is
-at most 512 bytes, separate from the 1024-byte output bound. A focused host size
-check observed 496 bytes on macOS ARM64; a fresh NetBSD size check was not run.
+at most 512 bytes, separate from the 1024-byte output bound. Focused size checks observed 496 bytes on macOS ARM64 and on NetBSD 11 AArch64;
+see the [diagnostic software evidence](evidence/attachment-transfer-diagnostics/README.md).
 The observer supplies classic or Unicode context separately for both legacy and
 own-home callers; that mode is not in the Rust line. Its strict parser accepts
 the defined ordered schema only. These observations do not establish a

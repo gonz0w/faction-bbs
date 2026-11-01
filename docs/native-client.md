@@ -187,3 +187,5 @@ that diagnostic line; do not share mail or file contents. The line contains fixe
 categories and numbers rather than names, account identifiers, paths, URLs,
 filenames, keys, tokens, payloads or raw error details. It does not identify the
 cause of an earlier failure or retry the transfer automatically.
+
+See the [diagnostic software evidence](../dev-docs/evidence/attachment-transfer-diagnostics/README.md) for the observed checks and their limits.
