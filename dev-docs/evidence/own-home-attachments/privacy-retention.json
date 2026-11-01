@@ -1,0 +1,114 @@
+{
+  "intended_repository_family": "dev-docs/evidence/own-home-attachments",
+  "issues": [
+    321,
+    322
+  ],
+  "privacy": {
+    "audit_metadata_view_grants_no_actor_session_runtime_or_seed_authority": true,
+    "failed_recovery": {
+      "full_audit_not_reached": true,
+      "partial_ciphertext_and_original_failures_preserved": true
+    },
+    "fresh_continuation": {
+      "actual_provider_stores": 2,
+      "actual_source_copy_bytes_reverified": true,
+      "actual_store_log_and_mail_sources": 70,
+      "direct_actual_plaintext_password_scans": true,
+      "full_native_descriptor_content_key_audit": true,
+      "hidden_exact_token_values_unavailable": true,
+      "token_field_patterns_only": true
+    },
+    "maximum_file_each_mode": {
+      "actual_provider_stores": 2,
+      "actual_store_log_and_mail_sources": 58,
+      "descriptor_content_key_iv_name_hash_subject_body_native_audit": true,
+      "direct_actual_plaintext_and_password_scans": true,
+      "hidden_exact_token_values_unavailable": true,
+      "token_field_patterns_only": true
+    },
+    "member_vault_and_content_keys_remain_outside_provider_workers": true,
+    "ordinary_text": {
+      "actual_encrypted_stanza_archive_native_decrypt": true,
+      "actual_password_plaintext_wire_checks": true,
+      "blob_iq_requests": 0,
+      "foreign_attachment_participant_or_provider_authorization_claim": false
+    }
+  },
+  "retention": {
+    "corpora": {
+      "failed-recovery-episode": {
+        "bytes": 50605775,
+        "corpus_sha256": "eddd385f39e35be430ccdd21bef3526e12270ed07b9098ce1ab39d2aed496d90",
+        "receipt_sha256": "ddf9d1ae36f42d98490a265c1ab20d7264e4c429c58d7f0ab4b18ad7c883b4a5",
+        "regular_files": 221
+      },
+      "fresh-manual-continuation": {
+        "bytes": 50825599,
+        "corpus_sha256": "8069938d02e00a1fa0945cc15b0211b3e3bb79ced33322d1c2d68257afb95d36",
+        "receipt_sha256": "73169512d164d6dd05e0b3c8532413a26cac12c97e19556c3bc8e8b1a84ca32f",
+        "regular_files": 297
+      },
+      "maximum-file": {
+        "bytes": 60320970,
+        "corpus_sha256": "1cf25d90149386e7fa5e62754879c1c735575e2c4243b889e960394e6c700a55",
+        "receipt_sha256": "822b09c95157b7095f290141dc1f9307bf11bea38d6d6602e35c26fa1aa19423"
+      },
+      "ordinary-text": {
+        "bytes": 49308963,
+        "corpus_sha256": "d29b098bbe6e5afe67c6476a8ebe1f74a95f4c180f59b1d5a10409bfcb31c788",
+        "receipt_sha256": "5fb1c99de0576517e1f5f51ae113eeab2c1530eebbbd354f2063b44c23616cfd",
+        "regular_files": 63
+      }
+    },
+    "failed_recovery": {
+      "all_private_files_retained": true,
+      "generated_fixture_files": 186,
+      "source_removed_after_first_canonical_progress": true,
+      "uncertain_partial_fetch_tail_not_decoded": true
+    },
+    "fresh_continuation": {
+      "directory_mode": "0700",
+      "file_mode": "0600",
+      "new_working_state_private_files": 264,
+      "original_failed_corpus_never_refreshed": true,
+      "prior_host_and_text_files_verified_unchanged": 598
+    },
+    "maximum_file": {
+      "file_mode": "0600",
+      "private_fixture_files": 505,
+      "protected_selected_files_unchanged": 42
+    },
+    "ordinary_text": {
+      "directory_mode": "0700",
+      "file_mode": "0600",
+      "private_fixture_files": 38,
+      "protected_original_files": 42
+    },
+    "replay_limits": [
+      "Some earliest component runs did not retain in-memory device TLS keys. Later final-vector capture does not recover them.",
+      "Final synthetic device vector retention is a scoped claim; it does not cover every historical or intermediate random input.",
+      "The published hashes identify private corpora; raw synthetic credentials, vaults, plaintext needles, environments and ciphertext stores are deliberately not exported.",
+      "Historical exact source archives remain privately retained; selected current sources will be publicly bound by final commit, while old variants need explicit source-object or private-custody references."
+    ]
+  },
+  "schema": 1,
+  "scope": "Host observations only; curated from preserved receipts, not new execution or final acceptance",
+  "teardown": {
+    "failed_recovery": {
+      "actual_native_pids_absent": 6,
+      "actual_provider_and_mail_ports_closed": 4,
+      "selected_processes_remaining": 0
+    },
+    "fresh_continuation": {
+      "actual_native_pids_absent": 3,
+      "actual_provider_and_mail_ports_closed": 4,
+      "selected_processes_remaining": 0
+    },
+    "maximum_file_actual_closed_operator_processes": 4,
+    "maximum_file_all_configured_fixture_listeners_closed": 10,
+    "no_repeated_wait_of_old_reaped_children_claim": true,
+    "ordinary_text_historical_stop_receipts_and_fresh_absence": true,
+    "ordinary_text_new_mail_ports_closed": 2
+  }
+}

@@ -37,12 +37,14 @@ by the sysop; experiments and future protocols are separate from normal operatio
   Compatible home storage is required. Ordinary SSH access does not receive private
   mail plaintext or keys.
 - **Limits:** provider operation and cross-home attachment delivery are software
-  previews, not deployed services. The explicitly composed carrier and operator
-  are under validation; native cross-home delivery and mail release are incomplete.
-  Independent client interoperability, physical hardware and capacity remain
-  unqualified. See the [operator guide](docs/provider-operator.md),
+  previews, not deployed services. An explicitly enabled own-home route completed
+  maximum-size classic and Unicode exercises on the host and a NetBSD software
+  VM, using two separately configured homes and one opaque test delivery/archive
+  queue. Deployed federation, independent client interoperability, physical
+  hardware and capacity remain unqualified. See the
+  [operator guide](docs/provider-operator.md) and
   [carrier contract](dev-docs/delegation-verifier.md) and
-  [software evidence](dev-docs/evidence/delegation-publication/README.md).
+  [software evidence](dev-docs/evidence/own-home-attachments/README.md).
 
 ## What you can do
 

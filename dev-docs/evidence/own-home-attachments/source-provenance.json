@@ -1,0 +1,510 @@
+{
+  "captured_inputs": 9358,
+  "committed_base": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1",
+  "executed_source_is_dirty_from_base": true,
+  "host_build_and_suite_receipt_sha256": "01cc1ee33d757831ed63a8e8d6a0acc3e7ee474b5674097e041f29bfbaac4000",
+  "host_build_slices": {
+    "candidate36-final-operator": {
+      "custody_sha256": "4cab4ce9e67ec62e33fb1ff909b28579f07286541d086506db53786644f00e09",
+      "result": {
+        "archive_sha256": "eacc95f706e708cd68c3382a621071788484618ae09b0351038b89d0ba144596",
+        "exit_code": 0,
+        "inputs_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+        "rawlog_sha256": "d2929687807f4f59b86fb8b0fdc9d7ef06dabd65fffdd040c5dc89837e5d1cae"
+      },
+      "suite": {
+        "counts": [],
+        "failed": 0,
+        "harnesses": 0,
+        "ignored": 0,
+        "passed": 0
+      }
+    },
+    "candidate37-final-client-seed": {
+      "custody_sha256": "0c992b704343785786d4fe12517e2cb12659fdae53568f0796fdffea75ad450a",
+      "result": {
+        "archive_sha256": "2aa31844598adecc5f443a3736e1784aad90e52f4b66c8c2d635a24ca1a4c8d8",
+        "exit_code": 0,
+        "inputs_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+        "rawlog_sha256": "411cb181b3f15c1a0d91daa35cefea15889ef63a2e5e5b912a1552b111f5337d"
+      },
+      "suite": {
+        "counts": [],
+        "failed": 0,
+        "harnesses": 0,
+        "ignored": 0,
+        "passed": 0
+      }
+    },
+    "candidate38-final-client-clippy": {
+      "custody_sha256": "1105e6bd981e009dbafad33392cf0470c7b559f91ec77f10a2e6deabdad34c54",
+      "result": {
+        "archive_sha256": "bd95bd8844d600ade37ca8f3c120a333c1b770e6384bdff121f55f18f7a753b2",
+        "exit_code": 0,
+        "inputs_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+        "rawlog_sha256": "35f568d3b4787e259874f489878a02710b3119d108ea0598b39dd9e541830ac3"
+      },
+      "suite": {
+        "counts": [],
+        "failed": 0,
+        "harnesses": 0,
+        "ignored": 0,
+        "passed": 0
+      }
+    },
+    "candidate39-final-full-provider": {
+      "custody_sha256": "d9f24e45329ec90550848fbf9264a0b2d85c260fe84da2ecd9cdb0f10b9322c0",
+      "result": {
+        "archive_sha256": "577e17d7adebf6a27948f75b20660e1c0b8a6db6369f6c3fd546793aeaa4fb6e",
+        "exit_code": 0,
+        "inputs_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+        "rawlog_sha256": "8450871d932901c8f67f53507a11fe2c3ccb0273622100a731aad0b875bf1dab"
+      },
+      "suite": {
+        "counts": [
+          [
+            176,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            13,
+            0,
+            0
+          ],
+          [
+            75,
+            0,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            19,
+            0,
+            0
+          ],
+          [
+            38,
+            0,
+            0
+          ]
+        ],
+        "failed": 0,
+        "harnesses": 11,
+        "ignored": 0,
+        "passed": 357
+      }
+    },
+    "candidate40-final-full-client": {
+      "custody_sha256": "cbed98583cd4bf05188f9054e4e7392d656ac6a5968f9efd729d220b8927c392",
+      "result": {
+        "archive_sha256": "645ae5ae7d5f830e94e21890c5d70d85a6d4055d66c1eb4714c4a2d445835d0f",
+        "exit_code": 0,
+        "inputs_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+        "rawlog_sha256": "4027bfa9bcf4d16897b18eb7e7d061d0b628f894b0ddf1d43a7dce4a5cdcb1bd"
+      },
+      "suite": {
+        "counts": [
+          [
+            130,
+            0,
+            5
+          ],
+          [
+            89,
+            0,
+            3
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            6,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            7,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "failed": 0,
+        "harnesses": 17,
+        "ignored": 8,
+        "passed": 265
+      }
+    }
+  },
+  "intended_repository_family": "dev-docs/evidence/own-home-attachments",
+  "inventory_kind": "SHA256 of captured-input JSON, not a Git revision",
+  "issues": [
+    321,
+    322
+  ],
+  "public_reconstructability_gaps": [
+    "Final public source commit pending for selected dirty/untracked current runtime/test/build/helper bytes. Their exact file SHA and computed Git blob identities are supplied; after final commit the PR must bind these exact bytes. No duplicate whole-source archive is exported.",
+    "Historical RED and instrumented derivatives retain exact private source archives and hashes; public reconstructable variant objects have not all been exported.",
+    "Private synthetic credentials, vaults, actual ciphertext stores, full environments and full logs are intentionally not published; published hashes are integrity pointers, not public replay inputs.",
+    "Exact remote availability of locally referenced Git objects was not checked in this curation pass."
+  ],
+  "public_reconstructability_status": "Selected captured objects are verified against immutable runtime commit9fddcb151c2b94116f849408305f5c9a35ac5fe9; earlier base-only/capture facts below retain their original precommit scope.",
+  "publication_source_binding": {
+    "commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+    "original_curated_draft_sha256": "721e50393cebbaa1efe8c9c3ca4b6967ae0c2762cf77cd5423fefc591e526d32",
+    "scope": "Exact selected runtime, build, test and helper inputs; the broad private capture includes unowned nonruntime policy edits excluded from this commit.",
+    "verified_selected_objects": 25
+  },
+  "retained_whole_source_archive_sha256": "577e17d7adebf6a27948f75b20660e1c0b8a6db6369f6c3fd546793aeaa4fb6e",
+  "schema": 1,
+  "scope": "Public-safe draft of retained host observations only; no new execution or final batch acceptance",
+  "selected_current_objects": [
+    {
+      "committed_base_blob_sha1": "50aa819a8abe188c5cf3941b02206214a39ee96c",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:Cargo.lock",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "818312588ed0b77ec39cbc7108cab69cc7d0f714",
+      "current_matches_committed_base": false,
+      "current_sha256": "20f790feb2bec44415d134a81ad3738fd747c87593901d7a53eb48c4c7d4a4eb",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "Cargo.lock"
+    },
+    {
+      "committed_base_blob_sha1": "cfb4d1cc191f9714abff611aefa46c61e43189ea",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/Cargo.toml",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "12e1b96514b9e907d35c5ebe36acdb88b35a106c",
+      "current_matches_committed_base": false,
+      "current_sha256": "04d954f7285dc450c725bc62e355a026bef909de2dfe07a4d6abde85f8882a03",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/Cargo.toml"
+    },
+    {
+      "committed_base_blob_sha1": "d613f90371dc4629214fe57a66a8d0df5bfc3762",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/src/checkpoint_ui_attachments.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "dfd97330ba623c0f11ac9b71ab1153e6554b4782",
+      "current_matches_committed_base": false,
+      "current_sha256": "7ee63b8fa4befd8fc15f7bcb770f0aba25177ad9077b54bfd0f0cf54ba68a05b",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/src/checkpoint_ui_attachments.rs"
+    },
+    {
+      "committed_base_blob_sha1": "2ae8b487ca8c160d94f33f00b0fbb118e240a00e",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/src/device_provider_profile.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "67b8d8f0f23f9c9e7f813b6f983b810d28342672",
+      "current_matches_committed_base": false,
+      "current_sha256": "641ec129f27d5ee74ae9504f946cbade7279fe24c48853f5a66f8cfa07e06f7e",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/src/device_provider_profile.rs"
+    },
+    {
+      "committed_base_blob_sha1": "afe9cb2c0083b183eb84d521907ca4606f26373f",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/src/mail_blob_transfer.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "0bc7ffe4b063eba185a31354564c11b622c555da",
+      "current_matches_committed_base": false,
+      "current_sha256": "5172bacffd65c738fb98803b39f7d92ba07365f4f3746f3f36014be1a891b2a8",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/src/mail_blob_transfer.rs"
+    },
+    {
+      "committed_base_blob_sha1": "0d7449cdf83033b3bd94cd2e4ba10eed7685bdaf",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/src/mail_device_provider.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "8f15b8a4d8279dabbd9167658d000ab6047b706b",
+      "current_matches_committed_base": false,
+      "current_sha256": "bb0684088149ba37b2e0b7fc5f1b4a1f0dcf3015a629b6e5145693acc524e767",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/src/mail_device_provider.rs"
+    },
+    {
+      "committed_base_blob_sha1": null,
+      "committed_base_ref": null,
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "f8f0f095ba2bbe88d1c99c506a09113b4ee157a7",
+      "current_matches_committed_base": false,
+      "current_sha256": "94c8902f629208963edaf7fd429687d63ba7dd1e698708fe170e5d3383bf74b8",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/src/test_fixture_retention.rs"
+    },
+    {
+      "committed_base_blob_sha1": null,
+      "committed_base_ref": null,
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "fc95e710284673bbc1f782d5671a85d9aaf65b55",
+      "current_matches_committed_base": false,
+      "current_sha256": "0b363e553d639f3d9901f94e4e17ca1a50521050a2f21b47b5c9ea889e495202",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/src/test_fixture_retention_contract.rs"
+    },
+    {
+      "committed_base_blob_sha1": "420b4a7fba312f3833cf04b0a00c5aa6031ad1ea",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/tests/mail_device_provider.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "ecdf2f68d059caa496dbfe95f4a90bfd109c959d",
+      "current_matches_committed_base": false,
+      "current_sha256": "43e4cd74381852eb66a59987d154baa93decd283ae712e4ece64caf0d97a941a",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-client/tests/mail_device_provider.rs"
+    },
+    {
+      "committed_base_blob_sha1": "8568f8e6357ea2b6891b4e952f89a505c087d180",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-client/examples/device_provider_console_fixture.rs",
+      "current_blob_present_in_local_object_database": true,
+      "current_git_blob_sha1": "8568f8e6357ea2b6891b4e952f89a505c087d180",
+      "current_matches_committed_base": true,
+      "current_sha256": "6df74be18fee31063e18ceaff61d48cc69f91f67e258ff008cd2b1a1ce3cbefd",
+      "public_current_object_retrievability": "exact local committed source object; remote publication not checked",
+      "repository_path": "crates/faction-client/examples/device_provider_console_fixture.rs"
+    },
+    {
+      "committed_base_blob_sha1": "f09435744b58c885d1cd8cf7c0db1cdb7e3e4683",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-provider/src/delivery.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "c72f6b08b461927b6adc0768b4392498a606080f",
+      "current_matches_committed_base": false,
+      "current_sha256": "2ac1854a2505b74425fe01258cf06b374e74c8f77c511cac77313e35c3ec6000",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/src/delivery.rs"
+    },
+    {
+      "committed_base_blob_sha1": "7a03476ba1570cc960222886781691dae91cb101",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-provider/src/lib.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "f4625909e1d61549e5dcbf427177717762cd27fe",
+      "current_matches_committed_base": false,
+      "current_sha256": "ef6ec30f7945efe469475047628f40b8304cf9dafd076310b32037f382902231",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/src/lib.rs"
+    },
+    {
+      "committed_base_blob_sha1": "4019b2d69005de1da27988be7a4a8b96c4621120",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-provider/src/operator/composed.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "e2a3c8554455379080995af9a4a6ec505262c8f6",
+      "current_matches_committed_base": false,
+      "current_sha256": "c23faff0ad7c6940c250670e5acc8dd262e175390a4f2c422529a87dc7e67e22",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/src/operator/composed.rs"
+    },
+    {
+      "committed_base_blob_sha1": null,
+      "committed_base_ref": null,
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "464c8f89146cfedea4d05509c48f8bcd7c9e0732",
+      "current_matches_committed_base": false,
+      "current_sha256": "ba4244ac411e8992ba9dbfddf3cf67d4430cd6f0b29595f0b8834036becc8056",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/src/operator/composed_loop.rs"
+    },
+    {
+      "committed_base_blob_sha1": null,
+      "committed_base_ref": null,
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "7a7b1274be1d5b353c4e06edddb7f9ee9a1de029",
+      "current_matches_committed_base": false,
+      "current_sha256": "07605f47e47730a284adeed971b68f23defd8e3755d6c3b883d23740588a31d3",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/src/operator/composed_loop_tests.rs"
+    },
+    {
+      "committed_base_blob_sha1": "da6d021d85ff13bb2265dbb381843cff4e8e4dd9",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-provider/src/publication_tests.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "ec5a0ae592a986b27fda9d1c30aabca8f01f5bb4",
+      "current_matches_committed_base": false,
+      "current_sha256": "d18e3faf37ba3e08ca2271001601d18971b0affa97509d36062444de11182b50",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/src/publication_tests.rs"
+    },
+    {
+      "committed_base_blob_sha1": "4a801d5979f81236f27e2fa62463f6c4b7f10c58",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-provider/tests/operator_cli.rs",
+      "current_blob_present_in_local_object_database": true,
+      "current_git_blob_sha1": "4a801d5979f81236f27e2fa62463f6c4b7f10c58",
+      "current_matches_committed_base": true,
+      "current_sha256": "f56fb6ca51c3668ee273db99ea14190332fb6dd035f62a220d58846bf8811590",
+      "public_current_object_retrievability": "exact local committed source object; remote publication not checked",
+      "repository_path": "crates/faction-provider/tests/operator_cli.rs"
+    },
+    {
+      "committed_base_blob_sha1": "bf2f9b5119e0ec5770548da9cbced93d263eb570",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:crates/faction-provider/tests/delivery_interface.rs",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "44752c2b7fdf9dcc0d45d3e9a69de87b0e912d4c",
+      "current_matches_committed_base": false,
+      "current_sha256": "dc258043e96d9ed61c07727f16fcb006363ad0f35fc209a7b426bce4a1271fbd",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "crates/faction-provider/tests/delivery_interface.rs"
+    },
+    {
+      "committed_base_blob_sha1": "1d1c15ff4e650d0be1a5573ea387bfb0c0577456",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:tools/probe_device_provider_console.py",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "14a705aaf9a441cda1b33f7c59f35ed95a90aba5",
+      "current_matches_committed_base": false,
+      "current_sha256": "b0a02c971989373bc47653df506f8ab7b7c8f436244a8294ca330fcc057968da",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "tools/probe_device_provider_console.py"
+    },
+    {
+      "committed_base_blob_sha1": null,
+      "committed_base_ref": null,
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "bea9ba3d0f0e3d04a50be19366417a836ebcdacd",
+      "current_matches_committed_base": false,
+      "current_sha256": "0598424cb969e02ff8b39fadbbe4aa211870c8dee86f7fe0d55080f69fc38ed9",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "tools/probe_two_home_provider_console.py"
+    },
+    {
+      "committed_base_blob_sha1": "ae7394f7c2a65b8118a30d8122ab59ae80f52a0b",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:tools/test_probe_device_provider_console.py",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "d6db89d05b637beefa62e1337cb4c54791c2c5f1",
+      "current_matches_committed_base": false,
+      "current_sha256": "e271cff36bb845d795a26fd7c7b420c543ba712d21784db29c4d9d2f122e7792",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "tools/test_probe_device_provider_console.py"
+    },
+    {
+      "committed_base_blob_sha1": null,
+      "committed_base_ref": null,
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "90a37cca7eab78cba9814ac2a06060e20785ddba",
+      "current_matches_committed_base": false,
+      "current_sha256": "dd6b79174a64e42cbae1827f8bb1e1893d8fc49f2531966576d3e195e9cb8596",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "tools/test_probe_two_home_provider_console.py"
+    },
+    {
+      "committed_base_blob_sha1": "8f84ef2af4ef6aa3df2182e67232e81aabbaed9f",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:tools/check_provider_dependencies.py",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "0ce04c8259814800eea486d91a194cbf088288d1",
+      "current_matches_committed_base": false,
+      "current_sha256": "1271c91e895261a2563ce3733f9fff92c219c51bafa6d79c3a296c998f69e5d1",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "tools/check_provider_dependencies.py"
+    },
+    {
+      "committed_base_blob_sha1": "09296f89e2448525809c6c954f96dff9af4f16bc",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:tools/check_delegation_codec_dependencies.py",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "bb0dd4a7421f1ca4901158d50dc9a0ff796bf1df",
+      "current_matches_committed_base": false,
+      "current_sha256": "3cbca19ff7c835b4d545b6989fc089f97ed6b613aaae217de995c1f9feb21f68",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": "tools/check_delegation_codec_dependencies.py"
+    },
+    {
+      "committed_base_blob_sha1": "74d09088edefd051a2f9f10ae4732c7eb58ba9e8",
+      "committed_base_ref": "70a4c289371deb1b8dbb8c3c25bbecc12910f0f1:.github/workflows/documentation.yml",
+      "current_blob_present_in_local_object_database": false,
+      "current_git_blob_sha1": "267a1c6a5d8cfa2d869e358b78dd18c1d3380412",
+      "current_matches_committed_base": false,
+      "current_sha256": "aeeebdc71d141418b24eae5536859cd219c1461738a248b71701586805964dc3",
+      "public_current_object_retrievability": "not established for dirty or untracked current bytes",
+      "repository_path": ".github/workflows/documentation.yml"
+    }
+  ],
+  "selected_executable_sha256": {
+    "client": "d69813aaf1a27bc812581951a67575279c4b25c3355afb963428220dd92c337d",
+    "operator": "2e1f0d1d8efdb492841ae6827c3bbfac5649d3a476040c312216723044182ed7",
+    "seed": "e75bd60c27f28d642a3975deed58a6fab8c36d2b6e262d0fde1aac81bbb5061e"
+  },
+  "source_inventory_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723"
+}

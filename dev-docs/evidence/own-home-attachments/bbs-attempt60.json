@@ -1,0 +1,32 @@
+{
+  "closure": {
+    "forward_closed": true,
+    "guest_restore_branch_invoked": false,
+    "handles_closed": true,
+    "infrastructure_shutdown_seconds": 19.389179833990056,
+    "owner_assets_exact": 86
+  },
+  "completion_observer_exit": 1,
+  "completion_observer_failure": "native process-query assertion after the launcher had observed its child exit; guest failure transcript remained inside the retained COW",
+  "guest_restoration_invocations": 0,
+  "new_admin_authorization_created": false,
+  "overlay_retained_for_diagnosis": true,
+  "phase_seconds": 51.68191838264465,
+  "preflight_actual_child_exit": 1,
+  "preflight_transport_exit": 0,
+  "private_custody_verified": false,
+  "proof_invocations": 0,
+  "receipt_sha256": {
+    "final-result.private.json": "cd02ce8f9f279ce49d35363ba4a56e178c5d7544bf950a2b4bf31fb37f5e63b4",
+    "preflight-observe.stderr.private": "40f44ba03e62b4027dc192c5bc9b24852a9a9efcd171a86972005460fff82c7c",
+    "preflight.stdout.private": "b8b9eab68203e851595708abb4b126cf54287e1f9e50567afdba91f84e264de1",
+    "release.private.json": "c06c7c6d5e8ec8cf1303e3466f3a867750f1b431cf7a5ba6a3cd9868ad2a1770",
+    "transport.py": "bb667c0effefd871aee9df1aef223e8e27658fb9b3afc3fe1c0fa2fa2453c140",
+    "whole-guest-closure.private.json": "bda8a097d6277b30e8b4ec44a802017567a88e60ccdfaa7e96b05e677e56046b"
+  },
+  "schema": 1,
+  "scope": "First actual BBS-fixture attempt stopped before setup/proof; not a product failure diagnosis or a passing independence test.",
+  "setup_invocations": 0,
+  "stage_ssh_exit": 0,
+  "whole_vm_closed": true
+}

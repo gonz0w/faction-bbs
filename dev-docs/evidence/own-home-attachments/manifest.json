@@ -1,0 +1,21 @@
+{
+  "files": {
+    "dev-docs/evidence/own-home-attachments/README.md": "0616f9b28188bcbf741bd77396fc3fb86ad2efa7fdb0b65f04ef9f0fbea3f510",
+    "dev-docs/evidence/own-home-attachments/REPRODUCE.md": "812f34f04c0f7a90feb5c9c33f3fb1950331ebc9c4707629d6a27eaf217d189f",
+    "dev-docs/evidence/own-home-attachments/bbs-attempt60.json": "d693ab9aff2b21d6fdc4bbf44e1e3166b47cacb28330191b999fb3ee7be1ad81",
+    "dev-docs/evidence/own-home-attachments/bbs-compilation.json": "dfd92f8ba5d5c92d3977eefe21476057eecee849942a2df2b638a929f5df96a5",
+    "dev-docs/evidence/own-home-attachments/bbs-outage.json": "0f555ee571f2d2c5a5e79e3d940085db1df6f1f8487c6e10282a290020c29ae0",
+    "dev-docs/evidence/own-home-attachments/carrier-host-components.json": "11acfc9e5105cdfea2c4ce7b6e1a7d8f6a459cc791365d372483a2522e99e2d3",
+    "dev-docs/evidence/own-home-attachments/core-tdd.json": "f3e0dfdd2aa7c4c0028b1af35b0ab9924ee359c055ca0d653da3ae54e77f7f2a",
+    "dev-docs/evidence/own-home-attachments/diagnostic-recovery.json": "f2ef21643761bcb388fdcf9e06afe941584b3565c67aeeb50f2e73f9bdab85fe",
+    "dev-docs/evidence/own-home-attachments/fixture-preparation.json": "83ae675d3a1725e871cda666446b5377c89c96a79cd12e55080b5cf060607f0b",
+    "dev-docs/evidence/own-home-attachments/limits-and-review.json": "17dd6179376e89a0435f7e1805a0bbc881128ad4ef8114b88ea7614db71994e2",
+    "dev-docs/evidence/own-home-attachments/native-binaries.json": "d285acae285378373e3eaccb3ca97b5aae49374f838677f537a0d5b81cfb5e34",
+    "dev-docs/evidence/own-home-attachments/native-results.json": "2272a97b4c4ad72e8c86a111f6a90ee0ea4da71290443f4a259309397a2722f6",
+    "dev-docs/evidence/own-home-attachments/privacy-retention.json": "389eeef72ecf35f502060695e85bd9091880c3971cc234e0cefa0e9947ddabaa",
+    "dev-docs/evidence/own-home-attachments/results.json": "d2a520e2d74c6aafa56ddaabe4867a86e0c98b86e4911d6fd138440c04656ce6",
+    "dev-docs/evidence/own-home-attachments/source-provenance.json": "eb3aaeb6ceb01be565b9d6867afe1fe98a4bd9cc6417c2f45bcb0be0351739f6",
+    "dev-docs/evidence/own-home-attachments/tdd-host-results.json": "0a3e92e5aa659bef00965b1a1a75feb03065e8baf05cd7efde864804e655fd61"
+  },
+  "schema": 1
+}

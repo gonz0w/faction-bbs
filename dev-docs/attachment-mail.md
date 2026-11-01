@@ -19,3 +19,48 @@ Live, network and archive receipt share the authenticated transaction. It preser
 Accepted historical attachments remain locally consumable after session expiry, revocation, history-only backup/recovery or a fresh device change. Those states do not resume the old live protocol. The private locator identifies ciphertext but does not authorize a connection. The separate transfer API fetches only from an authenticated retained record through an explicitly selected invited-home route; existing HTTPS locators remain inert. The default-off `network-mail` console provides an explicit [private attachment desk](../docs/private-attachments.md) using the managed transfer path. These underlying APIs do not themselves provide a CLI action or public HTTP endpoint.
 
 The existing 512 KiB checkpoint, 64 history records, eight pending messages, 8192-byte SCE, 8208-byte payload and 1 MiB plaintext blob limits remain. The bounded transfer and store have their own limits and external authorization boundary. The separate [NetBSD software qualification](evidence/netbsd-attachments/README.md) covers the native libraries, transfer and production console in one guest. It does not establish independent modern-client interoperability or a full attachment product; the original requirements of #88 remain open. Ordinary classic access and text mail remain available.
+
+## Explicit own-home carrier
+
+The default-off own-home provider selection uses a private version 2 profile with
+`route = "own-home"`. Route selection occurs before a socket: both local principals
+use the existing binary Session, local sender/foreign recipient uses publication,
+and local recipient/foreign sender uses retrieval. A wrong local full principal,
+neither principal local, or an unsupported action is refused. The full unlocked
+vault identity and verified peer snapshot remain required. The configured home is
+the only endpoint; errors and Busy never select IQ or another endpoint.
+
+The existing worker's eight SDK requests per ten-second cycle remain in force.
+Each carrier operation stays within the worker's original deadline and cannot renew
+or extend it. Its eight transport attempts are distinct from the worker's SDK
+request limit. Submit, close and paced collection share that attempt and deadline
+bound; each `collect_paced` waits within the budget and the client makes at most six fresh collects. Only a fresh authenticated `Response::Progress { binding, offset,
+committed }` with the exact binding, complete offset and `committed = true`
+releases mail. A receipt, Busy, EOF or timeout cannot release it; retry the exact
+persisted operation with fresh authority. The recipient retains normal transfer
+confirmation, sees the sender home under separately preapproved policy, and has
+no client invitation authority or legacy IQ invitation prompt on this route.
+
+Host and fresh NetBSD maintained-client exercises completed maximum 1 MiB classic
+and Unicode journeys. The NetBSD run used 1 GiB RAM, two CPUs and the original
+60-second budget, with 65 upload and 65 fetch calls for 1,048,592 ciphertext
+bytes. Its build temporarily required 2 GiB for the compiler; 1 GiB was restored
+before qualification. Homes had separate runtime, configuration, keys, stores
+and approved policy; one opaque test XMPP delivery/archive queue served both.
+Fresh native provider and client suites passed 357 checks (including 38 doc tests)
+and 266 tests respectively; eight inherited client helper tests were ignored. These fixtures do not establish
+deployed S2S, provider adoption or independent client interoperability. Public
+evidence is recorded in the [own-home software evidence](evidence/own-home-attachments/README.md).
+
+In a host interruption exercise, an exact persisted upload retried after source
+removal and same-policy restart committed, released mail and reached an offline
+recipient. A later fetch stopped at 32 KiB; that original episode failed and is
+unexplained. A separate fresh fetch resumed partial state, first confirmed at
+61,440 bytes, and completed 131,088 ciphertext bytes in six calls; verification
+produced 131,072 plaintext bytes and a new private `0600` save without overwrite.
+This is not uninterrupted completion, automatic retry or a fix claim. Ordinary
+text mail passed an outage exercise. A separate native software exercise passed
+eight BBS/SFTP controls while both homes were unavailable: independent registration
+and approval, preserved encrypted state, and a 131,328-byte exact public SFTP
+transfer with privacy and terminal restoration checks.
+Existing historical evidence is unchanged.

@@ -1,0 +1,138 @@
+{
+  "build": {
+    "acceptance_tests_executed": false,
+    "builder_memory_gib": 2,
+    "cpus": 2,
+    "production_elfs": 3,
+    "serial": true,
+    "test_elfs": 27
+  },
+  "console": {
+    "budget_seconds": 60,
+    "configured_ports_closed": 8,
+    "controls": 16,
+    "hidden_exact_tokens_available": false,
+    "maintained_cli_children_reaped": true,
+    "modes": {
+      "classic": {
+        "fetch": {
+          "calls": 65,
+          "ciphertext_bytes": 1048592,
+          "seconds": 44.384846
+        },
+        "upload": {
+          "calls": 65,
+          "ciphertext_bytes": 1048592,
+          "seconds": 24.13838
+        }
+      },
+      "unicode": {
+        "fetch": {
+          "calls": 65,
+          "ciphertext_bytes": 1048592,
+          "seconds": 48.380591
+        },
+        "upload": {
+          "calls": 65,
+          "ciphertext_bytes": 1048592,
+          "seconds": 24.506711
+        }
+      }
+    },
+    "plaintext_bytes": 1048576,
+    "selected_files_per_mode": 58,
+    "selected_processes_remaining": 0,
+    "stores": 2,
+    "token_check": "field patterns only"
+  },
+  "later_qualification": {
+    "completed_record": "bbs-outage.json",
+    "final_integration": "Review and current-head CI are recorded with the closing PR, not asserted by this saved result.",
+    "native54_stage_boundary": "The standalone native54 record preceded the separate BBS/SFTP proof and final snapshot closure."
+  },
+  "limitations": [
+    "One opaque test XMPP delivery/archive queue, not deployed S2S",
+    "No provider adoption or independent client interoperability",
+    "No hardware, 250-member capacity or security-audit claim"
+  ],
+  "receipt_sha256": {
+    "build42": {
+      "corpus_sha256": "a82334e92567296cf49ae6e23c465c1c2a73b89e0516a4f4115019670f6532bf",
+      "retained_result_sha256": "371f0a20ea4309e7c26ca1956b6fa8fe8058a70a0d28e3e764cf78de81bd7fbb",
+      "retention_receipt_sha256": "11be92d201a04b6401a97108cae25ef477a5896337db3da8b5462aba30de6ea6",
+      "stage_result_sha256": "e0f21e4392eaa1a8d47b712dc15b0e6e92a32c46990eedbff0f1028db7401d70"
+    },
+    "lifecycle48": {
+      "builder-actual.stderr": "ad4f605bc01f56f4ef2ef01c69a47117f5c4f11de84bfd2ca2d60381361b9923",
+      "builder-actual.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restore-actual.stderr": "ad4f605bc01f56f4ef2ef01c69a47117f5c4f11de84bfd2ca2d60381361b9923",
+      "restore-actual.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "precompile50": {
+      "corpus_sha256": "f22c8600616c3e44595d8f9aed7fa2a5b68b24ea0826086153ca88c356e27f6a",
+      "retained_result_sha256": "18104ac702068d09c81efb3cdd26a5a436d5f93089be73d9b56c089f5993d9de",
+      "retention_receipt_sha256": "ae9eae8cac924ae31698b6cff4bf8ac59cd5d555a45dbc0f9444736435ad64f7",
+      "stage_result_sha256": "450740f331033ecd7ccd4104c7c78dec3b763e88c187c402347e9fc77036e93a"
+    },
+    "preflight41": {
+      "corpus_sha256": "670d5e22379830ed6c6f5c5282dca3450402f149cf53ff3798ff69ac61a51e2e",
+      "retained_result_sha256": "6445c0ba399b94f74daee79886a0b9be9f66f69bdbdb4c0e5374c979823458b5",
+      "retention_receipt_sha256": "9d4b3f08f1d311b76fa5cd4a7a20175a31e8c8266213e97ca6f81dad4a7e085e",
+      "stage_result_sha256": "f0898dac97558540027c6d8a3ba34b5abf3a6e929457f14a477bff980b994e00"
+    },
+    "proof54": {
+      "corpus_sha256": "8af7d060de34886f8c4e84d89be569e18628e59315830efbdcf0e1bae554863b",
+      "retained_result_sha256": "c12c4afd60a7cfe0098b52b024383e55b8e91d7594f663e46e7123f88b30831a",
+      "retention_receipt_sha256": "17c23a4484ea3d425e271dc92c23b61c79aa7e0daefee2809b90cccf5cfa5fe7",
+      "stage_result_sha256": "78bec7bbe6ba56c24e9dab1298c7ea9e9e2c792beaeaaf7518644895d97cb0da"
+    },
+    "readiness49": {
+      "read-only.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "read-only.stdout": "8265acc23f4029a28ec34ab8f412080946e62e22314913105908e69476167712",
+      "result.json": "c7743cead898851acd484604e7522e7bc5a1b35af0057872abd98ecc2ee35912"
+    },
+    "readiness51": {
+      "read-only.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "read-only.stdout": "7db6b475b3322fb09522d47d3f1f381055ce1ee4b8449a2567f3cd49db4e9766",
+      "result.json": "07a6b1e4bff9d41632170c9d79e1a56a4941fe3889c11f5fca5a1e05aeb6947d"
+    },
+    "retry44": {
+      "corpus_sha256": "0d92ba4c4f893e4a56505e48ed34a566bd405f22f46d3839114dde078510e981",
+      "retained_result_sha256": "75bf53f9e361b3d5b41d7ffd5a9fc4dd16ba09033a5e892668ab19ba24711d54",
+      "retention_receipt_sha256": "f34725cf0f1d0d6b613a88e7ab67bef28ed25d73c9e2a7396b57822e86f288c7",
+      "stage_result_sha256": "2256f70a6103461e7abcc7e5fac3f343da043af0c506aa0a3fd9d3a84c5c1f19"
+    },
+    "suites52": {
+      "corpus_sha256": "f3be722f8f8100a0466c2ae7ec43d06d96d2f6321dbb4281dce3710bc063e974",
+      "retained_result_sha256": "ad569556cbb7ecb3c40ebbc52417ced5a4910594413d3714453bd680fdcac4b9",
+      "retention_receipt_sha256": "243536c3636526417a62cecd37f1c892e5b224a349f023a757689dd71ee3c0f4",
+      "stage_result_sha256": "6ba9e44805c185940ecda7e130d0829e047f3b0cbad8d87670f3a1d1316a7efb"
+    },
+    "tmp53": {
+      "corpus_sha256": "8226fec540bdb6230e6c5d9303a7e45f1ef69b176407b2b9ebca3b5375d6396c",
+      "retained_result_sha256": "3a9590356ceb0e74068b6c0260ae9055124723dc714df4ef1332c57e78ca84ca",
+      "retention_receipt_sha256": "50bf65ac6dcf107bd91dc3061d1f6292a4208ee060ac9ca80115542e6d0a8dc1",
+      "stage_result_sha256": "4893d3e5e43b70492be3656edb53aa118da0045ade6998262ce8de1f30ae45da"
+    }
+  },
+  "runtime": {
+    "client_harnesses": 17,
+    "cpus": 2,
+    "ignored_inherited_helpers": 8,
+    "initial_client": "failed SUN_LEN before loader assertions",
+    "memory_bytes": 1054990336,
+    "provider_checks_passed_total_including_docs": 357,
+    "provider_doc_tests_included": 38,
+    "provider_non_doc_tests_passed": 319,
+    "short_tmp_client_tests_passed": 266,
+    "short_tmp_isolated_original_test_passed": 1
+  },
+  "source_inventory": {
+    "commit_binding": "Selected runtime, build and helper source identities match; inventory also includes unowned non-runtime guidance excluded from commit. Whole-tree identity is not claimed.",
+    "files": 9358,
+    "final_commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+    "meaning": "source inventory, not a Git commit",
+    "sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723"
+  },
+  "status": "Source-bound software observations; final integration and CI results belong to the closing PR."
+}

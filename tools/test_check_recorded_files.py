@@ -102,6 +102,38 @@ class Integrity(unittest.TestCase):
 
 
 class Registration(unittest.TestCase):
+    def test_ci_pins_own_home_attachments_and_refuses_changed_result(self):
+        from check_recorded_files import safe_path, verify
+        repository = Path(__file__).resolve().parents[1]
+        workflow = (repository / ".github/workflows/documentation.yml").read_text()
+        selections = re.findall(
+            r"^ +(python3 tools/check_recorded_files\.py dev-docs/evidence/own-home-attachments/manifest\.json [a-f0-9]{64})$",
+            workflow, re.MULTILINE)
+        self.assertEqual(len(selections), 1,
+                         "CI must pin the own-home attachment record exactly once")
+        _, _, manifest, pin = shlex.split(selections[0])
+        family = Path(manifest).parent
+        result = (family / "results.json").as_posix()
+        with tempfile.TemporaryDirectory(prefix="faction322-recorded-files-OWNED-") as owned:
+            root = Path(owned)
+            (root / "OWNED").write_text("Owned own-home attachment integrity fixture.\n")
+            shutil.copytree(repository / family, root / family, symlinks=True)
+            files = json.loads((root / manifest).read_bytes())["files"]
+            self.assertIn(result, files)
+            for name in files:
+                if not Path(name).is_relative_to(family):
+                    destination = safe_path(root, name)
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(safe_path(repository, name), destination)
+            self.assertGreater(verify(root, manifest, pin), 0)
+            with (root / result).open("r+b") as changed:
+                first = changed.read(1)
+                self.assertEqual(len(first), 1)
+                changed.seek(0)
+                changed.write(bytes([first[0] ^ 1]))
+            with self.assertRaisesRegex(ValueError, "recorded file checksum changed"):
+                verify(root, manifest, pin)
+
     def test_ci_pins_delegation_publication_and_refuses_changed_result(self):
         from check_recorded_files import safe_path, verify
         repository = Path(__file__).resolve().parents[1]

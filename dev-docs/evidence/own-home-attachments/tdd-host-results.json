@@ -1,0 +1,93 @@
+{
+  "absence_endpoint_shape": {
+    "attempted_green_wrong_fixture_precondition": {
+      "bound_socket_was_not_closed": true,
+      "rawlog_sha256": "45264a9aefe7d33ddcd2aade64106bf2d8a9a3fc4928ff3ce8b9388daad8a86c",
+      "result": "EAGAIN instead of required ECONNREFUSED; retained failed test, no weakened predicate"
+    },
+    "chronology_preserved": true,
+    "preproducer_actual_json_shape_red": {
+      "error": "TypeError: AF_INET address requires tuple; actual JSON endpoint decoded as list",
+      "rawlog_sha256": "65c932f256d416da4c871568b92a3cc78c1d62a1c4444a9e4446a319d77f1109"
+    },
+    "setup_only_correction_green": {
+      "existing_six_tests_unchanged": true,
+      "passed": 7,
+      "rawlog_sha256": "3fb982537cad771fec45296a7b4eb6788a3b047d6be5ddc42d53607a6b3e44ee",
+      "required_result": "ECONNREFUSED",
+      "socket_closed_before_probe": true
+    },
+    "tuple_producer_sha256": "4ff01e1cecc7486867ba6bde1274519b9772d4c39806e5409a27e99f10a99fb9"
+  },
+  "intended_repository_family": "dev-docs/evidence/own-home-attachments",
+  "issues": [
+    321,
+    322
+  ],
+  "maintained_loop_cleanup_race": {
+    "green": {
+      "corpus_sha256": "c98787358b31ecfbdcb8cfb15ad70e3e3ba57067508b9e0883d0dce1f8660cb5",
+      "fmt_failure_classification": "existing lib.rs pub-use ordering; byte-identical in RED and measured GREEN",
+      "fmt_passed": false,
+      "focused_passed": 5,
+      "result": {
+        "archive_sha256": "ef7033188a4c8226af5542152fe2e4778b3c4c7d81852f382251e6e6118b238e",
+        "exit_code": 1,
+        "inputs_sha256": "88de65cb0fef3d845de416ceca84b11b3beafd5bc23457012041eb7378201969",
+        "rawlog_sha256": "88b84d7df18cf613d15cdcdec47cdae9d28a8720e417e7795e2a1114294f09fa",
+        "source_unchanged": true
+      },
+      "selected_test_executable_sha256": "16f50d29022c080ad82858e0efb74e6351e51c1a30d020a357961ae02f354260",
+      "strict_clippy_passed": true
+    },
+    "historical_console_cause_attribution": false,
+    "postformat_style": {
+      "qualification": "style-only; preceding immutable source remains the measured focused test/Clippy input; later final full suites qualify current source",
+      "result": {
+        "diff_check_exit": 0,
+        "fmt_check_exit": 0,
+        "inputs_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+        "loop_sha256": "ba4244ac411e8992ba9dbfddf3cf67d4430cd6f0b29595f0b8834036becc8056",
+        "new_lib_sha256": "ef6ec30f7945efe469475047628f40b8304cf9dafd076310b32037f382902231",
+        "qualification": "postformat style only; Rust tests/Clippy remain bound to immutable preformat GREEN",
+        "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source_unchanged": true
+      }
+    },
+    "producer": "Repeat identical finished-worker real-join and consumed/expired pending cleanup after admission, before dispatch; unfinished physical work retains its reservation.",
+    "producer_patch_sha256": "53138629bb30ff4a367c09b9caf426716dffc959e4d6aedc57d81ff504ff3b3e",
+    "red": {
+      "actual_behavior": "fresh authorized submit Err(Frame) after real old collect/3attempts/worker termination; all earlier and drain assertions passed",
+      "corpus_sha256": "6667f0c8355abf77ae5fc5f5bfdb860b4e8c93c9f4db929e20d434467ccb5848",
+      "result": {
+        "archive_sha256": "15ed85c29fdd2fc56d6e9c1d2c41918ed1c9f0f480633501a60b6d7b6d440419",
+        "exit_code": 101,
+        "inputs_sha256": "ce850f2b5457849abc883d2b39e7301f9849ac1264970ca0c4ce9e9c9a4d4bbc",
+        "rawlog_sha256": "6b7ec3fbcd2b9eb6c59d956b3804ab03d13913aa170b4474954241ae49c796b5",
+        "source_unchanged": true
+      },
+      "seconds": 0.12,
+      "selected_test_executable_sha256": "c007c93d13ead36c598b34369eaa6062cdd16167b6d4012dc76bcba59062c648"
+    },
+    "scope": "maintained cleanup/admission race only; no historical console cause attribution"
+  },
+  "online_oracle_correction": {
+    "actual_transcript_sha256": "cb67765da1b3fae4dd3836df95ff104466570ae5207bd793c999d456cd3ffd3f",
+    "corrected_control_sha256": "c0e8ebc5d6f19a294c9e40407fc9cd03c9553e0e768e4205236bf6050289f9f6",
+    "corrected_green": {
+      "passed": 4,
+      "rawlog_sha256": "8b3044e38c1169719f4a911fc974347ade5512f0232c63713b165cf23dbb49cf"
+    },
+    "previous_offline_characterization_preserved": true,
+    "product_defect_claim": false,
+    "scope": "actual retained online transcript, not offline two-line characterization",
+    "wrong_oracle_red": {
+      "actual_online_matches": 0,
+      "expected": 1,
+      "rawlog_sha256": "2f38ed3a07a01c314aa024679a1eded948a520bc197c4f813b41a966cc26ca0b",
+      "unchanged_cleanup_contracts_passed": 3
+    }
+  },
+  "schema": 1,
+  "scope": "Public-safe draft of retained host observations only; no new execution or final batch acceptance"
+}

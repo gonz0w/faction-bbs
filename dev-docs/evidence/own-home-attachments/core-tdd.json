@@ -1,0 +1,1421 @@
+{
+  "format": "core-tdd-draft-v1",
+  "curation_only": true,
+  "current_public_selected_runtime_commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+  "current_binding_scope": "Lead-verified selected runtime/build objects only. Historical broad input-map f350 includes unowned policy; no full current working-tree/source identity is claimed. Historical runs retain their distinct source archive and map identities.",
+  "slices": [
+    {
+      "scope": "fixture capture interface",
+      "red": [
+        "red02-capture-interface"
+      ],
+      "green": "green03-capture-inputs",
+      "observation": "Actual compile interface RED: two unresolved capture_owned_test_fixture uses. GREEN exact-copy/no-follow control passes1. red01 never executed a guard, compiler or test and is excluded from product RED."
+    },
+    {
+      "scope": "original parent deadline",
+      "red": [
+        "red05-parent-deadline-api"
+      ],
+      "green": "green06-parent-deadline-api",
+      "observation": "Missing operation_until API compile RED; GREEN interface1 and real cancellation/expired-parent before any TCP1. No preproducer runtime no-I/O claim."
+    },
+    {
+      "scope": "explicit v2 profile",
+      "red": [
+        "red07-explicit-v2-profile"
+      ],
+      "green": "green08-explicit-v2-profile",
+      "observation": "Valid explicit own-home profile refused before parser producer; nested parent/child one-control RED\u2192GREEN. Existing v1/private-credential/current-vault constraints remain in same test."
+    },
+    {
+      "scope": "publication route and immutable worker classification",
+      "red": [
+        "red10-core-publication-route",
+        "red11-pinned-route-interface"
+      ],
+      "green": "candidate12-pinned-route-worker",
+      "observation": "Actual authenticated foreign publication never submitted on old route; separately30 missing classifier/route/request-bound interface diagnostics. GREEN5 worker/classifier controls plus1 real publication/mail-release control. Exact spool, no-mail, submitted receipt and unfinished Busy assertions are not release success."
+    },
+    {
+      "scope": "UI foreign preflight",
+      "red": [
+        "red13-ui-foreign-preflight"
+      ],
+      "green": "candidate16-own-home-corrections",
+      "observation": "Own-home verified foreign-peer desk unavailable before UI producer; v1 refusal retained. GREEN affected full client lib/bin/integration plus strictClippy. Candidate14 later spool snapshot assertion failed because fixture advanced observation clock; parent approved same captured epoch correction, no production clock change. Assertions after that candidate14 failure were not reached."
+    },
+    {
+      "scope": "healthy admitted service-purpose contention",
+      "red": [
+        "red24-service-purpose-contention",
+        "red25-service-purpose-cancel"
+      ],
+      "green": "candidate26-service-purpose-fix",
+      "observation": "Real admitted current-token introspection dropped as StoreBusy during synchronized short Authority contention. Matching cancellation produced Busy instead of exact Cancelled. GREEN6 real controls plus strict combined Clippy. Same mutex wait, post-wait original bounds/policy, release before network. This does not establish any historical full-file failure cause."
+    },
+    {
+      "scope": "read-side deadline/routes metadata contention",
+      "red": [
+        "red31-read-side-metadata-contention"
+      ],
+      "green": "green32-read-side-metadata-contention",
+      "observation": "Actual grouped old-code result2failed healthy controls/2passed cancellation controls; healthy deadline falsely expired unfinished real own-home Delivery, routes Busy before approved publication callback. GREEN4 unchanged controls plus strict combinedClippy. No historical cause claim."
+    }
+  ],
+  "stages": {
+    "red02-capture-interface": {
+      "exit": 101,
+      "input_count": 9352,
+      "private_source_archive_sha256": "6e0eeeed41378cf457356d6d2d9e6ea8c389b2c5aa1eb61cc19bf0ea6cebb755",
+      "private_input_map_sha256": "957a77d81da113d2525d6bec69514919f18244b43bf9f896f6b96f0d724f3aef",
+      "private_raw_log_sha256": "720e02c9b0d9bde739536e36de5aed8776e6aaabeeb2785ce31da60d6c0d8363",
+      "private_raw_result_sha256": "68bd98d58dc9c89a6527b4aa6e3f432799ec80ab633d60651af5b7b8b7047322",
+      "private_command_receipt_sha256": "e574a0dc5fd92b9a9e4d06898567ee862200813f87beaabacbdfb9e7ec0ecbbb",
+      "private_executable_manifest_sha256": "d8df223fcad1a75fbc00fb161093eda998e7862699629f560fac8bb5b4f22bc9",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--bin",
+          "faction-client",
+          "owned_fixture_retention_copies",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "cannot find function `capture_owned_test_fixture` in this scope",
+        "cannot find function `capture_owned_test_fixture` in this scope",
+        "could not compile `faction-client` (bin \"faction-client\" test) due to 2 previous errors"
+      ],
+      "public_source_files": {
+        "crates/faction-client/src/test_fixture_retention.rs": "0b363e553d639f3d9901f94e4e17ca1a50521050a2f21b47b5c9ea889e495202"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "green03-capture-inputs": {
+      "exit": 0,
+      "input_count": 9352,
+      "private_source_archive_sha256": "5b268b7aba67ed5b322a53f6bc1400a825c4155479bd8ea2ae8f7241ee011220",
+      "private_input_map_sha256": "17c5cf9bbfd2e4db163e1b8eab51c9e0179fdf2a785273f0cbf44066657d4bd6",
+      "private_raw_log_sha256": "577d7d2835a0b938b925c0c3648afa780184624d027141582e38c226f5f7ee1c",
+      "private_raw_result_sha256": "84a03e3d41966aad2b0c3661debaf1188d527897a20f931c2e207d9a1a28e2e2",
+      "private_command_receipt_sha256": "09dfafe07cfdce055d0c52a981b52e3cae2842bad2e25df3e0a83dccb482c208",
+      "private_executable_manifest_sha256": "61c32f032cddd2f83fa2985c2822c343521463a1ce8769554c4cda50ead39740",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--bin",
+          "faction-client",
+          "owned_fixture_retention_copies",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-client/src/test_fixture_retention.rs": "f53a15e3ea2064773894736e9aac50ed1f6b78543c5b605d5a7c61fba1b67f64"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red05-parent-deadline-api": {
+      "exit": 101,
+      "input_count": 9352,
+      "private_source_archive_sha256": "aa69032a0afc9d6f25c0c84ec6fdc2a8cb1c2eb0be43d3c98efc66cb416b148e",
+      "private_input_map_sha256": "17c5cf9bbfd2e4db163e1b8eab51c9e0179fdf2a785273f0cbf44066657d4bd6",
+      "private_raw_log_sha256": "cbdadc509e532ca1c48a51018b513d09886b4b67a6cdbde75d218129caaa994f",
+      "private_raw_result_sha256": "aae01d5167af8de2f1f313d136d08b1f800688a318818bf67d2112c7889d15d6",
+      "private_command_receipt_sha256": "fafa5664a9cf8d00ac023440ddace0ade8b50ab029a60a229168df855d52d815",
+      "private_executable_manifest_sha256": "07eacda971e54fb7f27b7f0a4c2190aeb2378ac79e0ef27d8ab6a5529a38fcba",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier",
+          "--test",
+          "delivery_interface",
+          "parent_deadline_constructor",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "no associated function or constant named `operation_until` found for struct `CarrierEndpoint` in the current scope",
+        "could not compile `faction-provider` (test \"delivery_interface\") due to 1 previous error"
+      ],
+      "public_source_files": {
+        "crates/faction-provider/tests/delivery_interface.rs": "dc258043e96d9ed61c07727f16fcb006363ad0f35fc209a7b426bce4a1271fbd"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "green06-parent-deadline-api": {
+      "exit": 0,
+      "input_count": 9352,
+      "private_source_archive_sha256": "d4bac00ee6f2ca73b0b7a4b33156fc9131f6897372bf433794ead33ce1b11b01",
+      "private_input_map_sha256": "c84aa29ec87cd68987005882dedc5abea399e266d0557b94942f30bfcd89056b",
+      "private_raw_log_sha256": "fc16608c185f6a252256315e731a64b548d2a7348f7217916e06c9133f9097d2",
+      "private_raw_result_sha256": "2f8526b6ae2a6cbc966b9723e69f33112a6fbc6fdac407be17e9228e5a4d0c34",
+      "private_command_receipt_sha256": "54daca6369da84715155d25f5f03c201a4903d79bf99071c9b97e2697cb17180",
+      "private_executable_manifest_sha256": "dcc81923e7950a19ef29c083b4637891923052659913d615a2fd28e666f81feb",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier",
+          "--test",
+          "delivery_interface",
+          "parent_deadline_constructor",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "delegation-verifier",
+          "--lib",
+          "carrier_parent_deadline_and_cancellation",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-provider/tests/delivery_interface.rs": "dc258043e96d9ed61c07727f16fcb006363ad0f35fc209a7b426bce4a1271fbd",
+        "crates/faction-provider/src/delivery.rs": "5a739766136d883cb8649725ad3fa73f864958ec46fce77a9766338ae8b4fe7d",
+        "crates/faction-provider/src/publication_tests.rs": "d700f56d334556471d95bcc537708cb2fe1d7672c1dcedbe489d76ba783bbb76"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red07-explicit-v2-profile": {
+      "exit": 101,
+      "input_count": 9352,
+      "private_source_archive_sha256": "8a7cba8e726dc82909eb83d29e959a18960c4383d5f881ce9f85a7d373cc510d",
+      "private_input_map_sha256": "c84aa29ec87cd68987005882dedc5abea399e266d0557b94942f30bfcd89056b",
+      "private_raw_log_sha256": "06a57375959c2693f613e0b447e43a709847a07a5ff9f6ccdc5d58e19a402bb0",
+      "private_raw_result_sha256": "8ee1e5d7fcc7b0747f0b16df257f7243e12ca27d10ffd52b206f183ba4cd0835",
+      "private_command_receipt_sha256": "492b41f0296130fadcd23b100ef8f0d36712f03cef79c42070b2cf80af8ad524",
+      "private_executable_manifest_sha256": "dcc81923e7950a19ef29c083b4637891923052659913d615a2fd28e666f81feb",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--bin",
+          "faction-client",
+          "decoded_profile_binds_current_vault_and_private_credentials_without_spool",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `-p faction-client --bin faction-client`"
+      ],
+      "public_source_files": {
+        "crates/faction-client/src/device_provider_profile.rs": "dcb535f71aaad32b2af6b131f2e87bfcbc65398933b9c1a734d3985df0ea4d44"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "green08-explicit-v2-profile": {
+      "exit": 0,
+      "input_count": 9352,
+      "private_source_archive_sha256": "31fa2220b340c08d207675c884d9dc38ff088c8f23ea18801ead30b3e1fe3161",
+      "private_input_map_sha256": "9344401c64c92b346d52ee8e591d175a561af47361a8c22c71f0d6a147c5dfc8",
+      "private_raw_log_sha256": "c397993b12d1b7747f76073c5dc6bbd3141595c321828de4c6d2492dbb277d10",
+      "private_raw_result_sha256": "9621332b2fc577dff6fef3a5580b38c3f44295f6c92abf74b3b582bb8997614f",
+      "private_command_receipt_sha256": "05438a4745b2aa59db90a7cc5f5b5bd87fb62de8119c685b49971264aad99195",
+      "private_executable_manifest_sha256": "180c7b2de488e4716cc115fb8806c826e4e8e97569ab19effa536778c44261ee",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--bin",
+          "faction-client",
+          "decoded_profile_binds_current_vault_and_private_credentials_without_spool",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-client/src/device_provider_profile.rs": "a892fa977aee0bf18a6b3d51c5bd137e967f9207efc21ac2577d1d75677cbbff"
+      },
+      "private_after_input_check_sha256": "76745bfb9a890a292e9f8359aa3b1c05f850fa2d374ca3289cc1cb68a16a0eb1",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red10-core-publication-route": {
+      "exit": 101,
+      "input_count": 9353,
+      "private_source_archive_sha256": "eb0e24508d8f9c7b3bf07b12ddae815c153e08deddd4c57a92469bee4accc693",
+      "private_input_map_sha256": "ec0959d025dadec1cd8df989468f4d24b8a99d1f7c8c260612b8b97f11d9f88f",
+      "private_raw_log_sha256": "5ef463697b04beb85145c738a9cf685157a8fa13ec67c7fbe7d776c1df651df3",
+      "private_raw_result_sha256": "eccba5fc206b3180fcf0d1ef7f47e7cdb8bf73ea59386eed04aac13ea9e52b6d",
+      "private_command_receipt_sha256": "b34d46934c32af5bb6264651205d581ef5af0b26e63311be1355140376bcfb65",
+      "private_executable_manifest_sha256": "c9b27352f45fbaa978ff1b6e1dbdeb444ff587e479ba14799e60921a54bb97a1",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--test",
+          "mail_device_provider",
+          "explicit_foreign_publication_submits_real_device_authority_but_receipt_busy_never_releases_mail",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `-p faction-client --test mail_device_provider`"
+      ],
+      "public_source_files": {
+        "crates/faction-client/tests/mail_device_provider.rs": "3bd57819b6ecbb4e354c9d8348ae33ea8d7bc0887edd97e490cdd6fd716f42e9"
+      },
+      "private_after_input_check_sha256": "6ee980f7533c1f8a4d794bb95e4cbf469d357698fe91ae53532d67001b252d84",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red11-pinned-route-interface": {
+      "exit": 101,
+      "input_count": 9353,
+      "private_source_archive_sha256": "39ccf008f8ce53d9bf142b638bbb96db5cc8ff340985e51416bcb154e585cb28",
+      "private_input_map_sha256": "da4b6c66b24afe2c7ec19ea9de2de53f99bcb6697027c5cb46cb54a58d5ae225",
+      "private_raw_log_sha256": "c669a8cb02fe9e47bfa08d5dc89f82cad9171ce26652e69106eac62ab8909e25",
+      "private_raw_result_sha256": "41244e0f95724940ec5d99d52830a0f473288c74da71323de81ce47c45f3d630",
+      "private_command_receipt_sha256": "b01822c94d11fb5d01754b4866c81e16666d82008f78efc124e696de2753b672",
+      "private_executable_manifest_sha256": "c9b27352f45fbaa978ff1b6e1dbdeb444ff587e479ba14799e60921a54bb97a1",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--lib",
+          "full_binding_direction_is_classified",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "no method named `classify` found for struct `mail_device_provider::DeviceProvider` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `DeviceRoute` in this scope",
+        "no method named `classify` found for struct `mail_device_provider::DeviceProvider` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "no method named `classify` found for struct `mail_device_provider::DeviceProvider` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `DeviceRoute` in this scope",
+        "no method named `classify` found for struct `mail_device_provider::DeviceProvider` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `DeviceRoute` in this scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `TransferDirection` in this scope",
+        "cannot find type `TransferDirection` in this scope",
+        "no method named `classify` found for struct `mail_device_provider::DeviceProvider` in the current scope",
+        "this method takes 0 arguments but 2 arguments were supplied",
+        "cannot find type `TransferDirection` in this scope",
+        "this method takes 0 arguments but 2 arguments were supplied",
+        "no method named `request_bound` found for struct `Worker` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "no method named `request_bound` found for struct `Worker` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "no method named `request_bound` found for struct `Worker` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "no method named `request_bound` found for struct `Worker` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "no method named `request_bound` found for struct `Worker` in the current scope",
+        "cannot find type `TransferDirection` in this scope",
+        "could not compile `faction-client` (lib test) due to 30 previous errors"
+      ],
+      "public_source_files": {
+        "crates/faction-client/src/mail_device_provider.rs": "2240259ea0297f97aab9244b82186e0a7bef75456bf3a135eec2bd545fc007e0"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "candidate12-pinned-route-worker": {
+      "exit": 0,
+      "input_count": 9353,
+      "private_source_archive_sha256": "6bad714e82eea1fcc6f7941dfd23c750ac7050c9a92be1c487d224fa282e197c",
+      "private_input_map_sha256": "d50d4eb93dd0d23920b955b1106a4c5ccb7b5f2087230e4d9f2d8422d6d0c0aa",
+      "private_raw_log_sha256": "b68ef5196c4c4e20916d479c05ec9605226a41fe5e184b8c9e901e8dee22e176",
+      "private_raw_result_sha256": "8abed1d4fbfac2e62454190e17c3942be71aef85b9ffb995a606ff741df8ca5f",
+      "private_command_receipt_sha256": "3d5fc2a133eb0e93db556f8ab22f4438850a196949297f9de8c122a97d517fe5",
+      "private_executable_manifest_sha256": "51737f06622a8e0d4e2e7df0244db49be317d449a2a9ca03d94e0ebeaf6e28e3",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--lib",
+          "mail_device_provider::tests::",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--test",
+          "mail_device_provider",
+          "explicit_foreign_publication_submits_real_device_authority_but_receipt_busy_never_releases_mail",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-client/tests/mail_device_provider.rs": "3bd57819b6ecbb4e354c9d8348ae33ea8d7bc0887edd97e490cdd6fd716f42e9",
+        "crates/faction-client/src/mail_device_provider.rs": "7166ace9a8b090d31e1085278e96e5dd7693ff25c0324473de8d164f5b4fe9c5",
+        "crates/faction-client/src/mail_blob_transfer.rs": "a03b3c7e703e385570c168dee0451010196b26388acbb41ab2a4afb39c7889fe"
+      },
+      "private_after_input_check_sha256": "3e1ccfb896a7440c145f795678eaa233a9e9c2ea3170edbb0c2991fb97b3144e",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red13-ui-foreign-preflight": {
+      "exit": 101,
+      "input_count": 9353,
+      "private_source_archive_sha256": "89cfd4b32fd781685ffe65ba1c9ca1f4d8ba60a21f77352715c0b431fd2801ae",
+      "private_input_map_sha256": "d54984098d2d74b0c9492958237d17f3ba2a3fdb6523c5620235fc1bb8c3c88c",
+      "private_raw_log_sha256": "9c3d6207193f450c2989da145b2314489e4a26d61a9611ad8ee29d8436457129",
+      "private_raw_result_sha256": "a3f1c497bb8255db27cc95368b9d666bdf5feb975a37feeb078246fd28f42a2d",
+      "private_command_receipt_sha256": "a53c481cf3e67d715918e1ac6f6ad54242bd14851aac2d768ade5d4a5bf4fdb9",
+      "private_executable_manifest_sha256": "0a1ff5be2b1a7d23f6950bb7c473420af113967d70416934f990cdde44b895a2",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--bin",
+          "faction-client",
+          "explicit_own_home_profile_allows_verified_foreign_peer",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `-p faction-client --bin faction-client`"
+      ],
+      "public_source_files": {
+        "crates/faction-client/src/checkpoint_ui_attachments.rs": "8c17562e2b45338c455f1fd789b3a0225f759773b7fbdb427ab80d0f40960634"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "candidate14-own-home-client-full": {
+      "exit": 101,
+      "input_count": 9353,
+      "private_source_archive_sha256": "04137ebcfc43a2ec1cb2371b909e060c3aab3c5f2b2b45df36f3a4096db83fc6",
+      "private_input_map_sha256": "cd13a0f7096fad64e931ce8b957614a2c5c26d789a973010eaeca31f84a3e635",
+      "private_raw_log_sha256": "6eacf814b32f5c1ab6f4966074a329153d4830cff23679d578e4ac0944bb4518",
+      "private_raw_result_sha256": "a922cae4bc3edd968892b6dc71ac3d2ed26b3b48ac93c4d19a09e971b51cd107",
+      "private_command_receipt_sha256": "991c4d7b1d5450de7e35f312c4fc6ec2c6dfe323836aa487c2324fc698a56603",
+      "private_executable_manifest_sha256": "23c48c3c67f832133e379e9e00befb23ed823892948901d48dbf122e8b55b5c6",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--lib",
+          "--bin",
+          "faction-client",
+          "--test",
+          "mail_device_provider",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 130,
+          "failed": 0,
+          "ignored": 5
+        },
+        {
+          "status": "ok",
+          "passed": 89,
+          "failed": 0,
+          "ignored": 3
+        },
+        {
+          "status": "FAILED",
+          "passed": 9,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `-p faction-client --test mail_device_provider`"
+      ],
+      "public_source_files": {
+        "crates/faction-client/tests/mail_device_provider.rs": "3bd57819b6ecbb4e354c9d8348ae33ea8d7bc0887edd97e490cdd6fd716f42e9"
+      },
+      "private_after_input_check_sha256": "873688e870649106b2aa593fd19ceb36a274e6145e5ce8c179f3d6bb343f3f6d",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red15-own-home-strict-clippy": {
+      "exit": 101,
+      "input_count": 9353,
+      "private_source_archive_sha256": "8fea449e1c066b7900f64629606577399d0b6edba5fec5692dd80458960567f2",
+      "private_input_map_sha256": "cd13a0f7096fad64e931ce8b957614a2c5c26d789a973010eaeca31f84a3e635",
+      "private_raw_log_sha256": "6885a496671bb66df0fb12e4ac73db49f226674d229e80508ac83893985e76b1",
+      "private_raw_result_sha256": "83eaa6f977935148b13db26d0f405760a144179faf5debcf3d563cb533b28f67",
+      "private_command_receipt_sha256": "46a256ca73efd65f4ceddc42cc9875652794c09aae5e8cbaad927ca80688b990",
+      "private_executable_manifest_sha256": "23c48c3c67f832133e379e9e00befb23ed823892948901d48dbf122e8b55b5c6",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      "raw_test_summary_lines": [],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "large size difference between variants",
+        "this function has too many arguments (9/7)",
+        "could not compile `faction-client` (lib) due to 2 previous errors",
+        "large size difference between variants",
+        "could not compile `faction-client` (lib test) due to 2 previous errors"
+      ],
+      "public_source_files": {
+        "crates/faction-client/src/mail_blob_transfer.rs": "347b64c5dbf4551a278078c8c82dadbb14c409d265d65e86967e7b53c1b3e3c9"
+      },
+      "private_after_input_check_sha256": "873688e870649106b2aa593fd19ceb36a274e6145e5ce8c179f3d6bb343f3f6d",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "candidate16-own-home-corrections": {
+      "exit": 0,
+      "input_count": 9353,
+      "private_source_archive_sha256": "8a72dffd654d778e5cd1e179b1e9ccc2fc5f5ec663532ecc11528f3d68bcc04b",
+      "private_input_map_sha256": "f33575c9bc2c9863343eab3a5a7e29a68c89005bd0395c8da5edd5cf97d02e89",
+      "private_raw_log_sha256": "2e21eec72b17428d7e35d970b50c1b51bdd1d5349dd0fd8ff9ab66269cf0f3a9",
+      "private_raw_result_sha256": "b5332bf9124c689eec03296543b1600603f8a29c25de51bd720ebf55ce8b04f8",
+      "private_command_receipt_sha256": "729464d1ce11a5274da22e606c4390df7ec45cee24120404940ca896486aa07f",
+      "private_executable_manifest_sha256": "1295fee1ef6e760eea5772fe3d35e8e27e0d6725866c05a2ec6584226cc95f3b",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "clippy",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        [
+          "cargo",
+          "test",
+          "-p",
+          "faction-client",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "own-home-provider",
+          "--lib",
+          "--bin",
+          "faction-client",
+          "--test",
+          "mail_device_provider",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 130,
+          "failed": 0,
+          "ignored": 5
+        },
+        {
+          "status": "ok",
+          "passed": 89,
+          "failed": 0,
+          "ignored": 3
+        },
+        {
+          "status": "ok",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-client/src/checkpoint_ui_attachments.rs": "7ee63b8fa4befd8fc15f7bcb770f0aba25177ad9077b54bfd0f0cf54ba68a05b",
+        "crates/faction-client/tests/mail_device_provider.rs": "43e4cd74381852eb66a59987d154baa93decd283ae712e4ece64caf0d97a941a",
+        "crates/faction-client/src/mail_blob_transfer.rs": "5172bacffd65c738fb98803b39f7d92ba07365f4f3746f3f36014be1a891b2a8"
+      },
+      "private_after_input_check_sha256": "873688e870649106b2aa593fd19ceb36a274e6145e5ce8c179f3d6bb343f3f6d",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red24-service-purpose-contention": {
+      "exit": 101,
+      "input_count": 9356,
+      "private_source_archive_sha256": "f176c3a1bf60c8ef05638fe309e09f799e9da63ad1c9f6660bbc136fc0188593",
+      "private_input_map_sha256": "b3b559f22af1edbd29d4ca126a6b1a491d56e3a1bc2cfac942f518d2de343e22",
+      "private_raw_log_sha256": "513c5dece46ac35e0a1d0e7959dcdab390e2addbb1ad0cc8a1214812548c128d",
+      "private_raw_result_sha256": "4d82f741ed2bae856ae971fab23f57ef0926fdd660144044da630d9cf312ca75",
+      "private_command_receipt_sha256": "1d5861d80ec36228ca5120973e15e5a79d188c3e9e0dd60867513f4e2697d2b1",
+      "private_executable_manifest_sha256": "f5e1547e7d2992a14636941e99cfeb5cfea04aa6cbe616c4d39c1f8ea0c40576",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--lib",
+          "admitted_introspection_survives_short_contended_service_purpose_lookup",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `--lib`"
+      ],
+      "public_source_files": {
+        "crates/faction-provider/src/delivery.rs": "09f13295b51b32ac4c6cc0815ad51967c5412a17340c7f5e5556307aeb7af73d",
+        "crates/faction-provider/src/publication_tests.rs": "25d6b858ae0f234cde38fd5112ffd4fdfb15f06bc49bb10fadd2cd97b9389ba4"
+      },
+      "private_after_input_check_sha256": "c691b051b49851f42a3e7383c61948d03e4d843a88dce964b2cdfbb25d6b0ed5",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red25-service-purpose-cancel": {
+      "exit": 101,
+      "input_count": 9356,
+      "private_source_archive_sha256": "40fbbc8efab8634878afbf03a06ae59a5f315649c2e8202927b98d8c30baed24",
+      "private_input_map_sha256": "b903ddb959e19fc31d52618c69fdadbe0a925fbc5cc93a2fc99ab3be11288b52",
+      "private_raw_log_sha256": "f1b98b9f596d2ad9c64820ebef2eb9f24bbef7c6c08961752a9781e4d001ac4d",
+      "private_raw_result_sha256": "7e9e631fa984e87f0ebf22675af6dac1bede9811127b4de6313c38d7185cfb21",
+      "private_command_receipt_sha256": "271bbc6f2c30f3c41eb4c514b2bfac07d126fef819f57108817f5ae458c4931b",
+      "private_executable_manifest_sha256": "a55914700a1e01d7e92941cdb56872b84af1c357e18f18b3d821624efb3001ba",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--lib",
+          "admitted_introspection_cancelled_during_contended_service_purpose_lookup",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `--lib`"
+      ],
+      "public_source_files": {
+        "crates/faction-provider/src/delivery.rs": "7d7a4725c73d1ba751acd35b68d57f515287ad35e061659ad2609754a1ff196c",
+        "crates/faction-provider/src/publication_tests.rs": "bc56e14145bf5057ae9ddfb9a443494a5a37ceeb7f6fae8763917737bcebb175"
+      },
+      "private_after_input_check_sha256": "873688e870649106b2aa593fd19ceb36a274e6145e5ce8c179f3d6bb343f3f6d",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "candidate26-service-purpose-fix": {
+      "exit": 0,
+      "input_count": 9356,
+      "private_source_archive_sha256": "de6e74a124bd2ab086559799db0a258b0a2e018a008af5b5d71cfddc5b42535d",
+      "private_input_map_sha256": "f229a4e928232fe9f5023d44bf6d787b0d07b198e342f8b4f16975652b7c2745",
+      "private_raw_log_sha256": "8f70c660b74db3e843cee0f8ce422f4c1db5cc908ea606392b8820c8f1e140ec",
+      "private_raw_result_sha256": "b5aa9eade02e29d067898f9ac07c40660c6f5369ffc5ef23bbc5a7a6b8fa5cca",
+      "private_command_receipt_sha256": "42f149959ee0c6598ba139d0820f3ac0a7276c7f8f2cee4c1224467f65d067a4",
+      "private_executable_manifest_sha256": "7e69ca1366c8a24e400a84e7c92e1a992810882c795d4d7dc1b141c221a78cf5",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--lib",
+          "--no-run",
+          "--message-format=json"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-provider/src/delivery.rs": "f03ab9bd2c9219bac441ea111f1c015dbe8c7d2262a4501eb0de6cfdb0f159c8",
+        "crates/faction-provider/src/publication_tests.rs": "bc56e14145bf5057ae9ddfb9a443494a5a37ceeb7f6fae8763917737bcebb175"
+      },
+      "private_after_input_check_sha256": "fe8eabffd34600a425fbd1928c3242d1ea09cdfbb8208a18fced6218adfa77e9",
+      "actual_selected_harness_filters": [
+        "admitted_introspection_survives_short_contended_service_purpose_lookup",
+        "admitted_introspection_cancelled_during_contended_service_purpose_lookup",
+        "actual_tls_response_bio_checks_cancellation_after_gate_release",
+        "actual_tls_response_bio_checks_original_token_deadline_after_gate_release",
+        "policy_replace_and_stop_progress_while_actual_response_bio_is_held",
+        "endpoint_and_final_dispatch_resample_after_each_authority_wait_without_stale_sender_checks"
+      ],
+      "harness_invocation": "Immutable Cargo-reported copied test executable; each filter invoked separately with --exact --test-threads=1 --nocapture; private original argv retained.",
+      "private_selected_executable_receipt_sha256": "0da656d29413bd8b310a006c7e3ef5d3ff384bdb9757ddfceb6bd64811dc06ab",
+      "actual_selected_test_executable_sha256": "f9eb24e9ad119e1585443578e4e6ca4078f668b8f48da05ffb92045a4ae54597",
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "red31-read-side-metadata-contention": {
+      "exit": 101,
+      "input_count": 9358,
+      "private_source_archive_sha256": "1d391e2d5a7291a47f118e7dd0ebeb13b580e73a8bb3f7740bf1783071f06630",
+      "private_input_map_sha256": "3f624f7cbcc398fd49accb572f193dc69cd31c9a5dd6e4df66746b9e90b1c7c8",
+      "private_raw_log_sha256": "4732d7a0decad0330432ac2521c8591d479c3e22fc14d6f2f33036920f2e6257",
+      "private_raw_result_sha256": "4b3c9c41b959576d47ba5aa9292ebf7159fbf6876df27cfd242a7135b3e1df31",
+      "private_command_receipt_sha256": "8a177db07351340cfc9ad0d9f443768c654f2f1da1101c10f165a789ce01b59e",
+      "private_executable_manifest_sha256": "d2bfb7c946511067e85f26fb4dfae5a8e2a1b481745a74e335ac9d955871642b",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--lib",
+          "metadata_read_side_",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "FAILED",
+          "passed": 2,
+          "failed": 2,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [
+        "test failed, to rerun pass `--lib`"
+      ],
+      "public_source_files": {
+        "crates/faction-provider/src/delivery.rs": "3aa6f632305d3db1220692a5b09537705dd20fbfc90a9c3821d278a14e3a36c2",
+        "crates/faction-provider/src/publication_tests.rs": "d18e3faf37ba3e08ca2271001601d18971b0affa97509d36062444de11182b50"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    },
+    "green32-read-side-metadata-contention": {
+      "exit": 0,
+      "input_count": 9358,
+      "private_source_archive_sha256": "0569592c2b9477d6de4c5e554caba5cad03a08e5957add0ea5d3c3d79752fd7b",
+      "private_input_map_sha256": "c98082d55c8ad78a823c20d0592a0c90bb2d71e8cdd2f89ec870851ae2de53e6",
+      "private_raw_log_sha256": "6b168b7f394c625b42f66390b50433390a547455ec7728c56833874b9bec7d8c",
+      "private_raw_result_sha256": "90242bed2613f15e94a978e4ca43241096c4775aeda402f26cc93ff9789e8ea4",
+      "private_command_receipt_sha256": "80221dc1e714ad2d23d49be5c58d2040c2f5627eb77229c331d280cb8a3f1200",
+      "private_executable_manifest_sha256": "1240a90efa0d0f523306510dbe8998917689c656e4ad34388bdb32821541d26f",
+      "commands_with_public_relative_paths": [
+        [
+          "cargo",
+          "test",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--lib",
+          "metadata_read_side_",
+          "--",
+          "--test-threads=1",
+          "--nocapture"
+        ],
+        [
+          "cargo",
+          "clippy",
+          "--manifest-path",
+          "crates/faction-provider/Cargo.toml",
+          "--offline",
+          "--release",
+          "--locked",
+          "--features",
+          "operator,delegation-verifier",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      "raw_test_summary_lines": [
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "summary_count_scope": "Raw summaries are not summed across nested UI/profile subprocess output; parent/child may both report the same single control.",
+      "rust_diagnostics": [],
+      "public_source_files": {
+        "crates/faction-provider/src/delivery.rs": "2ac1854a2505b74425fe01258cf06b374e74c8f77c511cac77313e35c3ec6000",
+        "crates/faction-provider/src/publication_tests.rs": "d18e3faf37ba3e08ca2271001601d18971b0affa97509d36062444de11182b50"
+      },
+      "executable_manifest_scope": "Captured executable/dependency outputs, including inherited aliases; selected execution is identified by raw Cargo Running output or explicit selected-harness receipt."
+    }
+  },
+  "unchanged_test_source_comparisons": [
+    {
+      "slice": "capture",
+      "red": "red02-capture-interface",
+      "green": "green03-capture-inputs",
+      "public_source": "crates/faction-client/src/test_fixture_retention.rs",
+      "test_function": "owned_fixture_retention_copies_exact_inputs_without_following_links",
+      "red_function_sha256": "6ea3d3ed70935ee2aa64ca64e82744aadb5d8541cad8e035a07864f2051fd236",
+      "green_function_sha256": "6ea3d3ed70935ee2aa64ca64e82744aadb5d8541cad8e035a07864f2051fd236",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "parent",
+      "red": "red05-parent-deadline-api",
+      "green": "green06-parent-deadline-api",
+      "public_source": "crates/faction-provider/tests/delivery_interface.rs",
+      "test_function": "parent_deadline_constructor_has_no_caller_clock_or_actor_override",
+      "red_function_sha256": "3c7258a92d42337f5b56f07ed01b45f925b91b195cca7670079f5252b13a92c4",
+      "green_function_sha256": "3c7258a92d42337f5b56f07ed01b45f925b91b195cca7670079f5252b13a92c4",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "profile",
+      "red": "red07-explicit-v2-profile",
+      "green": "green08-explicit-v2-profile",
+      "public_source": "crates/faction-client/src/device_provider_profile.rs",
+      "test_function": "decoded_profile_binds_current_vault_and_private_credentials_without_spool",
+      "red_function_sha256": "9cd05ab6d22459629cfe2eec33a9f7b921adae6e0b01fa9f45e4795b010fadc5",
+      "green_function_sha256": "86cdac116356aa2f0adcfe81e43fc6e6a8d027b851534233bf5ac74d5dc93e63",
+      "entire_test_function_byte_identical": false
+    },
+    {
+      "slice": "publication",
+      "red": "red10-core-publication-route",
+      "green": "candidate12-pinned-route-worker",
+      "public_source": "crates/faction-client/tests/mail_device_provider.rs",
+      "test_function": "explicit_foreign_publication_submits_real_device_authority_but_receipt_busy_never_releases_mail",
+      "red_function_sha256": "0f7e26c74938251fbac179c6430e4ebc4b3e101df31c32407b12740fb6f0f3ee",
+      "green_function_sha256": "0f7e26c74938251fbac179c6430e4ebc4b3e101df31c32407b12740fb6f0f3ee",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "classifier",
+      "red": "red11-pinned-route-interface",
+      "green": "candidate12-pinned-route-worker",
+      "public_source": "crates/faction-client/src/mail_device_provider.rs",
+      "test_function": "full_binding_direction_is_classified_before_any_socket_or_worker",
+      "red_function_sha256": "bac964ad8bc9a1f5df7f3f84e9c164db9236cea6ff1e178a8b23cacc05daa4f1",
+      "green_function_sha256": "bac964ad8bc9a1f5df7f3f84e9c164db9236cea6ff1e178a8b23cacc05daa4f1",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "classifier",
+      "red": "red11-pinned-route-interface",
+      "green": "candidate12-pinned-route-worker",
+      "public_source": "crates/faction-client/src/mail_device_provider.rs",
+      "test_function": "pinned_carrier_rejects_changed_binding_direction_and_action_without_io",
+      "red_function_sha256": "792a8a8ba6d872ba03004ea1c0b5d21b47cd20b8b964ddf2e42010e886f68da1",
+      "green_function_sha256": "792a8a8ba6d872ba03004ea1c0b5d21b47cd20b8b964ddf2e42010e886f68da1",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "UI",
+      "red": "red13-ui-foreign-preflight",
+      "green": "candidate16-own-home-corrections",
+      "public_source": "crates/faction-client/src/checkpoint_ui_attachments.rs",
+      "test_function": "explicit_own_home_profile_allows_verified_foreign_peer_and_preserves_v1_refusal",
+      "red_function_sha256": "4e54a9c6d74d877528cd631a62eeb1b38d644d17f8afb9dbc181a40a1ed7fef9",
+      "green_function_sha256": "4e54a9c6d74d877528cd631a62eeb1b38d644d17f8afb9dbc181a40a1ed7fef9",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "service",
+      "red": "red25-service-purpose-cancel",
+      "green": "candidate26-service-purpose-fix",
+      "public_source": "crates/faction-provider/src/publication_tests.rs",
+      "test_function": "admitted_introspection_survives_short_contended_service_purpose_lookup",
+      "red_function_sha256": "66bb929a9333e33cb21d3be2ac36b26fbb0bbc58374641a9bcb73bec231593ee",
+      "green_function_sha256": "66bb929a9333e33cb21d3be2ac36b26fbb0bbc58374641a9bcb73bec231593ee",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "service",
+      "red": "red25-service-purpose-cancel",
+      "green": "candidate26-service-purpose-fix",
+      "public_source": "crates/faction-provider/src/publication_tests.rs",
+      "test_function": "admitted_introspection_cancelled_during_contended_service_purpose_lookup",
+      "red_function_sha256": "cc61b1b36bd08ec4c396c35861934c1d85446fcd3d4f00e8d3389fc5138db97d",
+      "green_function_sha256": "cc61b1b36bd08ec4c396c35861934c1d85446fcd3d4f00e8d3389fc5138db97d",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "metadata",
+      "red": "red31-read-side-metadata-contention",
+      "green": "green32-read-side-metadata-contention",
+      "public_source": "crates/faction-provider/src/publication_tests.rs",
+      "test_function": "metadata_read_side_deadline_contention_keeps_live_unfinished_delivery",
+      "red_function_sha256": "0279fda6d02f3b50bf4d4ce0d3d0838b729fb5c4a76be9a58a74723efbba0a7a",
+      "green_function_sha256": "0279fda6d02f3b50bf4d4ce0d3d0838b729fb5c4a76be9a58a74723efbba0a7a",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "metadata",
+      "red": "red31-read-side-metadata-contention",
+      "green": "green32-read-side-metadata-contention",
+      "public_source": "crates/faction-provider/src/publication_tests.rs",
+      "test_function": "metadata_read_side_deadline_contention_preserves_cancellation_refusal",
+      "red_function_sha256": "cbc7c131767f6bc6a08b175925d7796e90b7b5edf3755d0fb904c86965255938",
+      "green_function_sha256": "cbc7c131767f6bc6a08b175925d7796e90b7b5edf3755d0fb904c86965255938",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "metadata",
+      "red": "red31-read-side-metadata-contention",
+      "green": "green32-read-side-metadata-contention",
+      "public_source": "crates/faction-provider/src/publication_tests.rs",
+      "test_function": "metadata_read_side_routes_contention_keeps_valid_publication",
+      "red_function_sha256": "584b361b99dd9ee25024040fb82d13c0931832ecad8f8d995c2c3ac38080963e",
+      "green_function_sha256": "584b361b99dd9ee25024040fb82d13c0931832ecad8f8d995c2c3ac38080963e",
+      "entire_test_function_byte_identical": true
+    },
+    {
+      "slice": "metadata",
+      "red": "red31-read-side-metadata-contention",
+      "green": "green32-read-side-metadata-contention",
+      "public_source": "crates/faction-provider/src/publication_tests.rs",
+      "test_function": "metadata_read_side_routes_contention_preserves_cancellation_refusal",
+      "red_function_sha256": "c6af02c7bb7e1a186615eadbc85730bd5f45086968d900f848cfbcea644b50a9",
+      "green_function_sha256": "c6af02c7bb7e1a186615eadbc85730bd5f45086968d900f848cfbcea644b50a9",
+      "entire_test_function_byte_identical": true
+    }
+  ],
+  "root_owned_python_dependency_and_ci_evidence": [
+    {
+      "owner": "lead",
+      "scope": "root-owned own-home graph/profile contracts",
+      "artifacts": {
+        "red.log": {
+          "sha256": "56fe0cf51b14aba7f06c960339e7f132aefc2e539f28e346b130e479d170352d",
+          "bytes": 1975,
+          "actual_python_summary_lines": [
+            "Ran 2 tests in 0.001s",
+            "FAILED (errors=2)"
+          ]
+        },
+        "three-contract-red.log": {
+          "sha256": "8a8f513c71e0f2047c07497e9864490bf8c75001ef3a3c6782d776562b4b9df3",
+          "bytes": 2586,
+          "actual_python_summary_lines": [
+            "Ran 3 tests in 0.013s",
+            "FAILED (failures=1, errors=2)"
+          ]
+        },
+        "cause-specific-red.log": {
+          "sha256": "46a38b564ee230655b8524ec49bf442d7b37bd06cce81abcc6d2a8e09b646cab",
+          "bytes": 2682,
+          "actual_python_summary_lines": [
+            "Ran 3 tests in 0.017s",
+            "FAILED (failures=1, errors=2)"
+          ]
+        },
+        "four-contract-red.log": {
+          "sha256": "5ef7c9327be914af1950fc4044a1c55d8a1a46a43e948b9b2c22fab2aa3ce2e7",
+          "bytes": 3367,
+          "actual_python_summary_lines": [
+            "Ran 4 tests in 0.014s",
+            "FAILED (failures=2, errors=2)"
+          ]
+        },
+        "four-contract-green.log": {
+          "sha256": "84ff24306afcf5e19892adf32493aa9bc9dbc8db16870c6155e8e03c23864a33",
+          "bytes": 102,
+          "actual_python_summary_lines": [
+            "Ran 4 tests in 0.015s",
+            "OK"
+          ]
+        },
+        "post-resolution-contract-green.log": {
+          "sha256": "79f67ba8a97920a34cec119dace8230172188faa3db2533e13a06374aeb2ef49",
+          "bytes": 102,
+          "actual_python_summary_lines": [
+            "Ran 4 tests in 0.017s",
+            "OK"
+          ]
+        },
+        "red-custody.json": {
+          "sha256": "a5417e7c2b8799224600fd702fd89b03c665fd85a2455dbfe6f5f467a39d5428",
+          "bytes": 1304
+        },
+        "three-contract-custody.json": {
+          "sha256": "aac6b6ac908e197342e069a5631d2cba7ef9e962f3b5c8a14676e9f0fb93d48a",
+          "bytes": 1743
+        },
+        "before.json": {
+          "sha256": "b81dedb8cfad3d837534016def03e3ef6a15d61cf56edca3728ff439c0923e7d",
+          "bytes": 421
+        },
+        "initial-two-tests.py": {
+          "sha256": "84f64aff57342b69476cf9551debd16392c0deb6f1afdd3ef66666bdb5b938bd",
+          "bytes": 2840
+        },
+        "cause-specific-three-tests.py": {
+          "sha256": "b5a0aa5cf79fdf124565c6aea1caf34b90cf31532e2f69a60dc75ab7bd81980e",
+          "bytes": 4158
+        },
+        "test_own_home_qualification.py": {
+          "sha256": "22108400f1d9cc915143c49fc37071fc070436262d3d46a04c82239d195b8424",
+          "bytes": 5914
+        },
+        "post-resolution-test-fixture-failure.json": {
+          "sha256": "a06bf2d94877b1f0f87be712637b1e54d9ba1983926f84bdb762024dcef33e09",
+          "bytes": 481
+        },
+        "actual-graph-review.json": {
+          "sha256": "969ac7f45a73ddc7a3416df79b9600cb2756ceb8d9bd86158285e1841d5d0e68",
+          "bytes": 2954
+        }
+      },
+      "execution_scope": "Python guard/CI contract checks only; no runtime/ciphertext/mail-release claim; original exact commands and input receipts remain lead-owned."
+    },
+    {
+      "owner": "lead",
+      "scope": "root-owned CI maintained-console contract and exact guard",
+      "artifacts": {
+        "red.stderr": {
+          "sha256": "f262ca8b01c2e81f7b0962775ecf25b7c9c1b4d2a38bcee093ad55e8111fe13a",
+          "bytes": 992,
+          "actual_python_summary_lines": [
+            "Ran 1 test in 0.001s",
+            "FAILED (failures=1)"
+          ]
+        },
+        "green.stderr": {
+          "sha256": "d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad",
+          "bytes": 98,
+          "actual_python_summary_lines": [
+            "Ran 1 test in 0.001s",
+            "OK"
+          ]
+        },
+        "guard-red.stderr": {
+          "sha256": "03e42cf9be6e748f4a716b37466d61c54d55996612bb9d98f9fde0d4edbe38c9",
+          "bytes": 1596,
+          "actual_python_summary_lines": [
+            "Ran 1 test in 0.004s",
+            "FAILED (errors=1)"
+          ]
+        },
+        "guard-green.stderr": {
+          "sha256": "50123f26e6d30940556cc448291d77c1880d497121f6c91559a6a7bdb8620941",
+          "bytes": 98,
+          "actual_python_summary_lines": [
+            "Ran 1 test in 0.039s",
+            "OK"
+          ]
+        },
+        "policy-tests.stderr": {
+          "sha256": "ecd030a02e17aaccd9825eaa799f1e31eacb27c0579c1fc91f5a1f46ba30f62a",
+          "bytes": 12914,
+          "actual_python_summary_lines": [
+            "Ran 87 tests in 12.216s",
+            "FAILED (errors=8)"
+          ]
+        },
+        "policy-tests-green.stderr": {
+          "sha256": "1ed7b27f9662c0ba769f5b8aff2883927f14ba34db8fd839d6c50c58e94c2031",
+          "bytes": 188,
+          "actual_python_summary_lines": [
+            "Ran 88 tests in 12.678s",
+            "OK"
+          ]
+        },
+        "refactor-green.stderr": {
+          "sha256": "3884f83255b63480b178b50a1cdd1576f7134f9a64ac130ceed6487a1c8b4e36",
+          "bytes": 104,
+          "actual_python_summary_lines": [
+            "Ran 6 tests in 0.057s",
+            "OK"
+          ]
+        },
+        "red.json": {
+          "sha256": "958d8b1c9e330f96e6d278ebc28328eb5643abc42d6236144f0e3e9119b271fa",
+          "bytes": 188
+        },
+        "inputs.json": {
+          "sha256": "2b7b57247b8565d47a7b0783c09c0b8617c70414313749c2bc154a990c35ef13",
+          "bytes": 535
+        },
+        "final-inputs.json": {
+          "sha256": "5669000086b9cdbbb5bf8fc455bc844a577c77d39ee4eefc2400e26da7b274ab",
+          "bytes": 440
+        },
+        "test_own_home_console_ci.py": {
+          "sha256": "cc65971ddd06878b58a4e3d2c96a715d57fd95a231099b09008419cf8e2e1fe0",
+          "bytes": 2260
+        },
+        "test_own_home_ci_guard.py": {
+          "sha256": "3c7eea9c17731b41688a7de50e8073faebdd1851de2f5c80a432819413fa70d7",
+          "bytes": 892
+        },
+        "commands.json": {
+          "sha256": "c2b5d2fd1c8193c901bf23940b68f6b6362d720af03975fa50d52f42950114b8",
+          "bytes": 1042
+        }
+      },
+      "execution_scope": "Python guard/CI contract checks only; no runtime/ciphertext/mail-release claim; original exact commands and input receipts remain lead-owned."
+    }
+  ],
+  "excluded_setup_failure": {
+    "label": "red01-capture-interface",
+    "raw_receipt_sha256": "29b4137ba23f1eda78bf9c48e34211a48803472690271d1ded7f4d63fda1a20b",
+    "compiler_guard_or_test_executed": false,
+    "reason": "Wrapper capture-environment key missing before subprocess; not an API or product RED.",
+    "private_source_archive_sha256": "0738436f4f41be3098d2c5b56bf6b595b3e2822c3662546b709ce0778bdd0cbf",
+    "private_input_map_sha256": "957a77d81da113d2525d6bec69514919f18244b43bf9f896f6b96f0d724f3aef"
+  },
+  "limitations": [
+    "This draft curates existing observations; it performs no build, test, runtime probe, source mutation or retrospective RED.",
+    "Missing capture-helper compile RED generates no transient runtime fixtures. Early historical transient inputs were not all captured; no full replay claim. Later hooks retain selected final owned fixture inputs, not every random in-memory intermediate.",
+    "Exact archive/map/raw/result hashes identify private retained evidence; no source archive, executable, credentials or raw private fixture is copied into this draft.",
+    "Candidate14 remains a failed fixture-clock observation, candidate15 remains actual strict-Clippy RED (large enum and too many request arguments), both corrected in candidate16; candidate17 missing setup environment failures are setup failures, not product RED or passing controls.",
+    "Core original #321 carrier RED records remain in the separate component family. Current lead-only recorded-files guard RED trsl76v1 is excluded.",
+    "Candidate14 historical before-spool bytes were not retained; fixture-clock classification is supported by source/final snapshot and separate analysis, not a direct historical before/after binary diff. Later before/after copies were added prospectively."
+  ],
+  "qualification_before_rust_commands": [
+    [
+      "python3",
+      "tools/check_provider_dependencies.py"
+    ],
+    [
+      "python3",
+      "tools/check_delegation_codec_dependencies.py"
+    ],
+    [
+      "python3",
+      "tools/check_network_mail_dependencies.py"
+    ],
+    [
+      "python3",
+      "tools/check_provider_auth_dependencies.py"
+    ]
+  ],
+  "tdd_count_scope": {
+    "core_slices": 7,
+    "compile_interface_red_stages": 3,
+    "behavioral_red_stages": 6,
+    "distinct_expected_behavior_failures_in_those_stages": 7,
+    "metadata_old_code_cancellation_controls_already_passed": 2,
+    "nested_profile_and_UI_child_output_not_double_counted": true,
+    "additional_strict_clippy_red_diagnostics": 2,
+    "green_runtime_results_are_recorded_per_stage_not_added_as_independent_unique_tests": true
+  },
+  "assertion_continuity_note": "Twelve compared complete test functions are byte-identical. The profile GREEN adds only an extra uses_own_home assertion to the test, retaining the existing RED failing load-is_ok assertion and other original checks; no claim that its entire function is identical."
+}

@@ -1,0 +1,104 @@
+{
+  "CPUs": 2,
+  "actual_memory_bytes": 1054990336,
+  "build_jobs": 1,
+  "commands": [
+    {
+      "actual_exit": 0,
+      "elapsed_seconds": 45.10480899999993,
+      "source_exact": true,
+      "stage": "01-rust-bbs"
+    },
+    {
+      "actual_exit": 0,
+      "elapsed_seconds": 5.942854417000035,
+      "source_exact": true,
+      "stage": "02-normal-client-examples"
+    },
+    {
+      "actual_exit": 0,
+      "elapsed_seconds": 0.22314283300011084,
+      "source_exact": true,
+      "stage": "03-c-terminal"
+    },
+    {
+      "actual_exit": 0,
+      "elapsed_seconds": 0.06309112500002811,
+      "source_exact": true,
+      "stage": "04-c-daemon"
+    }
+  ],
+  "corpus_sha256": "bce3aa19fa64a4cfc0150a40b5ba203d1cc3236efe16affac6f06483394cf4f4",
+  "executable_copies_verified": 536,
+  "guard_exits": {
+    "01-rust-bbs": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "02-normal-client-examples": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "03-c-terminal": [],
+    "04-c-daemon": []
+  },
+  "lead_verified_archive_regular_files": 611,
+  "offline": true,
+  "retention_receipt_sha256": "d14cd4877d2f23fff9bf64c1ad3d1159d9b5259714718f7ab6d9025b14d2025f",
+  "runtime_tests_executed": false,
+  "schema": 1,
+  "scope": "Current ordinary BBS and normal fixture compilation only; runtime qualification is recorded separately.",
+  "selected": {
+    "checkpoint_ui_fixture": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "da4886922e9e9024762998ec1f3781ac424089441673bae52287eebd7f940fc0"
+    },
+    "faction": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "e31e68201850c178d844ab5c9c4a7c968764fbbcea139f89448b033e1e0fbf47"
+    },
+    "faction-daemon": {
+      "ELF_machine": 183,
+      "cargo_profile_test": null,
+      "sha256": "1712227c4637b1cf2ff25ba680f01fcced54cd0fc213ba0696d0bc68b89ccd1d"
+    },
+    "faction-files": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "eb9a66d6a4e9f20b54ed7f9df78f10db928620a7dc724781461e17f0be6543a2"
+    },
+    "faction-member": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "0e975da4c52cf481cc7225035475bcaafbf5f1702aac5c0eec108eb0cae64de2"
+    },
+    "faction-service": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "31c1e8578ba85d112f880e7edcb501dd2f4a8ef0fa65de7ffa0b03dbf47f3446"
+    },
+    "faction-tty": {
+      "ELF_machine": 183,
+      "cargo_profile_test": null,
+      "sha256": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c"
+    },
+    "home_mail_fixture": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "079f1109fce08db944ea9cd0cd6ef33f02f5959d7a05f1985ebca553533e9449"
+    }
+  },
+  "setup_executed": false,
+  "source_commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+  "source_count": 9358,
+  "source_inventory_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+  "summary_sha256": "f73a966153bceaf50deb991ff40d9c7a0b19efe01d3db9eb38aa157a8840841e"
+}

@@ -1,0 +1,159 @@
+{
+  "closure": {
+    "actual_individual_daemon_join_claim": false,
+    "failed_base_intentionally_retained_for_replay": true,
+    "forward_closed": true,
+    "guest_restore_branch_invocations": 0,
+    "infrastructure_shutdown_seconds": 21.590281457989477,
+    "original_go_elapsed_seconds": 736.7103669643402,
+    "owned_vm_and_controller_closed": true,
+    "owner_assets_exact": 86,
+    "retained_failure_image_handles_closed": true,
+    "retained_failure_image_unchanged": true,
+    "snapshot_tmp_remaining": []
+  },
+  "corpus_sha256": "9194f9feb8f24bd6a57015389d84e00a37e9288a5e3fff2108814ad9f2853a0c",
+  "custody_checks": {
+    "all_old_fixture_endpoints": 8,
+    "consistent_new_sqlite_backup": true,
+    "logical_snapshot_not_wal_byte_identity": true,
+    "old_state_afterstop_exact": true,
+    "outage_controls": 8,
+    "payload_bytes": 131328,
+    "provider_unique_endpoints": 4,
+    "source9358_verified_by_probe": true,
+    "stopped_witnesses": 3
+  },
+  "execution_boundaries": {
+    "database_capture": "Consistent logical SQLite read-only backup; no raw WAL byte-identity or exact bootable final-fixture replay claim.",
+    "guest_restoration_invocations": 0,
+    "individual_daemon_joins": "Not claimed from whole-VM closure; ordinary application drain is independently qualified.",
+    "manual_start_continuation": "actual empty persistent inode was preserved, exclusive kernel lock observed free and exact current roles absent; only three not-yet-executed maintained starts ran, all exited0",
+    "original_script_failure_rewritten": false,
+    "preflight": "passed after real NetBSD process-format correction",
+    "probe_exit": 0,
+    "probe_invocations": 1,
+    "setup_script": "failed after successful hidden sysop initialization and config validation; existing service PID file was normally empty after stop",
+    "snapshot_disposal": "Final temporary snapshot discarded after verified capture and graceful VM exit; retained failure base intentionally kept private for diagnosis/replay."
+  },
+  "receipt_sha256": {
+    "closure.private.json": "86797f56fc483e2de91dd56ac0689c71b6e38be2b82f13e4fd881c23cdd61ea6",
+    "custody.private.json": "e8c120d28069b89f7304339e2d48470c4a76d63b1f4077fee179ab914dfcb3ae",
+    "format-correction.private.json": "0ffd66c2ae599dc59ea7588292c13709c2fc1807d6701e1da8b9bc7730f6ec55",
+    "manual-start-transport.private.json": "f77ec5da5aa3028f285bf8d3af8f777d32f13ccd63eba23cc6a68240d167c8dc",
+    "manual-start.stdout.private": "6d5a078713a3ee9c66db894712e7a9d1ca48d3c339e540ccef59395754064cef",
+    "proof-transport.private.json": "6f9959b90ae86f7b1592aef4e559c889e2ba9cde2afd2c647c7c877ffe10bc6f",
+    "sshd-title-boundary/result.private.json": "572d923f263d5b3fd1fb27bacea88ba53753f609e1199d69327d82dcf1a19c0e"
+  },
+  "result": {
+    "approved_member": true,
+    "archive_token_unchanged": true,
+    "canonical_unchanged": true,
+    "capacity_claim": false,
+    "checks": [
+      "independent_board_registration_pending_and_explicit_approval",
+      "real_encrypted_nonempty_cursor_history_and_pending_seed",
+      "actual_closed_home_tcp_connection_failure",
+      "same_picker_send_and_archive_outage_preserve_exact_state",
+      "locked_picker_releases_store_and_requires_hidden_unlock",
+      "same_picker_approved_board_restricted_sftp_upload_review_download",
+      "same_picker_board_return_and_terminal_restoration",
+      "private_mail_absent_from_visited_board_transcript_database_store_and_logs"
+    ],
+    "count": 8,
+    "history_unchanged": true,
+    "home_transport_error": "Connect",
+    "nonempty_cursor": true,
+    "payload_bytes": 131328,
+    "payload_sha256": "91f86bc16210e6eab1715b5e77465cc1a906243e758bcecb884060dbe9a26fe3",
+    "pending_ids_unchanged": true,
+    "physical_hardware": false,
+    "platform": "NetBSD",
+    "privacy_scan": {
+      "board_files": 4,
+      "log_files": 2,
+      "matches": 0,
+      "store_files": 3,
+      "symlinks": 0
+    },
+    "private_fixture_retained_for_lead": true,
+    "restricted_sftp": true,
+    "result": "pass",
+    "same_picker_pid": true,
+    "scope": "same-picker-unavailable-home-approved-board-restricted-sftp"
+  },
+  "retained_failure_image_sha256": "28055bcc8765d26020b81930788ba134e7491bcec17495e2126f530bf409680b",
+  "retained_regular_files": 104,
+  "schema": 1,
+  "scope": "Current native own-home-enabled picker with selected providers stopped; profile deliberately unused/lazy, not device approval for the fresh synthetic same-home vault.",
+  "selected_native_binaries": {
+    "checkpoint_ui_fixture": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "da4886922e9e9024762998ec1f3781ac424089441673bae52287eebd7f940fc0"
+    },
+    "faction": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "e31e68201850c178d844ab5c9c4a7c968764fbbcea139f89448b033e1e0fbf47"
+    },
+    "faction-client": {
+      "sha256": "b4a57062870c5a58b86158000eb76127863b222fe0306c2d3513138d744a227b"
+    },
+    "faction-daemon": {
+      "ELF_machine": 183,
+      "cargo_profile_test": null,
+      "sha256": "1712227c4637b1cf2ff25ba680f01fcced54cd0fc213ba0696d0bc68b89ccd1d"
+    },
+    "faction-files": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "eb9a66d6a4e9f20b54ed7f9df78f10db928620a7dc724781461e17f0be6543a2"
+    },
+    "faction-member": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "0e975da4c52cf481cc7225035475bcaafbf5f1702aac5c0eec108eb0cae64de2"
+    },
+    "faction-service": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "31c1e8578ba85d112f880e7edcb501dd2f4a8ef0fa65de7ffa0b03dbf47f3446"
+    },
+    "faction-tty": {
+      "ELF_machine": 183,
+      "cargo_profile_test": null,
+      "sha256": "d1890c9d4afbd937b541e07629fa95e312c48ed3ee7b553ed4a1aa6a2b322a0c"
+    },
+    "home_mail_fixture": {
+      "ELF_machine": 183,
+      "cargo_profile_test": false,
+      "sha256": "079f1109fce08db944ea9cd0cd6ef33f02f5959d7a05f1985ebca553533e9449"
+    }
+  },
+  "source_commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+  "source_inputs": "Guest full 9358-file inventory and selected native57/50 binaries checked before proof; broad inventory includes nonruntime policy edits excluded from source commit.",
+  "stopped_witnesses": [
+    {
+      "all_fixture_unique_endpoints": 8,
+      "historical_native_cli_children_reaped_receipt": true,
+      "new_historical_wait_or_PID_claim": false,
+      "provider_unique_endpoints": 4,
+      "selected_full_argv_paths_absent": true
+    },
+    {
+      "all_fixture_unique_endpoints": 8,
+      "historical_native_cli_children_reaped_receipt": true,
+      "new_historical_wait_or_PID_claim": false,
+      "provider_unique_endpoints": 4,
+      "selected_full_argv_paths_absent": true
+    },
+    {
+      "all_fixture_unique_endpoints": 8,
+      "historical_native_cli_children_reaped_receipt": true,
+      "new_historical_wait_or_PID_claim": false,
+      "provider_unique_endpoints": 4,
+      "selected_full_argv_paths_absent": true
+    }
+  ]
+}

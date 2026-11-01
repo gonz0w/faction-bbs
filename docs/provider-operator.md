@@ -152,7 +152,13 @@ The provider allows one active connection, eight attempted operations, five seco
 for TCP and TLS admission and a ten-second accepted cycle. Attachment upload and
 mail release retain their separate client limits. This preview does not establish
 independent client interoperability or public listening. The composed mode below
-is under validation; native cross-home delivery and mail release remain incomplete.
+remains a software preview. Host and fresh NetBSD
+maintained-client exercises completed maximum 1 MiB classic and Unicode
+cross-home attachment journeys, including mail release, with separately configured
+homes and one opaque test delivery/archive queue. This does not establish deployed
+S2S, independent client interoperability or provider adoption. A separate native
+software exercise passed BBS and SFTP controls while the home services were
+unavailable. See the [software evidence](../dev-docs/evidence/own-home-attachments/README.md).
 
 ## Explicit composed mode
 
@@ -334,5 +340,5 @@ One Runtime per home shares the existing limits, with at most one continuation;
 the original eight attempts and ten-second accepted cycle remain. A receipt is
 routing data, not a Store commit or mail release. Collection requires a fresh
 authenticated connection. See the [carrier contract](../dev-docs/delegation-verifier.md).
-This preview does not establish native cross-home mail delivery, a deployed provider,
-public listening, independent interoperability, hardware or capacity support.
+This preview does not establish deployed S2S, provider adoption, public listening,
+independent interoperability, hardware or capacity support.

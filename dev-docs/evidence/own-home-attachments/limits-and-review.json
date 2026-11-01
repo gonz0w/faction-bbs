@@ -1,0 +1,39 @@
+{
+  "claim_limits": [
+    "R27 remains a real failed unexplained fetch halt after successful upload interruption/manual retry/commit/mail/archive.",
+    "R28 is one separately explicit fresh-current-authority manual fetch continuation. It neither fixes nor explains the earlier halt and is not an uninterrupted Episode A pass.",
+    "No inference assigns the historical console failures to independently reproduced metadata contention or cleanup/admission races.",
+    "This host slice claims no complete UI negative-case coverage, final whole-batch acceptance, CI completion, deployment, public service, physical SBC, independent interoperability or present capacity.",
+    "Native result compilation/runtime/memory envelopes and later native client count are owned by the separate native evidence handoff; no native counts are fabricated here.",
+    "Exact hidden bearer values were unavailable; token-field scans are not exact hidden-token scans.",
+    "Named-role loader/backend model telemetry is unavailable. Configured Sol/high equivalence is not an observed model/backend identity.",
+    "One final whole-batch review and final-commit/publication membership verification remain required."
+  ],
+  "intended_repository_family": "dev-docs/evidence/own-home-attachments",
+  "issues": [
+    321,
+    322
+  ],
+  "observer": {
+    "confirmed_progress_gap_seconds": 15,
+    "failure_drain_seconds": 5,
+    "foreground_call_ceiling": 65,
+    "maximum_ciphertext_bytes": 1048592,
+    "maximum_plaintext_bytes": 1048576,
+    "progress_strictly_increasing_and_canonical": true,
+    "strict_work_seconds": 60,
+    "success_grace_seconds": 0,
+    "transcript_bytes": 4194304,
+    "transfer_output_bytes": 16384
+  },
+  "production": {
+    "chunks_per_cycle": 4,
+    "parent_deadline_seconds": 10,
+    "physical_owner_helpers": "two maintained provider owners and at most one active native client",
+    "provider_delivery_attempt_ceiling": 8,
+    "sdk_requests_per_cycle": 8
+  },
+  "review_status": "Runtime source independently reviewed at the immutable source commit; final publication/cleanup review and hosted check results accompany the closing PR.",
+  "schema": 1,
+  "scope": "Host observations only; curated from preserved receipts, not new execution or final acceptance"
+}

@@ -1,0 +1,21 @@
+{
+  "private_corpus_sha256": "8af7d060de34886f8c4e84d89be569e18628e59315830efbdcf0e1bae554863b",
+  "schema": 1,
+  "scope": "Actual normal production operator, client and original fixture used by native54; precompiled at2GiB and executed at1GiB.",
+  "selected": {
+    "selected-client": {
+      "sha256": "b4a57062870c5a58b86158000eb76127863b222fe0306c2d3513138d744a227b",
+      "size": 3806912
+    },
+    "selected-operator": {
+      "sha256": "9eba49ae5175a6486afbaf93dcd85f77fd1134f0178faa98d33789323c779e92",
+      "size": 2011280
+    },
+    "selected-original_seed": {
+      "sha256": "84d1af8ef7456dcbcd38b62a5650b58153518f2f96e47ca21b9c5bde995db5ae",
+      "size": 923128
+    }
+  },
+  "source_commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+  "source_receipt_sha256": "e13c65ad933e08acdfabec8e37975fc05bde351a387d92d33440d2c94d3a6dc3"
+}
