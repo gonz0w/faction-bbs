@@ -1,0 +1,21 @@
+# Attachment transfer diagnostic software evidence
+
+This record describes bounded observations for [#329](https://github.com/gonz0w/faction-bbs/issues/329), which adds failure attribution to the default-off own-home attachment route. The [technical contract](../../attachment-mail.md#failure-attribution) explains the diagnostic fields and their limits. The [results record](results.json) identifies the measured inputs and outcomes. These observations do not establish the cause of [#326](https://github.com/gonz0w/faction-bbs/issues/326) or a performance fix.
+
+## Host observations
+
+705 Python tooling tests passed; repository and link checks passed. Python tooling was unchanged by the final Rust-only lint correction. Provider strict Clippy passed. The full provider library run passed 177 of 179 tests; two unchanged resource tests failed for an unknown cause, recorded in [#330](https://github.com/gonz0w/faction-bbs/issues/330). Four fresh matched controls, two each on baseline and candidate with unchanged assertions and timers, all passed. They do not replace the aggregate result, reproduce the old fixtures or explain the failures. Other provider integration and binary tests passed 143, plus 38 documentation tests. Corrected own-home all-target Clippy passed after one separately reviewed equivalent conditional collapse responding to an actual lint failure. The client suite passed 274 tests with eight existing subprocess helpers ignored; default, native-mail and network-mail all-target strict Clippy checks passed.
+
+Two small actual PTY cases, classic and Unicode, used 32-byte files. After queue, lock, provider stop and confirmation, each produced a 709-byte diagnostic line (711 bytes including CRLF). Strict parsing and fixed-enum scans passed; the original stop, desk, menu and lock behavior remained observable. Pending state, spool, recipient and both Store bytes were unchanged, and no mail was released. Direct owned helpers were reaped and closed. Known private values and the fixed allowlist were checked separately; an exact scan for the hidden random content key and IV was unavailable. No descriptor API was added for that scan.
+
+## NetBSD software observations
+
+On an approved fresh NetBSD 11.0 evbarm/AArch64 test VM, provider and client library and binary test harnesses were ELF64 AArch64. Compilation used two CPUs and temporarily 2 GiB. Client compilation first stopped on ENOSPC; after reclaiming only inactive Cargo cache views in the new copy-on-write guest, one continuation passed with unchanged source. This is not an OOM or type-error finding.
+
+The same VM restarted at 1 GiB (1,054,990,336 observed physical bytes) and two CPUs. Fourteen selected tests passed with none ignored: three provider diagnostics, eight client library diagnostics, one client binary diagnostic and two unchanged foreground deadline/cancellation and exhausted-budget controls. The native retained diagnostic state measured 496 bytes against the 512-byte contract. Source, ELF and SSL runtime guards were unchanged. Rust and Cargo were 1.96, LLVM 22.1.2 and base OpenSSL 3.5.7. This was a selected test-harness run, not a native production-client, full UI or maximum-file journey.
+
+The runtime source map covered 19,539 files: the recorded baseline plus nine runtime/tool overrides at `a4ff6fd65daf70ebc7dfae9c3043959ffb32beed`; the two guide paragraphs were not compiled source. The private custody contains the available test PKI, Store, member and known-clock fixtures, but not every internal clock scalar or the old failed run's inputs. It is not an exact replay of that lost run.
+
+The owned VM and controller stopped and their loopback forward closed. The saved playground was never started; the saved image, old test backing and kernel retained matching full hashes, mtimes, inodes and modes before and after, and backing files were observed opened read-only. The new copy-on-write image and captures remain private.
+
+These checks establish neither physical hardware or 250-member capacity nor deployment, independent interoperability or the historical failure cause. No instrumented Linux attempt or current-head CI result is included in this local evidence freeze. GitHub Issues remain the authority for further work.

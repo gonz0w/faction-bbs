@@ -11,6 +11,9 @@ The [delivery research](../dev-docs/research/0061-private-attachment-delivery-co
 rejects the unchanged modern-client candidate. Real provider deployment and
 independent client interoperability remain unqualified.
 
+The [corrected headless reference research](../dev-docs/research/0064-corrected-headless-source-profile.md)
+remains unqualified because its required build-tool graph is unresolved.
+
 The optional [private provider operator](provider-operator.md) serves separately approved device and service policies on loopback. For invited homes, each operator supplies fixed peer endpoints and independently obtained credentials, then uses the composed init, apply and serve commands. Stop the owner before policy changes; inspect retained state after an uncertain outcome and use a freshly authorized exact retry. Reset clears active approvals, so recovery requires a newly approved complete policy. The operator does not enroll devices or recover keys.
 
 The optional own-home route supports transfers between independently invited

@@ -25,6 +25,20 @@ class ComposedFixtureContracts(unittest.TestCase):
         self.a=home('home','home.test','alice@home.test',101,'01'*32,12345,11)
         self.b=home('away','away.test','bob@away.test',202,'02'*32,23456,21)
 
+    def test_both_transfer_observers_use_the_fixed_caller_mode(self):
+        import ast,inspect
+        for module in [importlib.import_module('probe_device_provider_console'),self.fixture]:
+            with self.subTest(module=module.__name__):
+                tree=ast.parse(inspect.getsource(module.one_journey))
+                calls=[node for node in ast.walk(tree) if isinstance(node,ast.Call)
+                    and isinstance(node.func,ast.Name) and node.func.id=='wait_transfer']
+                self.assertEqual(len(calls),2)
+                for call in calls:
+                    values=[keyword.value for keyword in call.keywords if keyword.arg=='unicode']
+                    self.assertEqual(len(values),1,'both upload/fetch require exact caller mode')
+                    self.assertIsInstance(values[0],ast.Name)
+                    self.assertEqual(values[0].id,'unicode')
+
     def test_fixed_config_has_independent_roots_and_only_service_keys(self):
         with patch.object(self.fixture,'fingerprint',side_effect=lambda p:self.digests[p]):
             raw=self.fixture.composed_config(self.a,self.b)

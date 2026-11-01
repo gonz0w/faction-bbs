@@ -64,3 +64,38 @@ eight BBS/SFTP controls while both homes were unavailable: independent registrat
 and approval, preserved encrypted state, and a 131,328-byte exact public SFTP
 transfer with privacy and terminal restoration checks.
 Existing historical evidence is unchanged.
+
+## Failure attribution
+
+For the own-home route, a stopped foreground upload or fetch emits one bounded
+`Attachment diagnostic v1` line after the existing worker drop/join and before
+the original stop message. Success output and stop markers remain unchanged;
+there is no automatic retry. The line contains fixed enums, numbers and the
+static value `unavailable`, never member names, account IDs, paths, URLs,
+filenames, keys, tokens, payloads or debug-formatted errors. See the
+[member recovery guidance](../docs/private-attachments.md) before retrying.
+
+The stop origin names the selecting branch (`foreground_deadline`,
+`sdk_deadline`, `cancel_branch`, `sdk_error` or `progress_bound`), not a
+historical root cause. The transport stage is separate from the last phase.
+The latter does not prove I/O is still pending; connect calls count entries,
+not completed connections. SDK cycles, logical requests, carrier attempts and
+connect calls are distinct. `cycle_*` values describe the current available
+snapshot; `observed_*` totals sum only available cycle samples. Interpret them
+with `unavailable_cycles`, `aggregate_valid` and `totals_clamped`: unavailable
+is not zero and partial sums are not complete wall time. Durations are bounded
+u64 microseconds. Connect includes TCP/TLS; exchange still includes unknown
+server callback, Store and scheduling time. Planned and actual wait are distinct,
+and overlapping timings must not be summed as equivalent elapsed time.
+
+An optional caller-owned `OnceLock` retains a by-value final snapshot through the
+existing worker join after timeout or cancellation; initialization failure or a
+join panic is explicitly unavailable. This adds no thread, queue, live polling,
+Runtime, protocol or authority cache. The retained diagnostic state contract is
+at most 512 bytes, separate from the 1024-byte output bound. Focused size checks observed 496 bytes on macOS ARM64 and on NetBSD 11 AArch64;
+see the [diagnostic software evidence](evidence/attachment-transfer-diagnostics/README.md).
+The observer supplies classic or Unicode context separately for both legacy and
+own-home callers; that mode is not in the Rust line. Its strict parser accepts
+the defined ordered schema only. These observations do not establish a
+performance fix or the cause of [#326](https://github.com/gonz0w/faction-bbs/issues/326);
+the diagnostic work is tracked by [#329](https://github.com/gonz0w/faction-bbs/issues/329).

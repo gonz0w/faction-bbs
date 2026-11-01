@@ -546,3 +546,5 @@ source-bound carrier, maximum-file classic/Unicode host and NetBSD journeys,
 manual interrupted-transfer recovery and independent mail/BBS/SFTP access during
 provider outage. Current source, retained failures, private capture, whole-snapshot
 teardown and remaining deployment/interoperability limits stay separate.
+
+- [Attachment transfer diagnostics](attachment-transfer-diagnostics/README.md) — bounded host and NetBSD software observations for failure attribution; no historical cause or performance fix established.

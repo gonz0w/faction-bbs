@@ -114,6 +114,41 @@ async fn foreground_step(
         cancelled = cancellation => { cancelled?; Err(invalid()) }
     }
 }
+#[cfg(feature = "own-home-provider")]
+async fn foreground_step_observed(
+    remaining: Duration,
+    sdk: impl std::future::Future<Output = Result<transfer::Report, transfer::Error>>,
+    cancellation: impl std::future::Future<Output = io::Result<()>>,
+    diagnostics: &transfer::CycleDiagnostics,
+) -> io::Result<Result<transfer::Report, transfer::Error>> {
+    if remaining.is_zero() {
+        diagnostics.record_stop(transfer::StopOrigin::ForegroundDeadline);
+        return Ok(Err(transfer::Error::Transport(
+            faction_xmpp::Error::Timeout,
+        )));
+    }
+    tokio::select! {
+        result = tokio::time::timeout(remaining,sdk) => match result {
+            Ok(result) => {
+                if diagnostics.stop_origin() == transfer::StopOrigin::Unobserved
+                    && let Err(error) = &result
+                {
+                    diagnostics.record_error(error);
+                }
+                Ok(result)
+            },
+            Err(_) => {
+                diagnostics.record_stop(transfer::StopOrigin::ForegroundDeadline);
+                Ok(Err(transfer::Error::Transport(faction_xmpp::Error::Timeout)))
+            }
+        },
+        cancelled = cancellation => {
+            diagnostics.record_stop(transfer::StopOrigin::CancelBranch);
+            cancelled?;
+            Err(invalid())
+        }
+    }
+}
 fn save_failure(error: &transfer::Error) -> &'static str {
     match error {
         transfer::Error::Save(SaveError::PublicationUncertain) => {
@@ -740,68 +775,140 @@ impl Screen<'_> {
             .build()?;
         let mut progress = Foreground::new(total);
         let started = Instant::now();
+        #[cfg(feature = "own-home-provider")]
+        let mut diagnostics = transfer::ForegroundDiagnostics::default();
         loop {
             let Some(remaining) = TRANSFER_TIME.checked_sub(started.elapsed()) else {
+                #[cfg(feature = "own-home-provider")]
+                if transport.own_home() {
+                    let _ = self.print(&diagnostics.failure_line(
+                        None,
+                        transfer::StopOrigin::ForegroundDeadline,
+                        matches!(selected, TransferSelection::Fetch(_)),
+                        progress.calls,
+                        progress.offset,
+                        started.elapsed(),
+                    ));
+                }
                 self.print("Foreground time budget reached.\r\nRetry only after inspecting local state.\r\n")?;
                 break;
             };
-            let result = runtime.block_on(foreground_step(
-                remaining,
-                async {
-                    match selected {
-                        TransferSelection::Upload(operation) => {
-                            #[cfg(feature = "device-provider")]
-                            if let AttachmentTransport::Device(provider) = transport {
-                                return transfer::upload_device_cycle(
+            #[cfg(feature = "own-home-provider")]
+            let cycle_diagnostics = transport
+                .own_home()
+                .then(transfer::CycleDiagnostics::default);
+            let sdk = async {
+                match selected {
+                    TransferSelection::Upload(operation) => {
+                        #[cfg(feature = "device-provider")]
+                        if let AttachmentTransport::Device(provider) = transport {
+                            #[cfg(feature = "own-home-provider")]
+                            if let Some(observation) = &cycle_diagnostics {
+                                return transfer::upload_device_cycle_observed(
                                     v,
                                     &mut spool,
                                     settings,
                                     &password,
-                                    provider,
+                                    transfer::ObservedDevice {
+                                        provider,
+                                        diagnostics: observation,
+                                    },
                                     operation,
                                     now().map_err(|_| transfer::Error::State)?,
                                 )
                                 .await;
                             }
-                            transfer::upload_cycle(
+                            return transfer::upload_device_cycle(
                                 v,
                                 &mut spool,
                                 settings,
                                 &password,
+                                provider,
                                 operation,
                                 now().map_err(|_| transfer::Error::State)?,
                             )
-                            .await
+                            .await;
                         }
-                        TransferSelection::Fetch(selection) => {
-                            #[cfg(feature = "device-provider")]
-                            if let AttachmentTransport::Device(provider) = transport {
-                                return transfer::fetch_device_cycle(
+                        transfer::upload_cycle(
+                            v,
+                            &mut spool,
+                            settings,
+                            &password,
+                            operation,
+                            now().map_err(|_| transfer::Error::State)?,
+                        )
+                        .await
+                    }
+                    TransferSelection::Fetch(selection) => {
+                        #[cfg(feature = "device-provider")]
+                        if let AttachmentTransport::Device(provider) = transport {
+                            #[cfg(feature = "own-home-provider")]
+                            if let Some(observation) = &cycle_diagnostics {
+                                return transfer::fetch_device_cycle_observed(
                                     v,
                                     &mut spool,
                                     settings,
-                                    provider,
+                                    transfer::ObservedDevice {
+                                        provider,
+                                        diagnostics: observation,
+                                    },
                                     selection,
                                     now().map_err(|_| transfer::Error::State)?,
                                 )
                                 .await;
                             }
-                            transfer::fetch_cycle(
+                            return transfer::fetch_device_cycle(
                                 v,
                                 &mut spool,
                                 settings,
-                                &password,
-                                invited.ok_or(transfer::Error::Route)?,
+                                provider,
                                 selection,
                                 now().map_err(|_| transfer::Error::State)?,
                             )
-                            .await
+                            .await;
                         }
+                        transfer::fetch_cycle(
+                            v,
+                            &mut spool,
+                            settings,
+                            &password,
+                            invited.ok_or(transfer::Error::Route)?,
+                            selection,
+                            now().map_err(|_| transfer::Error::State)?,
+                        )
+                        .await
                     }
-                },
-                self.network_cancel(),
-            ))?;
-            match result {
+                }
+            };
+            #[cfg(feature = "own-home-provider")]
+            let result = if let Some(observation) = &cycle_diagnostics {
+                runtime.block_on(foreground_step_observed(
+                    remaining,
+                    sdk,
+                    self.network_cancel(),
+                    observation,
+                ))
+            } else {
+                runtime.block_on(foreground_step(remaining, sdk, self.network_cancel()))
+            };
+            #[cfg(not(feature = "own-home-provider"))]
+            let result = runtime.block_on(foreground_step(remaining, sdk, self.network_cancel()));
+            #[cfg(feature = "own-home-provider")]
+            if let Some(observation) = &cycle_diagnostics {
+                // The future and its Worker are dropped/joined before this point.
+                diagnostics.accept_cycle(observation);
+                if !matches!(&result, Ok(Ok(_))) {
+                    let _ = self.print(&diagnostics.failure_line(
+                        Some(observation),
+                        observation.stop_origin(),
+                        matches!(selected, TransferSelection::Fetch(_)),
+                        progress.calls,
+                        progress.offset,
+                        started.elapsed(),
+                    ));
+                }
+            }
+            match result? {
                 Ok(report) => {
                     let step = progress.accept(report.offset, report.complete);
                     self.print(&format!(
@@ -813,6 +920,17 @@ impl Screen<'_> {
                         break;
                     }
                     if step == Step::Stop {
+                        #[cfg(feature = "own-home-provider")]
+                        if transport.own_home() {
+                            let _ = self.print(&diagnostics.failure_line(
+                                None,
+                                transfer::StopOrigin::ProgressBound,
+                                matches!(selected, TransferSelection::Fetch(_)),
+                                progress.calls,
+                                progress.offset,
+                                started.elapsed(),
+                            ));
+                        }
                         self.print("Stopped: progress or call bound.\r\nInspect state before an explicit retry.\r\n")?;
                         break;
                     }
@@ -1301,5 +1419,63 @@ mod tests {
         assert!(fetch.contains("Fetched ciphertext verified locally"));
         assert!(!fetch.contains("pending"));
         assert!(fetch.contains("No read receipt or automatic save"));
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_foreground_stop_origin_is_selected_before_any_sdk_poll() {
+        use std::cell::Cell;
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let polls = Cell::new(0);
+        let diagnostics = transfer::CycleDiagnostics::default();
+        let result = runtime.block_on(foreground_step_observed(
+            Duration::ZERO,
+            async {
+                polls.set(polls.get() + 1);
+                std::future::pending::<Result<transfer::Report, transfer::Error>>().await
+            },
+            std::future::pending::<io::Result<()>>(),
+            &diagnostics,
+        ));
+        assert!(matches!(
+            result,
+            Ok(Err(transfer::Error::Transport(
+                faction_xmpp::Error::Timeout
+            )))
+        ));
+        assert_eq!(polls.get(), 0);
+        assert_eq!(
+            diagnostics.stop_origin(),
+            transfer::StopOrigin::ForegroundDeadline
+        );
+        let diagnostics = transfer::CycleDiagnostics::default();
+        let result = runtime.block_on(foreground_step_observed(
+            Duration::from_secs(10),
+            std::future::pending::<Result<transfer::Report, transfer::Error>>(),
+            async {
+                Err(io::Error::new(
+                    io::ErrorKind::Interrupted,
+                    "synthetic cancellation private sentinel",
+                ))
+            },
+            &diagnostics,
+        ));
+        assert_eq!(result.err().unwrap().kind(), io::ErrorKind::Interrupted);
+        assert_eq!(
+            diagnostics.stop_origin(),
+            transfer::StopOrigin::CancelBranch
+        );
+        let diagnostics = transfer::CycleDiagnostics::default();
+        let result = runtime.block_on(foreground_step_observed(
+            Duration::from_secs(10),
+            async { Err(transfer::Error::State) },
+            std::future::pending::<io::Result<()>>(),
+            &diagnostics,
+        ));
+        assert!(matches!(result, Ok(Err(transfer::Error::State))));
+        assert_eq!(diagnostics.stop_origin(), transfer::StopOrigin::SdkError);
+        assert_eq!(diagnostics.error_kind(), transfer::DiagnosticError::State);
     }
 }

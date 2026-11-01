@@ -412,6 +412,7 @@ enum TransferRoute<'a> {
     Device(
         &'a Settings,
         &'a crate::mail_device_provider::DeviceProvider,
+        #[cfg(feature = "own-home-provider")] Option<&'a CycleDiagnostics>,
     ),
 }
 enum Carrier {
@@ -424,20 +425,20 @@ impl TransferRoute<'_> {
         match self {
             Self::Iq(settings) => settings,
             #[cfg(feature = "device-provider")]
-            Self::Device(settings, _) => settings,
+            Self::Device(settings, ..) => settings,
         }
     }
     fn check(&self, vault: &CheckpointVault, now: u64) -> Result<Principal, Error> {
         let own = network(vault, self.settings(), now)?;
         #[cfg(feature = "device-provider")]
-        if let Self::Device(_, provider) = self {
+        if let Self::Device(_, provider, ..) = self {
             provider.validate(vault).map_err(Error::Device)?;
         }
         Ok(own)
     }
     fn binding(&self, binding: &Binding, direction: TransferDirection) -> Result<(), Error> {
         #[cfg(feature = "device-provider")]
-        if let Self::Device(_, provider) = self
+        if let Self::Device(_, provider, ..) = self
             && !provider.permits_binding(binding, direction)
         {
             return Err(Error::Route);
@@ -450,7 +451,7 @@ impl TransferRoute<'_> {
         match self {
             Self::Iq(_) => false,
             #[cfg(feature = "device-provider")]
-            Self::Device(_, provider) => provider.uses_own_home(),
+            Self::Device(_, provider, ..) => provider.uses_own_home(),
         }
     }
     async fn connect(
@@ -471,12 +472,19 @@ impl TransferRoute<'_> {
                     .map_err(Error::Transport)
             }
             #[cfg(feature = "device-provider")]
-            Self::Device(_, provider) => provider
-                .open(binding, direction)
-                .await
-                .map(Box::new)
-                .map(Carrier::Device)
-                .map_err(Error::Device),
+            Self::Device(_, provider, ..) => {
+                let worker = provider
+                    .open(binding, direction)
+                    .await
+                    .map_err(Error::Device)?;
+                #[cfg(feature = "own-home-provider")]
+                let mut worker = worker;
+                #[cfg(feature = "own-home-provider")]
+                if let Self::Device(_, _, Some(diagnostics)) = self {
+                    worker.observe_final(diagnostics.sink.clone());
+                }
+                Ok(Carrier::Device(Box::new(worker)))
+            }
         }
     }
 }
@@ -602,7 +610,12 @@ pub async fn upload_device_cycle(
         upload_inner(
             vault,
             spool,
-            TransferRoute::Device(settings, provider),
+            TransferRoute::Device(
+                settings,
+                provider,
+                #[cfg(feature = "own-home-provider")]
+                None,
+            ),
             password,
             operation,
             now,
@@ -628,12 +641,419 @@ pub async fn fetch_device_cycle(
         fetch_inner(
             vault,
             spool,
-            TransferRoute::Device(settings, provider),
+            TransferRoute::Device(
+                settings,
+                provider,
+                #[cfg(feature = "own-home-provider")]
+                None,
+            ),
             "",
             &invited,
             selected,
             now,
         ),
+    )
+    .await
+}
+#[cfg(feature = "own-home-provider")]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[repr(u8)]
+pub enum StopOrigin {
+    #[default]
+    Unobserved,
+    ForegroundDeadline,
+    SdkDeadline,
+    CancelBranch,
+    SdkError,
+    ProgressBound,
+}
+#[cfg(feature = "own-home-provider")]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[repr(u8)]
+pub enum DiagnosticError {
+    #[default]
+    Unavailable,
+    State,
+    Intent,
+    Selection,
+    Route,
+    Protocol,
+    Blob,
+    Storage,
+    Xmpp,
+    Mail,
+    Save,
+    DeviceConfiguration,
+    DeviceIdentity,
+    DeviceKeylog,
+    DeviceTransport,
+    Worker,
+}
+/// Local failure attribution only: no credentials, content, route or authority.
+#[cfg(feature = "own-home-provider")]
+#[derive(Default)]
+pub struct CycleDiagnostics {
+    sink: std::sync::Arc<std::sync::OnceLock<crate::mail_device_provider::WorkerSnapshot>>,
+    origin: std::sync::atomic::AtomicU8,
+    error: std::sync::atomic::AtomicU8,
+}
+#[cfg(feature = "own-home-provider")]
+impl CycleDiagnostics {
+    pub fn stop_origin(&self) -> StopOrigin {
+        [
+            StopOrigin::Unobserved,
+            StopOrigin::ForegroundDeadline,
+            StopOrigin::SdkDeadline,
+            StopOrigin::CancelBranch,
+            StopOrigin::SdkError,
+            StopOrigin::ProgressBound,
+        ]
+        .get(usize::from(
+            self.origin.load(std::sync::atomic::Ordering::SeqCst),
+        ))
+        .copied()
+        .unwrap_or_default()
+    }
+    pub fn error_kind(&self) -> DiagnosticError {
+        [
+            DiagnosticError::Unavailable,
+            DiagnosticError::State,
+            DiagnosticError::Intent,
+            DiagnosticError::Selection,
+            DiagnosticError::Route,
+            DiagnosticError::Protocol,
+            DiagnosticError::Blob,
+            DiagnosticError::Storage,
+            DiagnosticError::Xmpp,
+            DiagnosticError::Mail,
+            DiagnosticError::Save,
+            DiagnosticError::DeviceConfiguration,
+            DiagnosticError::DeviceIdentity,
+            DiagnosticError::DeviceKeylog,
+            DiagnosticError::DeviceTransport,
+            DiagnosticError::Worker,
+        ]
+        .get(usize::from(
+            self.error.load(std::sync::atomic::Ordering::SeqCst),
+        ))
+        .copied()
+        .unwrap_or_default()
+    }
+    pub fn snapshot(&self) -> Option<&crate::mail_device_provider::WorkerSnapshot> {
+        self.sink.get()
+    }
+    pub fn record_stop(&self, origin: StopOrigin) {
+        self.origin
+            .store(origin as u8, std::sync::atomic::Ordering::SeqCst);
+    }
+    pub fn record_error(&self, error: &Error) {
+        self.error.store(
+            diagnostic_error(error) as u8,
+            std::sync::atomic::Ordering::SeqCst,
+        );
+        self.record_stop(StopOrigin::SdkError);
+    }
+}
+#[cfg(feature = "own-home-provider")]
+#[derive(Default)]
+pub struct ForegroundDiagnostics {
+    timings: faction_provider::delivery::DiagnosticTimings,
+    logical_completed: u16,
+    logical_attempted: u16,
+    carrier_attempts: u16,
+    busy: u16,
+    connect_calls: u16,
+    unavailable_cycles: u8,
+    cycles: u8,
+    invalid: bool,
+    clamped: bool,
+}
+#[cfg(feature = "own-home-provider")]
+impl ForegroundDiagnostics {
+    pub fn accept_cycle(&mut self, cycle: &CycleDiagnostics) {
+        if self.cycles >= 65 {
+            self.invalid = true;
+            return;
+        }
+        self.cycles += 1;
+        if let Some(snapshot) = cycle
+            .snapshot()
+            .filter(|s| s.state == crate::mail_device_provider::SnapshotState::Observed)
+        {
+            if snapshot.attempted > 8
+                || snapshot.completed > snapshot.attempted
+                || snapshot.carrier_attempts > 64
+                || snapshot.busy > 64
+                || snapshot.connections > 64
+                || self.logical_completed + u16::from(snapshot.completed) > 520
+                || self.logical_attempted + u16::from(snapshot.attempted) > 520
+                || self.carrier_attempts + u16::from(snapshot.carrier_attempts) > 4160
+                || self.busy + u16::from(snapshot.busy) > 4160
+                || self.connect_calls + u16::from(snapshot.connections) > 4160
+            {
+                self.invalid = true;
+                return;
+            }
+            self.clamped |= self
+                .timings
+                .submit_connect_us
+                .checked_add(snapshot.timings.submit_connect_us)
+                .is_none()
+                || self
+                    .timings
+                    .submit_exchange_us
+                    .checked_add(snapshot.timings.submit_exchange_us)
+                    .is_none()
+                || self
+                    .timings
+                    .collect_connect_us
+                    .checked_add(snapshot.timings.collect_connect_us)
+                    .is_none()
+                || self
+                    .timings
+                    .collect_exchange_us
+                    .checked_add(snapshot.timings.collect_exchange_us)
+                    .is_none()
+                || self
+                    .timings
+                    .planned_wait_us
+                    .checked_add(snapshot.timings.planned_wait_us)
+                    .is_none()
+                || self
+                    .timings
+                    .actual_wait_us
+                    .checked_add(snapshot.timings.actual_wait_us)
+                    .is_none();
+            self.timings = self.timings.saturating_add(snapshot.timings);
+            self.logical_completed += u16::from(snapshot.completed);
+            self.logical_attempted += u16::from(snapshot.attempted);
+            self.carrier_attempts += u16::from(snapshot.carrier_attempts);
+            self.busy += u16::from(snapshot.busy);
+            self.connect_calls += u16::from(snapshot.connections);
+        } else {
+            self.unavailable_cycles = self.unavailable_cycles.saturating_add(1);
+        }
+    }
+    /// One failure-only local line. Last phase is not proof I/O remains pending;
+    /// connect_calls counts entries, not successful sockets or TLS handshakes.
+    /// Phase elapsed overlaps cumulative timings, and planned wait is an estimate.
+    pub fn failure_line(
+        &self,
+        cycle: Option<&CycleDiagnostics>,
+        origin: StopOrigin,
+        fetch: bool,
+        sdk_completed: usize,
+        offset: u64,
+        elapsed: std::time::Duration,
+    ) -> String {
+        use crate::mail_device_provider::{DiagnosticRequest, SnapshotState};
+        use faction_provider::delivery::DiagnosticPhase;
+        let raw = cycle.and_then(CycleDiagnostics::snapshot);
+        let snapshot = raw.filter(|s| s.state == SnapshotState::Observed);
+        let state = match raw.map(|s| s.state) {
+            Some(SnapshotState::Observed) => "observed",
+            Some(SnapshotState::JoinPanicked) => "join_panicked",
+            _ => "unavailable",
+        };
+        let request = match snapshot.map(|s| s.request) {
+            Some(DiagnosticRequest::Begin) => "begin",
+            Some(DiagnosticRequest::Status) => "status",
+            Some(DiagnosticRequest::Put) => "put",
+            Some(DiagnosticRequest::Commit) => "commit",
+            Some(DiagnosticRequest::Get) => "get",
+            Some(DiagnosticRequest::Delete) => "delete",
+            _ => "unavailable",
+        };
+        let phase = match snapshot.map(|s| s.phase) {
+            Some(DiagnosticPhase::SubmitConnect) => "submit_connect",
+            Some(DiagnosticPhase::SubmitExchange) => "submit_exchange",
+            Some(DiagnosticPhase::CollectWait) => "collect_wait",
+            Some(DiagnosticPhase::CollectConnect) => "collect_connect",
+            Some(DiagnosticPhase::CollectExchange) => "collect_exchange",
+            Some(DiagnosticPhase::Idle) => "idle",
+            _ => "unavailable",
+        };
+        let origin = match origin {
+            StopOrigin::ForegroundDeadline => "foreground_deadline",
+            StopOrigin::SdkDeadline => "sdk_deadline",
+            StopOrigin::CancelBranch => "cancel_branch",
+            StopOrigin::SdkError => "sdk_error",
+            StopOrigin::ProgressBound => "progress_bound",
+            StopOrigin::Unobserved => "unavailable",
+        };
+        let error = match cycle.map(CycleDiagnostics::error_kind).unwrap_or_default() {
+            DiagnosticError::Unavailable => "unavailable",
+            DiagnosticError::State => "state",
+            DiagnosticError::Intent => "intent",
+            DiagnosticError::Selection => "selection",
+            DiagnosticError::Route => "route",
+            DiagnosticError::Protocol => "protocol",
+            DiagnosticError::Blob => "blob",
+            DiagnosticError::Storage => "storage",
+            DiagnosticError::Xmpp => "xmpp",
+            DiagnosticError::Mail => "mail",
+            DiagnosticError::Save => "save",
+            DiagnosticError::DeviceConfiguration => "device_configuration",
+            DiagnosticError::DeviceIdentity => "device_identity",
+            DiagnosticError::DeviceKeylog => "device_keylog",
+            DiagnosticError::DeviceTransport => "device_transport",
+            DiagnosticError::Worker => "worker",
+        };
+        let transport = match snapshot.and_then(|s| s.transport) {
+            Some(faction_provider::tls::Stage::Configuration) => "configuration",
+            Some(faction_provider::tls::Stage::Admission) => "admission",
+            Some(faction_provider::tls::Stage::Handshake) => "handshake",
+            Some(faction_provider::tls::Stage::Pin) => "pin",
+            Some(faction_provider::tls::Stage::Denied) => "denied",
+            Some(faction_provider::tls::Stage::Frame) => "frame",
+            Some(faction_provider::tls::Stage::Limit) => "limit",
+            Some(faction_provider::tls::Stage::Deadline) => "deadline",
+            Some(faction_provider::tls::Stage::Cancelled) => "cancelled",
+            Some(faction_provider::tls::Stage::Complete) => "complete",
+            None => "unavailable",
+        };
+        let number = |value: Option<u64>| {
+            value
+                .map(|v| v.to_string())
+                .unwrap_or_else(|| "unavailable".into())
+        };
+        format!(
+            "Attachment diagnostic v1 direction={} origin={} error={} state={} request={} last_phase={} transport={} sdk_completed={} sdk_active={} aggregate_valid={} totals_clamped={} observed_logical_completed={} observed_logical_attempted={} observed_carrier_attempts={} observed_busy={} observed_connect_calls={} unavailable_cycles={} cycle_completed={} cycle_logical_attempted={} cycle_carrier_attempts={} cycle_busy={} cycle_connect_calls={} confirmed_offset={} foreground_us={} last_phase_us={} observed_submit_connect_us={} observed_submit_exchange_us={} observed_collect_connect_us={} observed_collect_exchange_us={} observed_planned_wait_us={} observed_actual_wait_us={}\r\n",
+            if fetch { "fetch" } else { "upload" },
+            origin,
+            error,
+            state,
+            request,
+            phase,
+            transport,
+            sdk_completed,
+            if cycle.is_some() {
+                sdk_completed.saturating_add(1).min(65)
+            } else {
+                0
+            },
+            !self.invalid,
+            self.clamped,
+            number((!self.invalid).then_some(u64::from(self.logical_completed))),
+            number((!self.invalid).then_some(u64::from(self.logical_attempted))),
+            number((!self.invalid).then_some(u64::from(self.carrier_attempts))),
+            number((!self.invalid).then_some(u64::from(self.busy))),
+            number((!self.invalid).then_some(u64::from(self.connect_calls))),
+            self.unavailable_cycles,
+            number(snapshot.map(|s| u64::from(s.completed))),
+            number(snapshot.map(|s| u64::from(s.attempted))),
+            number(snapshot.map(|s| u64::from(s.carrier_attempts))),
+            number(snapshot.map(|s| u64::from(s.busy))),
+            number(snapshot.map(|s| u64::from(s.connections))),
+            offset,
+            u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
+            number(snapshot.map(|s| s.phase_us)),
+            number((!self.invalid).then_some(self.timings.submit_connect_us)),
+            number((!self.invalid).then_some(self.timings.submit_exchange_us)),
+            number((!self.invalid).then_some(self.timings.collect_connect_us)),
+            number((!self.invalid).then_some(self.timings.collect_exchange_us)),
+            number((!self.invalid).then_some(self.timings.planned_wait_us)),
+            number((!self.invalid).then_some(self.timings.actual_wait_us))
+        )
+    }
+}
+#[cfg(feature = "own-home-provider")]
+fn diagnostic_error(error: &Error) -> DiagnosticError {
+    match error {
+        Error::State => DiagnosticError::State,
+        Error::Intent => DiagnosticError::Intent,
+        Error::Selection => DiagnosticError::Selection,
+        Error::Route => DiagnosticError::Route,
+        Error::Protocol => DiagnosticError::Protocol,
+        Error::Blob => DiagnosticError::Blob,
+        Error::Storage(_) => DiagnosticError::Storage,
+        Error::Transport(_) => DiagnosticError::Xmpp,
+        Error::Mail(_) => DiagnosticError::Mail,
+        Error::Save(_) => DiagnosticError::Save,
+        Error::Device(crate::mail_device_provider::Error::Configuration) => {
+            DiagnosticError::DeviceConfiguration
+        }
+        Error::Device(crate::mail_device_provider::Error::Identity) => {
+            DiagnosticError::DeviceIdentity
+        }
+        Error::Device(crate::mail_device_provider::Error::Keylog) => DiagnosticError::DeviceKeylog,
+        Error::Device(crate::mail_device_provider::Error::Transport(_)) => {
+            DiagnosticError::DeviceTransport
+        }
+        Error::Device(crate::mail_device_provider::Error::Worker) => DiagnosticError::Worker,
+    }
+}
+#[cfg(feature = "own-home-provider")]
+async fn within_cycle_observed<T>(
+    duration: std::time::Duration,
+    future: impl std::future::Future<Output = Result<T, Error>>,
+    diagnostics: &CycleDiagnostics,
+) -> Result<T, Error> {
+    match tokio::time::timeout(duration, future).await {
+        Ok(result) => {
+            if let Err(error) = &result {
+                diagnostics.record_error(error);
+            }
+            result
+        }
+        Err(_) => {
+            diagnostics.record_stop(StopOrigin::SdkDeadline);
+            Err(Error::Transport(faction_xmpp::Error::Timeout))
+        }
+    }
+}
+/// Optional local observations do not change the selected device or grant authority.
+#[cfg(feature = "own-home-provider")]
+pub struct ObservedDevice<'a> {
+    pub provider: &'a crate::mail_device_provider::DeviceProvider,
+    pub diagnostics: &'a CycleDiagnostics,
+}
+#[cfg(feature = "own-home-provider")]
+pub async fn fetch_device_cycle_observed(
+    vault: &CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    observed: ObservedDevice<'_>,
+    selected: ReceivedSelection,
+    now: u64,
+) -> Result<Report, Error> {
+    let invited = InvitedHomes { homes: Vec::new() };
+    within_cycle_observed(
+        std::time::Duration::from_secs(10),
+        fetch_inner(
+            vault,
+            spool,
+            TransferRoute::Device(settings, observed.provider, Some(observed.diagnostics)),
+            "",
+            &invited,
+            selected,
+            now,
+        ),
+        observed.diagnostics,
+    )
+    .await
+}
+#[cfg(feature = "own-home-provider")]
+pub async fn upload_device_cycle_observed(
+    vault: &mut CheckpointVault,
+    spool: &mut Spool,
+    settings: &Settings,
+    password: &str,
+    observed: ObservedDevice<'_>,
+    operation: [u8; 16],
+    now: u64,
+) -> Result<Report, Error> {
+    within_cycle_observed(
+        std::time::Duration::from_secs(10),
+        upload_inner(
+            vault,
+            spool,
+            TransferRoute::Device(settings, observed.provider, Some(observed.diagnostics)),
+            password,
+            operation,
+            now,
+        ),
+        observed.diagnostics,
     )
     .await
 }
@@ -957,5 +1377,216 @@ mod tests {
         )
         .await;
         assert_eq!(result, Err(Error::Transport(faction_xmpp::Error::Timeout)));
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn diagnostic_sdk_timeout_origin_is_selected_not_inferred_from_transport() {
+        let diagnostics = CycleDiagnostics::default();
+        let result = within_cycle_observed(
+            std::time::Duration::from_millis(5),
+            std::future::pending::<Result<(), Error>>(),
+            &diagnostics,
+        )
+        .await;
+        assert_eq!(result, Err(Error::Transport(faction_xmpp::Error::Timeout)));
+        assert!(
+            diagnostics.snapshot().is_none(),
+            "unobserved initialization is not observed zero"
+        );
+        assert_eq!(diagnostics.stop_origin(), StopOrigin::SdkDeadline);
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn diagnostic_sdk_error_retains_original_result_and_fixed_category() {
+        let diagnostics = CycleDiagnostics::default();
+        let result = within_cycle_observed(
+            std::time::Duration::from_secs(10),
+            async { Err::<(), _>(Error::Protocol) },
+            &diagnostics,
+        )
+        .await;
+        assert_eq!(result, Err(Error::Protocol));
+        assert_eq!(diagnostics.stop_origin(), StopOrigin::SdkError);
+        assert_eq!(diagnostics.error_kind(), DiagnosticError::Protocol);
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_formatter_distinguishes_foreground_total_from_current_cycle() {
+        use crate::mail_device_provider::{DiagnosticRequest, SnapshotState, WorkerSnapshot};
+        use faction_provider::delivery::{DiagnosticPhase, DiagnosticTimings};
+        // Synthetic formatting data conveys no Session, Store or positive actor.
+        let cycle = CycleDiagnostics::default();
+        cycle
+            .sink
+            .set(WorkerSnapshot {
+                state: SnapshotState::Observed,
+                request: DiagnosticRequest::Get,
+                phase: DiagnosticPhase::CollectWait,
+                completed: 3,
+                attempted: 4,
+                carrier_attempts: 7,
+                busy: 1,
+                connections: 6,
+                timings: DiagnosticTimings {
+                    planned_wait_us: 19,
+                    actual_wait_us: 7,
+                    ..Default::default()
+                },
+                ..Default::default()
+            })
+            .unwrap();
+        cycle.record_stop(StopOrigin::SdkDeadline);
+        let mut foreground = ForegroundDiagnostics::default();
+        foreground.accept_cycle(&cycle);
+        let line = foreground.failure_line(
+            Some(&cycle),
+            StopOrigin::SdkDeadline,
+            true,
+            52,
+            851968,
+            std::time::Duration::from_secs(60),
+        );
+        for field in [
+            "direction=fetch",
+            "origin=sdk_deadline",
+            "last_phase=collect_wait",
+            "sdk_completed=52",
+            "observed_logical_completed=3",
+            "cycle_completed=3",
+            "logical_attempted=4",
+            "carrier_attempts=7",
+            "busy=1",
+            "connect_calls=6",
+            "planned_wait_us=19",
+            "actual_wait_us=7",
+        ] {
+            assert!(line.contains(field), "missing fixed field {field}");
+        }
+        assert!(line.len() <= 1024);
+        let missing = foreground.failure_line(
+            None,
+            StopOrigin::ForegroundDeadline,
+            true,
+            52,
+            851968,
+            std::time::Duration::from_secs(60),
+        );
+        assert!(missing.contains("state=unavailable"));
+        assert!(missing.contains("cycle_completed=unavailable"));
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_storage_and_saturating_totals_are_bounded() {
+        use crate::mail_device_provider::WorkerSnapshot;
+        use faction_provider::delivery::{DiagnosticTimings, OperationSnapshot};
+        use std::{
+            mem::size_of,
+            sync::{Arc, OnceLock},
+            time::Instant,
+        };
+        fn send_sync<T: Send + Sync>() {}
+        send_sync::<CycleDiagnostics>();
+        // Conservative live accounting: worker record, temporary copy, joined
+        // value, Operation's optional record+clock, caller context, sink, worker
+        // Arc, and FOUR usize words for Arc control (two are used by Rust1.96).
+        // Output allocation (separately <=1024 bytes) is not retained state.
+        let bytes = 3 * size_of::<WorkerSnapshot>()
+            + size_of::<Option<OperationSnapshot>>()
+            + size_of::<Option<Instant>>()
+            + size_of::<CycleDiagnostics>()
+            + size_of::<OnceLock<WorkerSnapshot>>()
+            + size_of::<Arc<OnceLock<WorkerSnapshot>>>()
+            + 4 * size_of::<usize>()
+            + size_of::<ForegroundDiagnostics>();
+        println!("owned diagnostic retained-state budget: {bytes} bytes");
+        assert!(bytes <= 512, "combined diagnostic storage is {bytes} bytes");
+        let max = DiagnosticTimings {
+            submit_connect_us: u64::MAX,
+            submit_exchange_us: u64::MAX,
+            collect_connect_us: u64::MAX,
+            collect_exchange_us: u64::MAX,
+            planned_wait_us: u64::MAX,
+            actual_wait_us: u64::MAX,
+        };
+        assert_eq!(max.saturating_add(max), max);
+        let cycle = CycleDiagnostics::default();
+        cycle
+            .sink
+            .set(WorkerSnapshot {
+                state: crate::mail_device_provider::SnapshotState::Observed,
+                timings: max,
+                phase_us: u64::MAX,
+                ..Default::default()
+            })
+            .unwrap();
+        let mut foreground = ForegroundDiagnostics::default();
+        foreground.accept_cycle(&cycle);
+        let line = foreground.failure_line(
+            Some(&cycle),
+            StopOrigin::SdkError,
+            false,
+            65,
+            1048592,
+            std::time::Duration::MAX,
+        );
+        assert!(line.len() <= 1024);
+        assert!(!line.contains("inf"));
+        assert!(line.contains("18446744073709551615"));
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_foreground_counters_do_not_saturate_at_one_byte() {
+        use crate::mail_device_provider::{SnapshotState, WorkerSnapshot};
+        // Synthetic aggregate-bound data; no transport, actor or Store fixture.
+        let cycle = CycleDiagnostics::default();
+        cycle
+            .sink
+            .set(WorkerSnapshot {
+                state: SnapshotState::Observed,
+                attempted: 8,
+                completed: 8,
+                carrier_attempts: 64,
+                busy: 48,
+                connections: 64,
+                ..Default::default()
+            })
+            .unwrap();
+        let mut foreground = ForegroundDiagnostics::default();
+        for _ in 0..65 {
+            foreground.accept_cycle(&cycle);
+        }
+        let line = foreground.failure_line(
+            None,
+            StopOrigin::ForegroundDeadline,
+            true,
+            65,
+            1048592,
+            std::time::Duration::from_secs(60),
+        );
+        for field in [
+            "observed_logical_completed=520",
+            "observed_logical_attempted=520",
+            "observed_carrier_attempts=4160",
+            "observed_busy=3120",
+            "observed_connect_calls=4160",
+        ] {
+            assert!(
+                line.contains(field),
+                "missing widened foreground counter {field}"
+            );
+        }
+        foreground.accept_cycle(&cycle);
+        let invalid = foreground.failure_line(
+            None,
+            StopOrigin::ForegroundDeadline,
+            true,
+            65,
+            1048592,
+            std::time::Duration::from_secs(60),
+        );
+        assert!(invalid.contains("aggregate_valid=false"));
+        assert!(invalid.contains("observed_connect_calls=unavailable"));
     }
 }

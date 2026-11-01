@@ -103,6 +103,85 @@ _TRANSFER_MARKERS = [
 ]
 
 
+# One fixed failure-line schema. This is local diagnostic data, never remote
+# authority. Unobserved carrier values are explicit, not observed zero timings.
+_DIAGNOSTIC_SCHEMA = (
+    ('direction', ('upload','fetch'), False),
+    ('origin', ('foreground_deadline','sdk_deadline','cancel_branch','sdk_error','progress_bound','unavailable'), False),
+    ('error', ('unavailable','state','intent','selection','route','protocol','blob','storage','xmpp','mail','save',
+               'device_configuration','device_identity','device_keylog','device_transport','worker'), False),
+    ('state', ('observed','unavailable','join_panicked'), False),
+    ('request', ('begin','status','put','commit','get','delete','unavailable'), False),
+    ('last_phase', ('submit_connect','submit_exchange','collect_wait','collect_connect','collect_exchange','idle','unavailable'), False),
+    ('transport', ('configuration','admission','handshake','pin','denied','frame','limit','deadline','cancelled','complete','unavailable'), False),
+    ('sdk_completed', 65, False), ('sdk_active', 65, False),
+    ('aggregate_valid', ('true','false'), False), ('totals_clamped', ('true','false'), False),
+    ('observed_logical_completed', 520, True), ('observed_logical_attempted', 520, True),
+    ('observed_carrier_attempts', 4160, True), ('observed_busy', 4160, True), ('observed_connect_calls', 4160, True),
+    ('unavailable_cycles', 65, False), ('cycle_completed', 8, True), ('cycle_logical_attempted', 8, True),
+    ('cycle_carrier_attempts', 64, True), ('cycle_busy', 64, True), ('cycle_connect_calls', 64, True),
+    ('confirmed_offset', 1_048_592, False), ('foreground_us', (1<<64)-1, False),
+    ('last_phase_us', (1<<64)-1, True),
+    ('observed_submit_connect_us', (1<<64)-1, True), ('observed_submit_exchange_us', (1<<64)-1, True),
+    ('observed_collect_connect_us', (1<<64)-1, True), ('observed_collect_exchange_us', (1<<64)-1, True),
+    ('observed_planned_wait_us', (1<<64)-1, True), ('observed_actual_wait_us', (1<<64)-1, True),
+)
+
+
+def _validated_transfer_diagnostic(data):
+    if type(data) is not dict or len(data) != len(_DIAGNOSTIC_SCHEMA):return None
+    if any(type(key) is not str for key in data):return None
+    if set(data) != {name for name, _, _ in _DIAGNOSTIC_SCHEMA}:return None
+    for name, domain, optional in _DIAGNOSTIC_SCHEMA:
+        value = data[name]
+        if type(domain) is tuple:
+            if type(value) is not str or value not in domain:return None
+        elif type(value) is str and value == 'unavailable' and optional:
+            continue
+        elif type(value) is not int or not 0 <= value <= domain:return None
+    # The availability flags make unknown intervals/counts visible as unknown.
+    aggregate = [name for name, _, _ in _DIAGNOSTIC_SCHEMA if name.startswith('observed_')]
+    if data['aggregate_valid'] == 'false':
+        if any(data[name] != 'unavailable' for name in aggregate):return None
+    elif any(type(data[name]) is not int for name in aggregate):return None
+    cycle = ['cycle_completed','cycle_logical_attempted','cycle_carrier_attempts',
+             'cycle_busy','cycle_connect_calls','last_phase_us']
+    if data['state'] != 'observed':
+        if any(data[name] != 'unavailable' for name in cycle):return None
+    elif any(type(data[name]) is not int for name in cycle):return None
+    return dict(data)
+
+
+def _parse_transfer_diagnostic(buffer):
+    if type(buffer) is not bytes or len(buffer) > _TRANSFER_OUTPUT:return None
+    lines = [line for line in buffer.split(b'\r\n')[:-1]
+             if line.startswith(b'Attachment diagnostic v1')]
+    if len(lines) != 1 or len(lines[0]) > 1024:return None
+    words = lines[0].split(b' ')
+    if words[:3] != [b'Attachment',b'diagnostic',b'v1'] or len(words) != 3+len(_DIAGNOSTIC_SCHEMA):return None
+    data = {}
+    for word, (name, domain, optional) in zip(words[3:], _DIAGNOSTIC_SCHEMA):
+        prefix = name.encode('ascii')+b'='
+        if not word.startswith(prefix):return None
+        raw = word[len(prefix):]
+        if type(domain) is tuple:
+            allowed = {value.encode('ascii'):value for value in domain}
+            if raw not in allowed:return None
+            data[name] = allowed[raw]
+        elif optional and raw == b'unavailable':
+            data[name] = 'unavailable'
+        elif re.fullmatch(rb'0|[1-9][0-9]{0,19}',raw) and int(raw) <= domain:
+            data[name] = int(raw)
+        else:return None
+    return _validated_transfer_diagnostic(data)
+
+
+def _transfer_diagnostic_summary(data):
+    data = _validated_transfer_diagnostic(data)
+    if data is None:return 'diagnostic=unavailable'
+    return ' '.join('diag_'+name+'='+str(data[name]) for name, _, _ in _DIAGNOSTIC_SCHEMA)
+
+
 def _transfer_failure_summary(observation):
     # Read only known fields from exact builtins: never format arbitrary values,
     # mapping keys, transcript bytes or exception text into a hosted diagnostic.
@@ -131,6 +210,7 @@ def _transfer_failure_summary(observation):
     last = fields(progress[-1]) if type(progress) is list and progress else {}
     marker = drain.get('marker_before_cancel', 'unavailable')
     return ' '.join([
+        'mode='+enum(observation.get('console_mode'), {'classic','unicode'}),
         'reason='+enum(observation.get('reason'), {
             'work_deadline', 'idle_gap', 'output_bound', 'product_stop',
             'early_completion', 'invalid_progress', 'io_error', 'eof'}),
@@ -147,6 +227,7 @@ def _transfer_failure_summary(observation):
         'reaped='+boolean(drain.get('reaped')),
         'marker='+('none' if marker is None else enum(marker, {
             'budget', 'transfer_stop', 'progress_bound', 'locked', 'completion'})),
+        _transfer_diagnostic_summary(observation.get('diagnostic')),
     ])
 
 
@@ -155,6 +236,8 @@ class TransferObservationError(ValueError):
         self.observation = observation
         try:
             summary = _transfer_failure_summary(observation)
+            if type(summary) is not str or len(summary) > 2048:
+                summary = 'unavailable'
         except Exception:
             # Formatting runs after the existing drain and cannot replace its
             # structured failure or leak a formatter exception's private text.
@@ -247,13 +330,15 @@ def _cancel_transfer(console, *, observe_stop=False, clock=None, poll=None,
 
 
 def wait_transfer(console, total, *, started=None, clock=None, poll=None,
-                  read=None, cancel=None):
+                  read=None, cancel=None, unicode=False):
     """Observe confirmed foreground progress within the unchanged 60 seconds.
 
     Only a whole validated progress record renews the 15-second gap. Noise,
     fragments, duplicates and later output never extend the absolute deadline.
     Keep trailing menu bytes available to the ordinary Console.expect caller.
     """
+    if type(unicode) is not bool:
+        raise ValueError('invalid fixed console mode')
     if type(total) is not int or not 1 <= total <= 1_048_592:
         raise ValueError('invalid expected transfer size')
     clock = time.monotonic if clock is None else clock
@@ -282,6 +367,8 @@ def wait_transfer(console, total, *, started=None, clock=None, poll=None,
             else 'late_completion_observed' if marker == 'completion'
             else 'observer_timeout_ambiguous' if reason == 'work_deadline'
             else 'observer_rejection')
+        result['console_mode'] = 'unicode' if unicode else 'classic'
+        result['diagnostic'] = _parse_transfer_diagnostic(console.buffer)
         raise TransferObservationError(result)
 
     if seen > _TRANSFER_OUTPUT or len(console.transcript) > _TRANSCRIPT_CAP:
@@ -680,7 +767,7 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
         (server/'stall').unlink();wait_fact(lambda:provider.status()[2]==0)
         facts.append('cancel_after_possible_durable_progress_locks_and_joins_before_reopen')
         c=start('alice',profiles[0]);desk(c);submitted=upload(c,operation)
-        upload_observation=wait_transfer(c,1_048_592,started=submitted);c.expect(DESK)
+        upload_observation=wait_transfer(c,1_048_592,started=submitted,unicode=unicode);c.expect(DESK)
         wait_fact(lambda:alice.messages==1)
         assert re.search(rb'SDK call: (?:[1-9]|[1-5][0-9]|6[0-5]) / 65',c.transcript)
         lock(c)
@@ -693,7 +780,7 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
         assert not (root/'bob/attachments').exists()
         before=c.transcript.count(HOME.encode())
         c.raw(b'f');c.expect(TRANSFER);c.send('transfer');submitted=time.monotonic()
-        fetch_observation=wait_transfer(c,1_048_592,started=submitted);c.expect(RECEIVED)
+        fetch_observation=wait_transfer(c,1_048_592,started=submitted,unicode=unicode);c.expect(RECEIVED)
         assert c.transcript.count(HOME.encode())==before
         c.raw(b'v');c.expect('Verified locally: 1048576 plaintext bytes.');c.expect(RECEIVED)
         destination=root/'saved'/'explicit.bin';destination.parent.mkdir(mode=0o700)
