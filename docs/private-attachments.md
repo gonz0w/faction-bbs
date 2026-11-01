@@ -12,7 +12,9 @@ rejects the unchanged modern-client candidate. Real provider deployment and
 independent client interoperability remain unqualified.
 
 The [corrected headless reference research](../dev-docs/research/0064-corrected-headless-source-profile.md)
-remains unqualified because its required build-tool graph is unresolved.
+remains unqualified. The subsequent [CMake qualification](../dev-docs/research/0065-cmake-bootstrap-qualification.md)
+rejects the selected unmodified native build profile because configuration would
+generate JavaScript/QtScript; complete tool and license closure remains unknown.
 
 The optional [private provider operator](provider-operator.md) serves separately approved device and service policies on loopback. For invited homes, each operator supplies fixed peer endpoints and independently obtained credentials, then uses the composed init, apply and serve commands. Stop the owner before policy changes; inspect retained state after an uncertain outcome and use a freshly authorized exact retry. Reset clears active approvals, so recovery requires a newly approved complete policy. The operator does not enroll devices or recover keys.
 
