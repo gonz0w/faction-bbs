@@ -123,7 +123,7 @@ class CodecDependencies(unittest.TestCase):
         gate = '          python3 tools/check_delegation_codec_dependencies.py\n'
         moved = source.replace(gate,'') + gate
         with self.assertRaises(ValueError): policy.validate_ci(moved)
-        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail]'))
+        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', 'needs: [native_mail]'))
 
     def test_ci_post_run_conditionals_and_job_tolerance_refused(self):
         source = ci_fixture()
@@ -138,6 +138,19 @@ class CodecDependencies(unittest.TestCase):
         # A skipped codec step cannot skip this check of the actual YAML source.
         policy.validate_ci((policy.ROOT / '.github/workflows/documentation.yml').read_text())
 
+    def test_current_ci_requires_both_serial_successors_without_losing_codec_gate(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', source.splitlines())
+        policy.validate_ci(source)
+
+    def test_each_successor_and_the_previous_four_job_aggregate_cannot_bypass_codec_gate(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        expected = 'needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]'
+        for missing in [', provider_composed', ', own_home_client', ', provider_composed, own_home_client']:
+            self.assertIn(expected, source)
+            with self.subTest(missing=missing), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(expected, expected.replace(missing, ''), 1))
+
     def test_inventory_is_read_only(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / 'profile.json'; path.write_text('expected')
@@ -149,7 +162,7 @@ class CodecDependencies(unittest.TestCase):
 
 def ci_fixture():
     lines = ['jobs:', '  documentation:', '    name: Documentation and policy',
-             '    needs: [native_mail, provider, provider_operator, provider_client]', '    if: ${{ always() }}',
+             '    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', '    if: ${{ always() }}',
              '    runs-on: ubuntu-24.04', '    timeout-minutes: 15', '    steps:',
              '      - name: Validate the isolated delegation wire codec', '        env:',
              '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-delegation-codec',

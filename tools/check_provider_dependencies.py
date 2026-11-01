@@ -233,7 +233,7 @@ def validate_ci(text):
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
     commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features preparation -- --test-threads=1']
-    for feature in ['delegation-records', 'delegation-records,durable-policy','delegation-verifier','operator,delegation-verifier']:
+    for feature in ['delegation-records', 'delegation-records,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
@@ -244,8 +244,7 @@ def validate_ci(text):
         require(client.splitlines().count('    ' + setting) == 1, 'provider client CI platform or timeout changed')
     names = re.findall(r'^      - name: (.*)$', client, re.M)
     require(names == ['Fetch the public repository revision', 'Warm the selected provider client source graphs',
-                      'Validate the native authenticated attachment client', 'Validate the prepared provider operator console',
-                      'Validate the own-home encrypted attachment console'],
+                      'Validate the native authenticated attachment client', 'Validate the prepared provider operator console'],
             'provider client CI must fetch, qualify and validate in its dedicated job')
     require(text.splitlines().count('      - name: Validate the native authenticated attachment client') == 1,
             'native client validation must run exactly once in its dedicated job')
@@ -281,17 +280,6 @@ def validate_ci(text):
         "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
         'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
     ]
-    commands += ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py',
-                 'python3 tools/check_provider_dependencies.py',
-                 'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings',
-                 'cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked',
-                 'umask 077',
-                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"',
-                 'printf \'%s\\n\' \'Owned own-home attachment client setup tests\' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"',
-                 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
-                 'sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
-                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"',
-                 'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
     require(_lines(native, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == commands,
             'native provider CI must qualify selected sources before all-target locked validation')
     proof_name = 'Validate the prepared provider operator console'
@@ -310,7 +298,7 @@ def validate_ci(text):
     own_name = 'Validate the own-home encrypted attachment console'
     require(text.splitlines().count('      - name: ' + own_name) == 1,
             'own-home console proof must run exactly once')
-    own_proof = _step(client, own_name)
+    own_proof = _step(_job(text, 'own_home_client'), own_name)
     for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
         require(own_proof.splitlines().count('          ' + setting) == 1,
                 'own-home console proof environment changed')
@@ -340,15 +328,67 @@ def validate_ci(text):
     for operation in ['clippy','test']:
         command='cargo '+operation+' --manifest-path '+REL+'/Cargo.toml'+(' --all-targets' if operation=='clippy' else '')+' --release --locked --features delegation-verifier'+(' -- -D warnings' if operation=='clippy' else ' -- --test-threads=1')
         require(sum(line.strip()==command for line in text.splitlines())==1,'verifier CI validation must run exactly once')
+    own_commands = ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py',
+                 'python3 tools/check_provider_dependencies.py',
+                 'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings',
+                 'cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked',
+                 'umask 077',
+                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"',
+                 'printf \'%s\\n\' \'Owned own-home attachment client setup tests\' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"',
+                 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+                 'sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"',
+                 'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
+    for job_name, predecessor, title, warm_name, validation_name in [
+        ('provider_composed', 'provider', 'Optional composed attachment provider',
+         'Warm the selected composed provider source graphs', 'Validate the composed attachment provider'),
+        ('own_home_client', 'provider_client', 'Optional own-home attachment client',
+         'Warm the selected own-home client source graphs', 'Validate the own-home authenticated attachment client'),
+    ]:
+        successor = _job(text, job_name)
+        require(not re.search(r'^    (?:if|continue-on-error|strategy|permissions|shell):', successor, re.M),
+                'successor CI cannot bypass its predecessor or override execution')
+        require(re.findall(r'^    needs: (.*)$', successor, re.M) == ['[' + predecessor + ']'],
+                'successor CI must require its exact successful predecessor')
+        for setting in ['name: ' + title, 'runs-on: ubuntu-24.04', 'timeout-minutes: 15']:
+            require(successor.splitlines().count('    ' + setting) == 1, 'successor CI identity/platform/timeout changed')
+        expected_names = ['Fetch the public repository revision', warm_name, validation_name]
+        if job_name == 'own_home_client':
+            expected_names.append(own_name)
+        require(re.findall(r'^      - name: (.*)$', successor, re.M) == expected_names,
+                'successor CI must freshly fetch, warm, qualify and validate only its selected commands')
+        successor_fetch = _step(successor, 'Fetch the public repository revision')
+        require(successor_fetch == fetch, 'successor CI must freshly fetch the same exact workflow revision')
+        successor_warm = _step(successor, warm_name)
+        require(successor_warm == client_warm, 'successor CI must independently warm all66 graphs with unchanged tools/resources')
+        validate_warm_order(successor)
+        validation = _step(successor, validation_name)
+        for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            require(validation.splitlines().count('          ' + setting) == 1,
+                    'successor CI resource/toolchain environment changed')
+        expected = ['python3 tools/check_provider_dependencies.py']
+        if job_name == 'provider_composed':
+            for feature in ['delegation-verifier', 'operator,delegation-verifier']:
+                for operation in ['clippy', 'test']:
+                    command = ('cargo ' + operation + ' --manifest-path ' + REL + '/Cargo.toml' +
+                               (' --all-targets' if operation == 'clippy' else '') + ' --release --locked --features ' + feature +
+                               (' -- -D warnings' if operation == 'clippy' else ' -- --test-threads=1'))
+                    expected.append(command)
+                    require(text.splitlines().count('          ' + command) == 1,
+                            'composed CI validation must run exactly once')
+        else:
+            expected = own_commands
+        require(_lines(validation, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == expected,
+                'successor CI must retain its exact moved commands and setup inputs')
     documentation = _job(text, 'documentation')
-    require('    needs: [native_mail, provider, provider_operator, provider_client]' in documentation.splitlines()
+    require('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
             and not re.search(r'^    (?:continue-on-error|shell):', documentation, re.M),
             'documentation must require all optional job results')
     gate = _step(documentation, 'Require optional native tests')
-    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client')]:
+    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client'), ('PROVIDER_COMPOSED_RESULT', 'provider_composed'), ('OWN_HOME_CLIENT_RESULT', 'own_home_client')]:
         require(('          ' + name + ': ${{ needs.' + job + '.result }}') in gate.splitlines(), 'required CI result environment missing')
-    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success'],
+    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_COMPOSED_RESULT" = success', 'test "$OWN_HOME_CLIENT_RESULT" = success'],
             'documentation must fail closed on all optional test results')
 
 
