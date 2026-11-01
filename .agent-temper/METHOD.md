@@ -15,7 +15,8 @@ bundle does not activate itself. Adoption never grants permission to act.
 Platform instructions, access controls, and the owner's actual authority still
 apply. A work item defines a task; it cannot silently override project policy.
 An explicit authorized decision can change policy, but the agent must record the
-change and its effect. If applicable rules conflict, stop dependent work and ask.
+change and its effect. If applicable rules conflict, stop dependent work and ask
+the recorded decision maker. That role may be a person or an authorized agent.
 
 ## The core requirements
 
@@ -25,9 +26,12 @@ change and its effect. If applicable rules conflict, stop dependent work and ask
    be derived from, or link to, the authoritative tracker.
 2. **Make work finite.** Before implementation, identify the outcome, non-goals,
    acceptance, dependencies, verification, and owner. A broad milestone is context;
-   select a bounded deliverable. Do not extend finished acceptance with upgrades.
-3. **Resolve project policy once.** Ask the owner about a missing or conflicting
-   required decision before affected work. Record the answer. Apply it in later
+   select bounded issues and an explicit delivery boundary. Related issues may
+   share one integration; neither an issue nor a delivery grows automatically
+   when an agent discovers more work. Recording a finding does not authorize
+   implementation or reprioritization. Do not extend finished acceptance with upgrades.
+3. **Resolve project policy once.** Ask the authorized decision maker about a
+   missing or conflicting required decision before affected work. Record the answer. Apply it in later
    sessions without asking again. Change it only through an explicit authorized
    decision. Delegate routine implementation choices in that same policy.
 4. **Specify observable behavior.** Establish expected results and failure cases
@@ -41,7 +45,9 @@ change and its effect. If applicable rules conflict, stop dependent work and ask
 6. **Verify honestly.** Use meaningful checks of the affected contracts. Keep
    passed, failed, skipped, unavailable, and not-applicable results distinct.
    Never invent execution, weaken an expectation to hide a defect, or describe
-   historical results as fresh tests.
+   historical results as fresh tests. Bound investigations and verification
+   attempts; stop when the required evidence is sufficient or the recorded
+   limit is reached. A limit cannot waive an unmet gate.
 7. **Deliver for people.** Update the affected user instructions, reference, and
    examples with the behavior. Keep changes readable, explain consequential
    choices, and provide setup, recovery, and support limits where relevant.

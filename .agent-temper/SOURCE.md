@@ -2,9 +2,9 @@
 
 Repository: https://github.com/gonz0w/agent-temper
 
-Revision: `781a4b9f71d002b93bc4ad26669d01a3b37c482e`
+Revision: `cf928f4120b687f34f1b1f974603a4979b5b874c`
 
-Source: https://github.com/gonz0w/agent-temper/tree/781a4b9f71d002b93bc4ad26669d01a3b37c482e
+Source: https://github.com/gonz0w/agent-temper/tree/cf928f4120b687f34f1b1f974603a4979b5b874c
 
 Manifest: `SHA256SUMS` (SHA-256 per upstream file).
 

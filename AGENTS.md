@@ -44,3 +44,21 @@ documentation, visual inspection, explicitly authorized browser tasks and small
 specified UI fixes to `temper_product`. Keep existing role assignments and all
 local execution/risk/review limits. The lead may select the recorded Sol
 implementer fallback explicitly; missing tools or authority remain blockers.
+
+## Bounded delivery and discoveries
+
+Follow the pinned [workflow](.agent-temper/docs/reference/workflow.md) and
+[verification stopping rules](.agent-temper/docs/reference/verification.md#bound-attempts-and-stop)
+with this project's selected local policies. Name the selected issues, bounded
+outcome, exclusions, lead and integration acceptance in the owning work record.
+Related issues may share one coherent delivery; new findings do not join it
+automatically. Repair current acceptance, link genuine blockers and return
+unrelated bugs or optimizations for milestone prioritization.
+
+Respect the recorded local priority authority, WIP and execution limits; otherwise
+use the workflow defaults. Recheck ownership and remaining acceptance on resumption.
+Finish an accepted batch before pulling optional work. At an attempt limit or
+repeated unexplained failure, preserve evidence and checkpoint/replan rather than
+renewing the attempt or broadening scope. Required checks and action authority
+remain binding. Preserve current branches/work and record any WIP transition;
+no historical exception, new executor, role or permission is activated here.
