@@ -34,6 +34,7 @@ import base64
 import copy
 import hashlib
 import json
+import math
 import select
 import shutil
 import socket
@@ -102,10 +103,63 @@ _TRANSFER_MARKERS = [
 ]
 
 
+def _transfer_failure_summary(observation):
+    # Read only known fields from exact builtins: never format arbitrary values,
+    # mapping keys, transcript bytes or exception text into a hosted diagnostic.
+    def fields(value):
+        return value if type(value) is dict else {}
+
+    def enum(value, allowed):
+        return value if type(value) is str and value in allowed else 'unavailable'
+
+    def integer(value, maximum):
+        return str(value) if type(value) is int and 0 <= value <= maximum else 'unavailable'
+
+    def seconds(value):
+        if type(value) is int and 0 <= value <= 1.7976931348623157e308:
+            return str(value)
+        if type(value) is float and math.isfinite(value) and value >= 0:
+            return str(value)
+        return 'unavailable'
+
+    def boolean(value):
+        return ('true' if value else 'false') if type(value) is bool else 'unavailable'
+
+    observation = fields(observation)
+    drain = fields(observation.get('drain'))
+    progress = observation.get('progress')
+    last = fields(progress[-1]) if type(progress) is list and progress else {}
+    marker = drain.get('marker_before_cancel', 'unavailable')
+    return ' '.join([
+        'reason='+enum(observation.get('reason'), {
+            'work_deadline', 'idle_gap', 'output_bound', 'product_stop',
+            'early_completion', 'invalid_progress', 'io_error', 'eof'}),
+        'classification='+enum(observation.get('classification'), {
+            'product_stop_observed', 'late_completion_observed',
+            'observer_timeout_ambiguous', 'observer_rejection'}),
+        'calls='+integer(observation.get('calls'), 65),
+        'offset='+integer(observation.get('offset'), 1_048_592),
+        'elapsed='+seconds(observation.get('seconds')),
+        'last_progress='+seconds(last.get('seconds')),
+        'drain_seconds='+seconds(drain.get('seconds')),
+        'cancelled='+boolean(drain.get('cancelled')),
+        'killed='+boolean(drain.get('killed')),
+        'reaped='+boolean(drain.get('reaped')),
+        'marker='+('none' if marker is None else enum(marker, {
+            'budget', 'transfer_stop', 'progress_bound', 'locked', 'completion'})),
+    ])
+
+
 class TransferObservationError(ValueError):
     def __init__(self, observation):
-        super().__init__('bounded transfer observation failed: '+observation['reason'])
         self.observation = observation
+        try:
+            summary = _transfer_failure_summary(observation)
+        except Exception:
+            # Formatting runs after the existing drain and cannot replace its
+            # structured failure or leak a formatter exception's private text.
+            summary = 'unavailable'
+        super().__init__('bounded transfer observation failed: '+summary)
 
 
 def _transfer_marker(buffer):

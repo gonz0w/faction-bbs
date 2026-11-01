@@ -276,6 +276,95 @@ class TransferObserverTests(unittest.TestCase):
         self.assertTrue(feed.done)
         return feed, caught.exception.observation
 
+    def test_failure_message_summarizes_injected_deadline_after_drain(self):
+        probe = importlib.import_module('probe_device_provider_console')
+        for marker, classification in [
+                (None, 'observer_timeout_ambiguous'),
+                ('budget', 'product_stop_observed'),
+                ('completion', 'late_completion_observed')]:
+            with self.subTest(marker=marker):
+                feed = TransferFeed([(10*n, self.progress(100*n, n)) for n in range(1, 6)]
+                                    + [(59, self.progress(600, 6))])
+                def drain(console):
+                    feed.cancelled.append(feed.now)
+                    feed.now += 1
+                    feed.done = True
+                    return dict(seconds=1.0, reaped=True, killed=False,
+                                cancelled=True, marker_before_cancel=marker)
+                with self.assertRaises(probe.TransferObservationError) as caught:
+                    probe.wait_transfer(feed, self.TOTAL, started=0.0, clock=feed.clock,
+                        poll=feed.poll, read=feed.read, cancel=drain)
+                observation = caught.exception.observation
+                self.assertIs(observation, feed.transfer_observation)
+                self.assertEqual(observation['classification'], classification)
+                self.assertEqual((feed.cancelled, feed.now, feed.done), ([60], 61, True))
+                message = str(caught.exception)
+                for field in ['reason=work_deadline', 'classification='+classification,
+                              'calls=6', 'offset=600', 'elapsed=60.0',
+                              'last_progress=59.0', 'drain_seconds=1.0',
+                              'cancelled=true', 'killed=false', 'reaped=true',
+                              'marker='+('none' if marker is None else marker)]:
+                    self.assertIn(field, message)
+                self.assertNotIn('Confirmed ciphertext', message)
+
+    def test_failure_summary_refuses_unknown_or_malformed_private_fields(self):
+        probe = importlib.import_module('probe_device_provider_console')
+        secret = 'SECRET-private-path-credential-transcript'
+        class Unknown:
+            def __str__(self):
+                raise AssertionError('unknown coercion')
+            def __repr__(self):
+                raise AssertionError('unknown repr')
+        class UnknownDict(dict):
+            def get(self, *args):
+                raise AssertionError('unknown mapping')
+        class UnknownString(str):
+            def __hash__(self):
+                raise AssertionError('unknown hash')
+        baseline = dict(reason='work_deadline', classification='observer_timeout_ambiguous',
+                        calls=6, offset=600, seconds=60.0,
+                        progress=[dict(seconds=59.0)],
+                        drain=dict(seconds=1.0, cancelled=True, killed=False,
+                                   reaped=True, marker_before_cancel=None))
+        cases = []
+        for field, values in [
+                ('reason', [secret, Unknown(), UnknownString(secret)]),
+                ('classification', [secret, Unknown()]),
+                ('calls', [-1, 66, True, 1.5, secret, Unknown()]),
+                ('offset', [-1, self.TOTAL+1, False, 1.5, secret, Unknown()]),
+                ('seconds', [-1, float('inf'), float('nan'), True, secret, Unknown()]),
+                ('progress', [secret, Unknown(), [dict(seconds=secret)],
+                              [dict(seconds=float('inf'))], [dict(seconds=-1)]]),
+                ('drain', [secret, Unknown(), UnknownDict()])]:
+            for value in values:
+                cases.append(dict(baseline, **{field:value}))
+        for field in ['seconds', 'cancelled', 'killed', 'reaped', 'marker_before_cancel']:
+            cases.append(dict(baseline, drain=dict(baseline['drain'], **{field:secret})))
+        cases += [Unknown(), UnknownDict(), {}]
+        for observation in cases:
+            with self.subTest(case=len(cases)):
+                error = probe.TransferObservationError(observation)
+                self.assertIs(error.observation, observation)
+                message = str(error)
+                self.assertNotIn(secret, message)
+                self.assertIn('unavailable', message)
+                self.assertLess(len(message), 2048)
+        decorated = dict(baseline, **{secret:secret})
+        decorated['progress'] = [dict(seconds=59.0, transcript=secret)]
+        error = probe.TransferObservationError(decorated)
+        self.assertNotIn(secret, str(error))
+        self.assertIn('calls=6', str(error))
+        # Even a formatter defect must preserve the already completed drain and
+        # the original structured observation, rather than replace the failure.
+        feed = TransferFeed()
+        with patch.object(probe, '_transfer_failure_summary', side_effect=RuntimeError(secret)):
+            with self.assertRaises(probe.TransferObservationError) as caught:
+                self.observe(feed)
+        self.assertEqual((feed.cancelled, feed.done), ([15], True))
+        self.assertIs(caught.exception.observation, feed.transfer_observation)
+        self.assertIn('unavailable', str(caught.exception))
+        self.assertNotIn(secret, str(caught.exception))
+
     def test_productive_completion_can_exceed_fifteen_seconds_but_not_sixty(self):
         feed = TransferFeed([(6, self.progress(16_384, 1)),
                              (17, self.progress(32_768, 2)),
