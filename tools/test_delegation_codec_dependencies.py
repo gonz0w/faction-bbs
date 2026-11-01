@@ -123,7 +123,7 @@ class CodecDependencies(unittest.TestCase):
         gate = '          python3 tools/check_delegation_codec_dependencies.py\n'
         moved = source.replace(gate,'') + gate
         with self.assertRaises(ValueError): policy.validate_ci(moved)
-        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail]'))
+        with self.assertRaises(ValueError): policy.validate_ci(source.replace('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail]'))
 
     def test_ci_post_run_conditionals_and_job_tolerance_refused(self):
         source = ci_fixture()
@@ -138,6 +138,19 @@ class CodecDependencies(unittest.TestCase):
         # A skipped codec step cannot skip this check of the actual YAML source.
         policy.validate_ci((policy.ROOT / '.github/workflows/documentation.yml').read_text())
 
+    def test_current_ci_requires_both_serial_successors_without_losing_codec_gate(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', source.splitlines())
+        policy.validate_ci(source)
+
+    def test_each_successor_and_the_previous_four_job_aggregate_cannot_bypass_codec_gate(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        expected = 'needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]'
+        for missing in [', provider_composed', ', own_home_client', ', provider_composed, own_home_client', ', bbs_regressions']:
+            self.assertIn(expected, source)
+            with self.subTest(missing=missing), self.assertRaises(ValueError):
+                policy.validate_ci(source.replace(expected, expected.replace(missing, ''), 1))
+
     def test_inventory_is_read_only(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / 'profile.json'; path.write_text('expected')
@@ -149,7 +162,7 @@ class CodecDependencies(unittest.TestCase):
 
 def ci_fixture():
     lines = ['jobs:', '  documentation:', '    name: Documentation and policy',
-             '    needs: [native_mail, provider, provider_operator, provider_client]', '    if: ${{ always() }}',
+             '    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', '    if: ${{ always() }}',
              '    runs-on: ubuntu-24.04', '    timeout-minutes: 15', '    steps:',
              '      - name: Validate the isolated delegation wire codec', '        env:',
              '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-delegation-codec',
@@ -157,6 +170,7 @@ def ci_fixture():
              '          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     for manifest, feature in [('crates/faction-delegation-codec/Cargo.toml', ''),
                                ('Cargo.toml', ' --features faction-client/device-provider'),
+                               ('Cargo.toml', ' --features faction-client/own-home-provider'),
                                ('crates/faction-provider/Cargo.toml', ' --features operator'),
                                ('crates/faction-provider/Cargo.toml', ' --features delegation-wire'),
                                ('crates/faction-provider/Cargo.toml', ' --features delegation-wire,durable-policy'),
@@ -176,7 +190,7 @@ class QualifiedProviderWireEdge(unittest.TestCase):
     def test_exact_optional_wire_edge_is_allowed_with_ordinary_feature_refusals(self):
         edge={'path':'../faction-delegation-codec','optional':True,'default-features':False}
         candidate={'features':{'default':[],'delegation-issuer':['delegation-records','delegation-services'],
-                   'delegation-wire':['delegation-issuer','dep:faction-delegation-codec']},'dependencies':{'faction-delegation-codec':edge}}
+                   'delegation-wire':['delegation-issuer','dep:faction-delegation-codec','dep:rustix']},'dependencies':{'faction-delegation-codec':edge}}
         policy.validate_product_edges({'crates/faction-provider/Cargo.toml':candidate})
         for path in ['crates/faction-client/Cargo.toml','crates/other/Cargo.toml']:
             with self.subTest(path=path),self.assertRaises(ValueError):policy.validate_product_edges({path:candidate})

@@ -1,0 +1,311 @@
+"""Exact default-off own-home dependency qualification contracts."""
+import copy
+import json
+from unittest.mock import patch
+import sys
+import tomllib
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+import check_provider_dependencies as provider
+import check_delegation_codec_dependencies as codec
+
+class OwnHomeQualification(unittest.TestCase):
+    def test_explicit_default_off_own_home_client_feature_is_allowed(self):
+        manifest = tomllib.loads((ROOT / 'crates/faction-client/Cargo.toml').read_text())
+        manifest['features']['own-home-provider'] = [
+            'device-provider', 'faction-provider/delegation-verifier']
+        provider.validate_product_edges({'crates/faction-client/Cargo.toml': manifest})
+
+    def test_new_root_codec_checksums_cannot_approve_themselves(self):
+        # This fixture exercises identity/checksum adoption, not Cargo resolution.
+        # Keep each identity once even after the real root adopts these packages.
+        actual = tomllib.loads((ROOT / 'Cargo.lock').read_text())
+        root_lock = 'version = 4\n'
+        for row in actual['package']:
+            if (row['name'], row['version']) in provider.CODEC_ONLY:
+                continue
+            root_lock += '\n[[package]]\n'
+            for key in ['name', 'version', 'source', 'checksum']:
+                if key in row:
+                    root_lock += key + ' = ' + json.dumps(row[key]) + '\n'
+        for name, version in sorted(provider.CODEC_ONLY):
+            approved = codec.APPROVED[(name, version)]
+            checksum = ('0' * 64 if name == 'httparse' else approved['checksum'])
+            root_lock += ('\n[[package]]\nname = ' + json.dumps(name) +
+                          '\nversion = ' + json.dumps(version) +
+                          '\nsource = ' + json.dumps(codec.REGISTRY) +
+                          '\nchecksum = ' + json.dumps(checksum) + '\n')
+        original_read = Path.read_text
+        def read(path, *args, **kwargs):
+            if path == ROOT / 'Cargo.lock':
+                return root_lock
+            return original_read(path, *args, **kwargs)
+        metadata = json.dumps({'packages': [], 'resolve': {'nodes': []}})
+        with patch.object(Path, 'read_text', read), \
+             patch.object(provider.subprocess, 'check_output', return_value=metadata), \
+             patch.object(provider, 'validate_graph'), \
+             patch.object(provider, 'validate_ci'):
+            with self.assertRaisesRegex(ValueError, 'unreviewed optional codec locked source'):
+                provider.inventory()
+
+    def test_ci_warms_own_home_graph_before_compile_and_keeps_legacy_pair(self):
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        for job in ['provider', 'provider_operator', 'provider_client']:
+            section = provider._job(source, job)
+            prefix = section[:section.index('python3 tools/check_provider_dependencies.py')]
+            for target in provider.TARGETS:
+                command = ('cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform ' + target +
+                           ' --features faction-client/own-home-provider > /dev/null')
+                self.assertEqual(prefix.splitlines().count('          ' + command), 1)
+        native = provider._step(provider._job(source, 'provider_client'),
+                                'Validate the native authenticated attachment client')
+        for feature in ['device-provider', 'own-home-provider']:
+            selected = native if feature == 'device-provider' else provider._step(provider._job(source, 'own_home_client'), 'Validate the own-home authenticated attachment client')
+            clippy = ('cargo clippy -p faction-client --features ' + feature +
+                      ' --all-targets --release --locked -- -D warnings')
+            self.assertIn('          ' + clippy + '\n', selected)
+        own_test = ('env FACTION_SETUP_CLIENT_EXE=\"$RUNNER_TEMP/faction322-setup-OWNED/faction-client\" '
+                    'FACTION_SETUP_CAPTURE_DIR=\"$RUNNER_TEMP/faction322-setup-OWNED/captures\" '
+                    'cargo test -p faction-client --features own-home-provider'
+                    ' --all-targets --release --locked -- --test-threads=1')
+        self.assertEqual(source.splitlines().count('          ' + own_test), 1)
+        codec_step = provider._step(provider._job(source, 'documentation'),
+                                    'Validate the isolated delegation wire codec')
+        for target in provider.TARGETS:
+            self.assertIn(' --filter-platform ' + target +
+                          ' --features faction-client/own-home-provider > /dev/null', codec_step)
+
+    def test_own_home_codec_graph_accepts_only_qualified_parent_union(self):
+        packages = [
+            {'id': 'client', 'name': 'faction-client', 'version': '0.1.0-alpha.1'},
+            {'id': 'provider', 'name': 'faction-provider', 'version': '0.1.0-alpha.1'},
+            {'id': 'codec', 'name': 'faction-delegation-codec', 'version': '0.1.0-alpha.1'},
+        ]
+        nodes = [
+            {'id': 'client', 'features': ['default', 'device-provider', 'native-mail', 'network-mail', 'own-home-provider'], 'deps': [{'pkg': 'provider'}]},
+            {'id': 'provider', 'features': ['delegation-issuer', 'delegation-records', 'delegation-services', 'delegation-verifier', 'delegation-wire', 'preparation'], 'deps': [{'pkg': 'codec'}]},
+            {'id': 'codec', 'features': [], 'deps': []},
+        ]
+        for name, version, features in [
+            ('base64', '0.22.1', ['alloc', 'default', 'std']),
+            ('memchr', '2.8.3', ['alloc', 'default', 'std']),
+            ('serde_json', '1.0.154', ['alloc', 'std']),
+        ]:
+            approved = codec.APPROVED[(name, version)]
+            packages.append({'id': name, 'name': name, 'version': version,
+                             'source': codec.REGISTRY, 'license': approved['license']})
+            nodes.append({'id': name, 'features': features, 'deps': []})
+            nodes[2]['deps'].append({'pkg': name})
+        metadata = {'packages': packages, 'resolve': {'nodes': nodes}}
+        codec.validate_own_home_graph(metadata)
+        ordinary = copy.deepcopy(metadata)
+        ordinary['resolve']['nodes'][0]['features'].remove('own-home-provider')
+        with self.assertRaises(ValueError):
+            codec.validate_own_home_graph(ordinary)
+        extra = copy.deepcopy(metadata)
+        extra['resolve']['nodes'][3]['features'].append('unreviewed')
+        with self.assertRaises(ValueError):
+            codec.validate_own_home_graph(extra)
+        # The standalone wire composition must retain its narrower feature rules.
+        with self.assertRaises(ValueError):
+            codec.validate_wire_graph(metadata)
+
+class OwnHomeConsoleCI(unittest.TestCase):
+    def test_selected_console_proof_builds_both_real_paths_after_legacy(self):
+        source=(ROOT/'.github/workflows/documentation.yml').read_text()
+        job=provider._job(source,'own_home_client')
+        name='Validate the own-home encrypted attachment console'
+        self.assertEqual(source.splitlines().count('      - name: '+name),1,
+                         'explicit own-home console proof must run exactly once')
+        proof=provider._step(job,name)
+        self.assertIn('    needs: [provider_client]', job.splitlines())
+        self.assertIn('Validate the prepared provider operator console', provider._job(source, 'provider_client'))
+        for setting in ['CARGO_BUILD_JOBS: 2','RUSTUP_TOOLCHAIN: 1.96.0','CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            self.assertEqual(proof.splitlines().count('          '+setting),1)
+        expected = [
+            'python3 tools/check_provider_dependencies.py',
+            'cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator,delegation-verifier --release --locked',
+            'cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked',
+            'umask 077',
+            'mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"',
+            'printf \'%s\\n\' \'Owned authenticated-provider console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"',
+            'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"',
+        ]
+        self.assertEqual(provider._lines(proof,{'python3','cargo','umask','mkdir','printf'}), expected)
+        self.assertNotIn('continue-on-error',proof)
+        self.assertNotIn('timeout-minutes:',proof)
+
+class OwnHomeCIMarkerIntegration(unittest.TestCase):
+    def test_actual_own_home_ci_marker_is_accepted_by_maintained_probe(self):
+        import shlex
+        import subprocess
+        import tempfile
+        import probe_device_provider_console as probe
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        step = provider._step(provider._job(source, 'own_home_client'),
+                              'Validate the own-home encrypted attachment console')
+        commands = provider._lines(step, {'python3', 'cargo', 'umask', 'mkdir', 'printf'})
+        producers = [shlex.split(command) for command in commands if command.startswith('printf ')]
+        self.assertEqual(len(producers), 1)
+        producer = producers[0]
+        self.assertEqual(len(producer), 5)
+        self.assertEqual(producer[:2], ['printf', '%s\\n'])
+        self.assertEqual(producer[3:], ['>', '$RUNNER_TEMP/faction322-console-OWNED/OWNED'])
+        # Exercise actual printf output, not a copied expected marker or shell.
+        result = subprocess.run(['/usr/bin/printf', *producer[1:3]], check=True, capture_output=True)
+        with tempfile.TemporaryDirectory(prefix='own-home-ci-marker-OWNED-') as temporary:
+            root = Path(temporary) / 'faction322-console-OWNED'
+            root.mkdir(mode=0o700)
+            (root / 'OWNED').write_bytes(result.stdout)
+            self.assertEqual(probe.require_root(root), root)
+
+    def test_maintained_marker_rejects_wrong_bytes_and_loose_mode(self):
+        import tempfile
+        import probe_device_provider_console as probe
+        with tempfile.TemporaryDirectory(prefix='own-home-ci-marker-negative-OWNED-') as temporary:
+            root = Path(temporary) / 'root'
+            root.mkdir(mode=0o700)
+            marker = root / 'OWNED'
+            marker.write_bytes(b'Owned authenticated-provider console proof\n')
+            self.assertEqual(probe.require_root(root), root)
+            root.chmod(0o755)
+            with self.assertRaises(ValueError):
+                probe.require_root(root)
+            root.chmod(0o700)
+            marker.write_bytes(b'Wrong owner marker\n')
+            with self.assertRaises(ValueError):
+                probe.require_root(root)
+
+class OwnHomeGuard(unittest.TestCase):
+    def test_exact_added_step_and_its_negative_mutations(self):
+        source=(ROOT/'.github/workflows/documentation.yml').read_text()
+        provider.validate_ci(source)
+        proof = provider._step(provider._job(source, 'own_home_client'),
+                               'Validate the own-home encrypted attachment console')
+        for old,new in [(' --route own-home',''),('--features own-home-provider --bin','--features device-provider --bin'),('--features operator,delegation-verifier --release','--features operator --release'),('Owned authenticated-provider console proof','Wrong owner marker')]:
+            with self.subTest(changed=old):
+                self.assertIn(old,proof)
+                with self.assertRaises(ValueError):provider.validate_ci(source.replace(proof, proof.replace(old, new, 1), 1))
+
+class SuccessorSchedulingCI(unittest.TestCase):
+    def test_successors_are_serial_replacements_with_fresh_exact_checkout_and_all_graphs(self):
+        import re
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        for name, predecessor in [('provider_composed', 'provider'), ('own_home_client', 'provider_client')]:
+            self.assertIn('  ' + name + ':\n', source)
+            job = provider._job(source, name)
+            self.assertEqual(re.findall(r'^    needs: (.*)$', job, re.M), ['[' + predecessor + ']'])
+            self.assertIn('    runs-on: ubuntu-24.04', job.splitlines())
+            self.assertIn('    timeout-minutes: 15', job.splitlines())
+            self.assertNotRegex(job, r'^    (?:if|continue-on-error|strategy|permissions|shell):')
+            fetch = provider._step(job, 'Fetch the public repository revision')
+            self.assertIn('          CHECKOUT_SHA: ${{ github.sha }}', fetch.splitlines())
+            self.assertEqual(provider._lines(fetch, {'git'}), [
+                'git init .', 'git remote add origin "$REPOSITORY_URL"',
+                'git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"', 'git checkout --detach FETCH_HEAD'])
+            first = job.index('          python3 tools/check_provider_dependencies.py\n')
+            before_guard = job[:first]
+            metadata = [line.strip() for line in before_guard.splitlines() if line.strip().startswith('cargo metadata ')]
+            self.assertEqual(metadata, provider.root_warm_commands() + provider.provider_warm_commands())
+            self.assertEqual(len(metadata), 66)
+            self.assertNotRegex(before_guard, r'cargo (?:build|test|clippy) ')
+            self.assertNotIn('uses:', job)
+            for step in re.split(r'^      - name: ', job, flags=re.M)[2:]:
+                for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+                    self.assertIn('          ' + setting, step.splitlines())
+        # A completed predecessor is replaced by its successor; each of these
+        # two chains contributes at most one live runner alongside two originals.
+        roots = ['native_mail', 'provider', 'provider_operator', 'provider_client']
+        dependencies = {name: set() for name in roots}
+        dependencies.update(provider_composed={'provider'}, own_home_client={'provider_client'}, bbs_regressions={'own_home_client'})
+        from itertools import combinations
+        maximum = 0
+        for size in range(len(dependencies) + 1):
+            for completed in combinations(dependencies, size):
+                done = set(completed)
+                if not all(dependencies[name] <= done for name in done):
+                    continue
+                ready = [name for name, needs in dependencies.items() if name not in done and needs <= done]
+                maximum = max(maximum, len(ready))
+        self.assertEqual(maximum, 4)
+
+    def test_full_pairs_and_own_home_validation_move_once_without_legacy_consoles(self):
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        self.assertIn('  provider_composed:\n', source)
+        self.assertIn('  own_home_client:\n', source)
+        composed = provider._job(source, 'provider_composed')
+        own = provider._job(source, 'own_home_client')
+        for feature in ['delegation-verifier', 'operator,delegation-verifier']:
+            for operation in ['clippy', 'test']:
+                command = ('cargo ' + operation + ' --manifest-path crates/faction-provider/Cargo.toml' +
+                           (' --all-targets' if operation == 'clippy' else '') + ' --release --locked --features ' + feature +
+                           (' -- -D warnings' if operation == 'clippy' else ' -- --test-threads=1'))
+                self.assertEqual(source.splitlines().count('          ' + command), 1)
+                self.assertIn('          ' + command, composed.splitlines())
+                self.assertNotIn('          ' + command, provider._job(source, 'provider').splitlines())
+        for fragment in ['--features own-home-provider --all-targets', 'faction322-setup-OWNED', '--route own-home']:
+            self.assertIn(fragment, own)
+            self.assertNotIn(fragment, provider._job(source, 'provider_client'))
+        legacy = provider._job(source, 'provider_client')
+        for marker in ['Validate the native authenticated attachment client', 'Validate the prepared provider operator console', 'faction280-console-OWNED']:
+            self.assertIn(marker, legacy)
+            self.assertNotIn(marker, own)
+        self.assertEqual(source.count('      - name: Validate the own-home encrypted attachment console'), 1)
+
+    def test_aggregate_requires_both_successors_even_after_skipped_or_cancelled_jobs(self):
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        job = provider._job(source, 'documentation')
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', job.splitlines())
+        self.assertIn('    if: ${{ always() }}', job.splitlines())
+        gate = provider._step(job, 'Require optional native tests')
+        for name in ['provider_composed', 'own_home_client']:
+            env = name.upper() + '_RESULT'
+            self.assertIn('          ' + env + ': ${{ needs.' + name + '.result }}', gate.splitlines())
+            self.assertIn('          test "$' + env + '" = success', gate.splitlines())
+
+    def test_checker_rejects_the_previous_unsplit_layout(self):
+        import re
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        # Before implementation this leaves the old workflow unchanged, exposing
+        # the checker accepting the absent scheduling/coverage boundary.
+        changed = re.sub(r'^  (?:provider_composed|own_home_client):\n.*?(?=^  [a-z_]+:|\Z)', '', source, flags=re.M | re.S)
+        with self.assertRaises(ValueError):
+            provider.validate_ci(changed)
+
+    def test_successor_dependency_warmup_limits_and_required_results_cannot_be_bypassed(self):
+        source = (ROOT / '.github/workflows/documentation.yml').read_text()
+        for name, predecessor in [('provider_composed', 'provider'), ('own_home_client', 'provider_client')]:
+            self.assertIn('  ' + name + ':\n', source)
+            job = provider._job(source, name)
+            for old, new in [
+                ('    needs: [' + predecessor + ']', '    needs: []'),
+                ('    needs: [' + predecessor + ']', '    needs: [' + predecessor + ', native_mail]'),
+                ('    steps:', '    if: ${{ always() }}\n    steps:'),
+                ('    steps:', '    continue-on-error: true\n    steps:'),
+                ('timeout-minutes: 15', 'timeout-minutes: 30'),
+                ('CARGO_BUILD_JOBS: 2', 'CARGO_BUILD_JOBS: 4'),
+                ('CHECKOUT_SHA: ${{ github.sha }}', 'CHECKOUT_SHA: main'),
+            ]:
+                self.assertIn(old, job)
+                with self.subTest(job=name, changed=new), self.assertRaises(ValueError):
+                    provider.validate_ci(source.replace(job, job.replace(old, new)))
+            for command in provider.root_warm_commands() + provider.provider_warm_commands():
+                line = '          ' + command + '\n'
+                with self.subTest(job=name, missing=command), self.assertRaises(ValueError):
+                    provider.validate_ci(source.replace(job, job.replace(line, '', 1)))
+            env = name.upper() + '_RESULT'
+            for old, new in [
+                ('${{ needs.' + name + '.result }}', 'success'),
+                ('          test "$' + env + '" = success\n', ''),
+                ('test "$' + env + '" = success', 'test "$' + env + '" = success || true'),
+            ]:
+                self.assertIn(old, source)
+                with self.subTest(job=name, result_change=new), self.assertRaises(ValueError):
+                    provider.validate_ci(source.replace(old, new))
+
+
+if __name__ == '__main__':
+    unittest.main()

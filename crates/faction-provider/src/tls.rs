@@ -32,6 +32,14 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
+#[cfg(feature = "delegation-wire")]
+#[path = "tcp_connect.rs"]
+mod tcp_connect;
+
+#[cfg(feature = "delegation-verifier")]
+#[path = "delivery.rs"]
+pub mod delivery;
+
 pub const HANDSHAKE_LIMIT: Duration = Duration::from_secs(5);
 pub const CYCLE_LIMIT: Duration = Duration::from_secs(10);
 pub const MAX_OPERATIONS: usize = 8;
@@ -100,6 +108,8 @@ struct DeadlineIo {
     response_write_gate: Option<Arc<ResponseWriteGate>>,
     #[cfg(all(test, feature = "delegation-wire"))]
     response_phase: bool,
+    #[cfg(all(test, feature = "delegation-verifier"))]
+    delivery_prefix_gate: Option<Arc<DeliveryPrefixGate>>,
     #[cfg(test)]
     write_observation: Option<Arc<socket_bio_tests::WriteRetryObservation>>,
 }
@@ -120,6 +130,8 @@ impl DeadlineIo {
             response_write_gate: None,
             #[cfg(all(test, feature = "delegation-wire"))]
             response_phase: false,
+            #[cfg(all(test, feature = "delegation-verifier"))]
+            delivery_prefix_gate: None,
             #[cfg(test)]
             write_observation: None,
         }
@@ -184,6 +196,15 @@ impl Read for DeadlineIo {
 }
 impl Write for DeadlineIo {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        // Test-only scheduling after actual positive TLS socket output. This
+        // preserves the real socket and does not claim kernel backpressure.
+        #[cfg(all(test, feature = "delegation-verifier"))]
+        if let Some(gate) = self.delivery_prefix_gate.clone()
+            && gate.positive.load(Ordering::SeqCst) > 0
+        {
+            self.delivery_prefix_gate.take();
+            gate.gate.enter(self.deadline)?;
+        }
         #[cfg(all(test, feature = "delegation-wire"))]
         if self.response_phase
             && let Some(gate) = self.response_write_gate.take()
@@ -193,7 +214,26 @@ impl Write for DeadlineIo {
         loop {
             let timeout = self.timeout()?;
             self.socket.set_write_timeout(Some(timeout))?;
-            match self.socket.write(bytes) {
+            #[cfg(all(test, feature = "delegation-verifier"))]
+            let offered = if self
+                .delivery_prefix_gate
+                .as_ref()
+                .is_some_and(|g| g.positive.load(Ordering::SeqCst) == 0)
+            {
+                &bytes[..bytes.len().min(1)]
+            } else {
+                bytes
+            };
+            #[cfg(not(all(test, feature = "delegation-verifier")))]
+            let offered = bytes;
+            let result = self.socket.write(offered);
+            #[cfg(all(test, feature = "delegation-verifier"))]
+            if let Ok(written) = &result
+                && let Some(gate) = &self.delivery_prefix_gate
+            {
+                gate.positive.fetch_add(*written, Ordering::SeqCst);
+            }
+            match result {
                 Err(e)
                     if matches!(
                         e.kind(),
@@ -308,6 +348,51 @@ impl Server {
         store
             .add_cert(ca.clone())
             .map_err(|_| Stage::Configuration)?;
+        b.set_cert_store(store.build());
+        b.set_verify(SslVerifyMode::PEER | SslVerifyMode::FAIL_IF_NO_PEER_CERT);
+        b.set_session_cache_mode(SslSessionCacheMode::OFF);
+        b.set_options(SslOptions::NO_TICKET);
+        b.set_num_tickets(0).map_err(|_| Stage::Configuration)?;
+        b.set_max_early_data(0).map_err(|_| Stage::Configuration)?;
+        Ok(Self {
+            acceptor: b.build(),
+        })
+    }
+    #[cfg(feature = "delegation-verifier")]
+    pub fn new_composed(
+        certificate: &X509,
+        key: &PKey<Private>,
+        roots: &[X509],
+    ) -> Result<Self, Stage> {
+        if roots.is_empty() || roots.len() > 32 {
+            return Err(Stage::Configuration);
+        }
+        for (i, root) in roots.iter().enumerate() {
+            let der = root.to_der().map_err(|_| Stage::Configuration)?;
+            if roots[..i]
+                .iter()
+                .any(|previous| previous.to_der().is_ok_and(|old| old == der))
+            {
+                return Err(Stage::Configuration);
+            }
+        }
+        let mut b = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls_server())
+            .map_err(|_| Stage::Configuration)?;
+        b.set_min_proto_version(Some(SslVersion::TLS1_3))
+            .map_err(|_| Stage::Configuration)?;
+        b.set_max_proto_version(Some(SslVersion::TLS1_3))
+            .map_err(|_| Stage::Configuration)?;
+        b.set_certificate(certificate)
+            .map_err(|_| Stage::Configuration)?;
+        b.set_private_key(key).map_err(|_| Stage::Configuration)?;
+        b.check_private_key().map_err(|_| Stage::Configuration)?;
+        let mut store =
+            openssl::x509::store::X509StoreBuilder::new().map_err(|_| Stage::Configuration)?;
+        for ca in roots {
+            store
+                .add_cert(ca.clone())
+                .map_err(|_| Stage::Configuration)?;
+        }
         b.set_cert_store(store.build());
         b.set_verify(SslVerifyMode::PEER | SslVerifyMode::FAIL_IF_NO_PEER_CERT);
         b.set_session_cache_mode(SslSessionCacheMode::OFF);
@@ -497,6 +582,113 @@ impl Server {
             cancel,
             attempted: 0,
             closed: false,
+        })
+    }
+    #[cfg(feature = "delegation-verifier")]
+    pub fn accept_composed(
+        &self,
+        listener: &TcpListener,
+        runtime: &Runtime,
+        cancel: Arc<AtomicBool>,
+    ) -> Result<delivery::Incoming, Stage> {
+        let admission = Instant::now() + HANDSHAKE_LIMIT;
+        let state = runtime.state.clone();
+        if state.stopped.load(Ordering::SeqCst) || state.active.swap(true, Ordering::SeqCst) {
+            return Err(Stage::Denied);
+        }
+        let mut guard = AdmissionGuard {
+            state: state.clone(),
+            transferred: false,
+        };
+        if !listener.local_addr().is_ok_and(|a| a.ip().is_loopback())
+            || listener.set_nonblocking(true).is_err()
+        {
+            return Err(Stage::Configuration);
+        }
+        let socket = loop {
+            check(admission, &cancel)?;
+            if state.stopped.load(Ordering::SeqCst) {
+                return Err(Stage::Denied);
+            }
+            match listener.accept() {
+                Ok((socket, peer)) => {
+                    if !peer.ip().is_loopback() {
+                        return Err(Stage::Admission);
+                    }
+                    break socket;
+                }
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => {
+                    std::thread::sleep(Duration::from_millis(5))
+                }
+                Err(_) => return Err(Stage::Admission),
+            }
+        };
+        let start = Instant::now();
+        let deadline = start + CYCLE_LIMIT;
+        let handshake = admission.min(deadline);
+        socket.set_nodelay(true).map_err(|_| Stage::Configuration)?;
+        *state.socket.lock().map_err(|_| Stage::Denied)? =
+            Some(socket.try_clone().map_err(|_| Stage::Admission)?);
+        let mut io = DeadlineIo::new(socket, handshake, cancel.clone());
+        io.stop = Some(state.stopped.clone());
+        let mut stream = self
+            .acceptor
+            .accept(io)
+            .map_err(|_| classify(handshake, &cancel, Stage::Handshake))?;
+        check(handshake, &cancel)?;
+        if state.stopped.load(Ordering::SeqCst) {
+            return Err(Stage::Denied);
+        }
+        let leaf = stream.ssl().peer_certificate().ok_or(Stage::Handshake)?;
+        if stream.ssl().verify_result() != X509VerifyResult::OK || stream.ssl().session_reused() {
+            return Err(Stage::Handshake);
+        }
+        let now = wall_now();
+        if !leaf_current(&leaf, now) {
+            return Err(Stage::Denied);
+        }
+        let authenticated = {
+            let mut authority = state.authority.lock().map_err(|_| Stage::Denied)?;
+            if state.stopped.load(Ordering::SeqCst) {
+                return Err(Stage::Denied);
+            }
+            authority
+                .authenticate_composed(&leaf, now, start.elapsed().as_millis() as u64)
+                .map_err(|_| Stage::Denied)?
+        };
+        check(handshake, &cancel)?;
+        stream.get_mut().deadline = deadline;
+        guard.transferred = true;
+        Ok(match authenticated {
+            crate::authority::Authenticated::Device(connection, handle) => {
+                delivery::Incoming::device(Session {
+                    stream,
+                    leaf,
+                    connection,
+                    handle,
+                    state: Arc::downgrade(&state),
+                    start,
+                    deadline,
+                    cancel,
+                    attempted: 0,
+                    closed: false,
+                    #[cfg(all(test, feature = "delegation-verifier"))]
+                    publication_capture: None,
+                })
+            }
+            crate::authority::Authenticated::Service(credential) => {
+                delivery::Incoming::service(ServiceSession {
+                    stream,
+                    leaf,
+                    credential,
+                    state: Arc::downgrade(&state),
+                    start,
+                    deadline,
+                    cancel,
+                    attempted: 0,
+                    closed: false,
+                })
+            }
         })
     }
 }
@@ -994,6 +1186,10 @@ impl ClientCredentials {
 /// ```
 pub struct ClientAdmission {
     start: Instant,
+    #[cfg(feature = "delegation-verifier")]
+    current_probe: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
+    #[cfg(feature = "delegation-verifier")]
+    operation_deadline: Option<Instant>,
     expected_name: String,
     leaf_pin: [u8; 32],
     credentials: ClientCredentials,
@@ -1020,6 +1216,10 @@ impl ClientAdmission {
         }
         Ok(Self {
             start,
+            #[cfg(feature = "delegation-verifier")]
+            current_probe: None,
+            #[cfg(feature = "delegation-verifier")]
+            operation_deadline: None,
             expected_name: expected_name.into(),
             leaf_pin,
             credentials,
@@ -1029,8 +1229,16 @@ impl ClientAdmission {
     /// Consume only an already connected loopback socket. TLS still authenticates
     /// its peer; a socket or configuration text supplies no device authority.
     pub fn connect(self, socket: TcpStream) -> Result<Client, Stage> {
-        let handshake = self.start + HANDSHAKE_LIMIT;
+        #[cfg(feature = "delegation-verifier")]
+        let client_leaf = self.credentials.certificate.clone();
+        #[cfg(feature = "delegation-verifier")]
+        let current_probe = self.current_probe.clone();
         let deadline = self.start + CYCLE_LIMIT;
+        #[cfg(feature = "delegation-verifier")]
+        let deadline = self
+            .operation_deadline
+            .map_or(deadline, |original| original.min(deadline));
+        let handshake = (self.start + HANDSHAKE_LIMIT).min(deadline);
         check(handshake, &self.cancel)?;
         if !socket.peer_addr().is_ok_and(|a| a.ip().is_loopback())
             || !socket.local_addr().is_ok_and(|a| a.ip().is_loopback())
@@ -1068,6 +1276,12 @@ impl ClientAdmission {
         configuration.set_verify_hostname(true);
         check(handshake, &self.cancel)?;
         let io = DeadlineIo::new(socket, handshake, self.cancel.clone());
+        #[cfg(feature = "delegation-verifier")]
+        let io = {
+            let mut io = io;
+            io.policy_probe = current_probe.clone();
+            io
+        };
         let mut stream = configuration
             .connect(&self.expected_name, io)
             .map_err(|_| classify(handshake, &self.cancel, Stage::Handshake))?;
@@ -1080,6 +1294,15 @@ impl ClientAdmission {
             return Err(Stage::Pin);
         }
         check(handshake, &self.cancel)?;
+        #[cfg(feature = "delegation-verifier")]
+        if let Some(probe) = current_probe {
+            stream.get_mut().policy_probe = Some(Arc::new(move || {
+                probe() && leaf_current(&client_leaf, wall_now()) && leaf_current(&leaf, wall_now())
+            }));
+            if !stream.get_mut().policy_probe.as_ref().is_some_and(|p| p()) {
+                return Err(Stage::Denied);
+            }
+        }
         stream.get_mut().deadline = deadline;
         check(deadline, &self.cancel)?;
         Ok(Client {
@@ -1313,3 +1536,27 @@ pub(crate) use issuer_lifecycle_tests::cert as test_certificate;
 #[cfg(feature = "delegation-verifier")]
 #[path = "publication_session.rs"]
 mod publication_session;
+
+#[cfg(all(test, feature = "delegation-verifier"))]
+struct DeliveryPrefixGate {
+    gate: ResponseWriteGate,
+    positive: Arc<std::sync::atomic::AtomicUsize>,
+}
+#[cfg(all(test, feature = "delegation-verifier"))]
+impl Session {
+    pub(crate) fn hold_delivery_after_prefix(
+        &mut self,
+        entered: std::sync::mpsc::Sender<Instant>,
+        release: std::sync::mpsc::Receiver<()>,
+    ) -> Arc<std::sync::atomic::AtomicUsize> {
+        let positive = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        self.stream.get_mut().delivery_prefix_gate = Some(Arc::new(DeliveryPrefixGate {
+            gate: ResponseWriteGate {
+                entered,
+                release: std::sync::Mutex::new(release),
+            },
+            positive: positive.clone(),
+        }));
+        positive
+    }
+}

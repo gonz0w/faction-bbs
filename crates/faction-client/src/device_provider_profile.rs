@@ -110,9 +110,24 @@ pub(super) fn decode(
         .map_err(|_| invalid())?
         .parse::<toml::Table>()
         .map_err(|_| invalid())?;
-    if table.remove("version").and_then(|v| v.as_integer()) != Some(1) {
-        return Err(invalid());
-    }
+    let own_home = match table.remove("version").and_then(|v| v.as_integer()) {
+        Some(1) => false,
+        #[cfg(feature = "own-home-provider")]
+        Some(2) => {
+            if table
+                .remove("route")
+                .and_then(|v| v.as_str().map(str::to_owned))
+                .as_deref()
+                != Some("own-home")
+            {
+                return Err(invalid());
+            }
+            true
+        }
+        _ => return Err(invalid()),
+    };
+    #[cfg(not(feature = "own-home-provider"))]
+    let _ = own_home;
     let device = table
         .remove("device")
         .and_then(|v| v.as_integer())
@@ -146,7 +161,15 @@ pub(super) fn decode(
     {
         return Err(invalid());
     }
-    let config = Config::new(
+    #[cfg(feature = "own-home-provider")]
+    let constructor = if own_home {
+        Config::new_own_home
+    } else {
+        Config::new
+    };
+    #[cfg(not(feature = "own-home-provider"))]
+    let constructor = Config::new;
+    let config = constructor(
         &home,
         address,
         &name,
@@ -224,9 +247,14 @@ mod tests {
                 fs::read(self.0.join("OWNED")).unwrap(),
                 b"owned profile tests"
             );
+            if let Some(sink) = std::env::var_os("FACTION322_CORE_FIXTURE_RETENTION") {
+                capture_owned_test_fixture(&self.0, std::path::Path::new(&sink));
+            }
             fs::remove_dir_all(&self.0).unwrap();
         }
     }
+    include!("test_fixture_retention.rs");
+    include!("test_fixture_retention_contract.rs");
     #[test]
     fn child_deadline_kills_and_reaps_stalled_setup() {
         let mut command = std::process::Command::new(std::env::current_exe().unwrap());
@@ -345,6 +373,31 @@ mod tests {
         fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
         let checkpoint = fs::read(f.0.join("vault/mail.fkv")).unwrap();
         assert!(load(&path, &vault).is_ok());
+        #[cfg(feature = "own-home-provider")]
+        {
+            let v2 = text.replacen("version=1", "version=2\nroute=\"own-home\"", 1);
+            fs::write(&path, &v2).unwrap();
+            assert!(
+                load(&path, &vault).is_ok(),
+                "explicit own-home v2 profile must load against the unchanged current vault"
+            );
+            assert!(
+                load(&path, &vault).unwrap().uses_own_home(),
+                "v2 selection must preserve the explicit own-home mode"
+            );
+            for changed in [
+                v2.replace("own-home", "automatic"),
+                v2.replace("version=2", "version=1"),
+                v2.replace("alice@home.test", "other@home.test"),
+                v2.replace("device=101", "device=202"),
+                v2.replace(&identity, &"02".repeat(32)),
+            ] {
+                fs::write(&path, changed).unwrap();
+                assert!(load(&path, &vault).is_err());
+            }
+            assert_eq!(fs::read(f.0.join("vault/mail.fkv")).unwrap(), checkpoint);
+            assert!(!f.0.join("vault/attachments").exists());
+        }
         for changed in [
             text.replace("alice@home.test", "other@home.test"),
             text.replace("device=101", "device=202"),

@@ -15,6 +15,16 @@ impl Session {
         request: Request,
     ) -> Result<crate::services::PendingPublication, Error> {
         let state = self.attempt()?;
+        let pending = self.capture_publication(&state, binding, request)?;
+        drop(self);
+        Ok(pending)
+    }
+    pub(crate) fn capture_publication(
+        &mut self,
+        state: &Arc<State>,
+        binding: faction_files::private_blobs::Binding,
+        request: Request,
+    ) -> Result<crate::services::PendingPublication, Error> {
         let initial = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_err(|_| Error::Store(faction_files::private_blobs::Error::Clock))?;
@@ -29,7 +39,7 @@ impl Session {
             .lock()
             .map_err(|_| Error::Transport(Stage::Denied))?;
         let pending = a.prepare_publication_source(
-            &state,
+            state,
             crate::services::publication::PublicationSource {
                 session: crate::retrieval::Source {
                     connection: &self.connection,
@@ -46,7 +56,6 @@ impl Session {
             request,
         )?;
         drop(a);
-        drop(self);
         Ok(pending)
     }
 }

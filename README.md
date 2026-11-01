@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-10-30 · no supported release yet.**
+**Working hobby preview · updated 2026-10-31 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -30,57 +30,21 @@ by the sysop; experiments and future protocols are separate from normal operatio
 - **Capacity:** the normal shared service admits **eight sessions**. Earlier
   250-member experiments are [research evidence](dev-docs/research/README.md),
   not supported capacity.
-- **Privacy:** the device-local offline vault remains available. The default-off
-  [manual home-mail client](docs/online-mail.md) adds verified XMPP access,
-  encrypted subject/body exchange and durable pending ciphertext. Keys and
-  decryption stay on the member's device. Opt-in [archive catch-up](docs/archive-mail.md)
-  saves bounded offline pages with an encrypted cursor. An explicit
-  [picker E entry](docs/picker-home-mail.md) opens native mail between board visits.
-  [Local read tracking and Files-desk mail](docs/local-unread-mail.md) add encrypted
-  unread decisions and a parked in-session entry. A [selectable local inbox](docs/local-mail-inbox.md)
-  adds bounded unread navigation and selected-message reading. The default-off
-  [private attachment desk](docs/private-attachments.md) adds
-  explicit local queue, upload, fetch and save to native home mail. Compatible
-  home storage is required. A [NetBSD 11 ARM64 software qualification](dev-docs/evidence/netbsd-attachments/README.md)
-  exercises the desk and a two-home transfer inside one guest; provider deployment,
-  independent client interoperability, background notifications and production roaming remain incomplete.
-  [Experimental provider authority](dev-docs/provider-authority.md) explores a
-  separate synthetic TLS boundary, with a [native NetBSD software qualification](dev-docs/evidence/provider-authority-netbsd/README.md).
-  An optional [provider embedding](dev-docs/provider-integration.md) exposes that
-  boundary and reuses the native attachment IQ codec in process, with
-  [fresh host/NetBSD software evidence](dev-docs/evidence/provider-integration/README.md).
-  An explicit `device-provider` client feature can select a local, same-home
-  device provider for attachment transfers; ordinary encrypted mail uses its
-  separate XMPP route. The [host and NetBSD console proof](dev-docs/evidence/native-provider-client/README.md)
-  covers 1 MiB transfers in classic and Unicode modes, including outage and retry.
-  See the [attachment guide](docs/private-attachments.md).
-  The [delivery research](dev-docs/research/0061-private-attachment-delivery-contract.md)
-  rejects the unchanged modern-client candidate; real provider deployment and
-  independent interoperability remain unqualified.
-  [Offline preparation](docs/provider-preparation.md) creates a private profile and
-  separate self-asserted card; the operator checks a complete independently approved
-  proposal before a separate policy action. The [manual enrollment guide](docs/provider-enrollment.md)
-  describes independent approval and the dedicated SSH-forward workflow.
-  [Current host and NetBSD software checks](dev-docs/evidence/offline-provider-preparation/README.md)
-  exercise the generated files through encrypted attachment delivery and private saves.
-  An optional [private provider operator](docs/provider-operator.md) adds durable policy and a foreground loopback service using preapproved policy and independent TLS credentials. [Historical host and NetBSD 11 ARM64 software checks](dev-docs/evidence/durable-provider-operator/README.md) for the earlier #285 revision cover restart/retry, encrypted transfers and ordinary-access independence. It remains a software preview; it does not enroll devices or deploy a provider. Classic defaults remain.
-  Cross-home attachment authorization is under development. The default-off
-  [local retrieval-intent API](dev-docs/retrieval-intents.md) has host and NetBSD
-  software qualification. A separate default-off [service observation API](dev-docs/service-observations.md)
-  checks current recipient approval for an authenticated invited service. The
-  default-off library [retrieval issuer](dev-docs/delegation-issuer.md) adds an
-  explicitly permitted certificate-bound token and optional one-operation HTTP
-  carrier, with [host and NetBSD software evidence](dev-docs/evidence/delegation-issuer/README.md).
-  An explicit publication observation HTTP profile and bounded outbound client
-  expose unverified metadata to trusted embedders; they grant no device or Store
-  authority. A default-off [retrieval verifier](dev-docs/delegation-verifier.md)
-  checks fresh issuer metadata for a private committed-object retrieval; explicit
-  composed policy shares one home runtime for issuer and resource roles. A consuming
-  library publication operation checks fresh recipient approval for the actual
-  sender session. The earlier
-  verifier has [host and NetBSD software evidence](dev-docs/evidence/delegation-verifier/README.md). Full
-  native cross-home delivery and mail release remain incomplete. See the
-  [composed policy and publication software record](dev-docs/evidence/delegation-publication/README.md).
+- **Privacy:** the [offline vault](docs/local-mail-vault.md) and optional
+  [manual encrypted home mail](docs/online-mail.md) keep keys and decryption on
+  the member's device. The native client offers a local inbox, explicit replies,
+  bounded archive catch-up and a [private attachment desk](docs/private-attachments.md).
+  Compatible home storage is required. Ordinary SSH access does not receive private
+  mail plaintext or keys.
+- **Limits:** provider operation and cross-home attachment delivery are software
+  previews, not deployed services. An explicitly enabled own-home route completed
+  maximum-size classic and Unicode exercises on the host and a NetBSD software
+  VM, using two separately configured homes and one opaque test delivery/archive
+  queue. Deployed federation, independent client interoperability, physical
+  hardware and capacity remain unqualified. See the
+  [operator guide](docs/provider-operator.md) and
+  [carrier contract](dev-docs/delegation-verifier.md) and
+  [software evidence](dev-docs/evidence/own-home-attachments/README.md).
 
 ## What you can do
 

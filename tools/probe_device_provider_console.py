@@ -34,6 +34,7 @@ import base64
 import copy
 import hashlib
 import json
+import math
 import select
 import shutil
 import socket
@@ -102,10 +103,63 @@ _TRANSFER_MARKERS = [
 ]
 
 
+def _transfer_failure_summary(observation):
+    # Read only known fields from exact builtins: never format arbitrary values,
+    # mapping keys, transcript bytes or exception text into a hosted diagnostic.
+    def fields(value):
+        return value if type(value) is dict else {}
+
+    def enum(value, allowed):
+        return value if type(value) is str and value in allowed else 'unavailable'
+
+    def integer(value, maximum):
+        return str(value) if type(value) is int and 0 <= value <= maximum else 'unavailable'
+
+    def seconds(value):
+        if type(value) is int and 0 <= value <= 1.7976931348623157e308:
+            return str(value)
+        if type(value) is float and math.isfinite(value) and value >= 0:
+            return str(value)
+        return 'unavailable'
+
+    def boolean(value):
+        return ('true' if value else 'false') if type(value) is bool else 'unavailable'
+
+    observation = fields(observation)
+    drain = fields(observation.get('drain'))
+    progress = observation.get('progress')
+    last = fields(progress[-1]) if type(progress) is list and progress else {}
+    marker = drain.get('marker_before_cancel', 'unavailable')
+    return ' '.join([
+        'reason='+enum(observation.get('reason'), {
+            'work_deadline', 'idle_gap', 'output_bound', 'product_stop',
+            'early_completion', 'invalid_progress', 'io_error', 'eof'}),
+        'classification='+enum(observation.get('classification'), {
+            'product_stop_observed', 'late_completion_observed',
+            'observer_timeout_ambiguous', 'observer_rejection'}),
+        'calls='+integer(observation.get('calls'), 65),
+        'offset='+integer(observation.get('offset'), 1_048_592),
+        'elapsed='+seconds(observation.get('seconds')),
+        'last_progress='+seconds(last.get('seconds')),
+        'drain_seconds='+seconds(drain.get('seconds')),
+        'cancelled='+boolean(drain.get('cancelled')),
+        'killed='+boolean(drain.get('killed')),
+        'reaped='+boolean(drain.get('reaped')),
+        'marker='+('none' if marker is None else enum(marker, {
+            'budget', 'transfer_stop', 'progress_bound', 'locked', 'completion'})),
+    ])
+
+
 class TransferObservationError(ValueError):
     def __init__(self, observation):
-        super().__init__('bounded transfer observation failed: '+observation['reason'])
         self.observation = observation
+        try:
+            summary = _transfer_failure_summary(observation)
+        except Exception:
+            # Formatting runs after the existing drain and cannot replace its
+            # structured failure or leak a formatter exception's private text.
+            summary = 'unavailable'
+        super().__init__('bounded transfer observation failed: '+summary)
 
 
 def _transfer_marker(buffer):
@@ -287,8 +341,15 @@ class PublicMail:
     No private store API, transport credential or member-vault operation exists.
     The inherited HomePeer authenticates each ordinary XMPP account separately.
     """
-    def __init__(self, root):
+    def __init__(self, root, *, accounts=('alice@home.test', 'bob@home.test'),
+                 devices=(101, 202), archive_owner=None):
+        if len(accounts) != 2 or len(devices) != 2 or len(set(accounts)) != 2:
+            raise ValueError('two exact synthetic mail accounts required')
         self.root = root
+        self.accounts, self.devices = tuple(accounts), tuple(devices)
+        self.archive_owner = accounts[1] if archive_owner is None else archive_owner
+        if self.archive_owner not in self.accounts:
+            raise ValueError('synthetic archive owner must be selected')
         self.blob_requests = 0
         self.archive_pages = 0
         self.requests = 0
@@ -299,14 +360,15 @@ class PublicMail:
         if request.find('{urn:faction:blob:1}blob') is not None:
             self.blob_requests += 1
             raise ValueError('device-provider attachment fallback attempted')
-        own = ['alice@home.test', 'bob@home.test'][actor]
+        own = self.accounts[actor]
         reply = ET.Element('{'+NS+'}iq', {'type': 'result', 'id': request.attrib['id'],
                                          'from': own, 'to': own})
         query = request.find('{'+MAM+'}query')
         if query is not None:
             self.archive_pages += 1
             after = query.find('{'+RSM+'}set/{'+RSM+'}after')
-            available = (self.root/'delivery.xml').exists() and after is None
+            available = (own == self.archive_owner and
+                         (self.root/'delivery.xml').exists() and after is None)
             pieces = []
             if available:
                 outer = ET.Element('{'+NS+'}message', {'from': own, 'to': own})
@@ -329,10 +391,10 @@ class PublicMail:
                 raise ValueError('unsupported ordinary mail fixture IQ')
             items = pubsub.find('{'+PUBSUB+'}items')
             if items is None:
-                reply.set('from', 'home.test')
+                reply.set('from', own.split('@')[1])
             else:
                 account = request.get('to', own)
-                if account not in ['alice@home.test', 'bob@home.test']:
+                if account not in self.accounts:
                     raise ValueError('unknown ordinary mail account')
                 reply.set('from', account)
                 node = items.attrib['node']
@@ -342,9 +404,9 @@ class PublicMail:
                     item = ET.SubElement(result_items, '{'+PUBSUB+'}item', {'id': 'current'})
                     devices = ET.SubElement(item, '{'+OMEMO+'}devices')
                     ET.SubElement(devices, '{'+OMEMO+'}device',
-                                  {'id': '101' if account.startswith('alice@') else '202'})
+                                  {'id': str(self.devices[self.accounts.index(account)])})
                 elif node == OMEMO+':bundles':
-                    name = account.split('@')[0]
+                    name = ['alice', 'bob'][self.accounts.index(account)]
                     export = ET.parse(self.root/(name+'-bundle.xml')).getroot()
                     item = export.find('{'+PUBSUB+'}pubsub/{'+PUBSUB+'}publish/{'+PUBSUB+'}item')
                     if item is None:
@@ -442,20 +504,36 @@ def fingerprint(path):
     return hashlib.sha256(ssl.PEM_cert_to_DER_cert(path.read_text())).digest()
 
 
-def profile(root, name, identity, port, server_cert, device_pair):
+def profile(root, name, identity, port, server_cert, device_pair, *,
+            route='same-home', home='home.test', account=None, device=None, ca=None):
+    if route not in ('same-home', 'own-home'):
+        raise ValueError('explicit fixture route required')
     directory = root/(name+'-provider')
     directory.mkdir(mode=0o700)
-    for source, target in [(root/'ca.pem', 'ca.pem'), (device_pair[0], 'device.pem'),
+    for source, target in [(root/'ca.pem' if ca is None else ca, 'ca.pem'), (device_pair[0], 'device.pem'),
                            (device_pair[1], 'device.key')]:
         private(directory/target, source.read_bytes())
-    values = dict(version=1, home='home.test', endpoint='127.0.0.1:'+str(port),
-                  name='home.test', pin=fingerprint(server_cert).hex(),
-                  account=name+'@home.test', device=101 if name=='alice' else 202,
+    values = dict(version=2 if route == 'own-home' else 1, home=home, endpoint='127.0.0.1:'+str(port),
+                  name=home, pin=fingerprint(server_cert).hex(),
+                  account=name+'@'+home if account is None else account,
+                  device=(101 if name=='alice' else 202) if device is None else device,
                   identity=identity, ca=str(directory/'ca.pem'),
                   certificate=str(directory/'device.pem'), key=str(directory/'device.key'))
+    if route == 'own-home':values['route'] = route
     text = ''.join(key+'='+json.dumps(value)+'\n' for key, value in values.items())
+    if len(text.encode()) > 8192:raise ValueError('private profile bound')
     path = directory/'profile.toml'
     private(path, text.encode())
+    return path
+
+
+def mail_settings(root, name, peer, cert, ca):
+    """Exact fixture account/domain and its independently configured CA."""
+    path = root/(name+'-home.toml')
+    ca.chmod(0o600)
+    values = dict(version=1, account=peer.account, endpoint='127.0.0.1:'+str(peer.port),
+                  domain=peer.domain, ca=str(ca), pin=fingerprint(cert).hex())
+    private(path, ''.join(k+'='+json.dumps(v)+'\n' for k,v in values.items()).encode())
     return path
 
 
@@ -673,7 +751,12 @@ def one_journey(client, fixture, owned_root, openssl, unicode):
             raise ValueError('owned console fixture cleanup failed') from failures[0]
 
 
-def probe(client, fixture, owned_root, openssl):
+def probe(client, fixture, owned_root, openssl, *, route='same-home', operator=None):
+    if route not in ('same-home', 'own-home') or (route == 'own-home') != (operator is not None):
+        raise ValueError('explicit own-home fixture and operator selection required')
+    if route == 'own-home':
+        from probe_two_home_provider_console import probe as own_home_probe
+        return own_home_probe(client,fixture,operator,owned_root,openssl)
     owned_root=require_root(owned_root)
     modes=[one_journey(client,fixture,owned_root,openssl,unicode) for unicode in [False,True]]
     return dict(result='pass',count=sum(len(mode['checks']) for mode in modes),modes=modes,
@@ -687,12 +770,15 @@ def make_parser():
     parser.add_argument('--fixture',type=Path,required=True)
     parser.add_argument('--owned-root',type=Path,required=True)
     parser.add_argument('--openssl',default='openssl')
+    parser.add_argument('--route',choices=['same-home','own-home'],default='same-home')
+    parser.add_argument('--operator',type=Path)
     parser.add_argument('--output',type=Path,required=True)
     return parser
 
 
 if __name__=='__main__':
     args=make_parser().parse_args()
-    result=probe(args.client.resolve(),args.fixture.resolve(),args.owned_root,args.openssl)
+    result=probe(args.client.resolve(),args.fixture.resolve(),args.owned_root,args.openssl,
+                 route=args.route,operator=None if args.operator is None else args.operator.resolve())
     private(args.output,(json.dumps(result,indent=2,sort_keys=True)+'\n').encode())
     print('Authenticated-provider production console passed',result['count'],'controls.')

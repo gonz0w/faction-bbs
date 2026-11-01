@@ -1,6 +1,8 @@
 //! Private foreground operator adapter. Inputs are trusted preapproved public
 //! policy plus independently provisioned TLS material, never enrollment or keys
 //! derived from a member password. All diagnostics are fixed bounded strings.
+#[cfg(feature = "delegation-verifier")]
+mod composed;
 mod input;
 mod preparation;
 use crate::operator::input::Config;
@@ -29,7 +31,7 @@ fn mapped<T, E>(r: std::result::Result<T, E>) -> Result<T> {
 }
 /// Verify one explicitly selected local CA and the server leaf's current chain,
 /// server purpose and home name using OpenSSL. No system CA discovery or issuer.
-fn server(config: &Config) -> Result<Server> {
+fn server_material(config: &Config) -> Result<(Vec<u8>, Vec<u8>, Vec<u8>)> {
     let ca = input::private_file(&config.ca, &config.root, 65_536)?;
     let cert = input::private_file(&config.certificate, &config.root, 65_536)?;
     let key = input::private_file(&config.key, &config.root, 65_536)?;
@@ -51,6 +53,10 @@ fn server(config: &Config) -> Result<Server> {
     if !mapped(context.init(&store, &cert_chain[0], &chain, |ctx| ctx.verify_cert()))? {
         return Err(());
     }
+    Ok((ca, cert, key))
+}
+fn server(config: &Config) -> Result<Server> {
+    let (ca, cert, key) = server_material(config)?;
     mapped(Server::from_pem(&cert, &key, &ca))
 }
 fn same_home(registry: &faction_provider::authority::Registry, home: &str) -> bool {
@@ -112,6 +118,19 @@ fn serving(config: Config) -> Result<()> {
 }
 pub(super) fn run(args: impl IntoIterator<Item = std::ffi::OsString>) -> Result<()> {
     let args = args.into_iter().collect::<Vec<_>>();
+    #[cfg(feature = "delegation-verifier")]
+    if args.first().and_then(|a| a.to_str()).is_some_and(|a| {
+        matches!(
+            a,
+            "init-composed"
+                | "apply-composed"
+                | "serve-composed"
+                | "inspect-composed"
+                | "reset-composed"
+        )
+    }) {
+        return composed::run(&args);
+    }
     if args.first().is_some_and(|a| a == "prepare") {
         let result = preparation::execute(&args[1..]);
         if result == Err(preparation::Error::PublicationUncertain) {

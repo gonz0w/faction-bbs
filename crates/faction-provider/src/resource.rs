@@ -113,7 +113,26 @@ impl tls::ServiceSession {
         request: Request,
         token: codec::UnverifiedToken,
     ) -> Result<PendingRetrieval, Error> {
+        let pending = self.capture_retrieval(binding, request, token)?;
+        drop(self);
+        Ok(pending)
+    }
+    pub(crate) fn capture_retrieval(
+        &mut self,
+        binding: Binding,
+        request: Request,
+        token: codec::UnverifiedToken,
+    ) -> Result<PendingRetrieval, Error> {
         let state = self.issuer_attempt()?;
+        self.capture_retrieval_charged(&state, binding, request, token)
+    }
+    pub(crate) fn capture_retrieval_charged(
+        &mut self,
+        state: &Arc<State>,
+        binding: Binding,
+        request: Request,
+        token: codec::UnverifiedToken,
+    ) -> Result<PendingRetrieval, Error> {
         let action = exact_action(&binding, &request).map_err(Error::Store)?;
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -138,7 +157,7 @@ impl tls::ServiceSession {
             .cloned()
             .ok_or(Error::Store(BlobError::Denied))?;
         let context = Arc::new(Context {
-            state: Arc::downgrade(&state),
+            state: Arc::downgrade(state),
             credential: self.credential.clone(),
             leaf: self.leaf.clone(),
             binding,
@@ -168,8 +187,6 @@ impl tls::ServiceSession {
             token,
             _lease: lease,
         };
-        // Fully finish ServiceSession::drop and its TLS fields before returning.
-        drop(self);
         Ok(pending)
     }
 }
@@ -326,6 +343,24 @@ impl Access for VerifiedAccess<'_> {
     }
 }
 impl PendingRetrieval {
+    pub(crate) fn delivery_source(&self) -> crate::delivery::Source {
+        let context = self.context.clone();
+        crate::delivery::Source {
+            state: context.state.clone(),
+            purpose: 2,
+            peer: crate::delivery::Peer::Service(
+                context.credential.digest,
+                context.credential.identity.clone(),
+            ),
+            binding: context.binding.clone(),
+            request: self.request.clone(),
+            deadline: context.deadline,
+            cancel: context.cancel.clone(),
+            attempted: context.attempted,
+            _lease: self._lease.clone(),
+            current: Arc::new(move || context.current().is_ok()),
+        }
+    }
     /// Consume one continuation and return only the bounded Store result to the
     /// trusted embedder. No lock or exclusive Store borrow spans callback I/O.
     pub fn execute(
@@ -333,6 +368,14 @@ impl PendingRetrieval {
         endpoint: &tls::HttpEndpoint,
         store: &Mutex<Store>,
     ) -> Result<Response, Error> {
+        self.execute_delivery_response(endpoint, store)
+            .map(|(response, _)| response)
+    }
+    pub(crate) fn execute_delivery_response(
+        self,
+        endpoint: &tls::HttpEndpoint,
+        store: &Mutex<Store>,
+    ) -> Result<(Response, u64), Error> {
         let state = self.context.current()?;
         {
             let a = state
@@ -406,8 +449,9 @@ impl PendingRetrieval {
                 now.as_secs(),
             )
             .map_err(Error::Store)?;
-        verify_metadata(&self.context, &metadata, self.context.moment()?).map_err(Error::Store)?;
-        Ok(response)
+        let expires = verify_metadata(&self.context, &metadata, self.context.moment()?)
+            .map_err(Error::Store)?;
+        Ok((response, expires))
     }
 }
 

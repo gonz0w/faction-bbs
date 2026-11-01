@@ -74,6 +74,7 @@ use std::{
     thread,
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
+include!("../src/test_fixture_retention.rs");
 static SERIAL: Mutex<()> = Mutex::new(());
 const PASS: &[u8] = b"owned synthetic device attachment vault";
 fn now() -> u64 {
@@ -280,7 +281,8 @@ impl Fixture {
     }
     fn settings(&self, account: &str, endpoint: SocketAddr) -> Settings {
         let path = self.root.join("mail-profile");
-        fs::write(&path,format!("version = 1\naccount = \"{account}\"\nendpoint = \"{endpoint}\"\ndomain = \"home.test\"\nca = \"{}\"\npin = \"{}\"\n",self.root.join("ca.pem").display(),faction_client::mail_data::hex(&self.digests[0]))).unwrap();
+        let domain = account.split_once('@').unwrap().1;
+        fs::write(&path,format!("version = 1\naccount = \"{account}\"\nendpoint = \"{endpoint}\"\ndomain = \"{domain}\"\nca = \"{}\"\npin = \"{}\"\n",self.root.join("ca.pem").display(),faction_client::mail_data::hex(&self.digests[0]))).unwrap();
         fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
         Settings::load(&path).unwrap()
     }
@@ -343,6 +345,9 @@ impl Drop for Fixture {
             fs::read(self.root.join("OWNED")).unwrap(),
             b"issue279 synthetic private TLS fixture"
         );
+        if let Some(sink) = std::env::var_os("FACTION322_CORE_FIXTURE_RETENTION") {
+            capture_owned_test_fixture(&self.root, std::path::Path::new(&sink));
+        }
         fs::remove_dir_all(&self.root).unwrap();
         assert!(!self.root.exists());
     }
@@ -758,4 +763,260 @@ fn inherited_key_logging_is_refused_without_environment_mutation_or_connection()
             );
         }
     }
+}
+
+#[cfg(feature = "own-home-provider")]
+fn publication_runtime(
+    f: &Fixture,
+    own: &CheckpointVault,
+    peer: &str,
+    callback: SocketAddr,
+) -> Runtime {
+    use faction_provider::services::{
+        IssuerRoute, PublicationAssociation, ResourceAssociation, ServicePolicy,
+        ServiceRegistration, ServiceUse,
+    };
+    let principal = Fixture::principal(own);
+    let local = principal.account.split_once('@').unwrap().1.to_owned();
+    let epoch = now();
+    let entries = [
+        (local.as_str(), "relay", [11; 32], ServiceUse::Relay),
+        (peer, "introspection", [12; 32], ServiceUse::Introspection),
+        (peer, "relay", [13; 32], ServiceUse::ResourceClient),
+        (
+            local.as_str(),
+            "outgoing",
+            [14; 32],
+            ServiceUse::OutboundIntrospection,
+        ),
+        (peer, "endpoint", f.digests[0], ServiceUse::IssuerEndpoint),
+        (
+            local.as_str(),
+            "observer",
+            [15; 32],
+            ServiceUse::OutboundObservation,
+        ),
+        (peer, "observer", [16; 32], ServiceUse::Observation),
+    ]
+    .into_iter()
+    .map(|(home, id, digest, purpose)| {
+        (
+            ServiceRegistration {
+                home: home.into(),
+                client_id: id.into(),
+                dns_san: "provider.test".into(),
+                certificate_sha256: digest,
+                enabled: true,
+                valid_from: epoch - 60,
+                valid_until: epoch + 3600,
+            },
+            purpose,
+        )
+    })
+    .collect();
+    let policy = ServicePolicy::new_composed_publication(
+        local.clone(),
+        local.clone(),
+        entries,
+        vec![IssuerRoute {
+            sender_home: peer.into(),
+            audience: format!("{peer}/attachments"),
+            relay_client_id: "relay".into(),
+            introspection_client_id: "introspection".into(),
+        }],
+        vec![ResourceAssociation {
+            recipient_home: peer.into(),
+            issuer: peer.into(),
+            audience: format!("{local}/attachments"),
+            relay_client_id: "relay".into(),
+            outbound_client_id: "outgoing".into(),
+            endpoint_id: "endpoint".into(),
+            address: callback,
+            http_host: peer.into(),
+            ca_sha256: [17; 32],
+            remote_generation: 1,
+            remote_reset: 0,
+        }],
+        vec![PublicationAssociation {
+            recipient_home: peer.into(),
+            outbound_client_id: "observer".into(),
+            endpoint_id: "endpoint".into(),
+            address: callback,
+            http_host: peer.into(),
+            ca_sha256: [17; 32],
+            remote_generation: 1,
+            remote_reset: 0,
+        }],
+    )
+    .unwrap();
+    let registry = Registry::new(
+        1,
+        0,
+        vec![local.clone(), peer.into()],
+        vec![CredentialBinding {
+            certificate_sha256: f.digests[1],
+            principal,
+            valid_from: epoch - 60,
+            valid_until: epoch + 3600,
+            approved: true,
+            account_enabled: true,
+            device_enabled: true,
+            generation: 1,
+        }],
+    )
+    .unwrap();
+    let runtime = Runtime::new(None);
+    runtime
+        .control()
+        .replace_delegation_policy(registry, policy)
+        .unwrap();
+    runtime
+}
+
+#[cfg(feature = "own-home-provider")]
+#[test]
+fn explicit_foreign_publication_submits_real_device_authority_but_receipt_busy_never_releases_mail()
+{
+    use faction_provider::{delivery::Event, services::PublicationWireProfile};
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let f = Fixture::new();
+    let (mut a, _b, epoch) = f.pair(true);
+    let mut spool = Spool::open(&f.root.join("outgoing")).unwrap();
+    transfer::prepare(
+        &mut a,
+        &mut spool,
+        [31; 16],
+        selection(b"withheld synthetic private attachment", epoch),
+        epoch,
+    )
+    .unwrap();
+    let checkpoint = fs::read(f.root.join("alice/mail.fkv")).unwrap();
+    let spooled = fs::read(f.root.join("outgoing/private-blobs.snapshot")).unwrap();
+    fs::write(f.root.join("spool-before.snapshot"), &spooled).unwrap();
+    fs::set_permissions(
+        f.root.join("spool-before.snapshot"),
+        fs::Permissions::from_mode(0o600),
+    )
+    .unwrap();
+    let mail = TcpListener::bind("127.0.0.1:0").unwrap();
+    mail.set_nonblocking(true).unwrap();
+    let settings = f.settings("alice@foreign.test", mail.local_addr().unwrap());
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let callback = TcpListener::bind("127.0.0.1:0").unwrap();
+    callback.set_nonblocking(true).unwrap();
+    let runtime = publication_runtime(&f, &a, "home.test", callback.local_addr().unwrap());
+    let store = Mutex::new(f.store());
+    let before = fs::read(f.root.join("remote/private-blobs.snapshot")).unwrap();
+    let provider = DeviceProvider::new(
+        Config::new_own_home(
+            "foreign.test",
+            address,
+            "provider.test",
+            f.digests[0],
+            Fixture::principal(&a),
+        )
+        .unwrap(),
+        f.credentials(1),
+    );
+    let stop = Arc::new(AtomicBool::new(false));
+    let submitted = AtomicBool::new(false);
+    let busy = AtomicUsize::new(0);
+    thread::scope(|scope| {
+        let owner = &runtime;
+        let cancelled = stop.clone();
+        let fixture = &f;
+        let stored = &store;
+        let observed = &submitted;
+        let busy_count = &busy;
+        let server = scope.spawn(move || {
+            let mut pending = None;
+            let mut held_work = None;
+            let profile =
+                PublicationWireProfile::new("foreign.test".into(), vec!["observer".into()])
+                    .unwrap();
+            while !cancelled.load(Ordering::SeqCst) {
+                let incoming =
+                    match fixture
+                        .server()
+                        .accept_composed(&listener, owner, cancelled.clone())
+                    {
+                        Ok(incoming) => incoming,
+                        Err(_) if cancelled.load(Ordering::SeqCst) => break,
+                        Err(error) => panic!("actual device admission failed: {error:?}"),
+                    };
+                match incoming.serve(pending.as_mut(), stored, "foreign.test", &profile) {
+                    Ok(Event::Submitted(delivery, work)) => {
+                        assert!(pending.is_none());
+                        pending = Some(delivery);
+                        held_work = Some(work);
+                        observed.store(true, Ordering::SeqCst);
+                    }
+                    Ok(Event::Collected(false)) => {
+                        busy_count.fetch_add(1, Ordering::SeqCst);
+                    }
+                    Ok(Event::Collected(true)) => {
+                        panic!("a withheld callback cannot produce a result")
+                    }
+                    Ok(Event::Served) => {
+                        panic!("explicit foreign publication used the ordinary binary route")
+                    }
+                    Err(_) => (),
+                }
+            }
+            drop(held_work);
+            drop(pending);
+        });
+        let result = run(transfer::upload_device_cycle(
+            &mut a,
+            &mut spool,
+            &settings,
+            "unused mail password",
+            &provider,
+            [31; 16],
+            epoch,
+        ));
+        stop.store(true, Ordering::SeqCst);
+        server.join().unwrap();
+        assert!(
+            result.is_err(),
+            "receipt/Busy cannot complete a publication or mail release"
+        );
+    });
+    let spooled_after = fs::read(f.root.join("outgoing/private-blobs.snapshot")).unwrap();
+    fs::write(f.root.join("spool-after.snapshot"), &spooled_after).unwrap();
+    fs::set_permissions(
+        f.root.join("spool-after.snapshot"),
+        fs::Permissions::from_mode(0o600),
+    )
+    .unwrap();
+    assert!(
+        fs::read(f.root.join("remote/private-blobs.snapshot")).unwrap() == before,
+        "withheld callback changed actual home Store bytes"
+    );
+    assert!(
+        fs::read(f.root.join("alice/mail.fkv")).unwrap() == checkpoint,
+        "failed publication changed durable mail retry state"
+    );
+    assert!(
+        spooled_after == spooled,
+        "failed publication changed exact spooled ciphertext"
+    );
+    assert!(
+        matches!(mail.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock),
+        "submission receipt or Busy released encrypted mail"
+    );
+    assert!(
+        matches!(callback.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock),
+        "withheld test callback must not execute implicitly"
+    );
+    assert_eq!(a.pending(now()).unwrap().len(), 1);
+    assert!(
+        submitted.load(Ordering::SeqCst),
+        "explicit foreign route never submitted through actual authenticated device authority"
+    );
+    assert!(
+        busy.load(Ordering::SeqCst) > 0,
+        "the same captured operation must encounter early Busy without release"
+    );
 }

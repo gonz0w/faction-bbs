@@ -112,6 +112,9 @@ jobs:
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
       - name: Validate the opt-in attachment provider
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -167,6 +170,9 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator,delegation-verifier > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked -- -D warnings
@@ -179,8 +185,6 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-records,durable-policy -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-records,durable-policy -- --test-threads=1
-          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-verifier -- -D warnings
-          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-verifier -- --test-threads=1
   provider_client:
     name: Optional authenticated provider client
     runs-on: ubuntu-24.04
@@ -214,6 +218,9 @@ jobs:
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
@@ -262,6 +269,9 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator,delegation-verifier > /dev/null
       - name: Validate the native authenticated attachment client
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
@@ -329,6 +339,9 @@ jobs:
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
@@ -377,6 +390,9 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator,delegation-verifier > /dev/null
           python3 tools/check_provider_dependencies.py
           cargo fmt --manifest-path crates/faction-provider/Cargo.toml -- --check
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features durable-policy -- -D warnings
@@ -399,24 +415,12 @@ jobs:
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-wire,durable-policy -- --test-threads=1
           cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-verifier,durable-policy -- -D warnings
           cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-verifier,durable-policy -- --test-threads=1
-  documentation:
-    name: Documentation and policy
-    needs: [native_mail, provider, provider_operator, provider_client]
-    if: ${{ always() }}
+  provider_composed:
+    name: Optional composed attachment provider
+    needs: [provider]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Require optional native tests
-        env:
-          NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}
-          PROVIDER_RESULT: ${{ needs.provider.result }}
-          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}
-          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}
-        run: |
-          test "$NATIVE_MAIL_RESULT" = success
-          test "$PROVIDER_RESULT" = success
-          test "$PROVIDER_OPERATOR_RESULT" = success
-          test "$PROVIDER_CLIENT_RESULT" = success
       - name: Fetch the public repository revision
         env:
           REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
@@ -426,22 +430,64 @@ jobs:
           git remote add origin "$REPOSITORY_URL"
           git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
           git checkout --detach FETCH_HEAD
-      - name: Validate the isolated delegation wire codec
+      - name: Warm the selected composed provider source graphs
         env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-delegation-codec
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
           CARGO_BUILD_JOBS: 2
           RUSTUP_TOOLCHAIN: 1.96.0
         run: |
           rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
-          cargo metadata --locked --manifest-path crates/faction-delegation-codec/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
-          cargo metadata --locked --manifest-path crates/faction-delegation-codec/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
-          cargo metadata --locked --manifest-path crates/faction-delegation-codec/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/network-mail > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
           cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features preparation > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire > /dev/null
@@ -454,102 +500,175 @@ jobs:
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier,durable-policy > /dev/null
           cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier,durable-policy > /dev/null
-          python3 tools/check_delegation_codec_dependencies.py
-          cargo fmt --manifest-path crates/faction-delegation-codec/Cargo.toml -- --check
-          cargo clippy --manifest-path crates/faction-delegation-codec/Cargo.toml --all-targets --release --locked --offline -- -D warnings
-          cargo test --manifest-path crates/faction-delegation-codec/Cargo.toml --release --locked --offline
-      - name: Validate documentation, policies, and archive
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator,delegation-verifier > /dev/null
+      - name: Validate the composed attachment provider
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
         run: |
-          python3 tools/check_repository.py
-          python3 tools/model_link_budget.py --check
-          python3 tools/measure_text_replay.py --check
-          python3 tools/measure_buffer_probe.py --check
-          python3 tools/measure_native_sessions.py --check
-          python3 experiments/009-local-storage/probe.py --check
-          python3 experiments/023-netbsd-dependencies/verify_evidence.py
-          python3 tools/probe_lua_boundary.py --check
-          python3 tools/check_evidence_sources.py
-          python3 tools/check_original_games_evidence.py
-          python3 tools/check_file_area_evidence.py
-          python3 tools/check_native_client_evidence.py
-          python3 tools/check_room_reader_evidence.py
-          python3 tools/check_post_metadata_evidence.py
-          python3 tools/check_authored_articles_evidence.py
-          python3 tools/check_broader_articles_evidence.py
-          python3 tools/check_unicode_subjects_evidence.py
-          python3 tools/check_modern_terminals_evidence.py
-          python3 tools/check_kitty_graphics_evidence.py
-          python3 tools/check_terminal_compatibility_evidence.py
-          python3 tools/check_menu_themes_evidence.py
-          python3 tools/check_seasonal_themes_evidence.py
-          python3 tools/check_custom_menus_evidence.py
-          python3 tools/check_login_paging_evidence.py
-          python3 tools/check_nightwire_evidence.py
-          python3 tools/check_artwork_terminal_evidence.py
-          python3 tools/check_operator_evidence.py
-          python3 tools/check_operator_host_evidence.py
-          python3 tools/check_operator_recovery_evidence.py
-          python3 tools/check_directory_submissions_evidence.py
-          python3 tools/check_directory_evidence.py
-          python3 tools/check_board_launcher_evidence.py
-          python3 tools/check_room_browser_evidence.py
-          python3 tools/check_writing_desk_evidence.py
-          python3 tools/check_full_screen_evidence.py
-          python3 tools/check_wall_evidence.py
-          python3 tools/check_member_pages_evidence.py
-          python3 tools/check_local_mail_evidence.py
-          python3 tools/check_client_vault_integration_evidence.py
-          python3 tools/check_gatherings_evidence.py
-          python3 tools/check_polls_evidence.py
-          python3 tools/check_catchup_evidence.py
-          python3 tools/check_discussion_evidence.py
-          python3 tools/check_gallery_evidence.py
-          python3 tools/check_travel_evidence.py
-          python3 tools/check_library_evidence.py
-          python3 tools/check_file_requests_evidence.py
-          python3 tools/check_magazine_evidence.py
-          python3 tools/check_editorial_evidence.py
-          python3 tools/check_social_evidence.py
-          python3 tools/check_boardwide_social_evidence.py
-          python3 tools/check_standalone_social_evidence.py
-          python3 tools/check_idle_notifications_evidence.py
-          python3 tools/check_who_evidence.py
-          python3 tools/check_connection_desk_evidence.py
-          python3 tools/check_passport_evidence.py
-          python3 tools/check_board_guide_evidence.py
-          python3 tools/check_mail_proof_evidence.py
-          python3 tools/check_omemo_interop_evidence.py
-          python3 tools/check_checkpoint_evidence.py
-          python3 tools/check_checkpoint_console_evidence.py
-          python3 tools/check_xmpp_transport_evidence.py
-          python3 tools/check_home_mail_evidence.py
-          python3 tools/check_archive_mail_evidence.py
-          python3 tools/check_picker_mail_evidence.py
-          python3 tools/check_unread_mail_evidence.py
-          python3 tools/check_mail_inbox_evidence.py
-          python3 tools/check_menu_mail_evidence.py
-          python3 tools/check_reply_evidence.py
-          python3 tools/check_correspondents_evidence.py
-          python3 tools/check_menu_mail_notices_evidence.py
-          python3 tools/check_recorded_files.py dev-docs/evidence/mail-search/manifest.json 7942dc8503a25039d6f4457629b3c41d91ffaf186ef4a299da2fa3595a21224c
-          python3 tools/check_recorded_files.py dev-docs/evidence/attachment-bytes/manifest.json 4856304289bca15fccbb4c8c54bb8c900871ff054f823aa65f2a7a58a4bb00a3
-          python3 tools/check_recorded_files.py dev-docs/evidence/delegation-publication/manifest.json dc6b9a7acff5aaa7daf9f14ce65222ff010fcaa780930a527dc872057e9e1388
-          python3 tools/check_netbsd_application_evidence.py
-          python3 tools/check_service_evidence.py
-          python3 tools/check_memory_evidence.py
-          python3 tools/check_shared_evidence.py
-          python3 tools/check_transport_evidence.py
-          python3 tools/check_headroom_evidence.py
-          python3 tools/check_ui_evidence.py
-          python3 tools/check_integrated_evidence.py
-          python3 tools/check_confinement_evidence.py
-          python3 tools/check_isolation_evidence.py
-          python3 tools/check_admission_evidence.py
-          python3 tools/check_sustained_evidence.py
-          python3 tools/check_lookup_evidence.py
-          python3 tools/check_global_evidence.py
-          python3 -m unittest discover -s tools -p 'test_*.py'
-          python3 -m unittest discover -s experiments/250-attachment-bytes -p test_proof.py
+          python3 tools/check_provider_dependencies.py
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features delegation-verifier -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features delegation-verifier -- --test-threads=1
+          cargo clippy --manifest-path crates/faction-provider/Cargo.toml --all-targets --release --locked --features operator,delegation-verifier -- -D warnings
+          cargo test --manifest-path crates/faction-provider/Cargo.toml --release --locked --features operator,delegation-verifier -- --test-threads=1
+  own_home_client:
+    name: Optional own-home attachment client
+    needs: [provider_client]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Warm the selected own-home client source graphs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/native-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/network-mail > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features blob-iq > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features preparation > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-services,delegation-records,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-issuer,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator,delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator,delegation-verifier > /dev/null
+      - name: Validate the own-home authenticated attachment client
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          python3 -m unittest discover -s tools -p test_own_home_dependencies.py
+          python3 tools/check_provider_dependencies.py
+          cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings
+          cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"
+          printf '%s\n' 'Owned own-home attachment client setup tests' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"
+          cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"
+          sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"
+          mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"
+          env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1
+      - name: Validate the own-home encrypted attachment console
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          python3 tools/check_provider_dependencies.py
+          cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator,delegation-verifier --release --locked
+          cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"
+          printf '%s\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"
+          python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"
+  bbs_regressions:
+    name: BBS regressions
+    needs: [own_home_client]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Warm the selected BBS regression source graphs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-ui/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-ui/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-ui/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-headroom/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-headroom/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-headroom/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-transport-memory/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-transport-memory/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-transport-memory/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-board/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-board/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-board/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          python3 tools/check_bbs_regressions_ci.py
       - name: Validate optional Lua game evaluator and examples
         run: |
           sudo apt-get update -qq
@@ -681,3 +800,164 @@ jobs:
           PY
           python3 tools/build_inn_reference.py --archive "$RUNNER_TEMP/inn-2.7.4.tar.gz" --work-dir "$RUNNER_TEMP/inn-reference"
           python3 tools/check_inn_articles.py --reference-dir "$RUNNER_TEMP/inn-reference" --examples "$CARGO_TARGET_DIR/release/examples"
+  documentation:
+    name: Documentation and policy
+    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Require optional native tests
+        env:
+          NATIVE_MAIL_RESULT: ${{ needs.native_mail.result }}
+          PROVIDER_RESULT: ${{ needs.provider.result }}
+          PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}
+          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}
+          PROVIDER_COMPOSED_RESULT: ${{ needs.provider_composed.result }}
+          OWN_HOME_CLIENT_RESULT: ${{ needs.own_home_client.result }}
+          BBS_REGRESSIONS_RESULT: ${{ needs.bbs_regressions.result }}
+        run: |
+          test "$NATIVE_MAIL_RESULT" = success
+          test "$PROVIDER_RESULT" = success
+          test "$PROVIDER_OPERATOR_RESULT" = success
+          test "$PROVIDER_CLIENT_RESULT" = success
+          test "$PROVIDER_COMPOSED_RESULT" = success
+          test "$OWN_HOME_CLIENT_RESULT" = success
+          test "$BBS_REGRESSIONS_RESULT" = success
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Validate the isolated delegation wire codec
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-delegation-codec
+          CARGO_BUILD_JOBS: 2
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo metadata --locked --manifest-path crates/faction-delegation-codec/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-delegation-codec/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-delegation-codec/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/device-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features faction-client/own-home-provider > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features operator > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-wire,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd --features delegation-verifier,durable-policy > /dev/null
+          cargo metadata --locked --manifest-path crates/faction-provider/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin --features delegation-verifier,durable-policy > /dev/null
+          python3 tools/check_delegation_codec_dependencies.py
+          cargo fmt --manifest-path crates/faction-delegation-codec/Cargo.toml -- --check
+          cargo clippy --manifest-path crates/faction-delegation-codec/Cargo.toml --all-targets --release --locked --offline -- -D warnings
+          cargo test --manifest-path crates/faction-delegation-codec/Cargo.toml --release --locked --offline
+      - name: Validate documentation, policies, and archive
+        run: |
+          python3 tools/check_repository.py
+          python3 tools/model_link_budget.py --check
+          python3 tools/measure_text_replay.py --check
+          python3 tools/measure_buffer_probe.py --check
+          python3 tools/measure_native_sessions.py --check
+          python3 experiments/009-local-storage/probe.py --check
+          python3 experiments/023-netbsd-dependencies/verify_evidence.py
+          python3 tools/probe_lua_boundary.py --check
+          python3 tools/check_evidence_sources.py
+          python3 tools/check_original_games_evidence.py
+          python3 tools/check_file_area_evidence.py
+          python3 tools/check_native_client_evidence.py
+          python3 tools/check_room_reader_evidence.py
+          python3 tools/check_post_metadata_evidence.py
+          python3 tools/check_authored_articles_evidence.py
+          python3 tools/check_broader_articles_evidence.py
+          python3 tools/check_unicode_subjects_evidence.py
+          python3 tools/check_modern_terminals_evidence.py
+          python3 tools/check_kitty_graphics_evidence.py
+          python3 tools/check_terminal_compatibility_evidence.py
+          python3 tools/check_menu_themes_evidence.py
+          python3 tools/check_seasonal_themes_evidence.py
+          python3 tools/check_custom_menus_evidence.py
+          python3 tools/check_login_paging_evidence.py
+          python3 tools/check_nightwire_evidence.py
+          python3 tools/check_artwork_terminal_evidence.py
+          python3 tools/check_operator_evidence.py
+          python3 tools/check_operator_host_evidence.py
+          python3 tools/check_operator_recovery_evidence.py
+          python3 tools/check_directory_submissions_evidence.py
+          python3 tools/check_directory_evidence.py
+          python3 tools/check_board_launcher_evidence.py
+          python3 tools/check_room_browser_evidence.py
+          python3 tools/check_writing_desk_evidence.py
+          python3 tools/check_full_screen_evidence.py
+          python3 tools/check_wall_evidence.py
+          python3 tools/check_member_pages_evidence.py
+          python3 tools/check_local_mail_evidence.py
+          python3 tools/check_client_vault_integration_evidence.py
+          python3 tools/check_gatherings_evidence.py
+          python3 tools/check_polls_evidence.py
+          python3 tools/check_catchup_evidence.py
+          python3 tools/check_discussion_evidence.py
+          python3 tools/check_gallery_evidence.py
+          python3 tools/check_travel_evidence.py
+          python3 tools/check_library_evidence.py
+          python3 tools/check_file_requests_evidence.py
+          python3 tools/check_magazine_evidence.py
+          python3 tools/check_editorial_evidence.py
+          python3 tools/check_social_evidence.py
+          python3 tools/check_boardwide_social_evidence.py
+          python3 tools/check_standalone_social_evidence.py
+          python3 tools/check_idle_notifications_evidence.py
+          python3 tools/check_who_evidence.py
+          python3 tools/check_connection_desk_evidence.py
+          python3 tools/check_passport_evidence.py
+          python3 tools/check_board_guide_evidence.py
+          python3 tools/check_mail_proof_evidence.py
+          python3 tools/check_omemo_interop_evidence.py
+          python3 tools/check_checkpoint_evidence.py
+          python3 tools/check_checkpoint_console_evidence.py
+          python3 tools/check_xmpp_transport_evidence.py
+          python3 tools/check_home_mail_evidence.py
+          python3 tools/check_archive_mail_evidence.py
+          python3 tools/check_picker_mail_evidence.py
+          python3 tools/check_unread_mail_evidence.py
+          python3 tools/check_mail_inbox_evidence.py
+          python3 tools/check_menu_mail_evidence.py
+          python3 tools/check_reply_evidence.py
+          python3 tools/check_correspondents_evidence.py
+          python3 tools/check_menu_mail_notices_evidence.py
+          python3 tools/check_recorded_files.py dev-docs/evidence/mail-search/manifest.json 7942dc8503a25039d6f4457629b3c41d91ffaf186ef4a299da2fa3595a21224c
+          python3 tools/check_recorded_files.py dev-docs/evidence/attachment-bytes/manifest.json 4856304289bca15fccbb4c8c54bb8c900871ff054f823aa65f2a7a58a4bb00a3
+          python3 tools/check_recorded_files.py dev-docs/evidence/delegation-publication/manifest.json dc6b9a7acff5aaa7daf9f14ce65222ff010fcaa780930a527dc872057e9e1388
+          python3 tools/check_recorded_files.py dev-docs/evidence/own-home-attachments/manifest.json 118fd11ecec87c9614f5fd1d30999f5e9f0ef9cd54bc28045b8a37ad655cb974
+          python3 tools/check_netbsd_application_evidence.py
+          python3 tools/check_service_evidence.py
+          python3 tools/check_memory_evidence.py
+          python3 tools/check_shared_evidence.py
+          python3 tools/check_transport_evidence.py
+          python3 tools/check_headroom_evidence.py
+          python3 tools/check_ui_evidence.py
+          python3 tools/check_integrated_evidence.py
+          python3 tools/check_confinement_evidence.py
+          python3 tools/check_isolation_evidence.py
+          python3 tools/check_admission_evidence.py
+          python3 tools/check_sustained_evidence.py
+          python3 tools/check_lookup_evidence.py
+          python3 tools/check_global_evidence.py
+          python3 -m unittest discover -s tools -p 'test_*.py'
+          python3 -m unittest discover -s experiments/250-attachment-bytes -p test_proof.py

@@ -540,3 +540,9 @@ controls, original failures and narrow retention limits remain distinct from
 operator/relay deployment and independent interoperability. The selected
 [manifest](delegation-publication/manifest.json) SHA-256 is
 `dc6b9a7acff5aaa7daf9f14ce65222ff010fcaa780930a527dc872057e9e1388`; the existing recorded-file checker verifies its saved bytes.
+
+[Own-home encrypted attachments](own-home-attachments/README.md) records the explicit
+source-bound carrier, maximum-file classic/Unicode host and NetBSD journeys,
+manual interrupted-transfer recovery and independent mail/BBS/SFTP access during
+provider outage. Current source, retained failures, private capture, whole-snapshot
+teardown and remaining deployment/interoperability limits stay separate.

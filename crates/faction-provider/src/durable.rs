@@ -174,6 +174,21 @@ impl Runtime {
         let disk = Disk::initialize(path, &authority.snapshot())?;
         Ok(Self::from_durable(authority, disk))
     }
+    /// Validate a complete preapproved registry and service policy, then publish
+    /// their first snapshot together at the supplied generation and reset epoch.
+    /// No intermediate device-only state or invented policy generation is written.
+    #[cfg(feature = "delegation-verifier")]
+    pub fn initialize_composed_durable(
+        path: &Path,
+        registry: Registry,
+        policy: crate::services::ServicePolicy,
+    ) -> Result<Self, Error> {
+        let mut authority = Authority::new(None);
+        authority.replace_delegation_policy(registry, policy)?;
+        authority.relay_policy()?;
+        let disk = Disk::initialize(path, &authority.snapshot())?;
+        Ok(Self::from_durable(authority, disk))
+    }
     /// Recover only validated retained current policy, with a fresh authority,
     /// sessions and handles. No bootstrap policy or older pending fallback exists.
     pub fn reopen_durable(path: &Path) -> Result<Self, Error> {

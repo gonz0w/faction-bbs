@@ -11,17 +11,14 @@ The [delivery research](../dev-docs/research/0061-private-attachment-delivery-co
 rejects the unchanged modern-client candidate. Real provider deployment and
 independent client interoperability remain unqualified.
 
-The optional [private provider operator](provider-operator.md) can serve preapproved same-home policy on loopback. It is a software preview and requires independently supplied credentials; it does not enroll devices or recover keys.
+The optional [private provider operator](provider-operator.md) serves separately approved device and service policies on loopback. For invited homes, each operator supplies fixed peer endpoints and independently obtained credentials, then uses the composed init, apply and serve commands. Stop the owner before policy changes; inspect retained state after an uncertain outcome and use a freshly authorized exact retry. Reset clears active approvals, so recovery requires a newly approved complete policy. The operator does not enroll devices or recover keys.
 
-For a future cross-home attachment fetch, the recipient would use their own home,
-which can vouch for their approved device to the invited sender home. This keeps
-each home's approvals independent while the recipient's device retains the keys
-and decrypts the attachment. A compromised trusted home could impersonate its
-device claims and obtain ciphertext, but would not receive the attachment keys or
-plaintext. Vouching does not enroll encryption devices or replace the sender's
-verified identities. The [trust contract](../dev-docs/provider-integration.md#invited-home-attachment-trust)
-records the limits. Cross-home vouching is not yet implemented; the current
-device-provider route works only when both peers belong to the same home.
+The optional own-home route supports transfers between independently invited
+homes. Each device contacts only its own configured home; that home uses separately
+preapproved policy to reach the other home. A compromised trusted home could
+impersonate its device claims and obtain ciphertext, but does not receive the
+attachment keys or plaintext. Vouching does not enroll encryption devices or replace
+verified identities. See the [trust contract](../dev-docs/provider-integration.md#invited-home-attachment-trust).
 
 ## Optional device-provider transport
 
@@ -34,8 +31,8 @@ and dedicated SSH-forward workflow.
 The explicit `device-provider` client feature adds an optional local profile for
 attachment transfer. Select it with `--device-provider PRIVATE_PROFILE` alongside
 `--mail-online` or `--boards`; without selection the existing IQ route remains.
-Default, `native-mail` and `network-mail` builds exclude the provider. Both peers
-must belong to the configured local home; the provider connection is loopback only.
+Default, `native-mail` and `network-mail` builds exclude the provider. A version 1 profile requires both peers to belong to the configured local home;
+the provider connection is loopback only.
 The profile is local trust configuration, never supplied by a board, message or
 attachment locator. Its expected account, device and full identity must match the
 current unlocked vault. Transport certificates and keys are independent of the
@@ -71,13 +68,33 @@ are refused. Build explicitly with `--features device-provider`, then start eith
 `--mail-online STORE CONFIG --device-provider PRIVATE_PROFILE` or
 `--boards CATALOG --device-provider PRIVATE_PROFILE`; `--unicode` is optional.
 
+For the separately enabled, default-off `own-home-provider` build feature, select a private
+version 2 profile using the same `--device-provider` option. Build with
+`--features own-home-provider`. It has the same fields
+and requirements as version 1 above, with `version = 2` and the additional field
+`route = "own-home"`. The existing preparation and public-card commands produce
+version 1 material; they do not generate or enroll version 2 profiles. Arrange the
+credentials and the homes' separately approved policies with their operators; see
+[provider operation](provider-operator.md). Selecting a profile grants no approval.
+
+The unlocked vault's full current identity and its verified peer snapshot remain
+required. For two local principals the existing binary session is used; a local
+sender and foreign recipient use own-home publication, while a local recipient and
+foreign sender use own-home retrieval. A mismatched local full principal, two foreign
+principals or an unsupported action is refused before a socket opens. The selected
+route stays fixed for the action: errors or Busy never trigger another endpoint or
+IQ fallback. All provider connections use the same configured home endpoint.
+
 The profile is checked at attachment actions, before spool or connection, rather
 than during ordinary mail. A selected provider failure stops the attachment action
 without falling back to the IQ route. Ordinary mail, BBS and files remain independent.
 Device fetch needs no home password. Upload asks for the home password only for
 the later ordinary encrypted-mail release after authenticated storage confirmation.
-If a response is lost, storage may already have changed: reopen and retry the exact
-persisted operation; a lost reply is neither rollback nor permission to release mail.
+If Busy, an error or a lost response stops an action, inspect its retained exact
+state before a deliberate, freshly authorized retry of that same operation. Storage
+may already have changed; a lost reply is neither rollback nor permission to release
+mail. A retry does not renew the budget or switch routes, and completion is not
+automatic.
 
 
 ## Enable and retain
@@ -109,7 +126,7 @@ size, and the subject and body before the fresh queue confirmation. Cancellation
 queues nothing. Queueing persists the encrypted descriptor and exact message wire
 locally; it does not upload. Select the durable operation ID for a separate
 foreground upload. Retries use that same persisted operation and ciphertext, so
-the original source can be removed after successful queueing. A network write is
+the original source need not remain after the encrypted spool is confirmed. A network write is
 not proof of delivery or reading.
 
 ## Fetch, verify and save
@@ -121,8 +138,11 @@ cannot be fetched through this desk. Listing and inspecting metadata make no net
 connection and do not open the spool.
 
 Fetch requires the current healthy verified peer and identity to be eligible for
-network transfer. The selected device-provider route rejects a foreign-home sender.
-For the existing IQ route, when the authenticated sender belongs to a foreign home, give
+network transfer. A version 1 device-provider profile rejects a foreign-home sender. With the
+explicit own-home profile, the sender home is displayed and its separately
+preapproved home policy applies; the normal transfer confirmation remains. This
+route neither asks the legacy IQ invitation question nor gives the client authority
+to invite a home. For the existing IQ route, when the authenticated sender belongs to a foreign home, give
 fresh explicit consent to that home. Its identity comes from the authenticated
 sender, never from an attachment locator. All traffic and the hidden password use
 your own configured pinned home; the sender can be offline. Refusal connects to
@@ -150,6 +170,14 @@ own home until the action returns. Each SDK call retains its ten-second bound an
 at most four 4096-byte chunks. The provider allows eight attempted requests per
 session, five seconds for admission including TCP/TLS, a ten-second accepted cycle
 and five seconds for drain. Upload includes the later mail release in its call bound.
+The existing worker permits eight SDK requests per ten-second cycle. Each own-home
+carrier operation stays within that worker's original deadline; it cannot renew or
+extend it. Its eight transport attempts are separate from the worker's SDK request
+limit. Submit, close and paced collection share that attempt and deadline bound;
+each fresh collection waits inside the budget, with at most six paced collects. Only a fresh authenticated Store progress response with the exact binding,
+complete offset and committed status releases the queued mail. Receipts, Busy, EOF and timeouts
+never release it; retry the exact persisted operation after checking the state.
+
 The action continues only on successful forward progress and stops at the first
 error. It reports actual partial or completed bytes; there is no background retry
 or automatic reconnect. Ctrl-C or Ctrl-D cancels and locks. Retry deliberately
@@ -165,3 +193,20 @@ exercises actual same-home mTLS transfers, ordinary encrypted-mail receipt and
 private save in classic and Unicode modes on host and fresh NetBSD. It retains
 the original failure observations and unchanged transfer limits. Text mail
 and classic board access remain separate and available.
+
+Host and fresh NetBSD software exercises completed maximum 1 MiB transfers in
+both classic and Unicode modes. The NetBSD exercise used the maintained client,
+1 GiB RAM and two CPUs, and the original 60-second budget: each 1,048,592-byte
+ciphertext transfer took 65 upload and 65 fetch calls. Its compiler needed a
+temporary 2 GiB setting; 1 GiB was restored before qualification. The two homes
+had separate runtime, configuration, keys, stores and approved policies, with one
+opaque test XMPP delivery/archive queue. This does not establish deployed S2S,
+independent client interoperability or provider adoption. See the
+[software evidence](../dev-docs/evidence/own-home-attachments/README.md).
+
+A host interruption exercise recovered a persisted upload, but a later fetch
+stopped and remains unexplained. A separate fresh fetch resumed partial state and
+completed; that does not establish automatic retry or a fix. Inspect retained state
+and retry deliberately with fresh authorization when needed. Ordinary text mail,
+BBS access and SFTP also passed separate software outage exercises. See the
+[software evidence](../dev-docs/evidence/own-home-attachments/README.md) for scope.

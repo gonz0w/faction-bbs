@@ -27,6 +27,8 @@ use std::{
     },
 };
 pub use tls::Session;
+#[cfg(feature = "delegation-verifier")]
+pub use tls::delivery;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
     Transport(tls::Stage),

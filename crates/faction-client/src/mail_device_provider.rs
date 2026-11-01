@@ -1,7 +1,8 @@
 //! Explicit authenticated binary attachment transport on the member device.
 //! A foreground cycle owns one bounded TLS worker and joins it on every exit.
+pub(crate) use crate::mail_blob_transfer::TransferDirection;
 use crate::mail_checkpoint::CheckpointVault;
-use faction_files::private_blobs::{Principal, Request, Response, encode_request};
+use faction_files::private_blobs::{Binding, Principal, Request, Response, encode_request};
 pub use faction_provider::tls::ClientCredentials as Credentials;
 use faction_provider::tls::{CYCLE_LIMIT, ClientAdmission, HANDSHAKE_LIMIT, Stage};
 use std::{
@@ -15,6 +16,14 @@ use std::{
     time::{Duration, Instant},
 };
 use tokio::sync::oneshot;
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum DeviceRoute {
+    Ordinary,
+    #[cfg(feature = "own-home-provider")]
+    Publication,
+    #[cfg(feature = "own-home-provider")]
+    OwnHomeRetrieval,
+}
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
     Configuration,
@@ -36,6 +45,8 @@ pub struct Config {
     expected_name: String,
     leaf_pin: [u8; 32],
     expected: Principal,
+    #[cfg(feature = "own-home-provider")]
+    own_home: bool,
 }
 impl Config {
     pub fn new(
@@ -68,7 +79,23 @@ impl Config {
             expected_name: expected_name.into(),
             leaf_pin,
             expected,
+            #[cfg(feature = "own-home-provider")]
+            own_home: false,
         })
+    }
+    /// Explicit device-to-own-home selection. This local mode grants no server
+    /// invitation or actor authority and performs no I/O.
+    #[cfg(feature = "own-home-provider")]
+    pub fn new_own_home(
+        home: &str,
+        address: SocketAddr,
+        expected_name: &str,
+        leaf_pin: [u8; 32],
+        expected: Principal,
+    ) -> Result<Self, Error> {
+        let mut config = Self::new(home, address, expected_name, leaf_pin, expected)?;
+        config.own_home = true;
+        Ok(config)
     }
 }
 /// Independent transport credentials, distinct from the unlocked OMEMO vault.
@@ -97,22 +124,107 @@ impl DeviceProvider {
         }
         Ok(())
     }
-    pub(crate) fn permits_home(&self, account: &str) -> bool {
-        account.split_once('@').map(|(_, home)| home) == Some(self.config.home.as_str())
+    /// Whether the caller explicitly selected the own-home transport profile.
+    /// This is local routing configuration, never remote approval.
+    pub fn uses_own_home(&self) -> bool {
+        #[cfg(feature = "own-home-provider")]
+        {
+            self.config.own_home
+        }
+        #[cfg(not(feature = "own-home-provider"))]
+        {
+            false
+        }
     }
-    pub(crate) async fn open(&self) -> Result<Worker, Error> {
-        self.open_with(|| tokio::net::TcpStream::connect(self.config.address))
-            .await
+    fn classify(
+        &self,
+        binding: &Binding,
+        direction: TransferDirection,
+    ) -> Result<DeviceRoute, Error> {
+        binding.validate().map_err(|_| Error::Configuration)?;
+        let own = match direction {
+            TransferDirection::Upload => &binding.sender,
+            TransferDirection::Fetch => &binding.recipient,
+        };
+        if own != &self.config.expected {
+            return Err(Error::Identity);
+        }
+        let local = |principal: &Principal| {
+            principal.account.split_once('@').map(|(_, home)| home)
+                == Some(self.config.home.as_str())
+        };
+        if local(&binding.sender) && local(&binding.recipient) {
+            return Ok(DeviceRoute::Ordinary);
+        }
+        #[cfg(feature = "own-home-provider")]
+        if self.config.own_home {
+            return match direction {
+                TransferDirection::Upload if !local(&binding.recipient) => {
+                    Ok(DeviceRoute::Publication)
+                }
+                TransferDirection::Fetch if !local(&binding.sender) => {
+                    Ok(DeviceRoute::OwnHomeRetrieval)
+                }
+                _ => Err(Error::Configuration),
+            };
+        }
+        Err(Error::Configuration)
     }
-    async fn open_with<F, C>(&self, connect: F) -> Result<Worker, Error>
+    pub(crate) fn permits_binding(&self, binding: &Binding, direction: TransferDirection) -> bool {
+        self.classify(binding, direction).is_ok()
+    }
+    pub(crate) async fn open(
+        &self,
+        binding: &Binding,
+        direction: TransferDirection,
+    ) -> Result<Worker, Error> {
+        keylog()?;
+        let route = self.classify(binding, direction)?;
+        let start = Instant::now();
+        match route {
+            DeviceRoute::Ordinary => {
+                self.open_ordinary(binding, direction, start, || {
+                    tokio::net::TcpStream::connect(self.config.address)
+                })
+                .await
+            }
+            #[cfg(feature = "own-home-provider")]
+            DeviceRoute::Publication | DeviceRoute::OwnHomeRetrieval => {
+                let endpoint = faction_provider::delivery::CarrierEndpoint::new(
+                    self.config.address,
+                    self.config.expected_name.clone(),
+                    self.config.leaf_pin,
+                    self.credentials.clone(),
+                )
+                .map_err(Error::Transport)?;
+                spawn_worker(
+                    binding.clone(),
+                    direction,
+                    start,
+                    Arc::new(AtomicBool::new(false)),
+                    move || Ok(Transport::Delivery(endpoint, route)),
+                )
+                .await
+            }
+        }
+    }
+    async fn open_ordinary<F, C>(
+        &self,
+        binding: &Binding,
+        direction: TransferDirection,
+        start: Instant,
+        connect: F,
+    ) -> Result<Worker, Error>
     where
         F: FnOnce() -> C,
         C: std::future::Future<Output = std::io::Result<tokio::net::TcpStream>>,
     {
         keylog()?;
-        // The conservative native clock starts before the provider's opaque
-        // admission token. TCP never retries or restarts either absolute budget.
-        let start = Instant::now();
+        // Classification precedes even creating the connection future. Ordinary
+        // mode retains one legacy binary session and its original admission.
+        if self.classify(binding, direction)? != DeviceRoute::Ordinary {
+            return Err(Error::Configuration);
+        }
         let cancel = Arc::new(AtomicBool::new(false));
         let admission = ClientAdmission::new(
             &self.config.expected_name,
@@ -130,38 +242,148 @@ impl DeviceProvider {
         .map_err(|_| Error::Transport(Stage::Admission))?
         .into_std()
         .map_err(|_| Error::Transport(Stage::Admission))?;
-        let (send, receive) = mpsc::sync_channel::<Command>(1);
-        let (ready, initialized) = oneshot::channel();
-        let cancelled = cancel.clone();
-        #[cfg(test)]
-        let observation = Arc::new(RequestObservation::default());
-        #[cfg(test)]
-        let worker_observation = observation.clone();
-        let thread = thread::Builder::new()
-            .name("faction-device-tls".into())
-            .spawn(move || {
-                let mut client = match admission.connect(socket) {
-                    Ok(client) => {
-                        if ready.send(Ok(())).is_err() {
-                            return;
-                        }
-                        client
+        spawn_worker(binding.clone(), direction, start, cancel, move || {
+            admission
+                .connect(socket)
+                .map(Transport::Ordinary)
+                .map_err(Error::Transport)
+        })
+        .await
+    }
+    #[cfg(test)]
+    async fn open_with<F, C>(&self, connect: F) -> Result<Worker, Error>
+    where
+        F: FnOnce() -> C,
+        C: std::future::Future<Output = std::io::Result<tokio::net::TcpStream>>,
+    {
+        let binding = Binding {
+            sender: self.config.expected.clone(),
+            recipient: self.config.expected.clone(),
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        self.open_ordinary(&binding, TransferDirection::Upload, Instant::now(), connect)
+            .await
+    }
+}
+
+enum Transport {
+    Ordinary(faction_provider::tls::Client),
+    #[cfg(feature = "own-home-provider")]
+    Delivery(faction_provider::delivery::CarrierEndpoint, DeviceRoute),
+}
+impl Transport {
+    fn request(
+        &mut self,
+        binding: &Binding,
+        request: Request,
+        deadline: Instant,
+        cancel: Arc<AtomicBool>,
+    ) -> Result<Response, Error> {
+        #[cfg(not(feature = "own-home-provider"))]
+        let _ = (binding, deadline, cancel);
+        match self {
+            Self::Ordinary(client) => client.request(&request).map_err(Error::Transport),
+            #[cfg(feature = "own-home-provider")]
+            Self::Delivery(endpoint, route) => {
+                use faction_provider::delivery::Collection;
+                let mut operation = endpoint
+                    .operation_until(deadline, cancel)
+                    .map_err(Error::Transport)?;
+                match route {
+                    DeviceRoute::Publication => {
+                        operation.submit_publication(binding.clone(), request)
                     }
-                    Err(error) => {
-                        let _ = ready.send(Err(Error::Transport(error)));
+                    DeviceRoute::OwnHomeRetrieval => {
+                        operation.submit_own_home(binding.clone(), request)
+                    }
+                    DeviceRoute::Ordinary => return Err(Error::Configuration),
+                }
+                .map_err(Error::Transport)?;
+                // One submit and bounded fresh collects on this SAME operation.
+                // Busy neither renews the parent clock nor changes the route.
+                for _ in 0..6 {
+                    match operation.collect_paced().map_err(Error::Transport)? {
+                        Collection::Complete(response) => return Ok(response),
+                        Collection::Busy => (),
+                    }
+                }
+                Err(Error::Transport(Stage::Limit))
+            }
+        }
+    }
+}
+fn request_matches(binding: &Binding, direction: TransferDirection, request: &Request) -> bool {
+    match request {
+        Request::Begin(value) => direction == TransferDirection::Upload && value == binding,
+        Request::Status { id } => *id == binding.id,
+        Request::PutChunk { id, .. } | Request::Commit { id } | Request::Delete { id } => {
+            direction == TransferDirection::Upload && *id == binding.id
+        }
+        Request::GetChunk { id, .. } => direction == TransferDirection::Fetch && *id == binding.id,
+    }
+}
+async fn spawn_worker(
+    binding: Binding,
+    direction: TransferDirection,
+    start: Instant,
+    cancel: Arc<AtomicBool>,
+    initialize: impl FnOnce() -> Result<Transport, Error> + Send + 'static,
+) -> Result<Worker, Error> {
+    let (send, receive) = mpsc::sync_channel::<Command>(1);
+    let (ready, initialized) = oneshot::channel();
+    let cancelled = cancel.clone();
+    let pinned = binding.clone();
+    let deadline = start + CYCLE_LIMIT;
+    #[cfg(test)]
+    let observation = Arc::new(RequestObservation::default());
+    #[cfg(test)]
+    let worker_observation = observation.clone();
+    let thread = thread::Builder::new()
+        .name("faction-device-tls".into())
+        .spawn(move || {
+            let mut transport = match initialize() {
+                Ok(transport) => {
+                    if ready.send(Ok(())).is_err() {
                         return;
                     }
-                };
-                while !cancelled.load(Ordering::SeqCst) && Instant::now() < start + CYCLE_LIMIT {
-                    match receive.recv_timeout(Duration::from_millis(100)) {
-                        Ok(Command { request, response }) => {
-                            if cancelled.load(Ordering::SeqCst) || response.is_closed() {
-                                break;
-                            }
+                    transport
+                }
+                Err(error) => {
+                    let _ = ready.send(Err(error));
+                    return;
+                }
+            };
+            let mut attempted = 0;
+            while !cancelled.load(Ordering::SeqCst) && Instant::now() < deadline {
+                match receive.recv_timeout(Duration::from_millis(100)) {
+                    Ok(Command {
+                        binding,
+                        direction: requested_direction,
+                        request,
+                        response,
+                    }) => {
+                        if cancelled.load(Ordering::SeqCst) || response.is_closed() {
+                            break;
+                        }
+                        let result = if Instant::now() >= deadline {
+                            Err(Error::Transport(Stage::Deadline))
+                        } else if attempted >= 8 {
+                            Err(Error::Transport(Stage::Limit))
+                        } else if binding != pinned
+                            || requested_direction != direction
+                            || !request_matches(&pinned, direction, &request)
+                        {
+                            Err(Error::Configuration)
+                        } else {
+                            attempted += 1;
                             #[cfg(test)]
                             let observation_index =
                                 worker_observation.entered.fetch_add(1, Ordering::SeqCst);
-                            let result = client.request(&request).map_err(Error::Transport);
+                            let result =
+                                transport.request(&pinned, request, deadline, cancelled.clone());
                             #[cfg(test)]
                             if let Some(slot) = worker_observation
                                 .results
@@ -171,30 +393,35 @@ impl DeviceProvider {
                             {
                                 *slot = Some(result.as_ref().map(|_| ()).map_err(|error| *error));
                             }
-                            let failed = result.is_err();
-                            if response.send(result).is_err() || failed {
-                                break;
-                            }
+                            result
+                        };
+                        let failed = result.is_err();
+                        if response.send(result).is_err() || failed {
+                            break;
                         }
-                        Err(mpsc::RecvTimeoutError::Timeout) => (),
-                        Err(mpsc::RecvTimeoutError::Disconnected) => break,
                     }
+                    Err(mpsc::RecvTimeoutError::Timeout) => (),
+                    Err(mpsc::RecvTimeoutError::Disconnected) => break,
                 }
-            })
-            .map_err(|_| Error::Worker)?;
+            }
+        })
+        .map_err(|_| Error::Worker)?;
+    #[cfg(test)]
+    WORKER_STARTS.with(|count| count.set(count.get() + 1));
+    let worker = Worker {
+        send: Some(send),
+        thread: Some(thread),
+        cancel,
+        binding,
+        direction,
+        deadline,
         #[cfg(test)]
-        WORKER_STARTS.with(|count| count.set(count.get() + 1));
-        let worker = Worker {
-            send: Some(send),
-            thread: Some(thread),
-            cancel,
-            #[cfg(test)]
-            observation,
-        };
-        initialized.await.map_err(|_| Error::Worker)??;
-        Ok(worker)
-    }
+        observation,
+    };
+    initialized.await.map_err(|_| Error::Worker)??;
+    Ok(worker)
 }
+
 fn keylog() -> Result<(), Error> {
     if ["SSLKEYLOGFILE", "TLSKEYLOGFILE"]
         .iter()
@@ -206,6 +433,8 @@ fn keylog() -> Result<(), Error> {
     }
 }
 struct Command {
+    binding: Binding,
+    direction: TransferDirection,
     request: Request,
     response: oneshot::Sender<Result<Response, Error>>,
 }
@@ -221,6 +450,9 @@ pub(crate) struct Worker {
     send: Option<SyncSender<Command>>,
     thread: Option<JoinHandle<()>>,
     cancel: Arc<AtomicBool>,
+    binding: Binding,
+    direction: TransferDirection,
+    deadline: Instant,
     #[cfg(test)]
     observation: Arc<RequestObservation>,
 }
@@ -230,7 +462,29 @@ impl Worker {
         self.observation.clone()
     }
 
-    pub(crate) async fn request(&mut self, request: Request) -> Result<Response, Error> {
+    #[cfg(test)]
+    async fn request(&mut self, request: Request) -> Result<Response, Error> {
+        self.request_bound(&self.binding.clone(), self.direction, request)
+            .await
+    }
+    pub(crate) async fn request_bound(
+        &mut self,
+        binding: &Binding,
+        direction: TransferDirection,
+        request: Request,
+    ) -> Result<Response, Error> {
+        if self.cancel.load(Ordering::SeqCst) {
+            return Err(Error::Transport(Stage::Cancelled));
+        }
+        if Instant::now() >= self.deadline {
+            return Err(Error::Transport(Stage::Deadline));
+        }
+        if binding != &self.binding
+            || direction != self.direction
+            || !request_matches(binding, direction, &request)
+        {
+            return Err(Error::Configuration);
+        }
         // Bound caller-owned input before queueing it; Client rechecks framing and
         // its original operation/deadline budget on the actual TLS connection.
         encode_request(&request).map_err(|_| Error::Transport(Stage::Frame))?;
@@ -238,7 +492,12 @@ impl Worker {
         self.send
             .as_ref()
             .ok_or(Error::Worker)?
-            .try_send(Command { request, response })
+            .try_send(Command {
+                binding: binding.clone(),
+                direction,
+                request,
+                response,
+            })
             .map_err(|_| Error::Worker)?;
         receive.await.map_err(|_| Error::Worker)?
     }
@@ -268,6 +527,7 @@ mod tests {
         sync::atomic::AtomicUsize,
         task::{Context, Poll},
     };
+    include!("test_fixture_retention.rs");
     struct Owned(PathBuf);
     impl Drop for Owned {
         fn drop(&mut self) {
@@ -275,6 +535,9 @@ mod tests {
                 fs::read(self.0.join("OWNED")).unwrap(),
                 b"issue279 private connector unit"
             );
+            if let Some(sink) = std::env::var_os("FACTION322_CORE_FIXTURE_RETENTION") {
+                capture_owned_test_fixture(&self.0, &PathBuf::from(sink));
+            }
             fs::remove_dir_all(&self.0).unwrap();
             assert!(!self.0.exists());
         }
@@ -402,7 +665,7 @@ mod tests {
                 while std::io::Read::read(&mut socket, &mut bytes).unwrap_or(0) != 0 {}
             });
             tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap().block_on(async {
-                let mut call=Box::pin(provider.open());
+                let mut call=Box::pin(provider.open_with(||tokio::net::TcpStream::connect(provider.config.address)));
                 tokio::select! {result=&mut call=>panic!("stalled TLS returned {}",result.is_ok()),_=tokio::time::sleep(Duration::from_millis(40))=>{}}
                 drop(call);
             });
@@ -669,5 +932,212 @@ listener.close()
         });
         WORKER_STARTS.with(|count| assert_eq!(count.get(), 1));
         peer.stop();
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn full_binding_direction_is_classified_before_any_socket_or_worker() {
+        use faction_files::private_blobs::Binding;
+        let (_fixture, mut provider) = provider();
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        provider.config.address = listener.local_addr().unwrap();
+        let own = provider.config.expected.clone();
+        let mut binding = Binding {
+            sender: own.clone(),
+            recipient: Principal {
+                account: "bob@home.test".into(),
+                device: 202,
+                identity: [2; 32],
+            },
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        assert_eq!(
+            provider.classify(&binding, TransferDirection::Upload),
+            Ok(DeviceRoute::Ordinary)
+        );
+        binding.recipient.account = "bob@foreign.test".into();
+        assert!(
+            provider
+                .classify(&binding, TransferDirection::Upload)
+                .is_err()
+        );
+        provider.config.own_home = true;
+        assert_eq!(
+            provider.classify(&binding, TransferDirection::Upload),
+            Ok(DeviceRoute::Publication)
+        );
+        let reverse = Binding {
+            sender: binding.recipient.clone(),
+            recipient: own.clone(),
+            ..binding.clone()
+        };
+        assert_eq!(
+            provider.classify(&reverse, TransferDirection::Fetch),
+            Ok(DeviceRoute::OwnHomeRetrieval)
+        );
+        let mut invalid = Vec::new();
+        invalid.push((binding.clone(), TransferDirection::Fetch));
+        invalid.push((reverse.clone(), TransferDirection::Upload));
+        for field in 0..3 {
+            let mut changed = binding.clone();
+            match field {
+                0 => changed.sender.account = "other@home.test".into(),
+                1 => changed.sender.device += 1,
+                _ => changed.sender.identity = [9; 32],
+            }
+            invalid.push((changed, TransferDirection::Upload));
+            let mut changed = reverse.clone();
+            match field {
+                0 => changed.recipient.account = "other@home.test".into(),
+                1 => changed.recipient.device += 1,
+                _ => changed.recipient.identity = [9; 32],
+            }
+            invalid.push((changed, TransferDirection::Fetch));
+        }
+        let mut neither = binding.clone();
+        neither.sender.account = "alice@elsewhere.test".into();
+        invalid.push((neither, TransferDirection::Upload));
+        for (binding, direction) in invalid {
+            assert!(provider.classify(&binding, direction).is_err());
+            assert!(provider.open(&binding, direction).await.is_err());
+        }
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        WORKER_STARTS.with(|count| assert_eq!(count.get(), 0));
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn pinned_carrier_rejects_changed_binding_direction_and_action_without_io() {
+        use faction_files::private_blobs::Binding;
+        let (_fixture, mut provider) = provider();
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        provider.config.address = listener.local_addr().unwrap();
+        provider.config.own_home = true;
+        let binding = Binding {
+            sender: provider.config.expected.clone(),
+            recipient: Principal {
+                account: "bob@foreign.test".into(),
+                device: 202,
+                identity: [2; 32],
+            },
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        let mut worker = provider
+            .open(&binding, TransferDirection::Upload)
+            .await
+            .unwrap();
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        let mut changed = binding.clone();
+        changed.recipient.identity = [9; 32];
+        assert!(
+            worker
+                .request_bound(
+                    &changed,
+                    TransferDirection::Upload,
+                    Request::Begin(changed.clone())
+                )
+                .await
+                .is_err()
+        );
+        assert!(
+            worker
+                .request_bound(
+                    &binding,
+                    TransferDirection::Fetch,
+                    Request::Status { id: binding.id }
+                )
+                .await
+                .is_err()
+        );
+        assert!(
+            worker
+                .request_bound(
+                    &binding,
+                    TransferDirection::Upload,
+                    Request::GetChunk {
+                        id: binding.id,
+                        offset: 0
+                    }
+                )
+                .await
+                .is_err()
+        );
+        assert!(
+            worker
+                .request_bound(
+                    &binding,
+                    TransferDirection::Upload,
+                    Request::Commit { id: [8; 32] }
+                )
+                .await
+                .is_err()
+        );
+        assert!(
+            worker
+                .request_bound(&binding, TransferDirection::Upload, Request::Begin(changed))
+                .await
+                .is_err()
+        );
+        drop(worker);
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        WORKER_STARTS.with(|count| assert_eq!(count.get(), 1));
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn carrier_idle_time_before_first_command_cannot_renew_parent_deadline() {
+        let (_fixture, mut provider) = provider();
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        provider.config.address = listener.local_addr().unwrap();
+        provider.config.own_home = true;
+        let binding = Binding {
+            sender: provider.config.expected.clone(),
+            recipient: Principal {
+                account: "bob@foreign.test".into(),
+                device: 202,
+                identity: [2; 32],
+            },
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        let start = Instant::now();
+        let mut worker = provider
+            .open(&binding, TransferDirection::Upload)
+            .await
+            .unwrap();
+        tokio::time::sleep(CYCLE_LIMIT + Duration::from_millis(20)).await;
+        assert_eq!(
+            worker
+                .request_bound(
+                    &binding,
+                    TransferDirection::Upload,
+                    Request::Begin(binding.clone())
+                )
+                .await,
+            Err(Error::Transport(Stage::Deadline))
+        );
+        let drain = Instant::now();
+        drop(worker);
+        assert!(drain.elapsed() < Duration::from_secs(1));
+        assert!(start.elapsed() >= CYCLE_LIMIT);
+        assert!(
+            matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        WORKER_STARTS.with(|count| assert_eq!(count.get(), 1));
     }
 }

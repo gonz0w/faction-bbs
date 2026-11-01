@@ -1,0 +1,99 @@
+{
+  "initial_five_launch_blockers": {
+    "actual_green": {
+      "exit": 0,
+      "methods": 6,
+      "rawlog_sha256": "02316e43b834161bf83edb055ddd8bc9db1899e56ad348d0dd34738a14be0ff1",
+      "source_sha256": "869ed94498c70931b4401f24a44d7f0bbeadfebd55040174f5333fe47f789539",
+      "test_sha256": "48d725ad1fc63de2530e4f039acbc758bf6f21890362b1c1c84fba3fcc507cde"
+    },
+    "actual_red": {
+      "exit": 1,
+      "methods": 6,
+      "rawlog_sha256": "1504abeeb294afefa1fd634f3bc63058235814870c975cdd36cc4a9ac9388ae8",
+      "source_sha256": "289625ee834051d18aa6635f7f928c92126fb81f0eaba26f9bc27e595b10e7df",
+      "test_sha256": "48d725ad1fc63de2530e4f039acbc758bf6f21890362b1c1c84fba3fcc507cde"
+    },
+    "categories": [
+      "dedicated PID/UID/start/full-role/config/binary identity before signaling; wrong admin/config/reused identities refuse",
+      "restricted member public authorization file readable to nonowner class",
+      "default SSH host pin uses plain loopback name; nondefault pins retain bracket-port form",
+      "exact existing credential lock inodes selected, no wildcard/create/replace; stopped checks repeated",
+      "unused lazy provider profile must not introduce transport expiry validation"
+    ],
+    "failed_assertions": 7,
+    "test_scope": "synthetic identity/command seams and actual old executor AST projections; owned temporary file metadata/inodes plus real ssh-keygen host lookup; no real daemon or PID signal"
+  },
+  "intended_repository_family": "dev-docs/evidence/own-home-attachments",
+  "inventory_is_git_commit": false,
+  "limits": [
+    "This record reports local preparation tests, not native guest setup, successful BBS/SFTP, service teardown or whole-batch acceptance.",
+    "No historical source/log is relabeled; old failed and setup-error candidates remain retained.",
+    "Runtime/backend source remains the selected immutable commit; nonruntime repository changes are separate from the captured full inventory.",
+    "No private paths, full commands/environments, credentials, host pins, ports or generated member identifiers are exported.",
+    "Final whole-batch review and actual final lifecycle custody remain separately owned."
+  ],
+  "original_frozen_inputs_preserved": true,
+  "prepared_source_hashes": {
+    "bindings.private.json": "a64cd8f9b88a8e43b1403f96cf41beb870aa634223536b99daba263b5e2608a2",
+    "guest_cleanup.py": "d58cd907993bce4d620f017435a067bb21037ae8fd6d9ac34d8a7fd3cbd32eb0",
+    "guest_probe.py": "86929c96a77a225d500f8e94048d8f98b5cbfa70d6b42ba8e81b22e8537cbe7c",
+    "guest_setup.py": "1adf27477efb6c4e23df3763e13cd3764740639829f89c47b6b0ec37c58a2ba1",
+    "test_review_boundaries.py": "48d725ad1fc63de2530e4f039acbc758bf6f21890362b1c1c84fba3fcc507cde",
+    "test_startup_sequence.py": "7ae104b446ef2e27ea47160b74dc31e3554df9284a12d4bec3d942e5d8bcc2c8"
+  },
+  "runtime_source_commit": "9fddcb151c2b94116f849408305f5c9a35ac5fe9",
+  "schema": 1,
+  "scope": "Private fixture preparation observations only; no guest/service/probe execution or product-positive result",
+  "selected_lifecycle_plan": {
+    "external_teardown_implementation_and_execution": "owned by lead/core, outside this preparation record",
+    "findings_fixed_or_waived": false,
+    "findings_scope": "documented unselected fixture cleanup paths; no assertion that earlier fixes eliminate these cases",
+    "guest_restoration_branch_executed": false,
+    "guest_restoration_branch_selected": false,
+    "lead_decision": "Preserve actual corpus, gracefully shut down the dedicated disposable VM, then discard only its owned COW; saved original backing/assets preserved by separately owned teardown",
+    "unselected_remaining_findings": [
+      "PID-file-less spawned owner recovery gap in the private guest cleanup branch",
+      "Temporary administrator public-key append to provenance-receipt window in the private guest cleanup branch"
+    ]
+  },
+  "source_inventory_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+  "startup_sequencing": {
+    "combined_green": {
+      "exit": 0,
+      "methods": 8,
+      "rawlog_sha256": "8faa0ab7322e7f66db38f6e7231d2d589135a6fff97ab5ddb896ecd99fa5f010",
+      "source_sha256": "3b3df1c968d14e12d875547869d4cd3e7ffe21fc8933d71adb18f4e43005469d",
+      "test_sha256": "7ae104b446ef2e27ea47160b74dc31e3554df9284a12d4bec3d942e5d8bcc2c8"
+    },
+    "corrected_actual_spawn_red": {
+      "exit": 1,
+      "methods": 1,
+      "rawlog_sha256": "6fe1abd94fbc83a6e56833f1e5b815d018320a8df91134e8e3919aaed4624338",
+      "source_sha256": "869ed94498c70931b4401f24a44d7f0bbeadfebd55040174f5333fe47f789539",
+      "test_sha256": "7ae104b446ef2e27ea47160b74dc31e3554df9284a12d4bec3d942e5d8bcc2c8"
+    },
+    "corrected_red_behavior": "synthetic maintained start registers owned identity and raises readiness failure; old code fails to retain ownership",
+    "extra_green_reason": "final preflight caller passes expected saved identity for the same confirmed-death contract",
+    "final_same_assertions_green": {
+      "exit": 0,
+      "methods": 8,
+      "rawlog_sha256": "8faa0ab7322e7f66db38f6e7231d2d589135a6fff97ab5ddb896ecd99fa5f010",
+      "source_sha256": "1adf27477efb6c4e23df3763e13cd3764740639829f89c47b6b0ec37c58a2ba1",
+      "test_sha256": "7ae104b446ef2e27ea47160b74dc31e3554df9284a12d4bec3d942e5d8bcc2c8"
+    },
+    "initial_run": {
+      "exit": 1,
+      "methods": 2,
+      "rawlog_sha256": "49e559634ccbc53f8335b0db104ec0aa14c420d9e41cbcc2a9da704a65d8c7aa",
+      "source_sha256": "869ed94498c70931b4401f24a44d7f0bbeadfebd55040174f5333fe47f789539",
+      "test_sha256": "7e6627c61aaafb270c5204b7079a60fb48c0ee9b8d40106df6389c6b6779e800"
+    },
+    "initial_run_classification": "confirmed-dead-owner case failed meaningfully; spawn case selected wrong earlier loop and raised NameError, which is setup failure rather than spawn RED",
+    "producer_patch_sha256": "b9179c18cacc09b48d29e39b1b419908b45f774978398f30680111130f877469",
+    "producer_scope": "retain qualified current owner across failed readiness return; preserve original error; confirmed dead owner becomes already closed; live identity mismatches remain refused",
+    "selector_correction": "actual three-role loop required literal onestart descendant; assertions unchanged",
+    "selector_only_correction_sha256": "537c3f9eb4f2973ef76ebe7781ff6103c905cfb12a6119575f555b15944814c4",
+    "synthetic_unit_only": true
+  }
+}

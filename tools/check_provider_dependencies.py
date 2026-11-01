@@ -30,13 +30,13 @@ def validate_profile(manifest, workspace):
     expected = {'package': {'name': 'faction-provider', 'version': '0.1.0-alpha.1',
                 'edition': '2024', 'rust-version': '1.96', 'license': 'BSD-3-Clause', 'publish': False},
                 'workspace': {}, 'features': {'default': [], 'blob-iq': ['dep:faction-xmpp'],
-                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [], 'delegation-issuer': ['delegation-records', 'delegation-services'], 'delegation-wire': ['delegation-issuer', 'dep:faction-delegation-codec'], 'delegation-verifier': ['delegation-wire'],
+                    'durable-policy': ['dep:rustix'], 'delegation-records': [], 'delegation-services': [], 'delegation-issuer': ['delegation-records', 'delegation-services'], 'delegation-wire': ['delegation-issuer', 'dep:faction-delegation-codec', 'dep:rustix'], 'delegation-verifier': ['delegation-wire'],
                     'preparation': ['dep:toml', 'toml/display'],
                     'operator': ['durable-policy', 'preparation', 'dep:faction-unix']},
                 'dependencies': {'faction-delegation-codec': {'path': '../faction-delegation-codec', 'optional': True, 'default-features': False}, 'faction-files': {'path': '../faction-files'}, 'openssl': '=0.10.81',
                                  'faction-xmpp': {'path': '../faction-xmpp', 'optional': True},
                     'rustix': {'version': '=1.1.5', 'default-features': False,
-                               'features': ['std', 'fs', 'process'], 'optional': True},
+                               'features': ['std', 'fs', 'process', 'net', 'event'], 'optional': True},
                     'toml': {'version': '=1.1.8', 'default-features': False,
                              'features': ['std', 'parse', 'serde'], 'optional': True},
                     'faction-unix': {'path': '../faction-unix', 'optional': True}},
@@ -53,7 +53,8 @@ def validate_product_edges(manifests):
     features = {'default': [],
                 'native-mail': ['dep:faction-omemo', 'faction-omemo/native'],
                 'network-mail': ['native-mail', 'dep:faction-xmpp', 'dep:tokio', 'dep:roxmltree'],
-                'device-provider': ['network-mail', 'dep:faction-provider', 'faction-provider/preparation', 'tokio/sync']}
+                'device-provider': ['network-mail', 'dep:faction-provider', 'faction-provider/preparation', 'tokio/sync'],
+                'own-home-provider': ['device-provider', 'faction-provider/delegation-verifier']}
     edge = {'path': '../faction-provider', 'optional': True, 'default-features': False}
     for name, manifest in manifests.items():
         require(not any(key in manifest for key in ['patch', 'replace']), 'unreviewed dependency replacement')
@@ -77,15 +78,21 @@ def validate_product_edges(manifests):
 
 
 def validate_graph(metadata, enabled):
+    own_home = enabled == 'own-home-provider'
+    profile = 'own-home-provider' if own_home else ('device-provider' if enabled else 'ordinary-root')
     for package, features in selected_packages(metadata):
-        validate_codec_composition('device-provider' if enabled else 'ordinary-root', package, features)
+        validate_codec_composition(profile, package, features)
     selected = [(package, features) for package, features in selected_packages(metadata)
                 if package['name'] == 'faction-provider']
-    require(bool(selected) == enabled, 'provider leaked into an ordinary graph or is absent from the selected graph')
+    require(bool(selected) == bool(enabled), 'provider leaked into an ordinary graph or is absent from the selected graph')
     if enabled:
-        require(len(selected) == 1 and selected[0][1] == ['preparation'],
-                'client provider must select only preparation; operator and durability stay separate')
-
+        expected = (['delegation-issuer', 'delegation-records', 'delegation-services',
+                     'delegation-verifier', 'delegation-wire', 'preparation']
+                    if own_home else ['preparation'])
+        require(len(selected) == 1 and selected[0][1] == expected,
+                'client provider must select its exact explicit profile; operator and durability stay separate')
+    if own_home:
+        delegation_codec.validate_own_home_graph(metadata)
 
 
 # These exact selected identities were absent from all previously qualified root
@@ -95,10 +102,10 @@ CODEC_ONLY = {('httparse','1.10.1'), ('form_urlencoded','1.2.2'), ('percent-enco
 def validate_codec_composition(profile, package, features):
     key=(package['name'],package.get('version'))
     if package['name'] in {name for name, _ in CODEC_ONLY}:
-        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy'}, 'codec-only source leaked into ordinary/core graph')
+        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy','operator,delegation-verifier','own-home-provider'}, 'codec-only source leaked into ordinary/core graph')
         delegation_codec.validate_selected(package,features)
     if package['name']=='faction-delegation-codec':
-        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy'} and features==[], 'codec local edge leaked into ordinary/core graph')
+        require(profile in {'delegation-wire','delegation-wire,durable-policy','delegation-verifier','delegation-verifier,durable-policy','operator,delegation-verifier','own-home-provider'} and features==[], 'codec local edge leaked into ordinary/core graph')
 
 
 
@@ -152,13 +159,13 @@ TOOLCHAIN = 'rustup toolchain install 1.96.0 --profile minimal --component rustf
 def root_warm_commands():
     return ['cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features faction-client/' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'native-mail', 'network-mail', 'device-provider'] for target in TARGETS]
+            for feature in ['', 'native-mail', 'network-mail', 'device-provider', 'own-home-provider'] for target in TARGETS]
 
 
 def provider_warm_commands():
     return ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target
             + (' --features ' + feature if feature else '') + ' > /dev/null'
-            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy'] for target in TARGETS]
+            for feature in ['', 'blob-iq', 'durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'] for target in TARGETS]
 
 
 def validate_warm_order(job):
@@ -191,6 +198,18 @@ def operator_proof_commands():
             'python3 tools/probe_provider_operator.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --owned-root "$RUNNER_TEMP/faction284-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction284-console-OWNED/result.json" --prepared']
 
 
+def own_home_console_commands():
+    return [
+        'python3 tools/check_provider_dependencies.py',
+        'cargo build --manifest-path crates/faction-provider/Cargo.toml --bin faction-provider --features operator,delegation-verifier --release --locked',
+        'cargo build -p faction-client --features own-home-provider --bin faction-client --example device_provider_console_fixture --release --locked',
+        'umask 077',
+        'mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"',
+        'printf \'%s\\n\' \'Owned authenticated-provider console proof\' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"',
+        'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"',
+    ]
+
+
 def validate_ci(text):
     # Recognize this reviewed workflow's literal jobs/steps only. This does not
     # interpret general YAML/shell semantics or establish global workflow trust.
@@ -205,7 +224,7 @@ def validate_ci(text):
     commands = ['rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy']
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' > /dev/null' for target in TARGETS]
     commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features blob-iq > /dev/null' for target in TARGETS]
-    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy'] for target in TARGETS]
+    commands += ['cargo metadata --locked --manifest-path ' + REL + '/Cargo.toml --format-version 1 --filter-platform ' + target + ' --features ' + feature + ' > /dev/null' for feature in ['durable-policy', 'preparation', 'operator', 'delegation-records', 'delegation-records,durable-policy', 'delegation-services', 'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier', 'delegation-verifier,durable-policy', 'operator,delegation-verifier'] for target in TARGETS]
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check',
                  'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked -- -D warnings',
@@ -214,7 +233,7 @@ def validate_ci(text):
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features blob-iq -- --test-threads=1']
     commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features preparation -- -D warnings',
                  'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features preparation -- --test-threads=1']
-    for feature in ['delegation-records', 'delegation-records,durable-policy','delegation-verifier']:
+    for feature in ['delegation-records', 'delegation-records,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     require(lines == commands, 'provider CI must qualify exact selected sources before locked validation')
@@ -276,6 +295,15 @@ def validate_ci(text):
             expected = 2 if command.startswith('cargo build -p faction-client ') else 1
             require(text.splitlines().count('          ' + command) == expected,
                     'prepared operator proof command duplicated or moved outside its guarded step')
+    own_name = 'Validate the own-home encrypted attachment console'
+    require(text.splitlines().count('      - name: ' + own_name) == 1,
+            'own-home console proof must run exactly once')
+    own_proof = _step(_job(text, 'own_home_client'), own_name)
+    for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+        require(own_proof.splitlines().count('          ' + setting) == 1,
+                'own-home console proof environment changed')
+    require(_lines(own_proof, {'python3', 'cargo', 'umask', 'mkdir', 'printf'}) == own_home_console_commands(),
+            'own-home console proof must use the qualified real composed operator and explicit client')
     # Every fresh job must materialize every graph read by the offline guard.
     warm = _step(provider, 'Warm the selected native attachment source graphs')
     require(_lines(warm, {'rustup', 'cargo'}) == [TOOLCHAIN] + root_warm_commands(),
@@ -300,16 +328,70 @@ def validate_ci(text):
     for operation in ['clippy','test']:
         command='cargo '+operation+' --manifest-path '+REL+'/Cargo.toml'+(' --all-targets' if operation=='clippy' else '')+' --release --locked --features delegation-verifier'+(' -- -D warnings' if operation=='clippy' else ' -- --test-threads=1')
         require(sum(line.strip()==command for line in text.splitlines())==1,'verifier CI validation must run exactly once')
+    own_commands = ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py',
+                 'python3 tools/check_provider_dependencies.py',
+                 'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings',
+                 'cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked',
+                 'umask 077',
+                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"',
+                 'printf \'%s\\n\' \'Owned own-home attachment client setup tests\' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"',
+                 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+                 'sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"',
+                 'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
+    for job_name, predecessor, title, warm_name, validation_name in [
+        ('provider_composed', 'provider', 'Optional composed attachment provider',
+         'Warm the selected composed provider source graphs', 'Validate the composed attachment provider'),
+        ('own_home_client', 'provider_client', 'Optional own-home attachment client',
+         'Warm the selected own-home client source graphs', 'Validate the own-home authenticated attachment client'),
+    ]:
+        successor = _job(text, job_name)
+        require(not re.search(r'^    (?:if|continue-on-error|strategy|permissions|shell):', successor, re.M),
+                'successor CI cannot bypass its predecessor or override execution')
+        require(re.findall(r'^    needs: (.*)$', successor, re.M) == ['[' + predecessor + ']'],
+                'successor CI must require its exact successful predecessor')
+        for setting in ['name: ' + title, 'runs-on: ubuntu-24.04', 'timeout-minutes: 15']:
+            require(successor.splitlines().count('    ' + setting) == 1, 'successor CI identity/platform/timeout changed')
+        expected_names = ['Fetch the public repository revision', warm_name, validation_name]
+        if job_name == 'own_home_client':
+            expected_names.append(own_name)
+        require(re.findall(r'^      - name: (.*)$', successor, re.M) == expected_names,
+                'successor CI must freshly fetch, warm, qualify and validate only its selected commands')
+        successor_fetch = _step(successor, 'Fetch the public repository revision')
+        require(successor_fetch == fetch, 'successor CI must freshly fetch the same exact workflow revision')
+        successor_warm = _step(successor, warm_name)
+        require(successor_warm == client_warm, 'successor CI must independently warm all66 graphs with unchanged tools/resources')
+        validate_warm_order(successor)
+        validation = _step(successor, validation_name)
+        for setting in ['CARGO_BUILD_JOBS: 2', 'RUSTUP_TOOLCHAIN: 1.96.0', 'CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider']:
+            require(validation.splitlines().count('          ' + setting) == 1,
+                    'successor CI resource/toolchain environment changed')
+        expected = ['python3 tools/check_provider_dependencies.py']
+        if job_name == 'provider_composed':
+            for feature in ['delegation-verifier', 'operator,delegation-verifier']:
+                for operation in ['clippy', 'test']:
+                    command = ('cargo ' + operation + ' --manifest-path ' + REL + '/Cargo.toml' +
+                               (' --all-targets' if operation == 'clippy' else '') + ' --release --locked --features ' + feature +
+                               (' -- -D warnings' if operation == 'clippy' else ' -- --test-threads=1'))
+                    expected.append(command)
+                    require(text.splitlines().count('          ' + command) == 1,
+                            'composed CI validation must run exactly once')
+        else:
+            expected = own_commands
+        require(_lines(validation, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == expected,
+                'successor CI must retain its exact moved commands and setup inputs')
     documentation = _job(text, 'documentation')
-    require('    needs: [native_mail, provider, provider_operator, provider_client]' in documentation.splitlines()
+    require('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
             and not re.search(r'^    (?:continue-on-error|shell):', documentation, re.M),
             'documentation must require all optional job results')
     gate = _step(documentation, 'Require optional native tests')
-    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client')]:
+    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client'), ('PROVIDER_COMPOSED_RESULT', 'provider_composed'), ('OWN_HOME_CLIENT_RESULT', 'own_home_client'), ('BBS_REGRESSIONS_RESULT', 'bbs_regressions')]:
         require(('          ' + name + ': ${{ needs.' + job + '.result }}') in gate.splitlines(), 'required CI result environment missing')
-    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success'],
+    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_COMPOSED_RESULT" = success', 'test "$OWN_HOME_CLIENT_RESULT" = success', 'test "$BBS_REGRESSIONS_RESULT" = success'],
             'documentation must fail closed on all optional test results')
+    from check_bbs_regressions_ci import validate_ci as validate_bbs_ci
+    validate_bbs_ci(text)
 
 
 def inventory():
@@ -332,7 +414,7 @@ def inventory():
             if features:
                 command += ['--features', ','.join(features)]
             validate_graph(json.loads(subprocess.check_output(command, text=True)), False)
-    root_checks = existing_checks(tomllib.loads((ROOT / 'Cargo.lock').read_text()),
+    root_checks = provider_source_checks(tomllib.loads((ROOT / 'Cargo.lock').read_text()),
                                   tomllib.loads((ROOT / 'Cargo.lock').read_text()))
     profiles = {}; verified = {}
     for profile, features in [('default', []), ('blob-iq', ['blob-iq']),
@@ -349,18 +431,20 @@ def inventory():
                               ('delegation-wire,durable-policy', ['delegation-wire','durable-policy']),
                               ('delegation-verifier', ['delegation-verifier']),
                               ('delegation-verifier,durable-policy', ['delegation-verifier','durable-policy']),
-                              ('device-provider', ['faction-client/device-provider'])]:
+                              ('operator,delegation-verifier', ['operator','delegation-verifier']),
+                              ('device-provider', ['faction-client/device-provider']),
+                              ('own-home-provider', ['faction-client/own-home-provider'])]:
         graphs = {}
         for target in TARGETS:
-            selected_manifest = ROOT / 'Cargo.toml' if profile == 'device-provider' else MANIFEST
+            selected_manifest = ROOT / 'Cargo.toml' if profile in {'device-provider', 'own-home-provider'} else MANIFEST
             command = ['cargo', 'metadata', '--locked', '--offline', '--manifest-path', str(selected_manifest),
                        '--format-version', '1', '--filter-platform', target]
             if features:
                 command += ['--features', ','.join(features)]
             metadata = json.loads(subprocess.check_output(command, text=True))
-            if profile == 'device-provider':
-                validate_graph(metadata, True)
-            selected_checks = root_checks if profile == 'device-provider' else checks
+            if profile in {'device-provider', 'own-home-provider'}:
+                validate_graph(metadata, 'own-home-provider' if profile == 'own-home-provider' else True)
+            selected_checks = root_checks if profile in {'device-provider', 'own-home-provider'} else checks
             rows = []; local = []
             for package, selected_features in selected_packages(metadata):
                 validate_codec_composition(profile, package, selected_features)

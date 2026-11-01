@@ -1,0 +1,130 @@
+{
+  "intended_repository_family": "dev-docs/evidence/own-home-attachments",
+  "interrupted_upload_and_failed_fetch": {
+    "committed_store_encrypted_mail_and_offline_archive_passed": true,
+    "corpus_sha256": "eddd385f39e35be430ccdd21bef3526e12270ed07b9098ce1ab39d2aed496d90",
+    "initial_intended_stop_ciphertext_bytes": 16384,
+    "initial_stop_drain_seconds": 0.001137,
+    "later_fetch_stop_ciphertext_bytes": 32768,
+    "result": "SAFEHALT; original complete episode remains failed and unexplained",
+    "retry_upload_last_progress": {
+      "call": 8,
+      "offset": 131088,
+      "writes": 1
+    },
+    "runtime_seconds": 4.60036,
+    "save_and_privacy_not_reached": true,
+    "source_absent_before_explicit_retry": true
+  },
+  "issues": [
+    321,
+    322
+  ],
+  "maximum_file": {
+    "attachment_result": "pass",
+    "corpus_sha256": "1cf25d90149386e7fa5e62754879c1c735575e2c4243b889e960394e6c700a55",
+    "modes": [
+      {
+        "ciphertext_bytes": 1048592,
+        "mode": "classic",
+        "plaintext_bytes": 1048576,
+        "privacy": {
+          "actual_source_files": 58,
+          "actual_stores": 2,
+          "descriptor_and_content_key_audit": true,
+          "direct_plaintext_password_scan": true,
+          "hidden_exact_tokens_unavailable": true,
+          "token_field_patterns_only": true
+        },
+        "saved_sha256": "acb53a30c059087f8f7b0206549f6e9f304672f5317d09efc15d9ad5de6ee4ef",
+        "transfers": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 20.614838
+          },
+          "upload": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 7.875345
+          }
+        }
+      },
+      {
+        "ciphertext_bytes": 1048592,
+        "mode": "unicode",
+        "plaintext_bytes": 1048576,
+        "privacy": {
+          "actual_source_files": 58,
+          "actual_stores": 2,
+          "descriptor_and_content_key_audit": true,
+          "direct_plaintext_password_scan": true,
+          "hidden_exact_tokens_unavailable": true,
+          "token_field_patterns_only": true
+        },
+        "saved_sha256": "acb53a30c059087f8f7b0206549f6e9f304672f5317d09efc15d9ad5de6ee4ef",
+        "transfers": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 19.602087
+          },
+          "upload": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 7.864691
+          }
+        }
+      }
+    ],
+    "receipt_sha256": "924edf6d442a725dc8763011ac18315f1a45d1b2709b582f28a8019e36b0c662",
+    "separate_text_control_at_this_stage": "verification-oracle failure before first online cycle; not a product defect; not relabeled as a text pass"
+  },
+  "ordinary_text": {
+    "actual_absence_checks": 4,
+    "blob_iq_requests": 0,
+    "corpus_sha256": "d29b098bbe6e5afe67c6476a8ebe1f74a95f4c180f59b1d5a10409bfcb31c788",
+    "encrypted_offline_archive_accepted": true,
+    "exact_native_text_read": true,
+    "new_provider_processes_or_joins": 0,
+    "protected_files_unchanged": true,
+    "receipt_sha256": "3453be77fc28b9c64defa566a08319bcadd15e209c0a2810d8bdec58a3f0b0cc",
+    "result": "pass",
+    "runtime_seconds": 1.566565,
+    "scope": "separate fresh same-home member control while selected attachment owners were stopped; original opt-in profiles remained lazy and unused"
+  },
+  "schema": 1,
+  "scope": "Public-safe draft of retained host observations only; no new execution or final batch acceptance",
+  "separate_manual_fetch_continuation": {
+    "corpus_sha256": "8069938d02e00a1fa0945cc15b0211b3e3bb79ced33322d1c2d68257afb95d36",
+    "exact_uncertain_prior_tail_claim": false,
+    "fetch_calls": 6,
+    "fetch_seconds": 1.534438,
+    "final_ciphertext_bytes": 131088,
+    "first_confirmed_ciphertext_offset": 61440,
+    "new_mail_servers": 0,
+    "original_failed_episode_reclassified": false,
+    "overwrite_refused": true,
+    "prior_last_confirmed_offset": 32768,
+    "privacy": {
+      "actual_source_files": 70,
+      "actual_stores": 2,
+      "descriptor_and_content_key_audit": true,
+      "direct_plaintext_password_scan": true,
+      "hidden_exact_tokens_unavailable": true,
+      "token_field_patterns_only": true
+    },
+    "result": "pass; fresh explicit member authorization on actual retained partial state",
+    "runtime_seconds": 2.794342,
+    "save_mode": "0600",
+    "saved_bytes": 131072,
+    "saved_sha256": "a5ca21d995e6b075abf6bcb9e785f59a987e726477eb21541d86b7da494cc9ca",
+    "upload_or_archive_repeat": false
+  },
+  "source_inventory_sha256": "f35003020cd5f270cd5eed830c0fd241e8762e8baaf4096421117a7c16710723",
+  "topology": "Two independent maintained composed attachment operators; two separately authenticated mail fixture endpoints sharing one opaque archive queue. No production XMPP S2S deployment or independent interoperability claim."
+}

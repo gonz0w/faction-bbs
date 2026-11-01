@@ -31,14 +31,22 @@ impl AttachmentTransport {
         #[cfg(feature = "device-provider")]
         if let Self::Device(provider) = self {
             provider.validate(vault).map_err(|_| invalid())?;
-            if vault.legacy()?.home.split_once('@').map(|(_, home)| home)
-                != peer.address.split_once('@').map(|(_, home)| home)
+            if !provider.uses_own_home()
+                && vault.legacy()?.home.split_once('@').map(|(_, home)| home)
+                    != peer.address.split_once('@').map(|(_, home)| home)
             {
                 return Err(invalid());
             }
         }
         let _ = (vault, peer);
         Ok(())
+    }
+    fn own_home(&self) -> bool {
+        match self {
+            Self::Iq => false,
+            #[cfg(feature = "device-provider")]
+            Self::Device(provider) => provider.uses_own_home(),
+        }
     }
     fn device(&self) -> bool {
         match self {
@@ -560,7 +568,11 @@ impl Screen<'_> {
                     let total = row.attachment().ok_or_else(invalid)?.size + 16;
                     let sender_home = row.address.split_once('@').ok_or_else(invalid)?.1;
                     let own_home = settings.account.split_once('@').ok_or_else(invalid)?.1;
-                    let invited = if sender_home != own_home {
+                    let invited = if sender_home != own_home && transport.own_home() {
+                        self.attachment_field("Authenticated sender home:", sender_home)?;
+                        self.print("Your configured home must already approve this peer.\r\nTraffic uses YOUR configured pinned home.\r\nYour password is never sent to this route.\r\n")?;
+                        InvitedHomes::new(&[]).map_err(|_| invalid())?
+                    } else if sender_home != own_home {
                         self.attachment_field("Invited sender-home route:", sender_home)?;
                         self.print("Traffic uses YOUR configured pinned home.\r\nYour password is never sent to this route.\r\n")?;
                         rustix::termios::tcflush(
@@ -821,6 +833,7 @@ impl Screen<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    include!("test_fixture_retention.rs");
     #[test]
     fn foreground_requires_strict_progress_and_caps_calls() {
         let mut run = Foreground::new(1_048_592);
@@ -936,6 +949,9 @@ mod tests {
                 std::fs::read(self.0.join("OWNED")).unwrap(),
                 b"Owned synthetic attachment desk test"
             );
+            if let Some(sink) = std::env::var_os("FACTION322_CORE_FIXTURE_RETENTION") {
+                capture_owned_test_fixture(&self.0, &std::path::PathBuf::from(sink));
+            }
             std::fs::remove_dir_all(&self.0).unwrap();
         }
     }
@@ -997,6 +1013,95 @@ mod tests {
         assert!(PeerSnapshot::prepare(&historical, false, TIME).is_err());
         a.revoke().unwrap();
         assert!(snapshot.recheck(&a, false, TIME).is_err());
+        assert!(!f.0.join("alice/attachments").exists());
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn explicit_own_home_profile_allows_verified_foreign_peer_and_preserves_v1_refusal() {
+        if isolated(
+            "checkpoint_ui::attachments::tests::explicit_own_home_profile_allows_verified_foreign_peer_and_preserves_v1_refusal",
+        ) {
+            return;
+        }
+        use faction_client::mail_device_provider::{Config, Credentials, DeviceProvider};
+        use faction_files::private_blobs::Principal;
+        use std::{fs, os::unix::fs::PermissionsExt};
+        let f = Fixture::new();
+        let (a, _b) = f.pair();
+        let peer = PeerSnapshot::prepare(&a, true, TIME).unwrap();
+        peer.recheck(&a, true, TIME).unwrap();
+        let openssl = if cfg!(target_os = "macos") {
+            "/opt/homebrew/opt/openssl@3/bin/openssl"
+        } else {
+            "/usr/bin/openssl"
+        };
+        let output = std::process::Command::new(openssl)
+            .args([
+                "req",
+                "-x509",
+                "-newkey",
+                "ec",
+                "-pkeyopt",
+                "ec_paramgen_curve:prime256v1",
+                "-nodes",
+                "-keyout",
+                "key.pem",
+                "-out",
+                "cert.pem",
+                "-subj",
+                "/CN=provider.test",
+                "-addext",
+                "subjectAltName=DNS:provider.test",
+                "-days",
+                "1",
+            ])
+            .current_dir(&f.0)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "synthetic credential generation failed"
+        );
+        for name in ["cert.pem", "key.pem"] {
+            fs::set_permissions(f.0.join(name), fs::Permissions::from_mode(0o600)).unwrap();
+        }
+        let cert = fs::read(f.0.join("cert.pem")).unwrap();
+        let key = fs::read(f.0.join("key.pem")).unwrap();
+        let own = Principal {
+            account: a.legacy().unwrap().home.clone(),
+            device: a.inspection().unwrap().local_device,
+            identity: *a.inspection().unwrap().identity,
+        };
+        let credentials = Credentials::from_pem(&cert, &cert, &key).unwrap();
+        let endpoint = "127.0.0.1:1234".parse().unwrap();
+        let legacy = AttachmentTransport::Device(Box::new(DeviceProvider::new(
+            Config::new("home.test", endpoint, "provider.test", [1; 32], own.clone()).unwrap(),
+            credentials.clone(),
+        )));
+        assert!(
+            legacy.validate(&a, &peer).is_err(),
+            "v1 keeps foreign-peer refusal"
+        );
+        let selected = AttachmentTransport::Device(Box::new(DeviceProvider::new(
+            Config::new_own_home("home.test", endpoint, "provider.test", [1; 32], own.clone())
+                .unwrap(),
+            credentials.clone(),
+        )));
+        assert!(
+            selected.validate(&a, &peer).is_ok(),
+            "explicit own-home mode must reach the verified foreign-peer desk"
+        );
+        peer.recheck(&a, true, TIME).unwrap();
+        let mut wrong = own;
+        wrong.identity[0] ^= 1;
+        let wrong = AttachmentTransport::Device(Box::new(DeviceProvider::new(
+            Config::new_own_home("home.test", endpoint, "provider.test", [1; 32], wrong).unwrap(),
+            credentials,
+        )));
+        assert!(
+            wrong.validate(&a, &peer).is_err(),
+            "mode never relaxes current full local identity"
+        );
         assert!(!f.0.join("alice/attachments").exists());
     }
     #[test]

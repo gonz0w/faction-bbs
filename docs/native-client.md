@@ -160,9 +160,14 @@ The optional [manual encrypted home-mail guide](online-mail.md) covers the separ
 retains its v1 vault. Files and the offline checkpoint console remain separate.
 
 The optional `device-provider` build and explicit local profile select a
-separate same-home attachment transport for `--mail-online` or `--boards`.
+separate attachment transport for `--mail-online` or `--boards`. The version 1
+profile stays same-home; the separately enabled own-home route uses an explicit
+version 2 profile and preapproved home policy.
 See [private attachments](private-attachments.md) for trust and recovery limits.
-Ordinary mail, board and file access do not require that provider.
+Ordinary mail, board and file access do not require that provider. The own-home
+route has passed maximum-size classic and Unicode host and NetBSD software
+exercises; see [private attachments](private-attachments.md) for recovery and
+qualification limits.
 
 Opt-in [archive mode](archive-mail.md) adds an explicit local schema upgrade and
 one-page retained-mail catch-up. N sends pending ciphertext; A reads a bounded

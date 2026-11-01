@@ -1,0 +1,28 @@
+{
+  "closure63": {
+    "forward_closed": true,
+    "infrastructure_shutdown_seconds": 21.13686075003352,
+    "initial61_not_rewritten": true,
+    "known_processes_dead": true,
+    "owner_assets_exact": 86,
+    "retained_cow_handles_closed": true,
+    "retained_cow_unchanged": true,
+    "snapshot_tmp_entries": []
+  },
+  "diagnosis": "NetBSD treats text after the first equals sign in ps -o as a customized header. Repeated -o arguments restore the required separate columns; actual strict parser assertions remained unchanged.",
+  "native_format_and_sshd_title_green": "Actual eight-field rows and exact OpenSSH listener-title normalization were reviewed; captured native-row counterexample failed before the minimal fix, same three unit methods then passed.",
+  "no_product_runtime_source_change": true,
+  "original61": "Failed on a shlex reconstruction of a displayed argument containing spaces; launch/readiness failure remains preserved.",
+  "original_saved_assets_exact": 86,
+  "primary_reference": "https://man.netbsd.org/NetBSD-11.0/ps.1",
+  "recovery63": {
+    "elapsed_seconds": 23.735223290976137,
+    "first_error": null,
+    "query_custody_verified": true,
+    "setup_or_proof_invocations": 0,
+    "whole_vm_closed": true
+  },
+  "retained_reports_archive_sha256": "459e8334848fe15342fbe31a123ad19da1ad9589f18709330c456bf376ed3b94",
+  "schema": 1,
+  "scope": "Retained failed preflight diagnostic recovery only, not a BBS test retry or an initial forensic61 pass."
+}
