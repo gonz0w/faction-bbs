@@ -220,7 +220,7 @@ class SuccessorSchedulingCI(unittest.TestCase):
         # two chains contributes at most one live runner alongside two originals.
         roots = ['native_mail', 'provider', 'provider_operator', 'provider_client']
         dependencies = {name: set() for name in roots}
-        dependencies.update(provider_composed={'provider'}, own_home_client={'provider_client'})
+        dependencies.update(provider_composed={'provider'}, own_home_client={'provider_client'}, bbs_regressions={'own_home_client'})
         from itertools import combinations
         maximum = 0
         for size in range(len(dependencies) + 1):
@@ -258,7 +258,7 @@ class SuccessorSchedulingCI(unittest.TestCase):
     def test_aggregate_requires_both_successors_even_after_skipped_or_cancelled_jobs(self):
         source = (ROOT / '.github/workflows/documentation.yml').read_text()
         job = provider._job(source, 'documentation')
-        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', job.splitlines())
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', job.splitlines())
         self.assertIn('    if: ${{ always() }}', job.splitlines())
         gate = provider._step(job, 'Require optional native tests')
         for name in ['provider_composed', 'own_home_client']:

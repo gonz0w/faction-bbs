@@ -884,7 +884,9 @@ def ci_fixture():
     ) + '  documentation:\n', 1)
     source = source.replace('needs: [native_mail, provider, provider_operator, provider_client]', 'needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]')
     source = source.replace('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n', '          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n          PROVIDER_COMPOSED_RESULT: ${{ needs.provider_composed.result }}\n          OWN_HOME_CLIENT_RESULT: ${{ needs.own_home_client.result }}\n')
-    return source.replace('          test "$PROVIDER_CLIENT_RESULT" = success\n', '          test "$PROVIDER_CLIENT_RESULT" = success\n          test "$PROVIDER_COMPOSED_RESULT" = success\n          test "$OWN_HOME_CLIENT_RESULT" = success\n')
+    source = source.replace('          test "$PROVIDER_CLIENT_RESULT" = success\n', '          test "$PROVIDER_CLIENT_RESULT" = success\n          test "$PROVIDER_COMPOSED_RESULT" = success\n          test "$OWN_HOME_CLIENT_RESULT" = success\n')
+    from test_bbs_regressions_ci import bbs_fixture
+    return bbs_fixture(source)
 
 
 class PreparedOperatorProofCI(unittest.TestCase):
@@ -958,7 +960,7 @@ class ProviderClientCI(unittest.TestCase):
         self.assertEqual(source.count(native_ci_step()), 1)
         policy.validate_warm_order(client)
         documentation = policy._job(source, 'documentation')
-        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', documentation.splitlines())
+        self.assertIn('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', documentation.splitlines())
         self.assertIn('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}', documentation.splitlines())
         self.assertIn('          test "$PROVIDER_CLIENT_RESULT" = success', documentation.splitlines())
         policy.validate_ci(source)
@@ -1001,7 +1003,7 @@ class ProviderClientCI(unittest.TestCase):
             policy.validate_ci(source + '  provider_client:\n' + client)
         with self.assertRaises(ValueError):
             policy.validate_ci(source.replace('  provider_operator:\n', native_ci_step() + '  provider_operator:\n', 1))
-        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', 'needs: [native_mail, provider, provider_operator]'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail, provider, provider_operator]'),
                          ('          PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}\n', ''),
                          ('PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}', 'PROVIDER_CLIENT_RESULT: success'),
                          ('          test "$PROVIDER_CLIENT_RESULT" = success\n', ''),
@@ -1120,7 +1122,7 @@ class ProviderCI(unittest.TestCase):
 
     def test_documentation_fails_closed_on_both_native_and_provider(self):
         good = ci_fixture()
-        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', 'needs: native_mail'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: native_mail'),
                          ('          test "$PROVIDER_RESULT" = success\n', ''),
                          ('          test "$NATIVE_MAIL_RESULT" = success\n', ''),
                          ('test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_RESULT" = success || true'),
@@ -1175,7 +1177,7 @@ class DurableProviderProfiles(unittest.TestCase):
         for feature in ['durable-policy', 'operator']:
             self.assertIn('--features ' + feature + ' -- -D warnings', job)
             self.assertIn('--features ' + feature + ' -- --test-threads=1', job)
-        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', source)
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', source)
 
 
 class DurableProviderRefusals(unittest.TestCase):
@@ -1224,7 +1226,7 @@ class DurableProviderRefusals(unittest.TestCase):
             if line.strip().startswith(('cargo ', 'python3 ')):
                 with self.subTest(line=line), self.assertRaises(ValueError):
                     policy.validate_ci(good.replace(job, job.replace(line + '\n', '', 1)))
-        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', 'needs: [native_mail, provider]'),
+        for old, new in [('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', 'needs: [native_mail, provider]'),
                          ('test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success || true'),
                          ('PROVIDER_OPERATOR_RESULT: ${{ needs.provider_operator.result }}', 'PROVIDER_OPERATOR_RESULT: success'),
                          ('  provider_operator:\n', '  provider_operator:\n    if: false\n')]:

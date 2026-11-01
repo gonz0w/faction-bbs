@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class NativePolicy(unittest.TestCase):
  def test_native_ci_is_a_dependency_of_required_documentation_gate(self):
   text=(ROOT/'.github/workflows/documentation.yml').read_text()
-  self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]',text)
+  self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]',text)
   self.assertIn('cargo test -p faction-client -p faction-omemo --features faction-client/native-mail',text)
   self.assertIn('python3 tools/check_omemo_dependencies.py',text)
  def test_native_failure_cancel_or_skip_cannot_skip_a_required_gate(self):
@@ -25,14 +25,17 @@ class NativePolicy(unittest.TestCase):
   successors={'PROVIDER_COMPOSED_RESULT':'provider_composed','OWN_HOME_CLIENT_RESULT':'own_home_client'}
   for variable,job in successors.items():
    self.assertIn(variable+': ${{ needs.'+job+'.result }}',guard.group(1))
+  bbs='BBS_REGRESSIONS_RESULT'
+  self.assertIn(bbs+': ${{ needs.bbs_regressions.result }}',guard.group(1))
   self.assertEqual(command.splitlines(),
-   ['test "$'+variable+'" = success' for variable in [*results,*successors]])
+   ['test "$'+variable+'" = success' for variable in [*results,*successors,bbs]])
   # An absent variable and an explicitly empty result must both fail closed.
   statuses=['success','failure','cancelled','skipped','',None]
   for values in itertools.product(statuses,repeat=len(results)):
    with self.subTest(results=values):
     env={variable:value for variable,value in zip(results,values) if value is not None}
     env.update({variable:'success' for variable in successors})
+    env[bbs]='success'
     code=subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode
     self.assertEqual(code==0,all(value=='success' for value in values),values)
   # Keep all original1296 combinations above; test each new result without
@@ -41,12 +44,24 @@ class NativePolicy(unittest.TestCase):
    for status in statuses:
     with self.subTest(successor=variable,status=status):
      env={name:'success' for name in [*results,*successors]}
+     env[bbs]='success'
      if status is None:env.pop(variable)
      else:env[variable]=status
      code=subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode
      self.assertEqual(code==0,status=='success')
   env={name:'success' for name in results}
   env.update({name:'failure' for name in successors})
+  env[bbs]='success'
+  self.assertNotEqual(subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode,0)
+  # New BBS lane is fixedsuccess throughout every retained old case above.
+  for status in statuses:
+   with self.subTest(bbs=status):
+    env={name:'success' for name in [*results,*successors]}
+    if status is not None:env[bbs]=status
+    code=subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode
+    self.assertEqual(code==0,status=='success')
+  env={name:'success' for name in [*results,*successors]}
+  env.update({bbs:'failure','PROVIDER_RESULT':'failure'})
   self.assertNotEqual(subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode,0)
  def test_source_and_license_refuse_javascript_and_missing_terms(self):
   with tempfile.TemporaryDirectory(prefix='faction203-policy-') as tmp:

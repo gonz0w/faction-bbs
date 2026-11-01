@@ -29,12 +29,12 @@ class InboxCiContract(unittest.TestCase):
     def test_inbox_verification_keeps_required_native_prerequisite_and_job_bounds(self):
         workflow = (ROOT / '.github/workflows/documentation.yml').read_text()
         documentation = workflow.split('  documentation:', 1)[1]
-        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]', documentation)
-        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_CLIENT_RESULT','PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT']:
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]', documentation)
+        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_CLIENT_RESULT','PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT','BBS_REGRESSIONS_RESULT']:
             self.assertIn('test "$'+variable+'" = success',documentation)
         self.assertIn('test "$NATIVE_MAIL_RESULT" = success', documentation)
-        self.assertEqual(workflow.count('timeout-minutes: 15'), 7)
-        for job in ['native_mail','provider','provider_operator','provider_client','provider_composed','own_home_client','documentation']:
+        self.assertEqual(workflow.count('timeout-minutes: 15'), 8)
+        for job in ['native_mail','provider','provider_operator','provider_client','provider_composed','own_home_client','bbs_regressions','documentation']:
             header=workflow.split('  '+job+':',1)[1].split('    steps:',1)[0]
             self.assertIn('timeout-minutes: 15',header)
         self.assertNotIn('continue-on-error:', workflow)

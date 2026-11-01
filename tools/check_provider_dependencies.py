@@ -381,15 +381,17 @@ def validate_ci(text):
         require(_lines(validation, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == expected,
                 'successor CI must retain its exact moved commands and setup inputs')
     documentation = _job(text, 'documentation')
-    require('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]' in documentation.splitlines()
+    require('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
             and not re.search(r'^    (?:continue-on-error|shell):', documentation, re.M),
             'documentation must require all optional job results')
     gate = _step(documentation, 'Require optional native tests')
-    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client'), ('PROVIDER_COMPOSED_RESULT', 'provider_composed'), ('OWN_HOME_CLIENT_RESULT', 'own_home_client')]:
+    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client'), ('PROVIDER_COMPOSED_RESULT', 'provider_composed'), ('OWN_HOME_CLIENT_RESULT', 'own_home_client'), ('BBS_REGRESSIONS_RESULT', 'bbs_regressions')]:
         require(('          ' + name + ': ${{ needs.' + job + '.result }}') in gate.splitlines(), 'required CI result environment missing')
-    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_COMPOSED_RESULT" = success', 'test "$OWN_HOME_CLIENT_RESULT" = success'],
+    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_COMPOSED_RESULT" = success', 'test "$OWN_HOME_CLIENT_RESULT" = success', 'test "$BBS_REGRESSIONS_RESULT" = success'],
             'documentation must fail closed on all optional test results')
+    from check_bbs_regressions_ci import validate_ci as validate_bbs_ci
+    validate_bbs_ci(text)
 
 
 def inventory():

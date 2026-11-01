@@ -47,15 +47,18 @@ class PickerMailEvidence(unittest.TestCase):
 
     def test_ci_runs_supported_and_both_unsupported_graphs_with_existing_gates(self):
         text=(g.ROOT/'.github/workflows/documentation.yml').read_text()
-        native,docs=text.split('  documentation:',1)
+        from check_provider_dependencies import _job
+        native = _job(text, 'native_mail')
+        docs = _job(text, 'documentation')
+        bbs = _job(text, 'bbs_regressions')
         self.assertIn('python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --checkpoint-fixture "$CARGO_TARGET_DIR/release/examples/checkpoint_ui_fixture" --mail-fixture "$CARGO_TARGET_DIR/release/examples/home_mail_fixture"',native)
         self.assertEqual(native.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
-        self.assertEqual(docs.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
+        self.assertEqual(bbs.count('tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported'),1)
         self.assertIn('python3 tools/check_picker_mail_evidence.py',docs)
-        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]',docs)
-        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_CLIENT_RESULT','PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT']:
+        self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]',docs)
+        for variable in ['NATIVE_MAIL_RESULT','PROVIDER_RESULT','PROVIDER_OPERATOR_RESULT','PROVIDER_CLIENT_RESULT','PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT','BBS_REGRESSIONS_RESULT']:
             self.assertIn('test "$'+variable+'" = success',docs)
-        self.assertEqual(text.count('timeout-minutes: 15'), 7)
-        for job in ['native_mail','provider','provider_operator','provider_client','provider_composed','own_home_client','documentation']:
+        self.assertEqual(text.count('timeout-minutes: 15'), 8)
+        for job in ['native_mail','provider','provider_operator','provider_client','provider_composed','own_home_client','bbs_regressions','documentation']:
             header=text.split('  '+job+':',1)[1].split('    steps:',1)[0]
             self.assertIn('timeout-minutes: 15',header)

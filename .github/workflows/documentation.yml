@@ -632,9 +632,177 @@ jobs:
           mkdir -m 700 "$RUNNER_TEMP/faction322-console-OWNED"
           printf '%s\n' 'Owned authenticated-provider console proof' > "$RUNNER_TEMP/faction322-console-OWNED/OWNED"
           python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --operator "$CARGO_TARGET_DIR/release/faction-provider" --route own-home --owned-root "$RUNNER_TEMP/faction322-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction322-console-OWNED/result.json"
+  bbs_regressions:
+    name: BBS regressions
+    needs: [own_home_client]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Fetch the public repository revision
+        env:
+          REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          CHECKOUT_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin "$REPOSITORY_URL"
+          git fetch --no-tags --depth=1 origin "$CHECKOUT_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Warm the selected BBS regression source graphs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-ui/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-ui/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-ui/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-headroom/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-headroom/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-headroom/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-transport-memory/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-transport-memory/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/058-transport-memory/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-board/Cargo.toml --format-version 1 --filter-platform x86_64-unknown-linux-gnu > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-board/Cargo.toml --format-version 1 --filter-platform aarch64-unknown-netbsd > /dev/null
+          cargo metadata --locked --manifest-path experiments/055-shared-board/Cargo.toml --format-version 1 --filter-platform aarch64-apple-darwin > /dev/null
+          python3 tools/check_bbs_regressions_ci.py
+      - name: Validate optional Lua game evaluator and examples
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends liblua5.4-dev
+          python3 tools/build_lua_doors.py --include /usr/include/lua5.4 --library lua5.4 --output "$RUNNER_TEMP/faction-doors"
+          cc -std=c11 -D_GNU_SOURCE -Wall -Wextra -Werror -fanalyzer -I/usr/include/lua5.4 -fsyntax-only native/faction-doors/main.c
+          sudo install -d -o root -g root -m 755 "$RUNNER_TEMP/faction-door-fixtures"
+          sudo install -o root -g root -m 644 doors/examples/*.lua tools/fixtures/lua-doors/*.lua "$RUNNER_TEMP/faction-door-fixtures/"
+          python3 tools/smoke_lua_worker.py --binary "$RUNNER_TEMP/faction-doors" --scripts "$RUNNER_TEMP/faction-door-fixtures"
+      - name: Validate the local Rust core and real terminal flow
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          cargo fmt --all -- --check
+          cargo fmt --manifest-path experiments/055-shared-board/Cargo.toml -- --check
+          cargo fmt --manifest-path experiments/058-transport-memory/Cargo.toml -- --check
+          cargo fmt --manifest-path experiments/058-headroom/Cargo.toml -- --check
+          cargo fmt --manifest-path experiments/055-shared-ui/Cargo.toml -- --check
+          python3 tools/check_ui_dependencies.py
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo clippy --manifest-path experiments/055-shared-ui/Cargo.toml --all-targets --release --locked -- -D warnings
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo test --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo build --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked
+          python3 tools/check_headroom_dependencies.py
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo clippy --manifest-path experiments/058-headroom/Cargo.toml --all-targets --release --locked -- -D warnings
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo test --manifest-path experiments/058-headroom/Cargo.toml --release --locked
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo build --manifest-path experiments/058-headroom/Cargo.toml --release --locked
+          python3 tools/check_transport_dependencies.py
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/transport" cargo clippy --manifest-path experiments/058-transport-memory/Cargo.toml --all-targets --release --locked -- -D warnings
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/transport" cargo build --manifest-path experiments/058-transport-memory/Cargo.toml --release --locked
+          python3 tools/check_shared_dependencies.py
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/shared" cargo clippy --manifest-path experiments/055-shared-board/Cargo.toml --all-targets --release --locked -- -D warnings
+          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/shared" cargo build --manifest-path experiments/055-shared-board/Cargo.toml --release --locked
+          python3 tools/check_rust_dependencies.py
+          cargo clippy --workspace --all-targets --release --locked -- -D warnings
+          cargo test --workspace --locked --release
+          cargo build --workspace --locked --release
+          python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported --output "$RUNNER_TEMP/picker-default-off.json"
+          python3 tools/probe_native_mail.py --client "$CARGO_TARGET_DIR/release/faction-client"
+          python3 tools/smoke_local_vault_launcher.py "$CARGO_TARGET_DIR/release/faction-client"
+          cargo build -p faction-core --example playground_seed --release --locked
+          python3 tools/smoke_playground_seed.py "$CARGO_TARGET_DIR/release/examples/playground_seed"
+          cargo build -p faction-terminal --examples --release --locked
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --output "$RUNNER_TEMP/menu-base.svg"
+          cmp docs/images/menu-base.svg "$RUNNER_TEMP/menu-base.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/autumn --output "$RUNNER_TEMP/menu-autumn.svg"
+          cmp docs/images/menu-autumn.svg "$RUNNER_TEMP/menu-autumn.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --columns 40 --output "$RUNNER_TEMP/menu-compact.svg"
+          cmp docs/images/menu-compact.svg "$RUNNER_TEMP/menu-compact.svg"
+          python3 tools/smoke_operator.py "$CARGO_TARGET_DIR/release/faction-sysop"
+          python3 tools/smoke_operator_health.py "$CARGO_TARGET_DIR/release/faction-sysop"
+          python3 tools/smoke_passport.py "$CARGO_TARGET_DIR/release/faction-client"
+          python3 tools/smoke_connection_desk.py "$CARGO_TARGET_DIR/release/faction-client"
+          python3 tools/smoke_travel.py "$CARGO_TARGET_DIR/release/faction-client"
+          python3 tools/smoke_board_launcher.py "$CARGO_TARGET_DIR/release/faction-client"
+          python3 tools/smoke_directory.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_directory_submissions.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_backup_recovery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-sysop"
+          python3 tools/build_nightwire.py --check
+          python3 tools/check_nightwire.py "$CARGO_TARGET_DIR/release/examples/preview_theme"
+          python3 tools/smoke_nightwire.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_login_paging.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 1 --output "$RUNNER_TEMP/login-longform-1.svg"
+          cmp docs/images/login-longform-1.svg "$RUNNER_TEMP/login-longform-1.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 2 --output "$RUNNER_TEMP/login-longform-2.svg"
+          cmp docs/images/login-longform-2.svg "$RUNNER_TEMP/login-longform-2.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 3 --output "$RUNNER_TEMP/login-longform-3.svg"
+          cmp docs/images/login-longform-3.svg "$RUNNER_TEMP/login-longform-3.svg"
+          python3 tools/smoke_custom_menus.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/grid --output "$RUNNER_TEMP/menu-grid.svg"
+          cmp docs/images/menu-grid.svg "$RUNNER_TEMP/menu-grid.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/grid --login --output "$RUNNER_TEMP/login-grid.svg"
+          cmp docs/images/login-grid.svg "$RUNNER_TEMP/login-grid.svg"
+          python3 tools/smoke_theme_schedule.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member" "$CARGO_TARGET_DIR/release/examples/preview_theme"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/autumn --login --output "$RUNNER_TEMP/login-autumn.svg"
+          cmp docs/images/login-autumn.svg "$RUNNER_TEMP/login-autumn.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/winter --login --output "$RUNNER_TEMP/login-winter.svg"
+          cmp docs/images/login-winter.svg "$RUNNER_TEMP/login-winter.svg"
+          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/winter --login --columns 40 --output "$RUNNER_TEMP/login-compact.svg"
+          cmp docs/images/login-compact.svg "$RUNNER_TEMP/login-compact.svg"
+          python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_room_browser.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_writing_desk.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_standalone_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_idle_notifications.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_board_guide.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_who.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_editorial.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_magazine.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_file_requests.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_library.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_gallery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_discussion.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_catchup.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_polls.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_gatherings.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_member_pages.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_wall.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_full_screen.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_room_reader.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_unicode_subjects.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_modern_terminals.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_kitty_graphics.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_native_graphics.py "$CARGO_TARGET_DIR/release/faction-client"
+          cargo build -p faction-articles --examples --release --locked
+          python3 tools/check_article_interop.py "$CARGO_TARGET_DIR/release/examples/emit_fixture"
+          python3 tools/smoke_local_chat.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_export_restore.py "$CARGO_TARGET_DIR/release/faction"
+          python3 tools/smoke_member_worker.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
+          python3 tools/smoke_broker_lifecycle.py "$CARGO_TARGET_DIR/release/faction-broker"
+          python3 tools/smoke_credential_budget.py "$CARGO_TARGET_DIR/release/faction"
+
+      - name: Validate articles with original offline INN
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
+          RUSTUP_TOOLCHAIN: 1.96.0
+        run: |
+          umask 077
+          python3 - "$RUNNER_TEMP/inn-2.7.4.tar.gz" <<'PY'
+          import sys, urllib.request
+          from pathlib import Path
+          from tools.build_inn_reference import URL, SHA256
+          import hashlib
+          raw = urllib.request.urlopen(URL, timeout=30).read(10 * 1024 * 1024 + 1)
+          assert len(raw) <= 10 * 1024 * 1024 and hashlib.sha256(raw).hexdigest() == SHA256
+          Path(sys.argv[1]).write_bytes(raw)
+          PY
+          python3 tools/build_inn_reference.py --archive "$RUNNER_TEMP/inn-2.7.4.tar.gz" --work-dir "$RUNNER_TEMP/inn-reference"
+          python3 tools/check_inn_articles.py --reference-dir "$RUNNER_TEMP/inn-reference" --examples "$CARGO_TARGET_DIR/release/examples"
   documentation:
     name: Documentation and policy
-    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client]
+    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -647,6 +815,7 @@ jobs:
           PROVIDER_CLIENT_RESULT: ${{ needs.provider_client.result }}
           PROVIDER_COMPOSED_RESULT: ${{ needs.provider_composed.result }}
           OWN_HOME_CLIENT_RESULT: ${{ needs.own_home_client.result }}
+          BBS_REGRESSIONS_RESULT: ${{ needs.bbs_regressions.result }}
         run: |
           test "$NATIVE_MAIL_RESULT" = success
           test "$PROVIDER_RESULT" = success
@@ -654,6 +823,7 @@ jobs:
           test "$PROVIDER_CLIENT_RESULT" = success
           test "$PROVIDER_COMPOSED_RESULT" = success
           test "$OWN_HOME_CLIENT_RESULT" = success
+          test "$BBS_REGRESSIONS_RESULT" = success
       - name: Fetch the public repository revision
         env:
           REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
@@ -791,134 +961,3 @@ jobs:
           python3 tools/check_global_evidence.py
           python3 -m unittest discover -s tools -p 'test_*.py'
           python3 -m unittest discover -s experiments/250-attachment-bytes -p test_proof.py
-      - name: Validate optional Lua game evaluator and examples
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends liblua5.4-dev
-          python3 tools/build_lua_doors.py --include /usr/include/lua5.4 --library lua5.4 --output "$RUNNER_TEMP/faction-doors"
-          cc -std=c11 -D_GNU_SOURCE -Wall -Wextra -Werror -fanalyzer -I/usr/include/lua5.4 -fsyntax-only native/faction-doors/main.c
-          sudo install -d -o root -g root -m 755 "$RUNNER_TEMP/faction-door-fixtures"
-          sudo install -o root -g root -m 644 doors/examples/*.lua tools/fixtures/lua-doors/*.lua "$RUNNER_TEMP/faction-door-fixtures/"
-          python3 tools/smoke_lua_worker.py --binary "$RUNNER_TEMP/faction-doors" --scripts "$RUNNER_TEMP/faction-door-fixtures"
-      - name: Validate the local Rust core and real terminal flow
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
-          RUSTUP_TOOLCHAIN: 1.96.0
-        run: |
-          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
-          cargo fmt --all -- --check
-          cargo fmt --manifest-path experiments/055-shared-board/Cargo.toml -- --check
-          cargo fmt --manifest-path experiments/058-transport-memory/Cargo.toml -- --check
-          cargo fmt --manifest-path experiments/058-headroom/Cargo.toml -- --check
-          cargo fmt --manifest-path experiments/055-shared-ui/Cargo.toml -- --check
-          python3 tools/check_ui_dependencies.py
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo clippy --manifest-path experiments/055-shared-ui/Cargo.toml --all-targets --release --locked -- -D warnings
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo test --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/ui" cargo build --manifest-path experiments/055-shared-ui/Cargo.toml --release --locked
-          python3 tools/check_headroom_dependencies.py
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo clippy --manifest-path experiments/058-headroom/Cargo.toml --all-targets --release --locked -- -D warnings
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo test --manifest-path experiments/058-headroom/Cargo.toml --release --locked
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/headroom" cargo build --manifest-path experiments/058-headroom/Cargo.toml --release --locked
-          python3 tools/check_transport_dependencies.py
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/transport" cargo clippy --manifest-path experiments/058-transport-memory/Cargo.toml --all-targets --release --locked -- -D warnings
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/transport" cargo build --manifest-path experiments/058-transport-memory/Cargo.toml --release --locked
-          python3 tools/check_shared_dependencies.py
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/shared" cargo clippy --manifest-path experiments/055-shared-board/Cargo.toml --all-targets --release --locked -- -D warnings
-          CARGO_TARGET_DIR="$CARGO_TARGET_DIR/shared" cargo build --manifest-path experiments/055-shared-board/Cargo.toml --release --locked
-          python3 tools/check_rust_dependencies.py
-          cargo clippy --workspace --all-targets --release --locked -- -D warnings
-          cargo test --workspace --locked --release
-          cargo build --workspace --locked --release
-          python3 tools/probe_picker_home_mail.py --client "$CARGO_TARGET_DIR/release/faction-client" --unsupported --output "$RUNNER_TEMP/picker-default-off.json"
-          python3 tools/probe_native_mail.py --client "$CARGO_TARGET_DIR/release/faction-client"
-          python3 tools/smoke_local_vault_launcher.py "$CARGO_TARGET_DIR/release/faction-client"
-          cargo build -p faction-core --example playground_seed --release --locked
-          python3 tools/smoke_playground_seed.py "$CARGO_TARGET_DIR/release/examples/playground_seed"
-          cargo build -p faction-terminal --examples --release --locked
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --output "$RUNNER_TEMP/menu-base.svg"
-          cmp docs/images/menu-base.svg "$RUNNER_TEMP/menu-base.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/autumn --output "$RUNNER_TEMP/menu-autumn.svg"
-          cmp docs/images/menu-autumn.svg "$RUNNER_TEMP/menu-autumn.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --columns 40 --output "$RUNNER_TEMP/menu-compact.svg"
-          cmp docs/images/menu-compact.svg "$RUNNER_TEMP/menu-compact.svg"
-          python3 tools/smoke_operator.py "$CARGO_TARGET_DIR/release/faction-sysop"
-          python3 tools/smoke_operator_health.py "$CARGO_TARGET_DIR/release/faction-sysop"
-          python3 tools/smoke_passport.py "$CARGO_TARGET_DIR/release/faction-client"
-          python3 tools/smoke_connection_desk.py "$CARGO_TARGET_DIR/release/faction-client"
-          python3 tools/smoke_travel.py "$CARGO_TARGET_DIR/release/faction-client"
-          python3 tools/smoke_board_launcher.py "$CARGO_TARGET_DIR/release/faction-client"
-          python3 tools/smoke_directory.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_directory_submissions.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_backup_recovery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-sysop"
-          python3 tools/build_nightwire.py --check
-          python3 tools/check_nightwire.py "$CARGO_TARGET_DIR/release/examples/preview_theme"
-          python3 tools/smoke_nightwire.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_login_paging.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 1 --output "$RUNNER_TEMP/login-longform-1.svg"
-          cmp docs/images/login-longform-1.svg "$RUNNER_TEMP/login-longform-1.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 2 --output "$RUNNER_TEMP/login-longform-2.svg"
-          cmp docs/images/login-longform-2.svg "$RUNNER_TEMP/login-longform-2.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/longform --login --page 3 --output "$RUNNER_TEMP/login-longform-3.svg"
-          cmp docs/images/login-longform-3.svg "$RUNNER_TEMP/login-longform-3.svg"
-          python3 tools/smoke_custom_menus.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/grid --output "$RUNNER_TEMP/menu-grid.svg"
-          cmp docs/images/menu-grid.svg "$RUNNER_TEMP/menu-grid.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/grid --login --output "$RUNNER_TEMP/login-grid.svg"
-          cmp docs/images/login-grid.svg "$RUNNER_TEMP/login-grid.svg"
-          python3 tools/smoke_theme_schedule.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member" "$CARGO_TARGET_DIR/release/examples/preview_theme"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/autumn --login --output "$RUNNER_TEMP/login-autumn.svg"
-          cmp docs/images/login-autumn.svg "$RUNNER_TEMP/login-autumn.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/winter --login --output "$RUNNER_TEMP/login-winter.svg"
-          cmp docs/images/login-winter.svg "$RUNNER_TEMP/login-winter.svg"
-          python3 tools/render_theme_preview.py "$CARGO_TARGET_DIR/release/examples/preview_theme" --theme themes/base --season themes/seasons/winter --login --columns 40 --output "$RUNNER_TEMP/login-compact.svg"
-          cmp docs/images/login-compact.svg "$RUNNER_TEMP/login-compact.svg"
-          python3 tools/smoke_local_console.py "$CARGO_TARGET_DIR/release/faction"
-          python3 tools/smoke_room_browser.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_writing_desk.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_standalone_social.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_idle_notifications.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_board_guide.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_who.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_editorial.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_magazine.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_file_requests.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_library.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_gallery.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_discussion.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_catchup.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_polls.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_gatherings.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_member_pages.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_wall.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_full_screen.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_room_reader.py "$CARGO_TARGET_DIR/release/faction"
-          python3 tools/smoke_unicode_subjects.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_modern_terminals.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_kitty_graphics.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_native_graphics.py "$CARGO_TARGET_DIR/release/faction-client"
-          cargo build -p faction-articles --examples --release --locked
-          python3 tools/check_article_interop.py "$CARGO_TARGET_DIR/release/examples/emit_fixture"
-          python3 tools/smoke_local_chat.py "$CARGO_TARGET_DIR/release/faction"
-          python3 tools/smoke_export_restore.py "$CARGO_TARGET_DIR/release/faction"
-          python3 tools/smoke_member_worker.py "$CARGO_TARGET_DIR/release/faction" "$CARGO_TARGET_DIR/release/faction-member"
-          python3 tools/smoke_broker_lifecycle.py "$CARGO_TARGET_DIR/release/faction-broker"
-          python3 tools/smoke_credential_budget.py "$CARGO_TARGET_DIR/release/faction"
-
-      - name: Validate articles with original offline INN
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-target
-          RUSTUP_TOOLCHAIN: 1.96.0
-        run: |
-          umask 077
-          python3 - "$RUNNER_TEMP/inn-2.7.4.tar.gz" <<'PY'
-          import sys, urllib.request
-          from pathlib import Path
-          from tools.build_inn_reference import URL, SHA256
-          import hashlib
-          raw = urllib.request.urlopen(URL, timeout=30).read(10 * 1024 * 1024 + 1)
-          assert len(raw) <= 10 * 1024 * 1024 and hashlib.sha256(raw).hexdigest() == SHA256
-          Path(sys.argv[1]).write_bytes(raw)
-          PY
-          python3 tools/build_inn_reference.py --archive "$RUNNER_TEMP/inn-2.7.4.tar.gz" --work-dir "$RUNNER_TEMP/inn-reference"
-          python3 tools/check_inn_articles.py --reference-dir "$RUNNER_TEMP/inn-reference" --examples "$CARGO_TARGET_DIR/release/examples"
