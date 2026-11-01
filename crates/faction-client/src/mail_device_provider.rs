@@ -281,6 +281,7 @@ impl Transport {
         request: Request,
         deadline: Instant,
         cancel: Arc<AtomicBool>,
+        #[cfg(feature = "own-home-provider")] diagnostic: &mut WorkerSnapshot,
     ) -> Result<Response, Error> {
         #[cfg(not(feature = "own-home-provider"))]
         let _ = (binding, deadline, cancel);
@@ -292,25 +293,31 @@ impl Transport {
                 let mut operation = endpoint
                     .operation_until(deadline, cancel)
                     .map_err(Error::Transport)?;
-                match route {
-                    DeviceRoute::Publication => {
-                        operation.submit_publication(binding.clone(), request)
+                let result = (|| {
+                    match route {
+                        DeviceRoute::Publication => {
+                            operation.submit_publication(binding.clone(), request)
+                        }
+                        DeviceRoute::OwnHomeRetrieval => {
+                            operation.submit_own_home(binding.clone(), request)
+                        }
+                        DeviceRoute::Ordinary => return Err(Error::Configuration),
                     }
-                    DeviceRoute::OwnHomeRetrieval => {
-                        operation.submit_own_home(binding.clone(), request)
+                    .map_err(Error::Transport)?;
+                    // One submit and bounded fresh collects on this SAME operation.
+                    // Busy neither renews the parent clock nor changes the route.
+                    for _ in 0..6 {
+                        match operation.collect_paced().map_err(Error::Transport)? {
+                            Collection::Complete(response) => return Ok(response),
+                            Collection::Busy => (),
+                        }
                     }
-                    DeviceRoute::Ordinary => return Err(Error::Configuration),
+                    Err(Error::Transport(Stage::Limit))
+                })();
+                if let Some(snapshot) = operation.diagnostic_snapshot() {
+                    diagnostic.operation(snapshot);
                 }
-                .map_err(Error::Transport)?;
-                // One submit and bounded fresh collects on this SAME operation.
-                // Busy neither renews the parent clock nor changes the route.
-                for _ in 0..6 {
-                    match operation.collect_paced().map_err(Error::Transport)? {
-                        Collection::Complete(response) => return Ok(response),
-                        Collection::Busy => (),
-                    }
-                }
-                Err(Error::Transport(Stage::Limit))
+                result
             }
         }
     }
@@ -344,16 +351,18 @@ async fn spawn_worker(
     let thread = thread::Builder::new()
         .name("faction-device-tls".into())
         .spawn(move || {
+            #[cfg(feature = "own-home-provider")]
+            let mut diagnostic = WorkerSnapshot::default();
             let mut transport = match initialize() {
                 Ok(transport) => {
                     if ready.send(Ok(())).is_err() {
-                        return;
+                        return unobserved_worker_exit();
                     }
                     transport
                 }
                 Err(error) => {
                     let _ = ready.send(Err(error));
-                    return;
+                    return unobserved_worker_exit();
                 }
             };
             let mut attempted = 0;
@@ -382,8 +391,32 @@ async fn spawn_worker(
                             #[cfg(test)]
                             let observation_index =
                                 worker_observation.entered.fetch_add(1, Ordering::SeqCst);
-                            let result =
-                                transport.request(&pinned, request, deadline, cancelled.clone());
+                            #[cfg(feature = "own-home-provider")]
+                            {
+                                diagnostic.request = diagnostic_request(&request);
+                                diagnostic.phase =
+                                    faction_provider::delivery::DiagnosticPhase::Unobserved;
+                                diagnostic.phase_us = 0;
+                                diagnostic.transport = None;
+                                diagnostic.attempted = diagnostic.attempted.saturating_add(1);
+                            }
+                            let result = transport.request(
+                                &pinned,
+                                request,
+                                deadline,
+                                cancelled.clone(),
+                                #[cfg(feature = "own-home-provider")]
+                                &mut diagnostic,
+                            );
+                            #[cfg(feature = "own-home-provider")]
+                            {
+                                if result.is_ok() {
+                                    diagnostic.completed = diagnostic.completed.saturating_add(1);
+                                }
+                                if let Err(Error::Transport(stage)) = result.as_ref() {
+                                    diagnostic.transport = Some(*stage);
+                                }
+                            }
                             #[cfg(test)]
                             if let Some(slot) = worker_observation
                                 .results
@@ -404,6 +437,10 @@ async fn spawn_worker(
                     Err(mpsc::RecvTimeoutError::Disconnected) => break,
                 }
             }
+            #[cfg(feature = "own-home-provider")]
+            {
+                diagnostic
+            }
         })
         .map_err(|_| Error::Worker)?;
     #[cfg(test)]
@@ -415,6 +452,8 @@ async fn spawn_worker(
         binding,
         direction,
         deadline,
+        #[cfg(feature = "own-home-provider")]
+        diagnostic_sink: None,
         #[cfg(test)]
         observation,
     };
@@ -446,17 +485,91 @@ struct RequestObservation {
     entered: std::sync::atomic::AtomicUsize,
     results: std::sync::Mutex<[Option<Result<(), Error>>; 8]>,
 }
+#[cfg(feature = "own-home-provider")]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum DiagnosticRequest {
+    #[default]
+    Unobserved,
+    Begin,
+    Status,
+    Put,
+    Commit,
+    Get,
+    Delete,
+}
+#[cfg(feature = "own-home-provider")]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum SnapshotState {
+    #[default]
+    Unavailable,
+    Observed,
+    JoinPanicked,
+}
+#[cfg(feature = "own-home-provider")]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct WorkerSnapshot {
+    pub state: SnapshotState,
+    pub request: DiagnosticRequest,
+    pub phase: faction_provider::delivery::DiagnosticPhase,
+    pub transport: Option<Stage>,
+    pub attempted: u8,
+    pub completed: u8,
+    pub carrier_attempts: u8,
+    pub busy: u8,
+    pub connections: u8,
+    pub timings: faction_provider::delivery::DiagnosticTimings,
+    pub phase_us: u64,
+}
+#[cfg(feature = "own-home-provider")]
+type WorkerExit = WorkerSnapshot;
+#[cfg(not(feature = "own-home-provider"))]
+type WorkerExit = ();
+fn unobserved_worker_exit() -> WorkerExit {
+    #[cfg(feature = "own-home-provider")]
+    {
+        WorkerSnapshot::default()
+    }
+}
+#[cfg(feature = "own-home-provider")]
+impl WorkerSnapshot {
+    fn operation(&mut self, operation: faction_provider::delivery::OperationSnapshot) {
+        self.state = SnapshotState::Observed;
+        self.phase = operation.phase;
+        self.phase_us = operation.phase_us;
+        self.carrier_attempts = self.carrier_attempts.saturating_add(operation.attempted);
+        self.busy = self.busy.saturating_add(operation.busy);
+        self.connections = self.connections.saturating_add(operation.connections);
+        self.timings = self.timings.saturating_add(operation.timings);
+    }
+}
+#[cfg(feature = "own-home-provider")]
+fn diagnostic_request(request: &Request) -> DiagnosticRequest {
+    match request {
+        Request::Begin(_) => DiagnosticRequest::Begin,
+        Request::Status { .. } => DiagnosticRequest::Status,
+        Request::PutChunk { .. } => DiagnosticRequest::Put,
+        Request::Commit { .. } => DiagnosticRequest::Commit,
+        Request::GetChunk { .. } => DiagnosticRequest::Get,
+        Request::Delete { .. } => DiagnosticRequest::Delete,
+    }
+}
 pub(crate) struct Worker {
     send: Option<SyncSender<Command>>,
-    thread: Option<JoinHandle<()>>,
+    thread: Option<JoinHandle<WorkerExit>>,
     cancel: Arc<AtomicBool>,
     binding: Binding,
     direction: TransferDirection,
     deadline: Instant,
+    #[cfg(feature = "own-home-provider")]
+    diagnostic_sink: Option<Arc<std::sync::OnceLock<WorkerSnapshot>>>,
     #[cfg(test)]
     observation: Arc<RequestObservation>,
 }
 impl Worker {
+    #[cfg(feature = "own-home-provider")]
+    pub(crate) fn observe_final(&mut self, sink: Arc<std::sync::OnceLock<WorkerSnapshot>>) {
+        self.diagnostic_sink = Some(sink);
+    }
     #[cfg(test)]
     fn request_observation(&self) -> Arc<RequestObservation> {
         self.observation.clone()
@@ -509,7 +622,19 @@ impl Drop for Worker {
         // Client TCP is asynchronous; all worker TLS syscalls use the existing
         // 100-ms cancellation slices. Joining cannot leave a detached TLS task.
         if let Some(thread) = self.thread.take() {
-            let _ = thread.join();
+            let joined = thread.join();
+            #[cfg(feature = "own-home-provider")]
+            if let Some(sink) = self.diagnostic_sink.take() {
+                let snapshot = joined.unwrap_or_else(|_| WorkerSnapshot {
+                    state: SnapshotState::JoinPanicked,
+                    ..WorkerSnapshot::default()
+                });
+                // Only the existing join publishes: no live polling channel or
+                // lock is held across a request, cancellation, or network I/O.
+                let _ = sink.set(snapshot);
+            }
+            #[cfg(not(feature = "own-home-provider"))]
+            let _ = joined;
         }
     }
 }
@@ -1139,5 +1264,257 @@ listener.close()
             matches!(listener.accept(),Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
         );
         WORKER_STARTS.with(|count| assert_eq!(count.get(), 1));
+    }
+    #[cfg(feature = "own-home-provider")]
+    #[tokio::test(flavor = "current_thread")]
+    async fn diagnostic_actual_worker_join_retains_cancelled_authenticated_exchange() {
+        use std::{
+            future::Future,
+            io::{BufRead, Write},
+            task::Poll,
+        };
+        let (fixture, mut provider) = provider();
+        let script = r#"import pathlib, socket, ssl, sys
+root = pathlib.Path(sys.argv[1])
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+context.minimum_version = ssl.TLSVersion.TLSv1_3
+context.maximum_version = ssl.TLSVersion.TLSv1_3
+context.options |= ssl.OP_NO_TICKET
+context.num_tickets = 0
+context.load_cert_chain(root/'cert.pem',root/'key.pem')
+context.load_verify_locations(root/'cert.pem')
+context.verify_mode = ssl.CERT_REQUIRED
+listener = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+listener.bind(('127.0.0.1',0));listener.listen(1);listener.settimeout(5)
+print('PORT',listener.getsockname()[1],flush=True)
+raw,address = listener.accept()
+assert address[0]=='127.0.0.1'
+raw.settimeout(5)
+with context.wrap_socket(raw,server_side=True) as connection:
+    def exact(size):
+        result=b''
+        while len(result)<size:
+            chunk=connection.recv(size-len(result))
+            assert chunk
+            result+=chunk
+        return result
+    size=int.from_bytes(exact(4),'big')
+    assert 0<size<=8192
+    frame=exact(size)
+    assert frame[:6]==b'FDEL01' and frame[6]==0 and frame[7]==1
+    print('AUTHENTICATED_SUBMIT',flush=True)
+    sys.stdin.buffer.read(1)
+listener.close()
+"#;
+        let path = fixture.0.join("held-request.py");
+        fs::write(&path, script).unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+        let mut child = std::process::Command::new("python3")
+            .arg("-I")
+            .arg(&path)
+            .arg(&fixture.0)
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .spawn()
+            .unwrap();
+        let output = std::io::BufReader::new(child.stdout.take().unwrap());
+        let mut peer = FaultPeer {
+            address: "127.0.0.1:1".parse().unwrap(),
+            child,
+            output,
+        };
+        let mut line = String::new();
+        peer.output.read_line(&mut line).unwrap();
+        peer.address
+            .set_port(line.trim().strip_prefix("PORT ").unwrap().parse().unwrap());
+        provider.config.address = peer.address;
+        provider.config.own_home = true;
+        let binding = Binding {
+            sender: provider.config.expected.clone(),
+            recipient: Principal {
+                account: "bob@away.test".into(),
+                device: 202,
+                identity: [2; 32],
+            },
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        let sink = Arc::new(std::sync::OnceLock::new());
+        let mut worker = provider
+            .open(&binding, TransferDirection::Upload)
+            .await
+            .unwrap();
+        worker.observe_final(sink.clone());
+        let mut request = Box::pin(worker.request_bound(
+            &binding,
+            TransferDirection::Upload,
+            Request::Begin(binding.clone()),
+        ));
+        std::future::poll_fn(|cx| {
+            assert!(request.as_mut().poll(cx).is_pending());
+            Poll::Ready(())
+        })
+        .await;
+        line.clear();
+        peer.output.read_line(&mut line).unwrap();
+        assert_eq!(line, "AUTHENTICATED_SUBMIT\n");
+        assert!(
+            sink.get().is_none(),
+            "no publication while the actual worker is alive"
+        );
+        drop(request);
+        let drained = Instant::now();
+        drop(worker);
+        assert!(drained.elapsed() < Duration::from_secs(5));
+        peer.child.stdin.as_mut().unwrap().write_all(&[1]).unwrap();
+        let snapshot = sink
+            .get()
+            .expect("joined actual authenticated exchange must publish its final snapshot");
+        assert_eq!(snapshot.state, SnapshotState::Observed);
+        assert_eq!(snapshot.request, DiagnosticRequest::Begin);
+        assert_eq!(
+            snapshot.phase,
+            faction_provider::delivery::DiagnosticPhase::SubmitExchange
+        );
+        assert_eq!(snapshot.transport, Some(Stage::Frame));
+        assert_eq!(
+            (
+                snapshot.attempted,
+                snapshot.completed,
+                snapshot.busy,
+                snapshot.connections
+            ),
+            (1, 0, 0, 1)
+        );
+        assert!(snapshot.timings.submit_connect_us > 0);
+        assert!(snapshot.timings.submit_exchange_us > 0);
+        assert_eq!(snapshot.timings.actual_wait_us, 0);
+        assert!(peer.child.wait().unwrap().success());
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_actual_join_panic_is_unavailable_not_observed_zero() {
+        let sink = Arc::new(std::sync::OnceLock::new());
+        let own = Principal {
+            account: "alice@home.test".into(),
+            device: 101,
+            identity: [1; 32],
+        };
+        let binding = Binding {
+            sender: own.clone(),
+            recipient: own,
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        let mut worker = Worker {
+            send: None,
+            thread: Some(thread::spawn(|| panic!("synthetic join failure"))),
+            cancel: Arc::new(AtomicBool::new(false)),
+            binding,
+            direction: TransferDirection::Upload,
+            deadline: Instant::now() + CYCLE_LIMIT,
+            diagnostic_sink: None,
+            observation: Arc::new(RequestObservation::default()),
+        };
+        worker.observe_final(sink.clone());
+        drop(worker);
+        assert_eq!(sink.get().unwrap().state, SnapshotState::JoinPanicked);
+        assert_ne!(sink.get().unwrap().state, SnapshotState::Observed);
+    }
+
+    #[cfg(feature = "own-home-provider")]
+    #[test]
+    fn diagnostic_actual_ordinary_tls_has_no_observed_carrier_timings() {
+        use faction_provider::{
+            Runtime,
+            authority::{CredentialBinding, Registry},
+            tls::Server,
+        };
+        let (fixture, mut provider) = provider();
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        provider.config.address = listener.local_addr().unwrap();
+        provider.config.own_home = true; // Explicit own-home profile can select ordinary same-home.
+        let binding = Binding {
+            sender: provider.config.expected.clone(),
+            recipient: Principal {
+                account: "bob@home.test".into(),
+                device: 202,
+                identity: [2; 32],
+            },
+            id: [3; 32],
+            size: 32,
+            created: 1,
+            expires: 100,
+        };
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        // Future-only private input capture: retain the exact already-used
+        // registry clock value, never reconstruct an earlier execution's now().
+        let clock_record = fixture.0.join("diagnostic-registry-seconds");
+        fs::write(&clock_record, now.to_le_bytes()).unwrap();
+        fs::set_permissions(&clock_record, fs::Permissions::from_mode(0o600)).unwrap();
+        let registry = Registry::new(
+            1,
+            0,
+            vec!["home.test".into()],
+            vec![CredentialBinding {
+                certificate_sha256: provider.config.leaf_pin,
+                principal: provider.config.expected.clone(),
+                valid_from: now - 60,
+                valid_until: now + 3600,
+                approved: true,
+                account_enabled: true,
+                device_enabled: true,
+                generation: 1,
+            }],
+        )
+        .unwrap();
+        let runtime = Runtime::new(Some(registry));
+        let pem = fs::read(fixture.0.join("cert.pem")).unwrap();
+        let server =
+            Server::from_pem(&pem, &fs::read(fixture.0.join("key.pem")).unwrap(), &pem).unwrap();
+        let sink = Arc::new(std::sync::OnceLock::new());
+        thread::scope(|scope| {
+            let (entered, waiting) = std::sync::mpsc::channel();
+            let (release, resume) = std::sync::mpsc::channel();
+            let peer = scope.spawn(move || {
+                let session = server
+                    .accept(&listener, &runtime, Arc::new(AtomicBool::new(false)))
+                    .unwrap();
+                entered.send(()).unwrap();
+                resume.recv_timeout(Duration::from_secs(5)).unwrap();
+                drop(session);
+            });
+            let mut worker = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap()
+                .block_on(provider.open(&binding, TransferDirection::Upload))
+                .unwrap();
+            waiting.recv_timeout(Duration::from_secs(5)).unwrap();
+            worker.observe_final(sink.clone());
+            drop(worker);
+            release.send(()).unwrap();
+            peer.join().unwrap();
+            let snapshot = sink.get().unwrap();
+            assert_eq!(
+                snapshot.phase,
+                faction_provider::delivery::DiagnosticPhase::Unobserved
+            );
+            assert_eq!((snapshot.attempted, snapshot.completed), (0, 0));
+            assert_eq!(
+                snapshot.state,
+                SnapshotState::Unavailable,
+                "ordinary TLS provides no observed carrier-phase timing record"
+            );
+        });
     }
 }

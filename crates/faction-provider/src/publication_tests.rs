@@ -4082,3 +4082,142 @@ fn metadata_read_side_routes_contention_preserves_cancellation_refusal() {
 #[cfg(feature = "operator")]
 #[path = "operator/composed_loop_tests.rs"]
 mod composed_loop_tests;
+
+#[test]
+fn diagnostic_interface_starts_explicitly_unobserved() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    let operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+    assert!(operation.diagnostic_snapshot().is_none());
+    assert_eq!(operation.test_attempts(), 0);
+}
+
+#[test]
+fn diagnostic_actual_submit_exchange_survives_cancellation() {
+    use crate::delivery::DiagnosticPhase;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let _store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    let cancel = Arc::new(AtomicBool::new(false));
+    thread::scope(|scope| {
+        let original_cancel = cancel.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(original_cancel);
+            let result = operation.submit_publication(binding.clone(), Request::Begin(binding));
+            (result, operation)
+        });
+        let mut session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (entered, waiting) = std::sync::mpsc::channel();
+        let (release, resume) = std::sync::mpsc::channel();
+        let positive = session.hold_delivery_after_prefix(entered, resume);
+        let server = scope.spawn(move || session.submit_publication());
+        waiting.recv_timeout(Duration::from_secs(5)).unwrap();
+        cancel.store(true, Ordering::SeqCst);
+        let (result, operation) = client.join().unwrap();
+        release.send(()).unwrap();
+        drop(server.join().unwrap());
+        capture_carrier_optional(&h, "diagnostic-submit");
+        // Existing partial-frame read classification stays Frame; diagnostic
+        // cancellation origin is independent and must not remap that error.
+        assert!(cancel.load(Ordering::SeqCst));
+        assert_eq!(result, Err(tls::Stage::Frame));
+        assert!(positive.load(Ordering::SeqCst) > 0);
+        assert_eq!(operation.test_attempts(), 1);
+        assert_eq!(h.bytes(0).len(), 17);
+        listener.set_nonblocking(true).unwrap();
+        assert!(
+            matches!(listener.accept(), Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        let snapshot = operation
+            .diagnostic_snapshot()
+            .expect("actual cancelled exchange must be retained");
+        assert_eq!(snapshot.phase, DiagnosticPhase::SubmitExchange);
+        assert_eq!(
+            (snapshot.attempted, snapshot.busy, snapshot.connections),
+            (1, 0, 1)
+        );
+        assert!(snapshot.timings.submit_connect_us > 0);
+        assert!(snapshot.timings.submit_exchange_us > 0);
+        assert_eq!(snapshot.timings.actual_wait_us, 0);
+    });
+}
+
+#[test]
+fn diagnostic_actual_collect_wait_survives_cancellation_without_connection() {
+    use crate::delivery::DiagnosticPhase;
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let binding = h.pair.binding(0);
+    let _store = h.empty(0);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &local.device, listener.local_addr().unwrap());
+    let cancel = Arc::new(AtomicBool::new(false));
+    thread::scope(|scope| {
+        let original_cancel = cancel.clone();
+        let (entered, waiting) = std::sync::mpsc::sync_channel(0);
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(original_cancel);
+            operation.test_observe_collect_wait(entered);
+            operation
+                .submit_publication(binding.clone(), Request::Begin(binding))
+                .unwrap();
+            let result = operation.collect_paced();
+            (result, operation)
+        });
+        let mut session = local
+            .server(&local.ca.0)
+            .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (prefix, receipt_waiting) = std::sync::mpsc::channel();
+        let (release, resume) = std::sync::mpsc::channel();
+        let positive = session.hold_delivery_after_prefix(prefix, resume);
+        let receipt = scope.spawn(move || {
+            receipt_waiting
+                .recv_timeout(Duration::from_secs(5))
+                .unwrap();
+            // Preserve the existing synthetic receipt-RTT setup; entry below,
+            // rather than a sleep, is the oracle for the actual pacing phase.
+            thread::sleep(Duration::from_millis(100));
+            release.send(()).unwrap();
+        });
+        let (delivery, work) = session.submit_publication().unwrap();
+        receipt.join().unwrap();
+        waiting.recv_timeout(Duration::from_secs(5)).unwrap();
+        cancel.store(true, Ordering::SeqCst);
+        let (result, operation) = client.join().unwrap();
+        assert_eq!(result.err(), Some(tls::Stage::Cancelled));
+        assert!(positive.load(Ordering::SeqCst) > 0);
+        assert_eq!(operation.test_attempts(), 1);
+        assert_eq!(delivery.test_original_attempts(), 1);
+        assert_eq!(local.charged(), 1);
+        assert_eq!(h.bytes(0).len(), 17);
+        listener.set_nonblocking(true).unwrap();
+        assert!(
+            matches!(listener.accept(), Err(error) if error.kind()==std::io::ErrorKind::WouldBlock)
+        );
+        capture_carrier_optional(&h, "diagnostic-wait");
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+        let snapshot = operation
+            .diagnostic_snapshot()
+            .expect("actual cancelled pacing wait must be retained");
+        assert_eq!(snapshot.phase, DiagnosticPhase::CollectWait);
+        assert_eq!(
+            (snapshot.attempted, snapshot.busy, snapshot.connections),
+            (1, 0, 1)
+        );
+        assert!(snapshot.timings.planned_wait_us > 0);
+        assert!(snapshot.timings.actual_wait_us > 0);
+        assert_eq!(snapshot.timings.collect_connect_us, 0);
+        assert_eq!(snapshot.timings.collect_exchange_us, 0);
+    });
+}

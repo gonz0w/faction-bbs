@@ -365,6 +365,86 @@ class TransferObserverTests(unittest.TestCase):
         self.assertIn('unavailable', str(caught.exception))
         self.assertNotIn(secret, str(caught.exception))
 
+    DIAGNOSTIC = (
+        b'Attachment diagnostic v1 direction=fetch origin=sdk_deadline error=unavailable '
+        b'state=observed request=get last_phase=collect_wait transport=unavailable '
+        b'sdk_completed=52 sdk_active=53 aggregate_valid=true totals_clamped=false '
+        b'observed_logical_completed=263 observed_logical_attempted=264 observed_carrier_attempts=526 '
+        b'observed_busy=1 observed_connect_calls=525 unavailable_cycles=0 '
+        b'cycle_completed=3 cycle_logical_attempted=4 cycle_carrier_attempts=7 cycle_busy=1 cycle_connect_calls=6 '
+        b'confirmed_offset=851968 foreground_us=60000000 last_phase_us=7 '
+        b'observed_submit_connect_us=100 observed_submit_exchange_us=200 '
+        b'observed_collect_connect_us=300 observed_collect_exchange_us=400 '
+        b'observed_planned_wait_us=19 observed_actual_wait_us=7\r\n')
+
+    def test_failure_captures_valid_phase_fields_after_original_drain(self):
+        feed=TransferFeed([(1,self.progress(4096,1)),
+            (2,self.DIAGNOSTIC+b'Transfer stopped; no automatic retry.\r\n')])
+        with self.assertRaises(ValueError) as caught:self.observe(feed)
+        self.assertEqual((feed.cancelled,feed.done),([2],True))
+        self.assertEqual((caught.exception.observation['calls'],caught.exception.observation['offset']),(1,4096))
+        self.assertIn('diag_last_phase=collect_wait',str(caught.exception))
+        self.assertIn('diag_origin=sdk_deadline',str(caught.exception))
+        self.assertIn('diag_observed_logical_completed=263',str(caught.exception))
+        self.assertIn('mode=classic',str(caught.exception))
+        self.assertNotIn('Confirmed ciphertext bytes',str(caught.exception))
+
+    def test_failure_mode_comes_only_from_fixed_boolean_caller(self):
+        probe=importlib.import_module('probe_device_provider_console')
+        for unicode in (False,True):
+            feed=TransferFeed([(1,b'mode=SECRET-transcript-mode\r\n'+self.DIAGNOSTIC+
+                b'Transfer stopped; no automatic retry.\r\n')])
+            with self.assertRaises(probe.TransferObservationError) as caught:
+                probe.wait_transfer(feed,self.TOTAL,started=0.0,clock=feed.clock,poll=feed.poll,
+                    read=feed.read,cancel=feed.cancel,unicode=unicode)
+            self.assertIn('mode='+('unicode' if unicode else 'classic'),str(caught.exception))
+            self.assertNotIn('SECRET',str(caught.exception))
+            self.assertEqual(feed.cancelled,[1])
+        for unicode in ('SECRET',1,None):
+            feed=TransferFeed()
+            with self.assertRaises(ValueError):
+                probe.wait_transfer(feed,self.TOTAL,clock=feed.clock,unicode=unicode)
+            self.assertEqual(feed.cancelled,[])
+
+    def test_secret_padded_unknown_or_malformed_diagnostic_is_unavailable(self):
+        mutations=[self.DIAGNOSTIC.replace(b'collect_wait',b'SECRET-path-key'),
+            self.DIAGNOSTIC.replace(b'cycle_completed=3',b'cycle_completed=9'),
+            self.DIAGNOSTIC.replace(b'cycle_completed=3',b'cycle_completed=-1'),
+            self.DIAGNOSTIC.replace(b'cycle_completed=3',b'cycle_completed=03'),
+            self.DIAGNOSTIC.replace(b'foreground_us=60000000',b'foreground_us=NaN'),
+            self.DIAGNOSTIC.replace(b'last_phase_us=7',b'last_phase_us=18446744073709551616'),
+            self.DIAGNOSTIC.replace(b'sdk_completed=52',b'sdk_completed=66'),
+            self.DIAGNOSTIC.replace(b'observed_connect_calls=525',b'observed_connect_calls=4161'),
+            self.DIAGNOSTIC.replace(b'aggregate_valid=true',b'aggregate_valid=SECRET'),
+            self.DIAGNOSTIC.replace(b'\r\n',b' SECRET-extra-private-field\r\n'),
+            self.DIAGNOSTIC.replace(b' direction=',b'  direction='),
+            self.DIAGNOSTIC+self.DIAGNOSTIC,
+            b'Attachment diagnostic v1 '+b'SECRET'*250+b'\r\n']
+        for diagnostic in mutations:
+            feed=TransferFeed([(1,diagnostic+b'Transfer stopped; no automatic retry.\r\n')])
+            with self.assertRaises(ValueError) as caught:self.observe(feed)
+            self.assertEqual(feed.cancelled,[1])
+            self.assertIn('diagnostic=unavailable',str(caught.exception))
+            self.assertNotIn('SECRET',str(caught.exception))
+            self.assertLessEqual(len(str(caught.exception)),2048)
+
+    def test_structured_diagnostic_is_revalidated_without_unknown_repr(self):
+        probe=importlib.import_module('probe_device_provider_console')
+        class Unknown:
+            def __str__(self):raise AssertionError('unknown coercion')
+            def __repr__(self):raise AssertionError('unknown repr')
+        valid=probe._parse_transfer_diagnostic(self.DIAGNOSTIC)
+        self.assertIsNotNone(valid)
+        variants=['SECRET',Unknown(),dict(valid,private='SECRET'),dict(valid,last_phase='SECRET'),
+            dict(valid,cycle_completed=True),dict(valid,foreground_us=-1)]
+        for diagnostic in variants:
+            observation=dict(reason='work_deadline',calls=1,offset=4096,seconds=60.0,
+                progress=[],drain={},classification='observer_timeout_ambiguous',diagnostic=diagnostic)
+            error=probe.TransferObservationError(observation)
+            self.assertIs(error.observation,observation)
+            self.assertIn('diagnostic=unavailable',str(error))
+            self.assertNotIn('SECRET',str(error))
+
     def test_productive_completion_can_exceed_fifteen_seconds_but_not_sixty(self):
         feed = TransferFeed([(6, self.progress(16_384, 1)),
                              (17, self.progress(32_768, 2)),

@@ -176,3 +176,14 @@ archive page. It does not add background activity or a remote BBS unlock path.
 See [local unread mail](local-unread-mail.md) for explicit encrypted read tracking,
 a mail entry from the parked native Files desk and visit-local opt-in notices.
 These do not add background home polling or server-side mail decryption.
+
+### Stopped own-home attachment transfers
+
+If an own-home upload or fetch stops, the native console can show an
+`Attachment diagnostic v1` line before the existing stop message. Inspect the
+retained local state before any deliberate retry, as described in
+[private attachments](private-attachments.md). If you ask for help, you may share
+that diagnostic line; do not share mail or file contents. The line contains fixed
+categories and numbers rather than names, account identifiers, paths, URLs,
+filenames, keys, tokens, payloads or raw error details. It does not identify the
+cause of an earlier failure or retry the transfer automatically.

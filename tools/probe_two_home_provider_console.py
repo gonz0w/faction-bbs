@@ -400,7 +400,7 @@ def one_journey(client,fixture,operator,owned_root,openssl,unicode=False):
         journey.facts.append('actual_foreign_peer_native_queue_is_device_local_with_recipient_absent_and_unchanged')
         c=journey.start('alice');desk(c);started=upload(c,operation)
         remove=RemoveAfterProgress(source,1048592,os.read)
-        upload_observation=wait_transfer(c,1048592,started=started,read=remove);c.expect(DESK)
+        upload_observation=wait_transfer(c,1048592,started=started,read=remove,unicode=unicode);c.expect(DESK)
         assert remove.removed and not source.exists()
         assert upload_observation['progress'][-1]['writes']==1
         wait_fact(lambda:journey.peers[0].messages==1)
@@ -427,7 +427,7 @@ def one_journey(client,fixture,operator,owned_root,openssl,unicode=False):
         assert not (journey.root/'bob/attachments').exists()
         before_password=c.transcript.count(HOME.encode())
         c.raw(b'f');c.expect(TRANSFER);c.send('transfer');started=time.monotonic()
-        fetch_observation=wait_transfer(c,1048592,started=started);c.expect(RECEIVED)
+        fetch_observation=wait_transfer(c,1048592,started=started,unicode=unicode);c.expect(RECEIVED)
         assert c.transcript.count(HOME.encode())==before_password
         c.raw(b'v');c.expect('Verified locally: 1048576 plaintext bytes.');c.expect(RECEIVED)
         destination=journey.root/'saved'/'explicit.bin';destination.parent.mkdir(mode=0o700)

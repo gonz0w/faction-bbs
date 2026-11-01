@@ -521,6 +521,10 @@ impl CarrierEndpoint {
             next_collect: None,
             collect_delay: Duration::ZERO,
             ticket: None,
+            diagnostic: None,
+            diagnostic_start: None,
+            #[cfg(test)]
+            wait_entered: None,
         }
     }
     /// Start one logical request inside an existing foreground deadline.
@@ -561,6 +565,72 @@ impl CarrierEndpoint {
         admission.connect(socket)
     }
 }
+/// Fixed local diagnostic categories, never protocol data or remote authority.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum DiagnosticPhase {
+    #[default]
+    Unobserved,
+    SubmitConnect,
+    SubmitExchange,
+    CollectWait,
+    CollectConnect,
+    CollectExchange,
+    Idle,
+}
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct DiagnosticTimings {
+    pub submit_connect_us: u64,
+    pub submit_exchange_us: u64,
+    pub collect_connect_us: u64,
+    pub collect_exchange_us: u64,
+    pub planned_wait_us: u64,
+    pub actual_wait_us: u64,
+}
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct OperationSnapshot {
+    pub phase: DiagnosticPhase,
+    pub attempted: u8,
+    pub busy: u8,
+    pub connections: u8,
+    pub timings: DiagnosticTimings,
+    pub phase_us: u64,
+}
+fn diagnostic_micros(duration: Duration) -> u64 {
+    u64::try_from(duration.as_micros()).unwrap_or(u64::MAX)
+}
+impl OperationSnapshot {
+    fn add_phase(&mut self, micros: u64) {
+        let value = match self.phase {
+            DiagnosticPhase::SubmitConnect => &mut self.timings.submit_connect_us,
+            DiagnosticPhase::SubmitExchange => &mut self.timings.submit_exchange_us,
+            DiagnosticPhase::CollectConnect => &mut self.timings.collect_connect_us,
+            DiagnosticPhase::CollectExchange => &mut self.timings.collect_exchange_us,
+            DiagnosticPhase::CollectWait => &mut self.timings.actual_wait_us,
+            DiagnosticPhase::Unobserved | DiagnosticPhase::Idle => return,
+        };
+        *value = value.saturating_add(micros);
+    }
+}
+impl DiagnosticTimings {
+    pub fn saturating_add(self, other: Self) -> Self {
+        Self {
+            submit_connect_us: self
+                .submit_connect_us
+                .saturating_add(other.submit_connect_us),
+            submit_exchange_us: self
+                .submit_exchange_us
+                .saturating_add(other.submit_exchange_us),
+            collect_connect_us: self
+                .collect_connect_us
+                .saturating_add(other.collect_connect_us),
+            collect_exchange_us: self
+                .collect_exchange_us
+                .saturating_add(other.collect_exchange_us),
+            planned_wait_us: self.planned_wait_us.saturating_add(other.planned_wait_us),
+            actual_wait_us: self.actual_wait_us.saturating_add(other.actual_wait_us),
+        }
+    }
+}
 /// One original clock and bounded attempt window across all fresh connections.
 /// No automatic polling is performed by this interface.
 pub struct Operation {
@@ -572,12 +642,39 @@ pub struct Operation {
     next_collect: Option<Instant>,
     collect_delay: Duration,
     ticket: Option<Message>,
+    diagnostic: Option<OperationSnapshot>,
+    diagnostic_start: Option<Instant>,
+    #[cfg(test)]
+    wait_entered: Option<std::sync::mpsc::SyncSender<()>>,
 }
 pub enum Collection {
     Busy,
     Complete(Response),
 }
 impl Operation {
+    /// Local timings are cumulative client observations. Exchange includes all
+    /// unobserved server callback, Store and scheduling time; it is not CPU time.
+    pub fn diagnostic_snapshot(&self) -> Option<OperationSnapshot> {
+        let mut snapshot = self.diagnostic?;
+        snapshot.attempted = u8::try_from(self.attempted).unwrap_or(u8::MAX);
+        if let Some(start) = self.diagnostic_start {
+            snapshot.phase_us = diagnostic_micros(start.elapsed());
+            snapshot.add_phase(snapshot.phase_us);
+        }
+        Some(snapshot)
+    }
+    fn diagnostic_phase(&mut self, phase: DiagnosticPhase) {
+        let mut snapshot = self.diagnostic_snapshot().unwrap_or_default();
+        snapshot.phase = phase;
+        snapshot.phase_us = 0;
+        self.diagnostic = Some(snapshot);
+        self.diagnostic_start = (phase != DiagnosticPhase::Idle).then(Instant::now);
+    }
+    fn diagnostic_connect(&mut self, phase: DiagnosticPhase) {
+        self.diagnostic_phase(phase);
+        let snapshot = self.diagnostic.as_mut().unwrap();
+        snapshot.connections = snapshot.connections.saturating_add(1);
+    }
     fn current(&self) -> Result<(), Stage> {
         check(self.deadline, &self.cancel)?;
         if !leaf_current(&self.endpoint.credentials.certificate, wall_now())
@@ -616,9 +713,19 @@ impl Operation {
             .min(self.deadline.saturating_duration_since(Instant::now()));
         self.next_collect = Some((Instant::now() + self.collect_delay).min(self.deadline));
     }
-    fn wait_for_collect(&self) -> Result<(), Stage> {
+    fn wait_for_collect(&mut self) -> Result<(), Stage> {
         if self.attempted >= MAX_OPERATIONS {
             return Err(Stage::Limit);
+        }
+        self.diagnostic_phase(DiagnosticPhase::CollectWait);
+        let planned = self.next_collect.map_or(Duration::ZERO, |when| {
+            when.saturating_duration_since(Instant::now())
+        });
+        if let Some(snapshot) = &mut self.diagnostic {
+            snapshot.timings.planned_wait_us = snapshot
+                .timings
+                .planned_wait_us
+                .saturating_add(diagnostic_micros(planned));
         }
         loop {
             self.current()?;
@@ -626,7 +733,12 @@ impl Operation {
                 when.saturating_duration_since(Instant::now())
             });
             if remaining.is_zero() {
+                self.diagnostic_phase(DiagnosticPhase::Idle);
                 return Ok(());
+            }
+            #[cfg(test)]
+            if let Some(entered) = self.wait_entered.take() {
+                entered.send(()).unwrap();
             }
             std::thread::sleep(
                 remaining
@@ -683,11 +795,13 @@ impl Operation {
         };
         let bytes = message.encode().map_err(|_| Stage::Frame)?;
         let roundtrip = Instant::now();
+        self.diagnostic_connect(DiagnosticPhase::SubmitConnect);
         let mut client = self.endpoint.connect(
             self.deadline,
             self.cancel.clone(),
             self.current_probe.clone(),
         )?;
+        self.diagnostic_phase(DiagnosticPhase::SubmitExchange);
         write_frame(&mut client.stream, &bytes)?;
         let reply = read_frame(&mut client.stream)?.ok_or(Stage::Frame)?;
         if reply.len() != 39 || &reply[..6] != MAGIC || reply[6] != SUBMITTED {
@@ -700,6 +814,7 @@ impl Operation {
         drop(client);
         self.ticket = Some(message);
         self.schedule_collect(roundtrip.elapsed(), false);
+        self.diagnostic_phase(DiagnosticPhase::Idle);
         Ok(())
     }
     pub fn collect(&mut self) -> Result<Collection, Stage> {
@@ -711,11 +826,13 @@ impl Operation {
             .encode()
             .map_err(|_| Stage::Frame)?;
         let roundtrip = Instant::now();
+        self.diagnostic_connect(DiagnosticPhase::CollectConnect);
         let mut client = self.endpoint.connect(
             self.deadline,
             self.cancel.clone(),
             self.current_probe.clone(),
         )?;
+        self.diagnostic_phase(DiagnosticPhase::CollectExchange);
         write_frame(&mut client.stream, &bytes)?;
         let reply = read_frame(&mut client.stream)?.ok_or(Stage::Frame)?;
         check(self.deadline, &self.cancel)?;
@@ -726,12 +843,17 @@ impl Operation {
         match reply[6] {
             BUSY if reply.len() == 7 => {
                 self.schedule_collect(roundtrip.elapsed(), true);
+                if let Some(snapshot) = &mut self.diagnostic {
+                    snapshot.busy = snapshot.busy.saturating_add(1);
+                }
+                self.diagnostic_phase(DiagnosticPhase::Idle);
                 Ok(Collection::Busy)
             }
             RESULT => {
                 let response = decode_response(&reply[7..]).map_err(|_| Stage::Frame)?;
                 self.ticket = None;
                 self.next_collect = None;
+                self.diagnostic_phase(DiagnosticPhase::Idle);
                 Ok(Collection::Complete(response))
             }
             REFUSED if reply.len() == 7 => {
@@ -1049,6 +1171,10 @@ impl OwnHomeWork {
                 next_collect: None,
                 collect_delay: Duration::ZERO,
                 ticket: None,
+                diagnostic: None,
+                diagnostic_start: None,
+                #[cfg(test)]
+                wait_entered: None,
             };
             operation
                 .submit_retrieval(
@@ -1463,6 +1589,9 @@ impl ServiceSession {
 
 #[cfg(test)]
 impl Operation {
+    pub(crate) fn test_observe_collect_wait(&mut self, entered: std::sync::mpsc::SyncSender<()>) {
+        self.wait_entered = Some(entered);
+    }
     pub(crate) fn test_attempts(&self) -> usize {
         self.attempted
     }
