@@ -66,7 +66,9 @@ class OwnHomeQualification(unittest.TestCase):
             clippy = ('cargo clippy -p faction-client --features ' + feature +
                       ' --all-targets --release --locked -- -D warnings')
             self.assertIn('          ' + clippy + '\n', native)
-        own_test = ('cargo test -p faction-client --features own-home-provider'
+        own_test = ('env FACTION_SETUP_CLIENT_EXE=\"$RUNNER_TEMP/faction322-setup-OWNED/faction-client\" '
+                    'FACTION_SETUP_CAPTURE_DIR=\"$RUNNER_TEMP/faction322-setup-OWNED/captures\" '
+                    'cargo test -p faction-client --features own-home-provider'
                     ' --all-targets --release --locked -- --test-threads=1')
         self.assertEqual(source.splitlines().count('          ' + own_test), 1)
         codec_step = provider._step(provider._job(source, 'documentation'),

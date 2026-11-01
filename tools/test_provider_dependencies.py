@@ -305,7 +305,7 @@ def native_ci_step():
         "printf '%s\\n' 'Owned authenticated-provider console proof' > \"$RUNNER_TEMP/faction280-console-OWNED/OWNED\"",
         'python3 tools/probe_device_provider_console.py --client "$CARGO_TARGET_DIR/release/faction-client" --fixture "$CARGO_TARGET_DIR/release/examples/device_provider_console_fixture" --owned-root "$RUNNER_TEMP/faction280-console-OWNED" --openssl openssl --output "$RUNNER_TEMP/faction280-console-OWNED/result.json"',
     ]
-    commands += ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py', 'python3 tools/check_provider_dependencies.py', 'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings', 'cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
+    commands += ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py', 'python3 tools/check_provider_dependencies.py', 'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings', 'cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked', 'umask 077', 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"', 'printf \'%s\\n\' \'Owned own-home attachment client setup tests\' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"', 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"', 'sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"', 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"', 'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
     return ('      - name: Validate the native authenticated attachment client\n        env:\n          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider\n          CARGO_BUILD_JOBS: 2\n          RUSTUP_TOOLCHAIN: 1.96.0\n        run: |\n'
             + ''.join('          ' + command + '\n' for command in commands))
 
@@ -446,7 +446,14 @@ def joined_ci_fixture():
           python3 -m unittest discover -s tools -p test_own_home_dependencies.py
           python3 tools/check_provider_dependencies.py
           cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings
-          cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1
+          cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"
+          printf '%s\\n' 'Owned own-home attachment client setup tests' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"
+          cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"
+          sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"
+          mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"
+          env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1
   provider_operator:
     name: Optional durable provider operator
     runs-on: ubuntu-24.04
@@ -1086,6 +1093,58 @@ class PreparationConsoleCI(unittest.TestCase):
                          ('FACTION_SETUP_CAPTURE_DIR=', 'OMITTED_CAPTURE='),
                          ('mkdir -m 700 "$RUNNER_TEMP/faction286-setup-OWNED/captures"',
                           'mkdir -m 755 "$RUNNER_TEMP/faction286-setup-OWNED/captures"')]:
+            with self.subTest(change=new), self.assertRaises(ValueError):
+                policy.validate_ci(good.replace(old, new))
+
+
+    def test_own_home_tests_build_and_stage_their_own_client_and_private_inputs(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        step = policy._step(policy._job(source, 'provider_client'), 'Validate the native authenticated attachment client')
+        commands = [
+            'cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked',
+            'umask 077',
+            'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"',
+            "printf '%s\\n' 'Owned own-home attachment client setup tests' > \"$RUNNER_TEMP/faction322-setup-OWNED/OWNED\"",
+            'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+            'sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+            'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"',
+            'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1',
+        ]
+        # The second umask scopes these new inputs independently of legacy setup.
+        start = step.index('cargo clippy -p faction-client --features own-home-provider ')
+        own = step[start:]
+        for command in commands:
+            self.assertEqual(own.splitlines().count('          ' + command), 1, command)
+        positions = [own.index(command) for command in commands]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_own_home_test_without_fixture_environment_is_refused(self):
+        source = (policy.ROOT / '.github/workflows/documentation.yml').read_text()
+        step = policy._step(policy._job(source, 'provider_client'), 'Validate the native authenticated attachment client')
+        bare = 'cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1'
+        actual = next(line for line in step.splitlines() if line.strip().endswith(bare))
+        # On the old workflow this is unchanged, demonstrating that the old
+        # checker incorrectly accepts the exact missing-input invocation.
+        changed = source.replace(actual + '\n', '          ' + bare + '\n', 1)
+        with self.assertRaises(ValueError):
+            policy.validate_ci(changed)
+
+    def test_own_home_snapshot_and_capture_inputs_cannot_be_removed_or_reused(self):
+        good = ci_fixture()
+        step = policy._step(policy._job(good, 'provider_client'), 'Validate the native authenticated attachment client')
+        owned = [line for line in step.splitlines() if 'faction322-setup-OWNED' in line]
+        self.assertGreaterEqual(len(owned), 6)
+        for line in owned:
+            with self.subTest(missing=line), self.assertRaises(ValueError):
+                policy.validate_ci(good.replace(line + '\n', '', 1))
+        for old, new in [
+            ('FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client"', 'OMITTED_OWN_HOME_CLIENT=unused'),
+            ('FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures"', 'OMITTED_OWN_HOME_CAPTURE=unused'),
+            ('mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"', 'mkdir -m 755 "$RUNNER_TEMP/faction322-setup-OWNED/captures"'),
+            ('faction322-setup-OWNED', 'faction286-setup-OWNED'),
+            ('Owned own-home attachment client setup tests', 'Wrong owner marker'),
+        ]:
+            self.assertIn(old, good)
             with self.subTest(change=new), self.assertRaises(ValueError):
                 policy.validate_ci(good.replace(old, new))
 

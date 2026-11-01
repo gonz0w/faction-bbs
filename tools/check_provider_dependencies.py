@@ -284,7 +284,14 @@ def validate_ci(text):
     commands += ['python3 -m unittest discover -s tools -p test_own_home_dependencies.py',
                  'python3 tools/check_provider_dependencies.py',
                  'cargo clippy -p faction-client --features own-home-provider --all-targets --release --locked -- -D warnings',
-                 'cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
+                 'cargo build -p faction-client --features own-home-provider --bin faction-client --release --locked',
+                 'umask 077',
+                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED"',
+                 'printf \'%s\\n\' \'Owned own-home attachment client setup tests\' > "$RUNNER_TEMP/faction322-setup-OWNED/OWNED"',
+                 'cp "$CARGO_TARGET_DIR/release/faction-client" "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+                 'sha256sum "$RUNNER_TEMP/faction322-setup-OWNED/faction-client"',
+                 'mkdir -m 700 "$RUNNER_TEMP/faction322-setup-OWNED/captures"',
+                 'env FACTION_SETUP_CLIENT_EXE="$RUNNER_TEMP/faction322-setup-OWNED/faction-client" FACTION_SETUP_CAPTURE_DIR="$RUNNER_TEMP/faction322-setup-OWNED/captures" cargo test -p faction-client --features own-home-provider --all-targets --release --locked -- --test-threads=1']
     require(_lines(native, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == commands,
             'native provider CI must qualify selected sources before all-target locked validation')
     proof_name = 'Validate the prepared provider operator console'
