@@ -90,6 +90,28 @@ The picker also works offline. Existing explicit read decisions remain available
 Reply is still limited to the manual home-mail console and its current verified
 peer checks. Grouping never enrolls or retargets a recipient.
 
+## Preview a conversation
+
+Inside a correspondent inbox, press **T: Conversation** to preview the current
+account and device. The preview uses the current All/Unread filter and search;
+it shows only matching retained records, in local append order, oldest first.
+Sender timestamps do not determine this order. Each page shows up to two messages,
+with direction, local status, UTC time, subject and up to three body rows. A
+truncation indicator shows when text continues; open the full record to read it.
+Classic and Unicode displays render message text inertly.
+
+Use **Up/Down** or **K/J** to select a message and **N/P** to change pages;
+movement stops at the ends. **Enter/O** opens the selected full record, where
+existing explicit read and eligible online reply choices apply. On return, the
+same correspondent, filter and search remain active, with the original selection
+kept if still eligible. **B** returns to that correspondent inbox. An empty
+result cannot select a different correspondent.
+
+Previewing alone does not acknowledge, reply, queue or send mail, or contact home.
+It is a view of retained records on this device, not live chat, protocol threading,
+current presence or proof of contact or key continuity. The offline reader has no
+Reply action. Existing local notice settings are unchanged.
+
 ## Reply from the manual home-mail console
 
 After opening a received record in the manual home-mail console, press Enter to

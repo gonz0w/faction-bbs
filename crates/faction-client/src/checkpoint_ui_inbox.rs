@@ -131,6 +131,14 @@ impl Inbox {
     pub fn position(&self) -> usize {
         self.position
     }
+    pub fn eligible(&self) -> &[Entry] {
+        &self.shown
+    }
+    pub fn select_index(&mut self, index: usize) {
+        if let Some(position) = self.shown.iter().position(|e| e.index == index) {
+            self.position = position;
+        }
+    }
     pub fn len(&self) -> usize {
         self.shown.len()
     }
