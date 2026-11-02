@@ -33,6 +33,18 @@ pub(crate) enum Phase {
     Ssl,
     Postcheck,
     PacedWait,
+    Lookup,
+    Publication,
+}
+/// A hit reports no constructor work. Cold outcomes describe only publication;
+/// actual builder, configuration and build intervals remain independently visible.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(u8)]
+pub(crate) enum SetupOutcome {
+    None,
+    Hit,
+    ColdPublished,
+    ColdUnpublished,
 }
 struct Slot {
     ready: AtomicBool,
@@ -124,6 +136,7 @@ impl Trace {
         part: u8,
         start: Instant,
         complete: bool,
+        outcome: SetupOutcome,
     ) {
         let end = Instant::now();
         let Ok(index) = self
@@ -140,7 +153,8 @@ impl Trace {
             | ((connection.ordinal as u64) << 16)
             | ((phase as u64) << 24)
             | ((part as u64) << 32)
-            | ((u64::from(complete)) << 40);
+            | ((u64::from(complete)) << 40)
+            | ((outcome as u64) << 48);
         let slot = &self.slots[index];
         slot.tag.store(tag, Ordering::Relaxed);
         slot.start.store(self.micros(start), Ordering::Relaxed);
@@ -171,9 +185,17 @@ impl Trace {
                     Phase::Ssl,
                     Phase::Postcheck,
                     Phase::PacedWait,
+                    Phase::Lookup,
+                    Phase::Publication,
                 ][((tag >> 24) & 255) as usize],
                 part: ((tag >> 32) & 255) as u8,
                 complete: ((tag >> 40) & 255) == 1,
+                outcome: [
+                    SetupOutcome::None,
+                    SetupOutcome::Hit,
+                    SetupOutcome::ColdPublished,
+                    SetupOutcome::ColdUnpublished,
+                ][((tag >> 48) & 255) as usize],
                 start_us: slot.start.load(Ordering::Relaxed),
                 end_us: slot.end.load(Ordering::Relaxed),
             });
@@ -186,32 +208,51 @@ impl Trace {
                         .iter()
                         .filter(|p| p.role == role && p.kind == kind && p.ordinal == ordinal)
                         .collect();
-                    let expected: &[(Phase, u8)] = match kind {
-                        Kind::Binary => &[
-                            (Phase::Tcp, 0),
-                            (Phase::Builder, 0),
-                            (Phase::Immutable, 0),
-                            (Phase::Ssl, 0),
-                            (Phase::Postcheck, 0),
-                        ],
-                        // HTTP builds its context AFTER TCP. These two immutable
-                        // segments preserve that production order exactly.
-                        Kind::Http => &[
-                            (Phase::Builder, 0),
-                            (Phase::Immutable, 0),
-                            (Phase::Tcp, 0),
-                            (Phase::Immutable, 1),
-                            (Phase::Ssl, 0),
-                            (Phase::Postcheck, 0),
-                        ],
-                        Kind::Paced => &[(Phase::PacedWait, 0)],
-                    };
+                    let hit = run
+                        .iter()
+                        .any(|p| p.phase == Phase::Lookup && p.outcome == SetupOutcome::Hit);
+                    let mut expected = Vec::new();
+                    if kind == Kind::Paced {
+                        expected.push((Phase::PacedWait, 0));
+                    } else {
+                        if kind == Kind::Binary {
+                            expected.push((Phase::Tcp, 0));
+                        }
+                        expected.push((Phase::Lookup, 0));
+                        if !hit {
+                            expected.extend([(Phase::Builder, 0), (Phase::Immutable, 0)]);
+                        }
+                        // Both actual builds follow TCP; HTTP configuration
+                        // precedes it. Hits contain no configuration/build phases.
+                        if kind == Kind::Http {
+                            expected.push((Phase::Tcp, 0));
+                        }
+                        if !hit {
+                            expected.extend([(Phase::Immutable, 1), (Phase::Publication, 0)]);
+                        }
+                        expected.extend([(Phase::Ssl, 0), (Phase::Postcheck, 0)]);
+                    }
                     if run.len() != expected.len()
-                        || run.iter().zip(expected).any(|(p, (phase, part))| {
+                        || run.iter().zip(&expected).any(|(p, (phase, part))| {
                             p.phase != *phase
                                 || p.part != *part
                                 || !p.complete
                                 || p.start_us > p.end_us
+                                || match p.phase {
+                                    Phase::Lookup => {
+                                        p.outcome
+                                            != if hit {
+                                                SetupOutcome::Hit
+                                            } else {
+                                                SetupOutcome::None
+                                            }
+                                    }
+                                    Phase::Publication => !matches!(
+                                        p.outcome,
+                                        SetupOutcome::ColdPublished | SetupOutcome::ColdUnpublished
+                                    ),
+                                    _ => p.outcome != SetupOutcome::None,
+                                }
                         })
                         || run.windows(2).any(|w| w[0].end_us > w[1].start_us)
                     {
@@ -267,6 +308,7 @@ impl Connection {
             part,
             start: Instant::now(),
             complete: false,
+            outcome: SetupOutcome::None,
         }
     }
 }
@@ -276,9 +318,14 @@ pub(crate) struct Interval<'a> {
     part: u8,
     start: Instant,
     complete: bool,
+    outcome: SetupOutcome,
 }
 impl Interval<'_> {
     pub(crate) fn finish(mut self) {
+        self.complete = true;
+    }
+    pub(crate) fn finish_as(mut self, outcome: SetupOutcome) {
+        self.outcome = outcome;
         self.complete = true;
     }
     pub(crate) fn finish_optional(interval: Option<Self>) {
@@ -295,6 +342,7 @@ impl Drop for Interval<'_> {
             self.part,
             self.start,
             self.complete,
+            self.outcome,
         );
     }
 }
@@ -309,11 +357,12 @@ pub(crate) struct Point {
     pub(crate) start_us: u64,
     pub(crate) end_us: u64,
     pub(crate) complete: bool,
+    pub(crate) outcome: SetupOutcome,
 }
 impl Point {
     pub(crate) fn line(&self) -> String {
         format!(
-            "small_get_setup schema=1 sequence={} role={} kind={} ordinal={} phase={} part={} start_us={} end_us={} complete={}",
+            "small_get_setup schema=2 sequence={} role={} kind={} ordinal={} phase={} part={} start_us={} end_us={} complete={} outcome={}",
             self.sequence,
             self.role as u8,
             self.kind as u8,
@@ -322,7 +371,8 @@ impl Point {
             self.part,
             self.start_us,
             self.end_us,
-            u8::from(self.complete)
+            u8::from(self.complete),
+            self.outcome as u8
         )
     }
 }

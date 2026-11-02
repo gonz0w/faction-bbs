@@ -717,7 +717,7 @@ fn characterize_one_small_get_through_both_maintained_loops() {
                 eprintln!("{}", point.line());
             }
             eprintln!(
-                "small_get_setup_summary schema=1 points={} conclusive={} scope_clean={}",
+                "small_get_setup_summary schema=2 points={} conclusive={} scope_clean={}",
                 snapshot.points.len(),
                 u8::from(!snapshot.inconclusive),
                 u8::from(setup_scope_clean)

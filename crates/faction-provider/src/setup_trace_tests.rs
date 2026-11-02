@@ -1,29 +1,157 @@
 use super::*;
 
+#[test]
+fn setup_trace_shared_connector_distinguishes_cold_hit_and_unpublished_work() {
+    let trace = Trace::new(Instant::now());
+    trace.arm();
+    {
+        let _scope = trace.scope(Role::OwnHome);
+        for kind in [Kind::Binary, Kind::Http] {
+            for outcome in [
+                SetupOutcome::ColdPublished,
+                SetupOutcome::Hit,
+                SetupOutcome::ColdUnpublished,
+            ] {
+                let c = Connection::begin(kind).unwrap();
+                if kind == Kind::Binary {
+                    c.interval(Phase::Tcp, 0).finish();
+                }
+                c.interval(Phase::Lookup, 0)
+                    .finish_as(if outcome == SetupOutcome::Hit {
+                        outcome
+                    } else {
+                        SetupOutcome::None
+                    });
+                if outcome != SetupOutcome::Hit {
+                    c.interval(Phase::Builder, 0).finish();
+                    c.interval(Phase::Immutable, 0).finish();
+                }
+                if kind == Kind::Http {
+                    c.interval(Phase::Tcp, 0).finish();
+                }
+                if outcome != SetupOutcome::Hit {
+                    c.interval(Phase::Immutable, 1).finish();
+                    c.interval(Phase::Publication, 0).finish_as(outcome);
+                }
+                c.interval(Phase::Ssl, 0).finish();
+                c.interval(Phase::Postcheck, 0).finish();
+            }
+        }
+    }
+    let snapshot = trace.snapshot();
+    assert!(!snapshot.inconclusive);
+    assert_eq!(
+        snapshot
+            .points
+            .iter()
+            .filter(|p| p.outcome == SetupOutcome::Hit)
+            .count(),
+        2
+    );
+    assert_eq!(
+        snapshot
+            .points
+            .iter()
+            .filter(|p| p.phase == Phase::Builder)
+            .count(),
+        4
+    );
+    assert_eq!(
+        snapshot
+            .points
+            .iter()
+            .filter(|p| p.outcome == SetupOutcome::ColdPublished)
+            .count(),
+        2
+    );
+    assert_eq!(
+        snapshot
+            .points
+            .iter()
+            .filter(|p| p.outcome == SetupOutcome::ColdUnpublished)
+            .count(),
+        2
+    );
+}
+
 fn binary() {
     let c = Connection::begin(Kind::Binary).unwrap();
-    for phase in [
-        Phase::Tcp,
-        Phase::Builder,
-        Phase::Immutable,
-        Phase::Ssl,
-        Phase::Postcheck,
-    ] {
+    for phase in [Phase::Tcp, Phase::Lookup, Phase::Builder, Phase::Immutable] {
         Interval::finish_optional(Some(c.interval(phase, 0)));
+    }
+    c.interval(Phase::Immutable, 1).finish();
+    c.interval(Phase::Publication, 0)
+        .finish_as(SetupOutcome::ColdPublished);
+    c.interval(Phase::Ssl, 0).finish();
+    c.interval(Phase::Postcheck, 0).finish();
+}
+
+#[test]
+fn setup_trace_shared_connector_rejects_contradictory_missing_and_incomplete_work() {
+    for case in 0..8 {
+        let trace = Trace::new(Instant::now());
+        trace.arm();
+        {
+            let _scope = trace.scope(Role::OwnHome);
+            let c = Connection::begin(Kind::Binary).unwrap();
+            if case != 6 {
+                c.interval(Phase::Tcp, 0).finish();
+            }
+            if case != 0 {
+                let lookup = c.interval(Phase::Lookup, 0);
+                if case == 5 {
+                    drop(lookup);
+                } else {
+                    lookup.finish_as(if case == 1 {
+                        SetupOutcome::Hit
+                    } else {
+                        SetupOutcome::None
+                    });
+                }
+            }
+            if case == 6 {
+                c.interval(Phase::Tcp, 0).finish();
+            }
+            c.interval(Phase::Builder, 0).finish();
+            c.interval(Phase::Immutable, 0).finish();
+            if case != 2 {
+                c.interval(Phase::Immutable, 1).finish();
+            }
+            if case != 4 {
+                c.interval(Phase::Publication, 0).finish_as(if case == 3 {
+                    SetupOutcome::Hit
+                } else {
+                    SetupOutcome::ColdPublished
+                });
+            }
+            c.interval(Phase::Ssl, 0).finish_as(if case == 7 {
+                SetupOutcome::ColdUnpublished
+            } else {
+                SetupOutcome::None
+            });
+            c.interval(Phase::Postcheck, 0).finish();
+        }
+        assert!(
+            trace.snapshot().inconclusive,
+            "invalid shared setup case {case}"
+        );
     }
 }
 fn http() {
     let c = Connection::begin(Kind::Http).unwrap();
     for (phase, part) in [
+        (Phase::Lookup, 0),
         (Phase::Builder, 0),
         (Phase::Immutable, 0),
         (Phase::Tcp, 0),
         (Phase::Immutable, 1),
-        (Phase::Ssl, 0),
-        (Phase::Postcheck, 0),
     ] {
         c.interval(phase, part).finish();
     }
+    c.interval(Phase::Publication, 0)
+        .finish_as(SetupOutcome::ColdPublished);
+    c.interval(Phase::Ssl, 0).finish();
+    c.interval(Phase::Postcheck, 0).finish();
 }
 #[test]
 fn setup_trace_disabled_scopes_cleanup_and_numeric_privacy() {
@@ -43,7 +171,7 @@ fn setup_trace_disabled_scopes_cleanup_and_numeric_privacy() {
     assert!(Connection::begin(Kind::Binary).is_none());
     let snapshot = trace.snapshot();
     assert!(!snapshot.inconclusive);
-    assert_eq!(snapshot.points.len(), 5);
+    assert_eq!(snapshot.points.len(), 8);
     assert!(
         snapshot
             .points
@@ -101,7 +229,7 @@ fn setup_trace_roles_order_ordinals_and_concurrent_recording() {
     });
     let snapshot = trace.snapshot();
     assert!(!snapshot.inconclusive);
-    assert_eq!(snapshot.points.len(), 29);
+    assert_eq!(snapshot.points.len(), 42);
     assert!(
         snapshot
             .points

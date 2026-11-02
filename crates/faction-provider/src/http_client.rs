@@ -68,43 +68,10 @@ impl HttpEndpoint {
         let handshake = deadline.min(Instant::now() + HANDSHAKE_LIMIT);
         #[cfg(test)]
         let setup_trace = crate::setup_trace::Connection::begin(crate::setup_trace::Kind::Http);
-        #[cfg(test)]
-        let setup_builder = setup_trace
-            .as_ref()
-            .map(|trace| trace.interval(crate::setup_trace::Phase::Builder, 0));
-        let mut b =
-            SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
-        #[cfg(test)]
-        if let Some(interval) = setup_builder {
-            interval.finish();
-        }
-        #[cfg(test)]
-        let setup_immutable = setup_trace
-            .as_ref()
-            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 0));
-        b.set_min_proto_version(Some(SslVersion::TLS1_3))
-            .map_err(|_| Stage::Configuration)?;
-        b.set_max_proto_version(Some(SslVersion::TLS1_3))
-            .map_err(|_| Stage::Configuration)?;
-        let mut store =
-            openssl::x509::store::X509StoreBuilder::new().map_err(|_| Stage::Configuration)?;
-        store
-            .add_cert(self.credentials.ca.clone())
-            .map_err(|_| Stage::Configuration)?;
-        b.set_cert_store(store.build());
-        b.set_verify(SslVerifyMode::PEER);
-        b.set_session_cache_mode(SslSessionCacheMode::OFF);
-        b.set_options(SslOptions::NO_TICKET);
-        b.set_max_early_data(0).map_err(|_| Stage::Configuration)?;
-        b.set_certificate(&self.credentials.certificate)
-            .map_err(|_| Stage::Configuration)?;
-        b.set_private_key(&self.credentials.key)
-            .map_err(|_| Stage::Configuration)?;
-        b.check_private_key().map_err(|_| Stage::Configuration)?;
-        #[cfg(test)]
-        if let Some(interval) = setup_immutable {
-            interval.finish();
-        }
+        let prepared = self.credentials.prepare_connector(
+            #[cfg(test)]
+            setup_trace.as_ref(),
+        )?;
         check(handshake, &cancel)?;
         if !probe() {
             return Err(Stage::Denied);
@@ -131,26 +98,19 @@ impl HttpEndpoint {
         {
             io.read_retries = self.read_retries.clone();
         }
-        #[cfg(test)]
-        let setup_build = setup_trace
-            .as_ref()
-            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 1));
-        #[cfg(test)]
-        let connector = b.build();
-        #[cfg(test)]
-        if let Some(interval) = setup_build {
-            interval.finish();
-        }
+        let connector = self.credentials.finish_connector(
+            prepared,
+            #[cfg(test)]
+            setup_trace.as_ref(),
+        );
         #[cfg(test)]
         let setup_ssl = setup_trace
             .as_ref()
             .map(|trace| trace.interval(crate::setup_trace::Phase::Ssl, 0));
-        #[cfg(test)]
         let mut configuration = connector.configure().map_err(|_| Stage::Configuration)?;
-        #[cfg(test)]
+        // Preserve the original temporary context handle lifetime: the fresh SSL
+        // owns its native context reference before this local handle is dropped.
         drop(connector);
-        #[cfg(not(test))]
-        let mut configuration = b.build().configure().map_err(|_| Stage::Configuration)?;
         configuration.set_verify_hostname(true);
         let mut stream = configuration
             .connect(&self.server_name, io)

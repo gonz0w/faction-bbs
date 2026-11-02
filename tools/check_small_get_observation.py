@@ -60,7 +60,11 @@ def _record(line):
         if number > (1 << 64) - 1:
             return None
         values[match[1]] = number
-    if set(values) != set(keys) or values['schema'] != 1:
+    schema = values.get('schema')
+    if schema == 2 and words[0] == 'small_get_setup':
+        keys = keys + ['outcome']
+    if set(values) != set(keys) or schema not in (
+            (1, 2) if words[0] in {'small_get_setup', 'small_get_setup_summary'} else (1,)):
         return None
     return words[0], values
 
@@ -128,11 +132,14 @@ def _complete(points, calls, summary):
 def _setup_complete(records, calls, points, summary):
     setup = records['small_get_setup']
     headers = records['small_get_setup_summary']
-    if len(headers) != 1 or headers[0] != {'schema':1, 'points':len(setup), 'conclusive':1, 'scope_clean':1}:
+    if len(headers) != 1:
+        return False
+    schema = headers[0]['schema']
+    if headers[0] != {'schema':schema, 'points':len(setup), 'conclusive':1, 'scope_clean':1} or any(p['schema'] != schema for p in setup):
         return False
     if not 1 <= len(setup) <= 128 or [p['sequence'] for p in setup] != list(range(1, len(setup) + 1)):
         return False
-    if any(p['role'] > 2 or p['kind'] > 2 or p['ordinal'] > 7 or p['phase'] > 5 or p['part'] > 1 or p['complete'] != 1 or p['start_us'] > p['end_us'] for p in setup):
+    if any(p['role'] > 2 or p['kind'] > 2 or p['ordinal'] > 7 or p['phase'] > (5 if schema == 1 else 7) or p['part'] > 1 or p['complete'] != 1 or p['start_us'] > p['end_us'] for p in setup):
         return False
     expected_counts = {(0,0):len(calls), (0,2):len(calls)-1, (1,0):summary['inner_collects']+1, (1,1):1, (2,1):1}
     if set((p['role'],p['kind']) for p in setup) != set(expected_counts):
@@ -144,7 +151,32 @@ def _setup_complete(records, calls, points, summary):
         previous = None
         for ordinal in range(count):
             run = [p for p in group if p['ordinal'] == ordinal]
-            expected = {0:[(2,0),(0,0),(1,0),(3,0),(4,0)], 1:[(0,0),(1,0),(2,0),(1,1),(3,0),(4,0)], 2:[(5,0)]}[kind]
+            # Schema1 qualifies historical cold-work records only. Current
+            # schema2 requires explicit actual lookup/publication outcomes.
+            if schema == 1:
+                expected = {0:[(2,0),(0,0),(1,0),(3,0),(4,0)], 1:[(0,0),(1,0),(2,0),(1,1),(3,0),(4,0)], 2:[(5,0)]}[kind]
+            elif kind == 2:
+                expected = [(5, 0)]
+                if any(p['outcome'] != 0 for p in run):
+                    return False
+            else:
+                lookup = [p for p in run if p['phase'] == 6]
+                if len(lookup) != 1 or lookup[0]['outcome'] not in (0, 1):
+                    return False
+                hit = lookup[0]['outcome'] == 1
+                expected = [(2, 0)] if kind == 0 else []
+                expected += [(6, 0)]
+                if not hit:
+                    expected += [(0, 0), (1, 0)]
+                if kind == 1:
+                    expected += [(2, 0)]
+                if not hit:
+                    expected += [(1, 1), (7, 0)]
+                expected += [(3, 0), (4, 0)]
+                if any((p['outcome'] != (1 if hit else 0) if p['phase'] == 6
+                        else p['outcome'] not in (2, 3) if p['phase'] == 7
+                        else p['outcome'] != 0) for p in run):
+                    return False
             if [(p['phase'],p['part']) for p in run] != expected or any(a['end_us'] > b['start_us'] for a,b in zip(run,run[1:])):
                 return False
             if previous is not None and previous > run[0]['start_us']:
@@ -201,7 +233,8 @@ def validate(stdout, stderr, status):
             code |= 8
             continue
         records[name].append(values)
-        published.append(name + ' ' + ' '.join(key + '=' + str(values[key]) for key in SCHEMAS[name]))
+        keys = SCHEMAS[name] + (['outcome'] if name == 'small_get_setup' and values['schema'] == 2 else [])
+        published.append(name + ' ' + ' '.join(key + '=' + str(values[key]) for key in keys))
     summaries = records['small_get_summary']
     if len(summaries) != 1 or not _complete(records['small_get_point'], records['small_get_call'], summaries[0]):
         code |= 8

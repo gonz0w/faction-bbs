@@ -26,7 +26,7 @@ use std::{
     io::{self, Read, Write},
     net::{Shutdown, SocketAddr, TcpListener, TcpStream},
     sync::{
-        Arc, Weak,
+        Arc, Mutex, Weak,
         atomic::{AtomicBool, Ordering},
     },
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
@@ -1332,6 +1332,7 @@ pub struct ClientCredentials {
     ca: X509,
     certificate: X509,
     key: PKey<Private>,
+    connector: Arc<Mutex<Option<SslConnector>>>,
 }
 impl ClientCredentials {
     pub fn from_pem(ca: &[u8], certificate: &[u8], key: &[u8]) -> Result<Self, Stage> {
@@ -1358,8 +1359,108 @@ impl ClientCredentials {
             ca,
             certificate,
             key,
+            connector: Arc::new(Mutex::new(None)),
         })
     }
+
+    /// Prepare at the caller's original timed site. A busy/poisoned slot never
+    /// waits: the existing admission constructs its own bounded cold candidate.
+    fn prepare_connector(
+        &self,
+        #[cfg(test)] trace: Option<&crate::setup_trace::Connection>,
+    ) -> Result<PreparedConnector, Stage> {
+        #[cfg(test)]
+        let lookup = trace.map(|t| t.interval(crate::setup_trace::Phase::Lookup, 0));
+        let cached = self.connector.try_lock().ok().and_then(|slot| slot.clone());
+        #[cfg(test)]
+        if let Some(interval) = lookup {
+            interval.finish_as(if cached.is_some() {
+                crate::setup_trace::SetupOutcome::Hit
+            } else {
+                crate::setup_trace::SetupOutcome::None
+            });
+        }
+        if let Some(connector) = cached {
+            return Ok(PreparedConnector::Ready(connector));
+        }
+        #[cfg(test)]
+        let builder = trace.map(|t| t.interval(crate::setup_trace::Phase::Builder, 0));
+        let mut b =
+            SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(interval) = builder {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let immutable = trace.map(|t| t.interval(crate::setup_trace::Phase::Immutable, 0));
+        b.set_min_proto_version(Some(SslVersion::TLS1_3))
+            .map_err(|_| Stage::Configuration)?;
+        b.set_max_proto_version(Some(SslVersion::TLS1_3))
+            .map_err(|_| Stage::Configuration)?;
+        let mut store =
+            openssl::x509::store::X509StoreBuilder::new().map_err(|_| Stage::Configuration)?;
+        store
+            .add_cert(self.ca.clone())
+            .map_err(|_| Stage::Configuration)?;
+        b.set_cert_store(store.build());
+        b.set_verify(SslVerifyMode::PEER);
+        b.set_session_cache_mode(SslSessionCacheMode::OFF);
+        b.set_options(SslOptions::NO_TICKET);
+        b.set_max_early_data(0).map_err(|_| Stage::Configuration)?;
+        b.set_certificate(&self.certificate)
+            .map_err(|_| Stage::Configuration)?;
+        b.set_private_key(&self.key)
+            .map_err(|_| Stage::Configuration)?;
+        b.check_private_key().map_err(|_| Stage::Configuration)?;
+        #[cfg(test)]
+        if let Some(interval) = immutable {
+            interval.finish();
+        }
+        Ok(PreparedConnector::Cold(b))
+    }
+
+    /// Build only after the caller's TCP step. Locks cover handle lookup and
+    /// successful publication alone, never construction, TCP, TLS or policy work.
+    fn finish_connector(
+        &self,
+        prepared: PreparedConnector,
+        #[cfg(test)] trace: Option<&crate::setup_trace::Connection>,
+    ) -> SslConnector {
+        let builder = match prepared {
+            PreparedConnector::Ready(connector) => return connector,
+            PreparedConnector::Cold(builder) => builder,
+        };
+        #[cfg(test)]
+        let build = trace.map(|t| t.interval(crate::setup_trace::Phase::Immutable, 1));
+        let connector = builder.build();
+        #[cfg(test)]
+        if let Some(interval) = build {
+            interval.finish();
+        }
+        #[cfg(test)]
+        let publication = trace.map(|t| t.interval(crate::setup_trace::Phase::Publication, 0));
+        let _published = self.connector.try_lock().is_ok_and(|mut slot| {
+            if slot.is_none() {
+                *slot = Some(connector.clone());
+                true
+            } else {
+                false
+            }
+        });
+        #[cfg(test)]
+        if let Some(interval) = publication {
+            interval.finish_as(if _published {
+                crate::setup_trace::SetupOutcome::ColdPublished
+            } else {
+                crate::setup_trace::SetupOutcome::ColdUnpublished
+            });
+        }
+        connector
+    }
+}
+enum PreparedConnector {
+    Ready(SslConnector),
+    Cold(openssl::ssl::SslConnectorBuilder),
 }
 /// Single-use opaque admission clock, minted before asynchronous TCP connection.
 /// The caller cannot forge a start time, clone it or extend either deadline.
@@ -1441,46 +1542,15 @@ impl ClientAdmission {
         socket
             .set_nonblocking(false)
             .map_err(|_| Stage::Admission)?;
-        #[cfg(test)]
-        let setup_builder = self
-            .setup_trace
-            .as_ref()
-            .map(|trace| trace.interval(crate::setup_trace::Phase::Builder, 0));
-        let mut b =
-            SslConnector::builder(SslMethod::tls_client()).map_err(|_| Stage::Configuration)?;
-        #[cfg(test)]
-        if let Some(interval) = setup_builder {
-            interval.finish();
-        }
-        #[cfg(test)]
-        let setup_immutable = self
-            .setup_trace
-            .as_ref()
-            .map(|trace| trace.interval(crate::setup_trace::Phase::Immutable, 0));
-        b.set_min_proto_version(Some(SslVersion::TLS1_3))
-            .map_err(|_| Stage::Configuration)?;
-        b.set_max_proto_version(Some(SslVersion::TLS1_3))
-            .map_err(|_| Stage::Configuration)?;
-        let mut store =
-            openssl::x509::store::X509StoreBuilder::new().map_err(|_| Stage::Configuration)?;
-        store
-            .add_cert(self.credentials.ca)
-            .map_err(|_| Stage::Configuration)?;
-        b.set_cert_store(store.build());
-        b.set_verify(SslVerifyMode::PEER);
-        b.set_session_cache_mode(SslSessionCacheMode::OFF);
-        b.set_options(SslOptions::NO_TICKET);
-        b.set_max_early_data(0).map_err(|_| Stage::Configuration)?;
-        b.set_certificate(&self.credentials.certificate)
-            .map_err(|_| Stage::Configuration)?;
-        b.set_private_key(&self.credentials.key)
-            .map_err(|_| Stage::Configuration)?;
-        b.check_private_key().map_err(|_| Stage::Configuration)?;
-        let connector = b.build();
-        #[cfg(test)]
-        if let Some(interval) = setup_immutable {
-            interval.finish();
-        }
+        let prepared = self.credentials.prepare_connector(
+            #[cfg(test)]
+            self.setup_trace.as_ref(),
+        )?;
+        let connector = self.credentials.finish_connector(
+            prepared,
+            #[cfg(test)]
+            self.setup_trace.as_ref(),
+        );
         #[cfg(test)]
         let setup_ssl = self
             .setup_trace
@@ -1711,6 +1781,10 @@ mod http;
 #[cfg(all(test, feature = "delegation-issuer"))]
 #[path = "tls_issuer_tests.rs"]
 mod issuer_lifecycle_tests;
+
+#[cfg(all(test, feature = "delegation-issuer"))]
+#[path = "tls_setup_tests.rs"]
+mod setup_contract_tests;
 
 // Test-only scheduling inside the actual response BIO write, armed after the
 // handshake and request dispatch. This does not simulate kernel backpressure.
