@@ -159,6 +159,31 @@ drain limits remain. No result registry, worker pool or additional Runtime is
 introduced. See the [operator guide](../docs/provider-operator.md) for explicit
 configuration.
 
+### Credential-family TLS setup
+
+Mandatory-identity binary and HTTP clients lazily retain one successful TLS
+connector per `ClientCredentials` family. Clones share that immutable setup;
+separate `from_pem` calls create separate families. Every connection still creates
+a fresh SSL object and handshake and applies its current name, pin, certificate,
+policy, cancellation and deadline checks. No session, peer decision or operation
+authority is cached. The optional-identity `Client::connect` API is unchanged.
+
+Lookup and publication use nonblocking cache access. Construction happens outside
+the cache lock; a busy slot permits a local cold candidate within the existing
+admission. Binary cold setup stays after TCP. HTTP configuration stays before TCP,
+with build/publication afterward and the local connector handle dropped after
+fresh SSL configuration. Failed setup is not retained. A later handshake refusal
+can leave valid immutable setup cached without retaining its authentication result.
+
+The retained cost is one successful native context per live family, plus any
+temporary cold candidates and active SSL references. Transport-key references
+follow those owners; no context callback retains the cache owner. Native allocation
+and reference counts are not measured. Schema-2 test diagnostics distinguish lookup,
+cold publication and hits; hits omit constructor/configuration phases. Historical
+schema-1 records retain their original meaning. Reusing initialization work does
+not establish a cause or fix for the earlier Linux deadline failures in
+[#326](https://github.com/gonz0w/faction-bbs/issues/326).
+
 These interfaces are a software preview under validation. Full carrier behavior,
 native cross-home delivery, mail release and separate review are not yet established
 by the earlier component evidence below.

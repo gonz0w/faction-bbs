@@ -5,13 +5,13 @@ ROOT=Path(__file__).resolve().parents[1]
 class NativePolicy(unittest.TestCase):
  def test_native_ci_is_a_dependency_of_required_documentation_gate(self):
   text=(ROOT/'.github/workflows/documentation.yml').read_text()
-  self.assertIn('needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]',text)
+  self.assertIn('needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]',text)
   self.assertIn('cargo test -p faction-client -p faction-omemo --features faction-client/native-mail',text)
   self.assertIn('python3 tools/check_omemo_dependencies.py',text)
  def test_native_failure_cancel_or_skip_cannot_skip_a_required_gate(self):
   text=(ROOT/'.github/workflows/documentation.yml').read_text()
   doc=text.split('  documentation:\n',1)[1]
-  self.assertIn('if: ${{ always() }}',doc[:250])
+  self.assertIn('if: ${{ always() }}',doc.split('    steps:',1)[0])
   guard=re.search(r'(?ms)^      - name: Require optional native tests\n(.*?)(?=^      - name:)',doc)
   self.assertIsNotNone(guard)
   results={'NATIVE_MAIL_RESULT':'native_mail','PROVIDER_RESULT':'provider',
@@ -22,13 +22,17 @@ class NativePolicy(unittest.TestCase):
   run=re.search(r'(?m)^        run: \|\n((?:          [^\n]*\n)+)',guard.group(1))
   self.assertIsNotNone(run)
   command='\n'.join(line[10:] for line in run.group(1).splitlines())
-  successors={'PROVIDER_COMPOSED_RESULT':'provider_composed','OWN_HOME_CLIENT_RESULT':'own_home_client'}
+  successors={'PROVIDER_VERIFIER_DURABLE_RESULT':'provider_verifier_durable',
+              'PROVIDER_COMPOSED_RESULT':'provider_composed','OWN_HOME_CLIENT_RESULT':'own_home_client'}
   for variable,job in successors.items():
    self.assertIn(variable+': ${{ needs.'+job+'.result }}',guard.group(1))
   bbs='BBS_REGRESSIONS_RESULT'
   self.assertIn(bbs+': ${{ needs.bbs_regressions.result }}',guard.group(1))
+  ordered=[*results]
+  ordered.insert(3,'PROVIDER_VERIFIER_DURABLE_RESULT')
+  ordered.extend(['PROVIDER_COMPOSED_RESULT','OWN_HOME_CLIENT_RESULT',bbs])
   self.assertEqual(command.splitlines(),
-   ['test "$'+variable+'" = success' for variable in [*results,*successors,bbs]])
+   ['test "$'+variable+'" = success' for variable in ordered])
   # An absent variable and an explicitly empty result must both fail closed.
   statuses=['success','failure','cancelled','skipped','',None]
   for values in itertools.product(statuses,repeat=len(results)):
@@ -39,7 +43,7 @@ class NativePolicy(unittest.TestCase):
     code=subprocess.run(['/bin/sh','-e','-c',command],env=env,capture_output=True).returncode
     self.assertEqual(code==0,all(value=='success' for value in values),values)
   # Keep all original1296 combinations above; test each new result without
-  # multiplying the complete legacy Cartesian matrix by36.
+  # multiplying the complete legacy Cartesian matrix for each new prerequisite.
   for variable in successors:
    for status in statuses:
     with self.subTest(successor=variable,status=status):

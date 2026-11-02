@@ -183,10 +183,17 @@ def operator_commands():
     commands += ['python3 tools/check_provider_dependencies.py',
                  'cargo fmt --manifest-path ' + REL + '/Cargo.toml -- --check']
     for feature in ['durable-policy', 'operator', 'delegation-services',
-                    'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy', 'delegation-verifier,durable-policy']:
+                    'delegation-services,durable-policy', 'delegation-services,delegation-records,durable-policy', 'delegation-issuer', 'delegation-issuer,durable-policy', 'delegation-wire', 'delegation-wire,durable-policy']:
         commands += ['cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features ' + feature + ' -- -D warnings',
                      'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features ' + feature + ' -- --test-threads=1']
     return commands
+
+
+def durable_verifier_commands():
+    return [
+        'cargo clippy --manifest-path ' + REL + '/Cargo.toml --all-targets --release --locked --features delegation-verifier,durable-policy -- -D warnings',
+        'cargo test --manifest-path ' + REL + '/Cargo.toml --release --locked --features delegation-verifier,durable-policy -- --test-threads=1',
+    ]
 
 
 def operator_proof_commands():
@@ -339,12 +346,39 @@ def validate_ci(text):
     require(_lines(selected, {'rustup', 'cargo', 'python3'}) == operator_commands(),
             'operator CI must qualify all selected sources before locked API and CLI validation')
     validate_warm_order(operator)
-    # The six moved service validations belong only to the required operator
-    # consumer; reject extra copies outside that step as well.
-    for command in operator_commands():
+    durable = _job(text, 'provider_verifier_durable')
+    require(durable.split('    steps:\n', 1)[0] ==
+            '    name: Optional durable retrieval verifier\n    needs: [provider_operator]\n'
+            '    runs-on: ubuntu-24.04\n    timeout-minutes: 15\n',
+            'durable verifier must follow the operator with unchanged platform and limits')
+    require(re.findall(r'^      - name: (.*)$', durable, re.M) ==
+            ['Fetch the public repository revision', 'Validate durable retrieval verifier'],
+            'durable verifier must fetch and independently qualify exactly its final pair')
+    require(_step(durable, 'Fetch the public repository revision') == fetch,
+            'durable verifier must freshly fetch the exact workflow revision')
+    verification = _step(durable, 'Validate durable retrieval verifier')
+    require(verification.split('        run: |\n', 1)[0] ==
+            '        env:\n'
+            '          CARGO_TARGET_DIR: ${{ runner.temp }}/faction-provider-verifier-durable\n'
+            '          CARGO_BUILD_JOBS: 2\n'
+            '          RUSTUP_TOOLCHAIN: 1.96.0\n',
+            'durable verifier resource/toolchain environment changed')
+    commands = ([TOOLCHAIN] + root_warm_commands() + provider_warm_commands() +
+                ['python3 tools/check_provider_dependencies.py'] + durable_verifier_commands())
+    require(_lines(verification, {'rustup', 'cargo', 'python3'}) == commands,
+            'durable verifier must materialize all checked graphs before its unchanged pair')
+    require(verification.split('        run: |\n', 1)[1] == ''.join('          ' + command + '\n' for command in commands),
+            'durable verifier cannot hide trailing job overrides or extra step fields')
+    require(durable == durable.split('    steps:\n', 1)[0] + '    steps:\n' +
+            '      - name: Fetch the public repository revision\n' + fetch +
+            '      - name: Validate durable retrieval verifier\n' + verification,
+            'durable verifier must contain only its exact header, checkout and guarded validation')
+    validate_warm_order(durable)
+    # Each service validation belongs to its exact consumer, with no extra copy.
+    for command in operator_commands() + durable_verifier_commands():
         if command.startswith(('cargo clippy ', 'cargo test ')) and any(' --features ' + f in command for f in ['delegation-services','delegation-issuer','delegation-wire','delegation-verifier']):
             require(sum(line.strip() == command for line in text.splitlines()) == 1,
-                    'service CI validation must run exactly once in the operator job')
+                    'service CI validation must run exactly once in its required job')
     for operation in ['clippy','test']:
         command='cargo '+operation+' --manifest-path '+REL+'/Cargo.toml'+(' --all-targets' if operation=='clippy' else '')+' --release --locked --features delegation-verifier'+(' -- -D warnings' if operation=='clippy' else ' -- --test-threads=1')
         require(sum(line.strip()==command for line in text.splitlines())==1,'verifier CI validation must run exactly once')
@@ -407,14 +441,14 @@ def validate_ci(text):
         require(_lines(validation, {'cargo', 'python3', 'umask', 'mkdir', 'printf', 'cp', 'sha256sum', 'env'}) == expected,
                 'successor CI must retain its exact moved commands and setup inputs')
     documentation = _job(text, 'documentation')
-    require('    needs: [native_mail, provider, provider_operator, provider_client, provider_composed, own_home_client, bbs_regressions]' in documentation.splitlines()
+    require('    needs: [native_mail, provider, provider_operator, provider_verifier_durable, provider_client, provider_composed, own_home_client, bbs_regressions]' in documentation.splitlines()
             and '    if: ${{ always() }}' in documentation.splitlines()
             and not re.search(r'^    (?:continue-on-error|shell):', documentation, re.M),
             'documentation must require all optional job results')
     gate = _step(documentation, 'Require optional native tests')
-    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_CLIENT_RESULT', 'provider_client'), ('PROVIDER_COMPOSED_RESULT', 'provider_composed'), ('OWN_HOME_CLIENT_RESULT', 'own_home_client'), ('BBS_REGRESSIONS_RESULT', 'bbs_regressions')]:
+    for name, job in [('NATIVE_MAIL_RESULT', 'native_mail'), ('PROVIDER_RESULT', 'provider'), ('PROVIDER_OPERATOR_RESULT', 'provider_operator'), ('PROVIDER_VERIFIER_DURABLE_RESULT', 'provider_verifier_durable'), ('PROVIDER_CLIENT_RESULT', 'provider_client'), ('PROVIDER_COMPOSED_RESULT', 'provider_composed'), ('OWN_HOME_CLIENT_RESULT', 'own_home_client'), ('BBS_REGRESSIONS_RESULT', 'bbs_regressions')]:
         require(('          ' + name + ': ${{ needs.' + job + '.result }}') in gate.splitlines(), 'required CI result environment missing')
-    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_COMPOSED_RESULT" = success', 'test "$OWN_HOME_CLIENT_RESULT" = success', 'test "$BBS_REGRESSIONS_RESULT" = success'],
+    require(_lines(gate, {'test'}) == ['test "$NATIVE_MAIL_RESULT" = success', 'test "$PROVIDER_RESULT" = success', 'test "$PROVIDER_OPERATOR_RESULT" = success', 'test "$PROVIDER_VERIFIER_DURABLE_RESULT" = success', 'test "$PROVIDER_CLIENT_RESULT" = success', 'test "$PROVIDER_COMPOSED_RESULT" = success', 'test "$OWN_HOME_CLIENT_RESULT" = success', 'test "$BBS_REGRESSIONS_RESULT" = success'],
             'documentation must fail closed on all optional test results')
     from check_bbs_regressions_ci import validate_ci as validate_bbs_ci
     validate_bbs_ci(text)
