@@ -188,6 +188,13 @@ error. It reports actual partial or completed bytes; there is no background retr
 or automatic reconnect. Ctrl-C or Ctrl-D cancels and locks. Retry deliberately
 after checking the reported state. These limits do not change normal board budgets.
 
+This preview requires updated provider software at both homes for the waiting
+collection protocol. An older resource provider rejects the request, and the
+transfer stops without an automatic retry. The brief resource wait does not extend
+the transfer deadline. The [extension's host observations](../dev-docs/evidence/bounded-resource-collection/README.md)
+include both console modes. The older native qualifications below record earlier
+collection behavior; they are not fresh NetBSD tests of this extension.
+
 The desk is a software preview. A [NetBSD 11 ARM64 software qualification](../dev-docs/evidence/netbsd-attachments/README.md)
 exercised the production console and a 1 MiB transfer with both test homes, the
 client and handler on loopback inside one guest. This does not establish deployed

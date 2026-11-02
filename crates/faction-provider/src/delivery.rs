@@ -4,7 +4,7 @@ use super::*;
 use crate::services::{PendingPublication, PendingRetrieval, ServiceIdentity};
 use faction_files::private_blobs::Binding;
 use std::sync::{
-    Mutex,
+    Condvar, Mutex,
     atomic::{AtomicU64, AtomicUsize},
 };
 const MAGIC: &[u8; 6] = b"FDEL01";
@@ -14,6 +14,7 @@ const SUBMITTED: u8 = 2;
 const BUSY: u8 = 3;
 const RESULT: u8 = 4;
 const REFUSED: u8 = 5;
+const WAIT_COLLECT: u8 = 6;
 #[derive(Clone, PartialEq)]
 pub(crate) enum Peer {
     Device([u8; 32]),
@@ -40,6 +41,11 @@ struct Shared {
     #[cfg(all(test, feature = "durable-policy"))]
     deadline_attempt: Mutex<Option<std::sync::mpsc::SyncSender<(bool, usize)>>>,
     completion: Mutex<Option<Result<Response, Error>>>,
+    completed: Condvar,
+    #[cfg(test)]
+    wait_observer: Mutex<Option<std::sync::mpsc::SyncSender<(Instant, Instant)>>>,
+    #[cfg(test)]
+    finish_observer: Mutex<Option<std::sync::mpsc::SyncSender<()>>>,
     finished: AtomicBool,
     consumed: AtomicBool,
     // The actual result and all delivery bookkeeping die before this lease owner.
@@ -95,13 +101,87 @@ impl Shared {
             .map_err(|_| Error::Transport(Stage::Limit))?;
         self.current()
     }
+    // Only this condition wait is capped; existing current-authority lookups
+    // still resample their original absolute clocks after contention.
+    fn wait_completion(
+        &self,
+        session_deadline: Instant,
+        current_session: &mut impl FnMut() -> Result<(), Error>,
+    ) -> Result<(), Error> {
+        current_session()?;
+        self.current()?;
+        if self.finished.load(Ordering::SeqCst) {
+            return Ok(());
+        }
+        let start = Instant::now();
+        let mut end = (start + CANCEL_SLICE)
+            .min(session_deadline)
+            .min(self.source.deadline);
+        let tight = *self
+            .tight_deadline
+            .lock()
+            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+        end = end.min(tight);
+        // Token lifetime is authoritative only once real introspection publishes
+        // it. Unknown expiry supplies no guessed or client-derived authority.
+        let expires = self.expires.load(Ordering::SeqCst);
+        if expires != 0 {
+            let wall = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Clock))?;
+            let now = Instant::now();
+            let remaining = Duration::from_secs(expires)
+                .saturating_sub(wall)
+                .min(end.saturating_duration_since(now));
+            end = end.min(now + remaining);
+        }
+        #[cfg(test)]
+        if let Some(observer) = self.wait_observer.lock().unwrap().take() {
+            // This witnesses validated entry, never an OS park or exact wake.
+            let _ = observer.try_send((start, end));
+        }
+        loop {
+            current_session()?;
+            self.current()?;
+            let slot = self
+                .completion
+                .lock()
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+            if slot.is_some() {
+                drop(slot);
+                break;
+            }
+            let remaining = end.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                drop(slot);
+                break;
+            }
+            let (slot, _) = self
+                .completed
+                .wait_timeout(slot, remaining)
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+            drop(slot);
+            // No authority/metadata/policy lookup is made under completion.
+        }
+        current_session()?;
+        self.current()
+    }
     fn finish(&self, result: Result<Response, Error>) -> Result<(), Error> {
         let outcome = result.as_ref().map(|_| ()).map_err(|e| *e);
-        *self
+        #[cfg(test)]
+        if let Some(observer) = self.finish_observer.lock().unwrap().take() {
+            let _ = observer.try_send(());
+        }
+        // Both owners hold this mutex only to inspect or move the bounded slot.
+        // Contention with a collector must never discard the actual completion.
+        let mut slot = self
             .completion
-            .try_lock()
-            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))? = Some(result);
+            .lock()
+            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+        *slot = Some(result);
         self.finished.store(true, Ordering::SeqCst);
+        drop(slot);
+        self.completed.notify_all();
         outcome
     }
 }
@@ -135,6 +215,11 @@ impl Delivery {
                 #[cfg(all(test, feature = "durable-policy"))]
                 deadline_attempt: Mutex::new(None),
                 completion: Mutex::new(None),
+                completed: Condvar::new(),
+                #[cfg(test)]
+                wait_observer: Mutex::new(None),
+                #[cfg(test)]
+                finish_observer: Mutex::new(None),
                 finished: AtomicBool::new(false),
                 consumed: AtomicBool::new(false),
             }),
@@ -153,7 +238,7 @@ impl Delivery {
     ) {
         *self.shared.deadline_attempt.lock().unwrap() = Some(entered);
     }
-    #[cfg(all(test, feature = "durable-policy"))]
+    #[cfg(test)]
     pub(crate) fn hold_deadline_metadata(&self) -> std::sync::MutexGuard<'_, Instant> {
         self.shared.tight_deadline.lock().unwrap()
     }
@@ -184,13 +269,17 @@ impl Delivery {
         bytes: &[u8],
         peer: Peer,
         state: &Weak<State>,
+        session_deadline: Option<Instant>,
+        mut current_session: impl FnMut() -> Result<(), Error>,
     ) -> Result<Option<Vec<u8>>, Error> {
         // No authority is inferred from routing data or decoded principals.
         if peer != self.shared.source.peer || !Weak::ptr_eq(state, &self.shared.source.state) {
             return Err(Error::Transport(Stage::Denied));
         }
         let message = Message::decode(bytes)?;
-        if message.kind != COLLECT || message.correlation != self.shared.correlation {
+        if ![COLLECT, WAIT_COLLECT].contains(&message.kind)
+            || message.correlation != self.shared.correlation
+        {
             return Err(Error::Transport(Stage::Denied));
         }
         if message.purpose != self.shared.source.purpose()
@@ -200,13 +289,22 @@ impl Delivery {
         {
             return Err(Error::Transport(Stage::Denied));
         }
+        if message.kind == WAIT_COLLECT {
+            if message.purpose != 2 || !matches!(peer, Peer::Service(..)) {
+                return Err(Error::Transport(Stage::Denied));
+            }
+            self.shared.wait_completion(
+                session_deadline.ok_or(Error::Transport(Stage::Denied))?,
+                &mut current_session,
+            )?;
+        }
         if !self.shared.finished.load(Ordering::SeqCst) {
             return Ok(None);
         }
         let mut slot = self
             .shared
             .completion
-            .try_lock()
+            .lock()
             .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
         let Some(result) = slot.take() else {
             return Err(Error::Transport(Stage::Denied));
@@ -297,7 +395,10 @@ impl Message {
         }
         let kind = bytes[6];
         let purpose = bytes[7];
-        if ![SUBMIT, COLLECT].contains(&kind) || ![1, 2, 3].contains(&purpose) {
+        if ![SUBMIT, COLLECT, WAIT_COLLECT].contains(&kind)
+            || ![1, 2, 3].contains(&purpose)
+            || (kind == WAIT_COLLECT && purpose != 2)
+        {
             return Err(frame());
         }
         let correlation = bytes[8..40].try_into().map_err(|_| frame())?;
@@ -382,7 +483,7 @@ impl Session {
             let bytes = read_frame(&mut self.stream)
                 .map_err(|s| Error::Transport(classify(self.deadline, &guard.source.cancel, s)))?
                 .ok_or(Error::Transport(Stage::Frame))?;
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let reply = delivery.collect(&bytes, peer, &self.state, None, || Ok(()))?;
             self.write_delivery(reply, guard.clone())
         })();
         drop(self);
@@ -452,7 +553,15 @@ impl ServiceSession {
                 .map_err(|s| Error::Transport(classify(self.deadline, &guard.source.cancel, s)))?
                 .ok_or(Error::Transport(Stage::Frame))?;
             let peer = Peer::Service(self.credential.digest, self.credential.identity.clone());
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let state = self
+                .state
+                .upgrade()
+                .ok_or(Error::Transport(Stage::Denied))?;
+            let source_state = self.state.clone();
+            let deadline = self.deadline;
+            let reply = delivery.collect(&bytes, peer, &source_state, Some(deadline), || {
+                self.issuer_check(&state)
+            })?;
             let ready = reply.is_some();
             let reply = reply.unwrap_or_else(|| {
                 let mut b = MAGIC.to_vec();
@@ -817,14 +926,31 @@ impl Operation {
         self.diagnostic_phase(DiagnosticPhase::Idle);
         Ok(())
     }
+    /// Explicitly wait at a service-purpose2 resource for at most one server
+    /// cancellation slice. A refusal from an older server fails closed; this
+    /// call never falls back, resubmits, retries or renews the original window.
+    pub fn collect_waiting(&mut self) -> Result<Collection, Stage> {
+        if self
+            .ticket
+            .as_ref()
+            .is_none_or(|ticket| ticket.purpose != 2)
+        {
+            return Err(Stage::Denied);
+        }
+        self.collect_kind(WAIT_COLLECT)
+    }
     pub fn collect(&mut self) -> Result<Collection, Stage> {
+        self.collect_kind(COLLECT)
+    }
+    fn collect_kind(&mut self, kind: u8) -> Result<Collection, Stage> {
         self.charge()?;
-        let bytes = self
+        let mut bytes = self
             .ticket
             .as_ref()
             .ok_or(Stage::Denied)?
             .encode()
             .map_err(|_| Stage::Frame)?;
+        bytes[6] = kind;
         let roundtrip = Instant::now();
         self.diagnostic_connect(DiagnosticPhase::CollectConnect);
         let mut client = self.endpoint.connect(
@@ -1183,10 +1309,12 @@ impl OwnHomeWork {
                     token,
                 )
                 .map_err(Error::Transport)?;
-            for _ in 0..MAX_OPERATIONS {
-                operation.wait_for_collect().map_err(Error::Transport)?;
+            for number in 0..MAX_OPERATIONS {
+                if number != 0 {
+                    operation.wait_for_collect().map_err(Error::Transport)?;
+                }
                 self.shared.charge()?;
-                match operation.collect().map_err(Error::Transport)? {
+                match operation.collect_waiting().map_err(Error::Transport)? {
                     Collection::Complete(response) => {
                         self.shared.current()?;
                         return Ok(response);
@@ -1244,7 +1372,7 @@ impl Incoming {
     ) {
         self.service_purpose_attempt = Some(entered);
     }
-    #[cfg(all(test, feature = "durable-policy"))]
+    #[cfg(test)]
     pub(crate) fn observe_service_response_prefix(
         &mut self,
         entered: std::sync::mpsc::Sender<Instant>,
@@ -1430,6 +1558,8 @@ impl Session {
             let probe = d.shared.clone();
             self.stream.get_mut().policy_probe = Some(Arc::new(move || probe.current().is_ok()));
         }
+        #[cfg(test)]
+        FrameObservation::phase(FramePhase::InitialRead);
         let bytes = read_frame(&mut self.stream)
             .map_err(|s| Error::Transport(classify(self.deadline, &self.cancel, s)))?
             .ok_or(Error::Transport(Stage::Frame))?;
@@ -1440,6 +1570,8 @@ impl Session {
             let mut bytes = bytes;
             let mut state = state;
             loop {
+                #[cfg(test)]
+                FrameObservation::phase(FramePhase::DecodeDispatch);
                 if bytes.starts_with(MAGIC) {
                     return Err(Error::Transport(Stage::Denied));
                 }
@@ -1454,6 +1586,8 @@ impl Session {
                     request,
                 )?;
                 drop(guard);
+                #[cfg(test)]
+                FrameObservation::phase(FramePhase::ResponseWrite);
                 write_frame(
                     &mut self.stream,
                     &encode_response(&response).map_err(Error::Store)?,
@@ -1467,6 +1601,8 @@ impl Session {
                         return Err(Error::Transport(Stage::Limit));
                     }
                 }
+                #[cfg(test)]
+                FrameObservation::phase(FramePhase::NextRead);
                 let Some(next) = read_frame(&mut self.stream)
                     .map_err(|s| Error::Transport(classify(self.deadline, &self.cancel, s)))?
                 else {
@@ -1481,13 +1617,16 @@ impl Session {
             }
         }
         let message = Message::decode(&bytes)?;
+        if message.kind == WAIT_COLLECT {
+            return Err(Error::Transport(Stage::Denied));
+        }
         if message.kind == COLLECT {
             let delivery = pending.ok_or(Error::Transport(Stage::Denied))?;
             if !charged {
                 delivery.begin_collect(&peer, &self.state)?;
             }
             let guard = delivery.shared.clone();
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let reply = delivery.collect(&bytes, peer, &self.state, None, || Ok(()))?;
             let result = self.write_delivery(reply, guard.clone());
             drop(self);
             drop(guard);
@@ -1538,13 +1677,17 @@ impl ServiceSession {
             .map_err(|s| Error::Transport(classify(self.deadline, &self.cancel, s)))?
             .ok_or(Error::Transport(Stage::Frame))?;
         let message = Message::decode(&bytes)?;
-        if message.kind == COLLECT {
+        if [COLLECT, WAIT_COLLECT].contains(&message.kind) {
             let delivery = pending.ok_or(Error::Transport(Stage::Denied))?;
             if !charged {
                 delivery.begin_collect(&peer, &self.state)?;
             }
             let guard = delivery.shared.clone();
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let source_state = self.state.clone();
+            let deadline = self.deadline;
+            let reply = delivery.collect(&bytes, peer, &source_state, Some(deadline), || {
+                self.issuer_check(&state)
+            })?;
             let ready = reply.is_some();
             let reply = reply.unwrap_or_else(|| {
                 let mut b = MAGIC.to_vec();
@@ -1642,5 +1785,60 @@ impl CarrierEndpoint {
             }
         }
         received
+    }
+}
+
+// Test witnesses expose only contention/notification, never fabricated results.
+#[cfg(test)]
+pub(crate) struct CompletionWitness {
+    shared: Arc<Shared>,
+}
+#[cfg(test)]
+impl CompletionWitness {
+    pub(crate) fn hold(&self) -> std::sync::MutexGuard<'_, Option<Result<Response, Error>>> {
+        self.shared.completion.lock().unwrap()
+    }
+    pub(crate) fn notify_spurious(&self) {
+        self.shared.completed.notify_all();
+    }
+    pub(crate) fn observe_finish(&self, observer: std::sync::mpsc::SyncSender<()>) {
+        *self.shared.finish_observer.lock().unwrap() = Some(observer);
+    }
+}
+#[cfg(test)]
+impl Delivery {
+    pub(crate) fn test_completion_witness(&self) -> CompletionWitness {
+        CompletionWitness {
+            shared: self.shared.clone(),
+        }
+    }
+    pub(crate) fn test_observe_waiting_collect(
+        &self,
+        observer: std::sync::mpsc::SyncSender<(Instant, Instant)>,
+    ) {
+        *self.shared.wait_observer.lock().unwrap() = Some(observer);
+    }
+}
+
+#[cfg(test)]
+impl ServiceSession {
+    // Emulate the previous decoder's supported-kind boundary over real mTLS.
+    // This is not an executed historical server or interoperability evidence.
+    pub(crate) fn test_legacy_collect_only(mut self) -> Result<(), Error> {
+        self.issuer_attempt()?;
+        let bytes = read_frame(&mut self.stream)
+            .map_err(Error::Transport)?
+            .ok_or(Error::Transport(Stage::Frame))?;
+        assert!(bytes.starts_with(MAGIC));
+        assert_eq!(
+            bytes.get(6),
+            Some(&WAIT_COLLECT),
+            "test did not send actual opt-in wire kind6"
+        );
+        if ![SUBMIT, COLLECT].contains(&bytes[6]) {
+            return Err(Error::Transport(Stage::Frame));
+        }
+        Message::decode(&bytes)?;
+        Ok(())
     }
 }

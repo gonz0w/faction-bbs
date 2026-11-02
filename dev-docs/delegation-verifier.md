@@ -116,9 +116,34 @@ carrier; neither feature is enabled by default. A bounded submit, close and coll
 exchange lets the original connection close before federation callbacks. A receipt
 is routing data, not a Store commit or authority. Collection uses fresh TLS and
 checks the exact submitting identity, purpose, request and current authority.
-Unfinished work returns Busy immediately without queuing or holding the incoming
-lane for the callback. A lost result requires a freshly authorized exact retry;
-there is no automatic polling.
+Legacy `COLLECT` requests return Busy immediately for unfinished work. Updated
+homes can explicitly request `WAIT_COLLECT` (kind 6 under `FDEL01`) for a
+service retrieval (purpose 2). It checks the same authenticated peer, Runtime,
+correlation, binding and request, and spends one collection attempt from the
+original budget. It cannot authorize another operation or serve a device request.
+
+The added condition wait lasts at most 100 ms. It uses the earlier original
+session and source deadlines, any tighter deadline, and the known token expiry.
+Waking does not restart the wait. Current session and
+source authority are checked before and after the wait and before output. Existing
+authority-lock contention and system calls can take additional time; this is not
+a 100 ms bound on the whole admission. Completion wakes the existing collector
+through the result slot owned by its source. If only the added wait cap expires
+while original lifetimes and authority remain valid, unfinished work returns Busy
+and releases admission. Original deadline/token expiry, cancellation or invalid
+current authority still returns an error or refusal. No worker, queue, Runtime or
+authority cache is added. Reciprocal homes can regain
+admission after the bounded wait, without a fairness or completion guarantee.
+
+Own-home retrieval requests the first resource collection without an initial
+wait on the client. After Busy it retains the existing measured backoff and release
+gap. Device and publication collection keep their existing pacing and immediate
+wire semantics. Opt-in affects one call only. Old clients work against updated
+homes; a waiting request to an older resource provider fails closed, without
+fallback, resubmission or an automatic retry. Both homes need the updated preview
+for this path. A lost result still requires a freshly authorized exact retry.
+The [software record](evidence/bounded-resource-collection/README.md) separates the
+frozen latency workload, host profile tests and actual console observations.
 
 For own-home retrieval, the device connection closes before the actual registered
 Relay establishes its own mutual-TLS issuance connection. The configured peer

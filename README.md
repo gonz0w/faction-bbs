@@ -20,7 +20,7 @@ and fonts vary. Explore the [artwork](docs/artwork-nightwire.md) and
 
 ## Status
 
-**Working hobby preview · updated 2026-10-31 · no supported release yet.**
+**Working hobby preview · updated 2026-11-01 · no supported release yet.**
 
 The local BBS core and restricted SSH service work. Optional features are enabled
 by the sysop; experiments and future protocols are separate from normal operation.
@@ -44,7 +44,11 @@ by the sysop; experiments and future protocols are separate from normal operatio
   hardware and capacity remain unqualified. See the
   [operator guide](docs/provider-operator.md) and
   [carrier contract](dev-docs/delegation-verifier.md) and
-  [software evidence](dev-docs/evidence/own-home-attachments/README.md).
+  [software evidence](dev-docs/evidence/own-home-attachments/README.md). The bounded
+  waiting-collection extension has separate
+  [host qualification](dev-docs/evidence/bounded-resource-collection/README.md),
+  including maximum-file console checks. That record does not establish fresh
+  NetBSD or current-head CI qualification for the extension.
 
 ## What you can do
 

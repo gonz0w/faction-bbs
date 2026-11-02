@@ -279,32 +279,206 @@ impl Drop for DeadlineIo {
     }
 }
 
+// One scoped test-thread observation, never transport state or remote authority.
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum FramePhase {
+    InitialRead,
+    DecodeDispatch,
+    ResponseWrite,
+    NextRead,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum FramePart {
+    PrefixFirst,
+    PrefixRest,
+    LengthValidation,
+    Body,
+    WriteAll,
+    Flush,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum FrameOutcome {
+    Entered,
+    Complete,
+    CleanEof,
+    InvalidLength,
+    IoError,
+}
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct FrameSnapshot {
+    pub(crate) phase: FramePhase,
+    pub(crate) part: Option<FramePart>,
+    pub(crate) outcome: FrameOutcome,
+    pub(crate) error_kind: Option<io::ErrorKind>,
+}
+#[cfg(test)]
+std::thread_local! {
+    static FRAME_OBSERVATION: std::cell::Cell<Option<FrameSnapshot>> = const { std::cell::Cell::new(None) };
+}
+#[cfg(test)]
+pub(crate) struct FrameObservation {
+    // A zero-sized !Send/!Sync marker keeps Drop on the activating thread.
+    _thread_bound: std::marker::PhantomData<std::rc::Rc<()>>,
+}
+#[cfg(test)]
+impl FrameObservation {
+    pub(crate) fn start() -> Option<Self> {
+        FRAME_OBSERVATION.with(|slot| {
+            if slot.get().is_some() {
+                return None;
+            }
+            slot.set(Some(FrameSnapshot {
+                phase: FramePhase::InitialRead,
+                part: None,
+                outcome: FrameOutcome::Entered,
+                error_kind: None,
+            }));
+            Some(Self {
+                _thread_bound: std::marker::PhantomData,
+            })
+        })
+    }
+    pub(crate) fn current() -> Option<FrameSnapshot> {
+        FRAME_OBSERVATION.with(std::cell::Cell::get)
+    }
+    pub(crate) fn snapshot(&self) -> FrameSnapshot {
+        Self::current().expect("active frame observation")
+    }
+    pub(crate) fn phase(phase: FramePhase) {
+        FRAME_OBSERVATION.with(|slot| {
+            if slot.get().is_some() {
+                slot.set(Some(FrameSnapshot {
+                    phase,
+                    part: None,
+                    outcome: FrameOutcome::Entered,
+                    error_kind: None,
+                }));
+            }
+        });
+    }
+    fn event(part: FramePart, outcome: FrameOutcome, error_kind: Option<io::ErrorKind>) {
+        FRAME_OBSERVATION.with(|slot| {
+            if let Some(mut snapshot) = slot.get() {
+                snapshot.part = Some(part);
+                snapshot.outcome = outcome;
+                snapshot.error_kind = error_kind;
+                slot.set(Some(snapshot));
+            }
+        });
+    }
+}
+#[cfg(test)]
+impl Drop for FrameObservation {
+    fn drop(&mut self) {
+        FRAME_OBSERVATION.with(|slot| slot.set(None));
+    }
+}
+
 fn read_frame(stream: &mut SslStream<DeadlineIo>) -> Result<Option<Vec<u8>>, Stage> {
     let mut length = [0; 4];
-    let n = stream.read(&mut length[..1]).map_err(|_| Stage::Frame)?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixFirst, FrameOutcome::Entered, None);
+    let n = stream.read(&mut length[..1]).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::PrefixFirst,
+            FrameOutcome::IoError,
+            Some(_error.kind()),
+        );
+        Stage::Frame
+    })?;
     if n == 0 {
+        #[cfg(test)]
+        FrameObservation::event(FramePart::PrefixFirst, FrameOutcome::CleanEof, None);
         return Ok(None);
     }
-    stream
-        .read_exact(&mut length[1..])
-        .map_err(|_| Stage::Frame)?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixFirst, FrameOutcome::Complete, None);
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixRest, FrameOutcome::Entered, None);
+    stream.read_exact(&mut length[1..]).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::PrefixRest,
+            FrameOutcome::IoError,
+            Some(_error.kind()),
+        );
+        Stage::Frame
+    })?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::PrefixRest, FrameOutcome::Complete, None);
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Entered, None);
     let length = u32::from_be_bytes(length) as usize;
     if length == 0 || length > MAX_WIRE {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::LengthValidation,
+            FrameOutcome::InvalidLength,
+            None,
+        );
         return Err(Stage::Frame);
     }
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Complete, None);
     let mut bytes = vec![0; length];
-    stream.read_exact(&mut bytes).map_err(|_| Stage::Frame)?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::Body, FrameOutcome::Entered, None);
+    stream.read_exact(&mut bytes).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(FramePart::Body, FrameOutcome::IoError, Some(_error.kind()));
+        Stage::Frame
+    })?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::Body, FrameOutcome::Complete, None);
     Ok(Some(bytes))
 }
 fn write_frame<W: Write>(stream: &mut W, bytes: &[u8]) -> Result<(), Stage> {
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Entered, None);
     if bytes.is_empty() || bytes.len() > MAX_WIRE {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::LengthValidation,
+            FrameOutcome::InvalidLength,
+            None,
+        );
         return Err(Stage::Frame);
     }
+    #[cfg(test)]
+    FrameObservation::event(FramePart::LengthValidation, FrameOutcome::Complete, None);
     let mut frame = Vec::with_capacity(4 + bytes.len());
     frame.extend_from_slice(&(bytes.len() as u32).to_be_bytes());
     frame.extend_from_slice(bytes);
-    stream.write_all(&frame).map_err(|_| Stage::Frame)?;
-    stream.flush().map_err(|_| Stage::Frame)
+    #[cfg(test)]
+    FrameObservation::event(FramePart::WriteAll, FrameOutcome::Entered, None);
+    stream.write_all(&frame).map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(
+            FramePart::WriteAll,
+            FrameOutcome::IoError,
+            Some(_error.kind()),
+        );
+        Stage::Frame
+    })?;
+    #[cfg(test)]
+    FrameObservation::event(FramePart::WriteAll, FrameOutcome::Complete, None);
+    #[cfg(test)]
+    FrameObservation::event(FramePart::Flush, FrameOutcome::Entered, None);
+    let result = stream.flush().map_err(|_error| {
+        #[cfg(test)]
+        FrameObservation::event(FramePart::Flush, FrameOutcome::IoError, Some(_error.kind()));
+        Stage::Frame
+    });
+    #[cfg(test)]
+    if result.is_ok() {
+        FrameObservation::event(FramePart::Flush, FrameOutcome::Complete, None);
+    }
+    result
 }
 
 /// Trusted preloaded TLS configuration. Accepts only caller-owned loopback listeners.
@@ -1135,6 +1309,19 @@ impl Client {
             .ok_or(Stage::Frame)?;
         check(self.deadline, &self.cancel)?;
         decode_response(&bytes).map_err(|_| Stage::Frame)
+    }
+}
+
+#[cfg(test)]
+impl Client {
+    /// Send the first close-notify step once. Do not wait for peer acknowledgement,
+    /// retry, charge another request, or renew the original client window.
+    pub fn test_close_notify(&mut self) -> Result<(), Stage> {
+        check(self.deadline, &self.cancel)?;
+        self.stream
+            .shutdown()
+            .map_err(|_| classify(self.deadline, &self.cancel, Stage::Frame))?;
+        check(self.deadline, &self.cancel)
     }
 }
 
