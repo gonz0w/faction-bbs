@@ -109,3 +109,5 @@ the maintained shared service, with new complete 250-member VM measurements.
 - [0063: Invited-home attachment delegation](0063-invited-home-delegation.md) — source-level profile and finite qualification gates; no cross-home runtime claim.
 
 - [0064: Corrected headless reference source profile](0064-corrected-headless-source-profile.md) — required build-tool graph unresolved; no corrected-source or interoperability qualification.
+
+- [0065: CMake bootstrap qualification](0065-cmake-bootstrap-qualification.md) — selected unmodified native CMake profile would generate JavaScript/QtScript during configuration; source-only NO-GO with tool and license closure unresolved.

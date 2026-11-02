@@ -78,6 +78,14 @@ pub(super) fn run<'scope, 'env>(
                         if pending.is_some() || worker.is_some() {
                             return Err(());
                         }
+                        #[cfg(test)]
+                        let delivery = {
+                            let mut delivery = delivery;
+                            if let Some(hooks) = hooks {
+                                hooks.submitted(&mut delivery);
+                            }
+                            delivery
+                        };
                         pending = Some(delivery);
                         worker = Some(scope.spawn(move || {
                             let result = work.execute(routes, store);
@@ -108,7 +116,36 @@ pub(super) fn run<'scope, 'env>(
 // These one-shot lifecycle gates exist only in a test compilation. They neither
 // replace a real handle nor change pending state, authority, framing or charges.
 #[cfg(test)]
+pub(super) type AttachmentHook = Box<dyn Fn(&mut Delivery) + Send + Sync>;
+#[cfg(test)]
 pub(super) struct Hooks {
+    pub(super) lifecycle: Option<LifecycleHooks>,
+    pub(super) attach: Option<AttachmentHook>,
+}
+#[cfg(test)]
+impl Hooks {
+    fn submitted(&self, delivery: &mut Delivery) {
+        if let Some(attach) = &self.attach {
+            attach(delivery);
+        }
+    }
+    fn before_worker_exit(&self) {
+        if let Some(lifecycle) = &self.lifecycle {
+            lifecycle.before_worker_exit();
+        }
+    }
+    fn after_cleanup(
+        &self,
+        worker: &Option<thread::ScopedJoinHandle<'_, Result<(), ProviderError>>>,
+        pending: Option<&Delivery>,
+    ) {
+        if let Some(lifecycle) = &self.lifecycle {
+            lifecycle.after_cleanup(worker, pending);
+        }
+    }
+}
+#[cfg(test)]
+pub(super) struct LifecycleHooks {
     pub(super) worker_once: AtomicBool,
     pub(super) cleanup_once: AtomicBool,
     pub(super) work_returned: std::sync::mpsc::SyncSender<()>,
@@ -119,7 +156,7 @@ pub(super) struct Hooks {
     pub(super) check_pending: fn(&Delivery),
 }
 #[cfg(test)]
-impl Hooks {
+impl LifecycleHooks {
     fn before_worker_exit(&self) {
         // At most two notifications in the controlled two-operation test;
         // only the first real worker exit is gated.

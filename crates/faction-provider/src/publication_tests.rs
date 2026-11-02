@@ -2833,7 +2833,7 @@ fn maintained_router_keeps_ordinary_device_store_progress_while_callback_is_held
         authority::{CredentialBinding, Registry},
         delivery::{Collection, Event},
     };
-    for same_certificate in [false, true] {
+    for (certificate_case, same_certificate) in [false, true].into_iter().enumerate() {
         let h = Homes::new(false);
         let local = &h.pair.homes[0];
         let foreign = &h.pair.homes[1];
@@ -2960,7 +2960,7 @@ fn maintained_router_keeps_ordinary_device_store_progress_while_callback_is_held
                 created: tls::wall_now() - 5,
                 expires: tls::wall_now() + 300,
             };
-            for request in [
+            for (request_index, request) in [
                 Request::Begin(ordinary.clone()),
                 Request::PutChunk {
                     id: ordinary.id,
@@ -2972,22 +2972,77 @@ fn maintained_router_keeps_ordinary_device_store_progress_while_callback_is_held
                     id: ordinary.id,
                     offset: 0,
                 },
-            ] {
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                let prefix = format!(
+                    "router-observation-{}-case{certificate_case}-request{request_index}",
+                    std::process::id()
+                );
+                retain_synthetic_fixture(
+                    &format!("{prefix}-encoded-request.bin"),
+                    &faction_files::private_blobs::encode_request(&request).unwrap(),
+                );
                 let client_request = request.clone();
                 let client = scope.spawn(move || {
                     let mut c = local.client(address, credential);
-                    c.request(&client_request)
+                    let response = c.request(&client_request);
+                    let close_result: Option<Result<(), tls::Stage>> =
+                        response.as_ref().ok().map(|_| c.test_close_notify());
+                    (response, close_result)
                 });
                 let incoming = server
                     .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
                     .unwrap();
-                assert!(matches!(
-                    incoming
-                        .serve(Some(&mut delivery), &store, local.name, &profile)
-                        .unwrap(),
-                    Event::Served
-                ));
-                let response = client.join().unwrap().unwrap();
+                let observation = tls::FrameObservation::start()
+                    .expect("fresh parent-thread router frame observation");
+                let served = incoming.serve(Some(&mut delivery), &store, local.name, &profile);
+                let fixed_frame = observation.snapshot();
+                drop(observation);
+                // Join and retain observations before judging the unchanged
+                // server/client, exact-response and ownership assertions.
+                let client_result = client.join();
+                let server_class = match &served {
+                    Ok(Event::Served) => "served",
+                    Ok(Event::Collected(_)) => "collected",
+                    Ok(Event::Submitted(..)) => "submitted",
+                    Err(_) => "error",
+                };
+                let server_error = served.as_ref().err().copied();
+                let (client_class, client_stage) = match &client_result {
+                    Ok((Ok(_), _)) => ("response", None),
+                    Ok((Err(stage), _)) => ("transport_error", Some(*stage)),
+                    Err(_) => ("thread_panic", None),
+                };
+                let (close_class, close_stage) = match &client_result {
+                    Ok((_, Some(Ok(())))) => ("notified", None),
+                    Ok((_, Some(Err(stage)))) => ("transport_error", Some(*stage)),
+                    _ => ("not_attempted", None),
+                };
+                let diagnostic = format!(
+                    "router_observation case={certificate_case} same_certificate={same_certificate} request={request_index} server={server_class} server_error={server_error:?} frame={fixed_frame:?} client={client_class} client_stage={client_stage:?} close={close_class} close_stage={close_stage:?}\n"
+                );
+                retain_synthetic_fixture(
+                    &format!("{prefix}-fixed-observation.txt"),
+                    diagnostic.as_bytes(),
+                );
+                retain_synthetic_fixture(
+                    &format!("{prefix}-postoperation-store.snapshot"),
+                    &h.bytes(0),
+                );
+                capture_carrier_optional(
+                    &h,
+                    &format!("router-observation-case{certificate_case}-request{request_index}"),
+                );
+                eprint!("{diagnostic}");
+                assert!(matches!(served.unwrap(), Event::Served));
+                let (response, close_result) = client_result.unwrap();
+                assert!(
+                    matches!(close_result, Some(Ok(()))),
+                    "explicit fixture close_notify failed"
+                );
+                let response = response.unwrap();
                 match request {
                     Request::GetChunk { .. } => assert!(
                         matches!(response,Response::Chunk{offset:0,bytes,total:32} if bytes==vec![7;32])
@@ -3714,7 +3769,7 @@ fn service_purpose_contention(cancelled: bool) {
     );
 }
 
-#[cfg(feature = "durable-policy")]
+#[cfg(test)]
 fn metadata_capture_work(
     h: &Homes,
     store: &Mutex<Store>,
@@ -4220,4 +4275,1175 @@ fn diagnostic_actual_collect_wait_survives_cancellation_without_connection() {
         assert_eq!(snapshot.timings.collect_connect_us, 0);
         assert_eq!(snapshot.timings.collect_exchange_us, 0);
     });
+}
+
+#[test]
+fn waiting_resource_collect_returns_the_real_held_introspection_result() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let binding = h.pair.binding(0);
+    let store = h.empty(0);
+    h.publish(0, &binding, &store);
+    let record = foreign.record(&binding).unwrap();
+    let token = foreign.issue(&record);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &foreign.relay, listener.local_addr().unwrap());
+    let (operation, mut delivery, work) = thread::scope(|scope| {
+        let endpoint = endpoint.clone();
+        let binding = binding.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_retrieval(
+                    binding.clone(),
+                    Request::GetChunk {
+                        id: binding.id,
+                        offset: 0,
+                    },
+                    token,
+                )
+                .unwrap();
+            operation
+        });
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (delivery, work) = session.submit_retrieval().unwrap();
+        (client.join().unwrap(), delivery, work)
+    });
+    let mut frame = operation.test_collect_frame();
+    assert_eq!(frame[6], 1, "legacy ticket changed before opt-in");
+    frame[6] = 6;
+    let (server_result, raw) = thread::scope(|scope| {
+        let endpoint_http = local.endpoint(foreign);
+        let store_ref = &store;
+        let worker = scope.spawn(move || work.execute(&endpoint_http, store_ref));
+        let held = foreign
+            .server(&foreign.ca.0)
+            .accept_service(
+                &foreign.callback,
+                foreign.runtime(),
+                Arc::new(AtomicBool::new(false)),
+            )
+            .unwrap();
+        assert!(!delivery.is_finished());
+        let client = scope.spawn(|| endpoint.test_exchange(&frame));
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let collector = scope.spawn(|| session.collect_delivery(&mut delivery));
+        // The actual independent introspection response completes the real Work.
+        held.serve_http_once().unwrap();
+        worker.join().unwrap().unwrap();
+        (collector.join().unwrap(), client.join().unwrap())
+    });
+    assert!(delivery.is_finished());
+    capture_carrier_optional(&h, "waiting-resource-real-result");
+    drop(delivery);
+    assert_eq!(local.charged(), 0);
+    drop(record);
+    assert!(
+        matches!(server_result, Ok(true)),
+        "waiting collect failed: {server_result:?}"
+    );
+    assert!(
+        raw.len() >= 11,
+        "waiting collect disclosed no framed result"
+    );
+    let length = u32::from_be_bytes(raw[..4].try_into().unwrap()) as usize;
+    assert_eq!(length, raw.len() - 4);
+    assert_eq!(&raw[4..11], b"FDEL01\x04");
+    match faction_files::private_blobs::decode_response(&raw[11..]).unwrap() {
+        Response::Chunk {
+            offset,
+            bytes,
+            total,
+        } => {
+            assert_eq!(offset, 0);
+            assert_eq!(bytes, vec![9; 32]);
+            assert_eq!(total, 32);
+        }
+        _ => panic!("waiting collect substituted the actual committed result"),
+    }
+}
+
+#[test]
+fn waiting_resource_collect_interface_is_explicit_and_refuses_device_purpose() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let endpoint = carrier_endpoint(local, &local.device, local.callback.local_addr().unwrap());
+    let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+    assert_eq!(operation.collect_waiting().err(), Some(tls::Stage::Denied));
+    assert_eq!(operation.test_attempts(), 0);
+    capture_carrier_optional(&h, "waiting-interface-refused-no-ticket");
+}
+
+struct WaitingResource {
+    listener: TcpListener,
+    endpoint: crate::delivery::CarrierEndpoint,
+    operation: crate::delivery::Operation,
+    delivery: crate::delivery::Delivery,
+    work: crate::delivery::RetrievalWork,
+    record: crate::retrieval::RetrievalRecord,
+    source_cancel: Arc<AtomicBool>,
+}
+fn waiting_resource(h: &Homes, i: usize, binding: &Binding) -> WaitingResource {
+    let local = &h.pair.homes[i];
+    let foreign = &h.pair.homes[1 - i];
+    let binding = binding.clone();
+    let record = foreign.record(&binding).unwrap();
+    let token = foreign.issue(&record);
+    static NEXT: AtomicUsize = AtomicUsize::new(0);
+    retain_synthetic_fixture(
+        &format!(
+            "waiting-token-{}-{}.bin",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::SeqCst)
+        ),
+        &token.decode_bytes().unwrap(),
+    );
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &foreign.relay, listener.local_addr().unwrap());
+    let source_cancel = Arc::new(AtomicBool::new(false));
+    let (operation, delivery, work) = thread::scope(|scope| {
+        let endpoint = endpoint.clone();
+        let client = scope.spawn(move || {
+            let mut operation = endpoint.operation(Arc::new(AtomicBool::new(false)));
+            operation
+                .submit_retrieval(
+                    binding.clone(),
+                    Request::GetChunk {
+                        id: binding.id,
+                        offset: 0,
+                    },
+                    token,
+                )
+                .unwrap();
+            operation
+        });
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), source_cancel.clone())
+            .unwrap();
+        let (delivery, work) = session.submit_retrieval().unwrap();
+        (client.join().unwrap(), delivery, work)
+    });
+    WaitingResource {
+        listener,
+        endpoint,
+        operation,
+        delivery,
+        work,
+        record,
+        source_cancel,
+    }
+}
+fn assert_waiting_chunk(result: crate::delivery::Collection) {
+    let crate::delivery::Collection::Complete(Response::Chunk {
+        offset,
+        bytes,
+        total,
+    }) = result
+    else {
+        panic!("missing real resource result")
+    };
+    assert_eq!(offset, 0);
+    assert_eq!(bytes, vec![9; 32]);
+    assert_eq!(total, 32);
+}
+
+#[test]
+fn waiting_resource_collect_cap_spurious_wakes_and_legacy_collect_release_admission() {
+    use crate::delivery::Collection;
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let WaitingResource {
+        listener,
+        mut operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    let witness = delivery.test_completion_witness();
+    let (entered, waiting) = mpsc::sync_channel(1);
+    delivery.test_observe_waiting_collect(entered);
+    thread::scope(|scope| {
+        let endpoint = local.endpoint(foreign);
+        let store_ref = &store;
+        let worker = scope.spawn(move || work.execute(&endpoint, store_ref));
+        let held = foreign
+            .server(&foreign.ca.0)
+            .accept_service(
+                &foreign.callback,
+                foreign.runtime(),
+                Arc::new(AtomicBool::new(false)),
+            )
+            .unwrap();
+        thread::scope(|iteration| {
+            let client = iteration.spawn(|| operation.collect_waiting());
+            let session = local
+                .server(&foreign.ca.0)
+                .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let collector = iteration.spawn(|| session.collect_delivery(&mut delivery));
+            let (start, end) = waiting.recv_timeout(Duration::from_secs(2)).unwrap();
+            assert!(end <= start + Duration::from_millis(100));
+            assert!(end > start);
+            witness.notify_spurious();
+            witness.notify_spurious();
+            assert!(!collector.join().unwrap().unwrap());
+            assert!(matches!(client.join().unwrap().unwrap(), Collection::Busy));
+        });
+        assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+        assert_eq!(local.charged(), 1);
+        assert!(!delivery.is_finished());
+        assert_eq!(
+            operation.test_collect_frame()[6],
+            1,
+            "opt-in mutated the stored legacy ticket"
+        );
+        let (legacy_entered, legacy_waiting) = mpsc::sync_channel(1);
+        delivery.test_observe_waiting_collect(legacy_entered);
+        thread::scope(|iteration| {
+            let client = iteration.spawn(|| operation.collect());
+            let session = local
+                .server(&foreign.ca.0)
+                .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(!session.collect_delivery(&mut delivery).unwrap());
+            assert!(matches!(client.join().unwrap().unwrap(), Collection::Busy));
+        });
+        assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+        assert!(
+            legacy_waiting.try_recv().is_err(),
+            "legacy COLLECT entered the opt-in wait"
+        );
+        held.serve_http_once().unwrap();
+        worker.join().unwrap().unwrap();
+        thread::scope(|iteration| {
+            let client = iteration.spawn(|| operation.collect_waiting());
+            let session = local
+                .server(&foreign.ca.0)
+                .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(session.collect_delivery(&mut delivery).unwrap());
+            assert_waiting_chunk(client.join().unwrap().unwrap());
+        });
+    });
+    assert_eq!(delivery.test_original_attempts(), 5);
+    assert_eq!(operation.test_attempts(), 4);
+    capture_carrier_optional(&h, "waiting-cap-legacy");
+    drop(witness);
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+}
+
+#[test]
+fn waiting_resource_collect_completion_mutex_collision_keeps_the_actual_result() {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let WaitingResource {
+        listener,
+        mut operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    let witness = delivery.test_completion_witness();
+    let completion = witness.hold();
+    let (entered, waiting) = mpsc::sync_channel(1);
+    delivery.test_observe_waiting_collect(entered);
+    let (finish, finishing) = mpsc::sync_channel(1);
+    witness.observe_finish(finish);
+    thread::scope(|scope| {
+        let endpoint = local.endpoint(foreign);
+        let store_ref = &store;
+        let worker = scope.spawn(move || work.execute(&endpoint, store_ref));
+        let held = foreign
+            .server(&foreign.ca.0)
+            .accept_service(
+                &foreign.callback,
+                foreign.runtime(),
+                Arc::new(AtomicBool::new(false)),
+            )
+            .unwrap();
+        let client = scope.spawn(|| operation.collect_waiting());
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let collector = scope.spawn(|| session.collect_delivery(&mut delivery));
+        waiting.recv_timeout(Duration::from_secs(2)).unwrap();
+        held.serve_http_once().unwrap();
+        finishing.recv_timeout(Duration::from_secs(2)).unwrap();
+        assert!(
+            !worker.is_finished(),
+            "actual finish did not contend with the held completion lock"
+        );
+        drop(completion);
+        worker.join().unwrap().unwrap();
+        assert!(collector.join().unwrap().unwrap());
+        assert_waiting_chunk(client.join().unwrap().unwrap());
+    });
+    assert!(delivery.is_consumed());
+    capture_carrier_optional(&h, "waiting-completion-collision");
+    drop(witness);
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+}
+
+#[test]
+fn waiting_resource_collect_already_finished_is_not_lost_before_wait_registration() {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let WaitingResource {
+        listener,
+        mut operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    thread::scope(|scope| {
+        let callback = scope.spawn(|| {
+            foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap()
+                .serve_http_once()
+        });
+        work.execute(&local.endpoint(foreign), &store).unwrap();
+        callback.join().unwrap().unwrap();
+    });
+    assert!(delivery.is_finished());
+    let (entered, waiting) = mpsc::sync_channel(1);
+    delivery.test_observe_waiting_collect(entered);
+    thread::scope(|scope| {
+        let client = scope.spawn(|| operation.collect_waiting());
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        assert!(session.collect_delivery(&mut delivery).unwrap());
+        assert_waiting_chunk(client.join().unwrap().unwrap());
+    });
+    assert!(
+        waiting.try_recv().is_err(),
+        "finished result entered pending wait"
+    );
+    capture_carrier_optional(&h, "waiting-already-finished");
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+}
+
+#[test]
+fn waiting_resource_collect_rechecks_source_session_policy_and_tighter_deadline() {
+    use std::sync::mpsc;
+    for case in 0..4 {
+        let h = Homes::new(false);
+        let store = h.empty(0);
+        let binding = h.pair.binding(0);
+        h.publish(0, &binding, &store);
+        let local = &h.pair.homes[0];
+        let foreign = &h.pair.homes[1];
+        let WaitingResource {
+            listener,
+            endpoint,
+            operation,
+            mut delivery,
+            work,
+            record,
+            source_cancel,
+        } = waiting_resource(&h, 0, &binding);
+        let mut frame = operation.test_collect_frame();
+        frame[6] = 6;
+        let (entered, waiting) = mpsc::sync_channel(1);
+        delivery.test_observe_waiting_collect(entered);
+        let incoming_cancel = Arc::new(AtomicBool::new(false));
+        thread::scope(|scope| {
+            let endpoint_http = local.endpoint(foreign);
+            let store_ref = &store;
+            let worker = scope.spawn(move || work.execute(&endpoint_http, store_ref));
+            let held = foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap();
+            let client = scope.spawn(|| endpoint.test_exchange(&frame));
+            let session = local
+                .server(&foreign.ca.0)
+                .accept_service(&listener, local.runtime(), incoming_cancel.clone())
+                .unwrap();
+            // Narrow only after both actual TLS fixtures are admitted; the
+            // original source clock is never extended by test setup.
+            let tight = Instant::now() + Duration::from_millis(80);
+            if case == 3 {
+                *delivery.hold_deadline_metadata() = tight;
+            }
+            let collector = scope.spawn(|| session.collect_delivery(&mut delivery));
+            let (start, end) = waiting.recv_timeout(Duration::from_secs(2)).unwrap();
+            assert!(end <= start + Duration::from_millis(100));
+            match case {
+                0 => source_cancel.store(true, Ordering::SeqCst),
+                1 => incoming_cancel.store(true, Ordering::SeqCst),
+                2 => h.install(0, 3, 0, 3, 0, |_| ()),
+                3 => assert!(end <= tight),
+                _ => unreachable!(),
+            }
+            assert!(
+                collector.join().unwrap().is_err(),
+                "invalidation case {case} returned Busy/result"
+            );
+            assert!(
+                client.join().unwrap().is_empty(),
+                "invalidation disclosed application bytes"
+            );
+            assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+            drop(held);
+            assert!(worker.join().unwrap().is_err());
+        });
+        capture_carrier_optional(&h, "waiting-invalidation");
+        drop(delivery);
+        drop(record);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+#[test]
+fn waiting_finished_slot_contention_legacy_collect_retains_the_actual_result() {
+    finished_slot_contention(false);
+}
+#[test]
+fn waiting_finished_slot_contention_opt_in_collect_retains_the_actual_result() {
+    finished_slot_contention(true);
+}
+fn finished_slot_contention(waiting: bool) {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let WaitingResource {
+        listener,
+        mut operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    thread::scope(|scope| {
+        let callback = scope.spawn(|| {
+            foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap()
+                .serve_http_once()
+        });
+        work.execute(&local.endpoint(foreign), &store).unwrap();
+        callback.join().unwrap().unwrap();
+    });
+    assert!(delivery.is_finished());
+    let witness = delivery.test_completion_witness();
+    let completion = witness.hold();
+    let (entered, entry) = mpsc::sync_channel(1);
+    let (returned, returning) = mpsc::sync_channel(1);
+    let (early, server_result, client_result) = thread::scope(|scope| {
+        let client = scope.spawn(|| {
+            if waiting {
+                operation.collect_waiting()
+            } else {
+                operation.collect()
+            }
+        });
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let collector = scope.spawn(|| {
+            entered.send(()).unwrap();
+            let result = session.collect_delivery(&mut delivery);
+            returned.send(result).unwrap();
+        });
+        entry.recv_timeout(Duration::from_secs(2)).unwrap();
+        let early = returning.recv_timeout(Duration::from_millis(50));
+        // Always release and drain before judging either old or new behavior.
+        drop(completion);
+        collector.join().unwrap();
+        let server_result = match early {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                returning.recv_timeout(Duration::from_secs(2)).unwrap()
+            }
+            Err(other) => panic!("collector disappeared: {other:?}"),
+        };
+        (early, server_result, client.join().unwrap())
+    });
+    capture_carrier_optional(&h, "waiting-finished-slot-contention");
+    drop(witness);
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+    assert!(
+        matches!(early, Err(mpsc::RecvTimeoutError::Timeout)),
+        "finished collect returned before its actual result-slot lock was released: {early:?}"
+    );
+    assert!(
+        matches!(server_result, Ok(true)),
+        "finished collect lost its actual response: {server_result:?}"
+    );
+    assert_waiting_chunk(client_result.unwrap());
+}
+
+#[test]
+fn waiting_resource_collect_exact_rejections_do_not_enter_wait_or_disclose_bytes() {
+    use std::sync::mpsc;
+    for case in 0..12 {
+        let h = Homes::new(false);
+        let store = h.empty(0);
+        let binding = h.pair.binding(0);
+        h.publish(0, &binding, &store);
+        let local = &h.pair.homes[0];
+        let foreign = &h.pair.homes[1];
+        let WaitingResource {
+            listener,
+            endpoint,
+            mut operation,
+            mut delivery,
+            work,
+            record,
+            ..
+        } = waiting_resource(&h, 0, &binding);
+        if case == 11 {
+            thread::scope(|scope| {
+                let callback = scope.spawn(|| {
+                    foreign
+                        .server(&foreign.ca.0)
+                        .accept_service(
+                            &foreign.callback,
+                            foreign.runtime(),
+                            Arc::new(AtomicBool::new(false)),
+                        )
+                        .unwrap()
+                        .serve_http_once()
+                });
+                work.execute(&local.endpoint(foreign), &store).unwrap();
+                callback.join().unwrap().unwrap();
+            });
+        } else {
+            drop(work);
+        }
+        let mut frame = operation.test_collect_frame();
+        frame[6] = 6;
+        let (length_at, request_at, mut binding, request) = collect_request_parts(&frame);
+        match case {
+            0 => frame[6] = 7,
+            1 => frame[7] = 1,
+            2 => frame[7] = 3,
+            3 => frame.extend([23; 32]),
+            4 => frame.push(0),
+            5 => frame[8] ^= 1,
+            6 => {
+                binding.recipient.identity[0] ^= 1;
+                let encoded =
+                    faction_files::private_blobs::encode_request(&Request::Begin(binding)).unwrap();
+                frame[42..length_at].copy_from_slice(&encoded);
+            }
+            7 => {
+                let Request::GetChunk { id, .. } = request else {
+                    panic!("not a real GetChunk")
+                };
+                let encoded = faction_files::private_blobs::encode_request(&Request::GetChunk {
+                    id,
+                    offset: 1,
+                })
+                .unwrap();
+                frame[request_at..].copy_from_slice(&encoded);
+            }
+            8 => {
+                let encoded = faction_files::private_blobs::encode_request(&Request::Status {
+                    id: binding.id,
+                })
+                .unwrap();
+                frame.truncate(length_at);
+                frame.extend((encoded.len() as u16).to_be_bytes());
+                frame.extend(encoded);
+            }
+            9 | 10 => (),
+            11 => {
+                thread::scope(|scope| {
+                    let client = scope.spawn(|| operation.collect_waiting());
+                    let session = local
+                        .server(&foreign.ca.0)
+                        .accept_service(
+                            &listener,
+                            local.runtime(),
+                            Arc::new(AtomicBool::new(false)),
+                        )
+                        .unwrap();
+                    assert!(session.collect_delivery(&mut delivery).unwrap());
+                    assert_waiting_chunk(client.join().unwrap().unwrap());
+                });
+                assert!(delivery.is_consumed());
+            }
+            _ => unreachable!(),
+        }
+        retain_synthetic_fixture(
+            &format!("waiting-rejected-frame-{}-{case}.bin", std::process::id()),
+            &frame,
+        );
+        let (entered, waiting) = mpsc::sync_channel(1);
+        delivery.test_observe_waiting_collect(entered);
+        let attacker = match case {
+            9 => carrier_endpoint(local, &local.relay, listener.local_addr().unwrap()),
+            10 => carrier_endpoint(local, &local.device, listener.local_addr().unwrap()),
+            _ => endpoint,
+        };
+        let (server_result, bytes) = thread::scope(|scope| {
+            let client = scope.spawn(|| attacker.test_exchange(&frame));
+            let server_result = if case == 10 {
+                local
+                    .server(&local.ca.0)
+                    .accept(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap()
+                    .collect_delivery(&mut delivery)
+            } else {
+                let ca = if case == 9 {
+                    &local.ca.0
+                } else {
+                    &foreign.ca.0
+                };
+                local
+                    .server(ca)
+                    .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                    .unwrap()
+                    .collect_delivery(&mut delivery)
+            };
+            (server_result, client.join().unwrap())
+        });
+        capture_carrier_optional(&h, "waiting-exact-rejection");
+        assert!(server_result.is_err(), "case {case} was accepted");
+        assert!(bytes.is_empty(), "case {case} disclosed bytes");
+        assert!(waiting.try_recv().is_err(), "case {case} entered wait");
+        assert!(delivery.test_original_attempts() <= 8);
+        assert!(!local.runtime().state.active.load(Ordering::SeqCst));
+        drop(delivery);
+        drop(record);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+#[test]
+fn waiting_resource_collect_rejects_a_misbound_source_state_before_wait() {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let record = foreign.record(&binding).unwrap();
+    let token = foreign.issue(&record);
+    retain_synthetic_fixture(
+        &format!("waiting-misbound-token-{}.bin", std::process::id()),
+        &token.decode_bytes().unwrap(),
+    );
+    let pending = local.prepare(foreign, &binding, token, 0).unwrap();
+    let mut source = pending.delivery_source();
+    source.state = Arc::downgrade(&foreign.runtime().state);
+    let mut delivery = crate::delivery::Delivery::new(source).unwrap();
+    let (entered, waiting) = mpsc::sync_channel(1);
+    delivery.test_observe_waiting_collect(entered);
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = carrier_endpoint(local, &foreign.relay, listener.local_addr().unwrap());
+    // Peer authentication is genuine. The deliberately wrong source Weak must
+    // be rejected by begin_collect before even reading these routing bytes.
+    let (server_result, bytes) = thread::scope(|scope| {
+        let client = scope.spawn(|| endpoint.test_exchange(b"FDEL01\x06\x02"));
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        (
+            session.collect_delivery(&mut delivery),
+            client.join().unwrap(),
+        )
+    });
+    capture_carrier_optional(&h, "waiting-state-rejection");
+    assert!(matches!(
+        server_result,
+        Err(Error::Transport(tls::Stage::Denied))
+    ));
+    assert!(bytes.is_empty());
+    assert!(waiting.try_recv().is_err());
+    assert_eq!(delivery.test_original_attempts(), 1);
+    drop(delivery);
+    drop(pending);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+}
+
+#[test]
+fn waiting_resource_collect_device_purposes_refuse_before_new_attempt_or_tcp() {
+    for own_home in [false, true] {
+        let h = Homes::new(false);
+        let store = h.empty(0);
+        let local = &h.pair.homes[0];
+        let (listener, mut operation, delivery, work, _) =
+            metadata_capture_work(&h, &store, own_home, Arc::new(AtomicBool::new(false)));
+        let before = operation.diagnostic_snapshot().unwrap();
+        let attempts = operation.test_attempts();
+        let result = operation.collect_waiting();
+        let after = operation.diagnostic_snapshot().unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let pending = listener.accept();
+        capture_carrier_optional(&h, "waiting-device-api-refusal");
+        assert_eq!(result.err(), Some(tls::Stage::Denied));
+        assert_eq!(operation.test_attempts(), attempts);
+        assert_eq!(before.connections, after.connections);
+        assert!(matches!(pending,Err(error) if error.kind()==std::io::ErrorKind::WouldBlock));
+        drop(work);
+        drop(delivery);
+        assert_eq!(local.charged(), 0);
+    }
+}
+
+#[test]
+fn waiting_resource_collect_legacy_only_server_refusal_never_falls_back_or_resubmits() {
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let WaitingResource {
+        listener,
+        mut operation,
+        delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    let before = operation.diagnostic_snapshot().unwrap();
+    let (server_result, client_result) = thread::scope(|scope| {
+        let client = scope.spawn(|| operation.collect_waiting());
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        (session.test_legacy_collect_only(), client.join().unwrap())
+    });
+    let after = operation.diagnostic_snapshot().unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let pending = listener.accept();
+    capture_carrier_optional(&h, "waiting-legacy-only-server");
+    assert!(matches!(
+        server_result,
+        Err(Error::Transport(tls::Stage::Frame))
+    ));
+    assert!(client_result.is_err());
+    assert_eq!(operation.test_attempts(), 2);
+    assert_eq!(after.connections, before.connections + 1);
+    assert_eq!(operation.test_collect_frame()[6], 1);
+    assert!(matches!(pending,Err(error) if error.kind()==std::io::ErrorKind::WouldBlock));
+    drop(work);
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+}
+
+#[test]
+fn waiting_resource_collect_reciprocal_manual_admissions_release_for_real_callbacks() {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let stores = [h.empty(0), h.empty(1)];
+    let bindings = [h.pair.binding(0), h.pair.binding(1)];
+    for (i, store) in stores.iter().enumerate() {
+        h.publish(i, &bindings[i], store);
+    }
+    let a = &h.pair.homes[0];
+    let b = &h.pair.homes[1];
+    let WaitingResource {
+        listener: l0,
+        operation: mut op0,
+        delivery: mut d0,
+        work: w0,
+        record: r0,
+        ..
+    } = waiting_resource(&h, 0, &bindings[0]);
+    let WaitingResource {
+        listener: l1,
+        operation: mut op1,
+        delivery: mut d1,
+        work: w1,
+        record: r1,
+        ..
+    } = waiting_resource(&h, 1, &bindings[1]);
+    let (e0, q0) = mpsc::sync_channel(1);
+    d0.test_observe_waiting_collect(e0);
+    let (e1, q1) = mpsc::sync_channel(1);
+    d1.test_observe_waiting_collect(e1);
+    thread::scope(|scope| {
+        let ep0 = a.endpoint(b);
+        let ep1 = b.endpoint(a);
+        let s0 = &stores[0];
+        let s1 = &stores[1];
+        let worker0 = scope.spawn(move || w0.execute(&ep0, s0));
+        let worker1 = scope.spawn(move || w1.execute(&ep1, s1));
+        // Each incoming admission remains occupied while its real callback is
+        // unserved. These are manual serial admissions, not maintained loops.
+        thread::scope(|iteration| {
+            let client0 = iteration.spawn(|| op0.collect_waiting());
+            let client1 = iteration.spawn(|| op1.collect_waiting());
+            let session0 = a
+                .server(&b.ca.0)
+                .accept_service(&l0, a.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let session1 = b
+                .server(&a.ca.0)
+                .accept_service(&l1, b.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            let collect0 = iteration.spawn(|| session0.collect_delivery(&mut d0));
+            let collect1 = iteration.spawn(|| session1.collect_delivery(&mut d1));
+            for (start, end) in [
+                q0.recv_timeout(Duration::from_secs(2)).unwrap(),
+                q1.recv_timeout(Duration::from_secs(2)).unwrap(),
+            ] {
+                assert!(end <= start + Duration::from_millis(100));
+            }
+            assert!(!collect0.join().unwrap().unwrap());
+            assert!(!collect1.join().unwrap().unwrap());
+            assert!(matches!(
+                client0.join().unwrap().unwrap(),
+                crate::delivery::Collection::Busy
+            ));
+            assert!(matches!(
+                client1.join().unwrap().unwrap(),
+                crate::delivery::Collection::Busy
+            ));
+        });
+        assert!(!a.runtime().state.active.load(Ordering::SeqCst));
+        assert!(!b.runtime().state.active.load(Ordering::SeqCst));
+        assert!(!worker0.is_finished());
+        assert!(!worker1.is_finished());
+        let callback0 = scope.spawn(|| {
+            a.server(&a.ca.0)
+                .accept_service(&a.callback, a.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap()
+                .serve_http_once()
+        });
+        let callback1 = scope.spawn(|| {
+            b.server(&b.ca.0)
+                .accept_service(&b.callback, b.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap()
+                .serve_http_once()
+        });
+        callback0.join().unwrap().unwrap();
+        callback1.join().unwrap().unwrap();
+        worker0.join().unwrap().unwrap();
+        worker1.join().unwrap().unwrap();
+    });
+    for (i, listener, op, delivery) in [(0, &l0, &mut op0, &mut d0), (1, &l1, &mut op1, &mut d1)] {
+        let local = &h.pair.homes[i];
+        let foreign = &h.pair.homes[1 - i];
+        thread::scope(|scope| {
+            let client = scope.spawn(|| op.collect_waiting());
+            let session = local
+                .server(&foreign.ca.0)
+                .accept_service(listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+                .unwrap();
+            assert!(session.collect_delivery(delivery).unwrap());
+            assert_waiting_chunk(client.join().unwrap().unwrap());
+        });
+        assert_eq!(delivery.test_original_attempts(), 4);
+        assert_eq!(op.test_attempts(), 3);
+    }
+    capture_carrier_optional(&h, "waiting-reciprocal-manual");
+    drop(d0);
+    drop(d1);
+    drop(r0);
+    drop(r1);
+}
+
+#[test]
+fn waiting_resource_collect_known_issued_expiry_racing_completion_refuses_output() {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let expiry = tls::wall_now() + 3;
+    retain_synthetic_fixture(
+        &format!("waiting-actual-issued-expiry-{}.txt", std::process::id()),
+        format!("selected_remote_member_expiry={expiry}\n").as_bytes(),
+    );
+    h.install(0, 3, 0, 3, 0, |_| ());
+    let registry = foreign.registry(3, 0, local);
+    let mut entries = registry.bindings().to_vec();
+    entries[0].valid_until = expiry;
+    foreign
+        .runtime()
+        .control()
+        .replace_delegation_policy(
+            crate::authority::Registry::new(3, 0, registry.homes().to_vec(), entries).unwrap(),
+            h.policy(1, 3, 0, |_| ()),
+        )
+        .unwrap();
+    let WaitingResource {
+        listener,
+        endpoint,
+        operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    let mut frame = operation.test_collect_frame();
+    frame[6] = 6;
+    let witness = delivery.test_completion_witness();
+    let completion = witness.hold();
+    let (finish, finishing) = mpsc::sync_channel(1);
+    witness.observe_finish(finish);
+    let (entered, waiting) = mpsc::sync_channel(1);
+    delivery.test_observe_waiting_collect(entered);
+    let (server_result, bytes) = thread::scope(|scope| {
+        let endpoint_http = local.endpoint(foreign);
+        let store_ref = &store;
+        let worker = scope.spawn(move || work.execute(&endpoint_http, store_ref));
+        foreign
+            .server(&foreign.ca.0)
+            .accept_service(
+                &foreign.callback,
+                foreign.runtime(),
+                Arc::new(AtomicBool::new(false)),
+            )
+            .unwrap()
+            .serve_http_once()
+            .unwrap();
+        // The real issued expiry is published before the real finish attempt;
+        // completion is deliberately still blocked on its result-slot mutex.
+        finishing.recv_timeout(Duration::from_secs(2)).unwrap();
+        let client = scope.spawn(|| endpoint.test_exchange(&frame));
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let collector = scope.spawn(|| session.collect_delivery(&mut delivery));
+        let (start, end) = waiting.recv_timeout(Duration::from_secs(2)).unwrap();
+        assert!(end <= start + Duration::from_millis(100));
+        // This witnesses validated entry before the result-slot mutex. The
+        // deliberate test-held slot extends neither source nor token clocks.
+        // Only the condition-wait phase has the existing100ms cap.
+        while tls::wall_now() < expiry {
+            thread::sleep(Duration::from_millis(2));
+        }
+        drop(completion);
+        worker.join().unwrap().unwrap();
+        (collector.join().unwrap(), client.join().unwrap())
+    });
+    capture_carrier_optional(&h, "waiting-issued-expiry-race");
+    drop(witness);
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+    assert!(server_result.is_err());
+    assert!(
+        bytes.is_empty(),
+        "expired real result escaped completion race"
+    );
+}
+
+#[test]
+fn waiting_resource_collect_rechecks_revocation_after_actual_partial_output() {
+    use std::sync::mpsc;
+    let h = Homes::new(false);
+    let store = h.empty(0);
+    let binding = h.pair.binding(0);
+    h.publish(0, &binding, &store);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let WaitingResource {
+        listener,
+        mut operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &binding);
+    thread::scope(|scope| {
+        let callback = scope.spawn(|| {
+            foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap()
+                .serve_http_once()
+        });
+        work.execute(&local.endpoint(foreign), &store).unwrap();
+        callback.join().unwrap().unwrap();
+    });
+    let (server_result, client_result, positive) = thread::scope(|scope| {
+        let client = scope.spawn(|| operation.collect_waiting());
+        let mut incoming = local
+            .server(&foreign.ca.0)
+            .accept_composed(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        let (prefix, partial) = mpsc::channel();
+        let (release, resume) = mpsc::channel();
+        let positive = incoming.observe_service_response_prefix(prefix, resume);
+        let profile =
+            PublicationWireProfile::new(local.name.into(), vec!["observer".into()]).unwrap();
+        let store_ref = &store;
+        let delivery_ref = &mut delivery;
+        let collector = scope
+            .spawn(move || incoming.serve(Some(delivery_ref), store_ref, local.name, &profile));
+        partial.recv_timeout(Duration::from_secs(2)).unwrap();
+        let positive = positive.load(Ordering::SeqCst);
+        h.install(0, 3, 0, 3, 0, |_| ());
+        release.send(()).unwrap();
+        (collector.join().unwrap(), client.join().unwrap(), positive)
+    });
+    capture_carrier_optional(&h, "waiting-partial-output-revocation");
+    drop(delivery);
+    drop(record);
+    assert_eq!(local.charged(), 0);
+    assert!(positive > 0);
+    assert!(server_result.is_err());
+    assert!(
+        client_result.is_err(),
+        "revoked response completed after partial output"
+    );
+}
+
+#[test]
+fn waiting_resource_collect_reuses_the_single_published_binding() {
+    let h = Homes::new(false);
+    let local = &h.pair.homes[0];
+    let foreign = &h.pair.homes[1];
+    let store = h.empty(0);
+    let mut published = h.pair.binding(0);
+    // A valid historical creation instant makes regeneration observably wrong
+    // without waiting, changing the production clock, or extending expiry.
+    published.created -= 1;
+    let prefix = format!("single-binding-control-{}", std::process::id());
+    retain_synthetic_fixture(
+        &format!("{prefix}-published-binding.bin"),
+        &faction_files::private_blobs::encode_request(&Request::Begin(published.clone())).unwrap(),
+    );
+    retain_synthetic_fixture(&format!("{prefix}-empty-store.snapshot"), &h.bytes(0));
+    h.publish(0, &published, &store);
+    retain_synthetic_fixture(&format!("{prefix}-postpublish-store.snapshot"), &h.bytes(0));
+    capture_carrier_optional(&h, "single-binding-published");
+    let WaitingResource {
+        listener,
+        mut operation,
+        mut delivery,
+        work,
+        record,
+        ..
+    } = waiting_resource(&h, 0, &published);
+    let mut frame = operation.test_collect_frame();
+    frame[6] = 6;
+    retain_synthetic_fixture(&format!("{prefix}-actual-collect-frame.bin"), &frame);
+    let (_, _, requested, _) = collect_request_parts(&frame);
+    let (work_result, callback_result) = thread::scope(|scope| {
+        let callback = scope.spawn(|| {
+            foreign
+                .server(&foreign.ca.0)
+                .accept_service(
+                    &foreign.callback,
+                    foreign.runtime(),
+                    Arc::new(AtomicBool::new(false)),
+                )
+                .unwrap()
+                .serve_http_once()
+        });
+        let work_result = work.execute(&local.endpoint(foreign), &store);
+        (work_result, callback.join().unwrap())
+    });
+    retain_synthetic_fixture(
+        &format!("{prefix}-postdispatch-store.snapshot"),
+        &h.bytes(0),
+    );
+    let (server_result, client_result) = thread::scope(|scope| {
+        let client = scope.spawn(|| operation.collect_waiting());
+        let session = local
+            .server(&foreign.ca.0)
+            .accept_service(&listener, local.runtime(), Arc::new(AtomicBool::new(false)))
+            .unwrap();
+        (
+            session.collect_delivery(&mut delivery),
+            client.join().unwrap(),
+        )
+    });
+    capture_carrier_optional(&h, "single-binding-dispatched");
+    let observation = format!(
+        "binding_equal={} same_id={} callback_ok={} work={work_result:?} server={server_result:?} client_stage={:?}\n",
+        requested == published,
+        requested.id == published.id,
+        callback_result.is_ok(),
+        client_result.as_ref().err(),
+    );
+    retain_synthetic_fixture(&format!("{prefix}-observation.txt"), observation.as_bytes());
+    eprint!("single_binding_control {observation}");
+    drop(delivery);
+    drop(record);
+    let charged_after = local.charged();
+    // The real callback, dispatch, snapshots, frame and token capture all precede
+    // judgment; a setup error is not substituted for the observed Store outcome.
+    assert_eq!(charged_after, 0);
+    assert!(
+        callback_result.is_ok(),
+        "actual introspection failed: {callback_result:?}"
+    );
+    assert!(
+        work_result.is_ok(),
+        "single published binding retrieval failed: {work_result:?}"
+    );
+    assert_eq!(
+        requested, published,
+        "fixture regenerated the published binding"
+    );
+    assert!(matches!(server_result, Ok(true)));
+    assert_waiting_chunk(client_result.unwrap());
 }

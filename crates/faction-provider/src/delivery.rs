@@ -4,7 +4,7 @@ use super::*;
 use crate::services::{PendingPublication, PendingRetrieval, ServiceIdentity};
 use faction_files::private_blobs::Binding;
 use std::sync::{
-    Mutex,
+    Condvar, Mutex,
     atomic::{AtomicU64, AtomicUsize},
 };
 const MAGIC: &[u8; 6] = b"FDEL01";
@@ -14,6 +14,7 @@ const SUBMITTED: u8 = 2;
 const BUSY: u8 = 3;
 const RESULT: u8 = 4;
 const REFUSED: u8 = 5;
+const WAIT_COLLECT: u8 = 6;
 #[derive(Clone, PartialEq)]
 pub(crate) enum Peer {
     Device([u8; 32]),
@@ -40,6 +41,13 @@ struct Shared {
     #[cfg(all(test, feature = "durable-policy"))]
     deadline_attempt: Mutex<Option<std::sync::mpsc::SyncSender<(bool, usize)>>>,
     completion: Mutex<Option<Result<Response, Error>>>,
+    completed: Condvar,
+    #[cfg(test)]
+    wait_observer: Mutex<Option<std::sync::mpsc::SyncSender<(Instant, Instant)>>>,
+    #[cfg(test)]
+    finish_observer: Mutex<Option<std::sync::mpsc::SyncSender<()>>>,
+    #[cfg(test)]
+    trace: std::sync::OnceLock<TraceAttachment>,
     finished: AtomicBool,
     consumed: AtomicBool,
     // The actual result and all delivery bookkeeping die before this lease owner.
@@ -95,13 +103,108 @@ impl Shared {
             .map_err(|_| Error::Transport(Stage::Limit))?;
         self.current()
     }
+    // Only this condition wait is capped; existing current-authority lookups
+    // still resample their original absolute clocks after contention.
+    fn wait_completion(
+        &self,
+        session_deadline: Instant,
+        current_session: &mut impl FnMut() -> Result<(), Error>,
+        #[cfg(test)] trace: Option<&collection_trace::Collect<'_>>,
+    ) -> Result<(), Error> {
+        current_session()?;
+        self.current()?;
+        if self.finished.load(Ordering::SeqCst) {
+            #[cfg(test)]
+            if let Some(trace) = trace {
+                trace.already_finished();
+            }
+            return Ok(());
+        }
+        let start = Instant::now();
+        let mut end = (start + CANCEL_SLICE)
+            .min(session_deadline)
+            .min(self.source.deadline);
+        let tight = *self
+            .tight_deadline
+            .lock()
+            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+        end = end.min(tight);
+        // Token lifetime is authoritative only once real introspection publishes
+        // it. Unknown expiry supplies no guessed or client-derived authority.
+        let expires = self.expires.load(Ordering::SeqCst);
+        if expires != 0 {
+            let wall = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Clock))?;
+            let now = Instant::now();
+            let remaining = Duration::from_secs(expires)
+                .saturating_sub(wall)
+                .min(end.saturating_duration_since(now));
+            end = end.min(now + remaining);
+        }
+        #[cfg(test)]
+        if let Some(trace) = trace {
+            trace.bounds(start, end);
+        }
+        #[cfg(test)]
+        if let Some(observer) = self.wait_observer.lock().unwrap().take() {
+            // This witnesses validated entry, never an OS park or exact wake.
+            let _ = observer.try_send((start, end));
+        }
+        loop {
+            current_session()?;
+            self.current()?;
+            let slot = self
+                .completion
+                .lock()
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+            if slot.is_some() {
+                drop(slot);
+                break;
+            }
+            let remaining = end.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                drop(slot);
+                break;
+            }
+            let (slot, _) = self
+                .completed
+                .wait_timeout(slot, remaining)
+                .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+            drop(slot);
+            // No authority/metadata/policy lookup is made under completion.
+        }
+        #[cfg(test)]
+        if let Some(trace) = trace {
+            trace.wait_end();
+        }
+        current_session()?;
+        self.current()
+    }
     fn finish(&self, result: Result<Response, Error>) -> Result<(), Error> {
         let outcome = result.as_ref().map(|_| ()).map_err(|e| *e);
-        *self
+        #[cfg(test)]
+        if let Some(observer) = self.finish_observer.lock().unwrap().take() {
+            let _ = observer.try_send(());
+        }
+        // Both owners hold this mutex only to inspect or move the bounded slot.
+        // Contention with a collector must never discard the actual completion.
+        let mut slot = self
             .completion
-            .try_lock()
-            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))? = Some(result);
+            .lock()
+            .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
+        *slot = Some(result);
+        #[cfg(test)]
+        if let Some(trace) = self.trace.get() {
+            trace.trace.finish_before(trace.role, outcome.is_ok());
+        }
         self.finished.store(true, Ordering::SeqCst);
+        #[cfg(test)]
+        if let Some(trace) = self.trace.get() {
+            trace.trace.finish_after(trace.role, outcome.is_ok());
+        }
+        drop(slot);
+        self.completed.notify_all();
         outcome
     }
 }
@@ -135,6 +238,13 @@ impl Delivery {
                 #[cfg(all(test, feature = "durable-policy"))]
                 deadline_attempt: Mutex::new(None),
                 completion: Mutex::new(None),
+                completed: Condvar::new(),
+                #[cfg(test)]
+                wait_observer: Mutex::new(None),
+                #[cfg(test)]
+                finish_observer: Mutex::new(None),
+                #[cfg(test)]
+                trace: std::sync::OnceLock::new(),
                 finished: AtomicBool::new(false),
                 consumed: AtomicBool::new(false),
             }),
@@ -153,7 +263,7 @@ impl Delivery {
     ) {
         *self.shared.deadline_attempt.lock().unwrap() = Some(entered);
     }
-    #[cfg(all(test, feature = "durable-policy"))]
+    #[cfg(test)]
     pub(crate) fn hold_deadline_metadata(&self) -> std::sync::MutexGuard<'_, Instant> {
         self.shared.tight_deadline.lock().unwrap()
     }
@@ -184,13 +294,17 @@ impl Delivery {
         bytes: &[u8],
         peer: Peer,
         state: &Weak<State>,
+        session_deadline: Option<Instant>,
+        mut current_session: impl FnMut() -> Result<(), Error>,
     ) -> Result<Option<Vec<u8>>, Error> {
         // No authority is inferred from routing data or decoded principals.
         if peer != self.shared.source.peer || !Weak::ptr_eq(state, &self.shared.source.state) {
             return Err(Error::Transport(Stage::Denied));
         }
         let message = Message::decode(bytes)?;
-        if message.kind != COLLECT || message.correlation != self.shared.correlation {
+        if ![COLLECT, WAIT_COLLECT].contains(&message.kind)
+            || message.correlation != self.shared.correlation
+        {
             return Err(Error::Transport(Stage::Denied));
         }
         if message.purpose != self.shared.source.purpose()
@@ -200,13 +314,41 @@ impl Delivery {
         {
             return Err(Error::Transport(Stage::Denied));
         }
+        if message.kind == WAIT_COLLECT
+            && (message.purpose != 2 || !matches!(peer, Peer::Service(..)))
+        {
+            return Err(Error::Transport(Stage::Denied));
+        }
+        #[cfg(test)]
+        let trace = self.shared.trace.get().and_then(|attachment| {
+            attachment.trace.validated(
+                attachment.role,
+                if message.kind == WAIT_COLLECT {
+                    collection_trace::WireKind::Wait
+                } else {
+                    collection_trace::WireKind::Collect
+                },
+            )
+        });
+        if message.kind == WAIT_COLLECT {
+            self.shared.wait_completion(
+                session_deadline.ok_or(Error::Transport(Stage::Denied))?,
+                &mut current_session,
+                #[cfg(test)]
+                trace.as_ref(),
+            )?;
+        }
         if !self.shared.finished.load(Ordering::SeqCst) {
+            #[cfg(test)]
+            if let Some(trace) = &trace {
+                trace.outcome(collection_trace::Outcome::Busy);
+            }
             return Ok(None);
         }
         let mut slot = self
             .shared
             .completion
-            .try_lock()
+            .lock()
             .map_err(|_| Error::Store(faction_files::private_blobs::Error::Busy))?;
         let Some(result) = slot.take() else {
             return Err(Error::Transport(Stage::Denied));
@@ -221,6 +363,14 @@ impl Delivery {
                 response.extend(encode_response(&result).map_err(Error::Store)?);
             }
             Err(_) => response.push(REFUSED),
+        }
+        #[cfg(test)]
+        if let Some(trace) = &trace {
+            trace.outcome(if response[6] == RESULT {
+                collection_trace::Outcome::Result
+            } else {
+                collection_trace::Outcome::Refused
+            });
         }
         Ok(Some(response))
     }
@@ -251,6 +401,13 @@ pub struct RetrievalWork {
 }
 impl RetrievalWork {
     pub fn execute(self, endpoint: &HttpEndpoint, store: &Mutex<Store>) -> Result<(), Error> {
+        #[cfg(test)]
+        let _setup_scope = self.shared.trace.get().map(|attached| {
+            attached
+                .trace
+                .setup
+                .scope(crate::setup_trace::Role::Resource)
+        });
         let result = self
             .shared
             .charge()
@@ -297,7 +454,10 @@ impl Message {
         }
         let kind = bytes[6];
         let purpose = bytes[7];
-        if ![SUBMIT, COLLECT].contains(&kind) || ![1, 2, 3].contains(&purpose) {
+        if ![SUBMIT, COLLECT, WAIT_COLLECT].contains(&kind)
+            || ![1, 2, 3].contains(&purpose)
+            || (kind == WAIT_COLLECT && purpose != 2)
+        {
             return Err(frame());
         }
         let correlation = bytes[8..40].try_into().map_err(|_| frame())?;
@@ -382,7 +542,7 @@ impl Session {
             let bytes = read_frame(&mut self.stream)
                 .map_err(|s| Error::Transport(classify(self.deadline, &guard.source.cancel, s)))?
                 .ok_or(Error::Transport(Stage::Frame))?;
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let reply = delivery.collect(&bytes, peer, &self.state, None, || Ok(()))?;
             self.write_delivery(reply, guard.clone())
         })();
         drop(self);
@@ -452,7 +612,15 @@ impl ServiceSession {
                 .map_err(|s| Error::Transport(classify(self.deadline, &guard.source.cancel, s)))?
                 .ok_or(Error::Transport(Stage::Frame))?;
             let peer = Peer::Service(self.credential.digest, self.credential.identity.clone());
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let state = self
+                .state
+                .upgrade()
+                .ok_or(Error::Transport(Stage::Denied))?;
+            let source_state = self.state.clone();
+            let deadline = self.deadline;
+            let reply = delivery.collect(&bytes, peer, &source_state, Some(deadline), || {
+                self.issuer_check(&state)
+            })?;
             let ready = reply.is_some();
             let reply = reply.unwrap_or_else(|| {
                 let mut b = MAGIC.to_vec();
@@ -559,8 +727,20 @@ impl CarrierEndpoint {
         });
         admission.current_probe = Some(probe.clone());
         let handshake = (admission.start + HANDSHAKE_LIMIT).min(deadline);
+        #[cfg(test)]
+        {
+            admission.setup_trace =
+                crate::setup_trace::Connection::begin(crate::setup_trace::Kind::Binary);
+        }
+        #[cfg(test)]
+        let setup_tcp = admission
+            .setup_trace
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::Tcp, 0));
         let socket =
             super::tcp_connect::connect(&self.address, handshake, &admission.cancel, || probe())?;
+        #[cfg(test)]
+        crate::setup_trace::Interval::finish_optional(setup_tcp);
         socket.set_nodelay(true).map_err(|_| Stage::Configuration)?;
         admission.connect(socket)
     }
@@ -752,7 +932,17 @@ impl Operation {
     /// remain authoritative; this method does not retry or guarantee completion.
     /// It owns no socket or Session while waiting. `collect` remains immediate.
     pub fn collect_paced(&mut self) -> Result<Collection, Stage> {
+        #[cfg(test)]
+        let setup_wait = crate::setup_trace::Connection::begin(crate::setup_trace::Kind::Paced);
+        #[cfg(test)]
+        let setup_interval = setup_wait
+            .as_ref()
+            .map(|trace| trace.interval(crate::setup_trace::Phase::PacedWait, 0));
         self.wait_for_collect()?;
+        #[cfg(test)]
+        if let Some(interval) = setup_interval {
+            interval.finish();
+        }
         self.collect()
     }
     pub fn submit_publication(&mut self, binding: Binding, request: Request) -> Result<(), Stage> {
@@ -817,14 +1007,31 @@ impl Operation {
         self.diagnostic_phase(DiagnosticPhase::Idle);
         Ok(())
     }
+    /// Explicitly wait at a service-purpose2 resource for at most one server
+    /// cancellation slice. A refusal from an older server fails closed; this
+    /// call never falls back, resubmits, retries or renews the original window.
+    pub fn collect_waiting(&mut self) -> Result<Collection, Stage> {
+        if self
+            .ticket
+            .as_ref()
+            .is_none_or(|ticket| ticket.purpose != 2)
+        {
+            return Err(Stage::Denied);
+        }
+        self.collect_kind(WAIT_COLLECT)
+    }
     pub fn collect(&mut self) -> Result<Collection, Stage> {
+        self.collect_kind(COLLECT)
+    }
+    fn collect_kind(&mut self, kind: u8) -> Result<Collection, Stage> {
         self.charge()?;
-        let bytes = self
+        let mut bytes = self
             .ticket
             .as_ref()
             .ok_or(Stage::Denied)?
             .encode()
             .map_err(|_| Stage::Frame)?;
+        bytes[6] = kind;
         let roundtrip = Instant::now();
         self.diagnostic_connect(DiagnosticPhase::CollectConnect);
         let mut client = self.endpoint.connect(
@@ -1092,6 +1299,13 @@ impl Work {
 }
 impl OwnHomeWork {
     fn execute(self, routes: &RelayRoutes) -> Result<(), Error> {
+        #[cfg(test)]
+        let _setup_scope = self.shared.trace.get().map(|attached| {
+            attached
+                .trace
+                .setup
+                .scope(crate::setup_trace::Role::OwnHome)
+        });
         let result = (|| {
             self.shared.charge()?;
             let state = self
@@ -1149,6 +1363,10 @@ impl OwnHomeWork {
                     probe,
                 )
                 .map_err(Error::Transport)?;
+            #[cfg(test)]
+            if let Some(trace) = self.shared.trace.get() {
+                trace.trace.issue_success();
+            }
             *self
                 .shared
                 .tight_deadline
@@ -1183,10 +1401,12 @@ impl OwnHomeWork {
                     token,
                 )
                 .map_err(Error::Transport)?;
-            for _ in 0..MAX_OPERATIONS {
-                operation.wait_for_collect().map_err(Error::Transport)?;
+            for number in 0..MAX_OPERATIONS {
+                if number != 0 {
+                    operation.wait_for_collect().map_err(Error::Transport)?;
+                }
                 self.shared.charge()?;
-                match operation.collect().map_err(Error::Transport)? {
+                match operation.collect_waiting().map_err(Error::Transport)? {
                     Collection::Complete(response) => {
                         self.shared.current()?;
                         return Ok(response);
@@ -1244,7 +1464,7 @@ impl Incoming {
     ) {
         self.service_purpose_attempt = Some(entered);
     }
-    #[cfg(all(test, feature = "durable-policy"))]
+    #[cfg(test)]
     pub(crate) fn observe_service_response_prefix(
         &mut self,
         entered: std::sync::mpsc::Sender<Instant>,
@@ -1430,6 +1650,8 @@ impl Session {
             let probe = d.shared.clone();
             self.stream.get_mut().policy_probe = Some(Arc::new(move || probe.current().is_ok()));
         }
+        #[cfg(test)]
+        FrameObservation::phase(FramePhase::InitialRead);
         let bytes = read_frame(&mut self.stream)
             .map_err(|s| Error::Transport(classify(self.deadline, &self.cancel, s)))?
             .ok_or(Error::Transport(Stage::Frame))?;
@@ -1440,6 +1662,8 @@ impl Session {
             let mut bytes = bytes;
             let mut state = state;
             loop {
+                #[cfg(test)]
+                FrameObservation::phase(FramePhase::DecodeDispatch);
                 if bytes.starts_with(MAGIC) {
                     return Err(Error::Transport(Stage::Denied));
                 }
@@ -1454,6 +1678,8 @@ impl Session {
                     request,
                 )?;
                 drop(guard);
+                #[cfg(test)]
+                FrameObservation::phase(FramePhase::ResponseWrite);
                 write_frame(
                     &mut self.stream,
                     &encode_response(&response).map_err(Error::Store)?,
@@ -1467,6 +1693,8 @@ impl Session {
                         return Err(Error::Transport(Stage::Limit));
                     }
                 }
+                #[cfg(test)]
+                FrameObservation::phase(FramePhase::NextRead);
                 let Some(next) = read_frame(&mut self.stream)
                     .map_err(|s| Error::Transport(classify(self.deadline, &self.cancel, s)))?
                 else {
@@ -1481,13 +1709,16 @@ impl Session {
             }
         }
         let message = Message::decode(&bytes)?;
+        if message.kind == WAIT_COLLECT {
+            return Err(Error::Transport(Stage::Denied));
+        }
         if message.kind == COLLECT {
             let delivery = pending.ok_or(Error::Transport(Stage::Denied))?;
             if !charged {
                 delivery.begin_collect(&peer, &self.state)?;
             }
             let guard = delivery.shared.clone();
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let reply = delivery.collect(&bytes, peer, &self.state, None, || Ok(()))?;
             let result = self.write_delivery(reply, guard.clone());
             drop(self);
             drop(guard);
@@ -1538,13 +1769,17 @@ impl ServiceSession {
             .map_err(|s| Error::Transport(classify(self.deadline, &self.cancel, s)))?
             .ok_or(Error::Transport(Stage::Frame))?;
         let message = Message::decode(&bytes)?;
-        if message.kind == COLLECT {
+        if [COLLECT, WAIT_COLLECT].contains(&message.kind) {
             let delivery = pending.ok_or(Error::Transport(Stage::Denied))?;
             if !charged {
                 delivery.begin_collect(&peer, &self.state)?;
             }
             let guard = delivery.shared.clone();
-            let reply = delivery.collect(&bytes, peer, &self.state)?;
+            let source_state = self.state.clone();
+            let deadline = self.deadline;
+            let reply = delivery.collect(&bytes, peer, &source_state, Some(deadline), || {
+                self.issuer_check(&state)
+            })?;
             let ready = reply.is_some();
             let reply = reply.unwrap_or_else(|| {
                 let mut b = MAGIC.to_vec();
@@ -1642,5 +1877,777 @@ impl CarrierEndpoint {
             }
         }
         received
+    }
+}
+
+// Test witnesses expose only contention/notification, never fabricated results.
+#[cfg(test)]
+pub(crate) struct CompletionWitness {
+    shared: Arc<Shared>,
+}
+#[cfg(test)]
+impl CompletionWitness {
+    pub(crate) fn hold(&self) -> std::sync::MutexGuard<'_, Option<Result<Response, Error>>> {
+        self.shared.completion.lock().unwrap()
+    }
+    pub(crate) fn notify_spurious(&self) {
+        self.shared.completed.notify_all();
+    }
+    pub(crate) fn observe_finish(&self, observer: std::sync::mpsc::SyncSender<()>) {
+        *self.shared.finish_observer.lock().unwrap() = Some(observer);
+    }
+}
+#[cfg(test)]
+impl Delivery {
+    pub(crate) fn test_completion_witness(&self) -> CompletionWitness {
+        CompletionWitness {
+            shared: self.shared.clone(),
+        }
+    }
+    pub(crate) fn test_observe_waiting_collect(
+        &self,
+        observer: std::sync::mpsc::SyncSender<(Instant, Instant)>,
+    ) {
+        *self.shared.wait_observer.lock().unwrap() = Some(observer);
+    }
+}
+
+#[cfg(test)]
+impl ServiceSession {
+    // Emulate the previous decoder's supported-kind boundary over real mTLS.
+    // This is not an executed historical server or interoperability evidence.
+    pub(crate) fn test_legacy_collect_only(mut self) -> Result<(), Error> {
+        self.issuer_attempt()?;
+        let bytes = read_frame(&mut self.stream)
+            .map_err(Error::Transport)?
+            .ok_or(Error::Transport(Stage::Frame))?;
+        assert!(bytes.starts_with(MAGIC));
+        assert_eq!(
+            bytes.get(6),
+            Some(&WAIT_COLLECT),
+            "test did not send actual opt-in wire kind6"
+        );
+        if ![SUBMIT, COLLECT].contains(&bytes[6]) {
+            return Err(Error::Transport(Stage::Frame));
+        }
+        Message::decode(&bytes)?;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+struct TraceAttachment {
+    trace: Arc<collection_trace::Trace>,
+    role: collection_trace::Role,
+}
+#[cfg(test)]
+fn trace_get_request_matches(binding_id: &[u8; 32], request: &Request) -> bool {
+    matches!(request, Request::GetChunk { id, offset: 0 } if id == binding_id)
+}
+#[cfg(all(test, feature = "operator"))]
+impl Delivery {
+    pub(crate) fn test_attach_collection_trace(&mut self, trace: Arc<collection_trace::Trace>) {
+        let role = match (&self.shared.source.peer, self.shared.source.purpose) {
+            (Peer::Device(_), 3) => collection_trace::Role::Outer,
+            (Peer::Service(..), 2) => collection_trace::Role::Inner,
+            _ => return,
+        };
+        if !trace_get_request_matches(&self.shared.source.binding.id, &self.shared.source.request) {
+            trace.invalid();
+            return;
+        }
+        if self
+            .shared
+            .trace
+            .set(TraceAttachment {
+                trace: trace.clone(),
+                role,
+            })
+            .is_err()
+        {
+            trace.invalid();
+        } else {
+            trace.attached(role);
+        }
+    }
+}
+
+// Test-owned numeric chronology only. It retains no delivery, authority, token,
+// Session or lease. The fixed atomics never send, allocate or wait while recording.
+#[cfg(test)]
+pub(crate) mod collection_trace {
+    use super::*;
+    use std::cell::Cell;
+    const CAPACITY: usize = 64;
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    #[repr(u8)]
+    pub(crate) enum Role {
+        Outer,
+        Inner,
+    }
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    #[repr(u8)]
+    pub(crate) enum WireKind {
+        None,
+        Collect,
+        Wait,
+    }
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    #[repr(u8)]
+    pub(crate) enum Event {
+        Validated,
+        // Computed permitted condition-wait window, not a Condvar park interval.
+        WaitBounds,
+        WaitEnd,
+        AlreadyFinished,
+        // Reply decision before socket output; transport success is independent.
+        Outcome,
+        IssueSuccess,
+        FinishBefore,
+        FinishAfter,
+    }
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    #[repr(u8)]
+    pub(crate) enum Outcome {
+        None,
+        Busy,
+        Result,
+        Refused,
+        Error,
+    }
+    struct Slot {
+        ready: AtomicBool,
+        tag: AtomicU64,
+        micros: AtomicU64,
+        first_us: AtomicU64,
+        last_us: AtomicU64,
+    }
+    impl Slot {
+        fn new() -> Self {
+            Self {
+                ready: AtomicBool::new(false),
+                tag: AtomicU64::new(0),
+                micros: AtomicU64::new(0),
+                first_us: AtomicU64::new(0),
+                last_us: AtomicU64::new(0),
+            }
+        }
+    }
+    pub(crate) struct Trace {
+        origin: Instant,
+        pub(crate) setup: Arc<crate::setup_trace::Trace>,
+        enabled: AtomicBool,
+        bad: AtomicBool,
+        attached: AtomicUsize,
+        next: AtomicUsize,
+        attempts: [AtomicUsize; 2],
+        slots: [Slot; CAPACITY],
+    }
+    #[derive(Clone, Debug)]
+    pub(crate) struct Point {
+        // Atomic slot reservation order, not a cross-thread clock order.
+        pub(crate) sequence: usize,
+        pub(crate) micros: u64,
+        pub(crate) role: Role,
+        pub(crate) kind: WireKind,
+        pub(crate) attempt: usize,
+        pub(crate) event: Event,
+        pub(crate) outcome: Outcome,
+        pub(crate) first_us: u64,
+        pub(crate) last_us: u64,
+    }
+    #[derive(Debug)]
+    pub(crate) struct Snapshot {
+        pub(crate) points: Vec<Point>,
+        pub(crate) inconclusive: bool,
+    }
+    impl Trace {
+        pub(crate) fn new(origin: Instant) -> Arc<Self> {
+            Arc::new(Self {
+                origin,
+                setup: crate::setup_trace::Trace::new(origin),
+                enabled: AtomicBool::new(false),
+                bad: AtomicBool::new(false),
+                attached: AtomicUsize::new(0),
+                next: AtomicUsize::new(0),
+                attempts: std::array::from_fn(|_| AtomicUsize::new(0)),
+                slots: std::array::from_fn(|_| Slot::new()),
+            })
+        }
+        pub(crate) fn arm(&self) {
+            self.enabled.store(true, Ordering::SeqCst);
+            self.setup.arm();
+        }
+        pub(super) fn invalid(&self) {
+            self.bad.store(true, Ordering::SeqCst);
+        }
+        pub(crate) fn attached(&self, role: Role) {
+            if self.attached.fetch_or(1 << role as usize, Ordering::SeqCst) & (1 << role as usize)
+                != 0
+            {
+                self.invalid();
+            }
+        }
+        fn micros(&self, at: Instant) -> u64 {
+            at.saturating_duration_since(self.origin)
+                .as_micros()
+                .try_into()
+                .unwrap_or(u64::MAX)
+        }
+        fn emit(
+            &self,
+            role: Role,
+            kind: WireKind,
+            attempt: usize,
+            event: Event,
+            outcome: Outcome,
+            bounds: Option<(Instant, Instant)>,
+        ) {
+            if !self.enabled.load(Ordering::SeqCst) {
+                return;
+            }
+            let stamp = Instant::now();
+            let Ok(index) = self
+                .next
+                .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |n| {
+                    (n < CAPACITY).then_some(n + 1)
+                })
+            else {
+                self.invalid();
+                return;
+            };
+            let slot = &self.slots[index];
+            let tag = role as u64
+                | ((kind as u64) << 8)
+                | ((event as u64) << 16)
+                | ((attempt as u64) << 24)
+                | ((outcome as u64) << 32);
+            slot.tag.store(tag, Ordering::Relaxed);
+            slot.micros.store(self.micros(stamp), Ordering::Relaxed);
+            if let Some((first, last)) = bounds {
+                slot.first_us.store(self.micros(first), Ordering::Relaxed);
+                slot.last_us.store(self.micros(last), Ordering::Relaxed);
+            }
+            slot.ready.store(true, Ordering::Release);
+        }
+        pub(crate) fn validated(&self, role: Role, kind: WireKind) -> Option<Collect<'_>> {
+            if !self.enabled.load(Ordering::SeqCst) {
+                return None;
+            }
+            let Ok(attempt) = self.attempts[role as usize].fetch_update(
+                Ordering::SeqCst,
+                Ordering::SeqCst,
+                |n| (n < 8).then_some(n + 1),
+            ) else {
+                self.invalid();
+                return None;
+            };
+            self.emit(role, kind, attempt, Event::Validated, Outcome::None, None);
+            Some(Collect {
+                trace: self,
+                role,
+                kind,
+                attempt,
+                completed: Cell::new(false),
+            })
+        }
+        pub(crate) fn issue_success(&self) {
+            self.emit(
+                Role::Outer,
+                WireKind::None,
+                0,
+                Event::IssueSuccess,
+                Outcome::Result,
+                None,
+            );
+        }
+        pub(crate) fn finish_before(&self, role: Role, success: bool) {
+            self.emit(
+                role,
+                WireKind::None,
+                0,
+                Event::FinishBefore,
+                if success {
+                    Outcome::Result
+                } else {
+                    Outcome::Error
+                },
+                None,
+            );
+        }
+        pub(crate) fn finish_after(&self, role: Role, success: bool) {
+            self.emit(
+                role,
+                WireKind::None,
+                0,
+                Event::FinishAfter,
+                if success {
+                    Outcome::Result
+                } else {
+                    Outcome::Error
+                },
+                None,
+            );
+        }
+        pub(crate) fn snapshot(&self) -> Snapshot {
+            let mut points = Vec::with_capacity(CAPACITY);
+            let mut bad = self.bad.load(Ordering::SeqCst);
+            for (index, slot) in self.slots[..self.next.load(Ordering::SeqCst)]
+                .iter()
+                .enumerate()
+            {
+                if !slot.ready.load(Ordering::Acquire) {
+                    bad = true;
+                    continue;
+                }
+                let t = slot.tag.load(Ordering::Relaxed);
+                let role = [Role::Outer, Role::Inner][(t & 255) as usize];
+                let kind =
+                    [WireKind::None, WireKind::Collect, WireKind::Wait][((t >> 8) & 255) as usize];
+                let event = [
+                    Event::Validated,
+                    Event::WaitBounds,
+                    Event::WaitEnd,
+                    Event::AlreadyFinished,
+                    Event::Outcome,
+                    Event::IssueSuccess,
+                    Event::FinishBefore,
+                    Event::FinishAfter,
+                ][((t >> 16) & 255) as usize];
+                let outcome = [
+                    Outcome::None,
+                    Outcome::Busy,
+                    Outcome::Result,
+                    Outcome::Refused,
+                    Outcome::Error,
+                ][((t >> 32) & 255) as usize];
+                points.push(Point {
+                    sequence: index + 1,
+                    micros: slot.micros.load(Ordering::Relaxed),
+                    role,
+                    kind,
+                    attempt: ((t >> 24) & 255) as usize,
+                    event,
+                    outcome,
+                    first_us: slot.first_us.load(Ordering::Relaxed),
+                    last_us: slot.last_us.load(Ordering::Relaxed),
+                });
+            }
+            let registered = self.attached.load(Ordering::SeqCst);
+            let mut states = [[0u8; 8]; 2];
+            let mut kinds = [[WireKind::None; 8]; 2];
+            let mut finish = [0u8; 2];
+            let mut finish_start = [0u64; 2];
+            let mut finish_result = [Outcome::None; 2];
+            let mut issues = 0usize;
+            for p in &points {
+                let r = p.role as usize;
+                if matches!(p.event, Event::FinishBefore | Event::FinishAfter)
+                    && p.outcome != Outcome::Result
+                {
+                    bad = true;
+                }
+                if p.event == Event::Outcome
+                    && !matches!(p.outcome, Outcome::Busy | Outcome::Result)
+                {
+                    bad = true;
+                }
+                if registered & (1 << r) == 0 {
+                    bad = true;
+                }
+                match p.event {
+                    Event::IssueSuccess => {
+                        issues += 1;
+                        if p.role != Role::Outer {
+                            bad = true;
+                        }
+                    }
+                    Event::FinishBefore => {
+                        if finish[r] != 0 {
+                            bad = true;
+                        }
+                        finish[r] = 1;
+                        finish_start[r] = p.micros;
+                        finish_result[r] = p.outcome;
+                    }
+                    Event::FinishAfter => {
+                        if finish[r] != 1
+                            || p.micros < finish_start[r]
+                            || p.outcome != finish_result[r]
+                        {
+                            bad = true;
+                        }
+                        finish[r] = 2;
+                    }
+                    _ => {
+                        if p.attempt >= 8 {
+                            bad = true;
+                            continue;
+                        }
+                        let state = &mut states[r][p.attempt];
+                        if p.event != Event::Validated && kinds[r][p.attempt] != p.kind {
+                            bad = true;
+                        }
+                        if p.role == Role::Outer && p.kind != WireKind::Collect {
+                            bad = true;
+                        }
+                        match p.event {
+                            Event::Validated if *state == 0 && p.kind != WireKind::None => {
+                                *state = 1;
+                                kinds[r][p.attempt] = p.kind;
+                            }
+                            Event::WaitBounds
+                                if *state == 1
+                                    && p.kind == WireKind::Wait
+                                    && p.first_us <= p.last_us
+                                    && p.last_us - p.first_us <= 100_000 =>
+                            {
+                                *state = 2
+                            }
+                            Event::WaitEnd if *state == 2 => *state = 3,
+                            Event::AlreadyFinished if *state == 1 && p.kind == WireKind::Wait => {
+                                *state = 3
+                            }
+                            Event::Outcome
+                                if (*state == 1 && p.kind == WireKind::Collect)
+                                    || (*state == 3 && p.kind == WireKind::Wait) =>
+                            {
+                                *state = 4
+                            }
+                            _ => bad = true,
+                        }
+                    }
+                }
+            }
+            if self.enabled.load(Ordering::SeqCst) {
+                if registered == 0 {
+                    bad = true;
+                }
+                for r in 0..2 {
+                    if registered & (1 << r) != 0 {
+                        let n = self.attempts[r].load(Ordering::SeqCst);
+                        if n == 0 || finish[r] != 2 || states[r][..n].iter().any(|&s| s != 4) {
+                            bad = true;
+                        }
+                    }
+                }
+                if issues != usize::from(registered & 1 != 0) {
+                    bad = true;
+                }
+            }
+            Snapshot {
+                points,
+                inconclusive: bad,
+            }
+        }
+    }
+    pub(crate) struct Collect<'a> {
+        trace: &'a Trace,
+        role: Role,
+        kind: WireKind,
+        attempt: usize,
+        completed: Cell<bool>,
+    }
+    impl Collect<'_> {
+        pub(crate) fn bounds(&self, start: Instant, end: Instant) {
+            self.trace.emit(
+                self.role,
+                self.kind,
+                self.attempt,
+                Event::WaitBounds,
+                Outcome::None,
+                Some((start, end)),
+            );
+        }
+        pub(crate) fn wait_end(&self) {
+            self.trace.emit(
+                self.role,
+                self.kind,
+                self.attempt,
+                Event::WaitEnd,
+                Outcome::None,
+                None,
+            );
+        }
+        pub(crate) fn already_finished(&self) {
+            self.trace.emit(
+                self.role,
+                self.kind,
+                self.attempt,
+                Event::AlreadyFinished,
+                Outcome::None,
+                None,
+            );
+        }
+        pub(crate) fn outcome(&self, outcome: Outcome) {
+            if self.completed.replace(true) {
+                self.trace.invalid();
+                return;
+            }
+            self.trace.emit(
+                self.role,
+                self.kind,
+                self.attempt,
+                Event::Outcome,
+                outcome,
+                None,
+            );
+        }
+    }
+    impl Drop for Collect<'_> {
+        fn drop(&mut self) {
+            if !self.completed.get() {
+                self.trace.invalid();
+                self.trace.emit(
+                    self.role,
+                    self.kind,
+                    self.attempt,
+                    Event::Outcome,
+                    Outcome::Error,
+                    None,
+                );
+            }
+        }
+    }
+    #[cfg(test)]
+    mod controls {
+        use super::*;
+        fn retain(name: &str, snapshot: &Snapshot) {
+            use std::{io::Write, os::unix::fs::OpenOptionsExt};
+            if let Some(root) = std::env::var_os("FACTION318_CAPTURE_DIR") {
+                std::fs::OpenOptions::new()
+                    .create_new(true)
+                    .write(true)
+                    .mode(0o600)
+                    .open(std::path::Path::new(&root).join(name))
+                    .unwrap()
+                    .write_all(format!("{snapshot:?}\n").as_bytes())
+                    .unwrap();
+            }
+        }
+        fn complete_outer(trace: &Trace) {
+            trace.attached(Role::Outer);
+            trace.issue_success();
+            trace
+                .validated(Role::Outer, WireKind::Collect)
+                .unwrap()
+                .outcome(Outcome::Busy);
+            trace.finish_before(Role::Outer, true);
+            trace.finish_after(Role::Outer, true);
+        }
+        #[test]
+        fn collection_trace_controls_disabled_enabled_and_no_self_retention() {
+            let trace = Trace::new(Instant::now());
+            trace.issue_success();
+            trace.finish_before(Role::Outer, true);
+            trace.finish_after(Role::Outer, true);
+            let disabled = trace.snapshot();
+            retain("trace-disabled.txt", &disabled);
+            assert!(disabled.points.is_empty());
+            assert!(!disabled.inconclusive);
+            trace.arm();
+            complete_outer(&trace);
+            let enabled = trace.snapshot();
+            retain("trace-enabled.txt", &enabled);
+            assert!(!enabled.inconclusive);
+            assert_eq!(enabled.points.len(), 5);
+            let weak = Arc::downgrade(&trace);
+            drop(trace);
+            assert!(weak.upgrade().is_none());
+        }
+        #[test]
+        fn collection_trace_controls_wait_order_bounds_and_already_finished() {
+            let origin = Instant::now();
+            let trace = Trace::new(origin);
+            trace.arm();
+            trace.attached(Role::Inner);
+            let collect = trace.validated(Role::Inner, WireKind::Wait).unwrap();
+            collect.bounds(origin, origin + CANCEL_SLICE);
+            collect.wait_end();
+            collect.outcome(Outcome::Busy);
+            let ready = trace.validated(Role::Inner, WireKind::Wait).unwrap();
+            ready.already_finished();
+            ready.outcome(Outcome::Result);
+            trace.finish_before(Role::Inner, true);
+            trace.finish_after(Role::Inner, true);
+            let snapshot = trace.snapshot();
+            retain("trace-order-bounds.txt", &snapshot);
+            assert!(!snapshot.inconclusive);
+            assert_eq!(
+                snapshot.points.iter().map(|p| p.event).collect::<Vec<_>>(),
+                vec![
+                    Event::Validated,
+                    Event::WaitBounds,
+                    Event::WaitEnd,
+                    Event::Outcome,
+                    Event::Validated,
+                    Event::AlreadyFinished,
+                    Event::Outcome,
+                    Event::FinishBefore,
+                    Event::FinishAfter
+                ]
+            );
+            assert_eq!(snapshot.points[1].first_us, 0);
+            assert_eq!(snapshot.points[1].last_us, CANCEL_SLICE.as_micros() as u64);
+            assert!(
+                snapshot
+                    .points
+                    .windows(2)
+                    .all(|w| w[0].sequence + 1 == w[1].sequence)
+            );
+        }
+        #[test]
+        fn collection_trace_controls_missing_duplicate_and_order_are_inconclusive() {
+            let missing = Trace::new(Instant::now());
+            missing.arm();
+            missing.attached(Role::Inner);
+            drop(missing.validated(Role::Inner, WireKind::Wait));
+            let snapshot = missing.snapshot();
+            retain("trace-missing.txt", &snapshot);
+            assert!(snapshot.inconclusive);
+            let duplicate = Trace::new(Instant::now());
+            duplicate.arm();
+            complete_outer(&duplicate);
+            duplicate.attached(Role::Outer);
+            let snapshot = duplicate.snapshot();
+            retain("trace-duplicate.txt", &snapshot);
+            assert!(snapshot.inconclusive);
+            let order = Trace::new(Instant::now());
+            order.arm();
+            order.attached(Role::Inner);
+            let collect = order.validated(Role::Inner, WireKind::Wait).unwrap();
+            collect.wait_end();
+            collect.already_finished();
+            collect.outcome(Outcome::Result);
+            order.finish_before(Role::Inner, true);
+            order.finish_after(Role::Inner, true);
+            let snapshot = order.snapshot();
+            retain("trace-invalid-order.txt", &snapshot);
+            assert!(snapshot.inconclusive);
+        }
+        #[test]
+        fn collection_trace_controls_attempt_and_event_overflow_are_bounded() {
+            let trace = Trace::new(Instant::now());
+            trace.arm();
+            trace.attached(Role::Outer);
+            trace.issue_success();
+            for _ in 0..8 {
+                trace
+                    .validated(Role::Outer, WireKind::Collect)
+                    .unwrap()
+                    .outcome(Outcome::Busy);
+            }
+            assert!(trace.validated(Role::Outer, WireKind::Collect).is_none());
+            trace.finish_before(Role::Outer, false);
+            trace.finish_after(Role::Outer, false);
+            let snapshot = trace.snapshot();
+            retain("trace-attempt-overflow.txt", &snapshot);
+            assert!(snapshot.inconclusive);
+            assert_eq!(snapshot.points.len(), 19);
+            let trace = Trace::new(Instant::now());
+            trace.arm();
+            trace.attached(Role::Inner);
+            for _ in 0..=CAPACITY {
+                trace.finish_before(Role::Inner, true);
+            }
+            let snapshot = trace.snapshot();
+            retain("trace-event-overflow.txt", &snapshot);
+            assert!(snapshot.inconclusive);
+            assert_eq!(snapshot.points.len(), CAPACITY);
+        }
+        #[test]
+        fn collection_trace_controls_numeric_snapshot_has_no_payload_or_identity_fields() {
+            let private_token = "TRACE_PRIVATE_TOKEN_SENTINEL";
+            let private_payload = "TRACE_PRIVATE_PAYLOAD_SENTINEL";
+            let trace = Trace::new(Instant::now());
+            trace.arm();
+            complete_outer(&trace);
+            let snapshot = trace.snapshot();
+            retain("trace-privacy.txt", &snapshot);
+            let text = format!("{snapshot:?}");
+            assert!(!text.contains(private_token));
+            assert!(!text.contains(private_payload));
+            assert!(!snapshot.inconclusive);
+            assert_eq!(
+                std::mem::size_of_val(&trace.slots),
+                std::mem::size_of::<Slot>() * CAPACITY
+            );
+        }
+
+        #[test]
+        fn collection_trace_controls_review_failed_finish_and_terminal_outcomes() {
+            let cases = [
+                (Outcome::Result, false),
+                (Outcome::Busy, false),
+                (Outcome::Refused, true),
+                (Outcome::Error, true),
+                (Outcome::None, true),
+                (Outcome::Refused, false),
+                (Outcome::Error, false),
+            ];
+            let mut observed = Vec::new();
+            for (index, (outcome, success)) in cases.into_iter().enumerate() {
+                let trace = Trace::new(Instant::now());
+                trace.arm();
+                trace.attached(Role::Outer);
+                trace.issue_success();
+                trace
+                    .validated(Role::Outer, WireKind::Collect)
+                    .unwrap()
+                    .outcome(outcome);
+                trace.finish_before(Role::Outer, success);
+                trace.finish_after(Role::Outer, success);
+                let snapshot = trace.snapshot();
+                retain(&format!("trace-review-outcome-{index}.txt"), &snapshot);
+                observed.push((outcome, success, snapshot.inconclusive));
+            }
+            assert!(
+                observed.iter().all(|(_, _, bad)| *bad),
+                "failed or empty metadata must be inconclusive: {observed:?}"
+            );
+        }
+        #[test]
+        fn collection_trace_controls_review_exact_planned_get_request_guard() {
+            use std::{io::Write, os::unix::fs::OpenOptionsExt};
+            let id = [37; 32];
+            let requests = [
+                Request::GetChunk { id, offset: 0 },
+                Request::Status { id },
+                Request::GetChunk {
+                    id: [38; 32],
+                    offset: 0,
+                },
+                Request::GetChunk { id, offset: 1 },
+            ];
+            let observed = requests
+                .iter()
+                .map(|request| trace_get_request_matches(&id, request))
+                .collect::<Vec<_>>();
+            if let Some(root) = std::env::var_os("FACTION318_CAPTURE_DIR") {
+                for (index, request) in requests.iter().enumerate() {
+                    let bytes = encode_request(request).unwrap();
+                    std::fs::OpenOptions::new()
+                        .create_new(true)
+                        .write(true)
+                        .mode(0o600)
+                        .open(
+                            std::path::Path::new(&root)
+                                .join(format!("trace-review-guard-request-{index}.bin")),
+                        )
+                        .unwrap()
+                        .write_all(&bytes)
+                        .unwrap();
+                }
+                std::fs::OpenOptions::new()
+                    .create_new(true)
+                    .write(true)
+                    .mode(0o600)
+                    .open(std::path::Path::new(&root).join("trace-review-guard-results.txt"))
+                    .unwrap()
+                    .write_all(format!("{observed:?}\n").as_bytes())
+                    .unwrap();
+            }
+            assert_eq!(observed, vec![true, false, false, false]);
+        }
     }
 }

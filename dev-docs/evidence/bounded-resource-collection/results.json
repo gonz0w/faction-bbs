@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "issue": 326,
+  "base_commit": "c8cd988ff027ea603686d4ee618d2dbc752773b8",
+  "scope": "Retained controlled collector observations; not historical Linux attribution or general reliability proof",
+  "source_objects": {
+    "baseline-delivery": {
+      "path": "sources/baseline-delivery.rs",
+      "sha256": "bff1d2bf92c423aa9f7bf861daba45305c8171ace71f54c4d85aaf958642a1fa"
+    },
+    "wire-red-tests": {
+      "path": "sources/wire-red-tests.rs",
+      "sha256": "178770eed8f3df7a333771b210c53735639e76e0a4a65a1cc2224da136848e5d"
+    },
+    "published-result-red-delivery": {
+      "path": "sources/published-result-red-delivery.rs",
+      "sha256": "f3d071fcbd5986a05f28cc3bb2a0f9e48cc5c54e8043b52bbdff1fca78a6899a"
+    },
+    "published-result-red-tests": {
+      "path": "sources/published-result-red-tests.rs",
+      "sha256": "e2c7cbd9e17727912a22b71a5710a3ad551fa08a4e55e1c712fa8c6e2a525188"
+    },
+    "performance-delivery": {
+      "path": "sources/performance-delivery.rs",
+      "sha256": "45a84a1c5366020aca6d14a03f01ff00a77bd49a5133432601b01a8627fa70df"
+    },
+    "fifteen-controls-tests": {
+      "path": "sources/fifteen-controls-tests.rs",
+      "sha256": "3c6b1809372a31054c4eccec8fcf77628f3f260c96bd9fd58e4f9a71170fd55b"
+    },
+    "performance-tests": {
+      "path": "sources/performance-tests.rs",
+      "sha256": "ef21ae1f18f7ba5a44d19125f0979934e9cbbb2119a12eb2e246bcee51a84ae1"
+    },
+    "frozen-delay-loop": {
+      "path": "sources/frozen-delay-loop.rs",
+      "sha256": "f805049217eddc33108584d2a40d46c9b26ec6bad8aa921828ccc00603457a1e"
+    },
+    "frozen-maximum-workload": {
+      "path": "sources/frozen-maximum-workload.rs",
+      "sha256": "33687471ac95ee6ae12a565841d2ceb4f84c92a08502fc3d562a9d4cd0dc0d93"
+    },
+    "verifier-helpers-delivery": {
+      "path": "sources/verifier-helpers-delivery.rs",
+      "sha256": "2f08f8026719377d693a2674c2338640ac19b12baf64a6d3af8c1bae964c058d"
+    },
+    "binding-red-tests": {
+      "path": "sources/binding-red-tests.rs",
+      "sha256": "2c301b414bd54bc3c9ac04453b141aeacf00343f819de454b83e8899789561b6"
+    },
+    "binding-green-tests": {
+      "path": "sources/binding-green-tests.rs",
+      "sha256": "7e21ffa859ce49b89a646a85d55248ee2a1b71b4129fb68454253f3e02e17c1f"
+    },
+    "framing-observer-tls": {
+      "path": "sources/framing-observer-tls.rs",
+      "sha256": "6cc2c6a324fd027bc5daea7756d1c1801d433b2cfcf1be3374542a6465230316"
+    },
+    "framing-observer-tests": {
+      "path": "sources/framing-observer-tests.rs",
+      "sha256": "e623f5492d0d1c03f10423017a6cbbfe13223eefc50d8e7bd42c6f4d697a9c93"
+    },
+    "router-observer-delivery": {
+      "path": "sources/router-observer-delivery.rs",
+      "sha256": "2c439be5294237ddcc8699f26c2c87421e66be0ae198be453ce2902ab578d4d7"
+    },
+    "router-observation-tests": {
+      "path": "sources/router-observation-tests.rs",
+      "sha256": "a73670c5c8551fbe5743ba2fe878fe0f4ce36121a93bb47ae5935898132aef23"
+    },
+    "close-notify-tls": {
+      "path": "sources/close-notify-tls.rs",
+      "sha256": "542209d19979d4cbf393c64109e1720fcf45bf6462bfd20b0c0296860626c7b9"
+    },
+    "close-notify-tests": {
+      "path": "sources/close-notify-tests.rs",
+      "sha256": "11eb3187ad67a1728838d737bab2c6eedf34a243459e458e078c3906551e89f1"
+    },
+    "corrected-router-tests": {
+      "path": "sources/corrected-router-tests.rs",
+      "sha256": "ec459573398b5a9b559db6d5290ee712570ff696b3ffc4ad93e1c019e743f516"
+    },
+    "final-frame-tests": {
+      "path": "sources/final-frame-tests.rs",
+      "sha256": "6a94d5f521111a21ba406e6a9606783a65fe0a5400853618d583bd23a2657fc6"
+    }
+  },
+  "host_environment": {
+    "target": "aarch64-apple-darwin",
+    "rust": "1.96.0",
+    "cargo_locked_offline": true,
+    "compiler_jobs": 2,
+    "test_threads": 1,
+    "observed_linkage": [
+      "libssl.4.dylib",
+      "libcrypto.4.dylib"
+    ],
+    "fixture_cli": "existing OpenSSL 3 CLI",
+    "new_library_adoption": false,
+    "scope": "Frozen-workload and provider-profile artifacts only; the integrated family-3 environment is recorded separately."
+  },
+  "frozen_envelope": {
+    "dispatch_delay_ms": 20,
+    "maximum_ciphertext_bytes": 1048592,
+    "foreground_limit_us": 60000000,
+    "cycle_limit_s": 10,
+    "transport_attempt_limit": 8,
+    "sdk_cycle_limit": 65,
+    "maximum_outer_collects": 6,
+    "drain_limit_s": 5,
+    "fixture_identity": "Fresh generated private PKI and state; same envelope, not identical fixtures",
+    "cargo_test_profile": "unoptimized + debuginfo, observed in retained Cargo build output"
+  },
+  "performance_old_depth3": {
+    "result": "incomplete",
+    "verified_bytes": 524288,
+    "foreground_us": 60007531,
+    "completed_cycles": 32,
+    "status_started": 33,
+    "get_started": 129,
+    "logical_started": 162,
+    "logical_completed": 161,
+    "outer_attempts": 445,
+    "outer_connections": 445,
+    "busy": 122,
+    "planned_wait_us": 42585631,
+    "actual_wait_us": 43763909,
+    "drain_us": 1020,
+    "cleanup": true,
+    "raw_stderr_sha256": "668b68564db0bf5b6d078d728456a1d3ee33adb16e051b3a31337873b5d7fb34"
+  },
+  "performance_rejected_depth4": {
+    "adopted": false,
+    "result": "incomplete",
+    "verified_bytes": 942080,
+    "foreground_us": 60004817,
+    "completed_cycles": 57,
+    "status_started": 58,
+    "get_started": 231,
+    "logical_started": 289,
+    "logical_completed": 288,
+    "outer_attempts": 589,
+    "busy": 12,
+    "actual_wait_us": 41079013,
+    "drain_us": 10406,
+    "cleanup": true,
+    "raw_stderr_sha256": "7164ebcbfb371462d98b976708143f79463162e8b1cacafaaa1fb14e692929d4"
+  },
+  "performance_waiting_collection": {
+    "executions": 1,
+    "result": "complete",
+    "verified_bytes": 1048592,
+    "final_digest_and_deadline_assertions": "passed",
+    "foreground_us": 52328975,
+    "completed_cycles": 65,
+    "status_started": 65,
+    "get_started": 257,
+    "logical_started": 322,
+    "logical_completed": 322,
+    "outer_attempts": 645,
+    "outer_connections": 645,
+    "busy": 1,
+    "planned_wait_us": 30571649,
+    "actual_wait_us": 31884233,
+    "drain_us": 2978,
+    "cleanup": true,
+    "both_loops_joined": true,
+    "both_homes_inactive_zero_charged": true,
+    "harness_s": 58.76,
+    "controller_s": 59.047742250026204,
+    "executable_sha256": "0129d59c3ad2938f23bee1aaf89aaee47307c440d6061c09cd7f63ecb7548fca",
+    "raw_stdout_sha256": "50efd5e1372e2f1c89cd9336871b58bcc663d489d9f3c75350446868ec386711",
+    "raw_stderr_sha256": "7237b3e7fbc1324d77cb6f1fe9b03fe99419a6594ddff09c287f5f90f74baf0b",
+    "private_inventory_sha256": "1b2ce8893732403eb57ac813b2cac3f45ace7e4d6de4e53dba88d4d5970a0c46"
+  },
+  "focused_observations": {
+    "minimum_controls_passed": 6,
+    "complete_controls_passed": 15,
+    "expiry_setup_refactor_affected_test_passed": 1,
+    "fourteen_other_bodies_unchanged": true,
+    "fresh_fifteen_final_tree_claim": false,
+    "binding_helper_corrected_controls_passed": 16,
+    "binding_control": "One legitimate published binding created one second earlier; expiry unchanged; actual callback and Store comparison. Old helper mismatched full binding and was Denied; reused published binding succeeded."
+  },
+  "stopped_first_host_aggregate": {
+    "profile": "delegation-verifier release",
+    "passed": 155,
+    "failed": 2,
+    "elapsed_s": 172.09,
+    "failures": [
+      {
+        "case": "maintained_router_keeps_ordinary_device_store_progress_while_callback_is_held",
+        "observed": "Transport(Frame) during ordinary device service",
+        "attribution": "UNKNOWN"
+      },
+      {
+        "case": "waiting_finished_slot_contention_opt_in_collect_retains_the_actual_result",
+        "observed": "Store(Denied) during retrieval setup before contention witness",
+        "attribution": "Fixture mismatch class demonstrated separately; original failed Store state unavailable"
+      }
+    ],
+    "later_stages_executed": false,
+    "unavailable_pending_tcp_preconditions": 2,
+    "unavailable_is_runtime_proof": false,
+    "raw_stdout_sha256": "372abb1bc206c544e32a24eb5307bcabcb13795cdca5a4528250a9b4649bde37",
+    "raw_stderr_sha256": "6f56cdb9144dd6857ea6c60fe7c918850a34ebea4d1739abd42f1d17bb11b923",
+    "private_inventory_sha256": "a5977205883def55f6c07df16e5351a59bee81eeebcdb93ed86207043650b79e"
+  },
+  "provenance_limits": [
+    "The first raw-kind6 runtime record lists checkout-at-execution tests; its executable was built from the separate wire-red-tests source. Original records and explicit lineage correction are retained.",
+    "Hook-interface E0599 diagnostics coexisted with unrelated E0603 setup errors; no clean hook-only RED is claimed.",
+    "The initial raw-result fixture token was not separately captured; later helper fixtures retain actual tokens.",
+    "A premature unexecuted result-lock edit was discarded and source restored before the accepted two-case behavioral RED and reapplication.",
+    "The near-expiry fifteen-test variant passed; only its fragile setup was refactored and the affected case rerun.",
+    "Three test-only guards were widened after actual verifier-only compiler RED; those guards were already enabled for the measured operator/verifier benchmark.",
+    "Manual reciprocal admission, emulated legacy dispatch and deliberately invalid internal source tests have their stated fixture limits.",
+    "No raw private fixture, executable, endpoint, token or member data is included here. Selected source objects are exact project-owned Rust bytes.",
+    "No fresh NetBSD, current-head CI, deployment, physical capacity or independent-client interoperability result is established by this controlled record."
+  ],
+  "routing": {
+    "configured_equivalent_routes_requested": true,
+    "native_named_role_discovery": "unavailable",
+    "actual_model_effort_telemetry": "unavailable",
+    "agent_review": "Separate examination, not independent human assurance"
+  },
+  "framing_observer": {
+    "test_only": true,
+    "fixed_fields": [
+      "phase",
+      "optional framing part",
+      "outcome",
+      "optional I/O ErrorKind"
+    ],
+    "interface_red": "4 E0433 missing FrameObservation diagnostics, no unrelated errors",
+    "controls_passed": 12,
+    "existing_controls": 6,
+    "new_test_functions": 6,
+    "observed_orderly_close": "Ok(None), PrefixFirst CleanEof",
+    "observed_abrupt_close": "Frame, PrefixFirst IoError Other",
+    "truncation": "Frame; PrefixRest or Body IoError",
+    "private_inventory_sha256": "28647945a186d2b8f2f6d3e39beecfb3c918c8944da117d89a6804341a7dc59b",
+    "production_framing_error_or_tls_options_changed": false
+  },
+  "router_single_diagnostic": {
+    "executions": 1,
+    "result": "failed original assertion",
+    "certificate_case": 0,
+    "same_certificate": false,
+    "request_index": 0,
+    "client": "response",
+    "exact_response_assertions_reached": false,
+    "server": "Transport(Frame)",
+    "phase": "NextRead",
+    "part": "PrefixFirst",
+    "outcome": "IoError",
+    "io_kind": "Other",
+    "underlying_io_cause": "Not established by the fixed classification",
+    "encoded_request_sha256": "cabe2910d7e9eaca5b858800383c6ddb4d996b565004ac46a44d80b6fe896e10",
+    "postoperation_store_sha256": "e486f5a6f9e5c6dd77966e115d39424f16c00ff9a47e23ee0eb9260005cddaa3",
+    "raw_stdout_sha256": "0eac56287f547b7d451e5155f9c5477b794b494844c60f9b069e2402471f06cc",
+    "raw_stderr_sha256": "297d2765f8e7c8f4cb3ca491084c66bc563a30a00bf94617b5ed5947b8d0c4c0",
+    "private_inventory_sha256": "781d88e5d1f3093f4c4803dddb994abf9b2825b64ae1ec94d23b9148322cc040",
+    "later_requests_executed": false,
+    "worker_drain_measured": false
+  },
+  "close_notify_fixture": {
+    "test_only": true,
+    "helper": "One SSL shutdown first step; original deadline/cancel checked before and after; no retry or peer-ack wait",
+    "interface_red": "2 E0599 missing test_close_notify diagnostics, no unrelated errors",
+    "frame_controls_passed": 13,
+    "normal": "Ok",
+    "pre_cancelled": "Cancelled",
+    "pre_expired": "Deadline",
+    "deadlines_and_attempts_unchanged": true,
+    "abrupt_and_truncated_frame_errors_unchanged": true,
+    "production_drop_or_error_semantics_changed": false,
+    "private_inventory_sha256": "8701a3db2906a579a5482613eadb1c3952ae876ccedc243a7702cbab6373477d"
+  },
+  "router_corrected_fixture": {
+    "executions": 1,
+    "result": "passed all original assertions",
+    "certificate_variants": 2,
+    "ordinary_requests_per_variant": 4,
+    "all_eight_fixed_records": {
+      "server": "Served",
+      "phase": "NextRead",
+      "part": "PrefixFirst",
+      "outcome": "CleanEof",
+      "io_kind": null,
+      "client": "response",
+      "close": "notified"
+    },
+    "exact_response_and_byte_assertions_passed": true,
+    "physical_charge_pending_callback_and_worker_assertions_passed": true,
+    "source_or_executable_changed_during_run": false,
+    "runtime_fixture_parent_after_teardown": "OWNED marker only",
+    "worker_drain_measured": false,
+    "harness_s": 0.25,
+    "controller_s_rounded": 0.320843,
+    "executable_sha256": "08284dfd904c1006905bfb2793431f7bbdd85ce71fb155f578c726a7563577cb",
+    "raw_stdout_sha256": "087ac78be3dbb0c8c56fc3f0ea0e1eda33eec4b0c279f8ca1c8e24352a04abdb",
+    "raw_stderr_sha256": "741d07924c418c1e2c96fd2f4bf8c87b03fa5b13d18692a7c3c3f56cf534b5ae",
+    "private_inventory_sha256": "f5961ae01a23187c77b0a493e2d027f629ae2a71904a7282aa1b01a3fcea89fb",
+    "interpretation": "Changed fixture closing input; not a production TLS correction or exact historical vendor-cause proof"
+  },
+  "host_provider_release_validation": {
+    "source_base": "c8cd988ff027ea603686d4ee618d2dbc752773b8",
+    "final_overrides_sha256": {
+      "crates/faction-provider/src/delivery.rs": "2c439be5294237ddcc8699f26c2c87421e66be0ae198be453ce2902ab578d4d7",
+      "crates/faction-provider/src/publication_tests.rs": "ec459573398b5a9b559db6d5290ee712570ff696b3ffc4ad93e1c019e743f516",
+      "crates/faction-provider/src/tls.rs": "542209d19979d4cbf393c64109e1720fcf45bf6462bfd20b0c0296860626c7b9",
+      "crates/faction-provider/src/tls_frame_tests.rs": "6a94d5f521111a21ba406e6a9606783a65fe0a5400853618d583bd23a2657fc6"
+    },
+    "link_family": 4,
+    "profiles": [
+      {
+        "features": "delegation-verifier",
+        "library_passed": 165,
+        "other_target_passed": 90,
+        "doctests_passed": 38,
+        "clippy": "passed"
+      },
+      {
+        "features": "delegation-verifier,durable-policy",
+        "library_passed": 201,
+        "other_target_passed": 118,
+        "doctests_passed": 38,
+        "clippy": "passed"
+      },
+      {
+        "features": "operator,delegation-verifier",
+        "library_passed": 202,
+        "other_target_passed": 143,
+        "doctests_passed": 38,
+        "clippy": "passed"
+      }
+    ],
+    "failed_aggregate_preserved": true,
+    "source_maps_and_executables_retained": true,
+    "unavailable_pending_tcp_controls": "Existing precondition-dependent controls reported UNAVAILABLE on this host; harness passes do not establish pending-TCP runtime behavior.",
+    "private_inventory_sha256": [
+      "daaf3a2446e11f17f0fdaa72e85eb52106994791d61413233fd5563ad0d1f05a",
+      "95b7730140186bf1b5788cd5a3e9fd11ec6eaf906e05ce0019ce7f4c2bc0730a"
+    ]
+  },
+  "additional_observed_setup_failures": [
+    {
+      "kind": "Clippy type_complexity",
+      "effect": "Stopped before runtime",
+      "correction": "Named test-only alias for the identical return tuple, with matching feature guard; no lint suppression or runtime change.",
+      "private_inventory_sha256": "fd7d90ef544046b3a95e092df41f15cb1442df2adc07b149c693140646e2b8d9"
+    },
+    {
+      "kind": "Capture create_new collisions",
+      "effect": "Durable library aggregate had 198 passes and 3 capture-setup failures. Fresh attempted bytes at rejected create_new were unavailable; earlier existing capture bytes were not overwritten.",
+      "correction": "Fresh marked capture/core/setup/TMP namespaces per command. Unchanged minimal profile and durable Clippy passes carried; one changed-environment durable full suite passed. No source or assertion edits."
+    },
+    {
+      "kind": "Unsupported default OpenSSL major",
+      "effect": "Client native dependency build rejected major 4 before Clippy or runtime.",
+      "correction": "Select the already-installed required family 3 consistently through explicit paired headers/libraries and pkg-config; preserve the guard and prior family-4 observations.",
+      "limitations": "Not all failed system-header/process inputs were captured; no exact replay is claimed."
+    }
+  ],
+  "host_integrated_ssl3_validation": {
+    "openssl_version": "3.6.3",
+    "explicit_matching_headers_libraries_pkg_config": true,
+    "no_vendor": true,
+    "system_install_or_global_environment_changed": false,
+    "qualification_record_sha256": "e63f82307f30a226cb4a327625782234aaca539dbf23c6eee1a7eb224714e4d1",
+    "client_clippy": "passed",
+    "client_tests_passed": 274,
+    "client_existing_ignored": 8,
+    "client_sha256": "05207c62057e44dd5b77fb82fbe03fff7396205c49407897d65557b89a29a75d",
+    "fixture_sha256": "575d7b204de1690a7de3030e6ba86c0958a84906fcdba93afd1f4c66412a1aee",
+    "operator_sha256": "364f88ba709b4b27c4f4ed6cf8625c81d20036ee7fb04d4e0461086ecce7532d",
+    "cargo_reported_executable_artifacts": 21,
+    "saved_binary_link_checks": "Family 3 only for SSL/crypto consumers; non-SSL binaries classified separately.",
+    "console_probe_invocations": 1,
+    "console_checks_passed": 16,
+    "modes": [
+      {
+        "mode": "classic",
+        "result": "pass",
+        "plaintext_bytes": 1048576,
+        "ciphertext_bytes": 1048592,
+        "children_reaped": true,
+        "maintained_composed_owners": 2,
+        "one_active_client_maximum": true,
+        "recipient_initially_offline": true,
+        "transfers": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 16.35371
+          },
+          "upload": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 7.931151
+          }
+        }
+      },
+      {
+        "mode": "unicode",
+        "result": "pass",
+        "plaintext_bytes": 1048576,
+        "ciphertext_bytes": 1048592,
+        "children_reaped": true,
+        "maintained_composed_owners": 2,
+        "one_active_client_maximum": true,
+        "recipient_initially_offline": true,
+        "transfers": {
+          "fetch": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 16.310322
+          },
+          "upload": {
+            "calls": 65,
+            "offset": 1048592,
+            "reason": "complete",
+            "seconds": 7.877904
+          }
+        }
+      }
+    ],
+    "children_reaped": true,
+    "private_fixture_retained": true,
+    "deployment": false,
+    "production_s2s": false,
+    "independent_interoperability": false,
+    "physical_hardware": false,
+    "capacity_claim": false,
+    "private_inventory_sha256": "44fbaf651204f040e9786cc776626facc4db8371ca2f1184764c54e7611de09e",
+    "metadata_mode_correction": "Two preparation metadata files were 0644 inside a 0700 parent; only modes were corrected to0600. Initial inventory and correction record are retained; content is unchanged."
+  },
+  "host_code_review": {
+    "separate_nonauthor_review": "accepted frozen host code, no actionable findings",
+    "native_current_head_ci_and_final_publication_review": "not established by host code review",
+    "actual_model_effort_telemetry": "unavailable"
+  }
+}

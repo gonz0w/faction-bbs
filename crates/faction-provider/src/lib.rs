@@ -15,6 +15,8 @@ pub mod durable;
 #[cfg(feature = "preparation")]
 pub mod preparation;
 mod service;
+#[cfg(test)]
+mod setup_trace;
 pub mod tls;
 use authority::{Authority, Registry};
 use faction_files::private_blobs;

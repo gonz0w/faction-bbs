@@ -12,7 +12,9 @@ rejects the unchanged modern-client candidate. Real provider deployment and
 independent client interoperability remain unqualified.
 
 The [corrected headless reference research](../dev-docs/research/0064-corrected-headless-source-profile.md)
-remains unqualified because its required build-tool graph is unresolved.
+remains unqualified. The subsequent [CMake qualification](../dev-docs/research/0065-cmake-bootstrap-qualification.md)
+rejects the selected unmodified native build profile because configuration would
+generate JavaScript/QtScript; complete tool and license closure remains unknown.
 
 The optional [private provider operator](provider-operator.md) serves separately approved device and service policies on loopback. For invited homes, each operator supplies fixed peer endpoints and independently obtained credentials, then uses the composed init, apply and serve commands. Stop the owner before policy changes; inspect retained state after an uncertain outcome and use a freshly authorized exact retry. Reset clears active approvals, so recovery requires a newly approved complete policy. The operator does not enroll devices or recover keys.
 
@@ -185,6 +187,13 @@ The action continues only on successful forward progress and stops at the first
 error. It reports actual partial or completed bytes; there is no background retry
 or automatic reconnect. Ctrl-C or Ctrl-D cancels and locks. Retry deliberately
 after checking the reported state. These limits do not change normal board budgets.
+
+This preview requires updated provider software at both homes for the waiting
+collection protocol. An older resource provider rejects the request, and the
+transfer stops without an automatic retry. The brief resource wait does not extend
+the transfer deadline. The [extension's host observations](../dev-docs/evidence/bounded-resource-collection/README.md)
+include both console modes. The older native qualifications below record earlier
+collection behavior; they are not fresh NetBSD tests of this extension.
 
 The desk is a software preview. A [NetBSD 11 ARM64 software qualification](../dev-docs/evidence/netbsd-attachments/README.md)
 exercised the production console and a 1 MiB transfer with both test homes, the

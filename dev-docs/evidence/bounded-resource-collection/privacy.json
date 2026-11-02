@@ -1,0 +1,23 @@
+{
+  "scope": "Exact-value inspection of the then-current proposed public files against available generated material in marked issue326 roots. No saved playground or real user credentials were read.",
+  "inspected_public_file_count": 31,
+  "inspected_public_bytes": 2676204,
+  "marked_private_roots": 12,
+  "private_files_examined": 33206,
+  "new_private_key_token_or_credential_matches": 0,
+  "known_public_example_match": {
+    "path": "docs/private-attachments.md",
+    "line": 56,
+    "already_present_in_HEAD": true,
+    "new_disclosure": false,
+    "value_not_reproduced": true
+  },
+  "limitations": [
+    "Opaque-token coverage is limited to values exposed by existing captured schemas.",
+    "Encrypted vault/store records did not expose exact attachment content keys and IVs through existing schemas; they were not decrypted or reverse-engineered.",
+    "A zero exact-match result does not establish comprehensive secret coverage.",
+    "This record describes the 31-file scan; it does not attest to later wording changes or its own derived bytes."
+  ],
+  "source_artifacts": "Only exact project-owned Rust text and derived observations are selected; raw PKI, tokens, Store, executable and endpoint data remain private.",
+  "runtime_test_or_vm_execution": false
+}

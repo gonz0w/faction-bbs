@@ -132,3 +132,480 @@ fn healthy_writer_receives_one_contiguous_existing_frame() {
         assert_eq!(probe.flushes, 1);
     }
 }
+
+#[test]
+fn frame_observation_scope_refuses_nested_and_clears_on_drop() {
+    let initial = super::FrameObservation::current();
+    frame_observer_save("scope-initial.txt", format!("{initial:?}\n").as_bytes());
+    let scope = super::FrameObservation::start().expect("fresh frame observation");
+    let before = scope.snapshot();
+    let refused = super::FrameObservation::start().is_none();
+    let after = scope.snapshot();
+    drop(scope);
+    let cleared = super::FrameObservation::current();
+    frame_observer_save(
+        "scope-lifecycle.txt",
+        format!("before={before:?} nested_refused={refused} after={after:?} cleared={cleared:?}\n")
+            .as_bytes(),
+    );
+    assert!(initial.is_none());
+    assert!(refused);
+    assert_eq!(after, before);
+    assert!(cleared.is_none());
+}
+
+fn frame_observer_save(label: &str, bytes: &[u8]) {
+    use std::{
+        fs,
+        io::Write,
+        os::unix::fs::{OpenOptionsExt, PermissionsExt},
+        sync::atomic::{AtomicUsize, Ordering},
+    };
+    let Some(root) = std::env::var_os("FACTION318_CAPTURE_DIR") else {
+        return;
+    };
+    let root = std::path::PathBuf::from(root);
+    assert_eq!(
+        fs::metadata(&root).unwrap().permissions().mode() & 0o7777,
+        0o700
+    );
+    static NEXT: AtomicUsize = AtomicUsize::new(0);
+    let name = format!(
+        "frame-observer-{}-{}-{label}",
+        std::process::id(),
+        NEXT.fetch_add(1, Ordering::SeqCst)
+    );
+    fs::OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(root.join(name))
+        .unwrap()
+        .write_all(bytes)
+        .unwrap();
+}
+
+#[test]
+fn frame_observation_writer_controls_keep_exact_bytes_and_results() {
+    use super::{
+        FrameObservation as O, FrameOutcome as Outcome, FramePart as Part, FramePhase as P,
+    };
+    let payload = b"synthetic framed bytes";
+    for case in 0..5 {
+        let mut probe = Probe::healthy();
+        match case {
+            1 => {
+                probe.max_write = 3;
+                probe.interrupt_once = true;
+            }
+            2 => probe.fail_after = Some(2),
+            3 => probe.flush_error = true,
+            4 => probe.max_write = 0,
+            _ => (),
+        }
+        let scope = O::start().unwrap();
+        O::phase(P::ResponseWrite);
+        let result = write_frame(&mut probe, payload);
+        let snapshot = scope.snapshot();
+        drop(scope);
+        frame_observer_save("writer-input.bin", payload);
+        frame_observer_save("writer-wire.bin", &probe.wire);
+        frame_observer_save(
+            "writer-observation.txt",
+            format!(
+                "case={case} result={result:?} snapshot={snapshot:?} flushes={}\n",
+                probe.flushes
+            )
+            .as_bytes(),
+        );
+        assert_eq!(snapshot.phase, P::ResponseWrite);
+        if case < 2 {
+            assert_eq!(result, Ok(()));
+            assert_eq!(probe.wire, expected(payload));
+            assert_eq!(probe.flushes, 1);
+            assert_eq!(snapshot.part, Some(Part::Flush));
+            assert_eq!(snapshot.outcome, Outcome::Complete);
+            assert_eq!(snapshot.error_kind, None);
+        } else {
+            assert_eq!(result, Err(Stage::Frame));
+            assert_eq!(snapshot.outcome, Outcome::IoError);
+            assert_eq!(
+                snapshot.part,
+                Some(if case == 3 {
+                    Part::Flush
+                } else {
+                    Part::WriteAll
+                })
+            );
+            assert_eq!(
+                snapshot.error_kind,
+                Some(if case == 4 {
+                    io::ErrorKind::WriteZero
+                } else {
+                    io::ErrorKind::BrokenPipe
+                })
+            );
+            let count = if case == 3 {
+                expected(payload).len()
+            } else if case == 2 {
+                2
+            } else {
+                0
+            };
+            assert_eq!(probe.wire, expected(payload)[..count]);
+            assert_eq!(probe.flushes, usize::from(case == 3));
+        }
+        assert!(O::current().is_none());
+    }
+    for payload in [Vec::new(), vec![7; MAX_WIRE + 1]] {
+        let scope = O::start().unwrap();
+        O::phase(P::ResponseWrite);
+        let mut probe = Probe::healthy();
+        let result = write_frame(&mut probe, &payload);
+        let snapshot = scope.snapshot();
+        drop(scope);
+        frame_observer_save(
+            "writer-invalid-observation.txt",
+            format!("result={result:?} snapshot={snapshot:?}\n").as_bytes(),
+        );
+        assert_eq!(result, Err(Stage::Frame));
+        assert_eq!(snapshot.part, Some(Part::LengthValidation));
+        assert_eq!(snapshot.outcome, Outcome::InvalidLength);
+        assert_eq!(snapshot.error_kind, None);
+        assert!(probe.wire.is_empty());
+        assert_eq!(probe.flushes, 0);
+    }
+}
+
+#[test]
+fn frame_observation_phase_entries_and_panic_scopes_clear_without_leaking_state() {
+    use super::{FrameObservation as O, FrameOutcome as Outcome, FramePhase as P};
+    let scope = O::start().unwrap();
+    for phase in [
+        P::InitialRead,
+        P::DecodeDispatch,
+        P::ResponseWrite,
+        P::NextRead,
+    ] {
+        O::phase(phase);
+        let snapshot = scope.snapshot();
+        frame_observer_save("phase-entry.txt", format!("{snapshot:?}\n").as_bytes());
+        assert_eq!(snapshot.phase, phase);
+        assert_eq!(snapshot.part, None);
+        assert_eq!(snapshot.outcome, Outcome::Entered);
+        assert_eq!(snapshot.error_kind, None);
+    }
+    drop(scope);
+    let panicked = std::panic::catch_unwind(|| {
+        let scope = O::start().unwrap();
+        O::phase(P::NextRead);
+        let snapshot = scope.snapshot();
+        frame_observer_save("before-panic.txt", format!("{snapshot:?}\n").as_bytes());
+        panic!("fixed synthetic frame observation unwind");
+    });
+    let after = O::current();
+    frame_observer_save(
+        "after-panic.txt",
+        format!("panicked={} snapshot={after:?}\n", panicked.is_err()).as_bytes(),
+    );
+    assert!(panicked.is_err());
+    assert!(after.is_none());
+    let scope = O::start().unwrap();
+    let fresh = scope.snapshot();
+    drop(scope);
+    frame_observer_save("fresh-scope.txt", format!("{fresh:?}\n").as_bytes());
+    assert_eq!(fresh.phase, P::InitialRead);
+    assert_eq!(fresh.part, None);
+    assert_eq!(fresh.outcome, Outcome::Entered);
+    assert_eq!(fresh.error_kind, None);
+    assert!(O::current().is_none());
+}
+
+#[test]
+fn frame_observation_complete_representation_never_contains_payload_or_error_message() {
+    use super::{
+        FrameObservation as O, FrameOutcome as Outcome, FramePart as Part, FramePhase as P,
+    };
+    const PAYLOAD: &[u8] = b"PRIVATE_PAYLOAD_SENTINEL_326";
+    const MESSAGE: &str = "PRIVATE_ERROR_SENTINEL_326";
+    struct PrivateFailure;
+    impl Write for PrivateFailure {
+        fn write(&mut self, _bytes: &[u8]) -> io::Result<usize> {
+            Err(io::Error::other(MESSAGE))
+        }
+        fn flush(&mut self) -> io::Result<()> {
+            panic!("write failure unexpectedly flushed")
+        }
+    }
+    let scope = O::start().unwrap();
+    O::phase(P::ResponseWrite);
+    let result = write_frame(&mut PrivateFailure, PAYLOAD);
+    let snapshot = scope.snapshot();
+    let representation = format!("{snapshot:?}");
+    drop(scope);
+    frame_observer_save("privacy-payload.bin", PAYLOAD);
+    frame_observer_save("privacy-error.txt", MESSAGE.as_bytes());
+    frame_observer_save("privacy-fixed-snapshot.txt", representation.as_bytes());
+    assert_eq!(result, Err(Stage::Frame));
+    assert_eq!(snapshot.part, Some(Part::WriteAll));
+    assert_eq!(snapshot.outcome, Outcome::IoError);
+    assert_eq!(snapshot.error_kind, Some(io::ErrorKind::Other));
+    assert!(!representation.contains(MESSAGE));
+    assert!(!representation.contains(std::str::from_utf8(PAYLOAD).unwrap()));
+}
+
+#[cfg(feature = "delegation-issuer")]
+type ObservedTlsFrameRead = (
+    Result<Option<Vec<u8>>, Stage>,
+    super::FrameSnapshot,
+    (Result<(), io::ErrorKind>, Option<bool>),
+);
+
+#[cfg(feature = "delegation-issuer")]
+fn observed_tls_frame_read(
+    wire: &[u8],
+    close_notify: bool,
+    close_refusal: Option<Stage>,
+) -> ObservedTlsFrameRead {
+    observed_tls_frame_read_control(wire, close_notify, close_refusal, false)
+}
+
+#[cfg(feature = "delegation-issuer")]
+fn observed_tls_frame_read_control(
+    wire: &[u8],
+    close_notify: bool,
+    close_refusal: Option<Stage>,
+    hold_and_cancel_reader: bool,
+) -> ObservedTlsFrameRead {
+    use super::{
+        Arc, AtomicBool, CYCLE_LIMIT, Client, DeadlineIo, FrameObservation, FramePhase,
+        HANDSHAKE_LIMIT, Instant, Server, TcpListener, sha256, test_certificate, wall_now,
+    };
+    if hold_and_cancel_reader {
+        assert!(wire.is_empty());
+        assert!(!close_notify);
+    }
+    let (read_ready_tx, read_ready_rx) = std::sync::mpsc::sync_channel(1);
+    let (read_release_tx, read_release_rx) = std::sync::mpsc::sync_channel(1);
+    let t = wall_now() as i64;
+    let ca = test_certificate(None, "frame-observer-ca", 401, t - 60, t + 3600);
+    let server_identity =
+        test_certificate(Some((&ca.0, &ca.1)), "provider.test", 402, t - 60, t + 3600);
+    let client_identity = test_certificate(
+        Some((&ca.0, &ca.1)),
+        "frame-observer-client",
+        403,
+        t - 60,
+        t + 3600,
+    );
+    for (label, identity) in [
+        ("ca", &ca),
+        ("server", &server_identity),
+        ("client", &client_identity),
+    ] {
+        frame_observer_save(&format!("tls-{label}.pem"), &identity.0.to_pem().unwrap());
+        frame_observer_save(
+            &format!("tls-{label}.key"),
+            &identity.1.private_key_to_pem_pkcs8().unwrap(),
+        );
+    }
+    frame_observer_save("tls-raw-input.bin", wire);
+    let server = Server::new(&server_identity.0, &server_identity.1, &ca.0).unwrap();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let start = Instant::now();
+    let handshake = start + HANDSHAKE_LIMIT;
+    let deadline = start + CYCLE_LIMIT;
+    let (result, snapshot, sender) = std::thread::scope(|scope| {
+        let peer = scope.spawn(move || {
+            let mut client = Client::connect(
+                address,
+                "provider.test",
+                sha256(&server_identity.0.to_der().unwrap()),
+                &ca.0,
+                Some((&client_identity.0, Some(&client_identity.1))),
+                Arc::new(AtomicBool::new(false)),
+            )
+            .expect("fixed TLS frame fixture client admission");
+            let written = client
+                .stream
+                .write_all(wire)
+                .and_then(|()| client.stream.flush())
+                .map_err(|error| error.kind());
+            if hold_and_cancel_reader {
+                read_ready_tx.send(()).expect("admitted peer held open");
+                let released = read_release_rx
+                    .recv_timeout(client.deadline.saturating_duration_since(Instant::now()))
+                    .is_ok();
+                frame_observer_save("held-reader-peer.txt", format!("tls_admitted=true app_bytes_sent=0 released={released}\n").as_bytes());
+                assert!(released);
+            }
+            let closed = close_notify.then(|| {
+                match close_refusal {
+                    Some(Stage::Cancelled) => client.cancel.store(true, std::sync::atomic::Ordering::SeqCst),
+                    Some(Stage::Deadline) => client.deadline = client.deadline.min(Instant::now()),
+                    None => (),
+                    _ => panic!("unsupported fixed close-notify guard control"),
+                }
+                let original_deadline = client.deadline;
+                let original_attempts = client.attempted;
+                let sent_before = client.stream.get_shutdown().contains(openssl::ssl::ShutdownState::SENT);
+                let result: Result<(), Stage> = client.test_close_notify();
+                let sent_after = client.stream.get_shutdown().contains(openssl::ssl::ShutdownState::SENT);
+                let deadline_unchanged = client.deadline == original_deadline;
+                let attempts_unchanged = client.attempted == original_attempts;
+                frame_observer_save("close-notify-control.txt", format!("expected_refusal={close_refusal:?} result={result:?} deadline_unchanged={deadline_unchanged} attempts_unchanged={attempts_unchanged} sent_before={sent_before} sent_after={sent_after}\n").as_bytes());
+                assert!(deadline_unchanged);
+                assert!(attempts_unchanged);
+                assert!(!sent_before);
+                if let Some(expected) = close_refusal {
+                    assert_eq!(result, Err(expected));
+                    assert!(!sent_after);
+                } else {
+                    assert!(sent_after);
+                }
+                result.is_ok()
+            });
+            (written, closed)
+        });
+        let socket = loop {
+            match listener.accept() {
+                Ok((socket, _)) => break socket,
+                Err(error)
+                    if error.kind() == io::ErrorKind::WouldBlock && Instant::now() < handshake =>
+                {
+                    std::thread::sleep(std::time::Duration::from_millis(1))
+                }
+                _ => panic!("fixed TLS frame fixture accept failed"),
+            }
+        };
+        let io = DeadlineIo::new(socket, handshake, Arc::new(AtomicBool::new(false)));
+        let mut stream = server
+            .acceptor
+            .accept(io)
+            .unwrap_or_else(|_| panic!("fixed TLS frame fixture handshake failed"));
+        stream.get_mut().deadline = deadline;
+        if hold_and_cancel_reader {
+            read_ready_rx
+                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+                .expect("actual TLS admission before read refusal");
+            let pending = stream.ssl().pending();
+            stream
+                .get_mut()
+                .cancel
+                .store(true, std::sync::atomic::Ordering::SeqCst);
+            let cancelled = stream
+                .get_ref()
+                .cancel
+                .load(std::sync::atomic::Ordering::SeqCst);
+            frame_observer_save("held-reader-server.txt", format!("tls_admitted=true peer_held_open=true app_bytes_pending={pending} cancelled={cancelled}\n").as_bytes());
+            assert_eq!(pending, 0);
+            assert!(cancelled);
+        }
+        let observed = FrameObservation::start().unwrap();
+        FrameObservation::phase(FramePhase::InitialRead);
+        let result = super::read_frame(&mut stream);
+        let snapshot = observed.snapshot();
+        drop(observed);
+        if hold_and_cancel_reader {
+            read_release_tx
+                .send(())
+                .expect("release admitted peer after read");
+        }
+        drop(stream);
+        let sender = peer.join().unwrap();
+        (result, snapshot, sender)
+    });
+    let result_shape = result.as_ref().map(|bytes| bytes.as_ref().map(Vec::len));
+    frame_observer_save(
+        "tls-fixed-observation.txt",
+        format!("result={result_shape:?} snapshot={snapshot:?} sender={sender:?}\n").as_bytes(),
+    );
+    if let Ok(Some(bytes)) = &result {
+        frame_observer_save("tls-decoded-output.bin", bytes);
+    }
+    // The sender has no observation activation; it cannot mutate this thread's
+    // slot. No Runtime, provider Session or dispatch authority exists here.
+    (result, snapshot, sender)
+}
+
+#[cfg(feature = "delegation-issuer")]
+#[test]
+fn frame_observation_real_tls_read_controls_keep_valid_invalid_and_truncated_results() {
+    use super::{FrameOutcome as Outcome, FramePart as Part, FramePhase as P};
+    let payload = b"real bounded TLS bytes";
+    let (result, snapshot, sender) = observed_tls_frame_read(&expected(payload), true, None);
+    assert!(sender.0.is_ok());
+    assert_eq!(result, Ok(Some(payload.to_vec())));
+    assert_eq!(snapshot.phase, P::InitialRead);
+    assert_eq!(snapshot.part, Some(Part::Body));
+    assert_eq!(snapshot.outcome, Outcome::Complete);
+    assert_eq!(snapshot.error_kind, None);
+    for length in [0u32, (MAX_WIRE + 1) as u32] {
+        let (result, snapshot, sender) = observed_tls_frame_read(&length.to_be_bytes(), true, None);
+        assert!(sender.0.is_ok());
+        assert_eq!(result, Err(Stage::Frame));
+        assert_eq!(snapshot.part, Some(Part::LengthValidation));
+        assert_eq!(snapshot.outcome, Outcome::InvalidLength);
+        assert_eq!(snapshot.error_kind, None);
+    }
+    for (wire, part) in [
+        (vec![0, 0], Part::PrefixRest),
+        (vec![0, 0, 0, 8, b'a', b'b', b'c'], Part::Body),
+    ] {
+        let (result, snapshot, sender) = observed_tls_frame_read(&wire, true, None);
+        assert!(sender.0.is_ok());
+        assert_eq!(result, Err(Stage::Frame));
+        assert_eq!(snapshot.part, Some(part));
+        assert_eq!(snapshot.outcome, Outcome::IoError);
+        assert!(snapshot.error_kind.is_some());
+    }
+}
+
+#[cfg(feature = "delegation-issuer")]
+#[test]
+fn frame_observation_notified_empty_tls_boundary_is_clean_eof() {
+    use super::{FrameOutcome as Outcome, FramePart as Part};
+    let (result, snapshot, sender) = observed_tls_frame_read(&[], true, None);
+    assert_eq!(sender, (Ok(()), Some(true)));
+    assert_eq!(result, Ok(None));
+    assert_eq!(snapshot.part, Some(Part::PrefixFirst));
+    assert_eq!(snapshot.outcome, Outcome::CleanEof);
+    assert_eq!(snapshot.error_kind, None);
+}
+
+#[cfg(feature = "delegation-issuer")]
+#[test]
+fn frame_observation_close_notify_succeeds_once_and_refuses_original_cancel_or_expiry() {
+    use super::{FrameOutcome as Outcome, FramePart as Part};
+    // Empty wire makes the real peer wait for close_notify, not close first.
+    let (result, snapshot, sender) = observed_tls_frame_read(&[], true, None);
+    assert!(sender.0.is_ok());
+    assert_eq!(sender.1, Some(true));
+    assert_eq!(result, Ok(None));
+    assert_eq!(snapshot.part, Some(Part::PrefixFirst));
+    assert_eq!(snapshot.outcome, Outcome::CleanEof);
+    for guard in [Stage::Cancelled, Stage::Deadline] {
+        let (result, snapshot, sender) = observed_tls_frame_read(&[0, 0], true, Some(guard));
+        assert!(sender.0.is_ok());
+        assert_eq!(sender.1, Some(false));
+        assert_eq!(result, Err(Stage::Frame));
+        assert_eq!(snapshot.part, Some(Part::PrefixRest));
+        assert_eq!(snapshot.outcome, Outcome::IoError);
+        assert!(snapshot.error_kind.is_some());
+    }
+}
+
+#[cfg(feature = "delegation-issuer")]
+#[test]
+fn frame_observation_first_tls_byte_read_error_remains_frame_after_admission() {
+    use super::{FrameOutcome as Outcome, FramePart as Part, FramePhase as Phase};
+    let (result, snapshot, sender) = observed_tls_frame_read_control(&[], false, None, true);
+    assert_eq!(sender, (Ok(()), None));
+    assert_eq!(result, Err(Stage::Frame));
+    assert_eq!(snapshot.phase, Phase::InitialRead);
+    assert_eq!(snapshot.part, Some(Part::PrefixFirst));
+    assert_eq!(snapshot.outcome, Outcome::IoError);
+    assert_eq!(snapshot.error_kind, Some(io::ErrorKind::Other));
+}
